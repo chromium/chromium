@@ -92,15 +92,15 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    cores = None,
-    os = os.MAC_ANY,
-    cpu = cpu.ARM64,
     gn_args = gn_args.config(
         configs = [
             "ci/mac-angle-chromium-builder",
             "no_symbols",
         ],
     ),
+    cores = None,
+    os = os.MAC_ANY,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
@@ -114,13 +114,13 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    os = os.WINDOWS_ANY,
     gn_args = gn_args.config(
         configs = [
             "ci/win-angle-chromium-x64-builder",
             "no_symbols",
         ],
     ),
+    os = os.WINDOWS_ANY,
 )
 
 try_.builder(
@@ -134,11 +134,11 @@ try_.builder(
         is_compile_only = True,
         retry_failed_shards = False,
     ),
-    os = os.WINDOWS_ANY,
     gn_args = gn_args.config(
         configs = [
             "ci/win-angle-chromium-x86-builder",
             "no_symbols",
         ],
     ),
+    os = os.WINDOWS_ANY,
 )

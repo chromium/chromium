@@ -74,16 +74,6 @@ coverage_builder(
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "android",
-            short_name = "arm64",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
-    export_coverage_to_zoss = True,
-    generate_blame_list = True,
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -100,6 +90,16 @@ coverage_builder(
             "use_java_coverage",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "android",
+            short_name = "arm64",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
+    generate_blame_list = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_java_coverage = True,
 )
@@ -122,15 +122,6 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "android",
-            short_name = "x86",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
-    export_coverage_to_zoss = True,
     gn_args = gn_args.config(
         configs = [
             "android_builder",
@@ -145,6 +136,15 @@ coverage_builder(
             "use_java_coverage",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "android",
+            short_name = "x86",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_java_coverage = True,
 )
@@ -172,15 +172,6 @@ coverage_builder(
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "android",
-            short_name = "ann",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
-    export_coverage_to_zoss = True,
     # No symbols to prevent linker file too large error on
     # android_webview_unittests target.
     gn_args = gn_args.config(
@@ -198,6 +189,15 @@ coverage_builder(
             "use_clang_coverage",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "android",
+            short_name = "ann",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -222,6 +222,17 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "clang",
+            "fuchsia",
+            "fuchsia_code_coverage",
+            "no_symbols",
+            "release_builder",
+            "reclient",
+            "use_clang_coverage",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -236,17 +247,6 @@ coverage_builder(
         ),
     ],
     coverage_test_types = ["overall", "unit"],
-    gn_args = gn_args.config(
-        configs = [
-            "clang",
-            "fuchsia",
-            "fuchsia_code_coverage",
-            "no_symbols",
-            "release_builder",
-            "reclient",
-            "use_clang_coverage",
-        ],
-    ),
     use_clang_coverage = True,
 )
 
@@ -269,6 +269,16 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "use_clang_coverage",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "ios",
+            "xctest",
+        ],
+    ),
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -281,16 +291,6 @@ coverage_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
-    gn_args = gn_args.config(
-        configs = [
-            "use_clang_coverage",
-            "debug_static_builder",
-            "reclient",
-            "x64",
-            "ios",
-            "xctest",
-        ],
-    ),
     use_clang_coverage = True,
     xcode = xcode.x15main,
 )
@@ -314,6 +314,14 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_builder",
+            "reclient",
+            "use_clang_coverage",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -323,14 +331,6 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
-    gn_args = gn_args.config(
-        configs = [
-            "chromeos_with_codecs",
-            "release_builder",
-            "reclient",
-            "use_clang_coverage",
-        ],
-    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -352,14 +352,6 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "linux",
-            short_name = "js",
-        ),
-    ],
-    export_coverage_to_zoss = True,
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -370,6 +362,14 @@ coverage_builder(
             "optimize_webui_off",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "linux",
+            short_name = "js",
+        ),
+    ],
+    export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_javascript_coverage = True,
 )
@@ -394,14 +394,6 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "linux",
-            short_name = "js",
-        ),
-    ],
-    export_coverage_to_zoss = True,
     gn_args = gn_args.config(
         configs = [
             "chromeos_with_codecs",
@@ -411,6 +403,14 @@ coverage_builder(
             "optimize_webui_off",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "linux",
+            short_name = "js",
+        ),
+    ],
+    export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_javascript_coverage = True,
 )
@@ -419,14 +419,6 @@ coverage_builder(
 coverage_builder(
     name = "linux-fuzz-coverage",
     executable = "recipe:chromium/fuzz",
-    builderless = True,
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "linux-fuzz",
-            short_name = "lnx-fuzz",
-        ),
-    ],
     gn_args = gn_args.config(
         configs = [
             "use_clang_coverage",
@@ -440,6 +432,14 @@ coverage_builder(
             "pdf_xfa",
         ],
     ),
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "linux-fuzz",
+            short_name = "lnx-fuzz",
+        ),
+    ],
 )
 
 coverage_builder(
@@ -457,15 +457,6 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "linux",
-            short_name = "lnx",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
-    export_coverage_to_zoss = True,
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -476,6 +467,15 @@ coverage_builder(
             "chrome_with_codecs",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "linux",
+            short_name = "lnx",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     use_clang_coverage = True,
 )
 
@@ -497,14 +497,6 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "lacros",
-            short_name = "lnx",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
     gn_args = gn_args.config(
         configs = [
             "lacros_on_linux",
@@ -516,6 +508,14 @@ coverage_builder(
             "no_symbols",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "lacros",
+            short_name = "lnx",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -535,6 +535,16 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "clang",
+            "use_clang_coverage",
+            "no_symbols",
+            "chrome_with_codecs",
+        ],
+    ),
     builderless = True,
     cores = 12,
     os = os.MAC_ANY,
@@ -546,16 +556,6 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "clang",
-            "use_clang_coverage",
-            "no_symbols",
-            "chrome_with_codecs",
-        ],
-    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -575,16 +575,6 @@ coverage_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    builderless = True,
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "win",
-            short_name = "win10",
-        ),
-    ],
-    coverage_test_types = ["overall", "unit"],
-    export_coverage_to_zoss = True,
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -595,5 +585,15 @@ coverage_builder(
             "chrome_with_codecs",
         ],
     ),
+    builderless = True,
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "win",
+            short_name = "win10",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     use_clang_coverage = True,
 )

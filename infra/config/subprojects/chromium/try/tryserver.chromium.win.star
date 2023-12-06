@@ -53,10 +53,10 @@ try_.builder(
     mirrors = [
         "ci/win-asan",
     ],
+    gn_args = "ci/win-asan",
     cores = 16,
     ssd = True,
     execution_timeout = 9 * time.hour,
-    gn_args = "ci/win-asan",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
@@ -76,7 +76,6 @@ try_.builder(
     mirrors = [
         "ci/win-archive-rel",
     ],
-    contact_team_email = "chrome-desktop-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "ci/win-archive-rel",
@@ -84,6 +83,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -109,14 +109,6 @@ try_.orchestrator_builder(
         "ci/GPU Win x64 Builder",
         "ci/Win10 x64 Release (NVIDIA)",
     ],
-    compilator = "win-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
-        "chromium.compilator_can_outlive_parent": 100,
-        "chromium.skip_successful_tests": 50,
-    },
     gn_args = gn_args.config(
         configs = [
             "ci/Win x64 Builder",
@@ -127,6 +119,14 @@ try_.orchestrator_builder(
             "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
+    compilator = "win-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 5,
+        "chromium.compilator_can_outlive_parent": 100,
+        "chromium.skip_successful_tests": 50,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -150,13 +150,13 @@ try_.builder(
     mirrors = [
         "ci/win32-archive-rel",
     ],
-    contact_team_email = "chrome-desktop-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "ci/win32-archive-rel",
             "release_try_builder",
         ],
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -169,14 +169,14 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    builderless = False,
-    cores = 16,
-    ssd = True,
     gn_args = gn_args.config(
         configs = [
             "ci/Win Builder (dbg)",
         ],
     ),
+    builderless = False,
+    cores = 16,
+    ssd = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -244,10 +244,10 @@ try_.builder(
         "ci/Win x64 Builder (dbg)",
         "ci/Win10 Tests x64 (dbg)",
     ],
+    gn_args = "ci/Win x64 Builder (dbg)",
     cores = 16,
     os = os.WINDOWS_10,
     ssd = True,
-    gn_args = "ci/Win x64 Builder (dbg)",
 )
 
 try_.builder(
@@ -260,9 +260,9 @@ try_.builder(
     mirrors = [
         "ci/win10-multiscreen-fyi-rel",
     ],
+    gn_args = "ci/win10-multiscreen-fyi-rel",
     os = os.WINDOWS_10,
     contact_team_email = "web-windowing-team@google.com",
-    gn_args = "ci/win10-multiscreen-fyi-rel",
 )
 
 try_.builder(
@@ -270,8 +270,8 @@ try_.builder(
     mirrors = [
         "ci/win10-wpt-content-shell-fyi-rel",
     ],
-    os = os.WINDOWS_10,
     gn_args = "ci/win10-wpt-content-shell-fyi-rel",
+    os = os.WINDOWS_10,
 )
 
 try_.builder(
@@ -279,8 +279,8 @@ try_.builder(
     mirrors = [
         "ci/win11-wpt-content-shell-fyi-rel",
     ],
-    os = os.WINDOWS_ANY,
     gn_args = "ci/win11-wpt-content-shell-fyi-rel",
+    os = os.WINDOWS_ANY,
 )
 
 try_.builder(
@@ -289,9 +289,6 @@ try_.builder(
         "ci/Win x64 Builder",
         "ci/Win11 Tests x64",
     ],
-    builderless = True,
-    os = os.WINDOWS_10,
-    coverage_test_types = ["unit", "overall"],
     gn_args = gn_args.config(
         configs = [
             "ci/Win x64 Builder",
@@ -302,6 +299,9 @@ try_.builder(
             "enable_dangling_raw_ptr_feature_flag",
         ],
     ),
+    builderless = True,
+    os = os.WINDOWS_10,
+    coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         # TODO(https://crbug.com/1441206): Enable after resources verified.
         experiment_percentage = 10,
@@ -316,8 +316,8 @@ try_.builder(
 try_.builder(
     name = "win-fieldtrial-rel",
     mirrors = ["ci/win-fieldtrial-rel"],
-    os = os.WINDOWS_DEFAULT,
     gn_args = "ci/win-fieldtrial-rel",
+    os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
@@ -337,8 +337,8 @@ try_.builder(
 try_.builder(
     name = "win10-code-coverage",
     mirrors = ["ci/win10-code-coverage"],
-    execution_timeout = 20 * time.hour,
     gn_args = "ci/win10-code-coverage",
+    execution_timeout = 20 * time.hour,
 )
 
 try_.gpu.optional_tests_builder(

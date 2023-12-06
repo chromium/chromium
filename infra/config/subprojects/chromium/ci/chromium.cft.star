@@ -52,12 +52,6 @@ ci.builder(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.MAC,
     ),
-    cores = None,
-    os = os.MAC_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        short_name = "mac-rel-cft",
-    ),
-    contact_team_email = "browser-automation-staff@google.com",
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -67,6 +61,12 @@ ci.builder(
             "chrome_with_codecs",
         ],
     ),
+    cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "mac-rel-cft",
+    ),
+    contact_team_email = "browser-automation-staff@google.com",
 )
 
 ci.builder(
@@ -76,11 +76,6 @@ ci.builder(
         target_platform = builder_config.target_platform.LINUX,
         is_arm64 = True,
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        short_name = "linux-arm64-rel-cft",
-    ),
-    contact_team_email = "browser-automation-staff@google.com",
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -91,6 +86,11 @@ ci.builder(
             "arm64",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "linux-arm64-rel-cft",
+    ),
+    contact_team_email = "browser-automation-staff@google.com",
 )
 
 ci.builder(
@@ -99,11 +99,6 @@ ci.builder(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.LINUX,
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        short_name = "linux-rel-cft",
-    ),
-    contact_team_email = "browser-automation-staff@google.com",
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -113,6 +108,11 @@ ci.builder(
             "chrome_with_codecs",
         ],
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "linux-rel-cft",
+    ),
+    contact_team_email = "browser-automation-staff@google.com",
 )
 
 ci.builder(
@@ -121,12 +121,6 @@ ci.builder(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.WIN,
     ),
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        short_name = "win-rel-cft",
-    ),
-    contact_team_email = "browser-automation-staff@google.com",
-    execution_timeout = 6 * time.hour,
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -136,4 +130,10 @@ ci.builder(
             "chrome_with_codecs",
         ],
     ),
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "win-rel-cft",
+    ),
+    contact_team_email = "browser-automation-staff@google.com",
+    execution_timeout = 6 * time.hour,
 )

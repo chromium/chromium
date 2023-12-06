@@ -48,11 +48,11 @@ angle_ios_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
     gn_args = gn_args.config(
         configs = [
             "ci/ios-angle-builder",
             "no_symbols",
         ],
     ),
+    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )

@@ -41,6 +41,13 @@ consoles.console_view(
 ci.builder(
     name = "Deterministic Fuchsia (dbg)",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
+    ),
     # Runs two builds, which can cause the builder to run out of disk space
     # with standard free space.
     free_space = free_space.high,
@@ -58,13 +65,6 @@ ci.builder(
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 6 * time.hour,
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "reclient",
-            "fuchsia_smart_display",
-        ],
-    ),
 )
 
 ci.builder(
@@ -90,6 +90,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "arm64_host",
+            "cast_receiver_size_optimized",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
@@ -103,15 +112,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "fuchsia",
-            "arm64_host",
-            "cast_receiver_size_optimized",
-        ],
-    ),
 )
 
 ci.builder(
@@ -137,6 +137,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia_smart_display",
+            "arm64_host",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
@@ -150,14 +158,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "fuchsia_smart_display",
-            "arm64_host",
-        ],
-    ),
 )
 
 ci.builder(
@@ -181,6 +181,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "cast_receiver_size_optimized",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
@@ -194,14 +202,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "fuchsia",
-            "cast_receiver_size_optimized",
-        ],
-    ),
 )
 
 ci.builder(
@@ -224,6 +224,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia",
+            "compile_only",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "debug",
@@ -237,14 +245,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "reclient",
-            "fuchsia",
-            "compile_only",
-        ],
-    ),
 )
 
 ci.builder(
@@ -268,6 +268,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
@@ -281,11 +288,4 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "fuchsia_smart_display",
-        ],
-    ),
 )

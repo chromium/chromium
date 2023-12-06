@@ -108,12 +108,12 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "main_builder",
         ),
     ),
+    gn_args = "try/android-arm64-rel",
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "ninja",
     ),
-    gn_args = "try/android-arm64-rel",
 )
 
 cq_build_perf_builder(
@@ -144,15 +144,15 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "main_builder",
         ),
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["try/android-arm64-rel", "no_reclient", "siso"]),
+        "reproxy": "try/android-arm64-rel",
+    },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "siso",
     ),
-    gn_args = {
-        "builtin": gn_args.config(configs = ["try/android-arm64-rel", "no_reclient", "siso"]),
-        "reproxy": "try/android-arm64-rel",
-    },
 )
 
 cq_build_perf_builder(
@@ -173,12 +173,12 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
+    gn_args = "try/linux-rel",
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "ninja",
     ),
-    gn_args = "try/linux-rel",
 )
 
 cq_build_perf_builder(
@@ -202,15 +202,15 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient", "siso"]),
+        "reproxy": "try/linux-rel",
+    },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "siso",
     ),
-    gn_args = {
-        "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient", "siso"]),
-        "reproxy": "try/linux-rel",
-    },
 )
 
 cq_build_perf_builder(
@@ -231,12 +231,12 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
+    gn_args = "try/win-rel",
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "windows",
         short_name = "ninja",
     ),
-    gn_args = "try/win-rel",
 )
 
 cq_build_perf_builder(
@@ -260,11 +260,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    os = os.WINDOWS_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "windows",
-        short_name = "siso",
-    ),
     gn_args = {
         "builtin": gn_args.config(
             args = {
@@ -274,6 +269,11 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
         "reproxy": "try/win-rel",
     },
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "windows",
+        short_name = "siso",
+    ),
 )
 
 cq_build_perf_builder(
@@ -297,12 +297,12 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
+    gn_args = "try/linux-chromeos-rel",
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "cros",
         short_name = "ninja",
     ),
-    gn_args = "try/linux-chromeos-rel",
 )
 
 cq_build_perf_builder(
@@ -327,11 +327,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "cros",
-        short_name = "siso",
-    ),
     gn_args = {
         "builtin": gn_args.config(
             args = {
@@ -341,6 +336,11 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
         "reproxy": "try/linux-chromeos-rel",
     },
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "cros",
+        short_name = "siso",
+    ),
 )
 
 cq_build_perf_builder(
@@ -364,13 +364,13 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = "try/mac-rel",
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "ninja",
     ),
-    gn_args = "try/mac-rel",
 )
 
 cq_build_perf_builder(
@@ -397,18 +397,18 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "siso",
-    ),
     gn_args = {
         "builtin": gn_args.config(
             configs = ["try/mac-rel", "no_reclient", "siso"],
         ),
         "reproxy": "try/mac-rel",
     },
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "siso",
+    ),
 )
 
 def developer_build_perf_builder(description_html, **kwargs):
@@ -448,15 +448,15 @@ This builder measures build performance for Android developer builds, by simulat
             config = "main_builder",
         ),
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["android_developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["android_developer", "reclient"]),
+    },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "dev",
     ),
-    gn_args = {
-        "builtin": gn_args.config(configs = ["android_developer", "siso"]),
-        "reproxy": gn_args.config(configs = ["android_developer", "reclient"]),
-    },
     reclient_jobs = 5120,
 )
 
@@ -479,15 +479,15 @@ This builder measures build performance for Linux developer builds, by simulatin
             ],
         ),
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
+    },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "dev",
     ),
-    gn_args = {
-        "builtin": gn_args.config(configs = ["developer", "siso"]),
-        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
-    },
     reclient_jobs = 5120,
 )
 
@@ -510,15 +510,15 @@ This builder measures build performance for Windows developer builds, by simulat
             ],
         ),
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
+    },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "windows",
         short_name = "dev",
     ),
-    gn_args = {
-        "builtin": gn_args.config(configs = ["developer", "siso"]),
-        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
-    },
     reclient_jobs = 1000,
 )
 
@@ -541,15 +541,15 @@ This builder measures build performance for Mac developer builds, by simulating 
             ],
         ),
     ),
+    gn_args = {
+        "builtin": gn_args.config(configs = ["developer", "siso"]),
+        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
+    },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "dev",
     ),
-    gn_args = {
-        "builtin": gn_args.config(configs = ["developer", "siso"]),
-        "reproxy": gn_args.config(configs = ["developer", "reclient"]),
-    },
     reclient_jobs = 800,
 )

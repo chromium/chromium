@@ -65,10 +65,6 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -81,6 +77,10 @@ ci.gpu.linux_builder(
             "android_fastbuild",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android",
+    ),
+    cq_mirrors_console_view = "mirrors",
 )
 
 ci.gpu.linux_builder(
@@ -103,10 +103,6 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -115,6 +111,10 @@ ci.gpu.linux_builder(
             "reclient",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux",
+    ),
+    cq_mirrors_console_view = "mirrors",
 )
 
 ci.gpu.linux_builder(
@@ -133,17 +133,17 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux",
-    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
             "debug_builder",
             "reclient",
         ],
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux",
     ),
 )
 
@@ -169,10 +169,6 @@ ci.gpu.mac_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -182,6 +178,10 @@ ci.gpu.mac_builder(
             "x64",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac",
+    ),
+    cq_mirrors_console_view = "mirrors",
 )
 
 ci.gpu.mac_builder(
@@ -201,11 +201,6 @@ ci.gpu.mac_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac",
-    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -213,6 +208,11 @@ ci.gpu.mac_builder(
             "reclient",
             "x64",
         ],
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac",
     ),
 )
 
@@ -237,10 +237,6 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -250,6 +246,10 @@ ci.gpu.windows_builder(
             "resource_allowlisting",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows",
+    ),
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -269,17 +269,17 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows",
-    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
             "debug_builder",
             "reclient",
         ],
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows",
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

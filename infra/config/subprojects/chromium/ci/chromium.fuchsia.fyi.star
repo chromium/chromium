@@ -48,6 +48,14 @@ ci.builder(
         build_gs_bucket = "chromium-fyi-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia_smart_display",
+            "arm64_host",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             branch_selector = branches.selector.MAIN,
@@ -57,14 +65,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "reclient",
-            "fuchsia_smart_display",
-            "arm64_host",
-        ],
-    ),
 )
 
 ci.builder(
@@ -88,15 +88,6 @@ ci.builder(
         build_gs_bucket = "chromium-fyi-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = [
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "gardener|fuchsia ci|x64",
-            short_name = "asan",
-        ),
-    ],
-    contact_team_email = "chrome-fuchsia-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -106,6 +97,15 @@ ci.builder(
             "lsan",
         ],
     ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            branch_selector = branches.selector.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "gardener|fuchsia ci|x64",
+            short_name = "asan",
+        ),
+    ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 ci.builder(
@@ -129,6 +129,13 @@ ci.builder(
         build_gs_bucket = "chromium-fyi-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "fuchsia_smart_display",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             branch_selector = branches.selector.MAIN,
@@ -138,13 +145,6 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    gn_args = gn_args.config(
-        configs = [
-            "debug_builder",
-            "reclient",
-            "fuchsia_smart_display",
-        ],
-    ),
 )
 
 ci.builder(

@@ -45,6 +45,15 @@ ci.builder(
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "blink_symbol",
+            "minimal_symbols",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "rel",
@@ -57,15 +66,6 @@ ci.builder(
             short_name = "a11y",
         ),
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "reclient",
-            "fuchsia",
-            "blink_symbol",
-            "minimal_symbols",
-        ],
-    ),
 )
 
 ci.builder(
@@ -81,15 +81,15 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "rel",
-        short_name = "x64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "release_builder_blink",
             "reclient",
             "dcheck_always_on",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "rel",
+        short_name = "x64",
     ),
 )

@@ -85,13 +85,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    builderless = False,
-    cores = 32,
-    os = os.WINDOWS_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "release|builder",
-        short_name = "32",
-    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -100,6 +93,13 @@ ci.builder(
             "x86",
             "no_symbols",
         ],
+    ),
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|builder",
+        short_name = "32",
     ),
 )
 
@@ -119,19 +119,19 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    builderless = True,
-    cores = 32,
-    os = os.WINDOWS_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|builder",
-        short_name = "64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
             "debug_builder",
             "reclient",
         ],
+    ),
+    builderless = True,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "64",
     ),
 )
 
@@ -179,14 +179,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    builderless = False,
-    cores = 32,
-    os = os.WINDOWS_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|builder",
-        short_name = "32",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -196,6 +188,14 @@ ci.builder(
             "no_symbols",
         ],
     ),
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|builder",
+        short_name = "32",
+    ),
+    cq_mirrors_console_view = "mirrors",
     # TODO(crbug/1473182): Remove once the bug is closed.
     reclient_bootstrap_env = {
         "RBE_experimental_exit_on_stuck_actions": "true",
@@ -223,14 +223,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    builderless = False,
-    cores = 32,
-    os = os.WINDOWS_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "release|builder",
-        short_name = "64",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -239,6 +231,14 @@ ci.builder(
             "minimal_symbols",
         ],
     ),
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "release|builder",
+        short_name = "64",
+    ),
+    cq_mirrors_console_view = "mirrors",
 )
 
 ci.builder(
@@ -306,12 +306,6 @@ ci.thin_tester(
 ci.builder(
     name = "Windows deterministic",
     executable = "recipe:swarming/deterministic_build",
-    builderless = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "misc",
-        short_name = "det",
-    ),
-    execution_timeout = 12 * time.hour,
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -320,6 +314,12 @@ ci.builder(
             "minimal_symbols",
         ],
     ),
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "misc",
+        short_name = "det",
+    ),
+    execution_timeout = 12 * time.hour,
     reclient_bootstrap_env = {
         "RBE_ip_timeout": "10m",
     },

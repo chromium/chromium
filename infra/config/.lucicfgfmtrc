@@ -39,6 +39,7 @@ rules {
         arg: "builder_spec"
         arg: "mirrors"
         arg: "try_settings"
+        arg: "gn_args"
         arg: "pool"
         arg: "builderless"
         arg: "cores"

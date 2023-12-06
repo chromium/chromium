@@ -123,9 +123,9 @@ try_.builder(
     mirrors = [
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     ],
+    gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
-    gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -155,9 +155,9 @@ try_.builder(
         "ci/Dawn Mac x64 DEPS Release (AMD)",
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
+    gn_args = "ci/Dawn Mac x64 DEPS Builder",
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
-    gn_args = "ci/Dawn Mac x64 DEPS Builder",
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -187,8 +187,8 @@ try_.builder(
         "ci/Dawn Win10 x64 DEPS Release (Intel)",
         "ci/Dawn Win10 x64 DEPS Release (NVIDIA)",
     ],
-    os = os.WINDOWS_ANY,
     gn_args = "ci/Dawn Win10 x64 DEPS Builder",
+    os = os.WINDOWS_ANY,
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -218,8 +218,8 @@ try_.builder(
         "ci/Dawn Win10 x86 DEPS Release (Intel)",
         "ci/Dawn Win10 x86 DEPS Release (NVIDIA)",
     ],
-    os = os.WINDOWS_ANY,
     gn_args = "ci/Dawn Win10 x86 DEPS Builder",
+    os = os.WINDOWS_ANY,
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -284,8 +284,8 @@ try_.builder(
     mirrors = [
         "ci/Dawn Mac arm64 Release (Apple M2)",
     ],
-    os = os.MAC_ANY,
     gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
+    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -298,8 +298,8 @@ try_.builder(
         "ci/Dawn Mac x64 Release (AMD)",
         "ci/Dawn Mac x64 Release (Intel)",
     ],
-    os = os.MAC_ANY,
     gn_args = "ci/Dawn Mac x64 Builder",
+    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -310,9 +310,9 @@ try_.builder(
     mirrors = [
         "ci/Dawn Linux TSAN Release",
     ],
+    gn_args = "ci/Dawn Linux TSAN Release",
     pool = "luci.chromium.gpu.linux.nvidia.try",
     builderless = True,
-    gn_args = "ci/Dawn Linux TSAN Release",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -324,10 +324,10 @@ try_.builder(
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (AMD)",
     ],
+    gn_args = "ci/Dawn Mac x64 Builder",
     pool = "luci.chromium.gpu.mac.retina.amd.try",
     builderless = True,
     os = os.MAC_ANY,
-    gn_args = "ci/Dawn Mac x64 Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -338,11 +338,11 @@ try_.builder(
     mirrors = [
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     ],
+    gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
     builderless = True,
     os = os.MAC_ANY,
     cpu = None,
-    gn_args = "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -353,11 +353,11 @@ try_.builder(
     mirrors = [
         "ci/Dawn Mac arm64 Release (Apple M2)",
     ],
+    gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
     pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
     builderless = True,
     os = os.MAC_ANY,
     cpu = None,
-    gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -369,10 +369,10 @@ try_.builder(
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (Intel)",
     ],
+    gn_args = "ci/Dawn Mac x64 Builder",
     pool = "luci.chromium.gpu.mac.mini.intel.try",
     builderless = True,
     os = os.MAC_ANY,
-    gn_args = "ci/Dawn Mac x64 Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -384,10 +384,10 @@ try_.builder(
         "ci/Dawn Win10 x64 Builder",
         "ci/Dawn Win10 x64 Experimental Release (Intel)",
     ],
+    gn_args = "ci/Dawn Win10 x64 Builder",
     pool = "luci.chromium.gpu.win10.intel.try",
     builderless = True,
     os = os.WINDOWS_ANY,
-    gn_args = "ci/Dawn Win10 x64 Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -399,10 +399,10 @@ try_.builder(
         "ci/Dawn Win10 x86 Builder",
         "ci/Dawn Win10 x86 Experimental Release (Intel)",
     ],
+    gn_args = "ci/Dawn Win10 x86 Builder",
     pool = "luci.chromium.gpu.win10.intel.try",
     builderless = True,
     os = os.WINDOWS_ANY,
-    gn_args = "ci/Dawn Win10 x86 Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -415,8 +415,8 @@ try_.builder(
         "ci/Dawn Win10 x64 Release (Intel)",
         "ci/Dawn Win10 x64 Release (NVIDIA)",
     ],
-    os = os.WINDOWS_ANY,
     gn_args = "ci/Dawn Win10 x64 Builder",
+    os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -429,8 +429,8 @@ try_.builder(
         "ci/Dawn Win10 x86 Release (Intel)",
         "ci/Dawn Win10 x86 Release (NVIDIA)",
     ],
-    os = os.WINDOWS_ANY,
     gn_args = "ci/Dawn Win10 x86 Builder",
+    os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -442,10 +442,10 @@ try_.builder(
         "ci/Dawn Win10 x64 ASAN Builder",
         "ci/Dawn Win10 x64 ASAN Release (Intel)",
     ],
+    gn_args = "ci/Dawn Win10 x64 ASAN Builder",
     pool = "luci.chromium.gpu.win10.intel.try",
     builderless = True,
     os = os.WINDOWS_ANY,
-    gn_args = "ci/Dawn Win10 x64 ASAN Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -457,10 +457,10 @@ try_.builder(
         "ci/Dawn Win10 x64 ASAN Builder",
         "ci/Dawn Win10 x64 ASAN Release (NVIDIA)",
     ],
+    gn_args = "ci/Dawn Win10 x64 ASAN Builder",
     pool = "luci.chromium.gpu.win10.nvidia.try",
     builderless = True,
     os = os.WINDOWS_ANY,
-    gn_args = "ci/Dawn Win10 x64 ASAN Builder",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

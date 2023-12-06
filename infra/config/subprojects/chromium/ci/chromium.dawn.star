@@ -68,10 +68,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Linux|Builder",
-        short_name = "x64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -79,6 +75,10 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Linux|Builder",
+        short_name = "x64",
     ),
 )
 
@@ -103,11 +103,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Linux|Builder",
-        short_name = "x64",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -116,6 +111,11 @@ ci.gpu.linux_builder(
             "reclient",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Linux|Builder",
+        short_name = "x64",
+    ),
+    cq_mirrors_console_view = "mirrors",
 )
 
 ci.gpu.linux_builder(
@@ -137,10 +137,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Android|Builder",
-        short_name = "arm",
-    ),
     gn_args = gn_args.config(
         configs = [
             "android_builder",
@@ -148,6 +144,10 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Android|Builder",
+        short_name = "arm",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -225,10 +225,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Android",
-        short_name = "p6",
-    ),
     gn_args = gn_args.config(
         configs = [
             "android_builder",
@@ -237,6 +233,10 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Android",
+        short_name = "p6",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -318,13 +318,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Linux|TSAN",
-        short_name = "x64",
-    ),
-    # Serially executed tests + TSAN = more than the default timeout needed in
-    # order to prevent build timeouts.
-    execution_timeout = 6 * time.hour,
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -334,6 +327,13 @@ ci.gpu.linux_builder(
             "reclient",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Linux|TSAN",
+        short_name = "x64",
+    ),
+    # Serially executed tests + TSAN = more than the default timeout needed in
+    # order to prevent build timeouts.
+    execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -357,10 +357,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Android|Builder",
-        short_name = "arm",
-    ),
     gn_args = gn_args.config(
         configs = [
             "android_builder",
@@ -368,6 +364,10 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android|Builder",
+        short_name = "arm",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -448,10 +448,6 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Android",
-        short_name = "p6",
-    ),
     gn_args = gn_args.config(
         configs = [
             "android_builder",
@@ -460,6 +456,10 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android",
+        short_name = "p6",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -536,10 +536,6 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Mac",
-        short_name = "arm64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -548,6 +544,10 @@ ci.gpu.mac_builder(
             "reclient",
             "arm64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Mac",
+        short_name = "arm64",
     ),
 )
 
@@ -573,10 +573,6 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac",
-        short_name = "arm64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -585,6 +581,10 @@ ci.gpu.mac_builder(
             "reclient",
             "arm64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Mac",
+        short_name = "arm64",
     ),
 )
 
@@ -610,10 +610,6 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac|Builder",
-        short_name = "x64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -622,6 +618,10 @@ ci.gpu.mac_builder(
             "reclient",
             "x64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Mac|Builder",
+        short_name = "x64",
     ),
 )
 
@@ -645,11 +645,6 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Mac|Builder",
-        short_name = "x64",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -659,6 +654,11 @@ ci.gpu.mac_builder(
             "x64",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Mac|Builder",
+        short_name = "x64",
+    ),
+    cq_mirrors_console_view = "mirrors",
 )
 
 # Note that the Mac testers are all thin Linux VMs, triggering jobs on the
@@ -855,10 +855,6 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|ASAN|Builder",
-        short_name = "x64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_use_built_dxc",
@@ -868,6 +864,10 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|ASAN|Builder",
+        short_name = "x64",
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
@@ -957,10 +957,6 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Builder",
-        short_name = "x64",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_use_built_dxc",
@@ -969,6 +965,10 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "reclient",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|Builder",
+        short_name = "x64",
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
@@ -992,11 +992,6 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Windows|Builder",
-        short_name = "x64",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "dawn_use_built_dxc",
@@ -1006,6 +1001,11 @@ ci.gpu.windows_builder(
             "reclient",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Windows|Builder",
+        short_name = "x64",
+    ),
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -1168,10 +1168,6 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Builder",
-        short_name = "x86",
-    ),
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -1180,6 +1176,10 @@ ci.gpu.windows_builder(
             "reclient",
             "x86",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|Builder",
+        short_name = "x86",
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
@@ -1203,11 +1203,6 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Windows|Builder",
-        short_name = "x86",
-    ),
-    cq_mirrors_console_view = "mirrors",
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
@@ -1217,6 +1212,11 @@ ci.gpu.windows_builder(
             "x86",
         ],
     ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Windows|Builder",
+        short_name = "x86",
+    ),
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 

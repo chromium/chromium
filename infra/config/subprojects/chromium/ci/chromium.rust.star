@@ -47,10 +47,6 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android 32bit",
-        short_name = "rel",
-    ),
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
@@ -60,6 +56,10 @@ ci.builder(
             "android_builder",
             "arm",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android 32bit",
+        short_name = "rel",
     ),
 )
 
@@ -82,10 +82,6 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android 64bit",
-        short_name = "dbg",
-    ),
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
@@ -94,6 +90,10 @@ ci.builder(
             "android_builder",
             "arm64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android 64bit",
+        short_name = "dbg",
     ),
 )
 
@@ -116,10 +116,6 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android 64bit",
-        short_name = "rel",
-    ),
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
@@ -129,6 +125,10 @@ ci.builder(
             "android_builder",
             "arm64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android 64bit",
+        short_name = "rel",
     ),
 )
 
@@ -145,10 +145,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux",
-        short_name = "dbg",
-    ),
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
@@ -156,6 +152,10 @@ ci.builder(
             "enable_all_rust_features",
             "x64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux",
+        short_name = "dbg",
     ),
 )
 
@@ -174,10 +174,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux",
-        short_name = "rel",
-    ),
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
@@ -186,6 +182,10 @@ ci.builder(
             "enable_all_rust_features",
             "x64",
         ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Linux",
+        short_name = "rel",
     ),
 )
 
@@ -204,12 +204,6 @@ ci.builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    cores = 12,
-    os = os.MAC_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac x64",
-        short_name = "dbg",
-    ),
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
@@ -217,6 +211,12 @@ ci.builder(
             "enable_all_rust_features",
             "x64",
         ],
+    ),
+    cores = 12,
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac x64",
+        short_name = "dbg",
     ),
 )
 
@@ -234,11 +234,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    os = os.WINDOWS_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows x64",
-        short_name = "dbg",
-    ),
     gn_args = gn_args.config(
         configs = [
             "debug_builder",
@@ -246,6 +241,11 @@ ci.builder(
             "enable_all_rust_features",
             "x64",
         ],
+    ),
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows x64",
+        short_name = "dbg",
     ),
 )
 
@@ -263,11 +263,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    os = os.WINDOWS_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows x64",
-        short_name = "rel",
-    ),
     gn_args = gn_args.config(
         configs = [
             "release_try_builder",
@@ -276,5 +271,10 @@ ci.builder(
             "enable_all_rust_features",
             "x64",
         ],
+    ),
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows x64",
+        short_name = "rel",
     ),
 )

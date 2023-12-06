@@ -108,29 +108,29 @@ try_.builder(
 try_.builder(
     name = "mac-asan-rel",
     mirrors = ["ci/Mac ASAN Release"],
+    gn_args = "ci/Mac ASAN Release",
     cores = None,
     os = os.MAC_DEFAULT,
-    gn_args = "ci/Mac ASAN Release",
 )
 
 try_.builder(
     name = "mac-asan-media-rel",
     mirrors = ["ci/Mac ASAN Release Media"],
+    gn_args = "ci/Mac ASAN Release Media",
     cores = None,
     os = os.MAC_DEFAULT,
-    gn_args = "ci/Mac ASAN Release Media",
 )
 
 try_.builder(
     name = "win-asan-rel",
     mirrors = ["ci/Win ASan Release"],
-    os = os.WINDOWS_DEFAULT,
     gn_args = "ci/Win ASan Release",
+    os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
     name = "win-asan-media-rel",
     mirrors = ["ci/Win ASan Release Media"],
-    os = os.WINDOWS_DEFAULT,
     gn_args = "ci/Win ASan Release Media",
+    os = os.WINDOWS_DEFAULT,
 )

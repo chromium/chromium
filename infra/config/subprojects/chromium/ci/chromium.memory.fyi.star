@@ -46,6 +46,14 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "msan",
+            "fail_on_san_warnings",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = 1,
     # At this time, MSan is only compatibly with Focal. See
     # //docs/linux/instrumented_libraries.md.
@@ -56,14 +64,6 @@ ci.builder(
         short_name = "msan",
     ),
     execution_timeout = 6 * time.hour,
-    gn_args = gn_args.config(
-        configs = [
-            "msan",
-            "fail_on_san_warnings",
-            "release_builder",
-            "reclient",
-        ],
-    ),
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -84,12 +84,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    builderless = 1,
-    console_view_entry = consoles.console_view_entry(
-        category = "experimental|linux",
-        short_name = "tsan",
-    ),
-    execution_timeout = 4 * time.hour,
     gn_args = gn_args.config(
         configs = [
             "tsan",
@@ -99,6 +93,12 @@ ci.builder(
             "reclient",
         ],
     ),
+    builderless = 1,
+    console_view_entry = consoles.console_view_entry(
+        category = "experimental|linux",
+        short_name = "tsan",
+    ),
+    execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -119,12 +119,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    builderless = 1,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|ubsan",
-        short_name = "fyi",
-    ),
-    execution_timeout = 6 * time.hour,
     gn_args = gn_args.config(
         configs = [
             "ubsan_no_recover",
@@ -132,6 +126,12 @@ ci.builder(
             "reclient",
         ],
     ),
+    builderless = 1,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|ubsan",
+        short_name = "fyi",
+    ),
+    execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -153,14 +153,6 @@ ci.builder(
         ),
         run_tests_serially = True,
     ),
-    builderless = 1,
-    cores = None,
-    os = os.MAC_ANY,
-    console_view_entry = consoles.console_view_entry(
-        category = "mac|lsan",
-        short_name = "lsan",
-    ),
-    execution_timeout = 12 * time.hour,
     gn_args = gn_args.config(
         configs = [
             "asan",
@@ -171,5 +163,13 @@ ci.builder(
             "reclient",
         ],
     ),
+    builderless = 1,
+    cores = None,
+    os = os.MAC_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac|lsan",
+        short_name = "lsan",
+    ),
+    execution_timeout = 12 * time.hour,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
