@@ -56,9 +56,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
-  void DidSelectSuggestion(
-      const Suggestion& suggestion,
-      AutofillSuggestionTriggerSource trigger_source) override;
+  void DidSelectSuggestion(const Suggestion& suggestion) override;
   void DidAcceptSuggestion(
       const Suggestion& suggestion,
       const SuggestionPosition& position,

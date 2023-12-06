@@ -657,7 +657,7 @@ void AutofillPopupControllerImpl::SelectSuggestion(
   }
 
   if (index) {
-    delegate_->DidSelectSuggestion(GetSuggestionAt(*index), trigger_source_);
+    delegate_->DidSelectSuggestion(GetSuggestionAt(*index));
   } else {
     delegate_->ClearPreviewedForm();
   }

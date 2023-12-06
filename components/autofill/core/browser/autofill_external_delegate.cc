@@ -380,8 +380,7 @@ void AutofillExternalDelegate::OnPopupHidden() {
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
-    const Suggestion& suggestion,
-    AutofillSuggestionTriggerSource trigger_source) {
+    const Suggestion& suggestion) {
   ClearPreviewedForm();
 
   const Suggestion::BackendId backend_id =
@@ -400,14 +399,14 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       FillAutofillFormData(
           suggestion.popup_item_id, backend_id, true,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kFillFullAddress:
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill = GetAddressFieldsForGroupFilling()});
       break;
     case PopupItemId::kFillFullName:
@@ -415,7 +414,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
                GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
       break;
@@ -424,7 +423,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
                GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
@@ -433,7 +432,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
                GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)});
       break;
@@ -453,7 +452,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       FillAutofillFormData(
           suggestion.popup_item_id, backend_id, /*is_preview=*/true,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kEntryNotSelectable:
       return;

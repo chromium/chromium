@@ -40,9 +40,7 @@ class AutofillPopupDelegate {
 
   // Called when the autofill `suggestion` has been temporarily selected (e.g.,
   // hovered).
-  virtual void DidSelectSuggestion(
-      const Suggestion& suggestion,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+  virtual void DidSelectSuggestion(const Suggestion& suggestion) = 0;
 
   // Informs the delegate that a row in the popup has been chosen. `suggestion`
   // is the suggestion that was chosen in the popup. `position` refers to the

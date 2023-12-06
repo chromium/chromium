@@ -377,8 +377,7 @@ void PasswordAutofillManager::OnPopupShown() {}
 void PasswordAutofillManager::OnPopupHidden() {}
 
 void PasswordAutofillManager::DidSelectSuggestion(
-    const autofill::Suggestion& suggestion,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
+    const autofill::Suggestion& suggestion) {
   ClearPreviewedForm();
   if (suggestion.popup_item_id ==
           autofill::PopupItemId::kAllSavedPasswordsEntry ||

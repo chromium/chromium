@@ -124,9 +124,7 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
       : AutofillExternalDelegate(autofill_manager) {}
   ~MockAutofillExternalDelegate() override = default;
 
-  void DidSelectSuggestion(
-      const Suggestion& suggestion,
-      AutofillSuggestionTriggerSource trigger_source) override {}
+  void DidSelectSuggestion(const Suggestion& suggestion) override {}
   bool RemoveSuggestion(const std::u16string& value,
                         PopupItemId popup_item_id,
                         Suggestion::BackendId backend_id) override {
