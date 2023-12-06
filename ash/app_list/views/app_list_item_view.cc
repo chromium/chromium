@@ -604,16 +604,12 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   if (use_item_icon_) {
     // If the item icon is used, set the icon in ImageView and paint the view.
-    if (features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
-      shortcut_background_container_ =
-          AddChildView(std::make_unique<views::View>());
-    }
-
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetCanProcessEventsWithinSubtree(false);
     icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
-    if (has_host_badge_) {
+    if (has_host_badge_ &&
+        features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
       SetHostBadgeIcon(item_weak_->GetHostBadgeIcon());
     }
   } else {
@@ -733,11 +729,12 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
   }
 
   SetIcon(image_icon);
-
-  if (update_item_icon) {
-    SetHostBadgeIcon(item_weak_->GetHostBadgeIcon());
-  } else {
-    SetHostBadgeIcon(host_badge_icon_image_);
+  if (features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+    if (update_item_icon) {
+      SetHostBadgeIcon(item_weak_->GetHostBadgeIcon());
+    } else {
+      SetHostBadgeIcon(host_badge_icon_image_);
+    }
   }
 }
 
@@ -771,15 +768,32 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   }
 
   const gfx::Size icon_size =
-      gfx::ScaleToRoundedSize(GetIconSize(), icon_scale_);
+      has_host_badge_
+          ? gfx::ScaleToRoundedSize(app_list_config_->GetShortcutIconSize(),
+                                    icon_scale_)
+          : gfx::ScaleToRoundedSize(GetIconSize(), icon_scale_);
 
-  gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
-      icon, skia::ImageOperations::RESIZE_BEST, icon_size);
-  if (is_promise_app_ || ShouldUseFallbackIconImageModel()) {
-    resized = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-        icon_size.width(), resized);
+  gfx::ImageSkia resized_icon_image =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          icon, skia::ImageOperations::RESIZE_BEST, icon_size);
+
+  if (has_host_badge_ && GetColorProvider()) {
+    resized_icon_image =
+        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+            (app_list_config_->GetShortcutBackgroundContainerDimension() *
+             icon_scale_) /
+                2,
+            GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysSystemOnBaseOpaque),
+            resized_icon_image);
   }
-  icon_->SetImage(resized);
+
+  if (is_promise_app_ || ShouldUseFallbackIconImageModel()) {
+    resized_icon_image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+        icon_size.width(), resized_icon_image);
+  }
+
+  icon_->SetImage(resized_icon_image);
 
   Layout();
 }
@@ -788,11 +802,6 @@ gfx::Size AppListItemView::GetIconSize() const {
   if (is_folder_) {
     return app_list_config_->folder_icon_size();
   }
-
-  if (has_host_badge_) {
-    return app_list_config_->GetShortcutIconSize();
-  }
-
   if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
     return GetPreferredIconSizeForProgressRing();
   }
@@ -825,25 +834,27 @@ void AppListItemView::SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon) {
                 app_list_config_->shortcut_host_badge_icon_dimension()),
       icon_scale_);
 
-  gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
-      host_badge_icon, skia::ImageOperations::RESIZE_BEST,
-      host_badge_icon_size);
+  gfx::ImageSkia resized_host_badge_icon_image =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          host_badge_icon, skia::ImageOperations::RESIZE_BEST,
+          host_badge_icon_size);
+
+  if (GetColorProvider()) {
+    resized_host_badge_icon_image =
+        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+            (app_list_config_->GetShortcutHostBadgeIconContainerDimension() *
+             icon_scale_) /
+                2,
+            GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysSystemOnBaseOpaque),
+            resized_host_badge_icon_image);
+  }
 
   if (!host_badge_icon_view_) {
-    host_badge_icon_container_ = AddChildView(std::make_unique<views::View>());
-
-    auto* host_badge_icon_container_layout =
-        host_badge_icon_container_->SetLayoutManager(
-            std::make_unique<views::BoxLayout>(
-                views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
-    host_badge_icon_container_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-    host_badge_icon_container_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kCenter);
-    host_badge_icon_view_ = host_badge_icon_container_->AddChildView(
-        std::make_unique<views::ImageView>());
+    host_badge_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   }
-  host_badge_icon_view_->SetImage(resized);
+
+  host_badge_icon_view_->SetImage(resized_host_badge_icon_image);
 
   Layout();
 }
@@ -1389,38 +1400,6 @@ void AppListItemView::Layout() {
       app_list_config_, rect, gfx::ScaleToRoundedSize(icon_size, icon_scale_),
       icon_scale_);
 
-  const int shortcut_background_container_dimension =
-      app_list_config_->GetShortcutBackgroundContainerDimension();
-  const gfx::Size shortcut_background_container_size =
-      gfx::Size(shortcut_background_container_dimension,
-                shortcut_background_container_dimension);
-
-  const int shortcut_host_badge_icon_container_dimension =
-      app_list_config_->GetShortcutHostBadgeIconContainerDimension();
-
-  const gfx::Size shotcut_host_badge_icon_container_size =
-      gfx::Size(shortcut_host_badge_icon_container_dimension,
-                shortcut_host_badge_icon_container_dimension);
-
-  if (shortcut_background_container_ && has_host_badge_) {
-    shortcut_background_container_->SetBackground(
-        views::CreateThemedRoundedRectBackground(
-            cros_tokens::kCrosSysSystemOnBaseOpaque,
-            std::round(icon_scale_ * shortcut_background_container_dimension /
-                       2.0f),
-            0));
-
-    const gfx::Rect shortcut_background_container_bounds =
-        GetIconBoundsForTargetViewBounds(
-            app_list_config_, rect,
-            gfx::ScaleToRoundedSize(shortcut_background_container_size,
-                                    icon_scale_),
-            icon_scale_);
-
-    shortcut_background_container_->SetBoundsRect(
-        shortcut_background_container_bounds);
-  }
-
   GetIconView()->SetBoundsRect(icon_bounds);
   UpdateBackgroundLayerBounds();
   SetBackgroundExtendedState(is_icon_extended_, /*animate=*/false);
@@ -1443,23 +1422,18 @@ void AppListItemView::Layout() {
         kNewInstallDotSize, kNewInstallDotSize);
   }
 
-  if (host_badge_icon_container_ && host_badge_icon_view_ &&
-      features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
-    gfx::Rect host_badge_icon_container_bounds =
-        GetHostBadgeIconContainerBoundsForTargetViewBounds(
+  if (host_badge_icon_view_) {
+    const gfx::Size shortcut_host_badge_icon_container_size = gfx::Size(
+        app_list_config_->GetShortcutHostBadgeIconContainerDimension(),
+        app_list_config_->GetShortcutHostBadgeIconContainerDimension());
+    gfx::Rect host_badge_icon_bounds =
+        GetHostBadgeIconBoundsForTargetViewBounds(
             icon_bounds,
-            gfx::ScaleToRoundedSize(shotcut_host_badge_icon_container_size,
+            gfx::ScaleToRoundedSize(shortcut_host_badge_icon_container_size,
                                     icon_scale_),
             icon_scale_);
 
-    host_badge_icon_container_->SetBackground(
-        views::CreateThemedRoundedRectBackground(
-            cros_tokens::kCrosSysSystemOnBaseOpaque,
-            std::round(icon_scale_ *
-                       shortcut_host_badge_icon_container_dimension / 2.0f),
-            0));
-
-    host_badge_icon_container_->SetBoundsRect(host_badge_icon_container_bounds);
+    host_badge_icon_view_->SetBoundsRect(host_badge_icon_bounds);
   }
 
   const float indicator_size =
@@ -2016,8 +1990,7 @@ gfx::ImageSkia AppListItemView::GetDragImage() const {
   if (is_folder_) {
     return folder_icon_->CreateDragImage();
   }
-  if (has_host_badge_ && host_badge_icon_view_ &&
-      features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+  if (has_host_badge_ && host_badge_icon_view_) {
     const int background_radius =
         std::round(app_list_config_->GetShortcutBackgroundContainerDimension() /
                    2.0f * kDragDropAppIconScale);
@@ -2071,7 +2044,7 @@ gfx::Rect AppListItemView::GetIconBoundsForTargetViewBounds(
 }
 
 // static
-gfx::Rect AppListItemView::GetHostBadgeIconContainerBoundsForTargetViewBounds(
+gfx::Rect AppListItemView::GetHostBadgeIconBoundsForTargetViewBounds(
     const gfx::Rect& main_icon_bounds,
     const gfx::Size& host_badge_icon_with_background_size,
     const float icon_scale) {
@@ -2264,13 +2237,9 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
   icon_background_->SetVisible(true);
   GetIconView()->SetPaintToLayer();
   GetIconView()->layer()->SetFillsBoundsOpaquely(false);
-  if (host_badge_icon_container_) {
-    host_badge_icon_container_->SetPaintToLayer();
-    host_badge_icon_container_->layer()->SetFillsBoundsOpaquely(false);
-  }
-  if (shortcut_background_container_) {
-    shortcut_background_container_->SetPaintToLayer();
-    shortcut_background_container_->layer()->SetFillsBoundsOpaquely(false);
+  if (host_badge_icon_view_) {
+    host_badge_icon_view_->SetPaintToLayer();
+    host_badge_icon_view_->layer()->SetFillsBoundsOpaquely(false);
   }
   base::AutoReset<bool> auto_reset(&setting_up_icon_animation_, true);
   ui::Layer* const background_layer = GetIconBackgroundLayer();
@@ -2335,11 +2304,8 @@ void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
   if (!setting_up_icon_animation_ && !extend_icon && !is_folder_) {
     icon_background_->SetVisible(false);
     GetIconView()->DestroyLayer();
-    if (host_badge_icon_container_) {
-      host_badge_icon_container_->DestroyLayer();
-    }
-    if (shortcut_background_container_) {
-      shortcut_background_container_->DestroyLayer();
+    if (host_badge_icon_view_) {
+      host_badge_icon_view_->DestroyLayer();
     }
   }
 }

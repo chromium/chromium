@@ -236,7 +236,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Returns the host badge icon bounds using the centerpoint of
   // `main_icon_bounds` and given `host_badge_icon_container_size and the
   // `icon_scale` if the icon was scaled from the original display size.
-  static gfx::Rect GetHostBadgeIconContainerBoundsForTargetViewBounds(
+  static gfx::Rect GetHostBadgeIconBoundsForTargetViewBounds(
       const gfx::Rect& main_icon_bounds,
       const gfx::Size& host_badge_icon_container_size,
       float icon_scale);
@@ -514,14 +514,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // NOTE: Only one of `icon_` and `folder_icon_` is used for an item view.
   // The icon view that uses the ImageSkia in AppListItem to draw the icon.
   raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+
   // The folder icon view used for refreshed folders.
   raw_ptr<FolderIconView, ExperimentalAsh> folder_icon_ = nullptr;
 
-  // The main icon container view used for app shortcuts.
-  raw_ptr<views::View, ExperimentalAsh> shortcut_background_container_ =
-      nullptr;
-  // The host badge icon container view used for app shortcuts.
-  raw_ptr<views::View, ExperimentalAsh> host_badge_icon_container_ = nullptr;
   // The host badge icon view used for app shortcuts.
   raw_ptr<views::ImageView, ExperimentalAsh> host_badge_icon_view_ = nullptr;
 
