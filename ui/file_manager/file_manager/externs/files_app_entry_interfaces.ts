@@ -102,9 +102,7 @@ export abstract class FilesAppEntry {
    * This method is defined on Entry.
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  toURL(): string {
-    return '';
-  }
+  abstract toURL(): string;
 
   /** Gets metadata, such as "modificationTime" and "contentMimeType". */
   getMetadata(_success: MetadataCallback, error?: FileErrorCallback): void {

@@ -183,12 +183,11 @@ export class EntryList extends FilesAppDirEntry {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override toURL(): string {
-    // There may be multiple entry lists. Append the device path to return
-    // a unique identifiable URL for the entry list.
+    let url = `entry-list://${this.rootType}`;
     if (this.devicePath) {
-      return 'entry-list://' + this.rootType + '/' + this.devicePath;
+      url += `/${this.devicePath}`;
     }
-    return 'entry-list://' + this.rootType;
+    return url;
   }
 
   override getParent(
@@ -421,7 +420,7 @@ export class VolumeEntry extends FilesAppDirEntry {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override toURL(): string {
-    return this.rootEntry_ ? this.rootEntry_.toURL() : '';
+    return this.rootEntry_?.toURL() ?? '';
   }
 
   /** String used to determine the icon. */
@@ -620,9 +619,9 @@ export class FakeEntryImpl extends FakeEntry {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override toURL(): string {
-    let url = 'fake-entry://' + this.rootType;
+    let url = `fake-entry://${this.rootType}`;
     if (this.fileCategory) {
-      url += '/' + this.fileCategory;
+      url += `/${this.fileCategory}`;
     }
     return url;
   }
