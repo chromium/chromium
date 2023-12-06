@@ -844,4 +844,26 @@ TEST_F(StructuredMetricsRecorderTest, PurgeForceRecordedEvents) {
   ASSERT_EQ(data.events_size(), 0);
 }
 
+TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {
+  constexpr std::string_view kProjectName = "TestProjectOne";
+  constexpr std::string_view kEventName = "TestEventOne";
+  constexpr std::string_view kMetricOneName = "TestMetricOne";
+  constexpr std::string_view kMetricTwoName = "TestMetricTwo";
+
+  validator::Validators* validators = validator::Validators::Get();
+
+  ASSERT_EQ(validators->GetProjectName(kProjectOneHash), kProjectName);
+
+  auto project_validator = validators->GetProjectValidator(kProjectName);
+  ASSERT_TRUE(project_validator.has_value());
+
+  ASSERT_EQ((*project_validator)->GetEventName(kEventOneHash), kEventName);
+
+  auto event_validator = (*project_validator)->GetEventValidator(kEventName);
+  ASSERT_TRUE(event_validator.has_value());
+
+  ASSERT_EQ((*event_validator)->GetMetricName(kMetricOneHash), kMetricOneName);
+  ASSERT_EQ((*event_validator)->GetMetricName(kMetricTwoHash), kMetricTwoName);
+}
+
 }  // namespace metrics::structured
