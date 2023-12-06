@@ -486,10 +486,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                 SysNSStringToUTF8(suggestion.backendIdentifier)));
       }
 
-      // On iOS, only a single trigger source exists. See crbug.com/1448447.
-      _popupDelegate->DidAcceptSuggestion(
-          autofill_suggestion, {0, 0},
-          autofill::AutofillSuggestionTriggerSource::kiOS);
+      _popupDelegate->DidAcceptSuggestion(autofill_suggestion, {0, 0});
     }
     return;
   }

@@ -490,8 +490,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
-    const SuggestionPosition& position,
-    AutofillSuggestionTriggerSource trigger_source) {
+    const SuggestionPosition& position) {
   switch (suggestion.popup_item_id) {
     case PopupItemId::kAutofillOptions:
       // User selected 'Autofill Options'.
@@ -525,7 +524,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
       break;
     case PopupItemId::kFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source);
+      FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source_);
       break;
     case PopupItemId::kIbanEntry:
       // User selected an IBAN suggestion, and we should fill the unmasked IBAN
@@ -546,7 +545,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill = GetAddressFieldsForGroupFilling()});
       break;
     case PopupItemId::kFillFullName:
@@ -556,7 +555,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
                GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
       break;
@@ -568,7 +567,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
                GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
@@ -579,7 +578,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
                GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)});
       break;
@@ -615,7 +614,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.GetPayload<Suggestion::BackendId>(),
           /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kSeePromoCodeDetails:
       // Open a new tab and navigate to the offer details page.
@@ -691,7 +690,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kFillEverythingFromAddressProfile:
       autofill_metrics::LogFillingMethodUsed(
@@ -700,7 +699,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kCreditCardEntry:
       autofill_metrics::LogAutofillSuggestionAcceptedIndex(
@@ -709,7 +708,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
@@ -718,7 +717,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
+               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:

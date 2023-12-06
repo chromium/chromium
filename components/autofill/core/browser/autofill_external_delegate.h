@@ -57,10 +57,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void DidSelectSuggestion(const Suggestion& suggestion) override;
-  void DidAcceptSuggestion(
-      const Suggestion& suggestion,
-      const SuggestionPosition& position,
-      AutofillSuggestionTriggerSource trigger_source) override;
+  void DidAcceptSuggestion(const Suggestion& suggestion,
+                           const SuggestionPosition& position) override;
   void DidPerformButtonActionForSuggestion(
       const Suggestion& suggestion) override;
   bool RemoveSuggestion(const std::u16string& value,

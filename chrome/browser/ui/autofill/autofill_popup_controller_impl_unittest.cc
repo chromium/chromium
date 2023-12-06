@@ -137,8 +137,7 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&,
-               const AutofillPopupDelegate::SuggestionPosition&,
-               AutofillSuggestionTriggerSource),
+               const AutofillPopupDelegate::SuggestionPosition&),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
@@ -1094,10 +1093,9 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
   static_cast<AutofillPopupControllerImpl*>(sub_controller.get())
       ->SetViewForTesting(client().sub_popup_view().GetWeakPtr());
 
-  EXPECT_CALL(
-      manager().external_delegate(),
-      DidAcceptSuggestion(
-          _, EqualsSuggestionPosition({.row = 0, .sub_popup_level = 1}), _));
+  EXPECT_CALL(manager().external_delegate(),
+              DidAcceptSuggestion(_, EqualsSuggestionPosition(
+                                         {.row = 0, .sub_popup_level = 1})));
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   sub_controller->AcceptSuggestion(/*index=*/0, base::TimeTicks::Now());

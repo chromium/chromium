@@ -52,13 +52,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void OnPopupHidden() override;
 
   void DidSelectSuggestion(const autofill::Suggestion& suggestion) override;
-  // The password manager doesn't distinguish between trigger sources and its
-  // value is `kPasswordManager` for all password suggestions.
-  void DidAcceptSuggestion(
-      const autofill::Suggestion& suggestion,
-      const SuggestionPosition& position,
-      autofill::AutofillSuggestionTriggerSource trigger_source =
-          autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
+  void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
+                           const SuggestionPosition& position) override;
   void DidPerformButtonActionForSuggestion(
       const autofill::Suggestion&) override;
   bool RemoveSuggestion(const std::u16string& value,

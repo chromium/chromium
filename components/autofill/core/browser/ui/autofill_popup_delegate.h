@@ -45,10 +45,8 @@ class AutofillPopupDelegate {
   // Informs the delegate that a row in the popup has been chosen. `suggestion`
   // is the suggestion that was chosen in the popup. `position` refers to the
   // row and level of the suggestion in the suggestions layout.
-  virtual void DidAcceptSuggestion(
-      const Suggestion& suggestion,
-      const SuggestionPosition& position,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+  virtual void DidAcceptSuggestion(const Suggestion& suggestion,
+                                   const SuggestionPosition& position) = 0;
 
   // Informs the delegate that the user chose to perform the button action
   // associated with `suggestion`. Actions are currently implemented only on
