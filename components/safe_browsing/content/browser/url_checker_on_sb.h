@@ -40,18 +40,20 @@ class PingManager;
 class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
  public:
   struct StartParams {
-    StartParams(const net::HttpRequestHeaders& headers,
+    StartParams(net::HttpRequestHeaders headers,
                 int load_flags,
                 network::mojom::RequestDestination request_destination,
                 bool has_user_gesture,
-                const GURL& url,
-                const std::string& method);
-    const raw_ref<const net::HttpRequestHeaders> headers;
+                GURL url,
+                std::string method);
+    StartParams(const StartParams& other);
+    ~StartParams();
+    net::HttpRequestHeaders headers;
     int load_flags;
     network::mojom::RequestDestination request_destination;
     bool has_user_gesture;
-    const raw_ref<const GURL> url;
-    const raw_ref<const std::string> method;
+    const GURL url;
+    const std::string method;
   };
 
   struct OnCompleteCheckResult {

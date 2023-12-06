@@ -36,18 +36,22 @@ UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
       performed_check(performed_check) {}
 
 UrlCheckerOnSB::StartParams::StartParams(
-    const net::HttpRequestHeaders& headers,
+    net::HttpRequestHeaders headers,
     int load_flags,
     network::mojom::RequestDestination request_destination,
     bool has_user_gesture,
-    const GURL& url,
-    const std::string& method)
+    GURL url,
+    std::string method)
     : headers(headers),
       load_flags(load_flags),
       request_destination(request_destination),
       has_user_gesture(has_user_gesture),
       url(url),
       method(method) {}
+
+UrlCheckerOnSB::StartParams::StartParams(const StartParams& other) = default;
+
+UrlCheckerOnSB::StartParams::~StartParams() = default;
 
 UrlCheckerOnSB::UrlCheckerOnSB(
     GetDelegateCallback delegate_getter,
@@ -117,7 +121,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
     url_checker_ = std::move(url_checker_for_testing_);
   } else {
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        *params.headers, params.load_flags, params.request_destination,
+        params.headers, params.load_flags, params.request_destination,
         params.has_user_gesture, url_checker_delegate, web_contents_getter_,
         nullptr, content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
         frame_tree_node_id_, url_real_time_lookup_enabled_,
@@ -129,7 +133,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         is_mechanism_experiment_allowed_, hash_realtime_selection_);
   }
 
-  CheckUrl(*params.url, *params.method);
+  CheckUrl(params.url, params.method);
 }
 
 void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {

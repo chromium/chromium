@@ -1143,4 +1143,27 @@ TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
   EXPECT_TRUE(defer);
 }
 
+class SBBrowserUrlLoaderThrottleDisableOnUIThreadTest
+    : public SBBrowserUrlLoaderThrottleTestBase {
+ public:
+  SBBrowserUrlLoaderThrottleDisableOnUIThreadTest() {
+    feature_list_.InitAndDisableFeature(kSafeBrowsingOnUIThread);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/1508907.
+TEST_F(SBBrowserUrlLoaderThrottleDisableOnUIThreadTest,
+       VerifyDefer_DoesNotCrash) {
+  SetUpTest(/*async_check_enabled=*/true);
+  AddCallbackInfo(/*should_proceed=*/true,
+                  /*should_show_interstitial=*/false,
+                  /*should_delay_callback=*/false);
+
+  CallWillStartRequest();
+  CallWillProcessResponse();
+}
+
 }  // namespace safe_browsing
