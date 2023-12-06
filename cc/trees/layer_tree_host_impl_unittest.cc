@@ -18888,4 +18888,132 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   EXPECT_EQ(0, host_impl_->active_tree()->CurrentTopControlsShownRatio());
   EXPECT_EQ(picture_layer->ScrollInteractionInProgress(), false);
 }
+
+TEST_F(LayerTreeHostImplTest, AnimatedScrollSnapStrategyCurrentOffset) {
+  LayerImpl* snapping_layer = CreateLayerForSnapping();
+
+  gfx::Point pointer_position(10, 10);
+  gfx::Vector2dF delta(0, 10);
+
+  GetInputHandler().ScrollBegin(
+      BeginState(pointer_position, delta, ui::ScrollInputType::kWheel).get(),
+      ui::ScrollInputType::kWheel);
+
+  GetInputHandler().ScrollUpdate(
+      AnimatedUpdateState(pointer_position, delta).get());
+
+  EXPECT_NE(GetInputHandler().snap_strategy_for_testing(), nullptr);
+  EXPECT_VECTOR2DF_EQ(GetInputHandler()
+                          .snap_strategy_for_testing()
+                          ->current_position()
+                          .OffsetFromOrigin(),
+                      delta);
+  // Animated scroll offsets are not immediately reflected in the scroll tree.
+  EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(snapping_layer));
+}
+
+TEST_F(LayerTreeHostImplTest, NonAnimatedScrollSnapStrategyCurrentOffset) {
+  LayerImpl* snapping_layer = CreateLayerForSnapping();
+
+  gfx::Point pointer_position(10, 10);
+  gfx::Vector2dF delta(0, 10);
+
+  GetInputHandler().ScrollBegin(
+      BeginState(pointer_position, delta, ui::ScrollInputType::kWheel).get(),
+      ui::ScrollInputType::kWheel);
+
+  GetInputHandler().ScrollUpdate(
+      UpdateState(pointer_position, delta, ui::ScrollInputType::kWheel).get());
+
+  EXPECT_NE(GetInputHandler().snap_strategy_for_testing(), nullptr);
+  EXPECT_VECTOR2DF_EQ(GetInputHandler()
+                          .snap_strategy_for_testing()
+                          ->current_position()
+                          .OffsetFromOrigin(),
+                      delta);
+  // Non-Animated scroll offsets are immediately reflected in the scroll tree.
+  EXPECT_POINTF_EQ(gfx::PointF(0, 10), CurrentScrollOffset(snapping_layer));
+}
+
+TEST_F(LayerTreeHostImplTest, AnimatedViewportScrollSnapStrategyCurrentOffset) {
+  const gfx::Size content_size(1000, 1000);
+  const gfx::Size viewport_size(200, 200);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+
+  DrawFrame();
+  float min_page_scale = 1, max_page_scale = 4;
+  float page_scale_factor = 2;
+  host_impl_->active_tree()->PushPageScaleFromMainThread(
+      page_scale_factor, min_page_scale, max_page_scale);
+  host_impl_->active_tree()->SetPageScaleOnActiveTree(page_scale_factor);
+
+  SetScrollOffsetDelta(InnerViewportScrollLayer(), gfx::Vector2d(50, 50));
+  SetScrollOffsetDelta(OuterViewportScrollLayer(), gfx::Vector2d(5, 400));
+
+  const gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 60);
+  const gfx::Point pointer_position = gfx::Point(10, 10);
+  // Start an animated scroll on the inner viewport.
+  auto begin_state = BeginState(pointer_position, gfx::Vector2d(0, 60),
+                                ui::ScrollInputType::kWheel);
+  GetInputHandler().ScrollBegin(begin_state.get(), ui::ScrollInputType::kWheel);
+  GetInputHandler().ScrollUpdate(
+      AnimatedUpdateState(pointer_position, scroll_delta).get());
+
+  EXPECT_VECTOR2DF_EQ(
+      GetInputHandler()
+          .snap_strategy_for_testing()
+          ->current_position()
+          .OffsetFromOrigin(),
+      CurrentScrollOffset(InnerViewportScrollLayer()).OffsetFromOrigin() +
+          CurrentScrollOffset(OuterViewportScrollLayer()).OffsetFromOrigin() +
+          scroll_delta);
+  EXPECT_POINTF_EQ(gfx::PointF(50, 50),
+                   CurrentScrollOffset(InnerViewportScrollLayer()));
+  EXPECT_POINTF_EQ(gfx::PointF(5, 400),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+}
+
+TEST_F(LayerTreeHostImplTest,
+       NonAnimatedViewportScrollSnapStrategyCurrentOffset) {
+  const gfx::Size content_size(1000, 1000);
+  const gfx::Size viewport_size(200, 200);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+
+  DrawFrame();
+
+  float min_page_scale = 1, max_page_scale = 4;
+  float page_scale_factor = 2;
+  host_impl_->active_tree()->PushPageScaleFromMainThread(
+      page_scale_factor, min_page_scale, max_page_scale);
+  host_impl_->active_tree()->SetPageScaleOnActiveTree(page_scale_factor);
+
+  SetScrollOffsetDelta(InnerViewportScrollLayer(), gfx::Vector2d(50, 50));
+  SetScrollOffsetDelta(OuterViewportScrollLayer(), gfx::Vector2d(5, 400));
+
+  const gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 60);
+  const gfx::Point pointer_position = gfx::Point(10, 10);
+
+  // Start an animated scroll on the inner viewport.
+  auto begin_state =
+      BeginState(pointer_position, scroll_delta, ui::ScrollInputType::kWheel);
+  GetInputHandler().ScrollBegin(begin_state.get(), ui::ScrollInputType::kWheel);
+  GetInputHandler().ScrollUpdate(
+      UpdateState(pointer_position, scroll_delta, ui::ScrollInputType::kWheel)
+          .get());
+
+  // NonAnimated scrolls are immediately reflected in the scroll tree.
+  EXPECT_VECTOR2DF_EQ(
+      GetInputHandler()
+          .snap_strategy_for_testing()
+          ->current_position()
+          .OffsetFromOrigin(),
+      CurrentScrollOffset(InnerViewportScrollLayer()).OffsetFromOrigin() +
+          CurrentScrollOffset(OuterViewportScrollLayer()).OffsetFromOrigin());
+  // Inner viewport's delta increases by 30 (60 / |page_scale_factor|).
+  EXPECT_POINTF_EQ(gfx::PointF(50, 80),
+                   CurrentScrollOffset(InnerViewportScrollLayer()));
+  EXPECT_POINTF_EQ(gfx::PointF(5, 400),
+                   CurrentScrollOffset(OuterViewportScrollLayer()));
+}
+
 }  // namespace cc

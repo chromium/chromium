@@ -100,6 +100,10 @@ const std::optional<SnapSearchResult>& EndPositionStrategy::PickBestResult(
   return covering.has_value() ? covering : closest;
 }
 
+std::unique_ptr<SnapSelectionStrategy> EndPositionStrategy::Clone() const {
+  return std::make_unique<EndPositionStrategy>(*this);
+}
+
 bool DirectionStrategy::ShouldSnapOnX() const {
   return step_.x() != 0;
 }
@@ -174,6 +178,10 @@ bool DirectionStrategy::UsingFractionalOffsets() const {
   return use_fractional_offsets_;
 }
 
+std::unique_ptr<SnapSelectionStrategy> DirectionStrategy::Clone() const {
+  return std::make_unique<DirectionStrategy>(*this);
+}
+
 bool EndAndDirectionStrategy::ShouldSnapOnX() const {
   return displacement_.x() != 0;
 }
@@ -223,6 +231,10 @@ const std::optional<SnapSearchResult>& EndAndDirectionStrategy::PickBestResult(
 
 bool EndAndDirectionStrategy::UsingFractionalOffsets() const {
   return use_fractional_offsets_;
+}
+
+std::unique_ptr<SnapSelectionStrategy> EndAndDirectionStrategy::Clone() const {
+  return std::make_unique<EndAndDirectionStrategy>(*this);
 }
 
 }  // namespace cc

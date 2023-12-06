@@ -750,7 +750,7 @@ void AnimationHost::ImplOnlyScrollAnimationCreate(
       animation_start_offset);
 }
 
-bool AnimationHost::ImplOnlyScrollAnimationUpdateTarget(
+std::optional<gfx::PointF> AnimationHost::ImplOnlyScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
     const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,

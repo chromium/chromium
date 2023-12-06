@@ -12,6 +12,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/scroll_snap_data.h"
+#include "cc/input/snap_selection_strategy.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "ui/gfx/geometry/transform.h"
@@ -117,6 +118,11 @@ struct CC_EXPORT CompositorCommitData {
   // Tracks different methods of scrolling (e.g. wheel, touch, precision
   // touchpad, etc.).
   ManipulationInfo manipulation_info = kManipulationInfoNone;
+
+  // This tracks the strategy cc will use to snap at the end of the current
+  // scroll based on the scroll updates so far. The main thread will use this to
+  // determine whether to fire snapchanging or not.
+  std::unique_ptr<SnapSelectionStrategy> snap_strategy;
 };
 
 }  // namespace cc

@@ -465,6 +465,11 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   bool animating_for_snap_for_testing() const { return IsAnimatingForSnap(); }
 
+  const std::unique_ptr<SnapSelectionStrategy>& snap_strategy_for_testing()
+      const {
+    return snap_strategy_;
+  }
+
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input
   // system.
@@ -599,9 +604,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   bool ShouldAnimateScroll(const ScrollState& scroll_state) const;
 
-  bool ScrollAnimationUpdateTarget(const ScrollNode& scroll_node,
-                                   const gfx::Vector2dF& scroll_delta,
-                                   base::TimeDelta delayed_by);
+  std::optional<gfx::PointF> ScrollAnimationUpdateTarget(
+      const ScrollNode& scroll_node,
+      const gfx::Vector2dF& scroll_delta,
+      base::TimeDelta delayed_by);
 
   // Transforms viewport start point and scroll delta to local start point and
   // local delta, respectively. If the transformation of either the start or end
@@ -640,6 +646,11 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // of browser controls that are being shown or hidden during a scroll gesture
   // before the Blink WebView is resized to reflect the new state.
   double PredictViewportBoundsDelta(gfx::Vector2dF scroll_distance);
+
+  std::unique_ptr<SnapSelectionStrategy> CreateSnapStrategy(
+      const ScrollState& scroll_state,
+      const gfx::PointF& current_offset,
+      SnapReason snap_reason) const;
 
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
@@ -755,6 +766,14 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   bool prefers_reduced_motion_ = false;
 
   bool is_handling_touch_sequence_ = false;
+
+  // This tracks the strategy cc will use to snap at the end of the current
+  // scroll based on the scroll updates so far. The |current_offset|
+  // in SnapSelectionStrategy is set based on whether the scroll is animated
+  // or non animated. For non-animated scrolls, it is the same as the
+  // offset in the ScrollTree. For animated scrolls it is the target offset that
+  // is being animated to.
+  std::unique_ptr<SnapSelectionStrategy> snap_strategy_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

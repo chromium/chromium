@@ -50,10 +50,11 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
                                        base::TimeDelta delayed_by,
                                        base::TimeDelta animation_start_offset);
 
-  bool ScrollAnimationUpdateTarget(const gfx::Vector2dF& scroll_delta,
-                                   const gfx::PointF& max_scroll_offset,
-                                   base::TimeTicks frame_monotonic_time,
-                                   base::TimeDelta delayed_by);
+  std::optional<gfx::PointF> ScrollAnimationUpdateTarget(
+      const gfx::Vector2dF& scroll_delta,
+      const gfx::PointF& max_scroll_offset,
+      base::TimeTicks frame_monotonic_time,
+      base::TimeDelta delayed_by);
 
   // Aborts the currently running scroll offset animation on an element and
   // starts a new one offsetted by adjustment.
