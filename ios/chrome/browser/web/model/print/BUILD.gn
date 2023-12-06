@@ -12,8 +12,3 @@ source_set("print") {
   ]
   public_deps = [ "//ios/chrome/browser/web/print" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  public_deps = [ "//ios/chrome/browser/web/print:unit_tests" ]
-}

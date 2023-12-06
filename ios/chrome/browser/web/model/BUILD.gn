@@ -61,23 +61,3 @@ source_set("feature_flags") {
   sources = [ "features.h" ]
   public_deps = [ "//ios/chrome/browser/web:feature_flags" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  public_deps = [ "//ios/chrome/browser/web:unit_tests" ]
-}
-
-source_set("unit_tests_internal") {
-  testonly = true
-  public_deps = [ "//ios/chrome/browser/web:unit_tests_internal" ]
-}
-
-source_set("eg_app_support+eg2") {
-  testonly = true
-  public_deps = [ "//ios/chrome/browser/web:eg_app_support+eg2" ]
-}
-
-source_set("eg2_tests") {
-  testonly = true
-  public_deps = [ "//ios/chrome/browser/web:eg2_tests" ]
-}
