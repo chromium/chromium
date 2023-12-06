@@ -164,9 +164,12 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   const std::set<int> audio_object_types_;
   const bool has_sbr_;
   const bool has_flac_;
-  // Indicate if source buffer has been set as Dolby Vision. If true, always
-  // treat the source buffer as Dolby Vision, if false, a downgrade (e.g.,
-  // to H.264, H.265 codec) may occur if the buffer is backward compatible.
+  // Indicate if source buffer has been set as Dolby Vision. If true,
+  // always treat the source buffer as Dolby Vision, if false and if
+  // the source buffer is cross-compatible, use its compatible codec
+  // defined in Dolby Vision Profiles and Levels specification:
+  // https://professionalsupport.dolby.com/s/article/What-is-Dolby-Vision-Profile,
+  // otherwise still treat the buffer as Dolby Vision.
   const bool has_dv_;
 
   // Tracks the number of MEDIA_LOGS for skipping empty trun samples.

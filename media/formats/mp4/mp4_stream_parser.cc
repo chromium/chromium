@@ -695,7 +695,8 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         } else {
           MEDIA_LOG(INFO, media_log_)
               << "Dolby Vision video track with track_id=" << video_track_id
-              << " has been downgraded to use " << GetCodecName(video_codec)
+              << " is using cross-compatible codec: "
+              << GetCodecName(video_codec)
               << ". To prevent this, where Dolby Vision is supported, use a "
               << "Dolby Vision codec string when constructing the "
                  "SourceBuffer.";

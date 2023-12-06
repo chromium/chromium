@@ -708,8 +708,8 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithHEVCMimeTypeSourceBuffer) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   bool expect_success = true;
   EXPECT_MEDIA_LOG(InfoLog(
-      "Dolby Vision video track with track_id=1 has been downgraded to "
-      "use hevc. To prevent this, where Dolby Vision is supported, use a "
+      "Dolby Vision video track with track_id=1 is using cross-compatible "
+      "codec: hevc. To prevent this, where Dolby Vision is supported, use a "
       "Dolby Vision codec string when constructing the SourceBuffer."));
 #else
   bool expect_success = false;
