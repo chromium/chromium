@@ -135,7 +135,11 @@ class CORE_EXPORT RootFrameViewport final
       const cc::SnapSelectionStrategy& strategy) override;
   void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
   void SetSnapChangingTargetData(
-      absl::optional<cc::SnappedTargetData>) override;
+      absl::optional<cc::SnappedTargetData> data) override;
+  const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
+  void SetImplSnapStrategy(
+      std::unique_ptr<cc::SnapSelectionStrategy> strategy) override;
+  void EnqueueSnapChangingEventFromImplIfNeeded() override;
   void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
       const gfx::PointF&) override;
 

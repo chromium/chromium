@@ -46,6 +46,7 @@
 
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
@@ -84,6 +85,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   absl::optional<cc::SnapContainerData> snap_container_data_;
   absl::optional<cc::SnappedTargetData> snapped_target_data_;
   absl::optional<cc::SnappedTargetData> snapchanging_target_data_;
+  std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -552,6 +554,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
       absl::optional<cc::SnappedTargetData>) override;
   void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
       const gfx::PointF&) override;
+  const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
+  void SetImplSnapStrategy(
+      std::unique_ptr<cc::SnapSelectionStrategy> strategy) override;
+  void EnqueueSnapChangingEventFromImplIfNeeded() override;
 
   void DisposeImpl() override;
 

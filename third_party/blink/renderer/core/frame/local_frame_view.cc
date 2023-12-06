@@ -2461,6 +2461,18 @@ bool LocalFrameView::ShouldDeferLayoutSnap() const {
   return false;
 }
 
+void LocalFrameView::EnqueueSnapChangingFromImplIfNecessary() {
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    const auto* scrollable_areas = frame_view.UserScrollableAreas();
+    if (!scrollable_areas) {
+      return;
+    }
+    for (const auto& area : *scrollable_areas) {
+      area->EnqueueSnapChangingEventFromImplIfNeeded();
+    }
+  });
+}
+
 bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     DocumentLifecycle::LifecycleState target_state) {
   TRACE_EVENT0("blink,benchmark",
@@ -2489,6 +2501,9 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
   });
 
   ExecutePendingSnapUpdates();
+
+  // Fire snapchanging events based on the new layout if necessary.
+  EnqueueSnapChangingFromImplIfNecessary();
 
   EnqueueScrollEvents();
 

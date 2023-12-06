@@ -896,6 +896,8 @@ class CORE_EXPORT WebFrameWidgetImpl
                                        cc::ElementId scroll_latched_element_id);
   void SendEndOfScrollEvents(bool affects_outer_viewport,
                              cc::ElementId scroll_latched_element_id);
+  void SendSnapChangingEventIfNeeded(
+      const cc::CompositorCommitData& commit_data);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
 
   enum DragAction { kDragEnter, kDragOver };
