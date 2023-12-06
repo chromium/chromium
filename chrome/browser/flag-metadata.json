@@ -787,6 +787,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "back-forward-transitions",
+    "owners": [ "liuwilliam@google.com", "chrome-seamless-core@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "back-gesture-activity-tab-provider",
     "owners": ["lazzzis@google.com", "donnd@chromium.org", "twellington@chromium.org"],
     "expiry_milestone": 130

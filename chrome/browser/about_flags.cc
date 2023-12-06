@@ -8189,6 +8189,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBackForwardCache,
                                     kBackForwardCacheVariations,
                                     "BackForwardCache")},
+#if BUILDFLAG(IS_ANDROID)
+    {"back-forward-transitions", flag_descriptions::kBackForwardTransitionsName,
+     flag_descriptions::kBackForwardTransitionsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kBackForwardTransitions)},
+#endif
 
     {"windows-scrolling-personality",
      flag_descriptions::kWindowsScrollingPersonalityName,

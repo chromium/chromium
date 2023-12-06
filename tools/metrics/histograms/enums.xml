@@ -32118,6 +32118,7 @@ from previous Chrome versions.
   <int value="-506366023" label="VizHitTest:enabled"/>
   <int value="-506064880" label="EnableIPH:disabled"/>
   <int value="-505679399" label="FontCacheScaling:enabled"/>
+  <int value="-505264501" label="BackForwardTransitions:enabled"/>
   <int value="-504952236" label="AutocorrectParamsTuning:disabled"/>
   <int value="-504485318"
       label="AutofillFixServerQueriesIfPasswordManagerIsEnabled:enabled"/>
@@ -32674,6 +32675,7 @@ from previous Chrome versions.
   <int value="-242441279" label="SafetyCheckUnusedSitePermissions:enabled"/>
   <int value="-242431978" label="StartSurfaceRefactor:enabled"/>
   <int value="-241353344" label="MidiManagerWinrt:disabled"/>
+  <int value="-241065111" label="BackForwardTransitions:disabled"/>
   <int value="-241061180" label="NotificationImageDrag:enabled"/>
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>

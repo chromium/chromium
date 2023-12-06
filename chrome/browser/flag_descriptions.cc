@@ -692,6 +692,11 @@ const char kBackForwardCacheDescription[] =
     "To enable caching pages on same-site navigations too, choose 'enabled "
     "same-site support'.";
 
+const char kBackForwardTransitionsName[] = "Back-forward visual transitions";
+const char kBackForwardTransitionsDescription[] =
+    "If enabled, adds animated gesture transitions for back/forward session "
+    "history navigations";
+
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =
