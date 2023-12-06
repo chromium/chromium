@@ -277,6 +277,11 @@ const device::DiscoverableCredentialMetadata kCred1FromICloudKeychain(
     "rp.com",
     {4},
     kUser1);
+const device::DiscoverableCredentialMetadata kCred1FromChromeOS(
+    device::AuthenticatorType::kChromeOS,
+    "rp.com",
+    {4},
+    kUser1);
 const device::DiscoverableCredentialMetadata
     kCred2(device::AuthenticatorType::kOther, "rp.com", {1}, kUser2);
 const device::DiscoverableCredentialMetadata
@@ -2439,13 +2444,6 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   EXPECT_EQ(model.current_step(), Step::kCableActivate);
 }
 
-class MultiplePlatformAuthenticatorsTest
-    : public AuthenticatorRequestDialogModelTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnNewPasskeyUI};
-};
-
 template <class Value>
 class RepeatingValueCallbackReceiver {
  public:
@@ -2470,6 +2468,37 @@ class RepeatingValueCallbackReceiver {
   }
   absl::optional<Value> value_;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+};
+
+TEST_F(AuthenticatorRequestDialogModelTest, Crbug1503187) {
+  // This test reproduces the crash from crbug.com/1503187.
+
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnNewPasskeyUI};
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = {
+      AuthenticatorTransport::kInternal,
+      AuthenticatorTransport::kUsbHumanInterfaceDevice};
+  transports_info.recognized_credentials = {kCred1FromChromeOS};
+  transports_info.has_empty_allow_list = false;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
+
+  AuthenticatorRequestDialogModel model(main_rfh());
+  RepeatingValueCallbackReceiver<device::PublicKeyCredentialDescriptor>
+      account_preselected_callback;
+  model.SetAccountPreselectedCallback(account_preselected_callback.Callback());
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+}
+
+class MultiplePlatformAuthenticatorsTest
+    : public AuthenticatorRequestDialogModelTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnNewPasskeyUI};
 };
 
 TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {

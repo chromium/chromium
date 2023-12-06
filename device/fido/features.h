@@ -168,6 +168,10 @@ BASE_DECLARE_FEATURE(kWebAuthnAccessibleTimeouts);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 
+// CHECK an invariant about credential sources.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnChromeImplementedInvariant);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

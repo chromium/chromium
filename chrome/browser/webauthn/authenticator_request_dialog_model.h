@@ -776,9 +776,6 @@ class AuthenticatorRequestDialogModel
   // Mechanism that should be triggered immediately, if any.
   absl::optional<size_t> IndexOfPriorityMechanism();
 
-  std::vector<device::DiscoverableCredentialMetadata> RecognizedCredentialsFor(
-      device::AuthenticatorType source);
-
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
