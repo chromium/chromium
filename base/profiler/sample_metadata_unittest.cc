@@ -27,9 +27,9 @@ TEST(SampleMetadataTest, ScopedSampleMetadata) {
               MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                  PlatformThread::CurrentId())
                   .GetItems(&items));
-    EXPECT_EQ(HashMetricName("myname"), items[0].name_hash);
-    EXPECT_FALSE(items[0].key.has_value());
-    EXPECT_EQ(100, items[0].value);
+    EXPECT_EQ(HashMetricName("myname"), items[initial_item_count].name_hash);
+    EXPECT_FALSE(items[initial_item_count].key.has_value());
+    EXPECT_EQ(100, items[initial_item_count].value);
   }
 
   ASSERT_EQ(initial_item_count,
@@ -54,10 +54,10 @@ TEST(SampleMetadataTest, ScopedSampleMetadataWithKey) {
               MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                  PlatformThread::CurrentId())
                   .GetItems(&items));
-    EXPECT_EQ(HashMetricName("myname"), items[0].name_hash);
-    ASSERT_TRUE(items[0].key.has_value());
-    EXPECT_EQ(10, *items[0].key);
-    EXPECT_EQ(100, items[0].value);
+    EXPECT_EQ(HashMetricName("myname"), items[initial_item_count].name_hash);
+    ASSERT_TRUE(items[initial_item_count].key.has_value());
+    EXPECT_EQ(10, *items[initial_item_count].key);
+    EXPECT_EQ(100, items[initial_item_count].value);
   }
 
   ASSERT_EQ(initial_item_count,
@@ -81,9 +81,9 @@ TEST(SampleMetadataTest, SampleMetadata) {
             MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                PlatformThread::CurrentId())
                 .GetItems(&items));
-  EXPECT_EQ(HashMetricName("myname"), items[0].name_hash);
-  EXPECT_FALSE(items[0].key.has_value());
-  EXPECT_EQ(100, items[0].value);
+  EXPECT_EQ(HashMetricName("myname"), items[initial_item_count].name_hash);
+  EXPECT_FALSE(items[initial_item_count].key.has_value());
+  EXPECT_EQ(100, items[initial_item_count].value);
 
   metadata.Remove();
   ASSERT_EQ(initial_item_count,
@@ -107,10 +107,10 @@ TEST(SampleMetadataTest, SampleMetadataWithKey) {
             MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                PlatformThread::CurrentId())
                 .GetItems(&items));
-  EXPECT_EQ(HashMetricName("myname"), items[0].name_hash);
-  ASSERT_TRUE(items[0].key.has_value());
-  EXPECT_EQ(10, *items[0].key);
-  EXPECT_EQ(100, items[0].value);
+  EXPECT_EQ(HashMetricName("myname"), items[initial_item_count].name_hash);
+  ASSERT_TRUE(items[initial_item_count].key.has_value());
+  EXPECT_EQ(10, *items[initial_item_count].key);
+  EXPECT_EQ(100, items[initial_item_count].value);
 
   metadata.Remove(10);
   ASSERT_EQ(initial_item_count,
@@ -137,9 +137,9 @@ TEST(SampleMetadataTest, SampleMetadataWithThreadId) {
             MetadataRecorder::MetadataProvider(GetSampleMetadataRecorder(),
                                                PlatformThread::CurrentId())
                 .GetItems(&items));
-  EXPECT_EQ(HashMetricName("myname"), items[0].name_hash);
-  EXPECT_FALSE(items[0].key.has_value());
-  EXPECT_EQ(100, items[0].value);
+  EXPECT_EQ(HashMetricName("myname"), items[initial_item_count].name_hash);
+  EXPECT_FALSE(items[initial_item_count].key.has_value());
+  EXPECT_EQ(100, items[initial_item_count].value);
 
   metadata.Remove();
   ASSERT_EQ(initial_item_count,
