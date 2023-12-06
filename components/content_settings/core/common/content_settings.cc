@@ -89,6 +89,17 @@ bool ContentSettingPatternSource::operator==(
                   other.incognito);
 }
 
+std::ostream& operator<<(std::ostream& os,
+                         const ContentSettingPatternSource& source) {
+  os << "[(";
+  PrintTo(source.primary_pattern, &os);
+  os << ", ";
+  PrintTo(source.secondary_pattern, &os);
+  os << ") source=" << source.source
+     << " value=" << source.setting_value.DebugString() << "]";
+  return os;
+}
+
 // static
 bool RendererContentSettingRules::IsRendererContentSetting(
     ContentSettingsType content_type) {
