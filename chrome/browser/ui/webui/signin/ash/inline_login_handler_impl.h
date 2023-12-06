@@ -62,6 +62,9 @@ class InlineLoginHandlerImpl : public ::InlineLoginHandler {
   // Fires WebUIListener `show-signin-error-page` that would display an error
   // page informing the reason of the account not being added as a Secondary
   // account.
+  // `email` is the email of the blocked account.
+  // `hosted_domain` (optional) is the domain of the blocked account. It should
+  // be provided iff signin is blocked by policy.
   void ShowSigninErrorPage(const std::string& email,
                            const std::string& hosted_domain);
   void GetDeviceId(const base::Value::List& args);

@@ -58,9 +58,8 @@ class SigninHelper : public GaiaAuthConsumer {
       account_manager::AccountManager* account_manager,
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       const base::RepeatingClosure& close_dialog_closure,
-      const base::RepeatingCallback<void(const std::string&,
-                                         const std::string&)>&
-          show_signin_blocked_error,
+      const base::RepeatingCallback<
+          void(const std::string&, const std::string&)>& show_signin_error,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<ArcHelper> arc_helper,
       const std::string& gaia_id,
@@ -131,7 +130,7 @@ class SigninHelper : public GaiaAuthConsumer {
   // A callback that shows the page of an enterprise account sign-in blocked by
   // policy.
   base::RepeatingCallback<void(const std::string&, const std::string&)>
-      show_signin_blocked_error_;
+      show_signin_error_;
   // The user's AccountKey for which `this` object has been created.
   account_manager::AccountKey account_key_;
   // The user's email for which `this` object has been created.
