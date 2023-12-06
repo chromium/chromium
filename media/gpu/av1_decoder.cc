@@ -51,10 +51,15 @@ VideoCodecProfile AV1ProfileToVideoCodecProfile(
   }
 }
 
-// Returns true iff the sequence has spatial or temporal scalability information
-// for the selected operating point.
-bool SequenceUsesScalability(int operating_point_idc) {
-  return operating_point_idc != 0;
+// Returns true iff the current decode sequence has multiple spatial layers.
+bool IsSpatialLayerDecoding(int operating_point_idc) {
+  // Spec 6.4.1.
+  constexpr int kTemporalLayerBitMaskBits = 8;
+  const int kUsedSpatialLayerBitMask =
+      (operating_point_idc >> kTemporalLayerBitMaskBits) & 0b1111;
+  // In case of an only temporal layer encoding e.g. L1T3, spatial layer#0 bit
+  // is 1. We allow this case.
+  return kUsedSpatialLayerBitMask > 1;
 }
 
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
@@ -274,11 +279,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
               << "temporal_id=0";
           return kDecodeError;
         }
-        if (SequenceUsesScalability(
+        if (IsSpatialLayerDecoding(
                 parser_->sequence_header()
                     .operating_point_idc[kDefaultOperatingPoint])) {
-          DVLOG(3) << "Either temporal or spatial layer decoding is not "
-                   << "supported";
+          constexpr size_t kOperatingPointIdcBits = 12;
+          DVLOG(1) << "Spatial layer decoding is not supported: "
+                   << "operating_point_idc="
+                   << std::bitset<kOperatingPointIdcBits>(
+                          parser_->sequence_header()
+                              .operating_point_idc[kDefaultOperatingPoint]);
           return kDecodeError;
         }
 

@@ -374,6 +374,11 @@ ffmpeg -i bear-av1.mp4 -i bear-opus.mp4 -c copy -strict -2 \
 **Note**: "-strict -2" was required because the current ffmpeg version
 has support for OPUS in MP4 as experimental.
 
+#### av1-svc-L1T2.ivf
+AV1 data that has temporal layers.
+This is the same as av1-1-b8-22-svc-L1T2.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
+
 #### av1-svc-L2T2.ivf
 AV1 data that has spatial and temporal layers.
 This is the same as av1-1-b8-22-svc-L2T2.ivf in [libaom test vectors].
@@ -906,7 +911,7 @@ Additional containers created by Dolby:
 
 * ac4-ajoc.ac4                 -- encoded with bitstream version 2, presentation version 1 and prosentation level 3
 * ac4-channel-based-coding.ac4 -- encoded with bitstream version 2, presentation version 1 and prosentation level 1
-* ac4-ims.ac4                  -- encoded with bitstream version 2, presentation version 2 
+* ac4-ims.ac4                  -- encoded with bitstream version 2, presentation version 2
 
 ## VDA Test Files:
 

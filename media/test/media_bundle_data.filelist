@@ -37,6 +37,7 @@ data/av1-monochrome-I-frame-320x240-10bpp
 data/av1-monochrome-I-frame-320x240-12bpp
 data/av1-monochrome-I-frame-320x240-8bpp
 data/av1-show_existing_frame.ivf
+data/av1-svc-L1T2.ivf
 data/av1-svc-L2T2.ivf
 data/avc-bitstream-format-0.h264
 data/avc-bitstream-format-1.h264
