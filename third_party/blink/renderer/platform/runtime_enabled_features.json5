@@ -1816,6 +1816,10 @@
       settable_from_internals: true,
     },
     {
+      name: "FocusStyleInvalidationOnPageActivation",
+      status: "stable",
+    },
+    {
       name: "FontAccess",
       status: {"Android": "", "default": "stable"},
     },

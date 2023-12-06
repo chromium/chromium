@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -315,6 +316,28 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlot) {
   EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*slot));
   EXPECT_EQ(slot, FocusController::FindScopeOwnerSlot(*inner1));
   EXPECT_EQ(slot, FocusController::FindScopeOwnerSlot(*inner2));
+}
+
+// crbug.com/1508258
+TEST_F(FocusControllerTest, FocusHasChangedShouldInvalidateFocusStyle) {
+  SetBodyInnerHTML(
+      "<style>#host:focus { color:#A0A0A0; }</style>"
+      "<div id=host></div>");
+  auto& controller = GetFocusController();
+  controller.SetFocused(false);
+
+  auto* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML("<div tabindex=0></div>");
+  To<Element>(shadow_root.firstChild())->Focus();
+
+  controller.SetActive(true);
+  controller.SetFocused(true);
+  GetDocument().UpdateStyleAndLayoutTree();
+  const auto* style = host->GetComputedStyle();
+  EXPECT_EQ(Color(0xA0, 0xA0, 0xA0),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 class FocusControllerTestWithIframes : public RenderingTest {

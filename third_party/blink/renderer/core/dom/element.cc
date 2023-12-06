@@ -5870,7 +5870,13 @@ void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
     }
   }
 
-  if (IsFocused() == received) {
+  // We'd like to invalidate :focus style for kPage even if element's focus
+  // state has not been changed, because the element might have been focused
+  // while the page was inactive.
+  if (IsFocused() == received &&
+      (!RuntimeEnabledFeatures::
+           FocusStyleInvalidationOnPageActivationEnabled() ||
+       focus_type != mojom::blink::FocusType::kPage)) {
     return;
   }
 
