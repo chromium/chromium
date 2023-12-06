@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/package_id.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -72,6 +73,12 @@ PromiseAppAlmanacConnector::~PromiseAppAlmanacConnector() = default;
 void PromiseAppAlmanacConnector::GetPromiseAppInfo(
     const PackageId& package_id,
     GetPromiseAppCallback callback) {
+  // Ensure that the build uses the Google-internal file containing the
+  // official API keys, which are required to make queries to the Almanac.
+  if (!google_apis::IsGoogleChromeAPIKeyUsed() &&
+      !skip_api_key_check_for_testing_) {
+    return;
+  }
   if (locale_.empty()) {
     device_info_manager_->GetDeviceInfo(base::BindOnce(
         &PromiseAppAlmanacConnector::SetLocale, weak_ptr_factory_.GetWeakPtr(),
@@ -84,6 +91,11 @@ void PromiseAppAlmanacConnector::GetPromiseAppInfo(
 // static
 GURL PromiseAppAlmanacConnector::GetServerUrl() {
   return GetAlmanacEndpointUrl(kPromiseAppAlmanacEndpoint);
+}
+
+void PromiseAppAlmanacConnector::SetSkipApiKeyCheckForTesting(
+    bool skip_api_key_check) {
+  skip_api_key_check_for_testing_ = skip_api_key_check;
 }
 
 void PromiseAppAlmanacConnector::GetPromiseAppInfoImpl(

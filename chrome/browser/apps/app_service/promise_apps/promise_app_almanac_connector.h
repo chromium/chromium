@@ -50,6 +50,10 @@ class PromiseAppAlmanacConnector {
   // Returns the URL for the Almanac Promise App endpoint. Exposed for tests.
   static GURL GetServerUrl();
 
+  // Allows tests to trigger an Almanac query without needing an official Google
+  // API key.
+  void SetSkipApiKeyCheckForTesting(bool skip_api_key_check);
+
  private:
   void GetPromiseAppInfoImpl(const PackageId& package_id,
                              GetPromiseAppCallback callback);
@@ -71,6 +75,9 @@ class PromiseAppAlmanacConnector {
   std::string locale_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
+
+  bool skip_api_key_check_for_testing_ = false;
+
   base::WeakPtrFactory<PromiseAppAlmanacConnector> weak_ptr_factory_{this};
 };
 

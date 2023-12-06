@@ -86,9 +86,9 @@ class PromiseAppService : public AppRegistryCache::Observer {
   // care about Almanac responses.
   void SetSkipAlmanacForTesting(bool skip_almanac);
 
-  // Allows tests to skip the check of whether the user has an official Google
-  // API key so that we can trigger an Almanac query.
-  void SetSkipApiKeyCheckForTesting(bool skip_almanac);
+  // Allows tests to trigger an Almanac query without needing an official Google
+  // API key.
+  void SetSkipApiKeyCheckForTesting(bool skip_api_key_check);
 
  private:
   // Update a promise app's fields with the info retrieved from the Almanac API.
@@ -136,7 +136,6 @@ class PromiseAppService : public AppRegistryCache::Observer {
       app_registry_cache_observation_{this};
 
   bool skip_almanac_for_testing_ = false;
-  bool skip_api_key_check_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
