@@ -2985,8 +2985,13 @@ if (enable_java_templates) {
     action_with_pydeps(target_name) {
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
+        inputs = [
+          "//third_party/jdk/current/bin/java",
+          android_sdk_jar,
+        ]
       } else {
         script = "//build/android/gyp/compile_java.py"
+        inputs = [ "//third_party/jdk/current/bin/javac" ]
       }
 
       if (target_name == "chrome_java__header") {
@@ -3004,10 +3009,13 @@ if (enable_java_templates) {
       if (!invoker.enable_errorprone && !invoker.use_turbine) {
         outputs += [ invoker.output_jar_path + ".info" ]
       }
-      inputs = invoker.source_files + _java_srcjars + [
-                 _build_config,
-                 java_path_for_inputs,
-               ]
+      inputs += invoker.source_files + _java_srcjars + [
+                  "$android_sdk/optional/android.test.base.jar",
+                  "$android_sdk/optional/org.apache.http.legacy.jar",
+                  _build_config,
+                  java_path_for_inputs,
+                ]
+
       if (invoker.source_files != []) {
         inputs += [ invoker.target_sources_file ]
       }
