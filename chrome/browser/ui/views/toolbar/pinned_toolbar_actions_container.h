@@ -106,7 +106,7 @@ class PinnedToolbarActionsContainer
   void OnActionMoved(const actions::ActionId& id,
                      int from_index,
                      int to_index) override;
-  void OnActionsChanged() override {}
+  void OnActionsChanged() override;
 
   // views::DragController:
   void WriteDragDataForView(View* sender,
@@ -136,6 +136,9 @@ class PinnedToolbarActionsContainer
 
   // Sorts child views to display them in the correct order.
   void ReorderViews();
+
+  // Updates the container view to match the current state of the model.
+  void UpdateViews();
 
   void RemoveButton(PinnedActionToolbarButton* button);
 

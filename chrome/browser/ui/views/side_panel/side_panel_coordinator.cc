@@ -1321,16 +1321,8 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   UpdateToolbarButtonHighlight(observed_view->GetVisible());
 }
 
-void SidePanelCoordinator::OnActionAdded(const actions::ActionId& id) {
-  if (current_entry_ &&
-      id == SidePanelEntryIdToActionId(current_entry_->key().id())) {
-    UpdateHeaderPinButtonState();
-  }
-}
-
-void SidePanelCoordinator::OnActionRemoved(const actions::ActionId& id) {
-  if (current_entry_ &&
-      id == SidePanelEntryIdToActionId(current_entry_->key().id())) {
+void SidePanelCoordinator::OnActionsChanged() {
+  if (current_entry_) {
     UpdateHeaderPinButtonState();
   }
 }
