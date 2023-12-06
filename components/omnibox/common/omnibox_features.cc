@@ -74,13 +74,6 @@ BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,
              "OmniboxPreferNonShortcutMatchesWhenDeduping",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When disabled, when providers update their matches, the new set of matches
-// are sorted and culled, then merged with the old matches, then sorted and
-// culled again. When enabled, the first sort and cull is skipped.
-BASE_FEATURE(kSingleSortAndCullPass,
-             "OmniboxSingleSortAndCullPass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
 // OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,
@@ -491,14 +484,14 @@ BASE_FEATURE(kLogUrlScoringSignals,
 // URL suggestions and reranks them.
 BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, appends additional Trending and Recent Search Related Queries to
-// the suggestion list on the NTP and SRP.
-BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
-
 // If enabled, creates Omnibox autocompete URL scoring model.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, appends additional Trending and Recent Search Related Queries to
+// the suggestion list on the NTP and SRP.
+BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
 
 // Actions in Suggest is a data-driven feature; it's considered enabled when the
 // data is available.

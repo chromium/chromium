@@ -56,6 +56,7 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

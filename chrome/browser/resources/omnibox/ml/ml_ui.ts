@@ -45,8 +45,8 @@ export class MlUiElement extends CustomElement {
     const mlTable = this.getRequiredElement<MlTableElement>('ml-table');
     const mlChart = this.getRequiredElement<MlChartElement>('ml-chart');
 
-    this.getRequiredElement('#ml-sync-batch-url-scoring-disabled-warning')
-        .hidden = loadTimeData.getBoolean('isMlSyncBatchUrlScoringEnabled');
+    this.getRequiredElement('#ml-ml-url-scoring-disabled-warning').hidden =
+        loadTimeData.getBoolean('isMlUrlScoringEnabled');
     [mlCalculator, mlTable].forEach(
         el => el.addEventListener('copied', ({detail}) => {
           detail.then(() => 'Copied!')

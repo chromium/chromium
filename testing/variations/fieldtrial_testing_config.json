@@ -11699,7 +11699,6 @@
                 {
                     "name": "Enabled_fullModel_120523",
                     "params": {
-                        "MlSyncBatchUrlScoring": "true",
                         "MlUrlScoringShortcutDocumentSignals": "true",
                         "enable_scoring_signals_annotators_for_ml_scoring": "true"
                     },

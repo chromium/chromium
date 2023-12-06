@@ -44,8 +44,8 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
   source->AddResourcePath("ml", IDR_OMNIBOX_ML_ML_HTML);
 
-  source->AddBoolean("isMlSyncBatchUrlScoringEnabled",
-                     OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled());
+  source->AddBoolean("isMlUrlScoringEnabled",
+                     OmniboxFieldTrial::IsMlUrlScoringEnabled());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxUI)

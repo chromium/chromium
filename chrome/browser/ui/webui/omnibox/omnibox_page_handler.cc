@@ -550,7 +550,7 @@ OmniboxPageHandler::GetAutocompleteControllerType(
 }
 
 AutocompleteScoringModelService* OmniboxPageHandler::GetMlService() {
-  return OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled()
+  return OmniboxFieldTrial::IsMlUrlScoringEnabled()
              ? AutocompleteScoringModelServiceFactory::GetInstance()
                    ->GetForProfile(profile_)
              : nullptr;

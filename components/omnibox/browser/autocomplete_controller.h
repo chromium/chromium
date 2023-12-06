@@ -396,20 +396,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Runs the async scoring model for all the eligible matches in
-  // `results_.matches_`. Passes `completion_callback` to
-  // `OnUrlScoringModelDone()` callback which is called once the model is done
-  // for all the eligible matches, whether successfully or not.
-  void RunUrlScoringModel(base::OnceClosure completion_callback);
-
   // Runs the batch scoring for all the eligible matches in
   // `results_.matches_`. If `is_sync` is true, runs sync ML scoring on the
   // current thread. Otherwise, runs async ML scoring. Passes
   // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
   // once the model is done for all the eligible matches, whether successfully
   // or not.
-  void RunBatchUrlScoringModel(base::OnceClosure completion_callback,
-                               bool is_sync);
+  void RunBatchUrlScoringModel(base::OnceClosure completion_callback);
 
   // Called when the async scoring model is done running for all the eligible
   // matches in `results_.matches_`. Redistributes the existing relevance scores
@@ -577,7 +570,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `AutocompleteScoringModelService` and to prevent its callbacks from being
   // called `base::CancelableTaskTracker` alone is insufficient because it
   // cannot cancel tasks that have already started to run.
-  base::CancelableTaskTracker scoring_model_task_tracker_;
   base::WeakPtrFactory<AutocompleteController> weak_ptr_factory_{this};
 };
 

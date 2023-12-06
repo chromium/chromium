@@ -17,7 +17,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -1041,15 +1040,9 @@ void AutocompleteController::UpdateResult(
   //  becomes unnecessary.
 
   if (!done_) {
-    // Conditionally skip the first call to `SortAndCull()` before the old and
-    // new matches are merged.
-    static bool single_sort_and_cull_pass =
-        base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
-    if (!single_sort_and_cull_pass) {
-      internal_result_.SortAndCull(input_, template_url_service_,
-                                   triggered_feature_service_,
-                                   default_match_to_preserve);
-    }
+    internal_result_.SortAndCull(input_, template_url_service_,
+                                 triggered_feature_service_,
+                                 default_match_to_preserve);
     // If not all providers are done, merge the old and new matches before
     // sorting.
     internal_result_.TransferOldMatches(input_, &old_matches_to_reuse);
@@ -1058,9 +1051,7 @@ void AutocompleteController::UpdateResult(
   // When sync ML scoring is enabled, run ML scoring in the sync pass and other
   // async update passes. Otherwise, only run ML scoring after all async passes.
   if (!disable_ml_ && score_urls &&
-      (OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled() ||
-       (done_ && sync_pass_done_ &&
-        OmniboxFieldTrial::IsMlUrlScoringEnabled())) &&
+      (OmniboxFieldTrial::IsMlUrlScoringEnabled()) &&
       provider_client_->GetAutocompleteScoringModelService()) {
     default_match_to_preserve =
         PreprocessResultForMlScoring(default_match_to_preserve);
@@ -1068,13 +1059,13 @@ void AutocompleteController::UpdateResult(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // Use a WeakPtr since the model is not owned and `this` may no longer be
     // alive. `SortCullAndAnnotateResult()` is called when the model is done.
-    RunBatchUrlScoringModel(
-        base::BindOnce(&AutocompleteController::SortCullAndAnnotateResult,
-                       weak_ptr_factory_.GetWeakPtr(), last_default_match,
-                       last_default_associated_keyword,
-                       force_notify_default_match_changed,
-                       default_match_to_preserve),
-        OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled());
+    RunBatchUrlScoringModel(base::BindOnce(
+        &AutocompleteController::SortCullAndAnnotateResult,
+        weak_ptr_factory_.GetWeakPtr(), last_default_match,
+        last_default_associated_keyword, force_notify_default_match_changed,
+        default_match_to_preserve));
+#else
+    NOTREACHED();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   } else {
     // The final call to `SortAndCull()` happens inside
@@ -1747,38 +1738,8 @@ bool AutocompleteController::ShouldRunProvider(
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void AutocompleteController::RunUrlScoringModel(
-    base::OnceClosure completion_callback) {
-  TRACE_EVENT0("omnibox", "AutocompleteController::RunUrlScoringModel");
-
-  size_t eligible_matches_count = base::ranges::count_if(
-      internal_result_.matches_,
-      [](const auto& match) { return match.scoring_signals.has_value(); });
-
-  // If `eligible_matches_count` is 0, `completion_callback` is called
-  // immediately.
-  auto barrier_callback =
-      base::BarrierCallback<AutocompleteScoringModelService::Result>(
-          eligible_matches_count,
-          base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                         weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
-                         std::move(completion_callback)));
-
-  // Run the model for the eligible matches.
-  for (auto& match : internal_result_) {
-    if (!match.scoring_signals.has_value()) {
-      continue;
-    }
-    provider_client_->GetAutocompleteScoringModelService()
-        ->ScoreAutocompleteUrlMatch(
-            &scoring_model_task_tracker_, *match.scoring_signals,
-            match.stripped_destination_url.spec(), barrier_callback);
-  }
-}
-
 void AutocompleteController::RunBatchUrlScoringModel(
-    base::OnceClosure completion_callback,
-    bool is_sync) {
+    base::OnceClosure completion_callback) {
   TRACE_EVENT0("omnibox", "AutocompleteController::RunBatchUrlScoringModel");
 
   size_t eligible_matches_count = base::ranges::count_if(
@@ -1805,25 +1766,14 @@ void AutocompleteController::RunBatchUrlScoringModel(
   }
 
   auto timer = base::ElapsedTimer();
-  if (is_sync) {
-    // Synchronous ML model execution.
-    const auto batch_results =
-        provider_client_->GetAutocompleteScoringModelService()
-            ->BatchScoreAutocompleteUrlMatchesSync(
-                std::move(batch_scoring_signals),
-                std::move(stripped_destination_urls));
-    OnUrlScoringModelDone(std::move(timer), std::move(completion_callback),
-                          batch_results);
-  } else {
-    // Async ML model execution.
-    provider_client_->GetAutocompleteScoringModelService()
-        ->BatchScoreAutocompleteUrlMatches(
-            &scoring_model_task_tracker_, std::move(batch_scoring_signals),
-            std::move(stripped_destination_urls),
-            base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(timer),
-                           std::move(completion_callback)));
-  }
+  // Synchronous ML model execution.
+  const auto batch_results =
+      provider_client_->GetAutocompleteScoringModelService()
+          ->BatchScoreAutocompleteUrlMatchesSync(
+              std::move(batch_scoring_signals),
+              std::move(stripped_destination_urls));
+  OnUrlScoringModelDone(std::move(timer), std::move(completion_callback),
+                        batch_results);
 }
 
 void AutocompleteController::OnUrlScoringModelDone(
@@ -1941,7 +1891,6 @@ void AutocompleteController::OnUrlScoringModelDone(
 void AutocompleteController::CancelUrlScoringModel() {
   // Try to cancel any pending requests to the scoring model and invalidate the
   // WeakPtr to prevent its callbacks from being called.
-  scoring_model_task_tracker_.TryCancelAll();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

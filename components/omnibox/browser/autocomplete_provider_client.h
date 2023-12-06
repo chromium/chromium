@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 struct AutocompleteMatch;

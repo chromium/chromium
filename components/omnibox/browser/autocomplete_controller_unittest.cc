@@ -27,28 +27,6 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
-
-class FakeAutocompleteScoringModelService
-    : public AutocompleteScoringModelService {
- public:
-  FakeAutocompleteScoringModelService()
-      : AutocompleteScoringModelService(/*model_provider=*/nullptr) {}
-  // AutocompleteScoringModelService:
-  void ScoreAutocompleteUrlMatch(base::CancelableTaskTracker* tracker,
-                                 const ScoringSignals& scoring_signals,
-                                 const std::string& match_destination_url,
-                                 ResultCallback result_callback) override {
-    // TODO(crbug/1405555): Properly stub this function.
-  }
-
-  void BatchScoreAutocompleteUrlMatches(
-      base::CancelableTaskTracker* tracker,
-      const std::vector<const ScoringSignals*>& batch_scoring_signals,
-      const std::vector<std::string>& stripped_destination_urls,
-      BatchResultCallback batch_result_callback) override {
-    // TODO(crbug/1405555): Properly stub this function.
-  }
-};
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
@@ -110,7 +88,7 @@ class AutocompleteControllerTest : public testing::Test {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     provider_client->set_scoring_model_service(
-        std::make_unique<FakeAutocompleteScoringModelService>());
+        std::make_unique<AutocompleteScoringModelService>(nullptr));
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
     controller_ = std::make_unique<AutocompleteController>(
