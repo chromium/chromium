@@ -163,6 +163,24 @@ constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
   NOTREACHED_NORETURN();
 }
 
+// Attributes expected in `EXT-X-SKIP` tag contents.
+// These must remain sorted alphabetically.
+enum class XSkipTagAttribute {
+  kRecentlyRemovedDateranges,
+  kSkippedSegments,
+  kMaxValue = kSkippedSegments,
+};
+
+constexpr std::string_view GetAttributeName(XSkipTagAttribute attribute) {
+  switch (attribute) {
+    case XSkipTagAttribute::kRecentlyRemovedDateranges:
+      return "RECENTLY-REMOVED-DATERANGES";
+    case XSkipTagAttribute::kSkippedSegments:
+      return "SKIPPED-SEGMENTS";
+  }
+  NOTREACHED_NORETURN();
+}
+
 // Attributes expected in `EXT-X-MAP` tag contents.
 // These must remain sorted alphabetically.
 enum class XMapTagAttribute {
@@ -1284,6 +1302,72 @@ ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
   }
 
   return XTargetDurationTag{.duration = duration};
+}
+
+XSkipTag::XSkipTag() = default;
+XSkipTag::~XSkipTag() = default;
+XSkipTag::XSkipTag(const XSkipTag&) = default;
+XSkipTag::XSkipTag(XSkipTag&&) = default;
+
+ParseStatus::Or<XSkipTag> XSkipTag::Parse(
+    TagItem tag,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer) {
+  DCHECK(tag.GetName() == ToTagName(XSkipTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  XSkipTag out;
+  TypedAttributeMap<XSkipTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  if (!map.HasValue(XSkipTagAttribute::kSkippedSegments)) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  auto skip_result = types::ParseDecimalInteger(
+      map.GetValue(XSkipTagAttribute::kSkippedSegments)
+          .SkipVariableSubstitution());
+
+  if (!skip_result.has_value()) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(skip_result).error());
+  }
+
+  out.skipped_segments = std::move(skip_result).value();
+
+  if (map.HasValue(XSkipTagAttribute::kRecentlyRemovedDateranges)) {
+    // TODO(bug/314833987): Should this list have substitution?
+    auto removed_result = types::ParseQuotedString(
+        map.GetValue(XSkipTagAttribute::kRecentlyRemovedDateranges),
+        variable_dict, sub_buffer, /*allow_empty=*/true);
+    if (!removed_result.has_value()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(removed_result).error());
+    }
+
+    auto tab_joined_daterange_ids = std::move(removed_result).value();
+    std::vector<std::string> removed_dateranges = {};
+
+    while (!tab_joined_daterange_ids.Empty()) {
+      const auto daterange_id = tab_joined_daterange_ids.ConsumeDelimiter('\t');
+      if (daterange_id.Empty()) {
+        return ParseStatusCode::kMalformedTag;
+      }
+      // TODO(bug/314833987): What type should this be parsed into?
+      removed_dateranges.emplace_back(daterange_id.Str());
+    }
+    out.recently_removed_dateranges = std::move(removed_dateranges);
+  }
+
+  return out;
 }
 
 }  // namespace media::hls

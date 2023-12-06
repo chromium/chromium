@@ -384,6 +384,30 @@ struct MEDIA_EXPORT XTargetDurationTag {
   base::TimeDelta duration;
 };
 
+struct MEDIA_EXPORT XSkipTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXSkip;
+  static ParseStatus::Or<XSkipTag> Parse(
+      TagItem,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+  XSkipTag();
+  ~XSkipTag();
+  XSkipTag(const XSkipTag&);
+  XSkipTag(XSkipTag&&);
+
+  // The value is a decimal integer specifying the number of Media Segments
+  // replaced by the EXT-X-SKIP tag. This attribute is REQUIRED.
+  types::DecimalInteger skipped_segments;
+
+  // The value is a quoted string consisting of a tab delimited list of
+  // EXT-X-DATERANGE IDs that have been removed from the playlist recently.
+  // This attribute is REQUIRED if the client requested an update that skips
+  // EXT-X-DATERANGE tags. The quoted string MAY be empty.
+  std::optional<std::vector<std::string>> recently_removed_dateranges =
+      std::nullopt;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_
