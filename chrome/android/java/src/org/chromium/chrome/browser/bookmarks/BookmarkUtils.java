@@ -728,7 +728,7 @@ public class BookmarkUtils {
     /** Returns whether this bookmark can be moved */
     public static boolean isMovable(BookmarkModel bookmarkModel, BookmarkItem item) {
         if (Objects.equals(item.getParentId(), bookmarkModel.getPartnerFolderId())) return false;
-        return ReadingListUtils.isSwappableReadingListItem(item.getId()) || item.isEditable();
+        return item.isEditable();
     }
 
     /**

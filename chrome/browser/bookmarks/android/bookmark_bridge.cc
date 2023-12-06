@@ -676,7 +676,8 @@ void BookmarkBridge::GetBookmarksForFolder(
 
 jboolean BookmarkBridge::IsFolderVisible(JNIEnv* env, jlong id, jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (type == BookmarkType::BOOKMARK_TYPE_NORMAL) {
+  if (type == BookmarkType::BOOKMARK_TYPE_NORMAL ||
+      type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
     const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(
         bookmark_model_, static_cast<int64_t>(id));
     return node->IsVisible();

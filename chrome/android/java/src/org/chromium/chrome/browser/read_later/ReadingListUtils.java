@@ -4,20 +4,13 @@
 
 package org.chromium.chrome.browser.read_later;
 
-import android.app.Activity;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -39,66 +32,6 @@ public final class ReadingListUtils {
         // This should match ReadingListModel::IsUrlSupported(), having a separate function since
         // the UI may not load native library.
         return UrlUtilities.isHttpOrHttps(url);
-    }
-
-    /**
-     * Determines if the given {@link BookmarkId} is a type-swappable reading list item.
-     * @param id The BookmarkId to check.
-     * @return Whether the given {@link BookmarkId} is a type-swappable reading list item.
-     */
-    public static boolean isSwappableReadingListItem(@Nullable BookmarkId id) {
-        return id.getType() == BookmarkType.READING_LIST;
-    }
-
-    /**
-     * Attempts to type swap and show the save flow when the "Add to reading list" menu item is
-     * selected but there's an existing bookmark.
-     *
-     * @param activity The current Activity.
-     * @param bottomsheetController The BottomsheetController, used to show the save flow.
-     * @param bookmarkModel The BookmarkModel which is used for bookmark operations.
-     * @param bookmarkId The existing BookmarkId.
-     * @param bookmarkType The intended bookmark type.
-     * @return Whether the given bookmark item has been type-swapped and the save flow shown.
-     */
-    public static boolean maybeTypeSwapAndShowSaveFlow(
-            @NonNull Activity activity,
-            @NonNull BottomSheetController bottomsheetController,
-            @NonNull BookmarkModel bookmarkModel,
-            @NonNull BookmarkId bookmarkId,
-            @BookmarkType int bookmarkType,
-            @NonNull Profile profile) {
-        if (bookmarkId == null
-                || bookmarkId.getType() != BookmarkType.NORMAL
-                || bookmarkType != BookmarkType.READING_LIST) {
-            return false;
-        }
-
-        // When selecting the "Add to reading list" menu item while a regular bookmark exists,
-        // remove the regular bookmark first so the save flow is shown.
-        List<BookmarkId> bookmarkIds = new ArrayList<>();
-        bookmarkIds.add(bookmarkId);
-        List<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
-        typeSwapBookmarksIfNecessary(
-                bookmarkModel,
-                bookmarkIds,
-                typeSwappedBookmarks,
-                bookmarkModel.getReadingListFolder());
-
-        assert typeSwappedBookmarks.size() == 1;
-        if (typeSwappedBookmarks.size() != 1) return false;
-
-        BookmarkId newBookmark = typeSwappedBookmarks.get(0);
-        if (Boolean.TRUE.equals(sSkipShowSaveFlowForTesting)) return true;
-        BookmarkUtils.showSaveFlow(
-                activity,
-                bottomsheetController,
-                /* fromExplicitTrackUi= */ false,
-                newBookmark,
-                /* wasBookmarkMoved= */ true,
-                /* isNewBookmark= */ false,
-                profile);
-        return true;
     }
 
     /**

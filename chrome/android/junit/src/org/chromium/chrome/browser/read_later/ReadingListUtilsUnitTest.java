@@ -9,8 +9,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -24,11 +22,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -79,52 +75,6 @@ public class ReadingListUtilsUnitTest {
 
         // invalid url
         Assert.assertFalse(ReadingListUtils.isReadingListSupported(JUnitTestGURLs.INVALID_URL));
-    }
-
-    @Test
-    @SmallTest
-    public void isSwappableReadingListItem() {
-        BookmarkId readingListId = new BookmarkId(1, BookmarkType.READING_LIST);
-        BookmarkId regularId = new BookmarkId(1, BookmarkType.NORMAL);
-
-        Assert.assertFalse(ReadingListUtils.isSwappableReadingListItem(regularId));
-        Assert.assertTrue(ReadingListUtils.isSwappableReadingListItem(readingListId));
-    }
-
-    @Test
-    @SmallTest
-    public void maybeTypeSwapAndShowSaveFlow_EdgeCases() {
-        BookmarkId bookmarkId = Mockito.mock(BookmarkId.class);
-        doReturn(BookmarkType.NORMAL).when(bookmarkId).getType();
-
-        Assert.assertFalse(
-                ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
-                        Mockito.mock(Activity.class),
-                        Mockito.mock(BottomSheetController.class),
-                        Mockito.mock(BookmarkModel.class),
-                        /* bookmarkId= */ null,
-                        BookmarkType.READING_LIST,
-                        Mockito.mock(Profile.class)));
-
-        doReturn(BookmarkType.READING_LIST).when(bookmarkId).getType();
-        Assert.assertFalse(
-                ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
-                        Mockito.mock(Activity.class),
-                        Mockito.mock(BottomSheetController.class),
-                        Mockito.mock(BookmarkModel.class),
-                        bookmarkId,
-                        BookmarkType.READING_LIST,
-                        Mockito.mock(Profile.class)));
-
-        doReturn(BookmarkType.NORMAL).when(bookmarkId).getType();
-        Assert.assertFalse(
-                ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
-                        Mockito.mock(Activity.class),
-                        Mockito.mock(BottomSheetController.class),
-                        Mockito.mock(BookmarkModel.class),
-                        bookmarkId,
-                        BookmarkType.NORMAL,
-                        Mockito.mock(Profile.class)));
     }
 
     @Test

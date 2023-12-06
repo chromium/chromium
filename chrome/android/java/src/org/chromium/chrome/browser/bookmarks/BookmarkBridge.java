@@ -25,7 +25,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -606,9 +605,6 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return false;
         assert mIsNativeBookmarkModelLoaded;
-        if (ReadingListUtils.isSwappableReadingListItem(id)) {
-            return true;
-        }
         return BookmarkBridgeJni.get()
                 .isFolderVisible(mNativeBookmarkBridge, id.getId(), id.getType());
     }
