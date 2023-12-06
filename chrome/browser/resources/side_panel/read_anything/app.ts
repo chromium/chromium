@@ -1022,6 +1022,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!chrome.readingMode.isWebUIToolbarVisible) {
       document.body.style.background = skColorToRgba(backgroundColor);
     }
+
+    document.documentElement.style.setProperty(
+        '--selection-color', this.getSelectionColor_(backgroundColor));
+    document.documentElement.style.setProperty(
+        '--selection-text-color',
+        this.getSelectionTextColorVar(skColorToRgba(backgroundColor)));
   }
 
   updateFonts() {
