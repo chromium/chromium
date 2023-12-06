@@ -290,6 +290,7 @@ class WebThemeEngine {
       const gfx::Rect&,
       const ExtraParams*,
       blink::mojom::ColorScheme,
+      const ui::ColorProvider*,
       const absl::optional<SkColor>& accent_color = absl::nullopt) {}
 
   virtual absl::optional<SkColor> GetSystemColor(

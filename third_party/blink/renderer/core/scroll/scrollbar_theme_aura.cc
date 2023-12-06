@@ -257,13 +257,16 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
   }
 
   WebThemeEngine::ExtraParams extra_params(scrollbar_track);
+  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(),
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalTrack
           : WebThemeEngine::kPartScrollbarVerticalTrack,
-      state, rect, &extra_params, scrollbar.UsedColorScheme());
+      state, rect, &extra_params, color_scheme, color_provider);
 }
 
 void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
@@ -290,9 +293,12 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
         scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
   }
   WebThemeEngine::ExtraParams extra_params(scrollbar_button);
+  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
-      gc.Canvas(), params.part, params.state, rect, &extra_params,
-      scrollbar.UsedColorScheme());
+      gc.Canvas(), params.part, params.state, rect, &extra_params, color_scheme,
+      color_provider);
 }
 
 void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
@@ -321,13 +327,16 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
   }
 
   WebThemeEngine::ExtraParams params(scrollbar_thumb);
+  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       canvas,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalThumb
           : WebThemeEngine::kPartScrollbarVerticalThumb,
-      state, rect, &params, scrollbar.UsedColorScheme());
+      state, rect, &params, color_scheme, color_provider);
 }
 
 bool ScrollbarThemeAura::ShouldRepaintAllPartsOnInvalidation() const {

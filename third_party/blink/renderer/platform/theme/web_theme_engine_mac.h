@@ -19,6 +19,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
              const gfx::Rect& rect,
              const WebThemeEngine::ExtraParams* extra_params,
              mojom::ColorScheme color_scheme,
+             const ui::ColorProvider* color_provider,
              const absl::optional<SkColor>& accent_color) override;
 
   static bool IsScrollbarPart(WebThemeEngine::Part part);

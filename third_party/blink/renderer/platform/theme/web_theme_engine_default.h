@@ -26,6 +26,7 @@ class WebThemeEngineDefault : public WebThemeEngine {
              const gfx::Rect& rect,
              const WebThemeEngine::ExtraParams* extra_params,
              mojom::ColorScheme color_scheme,
+             const ui::ColorProvider* color_provider,
              const absl::optional<SkColor>& accent_color) override;
   void GetOverlayScrollbarStyle(WebThemeEngine::ScrollbarStyle*) override;
   bool SupportsNinePatch(Part part) const override;

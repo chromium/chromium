@@ -63,6 +63,10 @@ class AnimationTimeline;
 class Layer;
 }  // namespace cc
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 class ChromeClient;
 class Document;
@@ -242,6 +246,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return static_cast<ScrollbarOverlayColorTheme>(
         scrollbar_overlay_color_theme_);
   }
+
+  // Returns the color provider for this scrollbar.
+  const ui::ColorProvider* GetColorProvider(mojom::blink::ColorScheme) const;
 
   // This getter will create a MacScrollAnimator if it doesn't already exist,
   // only on MacOS.

@@ -168,14 +168,15 @@ void WebThemeEngineAndroid::Paint(
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     blink::mojom::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider,
     const absl::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
   // ColorProviders are not supported on android and there are no controls that
   // require ColorProvider colors on the platform.
-  const ui::ColorProvider* color_provider = nullptr;
+  const ui::ColorProvider* color_provider_android = nullptr;
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
+      canvas, color_provider_android, NativeThemePart(part), NativeThemeState(state),
       rect, native_theme_extra_params, NativeColorScheme(color_scheme),
       accent_color);
 }

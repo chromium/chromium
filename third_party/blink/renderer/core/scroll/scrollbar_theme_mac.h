@@ -121,7 +121,8 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
                          const Scrollbar* vertical_scrollbar,
                          const DisplayItemClient&,
                          const gfx::Rect& corner_rect,
-                         mojom::blink::ColorScheme color_scheme) override;
+                         mojom::blink::ColorScheme color_scheme,
+                         const ui::ColorProvider* color_provider) override;
   void PaintThumbInternal(GraphicsContext&,
                           const Scrollbar&,
                           const gfx::Rect&,

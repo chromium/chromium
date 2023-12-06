@@ -351,9 +351,12 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
                              DisplayItem::kScrollCorner);
   }
 
+  mojom::blink::ColorScheme color_scheme =
+      GetScrollableArea().UsedColorSchemeScrollbars();
+  const ui::ColorProvider* color_provider =
+      GetScrollableArea().GetColorProvider(color_scheme);
   theme->PaintScrollCorner(context, GetScrollableArea().VerticalScrollbar(),
-                           client, visual_rect,
-                           GetScrollableArea().UsedColorSchemeScrollbars());
+                           client, visual_rect, color_scheme, color_provider);
 }
 
 PaintLayerScrollableArea& ScrollableAreaPainter::GetScrollableArea() const {

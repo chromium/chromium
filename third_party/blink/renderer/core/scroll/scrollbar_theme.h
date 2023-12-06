@@ -35,6 +35,10 @@
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace blink {
 
 class GraphicsContext;
@@ -115,7 +119,8 @@ class CORE_EXPORT ScrollbarTheme {
                                  const Scrollbar* vertical_scrollbar,
                                  const DisplayItemClient&,
                                  const gfx::Rect& corner_rect,
-                                 mojom::blink::ColorScheme color_scheme);
+                                 mojom::blink::ColorScheme color_scheme,
+                                 const ui::ColorProvider* color_provider);
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const gfx::Rect&);

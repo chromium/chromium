@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -216,10 +217,13 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
   WebThemeEngine::ExtraParams extra_params(button);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      document.GetColorProviderForPainting(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartCheckbox,
-      GetWebThemeState(element), unzoomed_rect, &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style, document));
+      GetWebThemeState(element), unzoomed_rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, document));
   return false;
 }
 
@@ -237,11 +241,13 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   gfx::Rect unzoomed_rect =
       ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
-
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      document.GetColorProviderForPainting(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartRadio,
-      GetWebThemeState(element), unzoomed_rect, &extra_params,
-      style.UsedColorScheme(), GetAccentColor(style, document));
+      GetWebThemeState(element), unzoomed_rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, document));
   return false;
 }
 
@@ -254,11 +260,14 @@ bool ThemePainterDefault::PaintButton(const Element& element,
   button.has_border = true;
   button.zoom = style.EffectiveZoom();
   WebThemeEngine::ExtraParams extra_params(button);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      document.GetColorProviderForPainting(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartButton,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, document));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, document));
   return false;
 }
 
@@ -288,11 +297,14 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
           WebAutofillState::kPreviewed;
 
   WebThemeEngine::ExtraParams extra_params(text_field);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      element.GetDocument().GetColorProviderForPainting(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartTextField,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, element.GetDocument()));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, element.GetDocument()));
   return false;
 }
 
@@ -326,10 +338,14 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
 
   SetupMenuListArrow(document, style, rect, extra_params);
 
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      document.GetColorProviderForPainting(color_scheme);
+
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, document));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, document));
   return false;
 }
 
@@ -345,11 +361,14 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
   menu_list.fill_content_area = false;
   WebThemeEngine::ExtraParams extra_params(menu_list);
   SetupMenuListArrow(document, style, rect, extra_params);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      document.GetColorProviderForPainting(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartMenuList,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, document));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, document));
   return false;
 }
 
@@ -455,11 +474,14 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     }
   }
   WebThemeEngine::ExtraParams extra_params(slider);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      element.GetDocument().GetColorProviderForPainting(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderTrack,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, element.GetDocument()));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, element.GetDocument()));
   return false;
 }
 
@@ -488,11 +510,14 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
       GetAccentColor(*slider_element->HostInput()->EnsureComputedStyle(),
                      element.GetDocument());
   WebThemeEngine::ExtraParams extra_params(slider);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      element.GetDocument().GetColorProviderForPainting(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartSliderThumb,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      accent_color);
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, accent_color);
   return false;
 }
 
@@ -520,11 +545,14 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
           : WebThemeEngine::SpinArrowsDirection::kLeftRight;
 
   WebThemeEngine::ExtraParams extra_params(inner_spin);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      element.GetDocument().GetColorProviderForPainting(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartInnerSpinButton,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, element.GetDocument()));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, element.GetDocument()));
   return false;
 }
 
@@ -550,10 +578,13 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
       IsHorizontalWritingMode(layout_progress->StyleRef().GetWritingMode());
   WebThemeEngine::ExtraParams extra_params(progress_bar);
   DirectionFlippingScope scope(layout_object, paint_info, rect);
+  mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      element.GetDocument().GetColorProviderForPainting(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartProgressBar,
-      GetWebThemeState(element), rect, &extra_params, style.UsedColorScheme(),
-      GetAccentColor(style, element.GetDocument()));
+      GetWebThemeState(element), rect, &extra_params, color_scheme,
+      color_provider, GetAccentColor(style, element.GetDocument()));
   return false;
 }
 

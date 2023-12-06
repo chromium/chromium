@@ -243,6 +243,7 @@ void WebThemeEngineDefault::Paint(
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     mojom::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider,
     const absl::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
