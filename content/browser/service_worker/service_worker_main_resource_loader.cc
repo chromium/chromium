@@ -463,6 +463,18 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
+  // If |enable_only_when_service_worker_not_running| is true, preload requests
+  // are dispatched only when the ServiceWorker is not running. When it's
+  // running, preload requests for both main resource and subresources are not
+  // dispatched.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload,
+          "enable_only_when_service_worker_not_running",
+          /*default_value=*/false) &&
+      version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
+    return false;
+  }
+
   bool result = StartRaceNetworkRequest(context, version);
   if (result) {
     SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
