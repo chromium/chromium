@@ -247,7 +247,7 @@ public class TabDragSourceTest {
         // Drag tab onto strip on drag enter.
         verify(mStripLayoutHelper, times(1)).dragActiveClickedTabOntoStrip(anyLong(), anyFloat());
         // Invoke drag on drag moves.
-        verify(mStripLayoutHelper, times(2)).drag(anyLong(), anyFloat(), anyFloat(), anyFloat());
+        verify(mStripLayoutHelper, times(1)).drag(anyLong(), anyFloat(), anyFloat(), anyFloat());
         // Stop reorder on drop.
         verify(mStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
@@ -271,7 +271,9 @@ public class TabDragSourceTest {
          */
         triggerDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY);
         triggerDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY);
-        // Move within the tab strip area.
+        // Move within the tab strip area to trigger the #onDragEnter.
+        triggerDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY + DRAG_MOVE_DISTANCE);
+        // Move within the tab strip area again after entering to trigger the #onDragLocation.
         triggerDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY + DRAG_MOVE_DISTANCE);
         // Move outside the tab strip area but inside the toolbar.
         triggerDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY + 3 * DRAG_MOVE_DISTANCE);

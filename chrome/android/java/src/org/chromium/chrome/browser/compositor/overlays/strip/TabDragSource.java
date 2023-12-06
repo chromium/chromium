@@ -189,23 +189,27 @@ public class TabDragSource implements View.OnDragListener {
                                 mLastAction == DragEvent.ACTION_DRAG_EXITED);
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
-                res = didOccurInTabStrip(dragEvent.getY()) ? onDragEnter() : false;
+                // We'll trigger #onDragEnter when handling the following ACTION_DRAG_LOCATION so we
+                // have position data available (and can check if we've entered the tab strip).
+                res = false;
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
                 res = onDragExit();
                 break;
             case DragEvent.ACTION_DRAG_LOCATION:
                 boolean isLastYInTabStrip = didOccurInTabStrip(mLastYDp / mPxToDp);
-                if (mLastAction == DragEvent.ACTION_DRAG_ENTERED
-                        || (isLastYInTabStrip && didOccurInTabStrip(dragEvent.getY()))) {
-                    // First move after drag enter OR drag moved within strip
-                    res = onDragLocation(dragEvent.getX(), dragEvent.getY());
+                boolean isCurrYInTabStrip = didOccurInTabStrip(dragEvent.getY());
+                if (isCurrYInTabStrip) {
+                    if (mLastAction == DragEvent.ACTION_DRAG_ENTERED || !isLastYInTabStrip) {
+                        // dragged onto strip from outside controls OR from toolbar.
+                        res = onDragEnter();
+                    } else {
+                        // drag moved within strip.
+                        res = onDragLocation(dragEvent.getX(), dragEvent.getY());
+                    }
                 } else if (isLastYInTabStrip) {
                     // drag moved from within to outside strip.
                     res = onDragExit();
-                } else if (didOccurInTabStrip(dragEvent.getY())) {
-                    // drag moved from outside to within strip.
-                    res = onDragEnter();
                 }
                 mLastXDp = dragEvent.getX() * mPxToDp;
                 mLastYDp = dragEvent.getY() * mPxToDp;
