@@ -80,6 +80,21 @@ void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
       std::move(dict));
 }
 
+void SetManagedSiteSearchSettingsPreference(
+    const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&
+        site_search_engines,
+    TestingProfile* profile) {
+  base::Value::List pref_value;
+  for (auto& site_search_engine : site_search_engines) {
+    pref_value.Append(
+        base::Value(TemplateURLDataToDictionary(*site_search_engine)));
+  }
+
+  profile->GetTestingPrefService()->SetManagedPref(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName,
+      std::move(pref_value));
+}
+
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::u16string& keyword,
     const std::string& url,

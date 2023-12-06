@@ -26,7 +26,7 @@ class EnterpriseSiteSearchManager {
   using OwnedTemplateURLDataVector =
       std::vector<std::unique_ptr<TemplateURLData>>;
   using ObserverCallback =
-      base::RepeatingCallback<void(const OwnedTemplateURLDataVector&)>;
+      base::RepeatingCallback<void(OwnedTemplateURLDataVector&&)>;
 
   EnterpriseSiteSearchManager(PrefService* pref_service,
                               const ObserverCallback& change_observer);
@@ -40,21 +40,13 @@ class EnterpriseSiteSearchManager {
                                 PrefValueMap* prefs);
 
  private:
-  // Reads the site search providers from |pref| and copy them to
-  // `site_search_engines_`.
-  void LoadSiteSearchEnginesFromPrefs(const PrefService::Preference* pref);
-
   // Handles changes to kSiteSearchSettings pref due to policy updates. Calls
   // NotifyObserver() if site search providers may have changed. Invokes
-  // |change_observer_| if it is not NULL.
+  // `change_observer_` if it is not NULL.
   void OnSiteSearchPrefChanged();
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Site search engines provided by managed prefs. This will be empty if no
-  // value was set in the pref store.
-  OwnedTemplateURLDataVector site_search_engines_;
 
   // Invoked when changes to the list of managed site search engines are
   // detected.

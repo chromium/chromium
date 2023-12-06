@@ -70,7 +70,7 @@ class EnterpriseSiteSearchManagerTest : public testing::Test {
 
 TEST_F(EnterpriseSiteSearchManagerTest, EmptyList) {
   base::MockRepeatingCallback<void(
-      const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&)>
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
   EXPECT_CALL(callback, Run(IsEmpty())).Times(1);
 
@@ -86,7 +86,7 @@ TEST_F(EnterpriseSiteSearchManagerTest, NonEmptyList) {
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
 
   base::MockRepeatingCallback<void(
-      const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&)>
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
   EXPECT_CALL(
       callback,
@@ -106,7 +106,7 @@ TEST_F(EnterpriseSiteSearchManagerTest, NotCreatedByPolicy) {
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
 
   base::MockRepeatingCallback<void(
-      const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&)>
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&&)>
       callback;
   EXPECT_CALL(callback, Run(_)).Times(0);
 

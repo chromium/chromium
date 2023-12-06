@@ -15,6 +15,24 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 
+namespace {
+
+// Returns the site search providers read from `pref`.
+EnterpriseSiteSearchManager::OwnedTemplateURLDataVector
+LoadSiteSearchEnginesFromPrefs(const PrefService::Preference* pref) {
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  for (const base::Value& engine : pref->GetValue()->GetList()) {
+    const base::Value::Dict& url_dict = engine.GetDict();
+    std::unique_ptr<TemplateURLData> turl_data =
+        TemplateURLDataFromDictionary(url_dict);
+    CHECK(turl_data);
+    site_search_engines.push_back(std::move(turl_data));
+  }
+  return site_search_engines;
+}
+
+}  // namespace
+
 // A dictionary to hold all data related to the site search engines defined by
 // policy.
 const char EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName[] =
@@ -31,6 +49,7 @@ EnterpriseSiteSearchManager::EnterpriseSiteSearchManager(
         base::BindRepeating(
             &EnterpriseSiteSearchManager::OnSiteSearchPrefChanged,
             base::Unretained(this)));
+    OnSiteSearchPrefChanged();
   }
 }
 
@@ -39,8 +58,6 @@ EnterpriseSiteSearchManager::~EnterpriseSiteSearchManager() = default;
 // static
 void EnterpriseSiteSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  CHECK(base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy));
-
   registry->RegisterListPref(kSiteSearchSettingsPrefName);
 }
 
@@ -54,26 +71,11 @@ void EnterpriseSiteSearchManager::AddPrefValueToMap(
                            base::Value(std::move(providers)));
 }
 
-void EnterpriseSiteSearchManager::LoadSiteSearchEnginesFromPrefs(
-    const PrefService::Preference* pref) {
-  site_search_engines_.clear();
-
-  const base::Value::List& site_search_engines =
-      pref_service_->GetList(kSiteSearchSettingsPrefName);
-  if (site_search_engines.empty()) {
+void EnterpriseSiteSearchManager::OnSiteSearchPrefChanged() {
+  if (!change_observer_) {
     return;
   }
 
-  for (const base::Value& engine : site_search_engines) {
-    const base::Value::Dict& url_dict = engine.GetDict();
-    std::unique_ptr<TemplateURLData> turl_data =
-        TemplateURLDataFromDictionary(url_dict);
-    CHECK(turl_data);
-    site_search_engines_.push_back(std::move(turl_data));
-  }
-}
-
-void EnterpriseSiteSearchManager::OnSiteSearchPrefChanged() {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kSiteSearchSettingsPrefName);
   CHECK(pref);
@@ -83,9 +85,5 @@ void EnterpriseSiteSearchManager::OnSiteSearchPrefChanged() {
     return;
   }
 
-  LoadSiteSearchEnginesFromPrefs(pref);
-
-  if (change_observer_) {
-    change_observer_.Run(site_search_engines_);
-  }
+  change_observer_.Run(LoadSiteSearchEnginesFromPrefs(pref));
 }
