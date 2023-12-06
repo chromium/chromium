@@ -306,22 +306,6 @@ FacetURI FacetURI::FromCanonicalSpec(const std::string& canonical_spec) {
   return FacetURI(canonical_spec, true);
 }
 
-bool FacetURI::operator==(const FacetURI& other) const {
-  return canonical_spec_ == other.canonical_spec_;
-}
-
-bool FacetURI::operator!=(const FacetURI& other) const {
-  return canonical_spec_ != other.canonical_spec_;
-}
-
-bool FacetURI::operator<(const FacetURI& other) const {
-  return canonical_spec_ < other.canonical_spec_;
-}
-
-bool FacetURI::operator>(const FacetURI& other) const {
-  return canonical_spec_ > other.canonical_spec_;
-}
-
 bool FacetURI::IsValidWebFacetURI() const {
   return scheme() == url::kHttpsScheme;
 }

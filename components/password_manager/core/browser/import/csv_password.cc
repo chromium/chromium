@@ -103,12 +103,6 @@ CSVPassword& CSVPassword::operator=(const CSVPassword&) = default;
 CSVPassword& CSVPassword::operator=(CSVPassword&&) = default;
 CSVPassword::~CSVPassword() = default;
 
-bool operator==(const CSVPassword& lhs, const CSVPassword& rhs) {
-  return lhs.GetParseStatus() == rhs.GetParseStatus() &&
-         lhs.GetPassword() == rhs.GetPassword() &&
-         lhs.GetUsername() == rhs.GetUsername() && lhs.GetURL() == rhs.GetURL();
-}
-
 CSVPassword::Status CSVPassword::GetParseStatus() const {
   return status_;
 }

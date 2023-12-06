@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 
-#include <tuple>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -59,11 +58,6 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
 }
 
 }  // namespace
-
-bool operator==(const PasswordExportInfo& lhs, const PasswordExportInfo& rhs) {
-  return std::tie(lhs.status, lhs.file_path, lhs.folder_name) ==
-         std::tie(rhs.status, rhs.file_path, rhs.folder_name);
-}
 
 PasswordManagerExporter::PasswordManagerExporter(
     SavedPasswordsPresenter* presenter,

@@ -12,6 +12,9 @@ namespace password_manager {
 
 // The statistics containing user interactions with a site.
 struct InteractionsStats {
+  friend bool operator==(const InteractionsStats&,
+                         const InteractionsStats&) = default;
+
   // The domain of the site.
   GURL origin_domain;
 
@@ -25,8 +28,7 @@ struct InteractionsStats {
   base::Time update_time;
 };
 
-bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs);
 
 } // namespace password_manager
 
-#endif // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INTERACTIONS_STATS_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INTERACTIONS_STATS_H_

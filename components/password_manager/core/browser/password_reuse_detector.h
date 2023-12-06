@@ -6,6 +6,8 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_DETECTOR_H_
 
 #include <stdint.h>
+
+#include <compare>
 #include <map>
 #include <memory>
 #include <optional>
@@ -39,13 +41,16 @@ struct ReverseStringLess {
 // Container for the signon_realm and username that a compromised saved password
 // is saved on/with.
 struct MatchingReusedCredential {
+  friend auto operator<=>(const MatchingReusedCredential&,
+                          const MatchingReusedCredential&) = default;
+  friend bool operator==(const MatchingReusedCredential&,
+                         const MatchingReusedCredential&) = default;
+
   std::string signon_realm;
   std::u16string username;
   // The store in which those credentials are stored.
   PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
 
-  bool operator<(const MatchingReusedCredential& other) const;
-  bool operator==(const MatchingReusedCredential& other) const;
 };
 
 // Per-profile class responsible for detection of password reuse, i.e. that the

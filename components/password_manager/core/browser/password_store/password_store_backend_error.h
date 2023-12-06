@@ -46,6 +46,9 @@ struct PasswordStoreBackendError {
       PasswordStoreBackendErrorType error_type,
       PasswordStoreBackendErrorRecoveryType recovery_type);
 
+  friend bool operator==(const PasswordStoreBackendError&,
+                         const PasswordStoreBackendError&) = default;
+
   // The type of the error.
   PasswordStoreBackendErrorType type;
 
@@ -53,8 +56,6 @@ struct PasswordStoreBackendError {
   PasswordStoreBackendErrorRecoveryType recovery_type;
 };
 
-bool operator==(const PasswordStoreBackendError& lhs,
-                const PasswordStoreBackendError& rhs);
 
 }  // namespace password_manager
 

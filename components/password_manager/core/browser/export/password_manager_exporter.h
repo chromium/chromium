@@ -21,14 +21,15 @@ class SavedPasswordsPresenter;
 
 // Information about passwort export in progress.
 struct PasswordExportInfo {
+  friend bool operator==(const PasswordExportInfo&,
+                         const PasswordExportInfo&) = default;
+
   ExportProgressStatus status;
   // The full path to the file with exported passwords.
   std::string file_path;
   // The name of the folder containing the exported file.
   std::string folder_name;
 };
-
-bool operator==(const PasswordExportInfo& lhs, const PasswordExportInfo& rhs);
 
 // Controls the exporting of passwords. One instance per export flow.
 // PasswordManagerExporter will perform the export asynchronously as soon as all

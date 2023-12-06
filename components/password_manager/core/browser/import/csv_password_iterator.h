@@ -48,9 +48,6 @@ class CSVPasswordIterator {
   // there are no implicit conversions available for CSVPasswordIterator, and
   // the methods avoid having to declare the operators as friends.
   bool operator==(const CSVPasswordIterator& other) const;
-  bool operator!=(const CSVPasswordIterator& other) const {
-    return !(*this == other);
-  }
 
  private:
   // SeekToNextValidRow seeks the iterator to the first available data row which

@@ -12,9 +12,4 @@ PasswordStoreBackendError::PasswordStoreBackendError(
     PasswordStoreBackendErrorRecoveryType recovery_type)
     : type(error_type), recovery_type(recovery_type) {}
 
-bool operator==(const PasswordStoreBackendError& lhs,
-                const PasswordStoreBackendError& rhs) {
-  return lhs.type == rhs.type && lhs.recovery_type == rhs.recovery_type;
-}
-
 }  // namespace password_manager

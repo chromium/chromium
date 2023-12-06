@@ -53,6 +53,9 @@ class CSVPassword {
   CSVPassword& operator=(CSVPassword&&);
   ~CSVPassword();
 
+  // An exact equality comparison of all the fields - only used in tests.
+  friend bool operator==(const CSVPassword&, const CSVPassword&) = default;
+
   Status GetParseStatus() const;
 
   const std::string& GetPassword() const;
@@ -74,9 +77,6 @@ class CSVPassword {
 
   Status status_;
 };
-
-// An exact equality comparison of all the fields is only used for tests.
-bool operator==(const CSVPassword& lhs, const CSVPassword& rhs);
 
 }  // namespace password_manager
 

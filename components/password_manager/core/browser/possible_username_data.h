@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_POSSIBLE_USERNAME_DATA_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_POSSIBLE_USERNAME_DATA_H_
 
+#include <compare>
 #include <optional>
 #include <string>
 
@@ -25,6 +26,11 @@ constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
 // Contains information to uniquely identify the field that is considered to be
 // username in Username First Flow.
 struct PossibleUsernameFieldIdentifier {
+  friend auto operator<=>(const PossibleUsernameFieldIdentifier& lhs,
+                          const PossibleUsernameFieldIdentifier& rhs) = default;
+  friend bool operator==(const PossibleUsernameFieldIdentifier& lhs,
+                         const PossibleUsernameFieldIdentifier& rhs) = default;
+
   // Id of the `PasswordManagerDriver` which corresponds to the frame of this
   // field. When paired with the `renderer_id`, this pair uniquely identifies a
   // field globally.
@@ -32,17 +38,6 @@ struct PossibleUsernameFieldIdentifier {
 
   // Id of the field within the frame.
   autofill::FieldRendererId renderer_id;
-
-  friend bool operator<(const PossibleUsernameFieldIdentifier& lhs,
-                        const PossibleUsernameFieldIdentifier& rhs) {
-    return std::make_pair(lhs.driver_id, lhs.renderer_id) <
-           std::make_pair(rhs.driver_id, rhs.renderer_id);
-  }
-
-  friend bool operator==(const PossibleUsernameFieldIdentifier& lhs,
-                         const PossibleUsernameFieldIdentifier& rhs) {
-    return lhs.driver_id == rhs.driver_id && lhs.renderer_id == rhs.renderer_id;
-  }
 };
 
 // Contains information that the user typed in a text field. It might be the

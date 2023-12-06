@@ -8,9 +8,7 @@
 
 namespace password_manager {
 
-bool PublicKey::operator==(const PublicKey& other) const {
-  return key == other.key && key_version == other.key_version;
-}
+bool PublicKey::operator==(const PublicKey& other) const = default;
 
 sync_pb::CrossUserSharingPublicKey PublicKey::ToProto() const {
   sync_pb::CrossUserSharingPublicKey proto_result;
@@ -41,10 +39,6 @@ RecipientInfo& RecipientInfo::operator=(const RecipientInfo&) = default;
 RecipientInfo& RecipientInfo::operator=(RecipientInfo&&) = default;
 RecipientInfo::~RecipientInfo() = default;
 
-bool RecipientInfo::operator==(const RecipientInfo& other) const {
-  return user_id == other.user_id && user_name == other.user_name &&
-         email == other.email && profile_image_url == other.profile_image_url &&
-         public_key == other.public_key;
-}
+bool RecipientInfo::operator==(const RecipientInfo& other) const = default;
 
 }  // namespace password_manager

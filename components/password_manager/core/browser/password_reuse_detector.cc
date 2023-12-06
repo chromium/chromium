@@ -74,18 +74,6 @@ bool ReverseStringLess::operator()(const std::u16string& lhs,
                                       rhs.rend());
 }
 
-bool MatchingReusedCredential::operator<(
-    const MatchingReusedCredential& other) const {
-  return std::tie(signon_realm, username, in_store) <
-         std::tie(other.signon_realm, other.username, other.in_store);
-}
-
-bool MatchingReusedCredential::operator==(
-    const MatchingReusedCredential& other) const {
-  return signon_realm == other.signon_realm && username == other.username &&
-         in_store == other.in_store;
-}
-
 PasswordReuseDetector::PasswordReuseDetector() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

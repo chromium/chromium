@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_H_
 
+#include <compare>
 #include <map>
 #include <memory>
 #include <string>
@@ -45,8 +46,10 @@ struct AlternativeElement {
   AlternativeElement& operator=(AlternativeElement&& rhs);
   ~AlternativeElement();
 
-  bool operator==(const AlternativeElement&) const;
-  bool operator<(const AlternativeElement&) const;
+  friend auto operator<=>(const AlternativeElement&,
+                          const AlternativeElement&) = default;
+  friend bool operator==(const AlternativeElement&,
+                         const AlternativeElement&) = default;
 
   // The value of the field.
   std::u16string value;
@@ -93,6 +96,9 @@ struct InsecurityMetadata {
   InsecurityMetadata(const InsecurityMetadata& rhs);
   ~InsecurityMetadata();
 
+  friend bool operator==(const InsecurityMetadata& lhs,
+                         const InsecurityMetadata& rhs) = default;
+
   // The date when the record was created.
   base::Time create_time;
   // Whether the problem was explicitly muted by the user.
@@ -102,7 +108,6 @@ struct InsecurityMetadata {
   TriggerBackendNotification trigger_notification_from_backend{false};
 };
 
-bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs);
 
 // Represents a note attached to a particular credential.
 struct PasswordNote {
@@ -118,6 +123,9 @@ struct PasswordNote {
   PasswordNote& operator=(PasswordNote&& rhs);
   ~PasswordNote();
 
+  friend bool operator==(const PasswordNote& lhs,
+                         const PasswordNote& rhs) = default;
+
   // The name displayed in the UI labeling this note. Currently unused and added
   // for future compatibility.
   std::u16string unique_display_name;
@@ -129,9 +137,6 @@ struct PasswordNote {
   // to password values. Currently unused and added for future compatibility.
   bool hide_by_default = false;
 };
-
-bool operator==(const PasswordNote& lhs, const PasswordNote& rhs);
-bool operator!=(const PasswordNote& lhs, const PasswordNote& rhs);
 
 // The PasswordForm struct encapsulates information about a login form,
 // which can be an HTML form or a dialog with username/password text fields.
@@ -575,7 +580,6 @@ bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
 // An exact equality comparison of all the fields is only useful for tests.
 // Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
 bool operator==(const PasswordForm& lhs, const PasswordForm& rhs);
-bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs);
 
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme);
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form);
