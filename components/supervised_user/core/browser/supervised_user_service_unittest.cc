@@ -191,6 +191,10 @@ TEST_F(SupervisedUserServiceTest, InterstitialBannerState) {
   {
     // If disabled kFilterWebsitesForSupervisedUsersOnDesktopAndIOS
     // the state remains unchanged.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+
     EXPECT_TRUE(service_->GetUpdatedBannerState(
                     FirstTimeInterstitialBannerState::kUnknown) ==
                 FirstTimeInterstitialBannerState::kUnknown);

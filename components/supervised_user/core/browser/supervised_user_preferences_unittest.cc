@@ -238,11 +238,19 @@ class SupervisedUserPreferencesTestWithUrlFilteringFeature
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_IOS)
     if (IsURLFilteringEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+      feature_list_.InitWithFeatures(
+          {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+           supervised_user::kSupervisedPrefsControlledBySupervisedStore,
+           supervised_user::kEnableManagedByParentUi,
+           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
+          {});
     } else {
-      feature_list_.InitAndDisableFeature(
-          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+      feature_list_.InitWithFeatures(
+          {},
+          {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+           supervised_user::kSupervisedPrefsControlledBySupervisedStore,
+           supervised_user::kEnableManagedByParentUi,
+           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn});
     }
 #endif
   }
