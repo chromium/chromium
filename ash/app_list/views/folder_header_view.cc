@@ -67,8 +67,9 @@ constexpr int kFolderNameBorderThickness = 2;
 constexpr int kFolderNamePadding = 8;
 
 SkColor GetFolderBackgroundColor(bool is_active) {
-  if (!is_active)
+  if (!is_active) {
     return SK_ColorTRANSPARENT;
+  }
 
   const std::pair<SkColor, float> base_color_and_opacity =
       ash::ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
@@ -81,7 +82,7 @@ SkColor GetFolderBackgroundColor(bool is_active) {
 
 class FolderHeaderView::FolderNameView : public views::Textfield,
                                          public views::ViewTargeterDelegate {
-  //  METADATA_HEADER(FolderNameView, views::Textfield)
+  METADATA_HEADER(FolderNameView, views::Textfield)
 
  public:
   explicit FolderNameView(FolderHeaderView* folder_header_view)
@@ -139,8 +140,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     starting_name_ = GetText();
     folder_header_view_->previous_folder_name_ = starting_name_;
 
-    if (!defer_select_all_)
+    if (!defer_select_all_) {
       SelectAll(false);
+    }
 
     Textfield::OnFocus();
   }
@@ -178,18 +180,21 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool OnMousePressed(const ui::MouseEvent& event) override {
     // Since hovering changes the background color, only taps should be
     // triggered using the extended event target.
-    if (!DoesMouseEventActuallyIntersect(event))
+    if (!DoesMouseEventActuallyIntersect(event)) {
       return false;
+    }
 
-    if (!HasFocus())
+    if (!HasFocus()) {
       defer_select_all_ = true;
+    }
 
     return Textfield::OnMousePressed(event);
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    if (!HasFocus())
+    if (!HasFocus()) {
       UpdateBackgroundColor(/*is_active=*/false);
+    }
 
     has_mouse_already_entered_ = false;
   }
@@ -213,8 +218,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     if (defer_select_all_) {
       defer_select_all_ = false;
 
-      if (!HasSelection())
+      if (!HasSelection()) {
         SelectAll(false);
+      }
     }
 
     Textfield::OnMouseReleased(event);
@@ -261,8 +267,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   bool has_mouse_already_entered_ = false;
 };
 
-// BEGIN_METADATA(FolderHeaderView, FolderNameView, views::Textfield)
-// END_METADATA
+BEGIN_METADATA(FolderHeaderView, FolderNameView, views::Textfield)
+END_METADATA
 
 class FolderHeaderView::FolderNameJellyView
     : public ash::SystemTextfield,
@@ -408,17 +414,20 @@ FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate,
 }
 
 FolderHeaderView::~FolderHeaderView() {
-  if (folder_item_)
+  if (folder_item_) {
     folder_item_->RemoveObserver(this);
+  }
 }
 
 void FolderHeaderView::SetFolderItem(AppListFolderItem* folder_item) {
-  if (folder_item_)
+  if (folder_item_) {
     folder_item_->RemoveObserver(this);
+  }
 
   folder_item_ = folder_item;
-  if (!folder_item_)
+  if (!folder_item_) {
     return;
+  }
   folder_item_->AddObserver(this);
 
   folder_name_view_->SetEnabled(folder_item_->folder_type() !=
@@ -442,8 +451,9 @@ bool FolderHeaderView::HasTextFocus() const {
 }
 
 void FolderHeaderView::Update() {
-  if (!folder_item_)
+  if (!folder_item_) {
     return;
+  }
 
   folder_name_view_->SetVisible(folder_name_visible_);
   if (folder_name_visible_) {
@@ -505,15 +515,17 @@ int FolderHeaderView::GetMaxFolderNameCharLengthForTest() const {
 }
 
 std::u16string FolderHeaderView::GetFolderName() const {
-  if (!folder_item_)
+  if (!folder_item_) {
     return std::u16string();
+  }
 
   return base::UTF8ToUTF16(folder_item_->name());
 }
 
 std::u16string FolderHeaderView::GetElidedFolderName() const {
-  if (!folder_item_)
+  if (!folder_item_) {
     return std::u16string();
+  }
 
   // Enforce the maximum folder name length.
   std::u16string folder_name = GetFolderName();
@@ -530,8 +542,9 @@ std::u16string FolderHeaderView::GetElidedFolderName() const {
 
 void FolderHeaderView::Layout() {
   gfx::Rect rect(GetContentsBounds());
-  if (rect.IsEmpty())
+  if (rect.IsEmpty()) {
     return;
+  }
 
   gfx::Rect text_bounds(rect);
 
@@ -560,8 +573,9 @@ void FolderHeaderView::ContentsChanged(views::Textfield* sender,
 void FolderHeaderView::UpdateFolderName(
     const std::u16string& textfield_contents) {
   // Temporarily remove from observer to ignore data change caused by us.
-  if (!folder_item_)
+  if (!folder_item_) {
     return;
+  }
 
   folder_item_->RemoveObserver(this);
 
@@ -594,14 +608,16 @@ bool FolderHeaderView::HandleKeyEvent(views::Textfield* sender,
   if (ShouldNameViewClearFocus(key_event)) {
     // If the user presses the escape key, we should revert the text in
     // `folder_name_view_`.
-    if (key_event.key_code() == ui::VKEY_ESCAPE)
+    if (key_event.key_code() == ui::VKEY_ESCAPE) {
       sender->SetText(previous_folder_name_);
+    }
 
     folder_name_view_->GetFocusManager()->ClearFocus();
     return true;
   }
-  if (!IsUnhandledLeftRightKeyEvent(key_event))
+  if (!IsUnhandledLeftRightKeyEvent(key_event)) {
     return false;
+  }
   return ProcessLeftRightKeyTraversalForTextfield(folder_name_view_, key_event);
 }
 

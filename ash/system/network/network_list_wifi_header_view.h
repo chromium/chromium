@@ -14,7 +14,7 @@ namespace ash {
 // Creates network list header for Wifi networks.
 class ASH_EXPORT NetworkListWifiHeaderView
     : public NetworkListNetworkHeaderView {
-  METADATA_HEADER(NetworkListWifiHeaderView);
+  METADATA_HEADER(NetworkListWifiHeaderView, NetworkListNetworkHeaderView)
 
  public:
   explicit NetworkListWifiHeaderView(

@@ -7,12 +7,15 @@
 
 #include "ash/wm/desks/desk.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
 class DeskProfilesButton : public views::ImageButton, public Desk::Observer {
+  METADATA_HEADER(DeskProfilesButton, views::ImageButton)
+
  public:
   explicit DeskProfilesButton(views::Button::PressedCallback callback,
                               Desk* desk);

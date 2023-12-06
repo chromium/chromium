@@ -7,6 +7,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/adapters.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/linear_gradient.h"
@@ -288,5 +289,8 @@ void FocusModeChipCarousel::ScrollToChip(views::View* chip) {
 bool FocusModeChipCarousel::HasTasks() const {
   return !scroll_contents_->GetChildrenInZOrder().empty();
 }
+
+BEGIN_METADATA(FocusModeChipCarousel)
+END_METADATA
 
 }  // namespace ash

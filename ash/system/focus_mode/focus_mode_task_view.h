@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_TASK_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace views {
@@ -24,6 +25,8 @@ class FocusModeChipCarousel;
 // container to let the user create, edit, select, or deselect a task for a
 // focus session.
 class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
+  METADATA_HEADER(FocusModeTaskView, views::BoxLayoutView)
+
  public:
   FocusModeTaskView();
   FocusModeTaskView(const FocusModeTaskView&) = delete;

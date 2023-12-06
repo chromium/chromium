@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "base/check_op.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -273,5 +274,8 @@ void DeskProfilesButton::CreateMenu(const ui::LocatedEvent& event) {
   context_menu_->ShowContextMenuForViewImpl(this, location_in_screen,
                                             ui::MENU_SOURCE_MOUSE);
 }
+
+BEGIN_METADATA(DeskProfilesButton)
+END_METADATA
 
 }  // namespace ash

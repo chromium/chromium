@@ -14,6 +14,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -372,5 +373,8 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
   textfield_->SetTextColorId(cros_tokens::kCrosSysOnSurface);
   textfield_->SchedulePaint();
 }
+
+BEGIN_METADATA(FocusModeTaskView)
+END_METADATA
 
 }  // namespace ash

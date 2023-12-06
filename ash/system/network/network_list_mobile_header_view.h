@@ -14,7 +14,7 @@ namespace ash {
 // Creates network list header for Mobile networks.
 class ASH_EXPORT NetworkListMobileHeaderView
     : public NetworkListNetworkHeaderView {
-  METADATA_HEADER(NetworkListMobileHeaderView);
+  METADATA_HEADER(NetworkListMobileHeaderView, NetworkListNetworkHeaderView)
 
  public:
   explicit NetworkListMobileHeaderView(

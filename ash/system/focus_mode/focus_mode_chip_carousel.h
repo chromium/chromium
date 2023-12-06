@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_CHIP_CAROUSEL_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace views {
@@ -23,6 +24,7 @@ struct Task;
 // A horizontal scroll bar of chips for tasks. Selecting a task chip will save
 // it as the currently selected task for the focus session.
 class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
+  METADATA_HEADER(FocusModeChipCarousel, views::BoxLayoutView)
  public:
   // Called when a task chip is pressed, contains a task pointer that is alive
   // for the lifetime of the task chip.
