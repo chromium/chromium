@@ -891,6 +891,14 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     return;
   }
 
+  // Update the UI for the edit state to make sure it reflects the content in
+  // the table as the content may have changed since the view controller was
+  // created.
+  if ([self.navigationController.topViewController
+          isKindOfClass:[PasswordManagerViewController class]]) {
+    [self updateUIForEditState];
+  }
+
   TableViewModel* model = self.tableViewModel;
   NSMutableIndexSet* sectionIdentifiersToUpdate = [NSMutableIndexSet indexSet];
 
