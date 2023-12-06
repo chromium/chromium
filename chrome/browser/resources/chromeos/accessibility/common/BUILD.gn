@@ -30,6 +30,7 @@ ts_modules = [
   "array_util.ts",
   "instance_checker.ts",
   "paragraph_utils.ts",
+  "word_utils.ts",
 ]
 
 # Root dir must be the parent directory so it can reach common.
@@ -58,6 +59,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "$tsc_out_dir/array_util.js",
     "$tsc_out_dir/instance_checker.js",
     "$tsc_out_dir/paragraph_utils.js",
+    "$tsc_out_dir/word_utils.js",
     "async_util.js",
     "automation_predicate.js",
     "automation_util.js",
@@ -84,7 +86,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "testing/accessibility_test_base.js",
     "testing/test_node_generator.js",
     "tree_walker.js",
-    "word_utils.js",
   ]
   rewrite_rules = [
     rebase_path(tsc_out_dir, root_build_dir) + ":",
