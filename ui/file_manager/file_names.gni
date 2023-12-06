@@ -19,8 +19,6 @@ static_js_files = [
   "file_manager/background/js/test_util.js",
 
   # Files Common:
-  "file_manager/common/js/array_data_model.js",
-
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
@@ -106,6 +104,7 @@ ts_files = [
   # Common.
   "file_manager/common/js/api.ts",
   "file_manager/common/js/app_util.ts",
+  "file_manager/common/js/array_data_model.ts",
   "file_manager/common/js/async_util.ts",
   "file_manager/common/js/cr_ui.ts",
   "file_manager/common/js/files_app_entry_types.ts",
@@ -416,6 +415,8 @@ ts_templates = [
 ]
 
 ts_test_files = [
+  "file_manager/common/js/array_data_model_unittest.ts",
+
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
@@ -587,7 +588,6 @@ generate_definitions_js_files = [
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
-  "file_manager/definitions/array_data_model_events.d.ts",
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/externs/volume_info.d.ts",
@@ -614,7 +614,6 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Common:
-  "file_manager/common/js/array_data_model_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
 

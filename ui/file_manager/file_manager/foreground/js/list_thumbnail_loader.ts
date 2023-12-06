@@ -4,11 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {ChangeEvent, SpliceEvent} from '../../common/js/array_data_model.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {LruCache} from '../../common/js/lru_cache.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import {Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {ArrayDataModelChangeEvent, ArrayDataModelSpliceEvent} from '../../definitions/array_data_model_events.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import type {DirectoryModel} from './directory_model.js';
@@ -149,7 +149,7 @@ export class ListThumbnailLoader extends
    * An event handler for splice event of data model. When list is changed,
    * start to rescan items.
    */
-  private onSplice_(_event: ArrayDataModelSpliceEvent) {
+  private onSplice_(_event: SpliceEvent) {
     this.cursor_ = this.beginIndex_;
     this.continue_();
   }
@@ -166,7 +166,7 @@ export class ListThumbnailLoader extends
   /**
    * An event handler for change event of data model.
    */
-  private onChange_(event: ArrayDataModelChangeEvent) {
+  private onChange_(event: ChangeEvent) {
     // Mark the thumbnail in cache as invalid.
     const entry = isNullOrUndefined(event.detail.index) ?
         null :

@@ -14,7 +14,7 @@ export class VolumeInfoListImpl implements VolumeInfoList {
   /**
    * Holds VolumeInfo instances.
    */
-  private model_ = new ArrayDataModel([]);
+  private model_ = new ArrayDataModel<VolumeInfo>([]);
   constructor() {
     Object.freeze(this);
   }
@@ -59,7 +59,7 @@ export class VolumeInfoListImpl implements VolumeInfoList {
    */
   findIndex(volumeId: string): number {
     for (let i = 0; i < this.model_.length; i++) {
-      if (this.model_.item(i).volumeId === volumeId) {
+      if (this.model_.item(i)!.volumeId === volumeId) {
         return i;
       }
     }

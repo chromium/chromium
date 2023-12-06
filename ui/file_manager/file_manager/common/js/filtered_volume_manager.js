@@ -26,7 +26,8 @@ import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './v
  */
 export class FilteredVolumeInfoList {
   /**
-   * @param {!ArrayDataModel} list
+   * @param {!ArrayDataModel<import('../../externs/volume_info.js').VolumeInfo>}
+   *     list
    */
   constructor(list) {
     /** @private @const */
@@ -113,7 +114,9 @@ export class FilteredVolumeManager extends EventTarget {
     this.writableOnly_ = writableOnly;
     // Internal list holds filtered VolumeInfo instances.
     /** @private */
-    this.list_ = new ArrayDataModel([]);
+    this.list_ = new ArrayDataModel(
+        /** @type {import('../../externs/volume_info.js').VolumeInfo[]} */ (
+            []));
     // Public VolumeManager.volumeInfoList property accessed by callers.
     this.volumeInfoList = new FilteredVolumeInfoList(this.list_);
 
@@ -384,10 +387,9 @@ export class FilteredVolumeManager extends EventTarget {
    * @private
    */
   onVolumeInfoListUpdated_(event) {
-    const
-        spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
-                           */
+    const spliceEventDetail = /**
+                           @type {import('./array_data_model.js').SpliceEvent}
+                             */
         (event).detail;
     // Filters some volumes.
     let index = spliceEventDetail.index;

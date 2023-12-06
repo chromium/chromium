@@ -159,7 +159,7 @@ export function testSplice() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../common/js/array_data_model.js').SpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
@@ -171,7 +171,7 @@ export function testSplice() {
   fileListModel.addEventListener('permuted', event => {
     const
         permutedEventDetail = /**
-                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                 @type {import('../../common/js/array_data_model.js').PermutationEvent}
                                    */
         (event).detail;
     assertArrayEquals(permutedEventDetail.permutation, [0, 2, -1, 4]);
@@ -189,7 +189,7 @@ export function testSpliceWithoutSortStatus() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../common/js/array_data_model.js').SpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
@@ -201,7 +201,7 @@ export function testSpliceWithoutSortStatus() {
   fileListModel.addEventListener('permuted', event => {
     const
         permutedEventDetail = /**
-                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                 @type {import('../../common/js/array_data_model.js').PermutationEvent}
                                    */
         (event).detail;
     assertArrayEquals(permutedEventDetail.permutation, [0, 1, -1, 4]);
@@ -223,7 +223,7 @@ export function testSpliceWithoutAddingNewItems() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../common/js/array_data_model.js').SpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, []);
@@ -236,7 +236,7 @@ export function testSpliceWithoutAddingNewItems() {
   fileListModel.addEventListener('permuted', event => {
     const
         permutedEventDetail = /**
-                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                 @type {import('../../common/js/array_data_model.js').PermutationEvent}
                                    */
         (event).detail;
     assertArrayEquals(permutedEventDetail.permutation, [0, 1, -1, 2]);
@@ -254,7 +254,7 @@ export function testSpliceWithoutDeletingItems() {
   fileListModel.addEventListener('splice', event => {
     const
         spliceEventDetail = /**
-                         @type {import('../../definitions/array_data_model_events.js').ArrayDataModelSpliceEvent}
+                         @type {import('../../common/js/array_data_model.js').SpliceEvent}
                            */
         (event).detail;
     assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
@@ -265,7 +265,7 @@ export function testSpliceWithoutDeletingItems() {
   fileListModel.addEventListener('permuted', event => {
     const
         permutedEventDetail = /**
-                                 @type {import('../../definitions/array_data_model_events.js').ArrayDataModelPermutationEvent}
+                                 @type {import('../../common/js/array_data_model.js').PermutationEvent}
                                    */
         (event).detail;
     assertArrayEquals(permutedEventDetail.permutation, [0, 2, 3, 5]);

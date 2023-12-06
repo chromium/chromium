@@ -6,9 +6,9 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
+import type {ChangeEvent, PermutationEvent} from '../../../common/js/array_data_model.js';
 import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
 import {isNullOrUndefined} from '../../../common/js/util.js';
-import type {ArrayDataModelChangeEvent, ArrayDataModelPermutationEvent} from '../../../definitions/array_data_model_events.js';
 
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
@@ -705,7 +705,7 @@ export class List extends HTMLUListElement {
    * model adjustments.
    * @param event The 'permuted' event.
    */
-  private handleDataModelPermuted_(event: ArrayDataModelPermutationEvent) {
+  private handleDataModelPermuted_(event: PermutationEvent) {
     const newCachedItems: Record<number, ListItem> = {};
     for (const index in this.cachedItems_) {
       if (event.detail.permutation[index] !== -1) {
@@ -736,7 +736,7 @@ export class List extends HTMLUListElement {
     this.endBatchUpdates();
   }
 
-  private handleDataModelChange_(event: ArrayDataModelChangeEvent) {
+  private handleDataModelChange_(event: ChangeEvent) {
     if (isNullOrUndefined(event.detail.index)) {
       return;
     }

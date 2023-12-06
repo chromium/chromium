@@ -5,6 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {SpliceEvent} from '../../common/js/array_data_model.js';
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
@@ -15,7 +16,6 @@ import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
 import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {ArrayDataModelSpliceEvent} from '../../definitions/array_data_model_events.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {SearchData} from '../../externs/ts/state.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
@@ -1384,7 +1384,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * Handles update of VolumeInfoList.
    * @param event Event of VolumeInfoList's 'splice'.
    */
-  private onVolumeInfoListUpdated_(event: ArrayDataModelSpliceEvent) {
+  private onVolumeInfoListUpdated_(event: SpliceEvent) {
     const spliceEventDetail = event.detail;
     // Fallback to the default volume's root if the current volume is unmounted.
     if (this.hasCurrentDirEntryBeenUnmounted_(spliceEventDetail.removed)) {

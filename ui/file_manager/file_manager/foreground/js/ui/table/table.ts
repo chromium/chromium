@@ -396,25 +396,22 @@ export class Table extends HTMLDivElement {
     container.style.webkitBoxOrient = 'vertical';
 
     // Ensure all needed data available.
-    dm.prepareSort(columnId, function() {
-      // Select at most MAXIMUM_ROWS_TO_MEASURE items around visible area.
-      const items = list.getItemsInViewPort(list.scrollTop, listHeight);
-      const firstIndex = Math.floor(Math.max(
-          0, (items.last + items.first - MAXIMUM_ROWS_TO_MEASURE) / 2));
-      const lastIndex =
-          Math.min(dm.length, firstIndex + MAXIMUM_ROWS_TO_MEASURE);
-      for (let i = firstIndex; i < lastIndex; i++) {
-        const item = dm.item(i);
-        const div = doc.createElement('div');
-        div.className = 'table-row-cell';
-        div.appendChild(render(item, columnId, table));
-        container.appendChild(div);
-      }
-      list.appendChild(container);
-      const width = parseFloat(window.getComputedStyle(container).width);
-      list.removeChild(container);
-      cm.setWidth(index, width);
-    });
+    // Select at most MAXIMUM_ROWS_TO_MEASURE items around visible area.
+    const items = list.getItemsInViewPort(list.scrollTop, listHeight);
+    const firstIndex = Math.floor(
+        Math.max(0, (items.last + items.first - MAXIMUM_ROWS_TO_MEASURE) / 2));
+    const lastIndex = Math.min(dm.length, firstIndex + MAXIMUM_ROWS_TO_MEASURE);
+    for (let i = firstIndex; i < lastIndex; i++) {
+      const item = dm.item(i);
+      const div = doc.createElement('div');
+      div.className = 'table-row-cell';
+      div.appendChild(render(item, columnId, table));
+      container.appendChild(div);
+    }
+    list.appendChild(container);
+    const width = parseFloat(window.getComputedStyle(container).width);
+    list.removeChild(container);
+    cm.setWidth(index, width);
   }
 
   normalizeColumns() {
