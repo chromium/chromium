@@ -11,7 +11,6 @@ SafeBrowsing:
   - SafeBrowsingExtendedReportingEnabled
   - SafeBrowsingProtectionLevel
   - SafeBrowsingAllowlistDomains
-  - ClientSidePhishingProtectionAllowed
   - SafeBrowsingExtensionProtectionAllowed
   - SafeBrowsingProxiedRealTimeChecksAllowed
   - SafeBrowsingSurveysEnabled

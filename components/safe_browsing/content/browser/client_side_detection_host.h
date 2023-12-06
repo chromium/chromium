@@ -115,8 +115,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
                            PrerenderShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPolicyBrowserTest,
-                           PolicyEnabled);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers.

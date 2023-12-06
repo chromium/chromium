@@ -70,8 +70,6 @@ GURL GetSimplifiedURL(const GURL& url) {
 namespace prefs {
 const char kSafeBrowsingCsdPingTimestamps[] =
     "safebrowsing.csd_ping_timestamps";
-const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[] =
-    "safebrowsing.csd_phishing_protection_allowed_by_policy";
 const char kSafeBrowsingDeepScanningEnabled[] =
     "safebrowsing.deep_scanning_enabled";
 const char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
@@ -221,11 +219,6 @@ bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
              ->IsExtensionControlled();
 }
 
-bool IsCsdPhishingProtectionAllowed(const PrefService& prefs) {
-  return prefs.GetBoolean(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy);
-}
-
 bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs) {
   return prefs.GetBoolean(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
@@ -257,8 +250,6 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
-  registry->RegisterBooleanPref(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(
@@ -436,10 +427,6 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   preferences_list.Append(login_urls);
   preferences_list.Append(prefs::kPasswordProtectionLoginURLs);
 
-  preferences_list.Append(prefs->GetBoolean(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy));
-  preferences_list.Append(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy);
   preferences_list.Append(prefs->GetBoolean(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy));
   preferences_list.Append(

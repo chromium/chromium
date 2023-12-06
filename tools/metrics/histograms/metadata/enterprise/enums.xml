@@ -1891,7 +1891,6 @@ chromium-metrics-reviews@google.com.
   <int value="1086" label="CredentialProviderPromoEnabled"/>
   <int value="1087"
       label="RemoteAccessHostAllowEnterpriseRemoteSupportConnections"/>
-  <int value="1088" label="ClientSidePhishingProtectionAllowed"/>
   <int value="1089" label="UserAvatarCustomizationSelectorsEnabled"/>
   <int value="1090" label="DefaultThirdPartyStoragePartitioningSetting"/>
   <int value="1091" label="ThirdPartyStoragePartitioningBlockedForOrigins"/>

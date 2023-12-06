@@ -26,11 +26,6 @@ namespace prefs {
 // A list of times at which CSD pings were sent.
 extern const char kSafeBrowsingCsdPingTimestamps[];
 
-// A boolean indicating if client side phishing protection is allowed
-// by policy. If false, no protection is performed. If true, follow other Safe
-// Browsing settings.
-extern const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[];
-
 // Boolean that is true when deep scanning is allowed.
 extern const char kSafeBrowsingDeepScanningEnabled[];
 
@@ -333,10 +328,6 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
 
 // Return whether the Safe Browsing preference is controlled by an extension.
 bool IsSafeBrowsingExtensionControlled(const PrefService& prefs);
-
-// Returns whether Safe Browsing client side phishing protection is allowed for
-// the user.
-bool IsCsdPhishingProtectionAllowed(const PrefService& prefs);
 
 // Returns whether Safe Browsing extension protection is allowed for
 // the user.

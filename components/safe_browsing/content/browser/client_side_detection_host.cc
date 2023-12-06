@@ -31,7 +31,6 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -183,13 +182,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
     }
 
-    // Don't start classification if CSD-Phishing is not allowed by enterprise
-    // policy.
-    if (host_ && host_->delegate_->GetPrefs() &&
-        !IsCsdPhishingProtectionAllowed(*host_->delegate_->GetPrefs())) {
-      DontClassifyForPhishing(NO_CLASSIFY_NOT_ALLOWED_BY_POLICY);
-    }
-
     // If the tab has a delayed warning, ignore this second verdict. We don't
     // want to immediately undelay a page that's already blocked as phishy.
     if (host_ && host_->delegate_->HasSafeBrowsingUserInteractionObserver()) {
@@ -248,7 +240,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
     NO_CLASSIFY_LOCAL_RESOURCE = 15,
     NO_CLASSIFY_CHROME_UI_PAGE = 16,
-    NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17,
+    // NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17,  Obsolete
 
     NO_CLASSIFY_MAX  // Always add new values before this one.
   };
