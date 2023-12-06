@@ -27,8 +27,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -38,6 +40,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/prefs/pref_service.h"
@@ -63,12 +66,13 @@ namespace autofill {
 namespace {
 
 using ::base::UTF8ToUTF16;
+using mojom::SubmissionSource;
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::EmbeddedTestServer;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
+using test::CreateTestFormField;
 using ::testing::ElementsAre;
-using mojom::SubmissionSource;
 
 constexpr int METHOD_GET = 0;
 constexpr int METHOD_POST = 1;
@@ -81,6 +85,14 @@ std::vector<FormStructure*> ToRawPointerVector(
   for (const auto& item : list)
     result.push_back(item.get());
   return result;
+}
+
+// Sets the `host_form_signature` member of all fields contained in
+// `form_structure` to the signature of the `form_structure`.
+void SetCorrectFieldHostFormSignatures(FormStructure& form_structure) {
+  for (const std::unique_ptr<AutofillField>& field : form_structure) {
+    field->host_form_signature = form_structure.form_signature();
+  }
 }
 
 // Puts all data elements within the response body together in a single
@@ -184,8 +196,9 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
 // go over the wire, but allow calling back HTTP responses directly.
 // The responses in test are out of order and verify: successful query request,
 // successful upload request, failed upload request.
-class AutofillCrowdsourcingManagerTest : public AutofillCrowdsourcingManager::Observer,
-                                    public ::testing::Test {
+class AutofillCrowdsourcingManagerTest
+    : public AutofillCrowdsourcingManager::Observer,
+      public ::testing::Test {
  public:
   enum ResponseType {
     QUERY_SUCCESSFULL,
@@ -265,6 +278,7 @@ class AutofillCrowdsourcingManagerTest : public AutofillCrowdsourcingManager::Ob
     responses_.push_back(response);
   }
 
+  test::AutofillUnitTestEnvironment autofill_environment_;
   ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -282,95 +296,25 @@ class AutofillCrowdsourcingManagerTest : public AutofillCrowdsourcingManager::Ob
 };
 
 TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
-  FormData form;
-
-  FormFieldData field;
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"email";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"email2";
-  field.name = u"email2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"password";
-  field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = USERNAME},
+                                    {.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS},
+                                    {.role = EMAIL_ADDRESS},
+                                    {.role = PASSWORD}}})));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                    {.role = ADDRESS_HOME_LINE2},
+                                    {.role = ADDRESS_HOME_CITY}}})));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = USERNAME}, {.role = PASSWORD}}})));
 
-  form.fields.clear();
-
-  field.label = u"address";
-  field.name = u"address";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"address2";
-  field.name = u"address2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"city";
-  field.name = u"city";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  form_structures.push_back(std::make_unique<FormStructure>(form));
-
-  form.fields.clear();
-
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"password";
-  field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  form_structures.push_back(std::make_unique<FormStructure>(form));
   for (auto& form_structure : form_structures) {
-    for (auto& fs_field : *form_structure)
-      fs_field->host_form_signature = form_structure->form_signature();
+    SetCorrectFieldHostFormSignatures(*form_structure);
   }
 
-  // Make download manager.
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &client_, "dummykey",
       /*log_manager=*/nullptr);
@@ -407,22 +351,19 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
       *(form_structures[2]), false, ServerFieldTypeSet(), "42", true,
       pref_service_.get(), GetWeakPtr()));
 
+  // Server responseses - returned  out of sequence.
   const char* responses[] = {
       "<autofillqueryresponse>"
-      "<field autofilltype=\"0\" />"
+      "<field autofilltype=\"86\" />"
       "<field autofilltype=\"3\" />"
       "<field autofilltype=\"5\" />"
       "<field autofilltype=\"9\" />"
-      "<field autofilltype=\"0\" />"
-      "<field autofilltype=\"30\" />"
-      "<field autofilltype=\"31\" />"
-      "<field autofilltype=\"33\" />"
+      "<field autofilltype=\"9\" />"
+      "<field autofilltype=\"75\" />"
       "</autofillqueryresponse>",
       "",
       "<html></html>",
   };
-
-  // Return them out of sequence.
 
   // Request 1: Successful upload.
   request = test_url_loader_factory_.GetPendingRequest(1);
@@ -476,12 +417,10 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   EXPECT_EQ(responses[0], responses_.front().response);
   responses_.pop_front();
 
-  // Modify form structures to miss the cache.
-  field.label = u"Address line 2";
-  field.name = u"address2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  // Add a new form structure that is not in the cache.
+  form_structures.push_back(std::make_unique<FormStructure>(test::GetFormData(
+      {.fields = {
+           {.role = USERNAME}, {.role = PASSWORD}, {.role = PASSWORD}}})));
 
   // Request with id 4, not successful.
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
@@ -532,26 +471,13 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
 TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   // Build the form structures that we want to query.
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(test::GetFormData(
+      {.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}})));
 
   TestAutofillCrowdsourcingManager crowdsourcing_manager(&client_, "dummykey");
 
-  // Start the query request and look if it is successful. No response was
-  // received yet.
+  // Start the query and check its success. No response has been received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver_.IsolationInfo(),
@@ -634,18 +560,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
 
 TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // Build the form structures that we want to query.
-  FormData form;
-  FormFieldData field;
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  {
-    auto form_structure = std::make_unique<FormStructure>(form);
-    form_structures.push_back(std::move(form_structure));
-  }
+  form_structures.emplace_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   AutofillCrowdsourcingManagerWithCustomPayloadSize crowdsourcing_manager(
       &client_, "dummykey", kMaxQueryGetSize + 1);
@@ -745,23 +662,10 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
       {features::test::kAutofillUploadThrottling});
 
   // Build the form structures that we want to upload.
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  FormStructure form_structure(form);
+  FormStructure form_structure(test::GetFormData(
+      {.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}}));
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& fs_field : form_structure)
-    fs_field->host_form_signature = form_structure.form_signature();
+  SetCorrectFieldHostFormSignatures(form_structure);
 
   std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
   TestAutofillCrowdsourcingManager crowdsourcing_manager(&client_, "dummykey");
@@ -811,33 +715,13 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
-  FormData form;
-  FormFieldData field;
-  field.label = u"address";
-  field.name = u"address";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"address2";
-  field.name = u"address2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"city";
-  field.name = u"city";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                    {.role = ADDRESS_HOME_LINE2},
+                                    {.role = ADDRESS_HOME_CITY}}})));
   for (auto& form_structure : form_structures) {
-    for (auto& fs_field : *form_structure)
-      fs_field->host_form_signature = form_structure->form_signature();
+    SetCorrectFieldHostFormSignatures(*form_structure);
   }
 
   // Request with id 0.
@@ -884,36 +768,16 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
-  FormData form;
-  FormFieldData field;
-  field.label = u"address";
-  field.name = u"address";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"address2";
-  field.name = u"address2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"city";
-  field.name = u"city";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& fs_field : *form_structure)
-    fs_field->host_form_signature = form_structure->form_signature();
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                    {.role = ADDRESS_HOME_LINE2},
+                                    {.role = ADDRESS_HOME_CITY}}}));
+  form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
+  SetCorrectFieldHostFormSignatures(form_structure);
 
   // Request with id 0.
   EXPECT_TRUE(crowdsourcing_manager_.StartUploadRequest(
-      *form_structure, true, ServerFieldTypeSet(), std::string(), true,
+      form_structure, true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
 
   auto* request = test_url_loader_factory_.GetPendingRequest(0);
@@ -934,7 +798,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
             responses_.front().type_of_response);
   EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, responses_.front().error);
-  EXPECT_EQ(form_structure->FormSignatureAsStr(), responses_.front().signature);
+  EXPECT_EQ(form_structure.FormSignatureAsStr(), responses_.front().signature);
   // Expected response on non-query request is an empty string.
   EXPECT_EQ(std::string(), responses_.front().response);
   responses_.pop_front();
@@ -954,10 +818,10 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   responses_.pop_front();
 
   // Validate no retry on sending a bad request.
-  form_structure->set_submission_source(SubmissionSource::XHR_SUCCEEDED);
+  form_structure.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager_.StartUploadRequest(
-      *form_structure, true, ServerFieldTypeSet(), std::string(), true,
+      form_structure, true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
   request = test_url_loader_factory_.GetPendingRequest(2);
   test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
@@ -973,30 +837,11 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
-  FormData form;
-  FormFieldData field;
-  field.label = u"address";
-  field.name = u"address";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"address2";
-  field.name = u"address2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"city";
-  field.name = u"city";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                    {.role = ADDRESS_HOME_LINE2},
+                                    {.role = ADDRESS_HOME_CITY}}})));
 
   // Request with id 0.
   base::HistogramTester histogram;
@@ -1049,39 +894,19 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
-  FormData form;
-  FormFieldData field;
-  field.label = u"address";
-  field.name = u"address";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"address2";
-  field.name = u"address2";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"city";
-  field.name = u"city";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                    {.role = ADDRESS_HOME_LINE2},
+                                    {.role = ADDRESS_HOME_CITY}}}));
+  form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
+  SetCorrectFieldHostFormSignatures(form_structure);
 
   base::HistogramTester histogram;
   const auto kTimeDeltaMargin = base::Milliseconds(100);
 
-  auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& fs_field : *form_structure)
-    fs_field->host_form_signature = form_structure->form_signature();
-
   // Request with id 0.
   EXPECT_TRUE(crowdsourcing_manager_.StartUploadRequest(
-      *form_structure, true, ServerFieldTypeSet(), std::string(), true,
+      form_structure, true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
 
   const int max_attempts = crowdsourcing_manager_.GetMaxServerAttempts();
@@ -1136,11 +961,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryTooManyFieldsTest) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (auto& form : forms) {
     for (size_t i = 0; i < 5; ++i) {
-      FormFieldData field;
-      field.label = base::NumberToString16(i);
-      field.name = base::NumberToString16(i);
-      field.form_control_type = FormControlType::kInputText;
-      form.fields.push_back(field);
+      form.fields.push_back(CreateTestFormField(base::NumberToString(i),
+                                                base::NumberToString(i), "",
+                                                FormControlType::kInputText));
     }
     form_structures.push_back(std::make_unique<FormStructure>(form));
   }
@@ -1156,11 +979,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryNotTooManyFieldsTest) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (auto& form : forms) {
     for (size_t i = 0; i < 4; ++i) {
-      FormFieldData field;
-      field.label = base::NumberToString16(i);
-      field.name = base::NumberToString16(i);
-      field.form_control_type = FormControlType::kInputText;
-      form.fields.push_back(field);
+      form.fields.push_back(CreateTestFormField(base::NumberToString(i),
+                                                base::NumberToString(i), "",
+                                                FormControlType::kInputText));
     }
     form_structures.push_back(std::make_unique<FormStructure>(form));
   }
@@ -1170,40 +991,28 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryNotTooManyFieldsTest) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
-  FormData form;
-
-  FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
-
-  field.label = u"username";
-  field.name = u"username";
-  form.fields.push_back(field);
-
-  field.label = u"First Name";
-  field.name = u"firstname";
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures0;
-  form_structures0.push_back(std::make_unique<FormStructure>(form));
+  form_structures0.push_back(std::make_unique<FormStructure>(test::GetFormData(
+      {.fields = {
+           {.role = USERNAME}, {.role = NAME_FIRST}, {.role = NAME_LAST}}})));
 
-  // Add a slightly different form, which should result in a different request.
-  field.label = u"email";
-  field.name = u"email";
-  form.fields.push_back(field);
+  // Make a slightly different form, which should result in a different request.
   std::vector<std::unique_ptr<FormStructure>> form_structures1;
-  form_structures1.push_back(std::make_unique<FormStructure>(form));
+  form_structures1.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = USERNAME},
+                                    {.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS}}})));
 
-  // Add another slightly different form, which should also result in a
+  // Make yet another slightly different form, which should also result in a
   // different request.
-  field.label = u"email2";
-  field.name = u"email2";
-  form.fields.push_back(field);
   std::vector<std::unique_ptr<FormStructure>> form_structures2;
-  form_structures2.push_back(std::make_unique<FormStructure>(form));
+  form_structures2.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = USERNAME},
+                                    {.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS},
+                                    {.role = EMAIL_ADDRESS}}})));
 
   // Limit cache to two forms.
   LimitCache(2);
@@ -1314,7 +1123,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
 namespace {
 
-enum ServerCommuncationMode {
+enum ServerCommunicationMode {
   DISABLED,
   FINCHED_URL,
   COMMAND_LINE_URL,
@@ -1323,10 +1132,10 @@ enum ServerCommuncationMode {
 
 class AutofillServerCommunicationTest
     : public AutofillCrowdsourcingManager::Observer,
-      public testing::TestWithParam<ServerCommuncationMode> {
+      public testing::TestWithParam<ServerCommunicationMode> {
  protected:
   void SetUp() override {
-    testing::TestWithParam<ServerCommuncationMode>::SetUp();
+    testing::TestWithParam<ServerCommunicationMode>::SetUp();
 
     pref_service_ = test::PrefServiceForTesting();
 
@@ -1493,6 +1302,7 @@ class AutofillServerCommunicationTest
     return succeeded;
   }
 
+  test::AutofillUnitTestEnvironment autofill_environment_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedCommandLine scoped_command_line_;
@@ -1521,43 +1331,22 @@ TEST_P(AutofillServerCommunicationTest, IsEnabled) {
 }
 
 TEST_P(AutofillServerCommunicationTest, Query) {
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   EXPECT_EQ(GetParam() != DISABLED, SendQueryRequest(form_structures));
 }
 
 TEST_P(AutofillServerCommunicationTest, Upload) {
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name:";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Email:";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   EXPECT_EQ(GetParam() != DISABLED,
-            SendUploadRequest(FormStructure(form), true, {}, "", true));
+            SendUploadRequest(FormStructure(test::GetFormData(
+                                  {.fields = {{.role = NAME_FIRST},
+                                              {.role = NAME_LAST},
+                                              {.role = EMAIL_ADDRESS}}})),
+                              true, {}, "", true));
 }
 
 // Note that we omit DEFAULT_URL from the test params. We don't actually want
@@ -1571,16 +1360,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 using AutofillQueryTest = AutofillServerCommunicationTest;
 
 TEST_P(AutofillQueryTest, CacheableResponse) {
-  FormFieldData field;
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-
-  FormData form;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   // Query for the form. This should go to the embedded server.
   {
@@ -1615,16 +1397,9 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
 }
 
 TEST_P(AutofillQueryTest, SendsExperiment) {
-  FormFieldData field;
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-
-  FormData form;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   // Query for the form. This should go to the embedded server.
   {
@@ -1692,16 +1467,9 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
 }
 
 TEST_P(AutofillQueryTest, SendsExperimentFromFeatureParam) {
-  FormFieldData field;
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-
-  FormData form;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   {
     SCOPED_TRACE("Query without experiment");
@@ -1737,16 +1505,9 @@ TEST_P(AutofillQueryTest, SendsExperimentFromFeatureParam) {
 }
 
 TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
-  FormFieldData field;
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-
-  FormData form;
-  form.fields.push_back(field);
-
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  form_structures.push_back(std::make_unique<FormStructure>(
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   // Set the cache expiration interval to 0.
   cache_expiration_in_milliseconds_ = 0;
@@ -1924,8 +1685,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   FormStructure form_structure(form);
   form_structure.set_current_page_language(LanguageCode("fr"));
-  for (auto& fs_field : form_structure)
-    fs_field->host_form_signature = form_structure.form_signature();
+  SetCorrectFieldHostFormSignatures(form_structure);
 
   pref_service_->SetBoolean(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, true);
@@ -1984,27 +1744,12 @@ TEST_P(AutofillUploadTest, RichMetadata) {
 TEST_P(AutofillUploadTest, Throttling) {
   ASSERT_NE(DISABLED, GetParam());
 
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name:";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Email:";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
-  FormStructure form_structure(form);
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS}}}));
   for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;
     auto submission_source = static_cast<SubmissionSource>(i);
@@ -2041,35 +1786,16 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
       // Disabled
       {features::test::kAutofillUploadThrottling});
 
-  FormData form;
-  FormData small_form;
-  FormFieldData field;
-
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-  small_form.fields.push_back(field);
-
-  field.label = u"Last Name:";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-  small_form.fields.push_back(field);
-
-  field.label = u"Email:";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
-  FormStructure form_structure(form);
-  FormStructure small_form_structure(small_form);
-  for (auto& fs_field : form_structure)
-    fs_field->host_form_signature = form_structure.form_signature();
-  for (auto& fs_field : small_form_structure)
-    fs_field->host_form_signature = small_form_structure.form_signature();
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS}}}));
+  FormStructure small_form_structure(test::GetFormData(
+      {.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}}));
+  SetCorrectFieldHostFormSignatures(form_structure);
+  SetCorrectFieldHostFormSignatures(small_form_structure);
 
   for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;
@@ -2131,29 +1857,14 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
       features::test::kAutofillUploadThrottling,
       {{switches::kAutofillUploadThrottlingPeriodInDays, "16"}});
 
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name:";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Email:";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
-  FormStructure form_structure(form);
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS}}}));
   form_structure.set_submission_source(submission_source);
 
   base::HistogramTester histogram_tester;
@@ -2190,29 +1901,14 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
 TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
   ASSERT_NE(DISABLED, GetParam());
 
-  FormData form;
-  FormFieldData field;
-
-  field.label = u"First Name:";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Last Name:";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
-  field.label = u"Email:";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  form.fields.push_back(field);
-
   AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
-  FormStructure form_structure(form);
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = NAME_FIRST},
+                                    {.role = NAME_LAST},
+                                    {.role = EMAIL_ADDRESS}}}));
   form_structure.set_submission_source(submission_source);
 
   base::HistogramTester histogram_tester;
