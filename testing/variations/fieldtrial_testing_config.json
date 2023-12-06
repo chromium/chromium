@@ -9127,6 +9127,21 @@
             ]
         }
     ],
+    "IOSSignInUff": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasswordSignInUff"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [
