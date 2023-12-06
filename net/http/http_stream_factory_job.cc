@@ -854,8 +854,9 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     }
   }
 
-  if (proxy_info_.is_http_like())
-    establishing_tunnel_ = using_ssl_;
+  if (proxy_info_.is_http_like()) {
+    establishing_tunnel_ = using_ssl_ || is_websocket_;
+  }
 
   HttpServerProperties* http_server_properties =
       session_->http_server_properties();
