@@ -323,8 +323,8 @@ def main(argv=None):
   if args.print_only:
     print(revision_string)
   else:
-    lastchange_year = datetime.datetime.utcfromtimestamp(
-        version_info.timestamp).year
+    lastchange_year = datetime.datetime.fromtimestamp(
+        version_info.timestamp, datetime.timezone.utc).year
     contents_lines = [
         "LASTCHANGE=%s" % revision_string,
         "LASTCHANGE_YEAR=%s" % lastchange_year,

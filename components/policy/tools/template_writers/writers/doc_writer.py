@@ -354,7 +354,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
     self.AddText(element, '%s: %s' % (policy['name'], example))
 
   def _AddDictionaryExample(self, parent, policy):
-    '''Adds the example value of a 'dict' or 'external' policy to a DOM node.
+    r'''Adds the example value of a 'dict' or 'external' policy to a DOM node.
 
     Example output:
     <dl>
