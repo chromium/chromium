@@ -18829,29 +18829,6 @@
             ]
         }
     ],
-    "UnoPhase2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledUno",
-                    "enable_features": [
-                        "ConsistencyNewAccountInterface",
-                        "FeedBottomSyncStringRemoval",
-                        "IOSPasswordSettingsBulkUploadLocalPasswords",
-                        "ReplaceSyncPromosWithSignInPromos",
-                        "SyncEnableBatchUploadLocalData",
-                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
-                        "SyncEnableContactInfoDataTypeInTransportMode",
-                        "SyncEnableWalletMetadataInTransportMode",
-                        "SyncEnableWalletOfferInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnoPhase2FollowUp": [
         {
             "platforms": [
