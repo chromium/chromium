@@ -265,7 +265,6 @@
         ]
       },
       "Cast Audio Linux": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -277,7 +276,6 @@
         ]
       },
       "Cast Linux": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -289,7 +287,6 @@
         ]
       },
       "Cast Linux ARM64": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -301,7 +298,6 @@
         ]
       },
       "Cast Linux Debug": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -919,7 +915,7 @@
         ]
       },
       "Deterministic Linux": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
+        "contact_team_email": "chrome-build-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -931,7 +927,7 @@
         ]
       },
       "Deterministic Linux (dbg)": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
+        "contact_team_email": "chrome-build-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -1015,7 +1011,6 @@
         ]
       },
       "Leak Detection Linux": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -4124,7 +4119,7 @@
         ]
       },
       "linux-gcc-rel": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
+        "contact_team_email": "build@chromium.org",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -4334,7 +4329,6 @@
         ]
       },
       "linux-v4l2-codec-rel": {
-        "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

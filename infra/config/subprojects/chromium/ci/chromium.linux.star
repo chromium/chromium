@@ -21,7 +21,6 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
-    contact_team_email = "chrome-linux-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     notifies = ["chromium.linux"],
@@ -198,6 +197,7 @@ ci.builder(
         category = "release",
         short_name = "det",
     ),
+    contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
     gn_args = gn_args.config(
         configs = [
@@ -218,6 +218,7 @@ ci.builder(
         category = "debug|builder",
         short_name = "det",
     ),
+    contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 7 * time.hour,
     gn_args = {
         "local": "debug_builder",
@@ -280,6 +281,7 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -310,6 +312,7 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -345,6 +348,7 @@ ci.builder(
         short_name = "bld-wl",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
@@ -384,6 +388,7 @@ ci.thin_tester(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
     # TODO(crbug.com/1249968): Roll this out more broadly.
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
@@ -419,6 +424,7 @@ ci.thin_tester(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -448,6 +454,7 @@ ci.thin_tester(
         short_name = "tst-wl",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
 )
 
 ci.builder(
@@ -472,6 +479,7 @@ ci.builder(
         category = "release",
         short_name = "nsl",
     ),
+    contact_team_email = "chrome-linux-engprod@google.com",
     gn_args = gn_args.config(
         configs = ["release_builder", "reclient"],
     ),
@@ -500,6 +508,7 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
+    contact_team_email = "chrome-linux-engprod@google.com",
     gn_args = gn_args.config(
         configs = ["release_builder_blink", "reclient"],
     ),
@@ -528,6 +537,7 @@ ci.builder(
         category = "release",
         short_name = "trc",
     ),
+    contact_team_email = "chrome-linux-engprod@google.com",
     gn_args = gn_args.config(
         configs = [
             "release_builder",
@@ -562,6 +572,7 @@ ci.builder(
         category = "release",
         short_name = "gcc",
     ),
+    contact_team_email = "build@chromium.org",
     gn_args = gn_args.config(
         configs = [
             "release_builder",
