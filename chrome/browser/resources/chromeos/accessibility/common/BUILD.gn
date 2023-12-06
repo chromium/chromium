@@ -27,6 +27,7 @@ group("build") {
 # Add typescript files to compile here.
 ts_modules = [
   "array_util.ts",
+  "chrome_event_handler.ts",
   "instance_checker.ts",
   "paragraph_utils.ts",
   "word_utils.ts",
@@ -59,7 +60,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "automation_predicate.js",
     "automation_util.js",
     "browser_util.js",
-    "chrome_event_handler.js",
     "constants.js",
     "cursors/cursor.js",
     "cursors/range.js",

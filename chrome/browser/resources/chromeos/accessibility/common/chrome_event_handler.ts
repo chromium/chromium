@@ -1,29 +1,23 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
+
+type GenericListener<T extends any[]> = (...args: T) => void;
 
 /**
  * This class wraps ChromeEvent listeners, adding some convenience
  * functions.
  */
-export class ChromeEventHandler {
-  /**
-   * @param {!ChromeEvent} chromeEvent
-   * @param {function(...)} callback
-   */
-  constructor(chromeEvent, callback) {
-    /** @private {!ChromeEvent} */
-    this.chromeEvent_ = chromeEvent;
+export class ChromeEventHandler<T extends any[]> {
+  private listening_ = false;
 
-    /** @private {function(...)} */
-    this.callback_ = callback;
-
-    /** @private {boolean} */
-    this.listening_ = false;
-  }
+  constructor(private chromeEvent_: ChromeEvent<GenericListener<T>>,
+      private callback_: GenericListener<T>) {}
 
   /** Starts listening to events. */
-  start() {
+  start(): void {
     if (this.listening_) {
       return;
     }
@@ -33,7 +27,7 @@ export class ChromeEventHandler {
   }
 
   /** Stops listening or handling future events. */
-  stop() {
+  stop(): void {
     this.listening_ = false;
     this.chromeEvent_.removeListener(this.callback_);
   }
