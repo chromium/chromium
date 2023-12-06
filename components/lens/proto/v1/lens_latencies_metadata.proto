@@ -61,6 +61,8 @@ message ChromeSpecificPhaseLatenciesMetadata {
       // The type of the original Image. This only applies to IMAGE_ENCODE_END
       // PhaseTypes
       optional ImageType original_image_type = 1;
+      // The bytes size of the encoded image.
+      optional int64 encoded_image_size_bytes = 2;
     }
   }
 

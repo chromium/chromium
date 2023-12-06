@@ -313,7 +313,8 @@ TEST(LensUrlUtilsTest, AppendPopulatedLogsTest) {
   std::vector<lens::mojom::LatencyLogPtr> log_data;
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::DOWNSCALE_START, gfx::Size(), gfx::Size(),
-      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+      /*encoded_size_bytes=*/0));
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN,
       /*is_lens_side_panel_request=*/true,

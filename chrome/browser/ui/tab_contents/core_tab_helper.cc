@@ -199,7 +199,8 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
   if (needs_downscale) {
     log_data.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_START, original_size, gfx::Size(),
-        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+        /*encoded_size_bytes=*/0));
     thumbnail = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_GOOD,
         static_cast<int>(scaled_size.width()),
@@ -207,7 +208,8 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
     downscaled_size = gfx::Size(thumbnail.width(), thumbnail.height());
     log_data.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_END, original_size, downscaled_size,
-        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+        /*encoded_size_bytes=*/0));
   } else {
     thumbnail = std::move(bitmap);
     downscaled_size = gfx::Size(original_size);
@@ -217,7 +219,8 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
   std::vector<unsigned char> encoded_data;
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::ENCODE_START, original_size, downscaled_size,
-      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+      /*encoded_size_bytes=*/0));
   if (thumbnail.isOpaque() &&
       gfx::JPEGCodec::Encode(
           thumbnail, lens::features::GetEncodingQualityJpeg(), &encoded_data)) {
@@ -233,7 +236,8 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
   }
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::ENCODE_END, original_size, downscaled_size,
-      encode_target_format, base::Time::Now()));
+      encode_target_format, base::Time::Now(),
+      /*encoded_size_bytes=*/sizeof(unsigned char) * thumbnail_data.size()));
   return std::move(callback).Run(thumbnail_data, content_type, original_size,
                                  downscaled_size, std::move(log_data));
 }
@@ -241,11 +245,13 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
 // static
 lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
     const gfx::Image& image,
+    size_t& encoded_size_bytes,
     TemplateURLRef::SearchTermsArgs& search_args) {
   lens::mojom::ImageFormat image_format;
   std::string content_type;
   std::vector<unsigned char> data =
       EncodeImage(image, content_type, image_format);
+  encoded_size_bytes = sizeof(unsigned char) * data.size();
   search_args.image_thumbnail_content.assign(data.begin(), data.end());
   search_args.image_thumbnail_content_type = content_type;
   return image_format;
@@ -333,20 +339,23 @@ void CoreTabHelper::SearchByImageImpl(
   std::vector<lens::mojom::LatencyLogPtr> log_data;
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::OVERALL_START, gfx::Size(), gfx::Size(),
-      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+      /*encoded_size_bytes=*/0));
 
   // Downscale the `original_image` if needed.
   gfx::Image image = original_image;
   if (NeedsDownscale(original_image)) {
     log_data.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_START, original_image.Size(), gfx::Size(),
-        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+        /*encoded_size_bytes=*/0));
 
     image = DownscaleImage(original_image);
 
     log_data.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_END, original_image.Size(), image.Size(),
-        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+        lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+        /*encoded_size_bytes=*/0));
   }
 
   TemplateURLService* template_url_service = GetTemplateURLService();
@@ -360,8 +369,10 @@ void CoreTabHelper::SearchByImageImpl(
 
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::ENCODE_START, original_image.Size(), gfx::Size(),
-      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+      /*encoded_size_bytes=*/0));
 
+  size_t encoded_size_bytes;
   std::string content_type;
   std::vector<unsigned char> encoded_image_bytes;
   lens::mojom::ImageFormat image_format;
@@ -369,12 +380,14 @@ void CoreTabHelper::SearchByImageImpl(
     // We do not need to add the image to the search args when using the
     // companion.
     encoded_image_bytes = EncodeImage(image, content_type, image_format);
+    encoded_size_bytes = sizeof(unsigned char) * encoded_image_bytes.size();
   } else {
-    image_format = EncodeImageIntoSearchArgs(image, search_args);
+    image_format =
+        EncodeImageIntoSearchArgs(image, encoded_size_bytes, search_args);
   }
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::ENCODE_END, original_image.Size(), gfx::Size(),
-      image_format, base::Time::Now()));
+      image_format, base::Time::Now(), encoded_size_bytes));
 
   std::string additional_query_params_modified = additional_query_params;
   if (lens::features::GetEnableLatencyLogging() &&

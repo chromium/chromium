@@ -159,11 +159,14 @@ TEST(CoreTabHelperUnitTest,
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
+  size_t encoded_image_size_bytes;
   lens::mojom::ImageFormat image_format =
-      CoreTabHelper::EncodeImageIntoSearchArgs(image, search_args);
+      CoreTabHelper::EncodeImageIntoSearchArgs(image, encoded_image_size_bytes,
+                                               search_args);
 
   EXPECT_FALSE(search_args.image_thumbnail_content.empty());
   EXPECT_EQ("image/png", search_args.image_thumbnail_content_type);
+  EXPECT_EQ(313ul, encoded_image_size_bytes);
   EXPECT_EQ(lens::mojom::ImageFormat::PNG, image_format);
 }
 
@@ -178,11 +181,14 @@ TEST(CoreTabHelperUnitTest,
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
+  size_t encoded_image_size_bytes;
   lens::mojom::ImageFormat image_format =
-      CoreTabHelper::EncodeImageIntoSearchArgs(image, search_args);
+      CoreTabHelper::EncodeImageIntoSearchArgs(image, encoded_image_size_bytes,
+                                               search_args);
 
   EXPECT_FALSE(search_args.image_thumbnail_content.empty());
   EXPECT_EQ("image/webp", search_args.image_thumbnail_content_type);
+  EXPECT_EQ(124ul, encoded_image_size_bytes);
   EXPECT_EQ(lens::mojom::ImageFormat::WEBP, image_format);
 }
 
@@ -197,10 +203,13 @@ TEST(CoreTabHelperUnitTest,
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
+  size_t encoded_image_size_bytes;
   lens::mojom::ImageFormat image_format =
-      CoreTabHelper::EncodeImageIntoSearchArgs(image, search_args);
+      CoreTabHelper::EncodeImageIntoSearchArgs(image, encoded_image_size_bytes,
+                                               search_args);
 
   EXPECT_EQ("image/png", search_args.image_thumbnail_content_type);
+  EXPECT_EQ(0ul, encoded_image_size_bytes);
   EXPECT_EQ(lens::mojom::ImageFormat::PNG, image_format);
 }
 
@@ -215,11 +224,14 @@ TEST(CoreTabHelperUnitTest,
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
+  size_t encoded_image_size_bytes;
   lens::mojom::ImageFormat image_format =
-      CoreTabHelper::EncodeImageIntoSearchArgs(image, search_args);
+      CoreTabHelper::EncodeImageIntoSearchArgs(image, encoded_image_size_bytes,
+                                               search_args);
 
   EXPECT_FALSE(search_args.image_thumbnail_content.empty());
   EXPECT_EQ("image/jpeg", search_args.image_thumbnail_content_type);
+  EXPECT_EQ(359ul, encoded_image_size_bytes);
   EXPECT_EQ(lens::mojom::ImageFormat::JPEG, image_format);
 }
 
@@ -234,9 +246,12 @@ TEST(CoreTabHelperUnitTest,
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
 
+  size_t encoded_image_size_bytes;
   lens::mojom::ImageFormat image_format =
-      CoreTabHelper::EncodeImageIntoSearchArgs(image, search_args);
+      CoreTabHelper::EncodeImageIntoSearchArgs(image, encoded_image_size_bytes,
+                                               search_args);
 
   EXPECT_EQ("image/png", search_args.image_thumbnail_content_type);
+  EXPECT_EQ(0ul, encoded_image_size_bytes);
   EXPECT_EQ(lens::mojom::ImageFormat::PNG, image_format);
 }
