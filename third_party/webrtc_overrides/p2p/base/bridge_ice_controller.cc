@@ -594,7 +594,7 @@ const cricket::Connection* BridgeIceController::FindConnection(
     uint32_t id) const {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   rtc::ArrayView<const Connection* const> conns =
-      native_controller_->connections();
+      native_controller_->GetConnections();
   auto it = absl::c_find_if(
       conns, [id](const Connection* c) { return c->id() == id; });
   if (it != conns.end()) {
