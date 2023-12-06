@@ -15,9 +15,9 @@ namespace ash::quick_start {
 class QuickStartMetrics {
  public:
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class ScreenName {
     kOther = 0,  // We don't expect this value to ever be emitted.
     kNone = 1,  // There is no previous screen when automatically resuming after
@@ -48,9 +48,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class AdvertisingMethod {
     kQrCode = 0,
     kPin = 1,
@@ -58,9 +58,10 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml and should always reflect it. The UMA
-  // enum cannot use |device::BluetoothAdvertisement::ErrorCode| directly,
-  // because it is missing the required |kMaxValue| field.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
+  // reflect it. The UMA enum cannot use
+  // |device::BluetoothAdvertisement::ErrorCode| directly, because it is missing
+  // the required |kMaxValue| field.
   enum class FastPairAdvertisingErrorCode {
     kUnsupportedPlatform = 0,
     kAdvertisementAlreadyExists = 1,
@@ -79,9 +80,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class HandshakeErrorCode {
     kFailedToReadResponse = 0,
     kFailedToParse = 1,
@@ -94,9 +95,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class MessageType {
     kWifiCredentials = 0,
     kBootstrapConfigurations = 1,
@@ -110,9 +111,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class MessageReceivedErrorCode {
     kTimeOut = 0,
     kDeserializationFailure = 1,
@@ -128,14 +129,13 @@ class QuickStartMetrics {
     kUnknownError = 0,
     kBadRequest = 1,
     kAttestationNotSupportedOnDevice = 2,
-
     kMaxValue = kAttestationNotSupportedOnDevice,
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class WifiTransferResultFailureReason {
     kConnectionDroppedDuringAttempt = 0,
     kEmptyResponseBytes = 1,
@@ -152,9 +152,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class GaiaTransferResultFailureReason {
     kNoAccountsReceivedFromPhone = 0,
     kIneligibleAccount = 1,
