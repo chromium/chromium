@@ -9,11 +9,41 @@ import(
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
 switch_access_dir =
     "$root_out_dir/resources/chromeos/accessibility/switch_access"
+tsc_out_dir = "$target_gen_dir/tsc"
+common_tsc_out_dir = "$target_gen_dir/../common/tsc"
+
+# TS files to compile.
+ts_modules = []
+
+# TS files needed from ../common/.
+common_ts_modules = []
+
+# JS files needed to compile TS.
+js_deps = []
+
+# Root dir must be the parent directory so it can reach common.
+ts_library("ts_build") {
+  root_dir = "../"
+  out_dir = tsc_out_dir
+  deps = [ "../common:ts_build" ]
+  definitions = []
+
+  in_files = []
+  foreach(_js_file, js_deps) {
+    in_files += [ "switch_access/" + _js_file ]
+  }
+  foreach(_ts_file, ts_modules) {
+    in_files += [ "switch_access/" + _ts_file ]
+  }
+
+  tsconfig_base = "../tsconfig.base.json"
+}
 
 group("build") {
   deps = [ ":switch_access_copied_files" ]
@@ -82,7 +112,20 @@ run_jsbundler("switch_access_copied_files") {
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
+
+  foreach(_ts_file, ts_modules) {
+    sources +=
+        [ "$tsc_out_dir/switch_access/" + get_path_info(_ts_file, "dir") + "/" +
+          get_path_info(_ts_file, "name") + ".js" ]
+  }
+  foreach(_ts_file, common_ts_modules) {
+    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+
   rewrite_rules = [
+    rebase_path("$tsc_out_dir/switch_access", root_build_dir) + ":",
+    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
