@@ -2604,6 +2604,9 @@ Style notes:
       <message name="IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and all of its windows.">
         Close desk and windows
       </message>
+      <message name="IDS_ASH_DESKS_OPEN_PROFILE_MANAGER" desc="The tooltip and context menu text that describes the action of open the profile manager.">
+        Manage profiles
+      </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT" desc="Text provided in toast that notifies user that they have closed a desk and all of its windows.">
         Desk and windows have been closed
       </message>
