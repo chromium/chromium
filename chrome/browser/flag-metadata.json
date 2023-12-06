@@ -6257,7 +6257,7 @@
   {
     "name": "overscroll-history-navigation-setting",
     "owners": [ "charlesmeng@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     // Suggests the Ozone platform to use (desktop Linux only).  Can be set on
