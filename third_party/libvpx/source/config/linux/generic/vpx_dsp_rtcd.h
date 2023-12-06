@@ -3697,10 +3697,10 @@ void vpx_scaled_vert_c(const uint8_t* src,
                        int h);
 #define vpx_scaled_vert vpx_scaled_vert_c
 
-int64_t vpx_sse_c(const uint8_t* a,
-                  int a_stride,
-                  const uint8_t* b,
-                  int b_stride,
+int64_t vpx_sse_c(const uint8_t* src,
+                  int src_stride,
+                  const uint8_t* ref,
+                  int ref_stride,
                   int width,
                   int height);
 #define vpx_sse vpx_sse_c
