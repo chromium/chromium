@@ -190,9 +190,9 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
         if (existing_window) {
           content::RenderFrameHost* existing_frame =
               existing_window->web_contents()->GetPrimaryMainFrame();
-          int frame_id = MSG_ROUTING_NONE;
+          std::string frame_token;
           if (source_process_id() == existing_frame->GetProcess()->GetID()) {
-            frame_id = existing_frame->GetRoutingID();
+            frame_token = existing_frame->GetFrameToken().ToString();
           }
 
           if (!options->hidden || !*options->hidden) {
@@ -207,7 +207,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           // completion.
           if (existing_window->DidFinishFirstNavigation()) {
             base::Value::Dict result;
-            result.Set("frameId", frame_id);
+            result.Set("frameToken", frame_token);
             existing_window->GetSerializedState(&result);
             result.Set("existingWindow", true);
             return RespondNow(WithArguments(std::move(result)));
@@ -445,12 +445,12 @@ void AppWindowCreateFunction::OnAppWindowFinishedFirstNavigationOrClosed(
   CHECK(app_window);
   content::RenderFrameHost* app_frame =
       app_window->web_contents()->GetPrimaryMainFrame();
-  int frame_id = MSG_ROUTING_NONE;
+  std::string frame_token;
   if (source_process_id() == app_frame->GetProcess()->GetID()) {
-    frame_id = app_frame->GetRoutingID();
+    frame_token = app_frame->GetFrameToken().ToString();
   }
   base::Value::Dict result;
-  result.Set("frameId", frame_id);
+  result.Set("frameToken", frame_token);
   if (is_existing_window) {
     result.Set("existingWindow", true);
   } else {

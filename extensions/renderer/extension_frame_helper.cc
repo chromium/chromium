@@ -670,4 +670,27 @@ void ExtensionFrameHelper::DidClearWindowObject() {
   }
 }
 
+content::RenderFrame* ExtensionFrameHelper::FindFrameFromFrameTokenString(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> v8_string) {
+  CHECK(v8_string->IsString());
+
+  std::string frame_token;
+  if (!gin::Converter<std::string>::FromV8(isolate, v8_string, &frame_token)) {
+    return nullptr;
+  }
+  auto token = base::Token::FromString(frame_token);
+  if (!token) {
+    return nullptr;
+  }
+  auto unguessable_token =
+      base::UnguessableToken::Deserialize(token->high(), token->low());
+  if (!unguessable_token) {
+    return nullptr;
+  }
+  auto* web_frame = blink::WebLocalFrame::FromFrameToken(
+      blink::LocalFrameToken(unguessable_token.value()));
+  return content::RenderFrame::FromWebFrame(web_frame);
+}
+
 }  // namespace extensions

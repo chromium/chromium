@@ -93,6 +93,12 @@ class ExtensionFrameHelper
       content::RenderFrame* relative_to_frame,
       const std::string& name);
 
+  // Parse a `v8_frame_token_string` and find the associated
+  // RenderFrame associated with that token.
+  static content::RenderFrame* FindFrameFromFrameTokenString(
+      v8::Isolate* isolate,
+      v8::Local<v8::Value> v8_frame_token_string);
+
   // Returns true if the given |context| is for any frame in the extension's
   // event page.
   // TODO(devlin): This isn't really used properly, and should probably be
