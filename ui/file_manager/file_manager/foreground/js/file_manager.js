@@ -893,10 +893,7 @@ export class FileManager extends EventTarget {
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     assert(this.ui_.textContextMenu);
 
-    this.commandHandler_ =
-        // @ts-ignore: error TS2345: Argument of type 'FileSelectionHandler |
-        // null' is not assignable to parameter of type 'FileSelectionHandler'.
-        new CommandHandler(this, assert(this.selectionHandler_));
+    this.commandHandler_ = new CommandHandler(this);
 
     // TODO(hirono): Move the following block to the UI part.
     // Hook up the cr-button commands.

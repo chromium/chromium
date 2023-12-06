@@ -30,7 +30,7 @@ import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {CommonActionId, InternalActionId} from './actions_model.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
-import {FileSelection, FileSelectionHandler} from './file_selection.js';
+import {FileSelection} from './file_selection.js';
 import {HoldingSpaceUtil} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {Command} from './ui/command.js';
@@ -654,11 +654,8 @@ CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
 export class CommandHandler {
   /**
    * @param {!CommandHandlerDeps} fileManager Classes |CommandHandler| depends.
-   * @param {!FileSelectionHandler} selectionHandler
    */
-  // @ts-ignore: error TS6133: 'selectionHandler' is declared but its value is
-  // never read.
-  constructor(fileManager, selectionHandler) {
+  constructor(fileManager) {
     /**
      * CommandHandlerDeps.
      * @private @const @type {!CommandHandlerDeps}
