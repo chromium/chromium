@@ -38,7 +38,10 @@ SessionContext::SessionContext() {
   if (is_resume_after_update_) {
     FetchPersistedSessionContext();
   } else {
-    session_id_ = base::RandUint64();
+    // The session_id_ should be in range (INT32_MAX, INT64_MAX].
+    int64_t min = static_cast<int64_t>(INT32_MAX) + 1;
+    int64_t range = INT64_MAX - INT32_MAX;
+    session_id_ = min + base::RandGenerator(range);
     advertising_id_ = AdvertisingId();
     crypto::RandBytes(shared_secret_);
     crypto::RandBytes(secondary_shared_secret_);
