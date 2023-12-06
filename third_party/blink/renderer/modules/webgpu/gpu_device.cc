@@ -591,6 +591,17 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
   WGPUComputePipelineDescriptor dawn_desc =
       AsDawnType(this, descriptor, &desc_label, &computeStage);
 
+  // If ChromiumExperimentalSubgroups feature is enabled, chain the full
+  // subgroups options after compute pipeline descriptor.
+  WGPUDawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
+  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+    fullSubgroupsOptions.chain.sType =
+        WGPUSType_DawnComputePipelineFullSubgroups;
+    fullSubgroupsOptions.requiresFullSubgroups =
+        descriptor->getRequiresFullSubgroupsOr(false);
+    dawn_desc.nextInChain = &fullSubgroupsOptions.chain;
+  }
+
   absl::optional<String> label = {};
   if (descriptor->hasLabel()) {
     label = descriptor->label();
