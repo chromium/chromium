@@ -510,15 +510,10 @@ class FormStructure {
                           std::vector<FormSignature>* queried_form_signatures,
                           std::set<FormSignature>* processed_forms) const;
 
-  // Encodes the fields of `this` in the in-out parameter `upload`.
+  // Encodes the fields of `upload_fields` in the in-out parameter `upload`.
   // Helper function for EncodeUploadRequest().
-  //
-  // If `filter_renderer_form_id` is non-nullopt, only fields that originate
-  // from the given renderer form are encoded. See EncodeUploadRequest() for
-  // details.
-  void EncodeFormFieldsForUpload(
-      absl::optional<FormGlobalId> filter_renderer_form_id,
-      AutofillUploadContents* upload) const;
+  void EncodeFormFieldsForUpload(base::span<AutofillField*> upload_fields,
+                                 AutofillUploadContents* upload) const;
 
   // Returns true if the form has no fields, or too many.
   bool IsMalformed() const;

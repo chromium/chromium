@@ -78,6 +78,7 @@
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -606,33 +607,43 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
                                    upload.mutable_randomized_form_metadata());
   }
 
-  EncodeFormFieldsForUpload(/*filter_renderer_form_id=*/absl::nullopt, &upload);
-
+  std::vector<AutofillField*> upload_fields(fields_.size());
+  base::ranges::transform(fields_, upload_fields.begin(),
+                          &std::unique_ptr<AutofillField>::get);
+  EncodeFormFieldsForUpload(upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
   // Build AutofillUploadContents for the renderer forms that have been
   // flattened into `this` (see the function's documentation for details).
-  std::vector<std::pair<FormGlobalId, FormSignature>> subforms;
-  for (const auto& field : *this) {
+  std::erase_if(upload_fields, [this](const AutofillField* field) {
     // Autofill on iOS and the Password Manager in general have a null
     // FormFieldData::host_form_signature.
-    if (field->host_form_signature &&
-        field->host_form_signature != form_signature()) {
-      subforms.emplace_back(field->renderer_form_id(),
-                            field->host_form_signature);
-    }
-  }
-  for (const auto& [subform_id, subform_signature] :
-       base::flat_map<FormGlobalId, FormSignature>(std::move(subforms))) {
-    uploads.emplace_back();
-    uploads.back().set_client_version(
-        std::string(version_info::GetProductNameAndVersionForUserAgent()));
-    uploads.back().set_form_signature(subform_signature.value());
-    uploads.back().set_autofill_used(form_was_autofilled);
-    uploads.back().set_data_present(data_present);
-    EncodeFormFieldsForUpload(subform_id, &uploads.back());
-  }
+    return !field->host_form_signature ||
+           field->host_form_signature == form_signature();
+  });
+  // Partition `upload_fields` with respect to the forms' renderer id.
+  base::ranges::stable_sort(upload_fields, /*comp=*/{},
+                            &FormFieldData::renderer_form_id);
 
+  for (auto subform_begin = upload_fields.begin();
+       subform_begin != upload_fields.end();) {
+    AutofillUploadContents& upload_content = uploads.emplace_back();
+    upload_content.set_client_version(
+        std::string(version_info::GetProductNameAndVersionForUserAgent()));
+    upload_content.set_form_signature(
+        (*subform_begin)->host_form_signature.value());
+    upload_content.set_autofill_used(form_was_autofilled);
+    upload_content.set_data_present(data_present);
+
+    auto subform_end =
+        std::find_if(subform_begin, upload_fields.end(),
+                     [&subform_begin](const AutofillField* field) {
+                       return field->renderer_form_id() !=
+                              (*subform_begin)->renderer_form_id();
+                     });
+    EncodeFormFieldsForUpload({subform_begin, subform_end}, &uploads.back());
+    subform_begin = subform_end;
+  }
   return uploads;
 }
 
@@ -1495,17 +1506,11 @@ void FormStructure::EncodeFormForQuery(
 
 // static
 void FormStructure::EncodeFormFieldsForUpload(
-    absl::optional<FormGlobalId> filter_renderer_form_id,
+    base::span<AutofillField*> upload_fields,
     AutofillUploadContents* upload) const {
   DCHECK(!IsMalformed());
 
-  for (const auto& field : fields_) {
-    // Only take those fields that originate from the given renderer form.
-    if (filter_renderer_form_id &&
-        *filter_renderer_form_id != field->renderer_form_id()) {
-      continue;
-    }
-
+  for (AutofillField* field : upload_fields) {
     // Don't upload checkable fields.
     if (IsCheckable(field->check_status)) {
       continue;
