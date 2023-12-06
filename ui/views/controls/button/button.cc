@@ -809,7 +809,10 @@ ButtonActionViewInterface::ButtonActionViewInterface(Button* action_view)
 void ButtonActionViewInterface::ActionItemChangedImpl(
     actions::ActionItem* action_item) {
   BaseActionViewInterface::ActionItemChangedImpl(action_item);
-  action_view_->SetTooltipText(action_item->GetTooltipText());
+  std::u16string tooltip_text = action_item->GetTooltipText();
+  if (!tooltip_text.empty()) {
+    action_view_->SetTooltipText(tooltip_text);
+  }
 }
 
 void ButtonActionViewInterface::LinkActionTriggerToView(

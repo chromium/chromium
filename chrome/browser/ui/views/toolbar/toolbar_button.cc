@@ -30,6 +30,7 @@
 #include "components/user_education/common/user_education_class_properties.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -43,6 +44,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_mask.h"
@@ -690,6 +692,25 @@ void ToolbarButton::HighlightColorAnimation::ClearHighlightColor() {
   highlight_color_animation_.Reset(0.0f);
   highlight_color_.reset();
   parent_->UpdateColorsAndInsets();
+}
+
+std::unique_ptr<views::ActionViewInterface>
+ToolbarButton::GetActionViewInterface() {
+  return std::make_unique<ToolbarButtonActionViewInterface>(this);
+}
+
+ToolbarButtonActionViewInterface::ToolbarButtonActionViewInterface(
+    ToolbarButton* action_view)
+    : views::LabelButtonActionViewInterface(action_view),
+      action_view_(action_view) {}
+
+void ToolbarButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  views::LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  if (action_item->GetImage().IsVectorIcon()) {
+    action_view_->SetVectorIcon(
+        *action_item->GetImage().GetVectorIcon().vector_icon());
+  }
 }
 
 BEGIN_METADATA(ToolbarButton, views::LabelButton)

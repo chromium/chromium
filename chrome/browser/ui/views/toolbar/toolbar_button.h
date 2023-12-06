@@ -20,6 +20,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/view_factory.h"
@@ -118,6 +119,7 @@ class ToolbarButton : public views::LabelButton,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
+  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
@@ -133,6 +135,8 @@ class ToolbarButton : public views::LabelButton,
     menu_identifier_ = menu_identifier;
   }
   ui::ElementIdentifier menu_identifier() const { return menu_identifier_; }
+
+  bool GetVectorIconsHasValueForTesting() { return vector_icons_.has_value(); }
 
  protected:
   // Returns if menu should be shown. Override this to change default behavior.
@@ -341,6 +345,19 @@ class ToolbarButton : public views::LabelButton,
 
   // A factory for tasks that show the dropdown context menu for the button.
   base::WeakPtrFactory<ToolbarButton> show_menu_factory_{this};
+};
+
+class ToolbarButtonActionViewInterface
+    : public views::LabelButtonActionViewInterface {
+ public:
+  explicit ToolbarButtonActionViewInterface(ToolbarButton* action_view);
+  ~ToolbarButtonActionViewInterface() override = default;
+
+  // LabelButtonActionViewInterface:
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+
+ private:
+  raw_ptr<ToolbarButton> action_view_;
 };
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton, views::LabelButton)
