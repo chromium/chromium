@@ -10,7 +10,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var SetTimeDialogBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://set-time/test_loader.html?module=chromeos/set_time_dialog_test.js';
+    return 'chrome://set-time/test_loader.html?module=chromeos/set_time_dialog/set_time_dialog_test.js';
   }
 };
 

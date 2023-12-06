@@ -4,6 +4,7 @@
 
 import 'chrome://set-time/set_time.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SetTimeBrowserProxyImpl} from 'chrome://set-time/set_time_browser_proxy.js';
@@ -86,7 +87,7 @@ suite('SetTimeDialog', function() {
   });
 
   test('DateRangeContainsNow', () => {
-    const dateInput = setTimeElement.$$('#dateInput');
+    const dateInput = setTimeElement.shadowRoot.querySelector('#dateInput');
 
     // Input element attributes min and max are strings like '2019-03-01'.
     const minDate = new Date(dateInput.min);
@@ -99,7 +100,7 @@ suite('SetTimeDialog', function() {
   });
 
   test('SetDate', async () => {
-    const dateInput = setTimeElement.$$('#dateInput');
+    const dateInput = setTimeElement.shadowRoot.querySelector('#dateInput');
     assertTrue(!!dateInput);
 
     // Simulate the user changing the date picker forward by a week.
@@ -107,11 +108,11 @@ suite('SetTimeDialog', function() {
     const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
     dateInput.focus();
     dateInput.valueAsDate = nextWeek;
-    setTimeElement.$$('#doneButton').click();
+    setTimeElement.shadowRoot.querySelector('#doneButton').click();
 
     // The browser validates the change.
     await testBrowserProxy.whenCalled('doneClicked');
-    cr.webUIListenerCallback('validation-complete');
+    webUIListenerCallback('validation-complete');
 
     // Verify the page sends a request to move time forward.
     const timeInSeconds = await testBrowserProxy.whenCalled('setTimeInSeconds');
@@ -121,7 +122,7 @@ suite('SetTimeDialog', function() {
   });
 
   test('Revert invalid date on blur', () => {
-    const dateInput = setTimeElement.$$('#dateInput');
+    const dateInput = setTimeElement.shadowRoot.querySelector('#dateInput');
     dateInput.focus();
     dateInput.value = '9999-99-99';
     dateInput.blur();
@@ -131,26 +132,28 @@ suite('SetTimeDialog', function() {
   });
 
   test('SystemTimezoneChanged', () => {
-    const timezoneSelect = setTimeElement.$$('#timezoneSelect');
+    const timezoneSelect =
+        setTimeElement.shadowRoot.querySelector('#timezoneSelect');
     assertTrue(!!timezoneSelect);
     assertEquals('America/Sao_Paulo', timezoneSelect.value);
 
-    cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
+    webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
     assertEquals('America/Los_Angeles', timezoneSelect.value);
 
-    cr.webUIListenerCallback('system-timezone-changed', 'Asia/Seoul');
+    webUIListenerCallback('system-timezone-changed', 'Asia/Seoul');
     assertEquals('Asia/Seoul', timezoneSelect.value);
   });
 
   // Disabled for flake. https://crbug.com/1043598
   test.skip('SetDateAndTimezone', async () => {
-    const dateInput = setTimeElement.$$('#dateInput');
+    const dateInput = setTimeElement.shadowRoot.querySelector('#dateInput');
     assertTrue(!!dateInput);
 
-    const timeInput = setTimeElement.$$('#timeInput');
+    const timeInput = setTimeElement.shadowRoot.querySelector('#timeInput');
     assertTrue(!!timeInput);
 
-    const timezoneSelect = setTimeElement.$$('#timezoneSelect');
+    const timezoneSelect =
+        setTimeElement.shadowRoot.querySelector('#timezoneSelect');
     assertTrue(!!timezoneSelect);
     assertEquals('America/Sao_Paulo', timezoneSelect.value);
 
@@ -163,7 +166,7 @@ suite('SetTimeDialog', function() {
     dateInput.blur();
 
     // Simulate the user changing the time zone.
-    cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
+    webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
     assertEquals('America/Los_Angeles', timezoneSelect.value);
 
     // Make sure that time on input field was updated.
@@ -175,11 +178,11 @@ suite('SetTimeDialog', function() {
     assertGT(updatedTime.getTime(), updatedTimeAndTimezone.getTime());
 
     // Close the dialog.
-    setTimeElement.$$('#doneButton').click();
+    setTimeElement.shadowRoot.querySelector('#doneButton').click();
 
     // The browser validates the change.
     await testBrowserProxy.whenCalled('doneClicked');
-    cr.webUIListenerCallback('validation-complete');
+    webUIListenerCallback('validation-complete');
 
     const timeInSeconds = await testBrowserProxy.whenCalled('setTimeInSeconds');
     const todaySeconds = originalTime.getTime() / 1000;
@@ -199,10 +202,11 @@ suite('SetTimeDialog', function() {
     });
 
     test('SetDate', async () => {
-      const dateInput = setTimeElement.$$('#dateInput');
+      const dateInput = setTimeElement.shadowRoot.querySelector('#dateInput');
       assertTrue(!!dateInput);
 
-      assertEquals(null, setTimeElement.$$('#timezoneSelect'));
+      assertEquals(
+          null, setTimeElement.shadowRoot.querySelector('#timezoneSelect'));
 
       // Simulates the user changing the date picker backward by two days. We
       // are changing the date to make the test simpler. Changing the time
@@ -214,11 +218,11 @@ suite('SetTimeDialog', function() {
       const twoDaysAgo = new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000);
       dateInput.focus();
       dateInput.valueAsDate = twoDaysAgo;
-      setTimeElement.$$('#doneButton').click();
+      setTimeElement.shadowRoot.querySelector('#doneButton').click();
 
       // The browser validates the change.
       await testBrowserProxy.whenCalled('doneClicked');
-      cr.webUIListenerCallback('validation-complete');
+      webUIListenerCallback('validation-complete');
 
       // Verify the page sends a request to move time backward.
       const newTimeSeconds =
@@ -236,9 +240,9 @@ suite('SetTimeDialog', function() {
     });
 
     test('TimezoneUpdate', () => {
-      assertEquals(null, setTimeElement.$$('#timezoneSelect'));
-      cr.webUIListenerCallback(
-          'system-timezone-changed', 'America/Los_Angeles');
+      assertEquals(
+          null, setTimeElement.shadowRoot.querySelector('#timezoneSelect'));
+      webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
       // No crash.
     });
   });

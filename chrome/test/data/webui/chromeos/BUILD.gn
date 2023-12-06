@@ -62,7 +62,7 @@ if (include_js2gtest_tests) {
       "js2gtest_browsertest.js",
       "network_browsertest.js",
       "office_fallback/office_fallback_browsertest.js",
-      "set_time_dialog_browsertest.js",
+      "set_time_dialog/set_time_dialog_browsertest.js",
       "sys_internals/sys_internals_browsertest.js",
     ]
 
@@ -186,7 +186,6 @@ ts_library("build_ts") {
     "mock_controller.js",
     "mock_controller.m.js",
     "mojo_webui_test_support.js",
-    "set_time_dialog_test.js",
     "test_browser_proxy.js",
     "test_util.js",
 
@@ -205,6 +204,7 @@ ts_library("build_ts") {
     "os_feedback_ui/mojo_interface_provider_test.js",
     "os_feedback_ui/search_page_test.js",
     "os_feedback_ui/share_data_page_test.js",
+    "set_time_dialog/set_time_dialog_test.js",
     "shimless_rma/all_inputs_disabled_test.js",
     "shimless_rma/critical_error_page_test.js",
     "shimless_rma/fake_shimless_rma_service_test.js",

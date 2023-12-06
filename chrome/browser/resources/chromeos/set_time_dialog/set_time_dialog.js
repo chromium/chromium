@@ -21,8 +21,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SetTimeBrowserProxy, SetTimeBrowserProxyImpl} from './set_time_browser_proxy.js';
 import {getTemplate} from './set_time_dialog.html.js';
@@ -116,95 +116,103 @@ function getTimezoneDelta(firstTimezoneId, secondsTimezoneId) {
       getDateInTimezone(secondsTimezoneId);
 }
 
-Polymer({
-  is: 'set-time-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SetTimeDialogBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  _template: getTemplate(),
+/** @polymer */
+class SetTimeDialogElement extends SetTimeDialogBase {
+  static get is() {
+    return 'set-time-dialog';
+  }
 
-  // Remove listeners on detach.
-  behaviors: [WebUIListenerBehavior],
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
+  static get properties() {
+    return {
+      /**
+       * Items to populate the timezone select.
+       * @private
+       */
+      timezoneItems_: {
+        type: Array,
+        readonly: true,
+        value: getTimezoneItems,
+      },
+
+      /**
+       * Whether the timezone select element is visible.
+       * @private
+       */
+      isTimezoneVisible_: {
+        type: Boolean,
+        readonly: true,
+        value: () =>
+            /** @type {boolean} */ (loadTimeData.getValue('showTimezone')),
+      },
+
+      /**
+       * The minimum date allowed in the date picker.
+       * @private
+       */
+      minDate_: {
+        type: String,
+        readonly: true,
+        value: getMinDate,
+      },
+
+      /**
+       * The maximum date allowed in the date picker.
+       * @private
+       */
+      maxDate_: {
+        type: String,
+        readonly: true,
+        value: getMaxDate,
+      },
+
+      /**
+       * The last timezone selected.
+       * @private
+       */
+      selectedTimezone_: {
+        type: String,
+        value: () =>
+            /** @type {string} */ (loadTimeData.getValue('currentTimezoneId')),
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * Items to populate the timezone select.
-     * @private
+     * Values for reverting inputs when the user's date/time is invalid. The
+     * keys are element ids.
+     * @private {{dateInput: string, timeInput: string}}
      */
-    timezoneItems_: {
-      type: Array,
-      readonly: true,
-      value: getTimezoneItems,
-    },
+    this.prevValues_ = {dateInput: '', timeInput: ''};
 
     /**
-     * Whether the timezone select element is visible.
-     * @private
+     * ID of the setTimeout() used to refresh the current time.
+     * @private {?number}
      */
-    isTimezoneVisible_: {
-      type: Boolean,
-      readonly: true,
-      value: () =>
-          /** @type {boolean} */ (loadTimeData.getValue('showTimezone')),
-    },
+    this.timeTimeoutId_ = null;
 
-    /**
-     * The minimum date allowed in the date picker.
-     * @private
-     */
-    minDate_: {
-      type: String,
-      readonly: true,
-      value: getMinDate,
-    },
-
-    /**
-     * The maximum date allowed in the date picker.
-     * @private
-     */
-    maxDate_: {
-      type: String,
-      readonly: true,
-      value: getMaxDate,
-    },
-
-    /**
-     * The last timezone selected.
-     * @private
-     */
-    selectedTimezone_: {
-      type: String,
-      value: () =>
-          /** @type {string} */ (loadTimeData.getValue('currentTimezoneId')),
-    },
-  },
-
-  /**
-   * Values for reverting inputs when the user's date/time is invalid. The
-   * keys are element ids.
-   * @private {{dateInput: string, timeInput: string}}
-   */
-  prevValues_: {dateInput: '', timeInput: ''},
-
-  /**
-   * ID of the setTimeout() used to refresh the current time.
-   * @private {?number}
-   */
-  timeTimeoutId_: null,
-
-  /** @private {?SetTimeBrowserProxy} */
-  browserProxy_: null,
-
-  /** @override */
-  created() {
+    /** @private {!SetTimeBrowserProxy} */
     this.browserProxy_ = SetTimeBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  ready() {
-    this.updateTime_(new Date());
-  },
+  connectedCallback() {
+    super.connectedCallback();
 
-  /** @override */
-  attached() {
     // Register listeners for updates from C++ code.
     this.addWebUIListener(
         'system-clock-updated', this.updateTime_.bind(this, new Date()));
@@ -215,7 +223,13 @@ Polymer({
     this.browserProxy_.sendPageReady();
 
     /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
-  },
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    this.updateTime_(new Date());
+  }
 
   /**
    * @return {!Date} The date that is currently displayed on the dialog.
@@ -232,7 +246,7 @@ Polymer({
     // Add timezone offset to get real time.
     date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
     return date;
-  },
+  }
 
   /**
    * @return {!number} Seconds since epoch representing the date on the dialog
@@ -253,7 +267,7 @@ Polymer({
     }
 
     return Math.floor(now / 1000);
-  },
+  }
 
   /**
    * Sets the current timezone.
@@ -262,7 +276,7 @@ Polymer({
    */
   setTimezone_(timezoneId) {
     if (this.isTimezoneVisible_) {
-      const timezoneSelect = this.$$('#timezoneSelect');
+      const timezoneSelect = this.shadowRoot.querySelector('#timezoneSelect');
       assert(timezoneSelect.childElementCount > 0);
       timezoneSelect.value = timezoneId;
     }
@@ -273,7 +287,7 @@ Polymer({
 
     this.selectedTimezone_ = timezoneId;
     this.updateTime_(now);
-  },
+  }
 
   /**
    * Updates the date/time controls time.
@@ -300,7 +314,7 @@ Polymer({
         new Date(newTime.setSeconds(newTime.getSeconds() + secondsRemaining));
     this.timeTimeoutId_ = window.setTimeout(
         this.updateTime_.bind(this, nextTime), secondsRemaining * 1000);
-  },
+  }
 
   /**
    * Sets the system time from the UI.
@@ -308,7 +322,7 @@ Polymer({
    */
   applyTime_() {
     this.browserProxy_.setTimeInSeconds(this.getInputTimeSinceEpoch_());
-  },
+  }
 
   /**
    * Called when focus is lost on date/time controls.
@@ -326,7 +340,7 @@ Polymer({
 
     // Schedule periodic updates with the new time.
     this.updateTime_(this.getInputTime_());
-  },
+  }
 
   /**
    * @param {!Event} e The change event.
@@ -334,7 +348,7 @@ Polymer({
    */
   onTimezoneChange_(e) {
     this.setTimezone_(e.currentTarget.value);
-  },
+  }
 
   /**
    * Called when the done button is clicked. Child accounts need parental
@@ -347,7 +361,7 @@ Polymer({
    */
   onDoneClick_() {
     this.browserProxy_.doneClicked(this.getInputTimeSinceEpoch_());
-  },
+  }
 
   /** @private */
   saveAndClose_() {
@@ -358,5 +372,7 @@ Polymer({
       this.browserProxy_.setTimezone(this.selectedTimezone_);
     }
     this.browserProxy_.dialogClose();
-  },
-});
+  }
+}
+
+customElements.define(SetTimeDialogElement.is, SetTimeDialogElement);
