@@ -86,6 +86,12 @@ class FileManagerBrowserTestBase
     // Should test run in Guest or Incognito mode?
     GuestMode guest_mode = NOT_IN_GUEST_MODE;
 
+    // Locale used for this test to run.
+    std::string locale;
+
+    // A stored permanent country in `VariationsService` for this test to run.
+    std::string country;
+
     // Account type used to log-in for a test session. This option is valid only
     // for `LoggedInUserFilesAppBrowserTest`. This won't work with `guest_mode`
     // option.
@@ -185,8 +191,9 @@ class FileManagerBrowserTestBase
     // Whether test should run with the fsps-in-recents flag.
     bool enable_fsps_in_recents = false;
 
-    // Whether tests should enable Google One offer Files banner.
-    bool enable_google_one_offer_files_banner = false;
+    // Whether tests should enable Google One offer Files banner. This flag is
+    // enabled by default.
+    bool enable_google_one_offer_files_banner = true;
 
     // Whether tests should enable the Google Drive bulk pinning feature.
     bool enable_drive_bulk_pinning = false;

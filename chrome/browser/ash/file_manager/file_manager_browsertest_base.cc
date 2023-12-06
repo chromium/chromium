@@ -138,6 +138,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
@@ -200,6 +201,39 @@ class SelectFileDialogExtensionTestFactory
 
 namespace file_manager {
 namespace {
+
+// Waits `ash::locale_util::SwitchLanguage`.
+class SwitchLanguageWaiter {
+ public:
+  ash::locale_util::SwitchLanguageCallback CreateCallback() {
+    CHECK(!callback_created_)
+        << "Only a single callback can be created for a waiter.";
+
+    callback_created_ = true;
+    return base::BindOnce(&SwitchLanguageWaiter::OnLanguageSwitch,
+                          weak_ptr_factory_.GetWeakPtr());
+  }
+
+  void Wait() {
+    CHECK(!run_loop_.running()) << "This waiter is already waiting.";
+    run_loop_.Run();
+  }
+
+ private:
+  void OnLanguageSwitch(const ash::locale_util::LanguageSwitchResult& result) {
+    CHECK(result.success);
+    CHECK_EQ(result.requested_locale, result.loaded_locale)
+        << "Requested " << result.requested_locale << " but "
+        << result.loaded_locale << " is loaded.";
+
+    run_loop_.Quit();
+  }
+
+  bool callback_created_ = false;
+  base::RunLoop run_loop_;
+
+  base::WeakPtrFactory<SwitchLanguageWaiter> weak_ptr_factory_{this};
+};
 
 // Specialization of the navigation observer that stores web content every time
 // the OnDidFinishNavigation is called.
@@ -2443,6 +2477,20 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
   CHECK(profile());
   CHECK_EQ(!!browser(), options.browser);
+
+  if (!options.locale.empty()) {
+    SwitchLanguageWaiter waiter;
+    ash::locale_util::SwitchLanguage(
+        options.locale, /*enable_locale_keyboard_layouts=*/true,
+        /*login_layouts_only=*/false, waiter.CreateCallback(), profile());
+    waiter.Wait();
+  }
+
+  if (!options.country.empty()) {
+    CHECK(
+        g_browser_process->variations_service()->OverrideStoredPermanentCountry(
+            options.country));
+  }
 
   if (!options.mount_volumes) {
     VolumeManager::Get(profile())->RemoveDownloadsDirectoryForTesting();
