@@ -23,9 +23,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_H_
 
+#include <bit>
 #include <optional>
 
-#include "base/bits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -148,7 +148,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
       return (mask_ & types.mask_);
     }
     std::optional<MarkerType> IsOneMarkerType() {
-      if (base::bits::IsPowerOfTwo(mask_)) {
+      if (std::has_single_bit(mask_)) {
         return static_cast<MarkerType>(mask_);
       }
       return std::nullopt;
