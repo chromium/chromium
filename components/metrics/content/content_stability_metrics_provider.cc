@@ -5,7 +5,6 @@
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
 #include "base/check.h"
-#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/metrics/content/extensions_helper.h"
@@ -14,7 +13,9 @@
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/page_visibility_state.h"
 #include "content/public/common/process_type.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -23,6 +24,60 @@
 #endif
 
 namespace metrics {
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+// Determines which value of RendererHostedContentType correctly describes the
+// type of content hosted by `host`.
+RendererHostedContentType DetermineHostedContentType(
+    content::RenderProcessHost* host,
+    ExtensionsHelper* extensions_helper) {
+  if (extensions_helper && extensions_helper->IsExtensionProcess(host)) {
+    return RendererHostedContentType::kExtension;
+  }
+
+  // Iterate through `host`'s frames to identify these frame types:
+  bool has_active_foreground_main_frame = false;
+  bool has_active_foreground_subframe = false;
+  bool has_active_background_frame = false;
+  bool has_inactive_frame = false;
+
+  host->ForEachRenderFrameHost(
+      [&](content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsActive()) {
+          if (render_frame_host->GetVisibilityState() ==
+              blink::mojom::PageVisibilityState::kVisible) {
+            if (render_frame_host->GetMainFrame() == render_frame_host) {
+              has_active_foreground_main_frame = true;
+            } else {
+              has_active_foreground_subframe = true;
+            }
+          } else {
+            has_active_background_frame = true;
+          }
+        } else {
+          has_inactive_frame = true;
+        }
+      });
+
+  // Derive a `RendererHostedContentType` from the frame types hosted by `host`.
+  if (has_active_foreground_main_frame) {
+    return RendererHostedContentType::kForegroundMainFrame;
+  }
+  if (has_active_foreground_subframe) {
+    return RendererHostedContentType::kForegroundSubframe;
+  } else if (has_active_background_frame) {
+    return RendererHostedContentType::kBackgroundFrame;
+  } else if (has_inactive_frame) {
+    return RendererHostedContentType::kInactiveFrame;
+  }
+
+  return RendererHostedContentType::kNoFrameOrExtension;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
     PrefService* local_state,
@@ -72,9 +127,9 @@ void ContentStabilityMetricsProvider::RenderProcessExited(
   // On Android, the renderer crashes are recorded in
   // `OnCrashDumpProcessed`.
 #if !BUILDFLAG(IS_ANDROID)
-  bool was_extension_process =
-      extensions_helper_ && extensions_helper_->IsExtensionProcess(host);
-  helper_.LogRendererCrash(was_extension_process, info.status, info.exit_code);
+  helper_.LogRendererCrash(
+      DetermineHostedContentType(host, extensions_helper_.get()), info.status,
+      info.exit_code);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

@@ -38,13 +38,7 @@ void IOSChromeStabilityMetricsProvider::LogRendererCrash() {
   if (!recording_enabled_)
     return;
 
-  // The actual termination code isn't provided on iOS; use a dummy value.
-  // TODO(blundell): Think about having StabilityMetricsHelper have a variant
-  // that doesn't supply these arguments to make this cleaner.
-  int dummy_termination_code = 105;
-  helper_.LogRendererCrash(false /* not an extension process */,
-                           base::TERMINATION_STATUS_ABNORMAL_TERMINATION,
-                           dummy_termination_code);
+  helper_.LogRendererCrash();
 }
 
 void IOSChromeStabilityMetricsProvider::WebStateDidStartLoading(

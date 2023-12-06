@@ -549,6 +549,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.RendererAbnormalTermination.ByHostedContentType"
+    enum="RendererHostedContentType" expires_after="2024-06-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a renderer process exits abnormally. The value describes the
+    type of content hosted by the renderer at the time of abnormal exit.
+  </summary>
+</histogram>
+
+<histogram name="Stability.RendererAbnormalTermination.{HostedContentType}"
+    enum="TerminationStatus" expires_after="2024-06-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a renderer process hosting {HostedContentType} exits
+    abnormally. The value describes the exit reason.
+  </summary>
+  <token key="HostedContentType">
+    <variant name="BackgroundFrame"
+        summary="an active background frame (but no active foreground frame)"/>
+    <variant name="Extension" summary="an extension"/>
+    <variant name="ForegroundMainFrame"
+        summary="an active foreground main frame"/>
+    <variant name="ForegroundSubframe"
+        summary="an active foreground subframe (but no active foreground main
+                 frame)"/>
+    <variant name="InactiveFrame"
+        summary="an inactive frame (but no active frame)"/>
+    <variant name="NoFrameOrExtension" summary="no frame or extension"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -702,6 +702,19 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Session restoration was in progress before this XTE"/>
 </enum>
 
+<enum name="RendererHostedContentType">
+  <int value="0" label="Hosting an extension"/>
+  <int value="1" label="Hosting an active foreground main frame"/>
+  <int value="2"
+      label="Hosting an active foreground subframe (but no active foreground
+             main frame)"/>
+  <int value="3"
+      label="Hosting an active background frame (but no active foreground
+             frame)"/>
+  <int value="4" label="Hosting an inactive frame (but no active frame)"/>
+  <int value="5" label="Not hosting any frame or extension"/>
+</enum>
+
 <enum name="ShownAfterCrashingReason">
   <summary>
     This enum describes the reason that a crashed subframe became visible.
@@ -779,6 +792,19 @@ Called by update_debug_scenarios.py.-->
   <int value="15" label="Extension background page"/>
   <int value="16" label="DevTools"/>
   <int value="17" label="Unknown"/>
+</enum>
+
+<enum name="TerminationStatus">
+  <int value="0" label="Normal termination"/>
+  <int value="1" label="Abnormal termination"/>
+  <int value="2" label="Killed"/>
+  <int value="3" label="Crashed"/>
+  <int value="4" label="Still running"/>
+  <int value="5" label="Killed by OOM (ChromeOS)"/>
+  <int value="6" label="OOM protected (Android)"/>
+  <int value="7" label="Launch failed"/>
+  <int value="8" label="OOM"/>
+  <int value="9" label="Integrity failure (Win)"/>
 </enum>
 
 <enum name="VersionComparison">
