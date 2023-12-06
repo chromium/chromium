@@ -35,8 +35,8 @@ bool IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() {
 
 // static
 bool IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-    const std::string& trial_name,
-    const std::string& group_name,
+    std::string_view trial_name,
+    std::string_view group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
   return metrics::MetricsServiceAccessor::RegisterSyntheticFieldTrial(
       GetApplicationContext()->GetMetricsService(), trial_name, group_name,

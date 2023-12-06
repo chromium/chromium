@@ -64,7 +64,7 @@ void IOSFieldTrialRegisterImpl::RegisterFieldTrial(
   // See this comment for limitations of using this API:
   // chrome/browser/segmentation_platform/segmentation_platform_config.cc.
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      std::string(trial_name), std::string(group_name),
+      trial_name, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
