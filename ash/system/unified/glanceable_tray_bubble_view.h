@@ -66,6 +66,15 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   void OnGlanceablesContainerPreferredSizeChanged();
   void OnGlanceablesContainerHeightChanged(int height_delta);
 
+  // Sets the preferred size of `calendar_view_`. This is called during
+  // initialization and when the screen height changes.
+  void SetCalendarPreferredSize() const;
+
+  // For GlanceablesV2CalendarView: clips the `scroll_view_` height based on
+  // `screen_max_height` and `calendar_view_` height. This is called during
+  // initialization and when the `calendar_view_` height changes.
+  void ClipScrollViewHeight(int screen_max_height) const;
+
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Whether the bubble view has been initialized.
