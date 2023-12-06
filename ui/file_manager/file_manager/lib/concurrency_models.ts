@@ -98,3 +98,43 @@ export function keyedKeepFirst<Args extends any[]>(
   }
   return wrap;
 }
+
+/**
+ * While the key is the same it cancels the previous pending Actions
+ * Producer (AP).
+ * Note: APs with different keys can happen simultaneously, e.g. `key-2` won't
+ * cancel a pending `key-1`.
+ */
+export function keyedKeepLatest<Args extends any[]>(
+    actionsProducer: ActionsProducer<Args>,
+    generateKey: (...args: Args) => string): ActionsProducer<Args> {
+  // Scope #1: Initial setup.
+  let counter = 0;
+  // Key->index map for all in-flight AP.
+  const inFlightKeyToActionId = new Map<string, number>();
+
+  async function* wrap(...args: Args): ActionsProducerGen {
+    // Scope #2: Per-call to the ActionsProducer.
+    const key = generateKey(...args);
+    const actionId = ++counter;
+    inFlightKeyToActionId.set(key, actionId);
+
+    const generator = actionsProducer(...args);
+    for await (const producedAction of generator) {
+      // Scope #3: The generated action.
+      const latestActionId = inFlightKeyToActionId.get(key);
+      if (latestActionId === undefined || actionId < latestActionId) {
+        const error = new ConcurrentActionInvalidatedError(
+            `A new ActionProducer with the same key ${
+                key} is started, invalidate this one.`);
+        await generator.throw(error);
+        // We rely on the above throw to break the loop.
+      }
+      yield producedAction;
+    }
+
+    // If the action producer finishes without being cancelled, remove the key.
+    inFlightKeyToActionId.delete(key);
+  }
+  return wrap;
+}
