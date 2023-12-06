@@ -632,3 +632,15 @@ crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-backgr
 crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-transitions/animations/animate-with-color-mix.html [ Crash ]
 crbug.com/1499775 external/wpt/svg/painting/color-mix-currentcolor-fill-stroke-repaint.html [ Failure ]
+
+# 12-05-2023 Flaky tests that trigger shard level retry
+crbug.com/1499775 external/wpt/css/css-contain/contain-paint-clip-015.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-raised-sunken-caps-raise.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-sunk-initial-rtl.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-ruby/ruby-inlinize-blocks-003.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-005.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/motion/offset-path-shape-inset-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-wrapped.html [ Failure Pass ]
