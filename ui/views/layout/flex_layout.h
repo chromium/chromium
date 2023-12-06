@@ -232,25 +232,6 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
                                       const ChildViewSpacing& child_spacing,
                                       FlexLayoutData& data) const;
 
-  // Allocates space shortage (when the available space is less than the
-  // preferred size of the layout) across child views that can flex.
-  //
-  // Updates are made to |data| and |child_spacing|, and views that can still
-  // expand above their preferred size are added to |expandable_views| for later
-  // processing by AllocateFlexExcess().
-  void AllocateFlexShortage(const NormalizedSizeBounds& bounds,
-                            const FlexOrderToViewIndexMap& order_to_index,
-                            FlexLayoutData& data,
-                            ChildViewSpacing& child_spacing,
-                            FlexOrderToViewIndexMap& expandable_views) const;
-
-  // Allocates space above each child view's preferred size, based on remaining/
-  // excess space in the layout.
-  void AllocateFlexExcess(const NormalizedSizeBounds& bounds,
-                          const FlexOrderToViewIndexMap& order_to_index,
-                          FlexLayoutData& data,
-                          ChildViewSpacing& child_spacing) const;
-
   // Updates the available space for each flex child in |child_indices| in
   // |data.child_data| based on |data.total_size|, |bounds|, and the margin data
   // in |child_spacing|.
@@ -259,62 +240,64 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
                                    const ChildViewSpacing& child_spacing,
                                    FlexLayoutData& data) const;
 
+  // Calculate the size of the view under the given |size| and constrain it to
+  // the maximum and minimum space.
+  NormalizedSize ClampSizeToMinAndMax(FlexLayoutData& data,
+                                      const size_t view_index,
+                                      SizeBound size) const;
+
+  // Allocate space for flexible views
+  void AllocateFlexItem(const NormalizedSizeBounds& bounds,
+                        const FlexOrderToViewIndexMap& order_to_index,
+                        FlexLayoutData& data,
+                        ChildViewSpacing& child_spacing,
+                        bool skip_zero_preferred_size_view) const;
+
   // Pre-allocates space associated with zero-weight views at a particular flex
   // priority |flex_order|. Zero-weight child views are removed from
   // |child_list| and their entries are updated in |data|. If |expandable_views|
   // is specified, this is treated as the first pass, and space allocated to
   // each view is capped at its preferred size; if the view would claim more
   // space it is added to |expandable_views| (if specified).
-  void AllocateZeroWeightFlex(const NormalizedSizeBounds& bounds,
-                              int flex_order,
-                              ChildIndices& child_list,
-                              FlexLayoutData& data,
-                              ChildViewSpacing& child_spacing,
-                              FlexOrderToViewIndexMap* expandable_views) const;
-
-  // Tries to allocate all the views in |child_list| in the available |bounds|.
-  // If successful, updates |data| and |expandable_views|. Returns the
-  // difference between the space needed by all of the views in |child_list| and
-  // the space provided by |bounds|.
-  SizeBound TryAllocateAll(const NormalizedSizeBounds& bounds,
-                           int flex_order,
-                           const ChildIndices& child_list,
-                           FlexLayoutData& data,
-                           ChildViewSpacing& child_spacing,
-                           FlexOrderToViewIndexMap& expandable_views) const;
-
-  // Allocates flex excess |to_allocate| for a list of child views at the same
-  // priority order.
-  //
-  // It will attempt to do the entire allocation in one pass, removing all
-  // elements from |child_list| that it successfully allocates space for, but in
-  // the event a member of |child_list| does not take its full allocation, it
-  // will remove just that child and set aside its smaller size. At least one
-  // child will always be removed and |to_allocate| will be updated with the
-  // remaining space in the layout.
-  //
-  // This method should be called repeatedly until |child_list| is empty.
-  void AllocateFlexExcessAtOrder(const NormalizedSizeBounds& bounds,
-                                 SizeBound& to_allocate,
-                                 ChildIndices& child_list,
-                                 FlexLayoutData& data,
-                                 ChildViewSpacing& child_spacing) const;
-
-  // Allocates flex shortage for a list of child views at priority |order|.
-  //
-  // It will attempt to allocate the entire |child_list| in one pass, removing
-  // all elements that it successfully allocates space for, but in the event one
-  // or more members of |child_list| do not take their full allocation, those
-  // views will be allocated and removed from the list, and this method should
-  // be called again on the new, smaller list. At least one child is guaranteed
-  // to be allocated and removed each invocation.
-  //
-  // This method should be called repeatedly until |child_list| is empty.
-  void AllocateFlexShortageAtOrder(const NormalizedSizeBounds& bounds,
-                                   SizeBound deficit,
+  SizeBound AllocateZeroWeightFlex(const NormalizedSizeBounds& bounds,
                                    ChildIndices& child_list,
                                    FlexLayoutData& data,
                                    ChildViewSpacing& child_spacing) const;
+
+  // 0 preferred size views have a unique layout algorithm and they are either
+  // visible together. If they are not visible, they are not visible at all, so
+  // we need to delete them if necessary.
+  void FilterZeroSizeChildreIfNeeded(const NormalizedSizeBounds& bounds,
+                                     SizeBound& to_allocate,
+                                     ChildIndices& child_list,
+                                     FlexLayoutData& data,
+                                     ChildViewSpacing& child_spacing) const;
+
+  // Combining the actual situation of CSS flexbox and views, we solve the
+  // problem of flexible view allocation. The main thing here is to integrate
+  // https://www.w3.org/TR/css-flexbox-1/#resolve-flexible-lengths $9.2.7
+  bool ResolveFlexibleLengths(const NormalizedSizeBounds& bounds,
+                              SizeBound& remaining_free_space,
+                              ChildIndices& child_list,
+                              FlexLayoutData& data,
+                              ChildViewSpacing& child_spacing) const;
+
+  // Freeze flexible views according to css flexbox algorithm. But there is a
+  // special scene. If the view visibility changes. We terminate the freeze and
+  // force a restart.
+  bool FreezeViolations(ChildIndices& child_list,
+                        SizeBound& remaining_free_space,
+                        ChildIndices& freeze_child_list,
+                        ChildViewSpacing& child_spacing,
+                        FlexLayoutData& data) const;
+
+  // Algorithms required by views alone. Because views have custom flex rules,
+  // this may lead to unallocated space. Here we allocate these spaces.
+  void AllocateRemainingSpaceIfNeeded(
+      const NormalizedSizeBounds& bounds,
+      const FlexOrderToViewIndexMap& order_to_index,
+      FlexLayoutData& data,
+      ChildViewSpacing& child_spacing) const;
 
   // Returns the total weight for all children listed in |child_indices|.
   static int CalculateFlexTotal(const FlexLayoutData& data,

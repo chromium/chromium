@@ -50,7 +50,9 @@ struct FlexChildData {
   std::string ToString() const {
     std::ostringstream oss;
     oss << "{ preferred " << preferred_size.ToString() << " current "
-        << current_size.ToString() << " margins " << margins.ToString()
+        << current_size.ToString() << " min " << miniumize_size.ToString()
+        << " base " << flex_base_content_size.ToString() << " max "
+        << maxiumize_size.ToString() << " margins " << margins.ToString()
         << (using_default_margins ? " (using default)" : "") << " padding "
         << internal_padding.ToString() << " bounds " << actual_bounds.ToString()
         << " }";
@@ -59,6 +61,10 @@ struct FlexChildData {
 
   NormalizedSize preferred_size;
   NormalizedSize current_size;
+  NormalizedSize pending_size;
+  NormalizedSize miniumize_size;
+  NormalizedSize maxiumize_size;
+  NormalizedSize flex_base_content_size;
   NormalizedInsets margins;
   bool using_default_margins = true;
   NormalizedInsets internal_padding;
@@ -275,18 +281,24 @@ struct FlexLayout::FlexLayoutData {
 
   std::string ToString() const {
     std::ostringstream oss;
-    oss << "{ " << total_size.ToString() << " " << layout.ToString() << " {";
+    oss << "{ " << total_size.ToString() << "\n" << layout.ToString() << " {\n";
     bool first = true;
     for (const FlexChildData& flex_child : child_data) {
-      if (first)
+      if (first) {
         first = false;
-      else
-        oss << ", ";
+      } else {
+        oss << ",\n";
+      }
       oss << flex_child.ToString();
     }
-    oss << "} margin " << interior_margin.ToString() << " insets "
-        << host_insets.ToString() << "}";
+    oss << "}\nmargin " << interior_margin.ToString() << " insets "
+        << host_insets.ToString() << "\n}";
     return oss.str();
+  }
+
+  void SetCurrentSize(size_t view_index, NormalizedSize size) {
+    child_data[view_index].current_size = size;
+    layout.child_layouts[view_index].visible = size.main() > 0;
   }
 
   ProposedLayout layout;
@@ -416,6 +428,18 @@ ProposedLayout FlexLayout::CalculateProposedLayout(
   bounds.set_cross(
       std::max<SizeBound>(bounds.cross(), minimum_cross_axis_size()));
 
+  // The main idea of the new algorithm comes from css flexbox:
+  // https://www.w3.org/TR/css-flexbox-1/#box-manip Based on the css flexbox
+  // algorithm, combined with the old algorithm. Redesigned new algorithm.
+  //
+  // But there are some differences:
+  // 1. In css flex box, there is no situation where elements suddenly become
+  //    invisible during layout. But in views it will.
+  // 2. CSS flex box does not have multiple layout orders. So we need to make
+  //    special adjustments here
+  //
+  // Other more specific details will be explained in subsequent gazes.
+
   // Populate the child layout data vectors and the order-to-index map.
   FlexOrderToViewIndexMap order_to_view_index;
   InitializeChildData(bounds, data, order_to_view_index);
@@ -446,15 +470,30 @@ ProposedLayout FlexLayout::CalculateProposedLayout(
       std::max<SizeBound>(0, bounds.main() - data.total_size.main()),
       order_to_view_index, child_spacing, data);
 
-  // Flex up to preferred size. This will be a no-op if |order_to_view_index|
-  // is empty.
-  FlexOrderToViewIndexMap expandable_views;
-  AllocateFlexShortage(bounds, order_to_view_index, data, child_spacing,
-                       expandable_views);
+  // If there are multiple orders. We need to first limit the maximum size to
+  // the preferred size. To ensure that subsequent views have a chance to reach
+  // the preferred size
+  if (order_to_view_index.size() > 1) {
+    std::vector<NormalizedSize> backup_size(data.num_children());
+    for (size_t i = 0; i < data.num_children(); ++i) {
+      FlexChildData& flex_child = data.child_data[i];
+      backup_size[i] = flex_child.maxiumize_size;
+      flex_child.maxiumize_size = flex_child.preferred_size;
+    }
+    AllocateFlexItem(bounds, order_to_view_index, data, child_spacing, true);
+    for (size_t i = 0; i < data.num_children(); ++i) {
+      FlexChildData& flex_child = data.child_data[i];
+      flex_child.maxiumize_size = backup_size[i];
+    }
+  }
+  AllocateFlexItem(bounds, order_to_view_index, data, child_spacing, true);
 
-  // Flex views that can exceed their preferred size. This will be a no-op if
-  // |expandable_views| is empty.
-  AllocateFlexExcess(bounds, expandable_views, data, child_spacing);
+  // This is a different place too. Because css flexbox does not have dimensions
+  // that can be changed freely: Custom flex rules.
+  //
+  // So we may have unallocated space.
+  AllocateRemainingSpaceIfNeeded(bounds, order_to_view_index, data,
+                                 child_spacing);
 
   // Calculate the size of the host view.
   NormalizedSize host_size = data.total_size;
@@ -544,45 +583,45 @@ void FlexLayout::InitializeChildData(
         GetAvailableCrossAxisSize(data, view_index, bounds);
     SetCrossAxis(&child_layout.available_size, orientation(), available_cross);
 
+    // According to css flexbox:
+    // https://www.w3.org/TR/css-flexbox-1/#algo-main-item $9.2.3 All layout
+    // algorithms in views should follow the rule listed in $9.2.3, subsection
+    // 'C'. So here the basic size is set according to the C rule.
     flex_child.preferred_size =
         GetPreferredSizeForRule(flex_child.flex.rule(), child, available_cross);
+    flex_child.miniumize_size =
+        GetCurrentSizeForRule(flex_child.flex.rule(), child,
+                              NormalizedSizeBounds(0, available_cross));
+    flex_child.maxiumize_size = GetCurrentSizeForRule(
+        flex_child.flex.rule(), child,
+        NormalizedSizeBounds(bounds.main(), available_cross));
 
-    // gfx::Size calculation depends on whether flex is allowed.
-    if (main_axis_bounded) {
-      flex_child.current_size =
-          GetCurrentSizeForRule(flex_child.flex.rule(), child,
-                                NormalizedSizeBounds(0, available_cross));
-
-      DCHECK_GE(flex_child.preferred_size.main(),
-                flex_child.current_size.main())
-          << " in " << child->GetClassName();
-    } else {
-      // All non-flex or unbounded controls get preferred size.
-      flex_child.current_size = flex_child.preferred_size;
-    }
+    data.SetCurrentSize(view_index, main_axis_bounded
+                                        ? flex_child.miniumize_size
+                                        : flex_child.preferred_size);
 
     // Keep track of non-hidden/ignored child views that can flex. We assume any
     // view with a non-zero weight can flex, as can views with zero weight that
     // have a minimum size smaller than their preferred size.
     const int weight = flex_child.flex.weight();
-    bool can_flex = weight > 0 || flex_child.current_size.main() <
-                                      flex_child.preferred_size.main();
-
-    // Do a spot check to see if a zero-weight view could expand in the space
-    // provided. Note that we can get some false positives here but they will
-    // invariably shake out in subsequent steps.
-    if (!can_flex && weight == 0) {
-      const NormalizedSize estimate = GetCurrentSizeForRule(
-          flex_child.flex.rule(), child,
-          NormalizedSizeBounds(bounds.main(), available_cross));
-      can_flex = estimate.main() > flex_child.preferred_size.main();
-    }
+    bool can_flex =
+        weight > 0 ||
+        flex_child.current_size.main() < flex_child.preferred_size.main() ||
+        (weight == 0 &&
+         flex_child.maxiumize_size.main() > flex_child.preferred_size.main());
 
     // Add views that have the potential to flex to the appropriate order list.
     if (can_flex)
       flex_order_to_index[flex_child.flex.order()].push_back(view_index);
 
-    child_layout.visible = flex_child.current_size.main() > 0;
+    if (main_axis_bounded) {
+      flex_child.flex_base_content_size = std::min<NormalizedSize>(
+          std::max<NormalizedSize>(flex_child.miniumize_size,
+                                   flex_child.preferred_size),
+          flex_child.maxiumize_size);
+    } else {
+      flex_child.flex_base_content_size = flex_child.maxiumize_size;
+    }
   }
 }
 
@@ -796,167 +835,114 @@ void FlexLayout::UpdateLayoutFromChildren(
   }
 }
 
-void FlexLayout::AllocateFlexShortage(
-    const NormalizedSizeBounds& bounds,
-    const FlexOrderToViewIndexMap& order_to_index,
-    FlexLayoutData& data,
-    ChildViewSpacing& child_spacing,
-    FlexOrderToViewIndexMap& expandable_views) const {
-  // Step through each flex priority allocating shortage across child views that
-  // can flex.
-  for (const auto& flex_elem : order_to_index) {
-    const int order = flex_elem.first;
+NormalizedSize FlexLayout::ClampSizeToMinAndMax(FlexLayoutData& data,
+                                                const size_t view_index,
+                                                SizeBound size) const {
+  FlexChildData& flex_child = data.child_data[view_index];
+  ChildLayout& child_layout = data.layout.child_layouts[view_index];
 
+  // See how much space the child view wants within the reduced space
+  // remaining for it.
+  const NormalizedSizeBounds available(
+      size, GetCrossAxis(orientation(), child_layout.available_size));
+  const NormalizedSize new_size = GetCurrentSizeForRule(
+      flex_child.flex.rule(), child_layout.child_view, available);
+
+  return std::min<NormalizedSize>(
+      std::max<NormalizedSize>(flex_child.miniumize_size, new_size),
+      flex_child.maxiumize_size);
+}
+
+void FlexLayout::AllocateFlexItem(const NormalizedSizeBounds& bounds,
+                                  const FlexOrderToViewIndexMap& order_to_index,
+                                  FlexLayoutData& data,
+                                  ChildViewSpacing& child_spacing,
+                                  bool skip_zero_preferred_size_view) const {
+  for (const auto& flex_elem : order_to_index) {
     // Record available space for each view at this flex order.
     CalculateFlexAvailableSpace(bounds, flex_elem.second, child_spacing, data);
+
+    // Unlike css flexbox. Here we first deal with the view with 0 weight and
+    // the view with 0 preferred size. Because they have different meanings in
+    // views.
+    // We only need to allocate views with 0 preferred sizes if there are extra
+    // sizes left.
 
     // Get the list of views to process at this flex priority, in the desired
     // order. Zero-preferred-size views are sorted directly onto the list of
     // expandable views, because they're already at their preferred size.
     ChildIndices view_indices;
-    for (size_t child_index :
-         MaybeReverse(flex_elem.second, flex_allocation_order())) {
-      const int size = data.child_data[child_index].preferred_size.main();
-      auto& indices = (size == 0) ? expandable_views[order] : view_indices;
-      indices.push_back(child_index);
-    }
+    base::ranges::copy_if(
+        MaybeReverse(flex_elem.second, flex_allocation_order()),
+        std::back_inserter(view_indices),
+        [skip_zero_preferred_size_view, &data](size_t child_index) {
+          return !skip_zero_preferred_size_view ||
+                 data.child_data[child_index].preferred_size.main() > 0;
+        });
 
     // Allocate zero-weight child views at this order first. This removes them
     // from |view_indices|.
-    AllocateZeroWeightFlex(bounds, order, view_indices, data, child_spacing,
-                           &expandable_views);
+    SizeBound remaining_free_space =
+        AllocateZeroWeightFlex(bounds, view_indices, data, child_spacing);
+    if (!skip_zero_preferred_size_view) {
+      FilterZeroSizeChildreIfNeeded(bounds, remaining_free_space, view_indices,
+                                    data, child_spacing);
+    }
 
-    // Iterate until all views can be allocated or are dropped out.
-    for (SizeBound deficit;
-         !view_indices.empty() &&
-         (deficit = TryAllocateAll(bounds, order, view_indices, data,
-                                   child_spacing, expandable_views)) > 0;) {
-      // Process flex views with weight, allocating any shortage of flex space
-      // below the views' minimum size based on weight, and dropping out any
-      // views that fall to zero size.
-      AllocateFlexShortageAtOrder(bounds, deficit, view_indices, data,
-                                  child_spacing);
+    // Solve the problem of flexible size allocation.
+    while (ResolveFlexibleLengths(bounds, remaining_free_space, view_indices,
+                                  data, child_spacing)) {
+      continue;
     }
 
     UpdateLayoutFromChildren(bounds, data, child_spacing);
   }
 }
 
-void FlexLayout::AllocateFlexExcess(
+SizeBound FlexLayout::AllocateZeroWeightFlex(
     const NormalizedSizeBounds& bounds,
-    const FlexOrderToViewIndexMap& order_to_index,
-    FlexLayoutData& data,
-    ChildViewSpacing& child_spacing) const {
-  // Step through each flex priority allocating as much remaining space as
-  // possible to each remaining flex view.
-  for (const auto& flex_elem : order_to_index) {
-    const int order = flex_elem.first;
-
-    // No need to reverse here because if we are reversed, then these values
-    // were added in reverse order.
-    ChildIndices view_indices = flex_elem.second;
-
-    AllocateZeroWeightFlex(bounds, order, view_indices, data, child_spacing,
-                           nullptr);
-
-    // Allocate space to available children until all possible space is used up.
-    for (SizeBound remaining =
-             std::max<SizeBound>(0, bounds.main() - data.total_size.main());
-         !view_indices.empty();) {
-      AllocateFlexExcessAtOrder(bounds, remaining, view_indices, data,
-                                child_spacing);
-    }
-
-    UpdateLayoutFromChildren(bounds, data, child_spacing);
-  }
-}
-
-void FlexLayout::AllocateFlexShortageAtOrder(
-    const NormalizedSizeBounds& bounds,
-    SizeBound deficit,
     ChildIndices& child_list,
     FlexLayoutData& data,
     ChildViewSpacing& child_spacing) const {
-  int flex_total = CalculateFlexTotal(data, child_list);
+  SizeBound remaining =
+      std::max<SizeBound>(0, bounds.main() - data.total_size.main());
 
-  // We'll process the views in reverse order so that views later in the order
-  // are more likely to drop out/be shorted, which is consistent with the zero
-  // weight behavior. That is, if the FlexAllocationOrder associated with this
-  // layout is kNormal, views will drop from the end; while if it's kReverse,
-  // views will drop from the beginning.
-  std::map<size_t, NormalizedSize> pending_updates;
-  for (auto it = child_list.rbegin(); it != child_list.rend(); ++it) {
-    const size_t view_index = *it;
-    FlexChildData& flex_child = data.child_data[view_index];
-    ChildLayout& child_layout = data.layout.child_layouts[view_index];
-
-    const int weight = flex_child.flex.weight();
-    DCHECK_GT(weight, 0);
-    DCHECK(deficit.is_bounded());
-    const SizeBound to_deduct = base::ClampRound(
-        deficit.value() * weight / static_cast<float>(flex_total));
-    const SizeBound new_main = flex_child.preferred_size.main() - to_deduct;
-
-    // If a view would shrink smaller than its current size, go with that and
-    // eliminate it from the flex calculation.
-    if (new_main <= flex_child.current_size.main()) {
-      // Note that the iterator math ensures that the resulting forward iterator
-      // actually points to the element being removed.
-      child_list.erase(--it.base());
-      return;
+  // Allocate space to views with zero flex weight. They get first priority at
+  // this priority order.
+  auto it = child_list.begin();
+  while (it != child_list.end()) {
+    const size_t child_index = *it;
+    FlexChildData& flex_child = data.child_data[child_index];
+    // We don't care about weighted flex in this step.
+    if (flex_child.flex.weight() > 0) {
+      ++it;
+      continue;
     }
+    ChildLayout& child_layout = data.layout.child_layouts[child_index];
 
-    // See how much space the child view wants within the reduced space
-    // remaining for it.
-    const NormalizedSizeBounds available(
-        new_main, GetCrossAxis(orientation(), child_layout.available_size));
-    const NormalizedSize new_size = GetCurrentSizeForRule(
-        flex_child.flex.rule(), child_layout.child_view, available);
+    const int old_size =
+        child_layout.visible ? flex_child.current_size.main() : 0;
+    const SizeBound available_main =
+        child_spacing.GetMaxSize(child_index, old_size, remaining);
+    NormalizedSize new_size =
+        ClampSizeToMinAndMax(data, child_index, available_main);
 
-    if (new_size.main() < new_main) {
-      // Views that cap out below the allotted space can get their size set
-      // immediately and they will drop out of subsequent passes.
-      if (!new_size.is_empty() &&
-          new_size.main() >= flex_child.current_size.main()) {
-        flex_child.current_size = new_size;
-        child_layout.visible = true;
-        if (!child_spacing.HasViewIndex(view_index))
-          child_spacing.AddViewIndex(view_index);
+    if (new_size.main() > old_size) {
+      const int delta = child_spacing.GetTotalSizeChangeForNewSize(
+          child_index, old_size, new_size.main());
+      remaining -= delta;
+      data.SetCurrentSize(child_index, new_size);
+      if (!child_spacing.HasViewIndex(child_index)) {
+        child_spacing.AddViewIndex(child_index);
       }
-
-      // Since the view has already been allocated, remove it from the
-      // candidates list. The iterator math ensures that the resulting forward
-      // iterator corresponds to the element being removed from the list.
-      child_list.erase(--it.base());
-      return;
     }
-
-    // Changes to views that can take up the entire allotted space are held in
-    // case we need to do them on another pass (since they might get additional
-    // leftover space).
-    pending_updates.emplace(view_index, new_size);
-
-    // These numbers are based on ideal and not actual values we'll calculate
-    // below, because we want views which cannot use all of their adjusted space
-    // to drop out together rather than be order-dependent.
-    flex_total -= weight;
-    deficit -= to_deduct;
+    it = child_list.erase(it);
   }
 
-  // We have successfully allocated all of the remaining space. Apply the
-  // pending updates and we're done.
-  for (size_t pending_index : child_list) {
-    FlexChildData& flex_child = data.child_data[pending_index];
-    ChildLayout& child_layout = data.layout.child_layouts[pending_index];
-    flex_child.current_size = pending_updates[pending_index];
-    child_layout.visible = true;
-    if (!child_spacing.HasViewIndex(pending_index))
-      child_spacing.AddViewIndex(pending_index);
-  }
-  child_list.clear();
+  return remaining;
 }
 
-void FlexLayout::AllocateFlexExcessAtOrder(
+void FlexLayout::FilterZeroSizeChildreIfNeeded(
     const NormalizedSizeBounds& bounds,
     SizeBound& to_allocate,
     ChildIndices& child_list,
@@ -971,95 +957,185 @@ void FlexLayout::AllocateFlexExcessAtOrder(
   ChildViewSpacing temp_spacing(child_spacing);
   const int old_spacing = temp_spacing.GetTotalSpace();
   base::ranges::copy_if(child_list, std::back_inserter(zero_size_children),
-                        [&child_spacing](auto index) {
-                          return !child_spacing.HasViewIndex(index);
+                        [&child_spacing, &data](auto index) {
+                          return !child_spacing.HasViewIndex(index) &&
+                                 data.child_data[index].preferred_size.main() ==
+                                     0;
                         });
-  for (auto index : zero_size_children)
-    temp_spacing.AddViewIndex(index);
 
-  if (!zero_size_children.empty()) {
-    // Make sure there is enough space to show each of the affected views. If
-    // there is not, none of them appear, so remove them and bail out.
-    const int new_spacing = temp_spacing.GetTotalSpace();
-    const int delta = new_spacing - old_spacing;
-    // We'll factor in |flex_total| so that each child view should be allocated
-    // at least 1dp of space. That doesn't mean the child's flex rule will allow
-    // it to take up that space (see note below).
-    if (delta + flex_total > to_allocate) {
-      child_list.remove_if([child_spacing](size_t index) {
-        return !child_spacing.HasViewIndex(index);
-      });
-      return;
-    }
-
-    // Make all of the views visible, though note that at this point they are
-    // still zero-size, which typically does not happen elsewhere in FlexLayout.
-    // TODO(dfried): We could add a second boolean that would allow these views
-    // to be set to not visible but still "take up space" in the layout, or
-    // do some kind of post-processing pass to change the visibility flag to
-    // false once all of the other computations are complete, but I don't think
-    // it's worth the extra complexity until we have an actual use case or bug.
-    to_allocate -= delta;
-    child_spacing = temp_spacing;
-    for (size_t view_index : zero_size_children)
-      data.layout.child_layouts[view_index].visible = true;
+  if (zero_size_children.empty()) {
+    return;
   }
 
-  // See if we can't get through the remaining views, allocating size for each.
-  std::map<size_t, NormalizedSize> pending_updates;
-  SizeBound remaining = to_allocate;
-  for (auto it = child_list.begin(); remaining > 0 && it != child_list.end();
-       ++it) {
-    const size_t view_index = *it;
+  for (auto index : zero_size_children) {
+    temp_spacing.AddViewIndex(index);
+  }
+
+  // Make sure there is enough space to show each of the affected views. If
+  // there is not, none of them appear, so remove them and bail out.
+  const int new_spacing = temp_spacing.GetTotalSpace();
+  const int delta = new_spacing - old_spacing;
+  // We'll factor in |flex_total| so that each child view should be
+  // allocated at least 1dp of space. That doesn't mean the child's flex
+  // rule will allow it to take up that space (see note below).
+  if (delta + flex_total > to_allocate) {
+    child_list.remove_if([&child_spacing, &data](size_t index) {
+      return !child_spacing.HasViewIndex(index) &&
+             data.child_data[index].preferred_size.main() == 0;
+    });
+    return;
+  }
+
+  // Make all of the views visible, though note that at this point they are
+  // still zero-size, which typically does not happen elsewhere in
+  // FlexLayout.
+  // TODO(dfried): We could add a second boolean that would allow these
+  // views to be set to not visible but still "take up space" in the layout,
+  // or do some kind of post-processing pass to change the visibility flag
+  // to false once all of the other computations are complete, but I don't
+  // think it's worth the extra complexity until we have an actual use case
+  // or bug.
+  to_allocate -= delta;
+  child_spacing = temp_spacing;
+  for (size_t view_index : zero_size_children) {
+    data.layout.child_layouts[view_index].visible = true;
+  }
+}
+
+bool FlexLayout::ResolveFlexibleLengths(const NormalizedSizeBounds& bounds,
+                                        SizeBound& remaining_free_space,
+                                        ChildIndices& child_list,
+                                        FlexLayoutData& data,
+                                        ChildViewSpacing& child_spacing) const {
+  if (!remaining_free_space.is_bounded()) {
+    return false;
+  }
+
+  // Assume all subviews are visible. Calculate the total space change required
+  // to adjust from the current size to the main size.
+  ChildViewSpacing proposed_spacing(child_spacing);
+  int delta = 0;
+  for (size_t child_index : child_list) {
+    const FlexChildData& flex_child = data.child_data[child_index];
+    delta += proposed_spacing.GetTotalSizeChangeForNewSize(
+        child_index, flex_child.current_size.main(),
+        flex_child.flex_base_content_size.main());
+    if (!proposed_spacing.HasViewIndex(child_index)) {
+      proposed_spacing.AddViewIndex(child_index);
+    }
+  }
+  SizeBound temp_remaining_free_space = remaining_free_space - delta;
+
+  // According to css flexbox:
+  // https://www.w3.org/TR/css-flexbox-1/#resolve-flexible-lengths $9.2.7
+  // The following algorithm mainly comes from it.
+
+  int flex_total = CalculateFlexTotal(data, child_list);
+  ChildIndices min_violations;
+  ChildIndices max_violations;
+  int total_violation = 0;
+  for (auto view_index : child_list) {
     FlexChildData& flex_child = data.child_data[view_index];
-    ChildLayout& child_layout = data.layout.child_layouts[view_index];
-    // On the excess pass, all of the views we're considering should be visible
-    // (at least once we've cleared the bit above). We should have also handled
-    // flex weight zero views earlier.
-    DCHECK(child_layout.visible);
+    // We think it's already in the main sizes. Adjust according to remaining
+    // space.
+    SizeBound child_size = flex_child.flex_base_content_size.main();
 
     const int weight = flex_child.flex.weight();
     DCHECK_GT(weight, 0);
-    // Round up so we give slightly greater weight to earlier views.
-    SizeBound flex_amount = remaining;
-    if (remaining.is_bounded()) {
-      flex_amount = base::ClampCeil(remaining.value() * weight /
-                                    static_cast<float>(flex_total));
+    const SizeBound extra_space =
+        base::ClampFloor(temp_remaining_free_space.value() * weight /
+                             static_cast<float>(flex_total) +
+                         0.5f);
+    child_size += extra_space;
+
+    // $9.2.7.4.C Constrain new dimensions under maximum and minimum dimensions.
+    const NormalizedSize new_size =
+        ClampSizeToMinAndMax(data, view_index, child_size);
+    flex_child.pending_size = new_size;
+
+    int violation = new_size.main() - child_size.value();
+    if (violation > 0) {
+      min_violations.push_back(view_index);
+    } else if (violation < 0) {
+      max_violations.push_back(view_index);
     }
-    const int old_size = flex_child.current_size.main();
-    const SizeBound new_main = flex_amount + old_size;
-
-    const NormalizedSizeBounds available(
-        new_main, GetCrossAxis(orientation(), child_layout.available_size));
-    const NormalizedSize new_size = GetCurrentSizeForRule(
-        flex_child.flex.rule(), child_layout.child_view, available);
-
-    // In cases where a view does not take up its entire available size, we
-    // need to set aside the space it does want and bail out (if there are other
-    // views we'll repeat the allocation at this priority).
-    const int to_deduct = new_size.main() - old_size;
-    if (new_size.main() < new_main) {
-      flex_child.current_size = new_size;
-      to_allocate -= to_deduct;
-
-      child_list.erase(it);
-      return;
-    }
-
-    DCHECK_GE(to_deduct, 0);
-    DCHECK_LE(to_deduct, remaining);
-    pending_updates.emplace(view_index, new_size);
-
+    total_violation += violation;
+    temp_remaining_free_space -= extra_space;
     flex_total -= weight;
-    remaining -= to_deduct;
   }
 
-  // If we get here, we successfully allocated all of the space, so update
-  // everything and we're done.
-  to_allocate = remaining;
-  for (const auto& update : pending_updates)
-    data.child_data[update.first].current_size = update.second;
-  child_list.clear();
+  // $9.2.7.4.d: Fix min/max violations.
+  if (total_violation) {
+    FreezeViolations(child_list, remaining_free_space,
+                     total_violation > 0 ? min_violations : max_violations,
+                     child_spacing, data);
+    return true;
+  } else {
+    ChildIndices temp_list(child_list);
+    return FreezeViolations(child_list, remaining_free_space, temp_list,
+                            child_spacing, data);
+  }
+}
+
+bool FlexLayout::FreezeViolations(ChildIndices& child_list,
+                                  SizeBound& remaining_free_space,
+                                  ChildIndices& freeze_child_list,
+                                  ChildViewSpacing& child_spacing,
+                                  FlexLayoutData& data) const {
+  ChildViewSpacing new_spacing(child_spacing);
+  auto it = child_list.rbegin();
+  bool force_relayout = false;
+  while (!freeze_child_list.empty() && it != child_list.rend()) {
+    const size_t view_index = *it;
+    if (view_index != freeze_child_list.back()) {
+      ++it;
+      continue;
+    }
+
+    child_list.erase(--it.base());
+    ChildLayout& child_layout = data.layout.child_layouts[view_index];
+    FlexChildData& flex_child = data.child_data[view_index];
+    NormalizedSize old_size = flex_child.current_size;
+    flex_child.current_size = flex_child.pending_size;
+    child_layout.visible = flex_child.current_size.main() > 0;
+    freeze_child_list.pop_back();
+
+    // If the view is not visible, the empty space itself is not given at this
+    // time. Just make the difference directly.
+    if (!child_layout.visible) {
+      remaining_free_space -= flex_child.current_size.main() - old_size.main();
+      force_relayout = true;
+      break;
+    }
+
+    remaining_free_space -= new_spacing.GetTotalSizeChangeForNewSize(
+        view_index, old_size.main(), flex_child.current_size.main());
+    if (!new_spacing.HasViewIndex(view_index)) {
+      new_spacing.AddViewIndex(view_index);
+    }
+  }
+
+  child_spacing = new_spacing;
+  return force_relayout;
+}
+
+void FlexLayout::AllocateRemainingSpaceIfNeeded(
+    const NormalizedSizeBounds& bounds,
+    const FlexOrderToViewIndexMap& order_to_index,
+    FlexLayoutData& data,
+    ChildViewSpacing& child_spacing) const {
+  if (!bounds.main().is_bounded() || bounds.main() <= data.total_size.main()) {
+    return;
+  }
+
+  // If there are any remaining sizes. We update the main size to the current
+  // size. Ensured that subsequent allocations are based on the current size.
+  for (size_t i = 0; i < data.num_children(); ++i) {
+    FlexChildData& flex_child = data.child_data[i];
+    flex_child.flex_base_content_size = flex_child.current_size;
+  }
+
+  AllocateFlexItem(bounds, order_to_index, data, child_spacing, false);
 }
 
 void FlexLayout::CalculateFlexAvailableSpace(
@@ -1089,123 +1165,6 @@ void FlexLayout::CalculateFlexAvailableSpace(
       SetMainAxis(&child_layout.available_size, orientation(), available_size);
     }
   }
-}
-
-void FlexLayout::AllocateZeroWeightFlex(
-    const NormalizedSizeBounds& bounds,
-    int flex_order,
-    ChildIndices& child_list,
-    FlexLayoutData& data,
-    ChildViewSpacing& child_spacing,
-    FlexOrderToViewIndexMap* expandable_views) const {
-  SizeBound remaining =
-      std::max<SizeBound>(0, bounds.main() - data.total_size.main());
-  const bool is_first_pass = expandable_views != nullptr;
-  bool need_to_update_layout = false;
-
-  // Allocate space to views with zero flex weight. They get first priority at
-  // this priority order.
-  auto it = child_list.begin();
-  while (it != child_list.end()) {
-    const size_t child_index = *it;
-    FlexChildData& flex_child = data.child_data[child_index];
-
-    // We don't care about weighted flex in this step.
-    if (flex_child.flex.weight() > 0) {
-      ++it;
-      continue;
-    }
-
-    ChildLayout& child_layout = data.layout.child_layouts[child_index];
-    DCHECK(is_first_pass || child_layout.visible ||
-           flex_child.preferred_size.main() == 0);
-
-    const int old_size =
-        child_layout.visible ? flex_child.current_size.main() : 0;
-    const SizeBound available_cross =
-        GetCrossAxis(orientation(), child_layout.available_size);
-    const SizeBound available_main =
-        child_spacing.GetMaxSize(child_index, old_size, remaining);
-    const NormalizedSizeBounds available(available_main, available_cross);
-    NormalizedSize new_size = GetCurrentSizeForRule(
-        flex_child.flex.rule(), child_layout.child_view, available);
-
-    if (is_first_pass && new_size.main() > flex_child.preferred_size.main()) {
-      new_size.set_main(flex_child.preferred_size.main());
-      (*expandable_views)[flex_order].push_back(child_index);
-    }
-
-    if (new_size.main() > old_size) {
-      const int delta = child_spacing.GetTotalSizeChangeForNewSize(
-          child_index, old_size, new_size.main());
-      remaining -= delta;
-      child_layout.visible = true;
-      flex_child.current_size = new_size;
-      if (!child_spacing.HasViewIndex(child_index))
-        child_spacing.AddViewIndex(child_index);
-      need_to_update_layout = true;
-    }
-    it = child_list.erase(it);
-  }
-
-  if (need_to_update_layout)
-    UpdateLayoutFromChildren(bounds, data, child_spacing);
-}
-
-SizeBound FlexLayout::TryAllocateAll(
-    const NormalizedSizeBounds& bounds,
-    int flex_order,
-    const ChildIndices& child_list,
-    FlexLayoutData& data,
-    ChildViewSpacing& child_spacing,
-    FlexOrderToViewIndexMap& expandable_views) const {
-  // Compute a new proposed spacing resulting from adding all the remaining
-  // child views at this order at their preferred sizes.
-  ChildViewSpacing proposed_spacing(child_spacing);
-  int delta = 0;
-  for (size_t child_index : child_list) {
-    const FlexChildData& flex_child = data.child_data[child_index];
-    delta += proposed_spacing.GetTotalSizeChangeForNewSize(
-        child_index, flex_child.current_size.main(),
-        flex_child.preferred_size.main());
-    if (!proposed_spacing.HasViewIndex(child_index))
-      proposed_spacing.AddViewIndex(child_index);
-  }
-  const int new_total_size = data.total_size.main() + delta;
-  const SizeBound deficit =
-      std::max<SizeBound>(0, new_total_size - bounds.main());
-
-  if (deficit == 0) {
-    // If there's enough space to add all of these views up to their preferred
-    // size then add them all, and if there's excess space, add the children
-    // to |expandable_views| as well.
-    for (size_t child_index : child_list) {
-      FlexChildData& flex_child = data.child_data[child_index];
-      if (flex_child.current_size.main() != flex_child.preferred_size.main()) {
-        // Need to recalculate the ideal size in the given bounds, which might
-        // not always be the preferred size.
-        const ChildLayout& child_layout =
-            data.layout.child_layouts[child_index];
-        const NormalizedSize new_size = GetCurrentSizeForRule(
-            flex_child.flex.rule(), child_layout.child_view,
-            NormalizedSizeBounds(
-                flex_child.preferred_size.main(),
-                GetCrossAxis(orientation(), child_layout.available_size)));
-        flex_child.current_size =
-            NormalizedSize(flex_child.preferred_size.main(), new_size.cross());
-        data.layout.child_layouts[child_index].visible = true;
-      }
-    }
-    if (new_total_size < bounds.main()) {
-      base::ranges::copy(child_list,
-                         std::back_inserter(expandable_views[flex_order]));
-    }
-
-    // All children have been allocated for this step at this point.
-    child_spacing = proposed_spacing;
-  }
-
-  return deficit;
 }
 
 // static

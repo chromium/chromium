@@ -553,50 +553,6 @@ TEST_F(LabelTest, MultilinePreferredSizeTest) {
   EXPECT_LT(multi_line_size.height(), new_size.height());
 }
 
-TEST_F(LabelTest, SetUseLegacyPreferredSizeTest) {
-  label()->SetText(u"This is an example.");
-
-  const gfx::Size single_line_size = label()->GetPreferredSize();
-
-  // Test the preferred size when the label is not yet laid out.
-  label()->SetMultiLine(true);
-  const gfx::Size multi_line_size = label()->GetPreferredSize();
-  EXPECT_EQ(single_line_size, multi_line_size);
-
-  // Test the preferred size after the label is laid out.
-  const int layout_width = multi_line_size.width() / 2;
-  label()->SetBounds(0, 0, layout_width,
-                     label()->GetHeightForWidth(layout_width));
-
-  const gfx::Size multi_line_size_bounded =
-      label()->GetPreferredSize({single_line_size.width(), {/* Unbounded */}});
-  const gfx::Size multi_line_size_bounded2 = label()->GetPreferredSize(
-      {single_line_size.width() / 2, {/* Unbounded */}});
-
-  EXPECT_EQ(multi_line_size_bounded.width(), single_line_size.width());
-  EXPECT_GT(multi_line_size_bounded.width(), multi_line_size_bounded2.width());
-  EXPECT_LT(multi_line_size_bounded.height(),
-            multi_line_size_bounded2.height());
-
-  // After SetUseLegacyPreferredSize(true). GetPreferredSize is affected by
-  // Bounds
-  label()->SetUseLegacyPreferredSize(true);
-
-  // Explicitly specified unbounded layout should follow unbounded layout,
-  // it does not follow the constraints of SetAllowBoundedPreferredSize
-  const gfx::Size multi_line_size_unbounded =
-      label()->GetPreferredSize({/* Unbounded */});
-  EXPECT_EQ(multi_line_size, multi_line_size_unbounded);
-
-  // Explicitly specifying SetAllowBoundedPreferredSize(false),
-  // GetPreferredSize(SizeBounds) should ignore the specified width.
-  const gfx::Size multi_line_size_bounded3 =
-      label()->GetPreferredSize({single_line_size.width(), {/* Unbounded */}});
-  const gfx::Size multi_line_size_bounded4 = label()->GetPreferredSize(
-      {single_line_size.width() / 2, {/* Unbounded */}});
-  EXPECT_EQ(multi_line_size_bounded3, multi_line_size_bounded4);
-}
-
 TEST_F(LabelTest, MultilinePreferredSizeWithConstraintTest) {
   label()->SetText(u"This is an example.");
 

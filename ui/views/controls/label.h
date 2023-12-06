@@ -268,14 +268,6 @@ class VIEWS_EXPORT Label : public View,
   int GetMaximumWidth() const;
   void SetMaximumWidth(int max_width);
 
-  // Defaults to false, meaning that `CalculatePreferredSize` is independent of
-  // the current size.
-  // Set this to true and file a bug if you encounter layout issue, in which
-  // case `CalculatePreferredSize(available_size)` will depend on `width()` and
-  // might ignore `available_size`.
-  // TODO(crbug.com/1346889): remove this.
-  void SetUseLegacyPreferredSize(bool use_legacy);
-
   // Gets/Sets whether the preferred size is empty when the label is not
   // visible.
   bool GetCollapseWhenHidden() const;
