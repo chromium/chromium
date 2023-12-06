@@ -51,6 +51,11 @@
                    username:(NSString*)username
                      origin:(NSString*)origin;
 
+// Creates password form for given fields and save it in the account store.
++ (BOOL)saveExamplePasswordToAccountStore:(NSString*)password
+                                 username:(NSString*)username
+                                   origin:(NSString*)origin;
+
 // Creates password form for given fields.
 + (BOOL)saveExampleNote:(NSString*)note
                password:(NSString*)password

@@ -19,6 +19,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -38,12 +39,17 @@ using password_manager::PasswordForm;
 namespace {
 
 scoped_refptr<password_manager::PasswordStoreInterface> GetPasswordStore() {
-  // ServiceAccessType governs behaviour in Incognito: only modifications with
-  // EXPLICIT_ACCESS, which correspond to user's explicit gesture, succeed.
-  // This test does not deal with Incognito, and should not run in Incognito
-  // context. Therefore IMPLICIT_ACCESS is used to let the test fail if in
-  // Incognito context.
+  // Ensure that the fails in incognito mode by using IMPLICIT_ACCESS.
   return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+      chrome_test_util::GetOriginalBrowserState(),
+      ServiceAccessType::IMPLICIT_ACCESS);
+}
+
+// Gets the account store of the password.
+scoped_refptr<password_manager::PasswordStoreInterface>
+GetPasswordAccountStore() {
+  // Ensure that the fails in incognito mode by using IMPLICIT_ACCESS.
+  return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }
@@ -59,10 +65,28 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
     obtained_ = std::move(obtained);
   }
 
+  // Retrieves all logins from the profile password store and updates
+  // `results_`. Returns true if the logins retrieved successfully.
   bool FetchStoreResults() {
     results_.clear();
     ResetObtained();
     GetPasswordStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+    bool responded =
+        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^bool {
+          return !AreObtainedReset();
+        });
+    if (responded) {
+      AppendObtainedToResults();
+    }
+    return responded;
+  }
+
+  // Retrieves all logins from the account password store and updates
+  // `results_`. Returns true if the logins retrieved successfully.
+  bool FetchAccountStoreResults() {
+    results_.clear();
+    ResetObtained();
+    GetPasswordAccountStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
     bool responded =
         base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^bool {
           return !AreObtainedReset();
@@ -120,6 +144,28 @@ bool SaveToPasswordStore(const PasswordForm& form) {
   for (const auto& result : consumer.GetStoreResults()) {
     if (result == expected_form)
       return true;
+  }
+  return false;
+}
+
+// Saves `form` to the password account store and waits until the async
+// processing is done.
+// Returns true if `form` is saved successfully, otherwise returns false.
+bool SaveToPasswordAccountStore(const PasswordForm& form) {
+  GetPasswordAccountStore()->AddLogin(form);
+  // When we retrieve the form from the store, `in_store` should be set.
+  password_manager::PasswordForm expected_form = form;
+  expected_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+
+  // Check the result and ensure PasswordStore processed this.
+  FakeStoreConsumer consumer;
+  if (!consumer.FetchAccountStoreResults()) {
+    return false;
+  }
+  for (const auto& result : consumer.GetStoreResults()) {
+    if (result == expected_form) {
+      return true;
+    }
   }
   return false;
 }
@@ -210,6 +256,17 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
   return SaveToPasswordStore(example);
+}
+
++ (BOOL)saveExamplePasswordToAccountStore:(NSString*)password
+                                 username:(NSString*)username
+                                   origin:(NSString*)origin {
+  PasswordForm example;
+  example.username_value = base::SysNSStringToUTF16(username);
+  example.password_value = base::SysNSStringToUTF16(password);
+  example.url = GURL(base::SysNSStringToUTF16(origin));
+  example.signon_realm = example.url.spec();
+  return SaveToPasswordAccountStore(example);
 }
 
 + (BOOL)saveExampleNote:(NSString*)note

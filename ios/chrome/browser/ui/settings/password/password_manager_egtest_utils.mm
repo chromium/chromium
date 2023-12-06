@@ -191,6 +191,16 @@ void SavePasswordForm(NSString* password,
              kPasswordStoreErrorMessage);
 }
 
+void SavePasswordFormToAccountStore(NSString* password,
+                                    NSString* username,
+                                    NSString* origin) {
+  GREYAssert(
+      [PasswordSettingsAppInterface saveExamplePasswordToAccountStore:password
+                                                             username:username
+                                                               origin:origin],
+      kPasswordStoreErrorMessage);
+}
+
 void SaveCompromisedPasswordForm(NSString* password,
                                  NSString* username,
                                  NSString* origin) {

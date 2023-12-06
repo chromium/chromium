@@ -299,6 +299,42 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests the unsynced data dialog shows when there are unsynced passwords. Also
+// verifies that the user is still signed in when the dialog Cancel button is
+// tapped. kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)
+    testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+
+  password_manager_test_utils::SavePasswordFormToAccountStore(
+      @"password", @"user", @"https://example.com");
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  SignOutFromAccountSettings();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_CANCEL)] performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Re-connect the fake sync server to the network to be able to sign-in when
+  // the test gets run repeatedly.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+}
+
 // Tests the unsynced data dialog shows when there are unsynced readinglist
 // entries. Also verifies that the user is still signed in when the dialog
 // Cancel button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.

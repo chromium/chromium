@@ -99,6 +99,11 @@ void SavePasswordForm(NSString* password = kDefaultPassword,
                       NSString* username = kDefaultUsername,
                       NSString* origin = kDefaultSite);
 
+// Saves a password form in the account store.
+void SavePasswordFormToAccountStore(NSString* password = kDefaultPassword,
+                                    NSString* username = kDefaultUsername,
+                                    NSString* origin = kDefaultSite);
+
 // Saves a compromised password form in the store.
 void SaveCompromisedPasswordForm(NSString* password = kDefaultPassword,
                                  NSString* username = kDefaultUsername,
