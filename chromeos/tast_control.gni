@@ -136,7 +136,7 @@ tast_disabled_tests_from_chrome_all = [
   "terminal.SSH@trogdor",
 
   # b/314989173
-  "platform.FlexHWIS@reven",
+  "platform.FlexHWIS@reven-vmtest",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
