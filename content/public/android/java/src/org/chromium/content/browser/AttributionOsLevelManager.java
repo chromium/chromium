@@ -398,6 +398,8 @@ public class AttributionOsLevelManager {
         if (origins.length == 0 && domains.length == 0) {
             switch (matchBehavior) {
                 case DeletionRequest.MATCH_BEHAVIOR_DELETE:
+                    recordOperationResult(
+                            OperationType.DELETE_REGISTRATIONS, OperationResult.SUCCESS);
                     onDataDeletionCompleted(requestId);
                     return;
                 case DeletionRequest.MATCH_BEHAVIOR_PRESERVE:
@@ -441,6 +443,8 @@ public class AttributionOsLevelManager {
 
                     @Override
                     public void onSuccess(Object result) {
+                        recordOperationResult(
+                                OperationType.DELETE_REGISTRATIONS, OperationResult.SUCCESS);
                         onCall();
                     }
 
@@ -470,6 +474,11 @@ public class AttributionOsLevelManager {
         }
     }
 
+    private static void onMeasurementStateReturned(int status, @OperationResult int result) {
+        recordOperationResult(OperationType.GET_MEASUREMENT_API_STATUS, result);
+        AttributionOsLevelManagerJni.get().onMeasurementStateReturned(status);
+    }
+
     /**
      * Gets Measurement API status with native, see `getMeasurementApiStatusAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
@@ -484,10 +493,7 @@ public class AttributionOsLevelManager {
         }
 
         if (!supportsAttribution()) {
-            recordOperationResult(
-                    OperationType.GET_MEASUREMENT_API_STATUS,
-                    OperationResult.ERROR_VERSION_UNSUPPORTED);
-            AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
+            onMeasurementStateReturned(/* status= */ 0, OperationResult.ERROR_VERSION_UNSUPPORTED);
             return;
         }
         if (ContextUtils.getApplicationContext()
@@ -497,10 +503,7 @@ public class AttributionOsLevelManager {
                                 Process.myUid())
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission may not be granted when embedded as WebView.
-            recordOperationResult(
-                    OperationType.GET_MEASUREMENT_API_STATUS,
-                    OperationResult.ERROR_PERMISSION_UNGRANTED);
-            AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
+            onMeasurementStateReturned(/* status= */ 0, OperationResult.ERROR_PERMISSION_UNGRANTED);
             return;
         }
         MeasurementManagerFutures mm = null;
@@ -512,9 +515,7 @@ public class AttributionOsLevelManager {
         }
 
         if (mm == null) {
-            recordOperationResult(
-                    OperationType.GET_MEASUREMENT_API_STATUS, OperationResult.ERROR_INTERNAL);
-            AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
+            onMeasurementStateReturned(/* status= */ 0, OperationResult.ERROR_INTERNAL);
             return;
         }
 
@@ -528,9 +529,7 @@ public class AttributionOsLevelManager {
         }
 
         if (future == null) {
-            recordOperationResult(
-                    OperationType.GET_MEASUREMENT_API_STATUS, OperationResult.ERROR_INTERNAL);
-            AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
+            onMeasurementStateReturned(/* status= */ 0, OperationResult.ERROR_INTERNAL);
             return;
         }
 
@@ -539,16 +538,14 @@ public class AttributionOsLevelManager {
                 new FutureCallback<Integer>() {
                     @Override
                     public void onSuccess(Integer status) {
-                        AttributionOsLevelManagerJni.get().onMeasurementStateReturned(status);
+                        onMeasurementStateReturned(status, OperationResult.SUCCESS);
                     }
 
                     @Override
                     public void onFailure(Throwable thrown) {
                         Log.w(TAG, "Failed to get measurement API status", thrown);
-                        recordOperationResult(
-                                OperationType.GET_MEASUREMENT_API_STATUS,
-                                convertToOperationResult(thrown));
-                        AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
+                        onMeasurementStateReturned(
+                                /* status= */ 0, convertToOperationResult(thrown));
                     }
                 },
                 ContextUtils.getApplicationContext().getMainExecutor());
