@@ -5854,6 +5854,32 @@ should be able to be added at any place in this file.
   <description>Recorded when a user opens a TWA.</description>
 </action>
 
+<action name="BulkCvcDeletionConfirmationDialogAccepted">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user clicks on &quot;Delete&quot; on the bulk delete dialog
+    box.
+  </description>
+</action>
+
+<action name="BulkCvcDeletionConfirmationDialogCancelled">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user clicks on &quot;Cancel&quot; on the bulk delete dialog
+    box.
+  </description>
+</action>
+
+<action name="BulkCvcDeletionHyperlinkClicked">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user clicks on the bulk delete hyperlink on the settings page.
+  </description>
+</action>
+
 <action name="Cancel">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -33,7 +33,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
@@ -662,6 +662,10 @@ export class SettingsPaymentsSectionElement extends
    */
   private onBulkRemoveCvcClick_() {
     assert(this.cvcStorageAvailable_);
+    // Log the metric for user clicking on the bulk delete hyperlink which
+    // triggers the dialog window.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        CvcDeletionUserAction.HYPERLINK_CLICKED);
     this.showBulkRemoveCvcConfirmationDialog_ = true;
   }
 
@@ -675,6 +679,12 @@ export class SettingsPaymentsSectionElement extends
             '#bulkDeleteCvcConfirmDialog');
     assert(confirmationDialog);
 
+    // Log the metric for user either clicking on "Delete" or "Cancel" on the
+    // bulk delete dialog window.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        confirmationDialog.wasConfirmed() ?
+            CvcDeletionUserAction.DIALOG_ACCEPTED :
+            CvcDeletionUserAction.DIALOG_CANCELLED);
     if (confirmationDialog.wasConfirmed()) {
       this.paymentsManager_.bulkDeleteAllCvcs();
     }
