@@ -81,8 +81,8 @@
   <message name="IDS_COMPOSE_UNDO" desc="Label shown on hover and read by screen-readers for button that user clicks to undo to the last result.">
     Undo
   </message>
-  <message name="IDS_COMPOSE_RESUBMIT" desc="Label shown on hover and read by screen-readers for button that user clicks to resubmit input.">
-    Resubmit
+  <message name="IDS_COMPOSE_RESUBMIT" desc="Label shown on hover and read by screen-readers for button that user clicks to regenerate input.">
+    Regenerate
   </message>
   <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the selected textfield.">
     Insert
