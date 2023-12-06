@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/animation/css_custom_transform_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_display_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_dynamic_range_limit_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_palette_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_size_adjust_interpolation_type.h"
@@ -211,6 +212,13 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSIntrinsicLengthInterpolationType>(
                 used_property));
+        break;
+      case CSSPropertyID::kDynamicRangeLimit:
+        if (RuntimeEnabledFeatures::CSSDynamicRangeLimitEnabled()) {
+          applicable_types->push_back(
+              std::make_unique<CSSDynamicRangeLimitInterpolationType>(
+                  used_property));
+        }
         break;
       case CSSPropertyID::kFlexGrow:
       case CSSPropertyID::kFlexShrink:

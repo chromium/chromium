@@ -751,8 +751,8 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // despite the (still) increased headroom.
   {
     PaintFlags sdr_paint_flags;
-    sdr_paint_flags.setDynamicRangeLimit(
-        PaintFlags::DynamicRangeLimit::kStandard);
+    sdr_paint_flags.setDynamicRangeLimit(PaintFlags::DynamicRangeLimitMixture(
+        PaintFlags::DynamicRangeLimit::kStandard));
     scoped_refptr<DisplayItemList> display_item_list_10k_nits_sdr =
         make_display_item_list(2, 10000.f, &sdr_paint_flags);
     auto actual = Raster(display_item_list_10k_nits_sdr, options);

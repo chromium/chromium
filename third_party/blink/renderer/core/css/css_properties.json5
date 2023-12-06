@@ -3178,6 +3178,7 @@
     {
       name: "dynamic-range-limit",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      interpolable: true,
       inherited: true,
       runtime_flag: "CSSDynamicRangeLimit",
       converter: "ConvertDynamicRangeLimit",
@@ -3187,7 +3188,7 @@
       keywords: ["standard", "high", "constrained-high"],
       typedom_types: ["Keyword"],
       include_paths: ["third_party/blink/renderer/platform/graphics/graphics_types.h"],
-      default_value: "cc::PaintFlags::DynamicRangeLimit::kHigh",
+      default_value: "DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh)",
     },
     {
       name: "initial-letter",

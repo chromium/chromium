@@ -855,7 +855,8 @@ bool DeserializeSkottieMap(
 
 SkottieFrameData DeserializeSkottieFrameData(PaintOpReader& reader) {
   SkottieFrameData frame_data;
-  reader.Read(&frame_data.image, PaintFlags::DynamicRangeLimit::kHigh);
+  reader.Read(&frame_data.image, PaintFlags::DynamicRangeLimitMixture(
+                                     PaintFlags::DynamicRangeLimit::kHigh));
   reader.Read(&frame_data.quality);
   return frame_data;
 }

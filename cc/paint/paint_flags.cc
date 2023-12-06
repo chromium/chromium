@@ -45,8 +45,8 @@ PaintFlags::PaintFlags() {
   bitfields_.blend_mode_ = static_cast<int>(SkBlendMode::kSrcOver);
   bitfields_.filter_quality_ =
       static_cast<int>(PaintFlags::FilterQuality::kNone);
-  bitfields_.dynamic_range_limit_ =
-      static_cast<int>(PaintFlags::DynamicRangeLimit::kHigh);
+  bitfields_.dynamic_range_limit_standard_mix_ = 0;
+  bitfields_.dynamic_range_limit_constrained_high_mix_ = 0;
 
   static_assert(sizeof(bitfields_) <= sizeof(bitfields_uint_),
                 "Too many bitfields");

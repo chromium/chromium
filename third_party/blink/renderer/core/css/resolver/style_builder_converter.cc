@@ -173,16 +173,17 @@ DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kHigh:
-        return DynamicRangeLimit::kHigh;
+        return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh);
       case CSSValueID::kConstrainedHigh:
-        return DynamicRangeLimit::kConstrainedHigh;
+        return DynamicRangeLimit(
+            cc::PaintFlags::DynamicRangeLimit::kConstrainedHigh);
       case CSSValueID::kStandard:
-        return DynamicRangeLimit::kStandard;
+        return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kStandard);
       default:
         break;
     }
   }
-  return DynamicRangeLimit::kHigh;
+  return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh);
 }
 
 StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
