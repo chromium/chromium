@@ -34,14 +34,14 @@ class FolderInMyFiles {
   explicit FolderInMyFiles(Profile* profile);
   ~FolderInMyFiles();
 
-  // Copies additional files into |folder_|, appending to |files_|.
+  // Copies additional files into `folder_`, appending to `files_`.
   void Add(const std::vector<base::FilePath>& files);
 
-  // Copies the contents of |file| to |folder_| with the given |new_base_name|.
+  // Copies the contents of `file` to `folder_` with the given `new_base_name`.
   void AddWithName(const base::FilePath& file,
                    const base::FilePath& new_base_name);
 
-  // Use platform_util::OpenItem() on the file with basename matching |path| to
+  // Use platform_util::OpenItem() on the file with basename matching `path` to
   // simulate a user request to open that path, e.g., from the Files app or
   // chrome://downloads.
   platform_util::OpenOperationResult Open(const base::FilePath& path);
@@ -70,7 +70,7 @@ std::vector<storage::FileSystemURL> CopyTestFilesIntoMyFiles(
 // done in an override of InProcessBrowserTest::SetUpOnMainThread().
 void AddDefaultComponentExtensionsOnMainThread(Profile* profile);
 
-// Installs the chrome app at the provided |test_path_ascii| under DIR_TEST_DATA
+// Installs the chrome app at the provided `test_path_ascii` under DIR_TEST_DATA
 // and waits for the background page to start up.
 scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
     Profile* profile,
@@ -83,7 +83,7 @@ scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
 base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
     Profile* profile);
 // Like above but uses the provided chrome app installation function
-// |install_fn| instead of InstallTestingChromeApp. |install_fn| receives the
+// `install_fn` instead of InstallTestingChromeApp. `install_fn` receives the
 // chrome app's path (relative to DIR_TEST_DATA) as argument.
 base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
     Profile* profile,
@@ -96,8 +96,8 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
     Profile* profile,
     const base::FilePath& file);
 
-// Add a fake web app with to the |app_service_proxy| with
-// |intent_filters|.
+// Add a fake web app with to the `app_service_proxy` with
+// `intent_filters`.
 void AddFakeAppWithIntentFilters(
     const std::string& app_id,
     std::vector<apps::IntentFilterPtr> intent_filters,
@@ -105,7 +105,7 @@ void AddFakeAppWithIntentFilters(
     absl::optional<bool> handles_intents,
     apps::AppServiceProxy* app_service_proxy);
 
-// Add a fake web app with to the |app_service_proxy|.
+// Add a fake web app with to the `app_service_proxy`.
 void AddFakeWebApp(const std::string& app_id,
                    const std::string& mime_type,
                    const std::string& file_extension,
@@ -166,7 +166,7 @@ class FakeProvidedFileSystemOneDrive
           file_system_info);
   ~FakeProvidedFileSystemOneDrive() override;
 
-  // Fail the create file request with |create_file_error_| if it exists.
+  // Fail the create file request with `create_file_error_` if it exists.
   // Otherwise, create a file as normal. Tests can run a callback on
   // `CreateFile` via `SetCreateFileCallback()`.
   ash::file_system_provider::AbortCallback CreateFile(
@@ -174,10 +174,10 @@ class FakeProvidedFileSystemOneDrive
       storage::AsyncFileUtil::StatusCallback callback) override;
 
   // Parallel what ODFS does but fail to get non-root entry metadata if
-  // |get_actions_error_| is set:
+  // `get_actions_error_` is set:
   // - If the number of entries requested is not 1, fail.
   // - If the root is requested, return (test) ODFS metadata.
-  // - If |get_actions_error_| is set, fail request with it.
+  // - If `get_actions_error_` is set, fail request with it.
   // - If the entry is found, return (test) entry metadata.
   // - Otherwise, fail.
   ash::file_system_provider::AbortCallback GetActions(

@@ -400,7 +400,7 @@ FakeProvidedFileSystemOneDrive::GetActions(
     std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
     return ash::file_system_provider::AbortCallback();
   }
-  // Otherwise, return |kODFSSampleUrl|.
+  // Otherwise, return `kODFSSampleUrl`.
   actions.push_back({ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
 
   std::move(callback).Run(actions, base::File::FILE_OK);
