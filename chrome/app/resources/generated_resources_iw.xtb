@@ -10154,7 +10154,6 @@
 <translation id="8999027165951679951">הנפח שהתפנה בגלל כרטיסייה לא פעילה: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">שגיאה בתחביר של קטע: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">יש לגעת בחיישן טביעות האצבע שבצד ימין של <ph name="DEVICE_TYPE" />. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">כל הכרטיסיות</translation>
 <translation id="9003185744423389627">החיבור לשרת ניהול המכשירים נכשל עם הסטטוס '<ph name="STATUS_TEXT" />', בשעה <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">‏לבצע סריקה אוטומטית של פרופילי eSIM זמינים?</translation>
 <translation id="9003647077635673607">התרה בכל האתרים</translation>

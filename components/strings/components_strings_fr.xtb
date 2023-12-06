@@ -824,6 +824,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
           <ph name="LIST_ITEM" />Les cookies et les données des sites
           <ph name="LIST_ITEM" />Les informations saisies dans les formulaires
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insérer</translation>
 <translation id="2625385379895617796">Votre horloge est en avance.</translation>
 <translation id="262745152991669301">Peut demander à se connecter à des appareils USB</translation>
 <translation id="2629325967560697240">Pour bénéficier du niveau de sécurité le plus élevé de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activez la protection renforcée<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1585,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4177501066905053472">Thèmes des annonces</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Ne plus suivre le prix</translation>
+<translation id="4191334393248735295">Longueur</translation>
 <translation id="4195459680867822611">Bouton "Voir les astuces Chrome" à activer pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196861286325780578">&amp;Rétablir le déplacement</translation>

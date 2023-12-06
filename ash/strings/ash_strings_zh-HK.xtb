@@ -659,6 +659,7 @@
 <translation id="36813544980941320">您的手機和 <ph name="DEVICE_NAME" /> 將共用 Wi-Fi 網絡</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 然後 <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">網站</translation>
+<translation id="3697991387880191195">按一下螢幕截圖快速鍵</translation>
 <translation id="3702809606464356667">顯示緊來自目前桌面嘅視窗，㩒向上箭咀掣就可以顯示來自所有桌面嘅視窗</translation>
 <translation id="3702846122927433391">尼日利亞嘅人口</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">無法儲存螢幕錄影</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> 已連線，可以開始使用。你可在「設定」中自訂滑鼠。</translation>
 <translation id="4405151984121254935">不支援已連接的周邊裝置類型</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
@@ -1292,6 +1294,7 @@
 <translation id="6199775032047436064">重新載入目前網頁</translation>
 <translation id="6200515304866777730">應用程式不支援</translation>
 <translation id="6210042900243040400">連線至 <ph name="EMAIL" /> 先前儲存的 <ph name="NAME" /></translation>
+<translation id="6212097153736801627">自訂你的 <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">擷取部分螢幕截圖或進行部分螢幕錄影</translation>
 <translation id="6220928844947387476">您現在可以錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
@@ -1532,6 +1535,7 @@
 <translation id="726276584504105859">拖曳到此處即可分割畫面</translation>
 <translation id="7262906531272962081">建立提醒</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵</translation>
+<translation id="7285232777292757180">使用快速設定中的螢幕截圖工具擷取螢幕截圖</translation>
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1915,6 +1919,7 @@
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」將被永久刪除</translation>
 <translation id="889790758758811533">剩餘 <ph name="PERCENTAGE" />% 電量 (大約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> 已連線，可以開始使用。你可在「設定」中自訂繪圖板。</translation>
 <translation id="88986195241502842">下一頁</translation>
 <translation id="8905919797434099235">(無標題)</translation>
 <translation id="890616557918890486">變更來源</translation>

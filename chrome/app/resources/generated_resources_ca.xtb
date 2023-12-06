@@ -10164,7 +10164,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8999027165951679951">Pestanya inactiva: <ph name="MEMORY_SAVINGS" /> alliberats</translation>
 <translation id="8999560016882908256">Error de sintaxi de la secció: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Toca el sensor d'empremtes digitals que hi ha al costat dret del teu <ph name="DEVICE_TYPE" />. Les dades de la teva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Totes les pestanyes</translation>
 <translation id="9003185744423389627">La connexió al servidor de gestió de dispositius ha fallat amb l'estat "<ph name="STATUS_TEXT" />" a les <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Vols que se cerquin automàticament perfils d'eSIM disponibles?</translation>
 <translation id="9003647077635673607">Permet-ho en tots els llocs web</translation>

@@ -828,6 +828,7 @@
           <ph name="LIST_ITEM" />কুকি এবং সাইট ডেটা
           <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">ঢোকান</translation>
 <translation id="2625385379895617796">আপনার ঘড়ির সময় অনেকটা এগিয়ে</translation>
 <translation id="262745152991669301">USB ডিভাইসের সাথে কানেক্ট করতে, অনুমতি চাইতে পারে</translation>
 <translation id="2629325967560697240">Chrome-এ সবচেয়ে বেশি সুরক্ষা পেতে, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />উন্নত সুরক্ষা চালু করুন<ph name="END_ENHANCED_PROTECTION_LINK" />।</translation>
@@ -1589,6 +1590,7 @@
 <translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">দাম ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
+<translation id="4191334393248735295">দৈর্ঘ্য</translation>
 <translation id="4195459680867822611">'Chrome সংক্রান্ত পরামর্শ দেখুন' বোতাম, Chrome ফিচার সম্পর্কে আরও জানতে এটি চালু করুন</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4196861286325780578">&amp;সরানোর কাজটি আবার করুন</translation>

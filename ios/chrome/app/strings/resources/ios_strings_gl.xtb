@@ -142,7 +142,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="165877110639533037">Non hai pestanas abertas</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Solicitar sitio para móbiles</translation>
-<translation id="168715261339224929">Activa a sincronización para acceder aos marcadores desde todos os teus dispositivos.</translation>
 <translation id="1687475363370981210">Marcar todo como lido</translation>
 <translation id="1689333818294560261">Alcume</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
@@ -175,6 +174,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1889872080060107187">Iniciarás sesión en <ph name="URL" /></translation>
 <translation id="1890237935065108104">Esta opción de configuración non está dispoñible.</translation>
+<translation id="1891199774460536658">Facer automaticamente o seguimento de todos os paquetes detectados</translation>
 <translation id="1894023287452300670">Fai un seguimento do prezo aquí</translation>
 <translation id="189531189292803889">O teu iPad restaurouse recentemente. Pode que por iso se cambiase o teu navegador predeterminado.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
@@ -654,6 +654,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4493604894403585654">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4502566650163919158">Comprobar agora</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
+<translation id="4509449376545878717">Non detectar nunca paquetes automaticamente</translation>
 <translation id="4514889972748124117">Suxerir contrasinal seguro…</translation>
 <translation id="4520798012560649652">Máis información sobre o modo de incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
@@ -1045,7 +1046,6 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6476253015009698798">O seguimento de prezos non está dispoñible para esta páxina.</translation>
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="648164694371393720">Produciuse un erro de autenticación</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
 <translation id="6484712497741564393">Tes a sesión iniciada como <ph name="EMAIL" />.
 
 Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
@@ -1338,6 +1338,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8023878949384262191">Amplía a sección.</translation>
 <translation id="8027581147000338959">Abrir nunha ventá nova</translation>
 <translation id="8032569120109842252">Seguindo</translation>
+<translation id="8040207962129315716">Preguntarme sempre</translation>
 <translation id="804225253087497565">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK" />historial de busca<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.</translation>
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
 <translation id="8044568254381073661">Gardar sen encriptación</translation>
@@ -1412,7 +1413,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8428634594422941299">De acordo</translation>
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8449347986464073209">Eliminar e pechar sesión</translation>
-<translation id="8458397775385147834">Eliminouse un elemento</translation>
 <translation id="8459333855531264009">Non seguro</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>

@@ -659,6 +659,7 @@
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
 <translation id="3682279812299376603">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">网站</translation>
+<translation id="3697991387880191195">按屏幕截图快捷方式</translation>
 <translation id="3702809606464356667">正在显示当前桌面中的窗口，按向上键即可显示所有桌面中的窗口</translation>
 <translation id="3702846122927433391">尼日利亚的人口</translation>
 <translation id="3705722231355495246">-</translation>
@@ -833,6 +834,7 @@
 <translation id="4389184120735010762">您按下了停靠放大镜的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="439598569299422042">已暂停，<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">无法保存抓屏</translation>
+<translation id="4403371424034411727">“<ph name="PERIPHERAL_NAME" />”已连接，可以使用了。您可在“设置”中自定义鼠标。</translation>
 <translation id="4405151984121254935">所连外围设备的类型不受支持</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
@@ -1291,6 +1293,7 @@
 <translation id="6199775032047436064">重新加载当前网页</translation>
 <translation id="6200515304866777730">应用不支持</translation>
 <translation id="6210042900243040400">关联已保存到 <ph name="EMAIL" /> 的“<ph name="NAME" />”</translation>
+<translation id="6212097153736801627">自定义您的“<ph name="PERIPHERAL_NAME" />”</translation>
 <translation id="6213808132343683860">截取局部屏幕或录屏</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
@@ -1532,6 +1535,7 @@
 <translation id="726276584504105859">拖到此处即可使用分屏模式</translation>
 <translation id="7262906531272962081">创建提醒</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />键 + 退格键</translation>
+<translation id="7285232777292757180">使用快捷设置中的“屏幕截取”工具截屏</translation>
 <translation id="7302889331339392448">“实时字幕”功能已关闭。</translation>
 <translation id="7303365578352795231">正在通过另一设备答复。</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1915,6 +1919,7 @@
 <translation id="888982883502837004">有适用于您设备的固件更新。点击即可查看并更新。</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />”会被永久删除</translation>
 <translation id="889790758758811533">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。请为设备接通电源。</translation>
+<translation id="8897940060812808966">“<ph name="PERIPHERAL_NAME" />”已连接，可以使用了。您可在“设置”中自定义绘图板。</translation>
 <translation id="88986195241502842">向下翻页</translation>
 <translation id="8905919797434099235">（无标题）</translation>
 <translation id="890616557918890486">更改来源</translation>

@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">نقل علامة التبويب إلى اليسار</translation>
 <translation id="7966321538264951561">رفض الاقتراحات</translation>
 <translation id="8029301326595421733">يتم عرض المعلومات حول هذا المتجر بطول الشاشة.</translation>
-<translation id="814503310257431685">عرض الكل</translation>
 <translation id="8205266828577616993">نقل علامة التبويب إلى الأعلى</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{إغلاق علامة تبويب واحدة محدّدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}two{إغلاق علامتَي تبويب محدّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}}</translation>
 <translation id="8398929769197326728">‏مجلد جديد - ‎<ph name="CURRENT_TIMESTAMP_MS" /></translation>

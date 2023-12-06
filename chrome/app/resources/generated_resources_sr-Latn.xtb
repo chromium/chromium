@@ -10158,7 +10158,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8999027165951679951">Neaktivna kartica: oslobođeno je <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Sintaksička greška sa odeljkom: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Dodirnite senzor za otisak prsta na desnoj strani <ph name="DEVICE_TYPE" /> uređaja. Podaci o otisku prsta se bezbedno čuvaju na <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
-<translation id="9000532564152265066">Sve kartice</translation>
 <translation id="9003185744423389627">Veza sa serverom za upravljanje uređajima nije uspela uz status <ph name="STATUS_TEXT" /> u <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Želite li automatski da skenirate dostupne eSIM profile?</translation>
 <translation id="9003647077635673607">Dozvoli na svim veb-sajtovima</translation>

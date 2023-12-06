@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">टैब को दाईं ओर ले जाएं</translation>
 <translation id="7966321538264951561">सुझावों को खारिज करें.</translation>
 <translation id="8029301326595421733">इस स्टोर के बारे में जानकारी पूरी स्क्रीन पर खुली हुई है</translation>
-<translation id="814503310257431685">सभी देखें</translation>
 <translation id="8205266828577616993">टैब ऊपर भेजें</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> चुना गया टैब बंद करें}one{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}other{<ph name="TABS_COUNT_MANY" /> चुने गए टैब बंद करें}}</translation>
 <translation id="8398929769197326728">नया फ़ोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

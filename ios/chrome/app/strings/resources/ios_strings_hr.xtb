@@ -142,7 +142,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="165877110639533037">Nema otvorenih kartica</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Zatraži web-lokaciju za mobilne uređaje</translation>
-<translation id="168715261339224929">Da bi se vaše oznake prikazale na svim vašim uređajima, uključite sinkronizaciju.</translation>
 <translation id="1687475363370981210">Označi sve kao pročitano</translation>
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1700629756560807968">Broj odabranih oznaka: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -838,6 +837,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5457226814769348910">Otvori offline verziju</translation>
 <translation id="5475069061743940393">Praćenje paketa</translation>
 <translation id="5478327362747197944">Izradite događaje izravno u Kalendaru tako da kliknete datum na web-stranici.</translation>
+<translation id="5482922178977937393">Želite li primati obavijesti o vijestima, sportu i drugim temama na temelju svojih interesa?</translation>
 <translation id="5489208564673669003">Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiranje svih kolačića (ne preporučuje se)</translation>
 <translation id="5497202150450073388">Pokušana dostava. Ponovit će se</translation>
@@ -1047,7 +1047,6 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="6476253015009698798">Praćenje cijena nije dostupno za ovu web-stranicu.</translation>
 <translation id="6476800141292307438">Stranica se prevodi na <ph name="LANGUAGE" />. Opcije su dostupne pri dnu zaslona.</translation>
 <translation id="648164694371393720">Pogreška autentifikacije</translation>
-<translation id="6482629121755362506">Broj izbrisanih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali podatke Chromea na svojem Google računu.</translation>
@@ -1415,7 +1414,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8428634594422941299">Shvaćam</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8449347986464073209">Izbriši i odjavi se</translation>
-<translation id="8458397775385147834">Izbrisana je 1 stavka</translation>
 <translation id="8459333855531264009">Nije sigurno</translation>
 <translation id="8487667956631253959">Uključeno</translation>
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>

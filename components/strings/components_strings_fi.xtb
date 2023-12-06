@@ -375,6 +375,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Chrome poistaa yli neljä viikkoa vanhat aiheet automaattisesti. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille, ja laittaa mainosaiheet pois päältä Chromen asetuksista milloin tahansa.</translation>
 <translation id="1697532407822776718">Kaikki on valmista.</translation>
 <translation id="1699651774646344471">Voit nyt käyttää Google-tililläsi olevia osoitteita</translation>
+<translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" /> on tarkoitettu verkkohakujen tekemiseen.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706625117072057435">Zoomaustasot</translation>
@@ -824,6 +825,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
           <ph name="LIST_ITEM" />Evästeet ja sivustodata
           <ph name="LIST_ITEM" />Lomakkeisiin syötetyt tiedot
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Lisää</translation>
 <translation id="2625385379895617796">Kellosi edistää</translation>
 <translation id="262745152991669301">Saa pyytää lupaa yhdistää USB-laitteisiin</translation>
 <translation id="2629325967560697240">Jos haluat käyttää Chromen tehokkainta suojausta, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ota parannettu suojaus käyttöön<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1587,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4177501066905053472">Mainosten aiheet</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Lopeta hinnan seuraaminen</translation>
+<translation id="4191334393248735295">Pituus</translation>
 <translation id="4195459680867822611">Katso Chromen vinkkejä ‑painike, aktivoi katsoaksesi lisätietoa Chromen ominaisuuksista</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4196861286325780578">&amp;Toista siirto</translation>

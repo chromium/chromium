@@ -825,6 +825,7 @@
             <ph name="LIST_ITEM" />داده‌های سایت و کوکی‌ها
             <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">درج</translation>
 <translation id="2625385379895617796">ساعت شما جلو است</translation>
 <translation id="262745152991669301">‏می‌تواند برای اتصال به دستگاه‌های USB درخواست دهد</translation>
 <translation id="2629325967560697240">‏برای بهره‌مندی از بالاترین سطح امنیت در Chrome، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />«محافظت بهبودیافته» را روشن کنید<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1586,7 @@
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">لغو پیگیری قیمت</translation>
+<translation id="4191334393248735295">طول</translation>
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
@@ -2921,7 +2923,7 @@
 <translation id="6883221904761970440">برگ اصالت‌سنجی اطلاعات کاربری پرداخت امن بسته شد</translation>
 <translation id="6884662655240309489">اندازه ۱</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
-<translation id="6888584790432772780">‏Chrome این صفحه را ساده کرده است تا خواندن آن آسان‌تر باشد Chrome صفحه اصلی را ازطریق اتصالی غیرایمن بازیابی کرد.</translation>
+<translation id="6888584790432772780">‏Chrome این صفحه را ساده کرده است تا خواندن آن آسان‌تر باشد Chrome صفحه اصلی را ازطریق یک اتصال ناامن بازیابی کرد.</translation>
 <translation id="6890443033788248019">مکان مجاز شود؟</translation>
 <translation id="6890531741535756070">قبلاً انتخاب کرده‌اید در وب‌سایت‌هایی که از <ph name="PROVIDER_ORIGIN" /> استفاده می‌کنند درستی‌سنجی با <ph name="DEVICE_LABEL" /> انجام شود. این ارائه‌دهنده ممکن است اطلاعات روش پرداختتان را ذخیره کرده باشد که می‌توانید <ph name="BEGIN_LINK" />درخواست حذف آن را بدهید<ph name="END_LINK" />.</translation>
 <translation id="6890956352250146925">گزینه‌های مرتبط با کوکی‌ها و داده‌های سایت</translation>

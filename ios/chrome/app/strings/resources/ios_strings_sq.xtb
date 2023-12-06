@@ -142,7 +142,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="165877110639533037">Nuk ka skeda të hapura</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Kërko sajtin për celular</translation>
-<translation id="168715261339224929">Për të marrë faqeshënuesit e tu në të gjitha pajisjet e tua, aktivizo sinkronizimin.</translation>
 <translation id="1687475363370981210">Shëno të gjitha si të lexuara</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> u zgjodhën</translation>
@@ -1045,7 +1044,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6476253015009698798">Monitorimi i çmimeve nuk ofrohet për këtë faqe.</translation>
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
 <translation id="648164694371393720">Gabim i vërtetimit</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementë u fshinë</translation>
 <translation id="6484712497741564393">Identifikuar si <ph name="EMAIL" />.
 
 Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>
@@ -1412,7 +1410,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8428634594422941299">E kuptova</translation>
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8449347986464073209">Fshi dhe dil</translation>
-<translation id="8458397775385147834">1 element u fshi</translation>
 <translation id="8459333855531264009">Jo e sigurt</translation>
 <translation id="8487667956631253959">Aktivizo</translation>
 <translation id="8487700953926739672">Mundësohet offline</translation>

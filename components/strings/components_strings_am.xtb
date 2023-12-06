@@ -827,6 +827,7 @@
           <ph name="LIST_ITEM" />ኩኪዎች እና የጣቢያ ውሂብ
           <ph name="LIST_ITEM" />በቅጾች ላይ የገባው መረጃ
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">አስገባ</translation>
 <translation id="2625385379895617796">የእርስዎ ሰዓት ገና የወደፊት ነው</translation>
 <translation id="262745152991669301">ከዩኤስቢ መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
 <translation id="2629325967560697240">የChrome ከፍተኛው የደህንነት ደረጃን ለማግኘት <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />የተሻሻለውን ጥበቃ ያብሩ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1587,6 +1588,7 @@
 <translation id="4177501066905053472">የማስታወቂያ ርዕሶች</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ዋጋ ላይ ክትትል ማድረግ አቁም</translation>
+<translation id="4191334393248735295">ርዝመት</translation>
 <translation id="4195459680867822611">የChrome ጠቃሚ ምክሮች አዝራርን ይመልከቱ ስለ Chrome ባህሪያት ለማወቅ ያግብሩ</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4196861286325780578">&amp;ውሰድን ድገም</translation>

@@ -142,7 +142,6 @@
 <translation id="165877110639533037">Нема отворени картички</translation>
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Побарајте сајт за мобилен</translation>
-<translation id="168715261339224929">За да ги добиете обележувачите на сите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="1687475363370981210">Означи ги сите како прочитани</translation>
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
@@ -1045,7 +1044,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6476253015009698798">Следењето цени не е достапно за страницава.</translation>
 <translation id="6476800141292307438">Страницата се преведува на <ph name="LANGUAGE" />. Достапни се опции на дното на екранот.</translation>
 <translation id="648164694371393720">Грешка при проверката</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ставки се избришани</translation>
 <translation id="6484712497741564393">Најавени сте како <ph name="EMAIL" />.
 
 Вашите податоци се шифрирани со вашата лозинка. Внесете ја за да користите и зачувувате податоци од Chrome во вашата сметка на Google.</translation>
@@ -1412,7 +1410,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8428634594422941299">Сфатив</translation>
 <translation id="8446884382197647889">Дознај повеќе</translation>
 <translation id="8449347986464073209">Избриши и одјави се</translation>
-<translation id="8458397775385147834">1 ставка е избришана</translation>
 <translation id="8459333855531264009">Не е безбедно</translation>
 <translation id="8487667956631253959">Вклучено</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>

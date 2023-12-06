@@ -10157,7 +10157,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8999027165951679951">Inaktiv flik: <ph name="MEMORY_SAVINGS" /> har frigjorts</translation>
 <translation id="8999560016882908256">Syntaxfel i avsnitt: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Tryck på fingeravtryckssensorn på högra sidan av <ph name="DEVICE_TYPE" />. Din fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Alla flikar</translation>
 <translation id="9003185744423389627">Anslutningen till servern för enhetshanteringen misslyckades <ph name="FAILURE_TIME" /> med statusen <ph name="STATUS_TEXT" /></translation>
 <translation id="90033698482696970">Vill du söka efter tillgängliga eSIM-profiler automatiskt?</translation>
 <translation id="9003647077635673607">Tillåt på alla webbplatser</translation>

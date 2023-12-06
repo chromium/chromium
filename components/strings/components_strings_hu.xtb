@@ -825,6 +825,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
             <ph name="LIST_ITEM" />cookie-k és webhelyadatok;
             <ph name="LIST_ITEM" />űrlapokon megadott információk.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Beillesztés</translation>
 <translation id="2625385379895617796">Az órája siet</translation>
 <translation id="262745152991669301">Engedélyt kérhet az USB-eszközökhöz való csatlakozásra</translation>
 <translation id="2629325967560697240">A Chrome legmagasabb szintű biztonságának eléréséhez <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />kapcsolja be a speciális védelmet<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1583,6 +1584,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4177501066905053472">Hirdetéstémák</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Árkövetés kikapcsolása</translation>
+<translation id="4191334393248735295">Hossz</translation>
 <translation id="4195459680867822611">Chrome-tippek megjelenítése gomb, nyomja meg a Chrome funkcióival kapcsolatos további információkért.</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196861286325780578">&amp;Áthelyezés újra</translation>

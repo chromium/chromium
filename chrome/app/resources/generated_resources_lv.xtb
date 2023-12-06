@@ -10134,7 +10134,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8999027165951679951">Neaktīva cilne; atbrīvotā vieta: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Sadaļas sintakses kļūda: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Pieskarieties pirksta nospieduma sensoram ierīces (<ph name="DEVICE_TYPE" />) labajā pusē. Jūsu pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai jūsu ierīcē (<ph name="DEVICE_TYPE" />).</translation>
-<translation id="9000532564152265066">Visas cilnes</translation>
 <translation id="9003185744423389627">Neizdevās izveidot statusu ar ierīces pārvaldības serveri. Statuss: “<ph name="STATUS_TEXT" />” (<ph name="FAILURE_TIME" />).</translation>
 <translation id="90033698482696970">Vai automātiski meklēt pieejamos eSIM profilus?</translation>
 <translation id="9003647077635673607">Atļaut visās vietnēs</translation>

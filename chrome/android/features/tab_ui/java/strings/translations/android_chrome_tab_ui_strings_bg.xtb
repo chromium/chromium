@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
 <translation id="8029301326595421733">Информацията за този магазин е отворена на пълната височина</translation>
-<translation id="814503310257431685">Преглед на всички</translation>
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

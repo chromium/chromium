@@ -826,6 +826,7 @@
           <ph name="LIST_ITEM" />ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
           <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">إدخال</translation>
 <translation id="2625385379895617796">توقيت ساعتك متقدم عن الوقت الحالي</translation>
 <translation id="262745152991669301">‏السماح للموقع الإلكتروني بطلب الاتصال بأجهزة USB</translation>
 <translation id="2629325967560697240">‏للحصول على أعلى مستوى من الحماية في متصفِّح Chrome، يمكنك <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />تفعيل "الحماية المُحسَّنة"<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1587,6 +1588,7 @@
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">إيقاف تتبُّع السعر</translation>
+<translation id="4191334393248735295">الطول</translation>
 <translation id="4195459680867822611">‏زر الاطّلاع على معلومات بشأن استخدام متصفّح Chrome: انقر على هذا الزر للتعرّف على ميزات Chrome.</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4196861286325780578">إ&amp;عادة النقل</translation>

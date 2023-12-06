@@ -10132,7 +10132,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8999027165951679951">Neaktivní karta: Uvolněno <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Chyba syntaxe sekce: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Dotkněte se snímače otisků prstů na pravé straně zařízení <ph name="DEVICE_TYPE" />. Otisk prstu je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Všechny karty</translation>
 <translation id="9003185744423389627">Připojení k serveru Správce zařízení se nezdařilo, stav: <ph name="STATUS_TEXT" /> v <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Automaticky vyhledávat dostupné profily eSIM karet?</translation>
 <translation id="9003647077635673607">Povolit na všech webech</translation>

@@ -10154,7 +10154,6 @@
 <translation id="8999027165951679951">Неактивна вкладка: звільнено <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Синтаксична помилка в розділі: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Торкніться сканера відбитків пальців на правому боці пристрою <ph name="DEVICE_TYPE" />. <ph name="DEVICE_TYPE" /> надійно зберігає дані про відбиток і нікуди не надсилає їх.</translation>
-<translation id="9000532564152265066">Усі вкладки</translation>
 <translation id="9003185744423389627">Не вдалося підключитися до сервера керування пристроями. Статус станом на <ph name="FAILURE_TIME" />: "<ph name="STATUS_TEXT" />".</translation>
 <translation id="90033698482696970">Автоматично сканувати доступні профілі eSIM?</translation>
 <translation id="9003647077635673607">Дозволити на всіх веб-сайтах</translation>

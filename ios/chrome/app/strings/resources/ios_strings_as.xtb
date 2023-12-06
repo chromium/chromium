@@ -142,7 +142,6 @@
 <translation id="165877110639533037">কোনো খোলা টেব নাই</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ৰ পৰা <ph name="TARGET_LANGUAGE" />লৈ</translation>
 <translation id="1683483432843341018">ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰক</translation>
-<translation id="168715261339224929">আপোনাৰ বুকমাৰ্কসমূহ নিজৰ সকলো ডিভাইচতে পাবলৈ ছিংক অন কৰক।</translation>
 <translation id="1687475363370981210">সকলো পঢ়া হ‘ল বুলি চিহ্নিত কৰক</translation>
 <translation id="1689333818294560261">উপনাম</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
@@ -175,6 +174,7 @@
 <translation id="1883255238294161206">সূচী সংকোচন কৰক</translation>
 <translation id="1889872080060107187">আপুনি <ph name="URL" />ত ছাইন ইন কৰিব</translation>
 <translation id="1890237935065108104">এই ছেটিংটো উপলব্ধ নহয়।</translation>
+<translation id="1891199774460536658">চিনাক্ত কৰা আটাইবোৰ পেকেজ স্বয়ংক্ৰিয়ভাৱে ট্ৰেক কৰক</translation>
 <translation id="1894023287452300670">ইয়াত মূল্য ট্ৰেক কৰক</translation>
 <translation id="189531189292803889">আপোনাৰ iPad শেহতীয়াকৈ পুনঃস্থাপন কৰা হৈছে, যিটোৱে হয়তো আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ সলনি কৰিছে।</translation>
 <translation id="1910975740091000991">iOSৰ বাবে Chrome</translation>
@@ -654,6 +654,7 @@
 <translation id="4493604894403585654">আপুনি <ph name="USER_EMAIL" /> ৰূপে ছাইন ইন কৰিছে। আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="4502566650163919158">এতিয়াই পৰীক্ষা কৰক</translation>
 <translation id="4508750114462689118">ছাইন প্ৰ’ম’ বন্ধ কৰক</translation>
+<translation id="4509449376545878717">পেকেজ কেতিয়াও স্বয়ংক্ৰিয়ভাৱে চিনাক্ত নকৰিব</translation>
 <translation id="4514889972748124117">বিশ্বস্ত পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="4520798012560649652">ইনক’গনিট’ ম’ডৰ বিষয়ে অধিক জানক</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} টা বুকমাৰ্ক}one{{count} টা বুকমাৰ্ক}other{{count} টা বুকমাৰ্ক}}</translation>
@@ -836,6 +837,7 @@
 <translation id="5457226814769348910">অফলাইন সংস্কৰণটো খোলক</translation>
 <translation id="5475069061743940393">পেকেজ ট্ৰেকিং</translation>
 <translation id="5478327362747197944">এখন ৱেব পৃষ্ঠাত পোনপটীয়াকৈ এটা তাৰিখত ক্লিক কৰি কেলেণ্ডাৰ অনুষ্ঠান সৃষ্টি কৰক।</translation>
+<translation id="5482922178977937393">আপুনি আপোনাৰ আগ্ৰহৰ ওপৰত ভিত্তি কৰি বাতৰি, ক্ৰীড়া আৰু আন বহুতৰ বাবে জাননী বিচাৰিবনে?</translation>
 <translation id="5489208564673669003">সকলো ছাইটৰ কুকিসমূহ পৰিচালনা কৰিবলৈ <ph name="BEGIN_LINK" />কুকিৰ ছেটিংসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="5490005495580364134">সকলো কুকি অৱৰোধ কৰক (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="5497202150450073388">ডেলিভাৰী দিবলৈ চেষ্টা কৰা হৈছে। পুনৰ চেষ্টা কৰা হ’ব</translation>
@@ -1045,7 +1047,6 @@
 <translation id="6476253015009698798">এই পৃষ্ঠাখনৰ বাবে মূল্য ট্ৰেক কৰাৰ সুবিধাটো উপলব্ধ নহয়।</translation>
 <translation id="6476800141292307438">এই পৃষ্ঠাটো <ph name="LANGUAGE" />লৈ অনুবাদ কৰি থকা হৈছে। বিকল্পসমূহ স্ক্রীণখনৰ একেবাৰে তলৰ কাষত আছে।</translation>
 <translation id="648164694371393720">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ কৰাত আসোঁৱাহ হৈছে</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> টা সমল মচা হ’ল</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> হিচাপে ছাইন ইন কৰিছে।
 
 আপোনাৰ ডেটা নিজৰ পাছফ্ৰে’জৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এইটো দিয়ক।</translation>
@@ -1338,6 +1339,7 @@
 <translation id="8023878949384262191">শাখাটো বিস্তাৰ কৰে।</translation>
 <translation id="8027581147000338959">নতুন ৱিণ্ড’ত খোলক</translation>
 <translation id="8032569120109842252">ফ’ল’ কৰি থকা হৈছে</translation>
+<translation id="8040207962129315716">মোক প্ৰতিবাৰেই সোধক</translation>
 <translation id="804225253087497565">আপুনি ছাইন ইন হৈ থকাৰ সময়ত আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK" />সন্ধানৰ ইতিহাস<ph name="END_LINK" /> আৰু <ph name="BEGIN_LINK" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK" /> ছেভ কৰা হ’ব পাৰে। আপুনি যিকোনো সময়তে সেইবোৰ মচিব পাৰে।</translation>
 <translation id="804427445359061970">অন্য ডিভাইচসমূহৰ পৰা আপোনাৰ টেবসমূহ আপুনি ইয়াত বিচাৰি পাব</translation>
 <translation id="8044568254381073661">এনক্ৰিপশ্বন অবিহনে ছেভ কৰক</translation>
@@ -1412,7 +1414,6 @@
 <translation id="8428634594422941299">বুজি পালোঁ</translation>
 <translation id="8446884382197647889">অধিক জানক</translation>
 <translation id="8449347986464073209">মচক আৰু ছাইন আউট কৰক</translation>
-<translation id="8458397775385147834">১টা বস্তু মচা হ’ল</translation>
 <translation id="8459333855531264009">সুৰক্ষিত নহয়</translation>
 <translation id="8487667956631253959">অন আছে</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>

@@ -375,6 +375,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše teme, starejše od štirih tednov. Ko nadaljujete brskanje, se tema lahko znova prikaže na seznamu. V Chromovih nastavitvah lahko prav tako kadar koli blokirate teme, za katere ne želite, da jih Chrome deli s spletnimi mesti, in izklopite teme oglasov.</translation>
 <translation id="1697532407822776718">Pripravljeni ste.</translation>
 <translation id="1699651774646344471">Zdaj lahko uporabljate naslove iz računa Google</translation>
+<translation id="1700542542921501212">Za iskanje po spletu lahko uporabite <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Ravni povečave/pomanjšave</translation>
@@ -824,6 +825,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
             <ph name="LIST_ITEM" />piškotkov in podatkov spletnih mest,
             <ph name="LIST_ITEM" />podatkov, vnesenih v obrazce.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Vstavi</translation>
 <translation id="2625385379895617796">Ura prehiteva</translation>
 <translation id="262745152991669301">Lahko zahteva vzpostavitev povezave z napravami USB.</translation>
 <translation id="2629325967560697240">Če želite imeti Chromovo največjo raven varnosti, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />vklopite izboljšano zaščito<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1584,6 +1586,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4177501066905053472">Teme oglasov</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prekliči spremljanje cene</translation>
+<translation id="4191334393248735295">Dolžina</translation>
 <translation id="4195459680867822611">Gumb za ogled nasvetov za Chrome, aktivirajte, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4196861286325780578">&amp;Uveljavi premik</translation>

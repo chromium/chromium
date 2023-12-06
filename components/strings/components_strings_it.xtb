@@ -375,6 +375,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> Chrome elimina automaticamente gli argomenti più vecchi di 4 settimane. Mentre continui a navigare, un argomento potrebbe riapparire nell'elenco. Puoi anche bloccare gli argomenti che non vuoi che Chrome condivida con i siti e disattivare gli argomenti degli annunci in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="1697532407822776718">Ecco fatto!</translation>
 <translation id="1699651774646344471">Ora puoi usare gli indirizzi presenti nel tuo Account Google</translation>
+<translation id="1700542542921501212">Puoi utilizzare <ph name="SEARCH_ENGINE_NAME" /> per eseguire ricerche sul web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Livelli di zoom</translation>
@@ -824,6 +825,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
           <ph name="LIST_ITEM" />Cookie e dati dei siti
           <ph name="LIST_ITEM" />Informazioni inserite nei moduli
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Inserisci</translation>
 <translation id="2625385379895617796">L'orologio è avanti</translation>
 <translation id="262745152991669301">Può chiedere di connettersi ai dispositivi USB</translation>
 <translation id="2629325967560697240">Per il massimo livello di sicurezza di Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />attiva la protezione avanzata<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1581,6 +1583,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4177501066905053472">Argomenti degli annunci</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Annulla monitoraggio prezzo</translation>
+<translation id="4191334393248735295">Lunghezza</translation>
 <translation id="4195459680867822611">Pulsante Leggi i suggerimenti di Chrome, attiva per scoprire di più sulle funzionalità di Chrome</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4196861286325780578">&amp;Ripeti spostamento</translation>

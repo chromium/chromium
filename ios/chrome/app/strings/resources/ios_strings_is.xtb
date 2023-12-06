@@ -142,7 +142,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="165877110639533037">Engir opnir flipar</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Biðja um snjallvef</translation>
-<translation id="168715261339224929">Kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum.</translation>
 <translation id="1687475363370981210">Merkja allt sem lesið</translation>
 <translation id="1689333818294560261">Gælunafn</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
@@ -1048,7 +1047,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6476253015009698798">Verðvöktun er ekki í boði á þessari síðu.</translation>
 <translation id="6476800141292307438">Þýðir síðuna á <ph name="LANGUAGE" />. Valkostir eru í boði neðarlega á skjánum.</translation>
 <translation id="648164694371393720">Auðkenningarvilla</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> atriðum eytt</translation>
 <translation id="6484712497741564393">Skráð(ur) inn sem <ph name="EMAIL" />.
 
 Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
@@ -1416,7 +1414,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8428634594422941299">Ég skil</translation>
 <translation id="8446884382197647889">Frekari upplýsingar</translation>
 <translation id="8449347986464073209">Eyða og skrá út</translation>
-<translation id="8458397775385147834">Einu atriði eytt</translation>
 <translation id="8459333855531264009">Ekki öruggt</translation>
 <translation id="8487667956631253959">Kveikt</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>

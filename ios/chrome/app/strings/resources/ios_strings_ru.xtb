@@ -142,7 +142,6 @@
 <translation id="165877110639533037">Нет открытых вкладок</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Мобильная версия</translation>
-<translation id="168715261339224929">Чтобы получить доступ к закладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="1687475363370981210">Отметить все как прочитанные</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -262,7 +261,7 @@
 <translation id="2359043044084662842">Перевести</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360196772093551345">Мобильная версия</translation>
-<translation id="2361721159900796207">Объект будет скрыт</translation>
+<translation id="2361721159900796207">Элемент будет скрыт</translation>
 <translation id="2362083820973145409">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Открывает настройки.</translation>
 <translation id="236977714248711277">Сайты не могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 
@@ -1045,7 +1044,6 @@
 <translation id="6476253015009698798">Отслеживание цен недоступно для этой страницы.</translation>
 <translation id="6476800141292307438">Перевод страницы на <ph name="LANGUAGE" />. Параметры указаны в нижней части экрана.</translation>
 <translation id="648164694371393720">Ошибка аутентификации</translation>
-<translation id="6482629121755362506">Удалено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Вы вошли как <ph name="EMAIL" />.
 
 Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chrome и сохранять их в аккаунте Google.</translation>
@@ -1144,7 +1142,7 @@
 <translation id="6930799952781667037">Нажмите, чтобы выбрать этот язык.</translation>
 <translation id="6939941780796374211">Настройки паролей</translation>
 <translation id="6944369514868857500">Сменить аккаунт</translation>
-<translation id="6944935964236827145">Скрыть действие "Перевести"</translation>
+<translation id="6944935964236827145">Скрыть Переводчик</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6973630695168034713">Папки</translation>
@@ -1412,7 +1410,6 @@
 <translation id="8428634594422941299">ОК</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8449347986464073209">Удалить и выйти</translation>
-<translation id="8458397775385147834">Удалено закладок: 1</translation>
 <translation id="8459333855531264009">Не защищено</translation>
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>

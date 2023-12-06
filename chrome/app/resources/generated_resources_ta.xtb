@@ -10147,7 +10147,6 @@
 <translation id="8999027165951679951">செயலில் இல்லாத பக்கம்: <ph name="MEMORY_SAVINGS" /> காலியாக்கப்பட்டது</translation>
 <translation id="8999560016882908256">பிரிவில் சின்டாக்ஸ் பிழை: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">உங்கள் <ph name="DEVICE_TYPE" /> இன் வலதுபக்கமுள்ள கைரேகை சென்சாரைத் தொடவும். உங்கள் கைரேகைத் தரவு பாதுகாப்பாகச் சேமிக்கப்படுவதுடன் <ph name="DEVICE_TYPE" /> சாதனத்திலேயே இருக்கும்.</translation>
-<translation id="9000532564152265066">அனைத்து பக்கங்களும்</translation>
 <translation id="9003185744423389627">சாதன நிர்வாகச் சேவையுடன் இணைக்க முடியவில்லை. பிழைச் செய்தி: <ph name="STATUS_TEXT" />, நேரம்: <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">கிடைக்கக்கூடிய eSIM சுயவிவரங்களைத் தானாக ஸ்கேன் செய்ய வேண்டுமா?</translation>
 <translation id="9003647077635673607">எல்லா இணையதளங்களிலும் அனுமதி</translation>

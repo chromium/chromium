@@ -142,7 +142,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="165877110639533037">No hay pestañas abiertas</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Solicitar sitio web móvil</translation>
-<translation id="168715261339224929">Activa la sincronización para ver tus marcadores en todos tus dispositivos.</translation>
 <translation id="1687475363370981210">Marcar todo como leído</translation>
 <translation id="1689333818294560261">Apodo</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
@@ -1045,7 +1044,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="6476253015009698798">El seguimiento de precios no está disponible para esta página.</translation>
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error de autenticación</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
 <translation id="6484712497741564393">Has iniciado sesión como <ph name="EMAIL" />.
 
 Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y guardar datos de Chrome en tu cuenta de Google.</translation>
@@ -1412,7 +1410,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8428634594422941299">Entendido</translation>
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8449347986464073209">Eliminar y cerrar sesión</translation>
-<translation id="8458397775385147834">1 elemento eliminado</translation>
 <translation id="8459333855531264009">No es seguro</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>

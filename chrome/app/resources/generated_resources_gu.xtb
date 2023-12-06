@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">જે આવર્તન પર સ્ક્રીન અપડેટ કરે છે તેનું નિર્ધારણ કરે છે</translation>
 <translation id="1060570945511946595">ટિકિટ મેનેજ કરો</translation>
 <translation id="1061130374843955397">તમારા <ph name="DEVICE_TYPE" /> પર આપનું સ્વાગત છે</translation>
+<translation id="1061309251982613260"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાથી બ્લૉક કરો.</translation>
 <translation id="1061373870045429865">આ લિંક માટે QR કોડ બનાવો</translation>
 <translation id="1061904396131502319">વિરામનો સમય થવા જ આવ્યો છે</translation>
 <translation id="10619348099955377">ડિસ્પ્લે નામ કૉપિ કરો</translation>
@@ -276,6 +277,7 @@
 <translation id="1203559206734265703">Protected Audiences માટેની ડિબગીંગની સુવિધા ચાલુ કરેલી છે.</translation>
 <translation id="120368089816228251">સંગીતનો સૂર</translation>
 <translation id="1203942045716040624">શેર કરેલા કર્મચારી: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">તમારો સિક્યુરિટી કોડ તમારા કાર્ડની પાછળના ભાગ પર હોય છે</translation>
 <translation id="1210678701920254279">પ્રિન્ટર જુઓ અથવા ઉમેરો અને સક્રિય પ્રિન્ટ જૉબ જુઓ</translation>
 <translation id="1211769675100312947">શૉર્ટકટ તમારા દ્વારા પસંદ કરવામાં આવે છે</translation>
 <translation id="1213254615020057352">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા બાળકના Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. આ સેટિંગ માલિક દ્વારા લાગુ કરવામાં આવ્યું છે. માલિક Googleને આ ડિવાઇસ માટે નિદાન અને વપરાશનો ડેટા મોકલવાનું પસંદ કરી શકે છે. જો તમારા બાળક માટે વધારાનું વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
@@ -299,6 +301,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" />ને લાઇસન્સની જરૂર છે</translation>
 <translation id="1223853788495130632">તમારા એડમિનિસ્ટ્રેટર આ સેટિંગ માટે વિશિષ્ટ મૂલ્યની ભલામણ કરે છે.</translation>
 <translation id="1225177025209879837">વિનંતી પર પ્રક્રિયા થઈ રહી છે...</translation>
+<translation id="1227107020813934021">ડૉક્યુમેન્ટ સ્કૅનર શોધો</translation>
 <translation id="1227660082540388410">પાસકીમાં ફેરફાર કરો</translation>
 <translation id="1227993798763400520">કાસ્ટ કરવામાં નિષ્ફળ થયાં. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="1230417814058465809">માનક સુરક્ષા ચાલુ છે. વધુ સઘન સુરક્ષા માટે, વધારેલા સંરક્ષણનો ઉપયોગ કરો.</translation>
@@ -448,6 +451,7 @@
 <translation id="1347625331607114917">તમારા Android ફોન પર કોડની ચકાસણી કરો</translation>
 <translation id="1347975661240122359">જ્યારે બૅટરી <ph name="BATTERY_LEVEL" />% પર પહોંચી જાય ત્યારે અપડેટ શરૂ થશે.</translation>
 <translation id="1348966090521113558">માઉસના ઍક્સેસિબિલિટી સેટિંગ</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" ડૉક્યુમેન્ટ સ્કૅનર શોધવા અને તેને ઍક્સેસ કરવા માગે છે.</translation>
 <translation id="1352834119074414157">આ બંડલ ખંડિત કે તેમાં ચેડાં કરવામાં આવ્યા હોઈ શકે છે. કૃપા કરીને આ વિન્ડો બંધ કરો અને ફરીથી ડાઉનલોડ કરો</translation>
 <translation id="1353275871123211385">ઍપની મંજૂરી અને સ્ક્રીન સમયની મર્યાદાઓ જેવા માતાપિતાના યોગ્ય નિયંત્રણોનો ઉપયોગ કરવા માટે, બાળકનું માતાપિતા દ્વારા મેનેજ કરવામાં આવતું હોય એવું Google એકાઉન્ટ હોવું આવશ્યક છે. Google Classroom જેવા સાધનો માટે પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરી શકાશે.</translation>
 <translation id="135389172849514421">ઑફલાઇન કાર્ય કરે છે</translation>
@@ -622,6 +626,7 @@
 <translation id="1485015260175968628">તે હવે આ કરી શકે છે:</translation>
 <translation id="1485141095922496924">વર્ઝન <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 માટે ફાઇલોને OneDriveમાં સ્ટોર કરવાની જરૂર છે. સ્થાનિક ફાઇલો ખસેડવામાં આવશે અને અન્ય લોકેશનની ફાઇલો કૉપિ કરવામાં આવશે. તમારી ફાઇલો Files ઍપમાં Microsoft OneDrive ફોલ્ડરમાં મળી શકે છે.</translation>
+<translation id="1486012259353794050">જ્યારે તમે પ્રશ્નો પૂછો, ત્યારે Google Assistant તમારી સ્ક્રીનના આધારે અનુરૂપ જવાબો પ્રદાન કરે છે</translation>
 <translation id="1486096554574027028">પાસવર્ડ શોધો</translation>
 <translation id="1486486872607808064"><ph name="APP_NAME" /> માટે તમે જ્યાં પાસકી બનાવવા માગતા હો, ત્યાં ડિવાઇસ પર કૅમેરા આ QR કોડ સ્કૅન કરો</translation>
 <translation id="1487335504823219454">ચાલુ - કસ્ટમ સેટિંગ</translation>
@@ -685,6 +690,7 @@
 <translation id="1541346352678737112">કોઈ નેટવર્ક મળ્યું નથી</translation>
 <translation id="154198613844929213">{0,plural, =0{હમણાં ડિલીટ કરી રહ્યાં છીએ.}=1{આટલા સમયમાં ડિલીટ કરી રહ્યાં છીએ: 1 સેકન્ડ}one{આટલા સમયમાં ડિલીટ કરી રહ્યાં છીએ: # સેકન્ડ}other{આટલા સમયમાં ડિલીટ કરી રહ્યાં છીએ: # સેકન્ડ}}</translation>
 <translation id="1542137295869176367">તમારો સાઇન ઇન ડેટા અપડેટ કરી શકાયો નથી</translation>
+<translation id="1542524755306892917">જ્યારે <ph name="SUPERVISED_USER_NAME" /> પ્રશ્નો પૂછે, ત્યારે આ Google Assistantને અનુરૂપ જવાબો પ્રદાન કરવાની મંજૂરી આપે છે.</translation>
 <translation id="1543284117603151572">Edge માંથી આયાત કરેલ</translation>
 <translation id="1543538514740974167">અહીં ઝડપથી મેળવો</translation>
 <translation id="1544588554445317666">ફાઇલના વધુ ટૂંકા નામનો ઉપયોગ કરવાનો અથવા કોઈ અલગ ફોલ્ડરમાં સાચવવાનો પ્રયાસ કરો</translation>
@@ -1897,6 +1903,7 @@
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> પાસવર્ડ રીસેટ કરો</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> લોડ કરી રહ્યાં છીએ</translation>
 <translation id="2440604414813129000">&amp;સ્રોત જુઓ</translation>
+<translation id="2440632898584211188">આ સાઇટને તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાની મંજૂરી આપવાનું ચાલુ રાખો.</translation>
 <translation id="2440823041667407902">સ્થાન ઍક્સેસ</translation>
 <translation id="2441719842399509963">ડિફૉલ્ટ્સ રિસેટ કરો</translation>
 <translation id="244231003699905658">અમાન્ય ઍડ્રેસ. કૃપા કરીને ઍડ્રેસ ચેક કરીને ફરી પ્રયાસ કરો.</translation>
@@ -2137,6 +2144,7 @@
 <translation id="262154978979441594">Google Assistant વૉઇસ મૉડલને તાલિમ આપો</translation>
 <translation id="26224892172169984">કોઈ પણ સાઇટને પ્રોટોકૉલ્સ હેન્ડલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="262373406453641243">કોલેમાક</translation>
+<translation id="2624045385113367716">MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાની મંજૂરી છે</translation>
 <translation id="2624142942574147739">આ પેજ તમારા કૅમેરા અને માઇક્રોફોનને ઍક્સેસ કરી રહ્યું છે.</translation>
 <translation id="2626799779920242286">કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="2627424346328942291">શેર કરી શકતા નથી</translation>
@@ -2350,6 +2358,7 @@
 <translation id="2777251078198759550">આ કન્ટેનર ડિલીટ કરો</translation>
 <translation id="2777525873368474674">છબીની લિંક પેસ્ટ કરો</translation>
 <translation id="2778471504622896352">ChromeOS લૉન્ચરમાં રિમોટ ઍપ ઉમેરો</translation>
+<translation id="2779728796406650689">જ્યારે તમે પ્રશ્નો પૂછો, ત્યારે આ Google Assistantને અનુરૂપ જવાબો પ્રદાન કરવાની મંજૂરી આપે છે.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">આ સાઇટ પર એક્સ્ટેન્શનને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="2782104745158847185">Linux ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં ભૂલ</translation>
@@ -2427,6 +2436,7 @@
 <translation id="2836269494620652131">ક્રૅશ</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> નો નેટવર્ક ઉપયોગ કરવા માટે, પહેલાં નીચે ઇન્ટરનેટથી તમારા કનેક્શનને પૂર્ણ કરો.</translation>
 <translation id="2838379631617906747">ઇન્સ્ટોલ કરી રહ્યું છે</translation>
+<translation id="2838474726369447181">આ સાઇટ તમારા MIDI ડિવાઇસ (SysEx)ને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરી શકે છે.</translation>
 <translation id="2839032553903800133">નોટિફિકેશનને બ્લૉક કરેલાં છે</translation>
 <translation id="2841013758207633010">સમય</translation>
 <translation id="2841837950101800123">પ્રદાતા</translation>
@@ -2450,6 +2460,7 @@
 <translation id="2856776373509145513">નવું કન્ટેનર બનાવો</translation>
 <translation id="2856907950922663165">URLને એન્ક્રિપ્ટ કરવાની સુવિધા બંધ કરીએ?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />માં પાસવર્ડ આયાત કરો</translation>
+<translation id="2861030231482411439">આ સાઇટને તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાથી બ્લૉક કરવાનું ચાલુ રાખો.</translation>
 <translation id="2861301611394761800">સિસ્ટમ અપડેટ પૂર્ણ થયું. કૃપા કરીને સિસ્ટમ પુનઃપ્રારંભ કરો.</translation>
 <translation id="2861402191395139055">Passpointના સબ્સ્ક્રિપ્શન</translation>
 <translation id="2861941300086904918">નેટિવ ક્લાયન્ટ સિક્યુરિટી મેનેજર</translation>
@@ -4870,6 +4881,7 @@
 <translation id="4811212958317149293">સ્વિચ ઍક્સેસ કીબોર્ડનું ઑટોમૅટિક રીતે સ્કૅન કરવાનાં સેટિંગ</translation>
 <translation id="4811503964269049987">પસંદ કરેલી ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="4813512666221746211">નેટવર્ક ભૂલ</translation>
+<translation id="4813872509679988157">આ સાઇટને તમારા MIDI ડિવાઇસનો ઉપયોગ કરવાની મંજૂરી આપવાનું ચાલુ રાખો.</translation>
 <translation id="4814114628197290459">IBAN ડિલીટ કરો</translation>
 <translation id="4814327014588285482">છોડો અને પછીથી મને યાદ કરાવો</translation>
 <translation id="4814378367953456825">આ ફિંગરપ્રિન્ટ માટેનું નામ દાખલ કરો</translation>
@@ -5182,6 +5194,7 @@
 <translation id="5063480226653192405">ઉપયોગ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS સેટિંગમાં સુરક્ષિત DNSને મેનેજ કરો</translation>
+<translation id="5066891009360243320">આ સાઇટને તમારા MIDI ડિવાઇસનો ઉપયોગ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="5067399438976153555">હંમેશાં ચાલુ</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> તમારા માઇક્રોફોનને ઍક્સેસ કરવા માંગે છે કે કેમ તે પૂછો</translation>
 <translation id="5068553687099139861">પાસવર્ડ બતાવો</translation>
@@ -5900,6 +5913,7 @@
 <translation id="5641608986289282154"><ph name="DEVICE_OS" />નો ઉપયોગ કરવાનું શરૂ કરો</translation>
 <translation id="5641648607875312660">સ્ક્રીનશૉટ છબી એડિટર</translation>
 <translation id="5642508497713047">CRL હસ્તાક્ષરકર્તા</translation>
+<translation id="5643191124441701136">તમારો સિક્યુરિટી કોડ તમારા કાર્ડની આગળના ભાગ પર હોય છે</translation>
 <translation id="5643321261065707929">મીટર્ડ (ડેટા નિયંત્રણ) નેટવર્ક</translation>
 <translation id="5646376287012673985">સ્થાન</translation>
 <translation id="5646558797914161501">ઉદ્યોગપતિ</translation>
@@ -6176,6 +6190,7 @@
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="5870086504539785141">ઍક્સેસિબિલિટી મેનૂ બંધ કરો</translation>
 <translation id="5870155679953074650">મોટી ભૂલ</translation>
+<translation id="5870901441418842049">આ સાઇટને તમારા MIDI ડિવાઇસ (SysEx)ને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="5875534259258494936">સ્ક્રીન શેરિંગ સમાપ્ત થઈ ગયું છે</translation>
 <translation id="5876576639916258720">થઈ રહ્યું છે…</translation>
 <translation id="5876851302954717356">જમણી બાજુએ નવું ટૅબ</translation>
@@ -6555,6 +6570,7 @@ USB ડિવાઇસ</translation>
 <translation id="6171779718418683144">દરેક મુલાકાત વખતે પૂછો</translation>
 <translation id="617213288191670920">કોઈ ભાષા ઉમેરી નથી</translation>
 <translation id="6173623053897475761">તમારો પિન ફરી ટાઇપ કરો</translation>
+<translation id="6174116123142608180">આ સાઇટને તમારા MIDI ડિવાઇસનો ઉપયોગ કરવાથી બ્લૉક કરવાનું ચાલુ રાખો.</translation>
 <translation id="6175314957787328458">Microsoft ડોમેન GUID</translation>
 <translation id="6175910054050815932">લિંક મેળવો</translation>
 <translation id="6176701216248282552">સાંદર્ભિક સહાયની સુવિધા ચાલુ છે. આ સુવિધાઓ Googleને ખુલ્લા પેજ મોકલી શકે છે.</translation>
@@ -7072,6 +7088,7 @@ USB ડિવાઇસ</translation>
 <translation id="6597324406048772521">આ સાઇટ પર એક્સ્ટેન્શનની મંજૂરી નથી</translation>
 <translation id="6597331566371766302">નીચે મુજબના એક્સ્ટેન્શનને તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યા છે:</translation>
 <translation id="659894938503552850">સૌથી નવું</translation>
+<translation id="6599934330666882772">આ સાઇટ તમારા MIDI ડિવાઇસનો ઉપયોગ કરી રહી છે.</translation>
 <translation id="6601262427770154296">વપરાશકર્તાના શબ્દકોશો મેનેજ કરો</translation>
 <translation id="6601612474695404578">અમુક સાઇટ તેમના પેજ લોડ કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરે છે. જો સાઇટ કામ કરતી ન હોય, તો તમે કુકીને મંજૂરી આપીને પ્રયાસ કરી શકો છો.</translation>
 <translation id="6602173570135186741">ઑટોમૅટિક રીતે ભરવાની સુવિધા અને પાસવર્ડ</translation>
@@ -7636,6 +7653,7 @@ USB ડિવાઇસ</translation>
 <translation id="7036706669646341689">Linux માટે <ph name="DISK_SIZE" /> સ્પેસનો સુઝાવ આપ્યો છે. ખાલી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
 <translation id="7037509989619051237">ટેક્સ્ટ ટૂ સ્પીચના પ્રીવ્યૂ માટે</translation>
 <translation id="7038632520572155338">સ્વિચ ઍક્સેસ</translation>
+<translation id="7038636380708661517"><ph name="HOST" />ને તમારા MIDI ડિવાઇસનો ઉપયોગ કરવાથી હંમેશાં બ્લૉક કરો.</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> માટે બીજું Google એકાઉન્ટ ઉમેરો</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> થી USB ઉપકરણો ઍક્સેસ કરો</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7790,6 +7808,7 @@ USB ડિવાઇસ</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7181117767881540376">અને બુકમાર્ક બાર છુપાવો</translation>
 <translation id="7182063559013288142">ઝટપટ હૉટસ્પૉટ</translation>
+<translation id="718240920439497409">MIDI ડિવાઇસ બ્લૉક કર્યા છે</translation>
 <translation id="7182791023900310535">તમારો પાસવર્ડ ખસેડો</translation>
 <translation id="718427252411067142">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતાં રોકવા માટે, તમારો પાસવર્ડ બદલવા માટે ઍપ ખોલો</translation>
 <translation id="7186088072322679094">ટુલબારમાં રાખો</translation>
@@ -7879,6 +7898,7 @@ USB ડિવાઇસ</translation>
 <translation id="7255002516883565667">હમણાં, તમારી પાસે એક કાર્ડ છે જેનો માત્ર આ ડિવાઇસ પર ઉપયોગ કરી શકાય છે</translation>
 <translation id="7255935316994522020">લાગુ કરો</translation>
 <translation id="7256069762010468647">સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
+<translation id="7256265230922801769"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાની મંજૂરી આપો.</translation>
 <translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
 <translation id="7256710573727326513">એક ટેબમાં ખોલો</translation>
 <translation id="7257173066616499747">Wi-Fi નેટવર્ક્સ</translation>
@@ -8904,6 +8924,7 @@ USB ડિવાઇસ</translation>
 <translation id="8041267120753677077">તમારા ફોનની ઍપ સ્ટ્રીમ કરો</translation>
 <translation id="8042142357103597104">ટેક્સ્ટની અસ્પષ્ટતા</translation>
 <translation id="8042331986490021244">તમારા પાસવર્ડ Google પાસવર્ડ મેનેજર પર સાચવવામાં આવે તે પહેલાં તેમને તમારા ડિવાઇસ પર એન્ક્રિપ્ટ કરવામાં આવે છે</translation>
+<translation id="8044090981104134791">MIDI ડિવાઇસને મંજૂરી છે</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ચાલી રહી નથી.</translation>
 <translation id="8044899503464538266">ધીમું</translation>
 <translation id="8045253504249021590">સિંક, Google ડૅશબોર્ડ દ્વારા અટકાવવામાં આવ્યું છે.</translation>
@@ -9097,6 +9118,7 @@ USB ડિવાઇસ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">તીવ્રતા</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> બંધ કરો</translation>
+<translation id="8197151971904389091"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસનો ઉપયોગ કરવાની મંજૂરી આપો.</translation>
 <translation id="8197673340773315084">ઑફિસ કે વ્યક્તિગત જેવું નામ કે લેબલ ઉમેરો</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8198457270656084773">સિસ્ટમ ડિવાઇસ-લૉગનું પેજ શોધી રહ્યાં છો? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />ની મુલાકાત લો.</translation>
@@ -9380,6 +9402,7 @@ USB ડિવાઇસ</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
 <translation id="8414685983518053656">નોંધ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (કેસ)</translation>
+<translation id="8417065541337558100">તમારા કૅમેરાનો પ્રીવ્યૂ</translation>
 <translation id="8417548266957501132">માતાપિતાનો પાસવર્ડ</translation>
 <translation id="8418445294933751433">ટૅબ તરીકે &amp;બતાવો</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> ઉમેરો</translation>
@@ -9875,6 +9898,7 @@ USB ડિવાઇસ</translation>
 <translation id="8811862054141704416">માઇક્રોફોનને Crostiniનો ઍક્સેસ આપવાના સેટિંગ</translation>
 <translation id="8811923271770626905">આ એક્સ્ટેન્શન બૅકગ્રાઉન્ડમાં ચાલી શકે છે</translation>
 <translation id="8812593354822910461">બ્રાઉઝિંગ ડેટા (<ph name="URL" />) પણ સાફ કરો જે તમને <ph name="DOMAIN" />માંથી સાઇન આઉટ કરશે. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાનું બ્લૉક કર્યું છે</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> પર સાઇન ઇન કરી શકતાં નથી</translation>
 <translation id="8813872945700551674">જાઓ અને માતાપિતા પાસેથી "<ph name="EXTENSION_NAME" />"ની મંજૂરી મેળવો</translation>
 <translation id="8813937837706331325">મધ્યમ પ્રમાણમાં મેમરી બચત</translation>
@@ -10127,7 +10151,6 @@ USB ડિવાઇસ</translation>
 <translation id="8999027165951679951">નિષ્ક્રિય ટૅબ: <ph name="MEMORY_SAVINGS" /> મેમરી ખાલી કરી</translation>
 <translation id="8999560016882908256">વિભાગ સિન્ટેક્સ ભૂલ: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">તમારા <ph name="DEVICE_TYPE" />ની જમણી બાજુના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
-<translation id="9000532564152265066">તમામ ટૅબ</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> વાગ્યે '<ph name="STATUS_TEXT" />'ના સ્ટેટસને લીધે ડિવાઇસ મેનેજમેન્ટ સર્વર સાથે કનેક્ટ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="90033698482696970">ઉપલબ્ધ ઇ-સિમ પ્રોફાઇલ માટે ઑટોમૅટિક રીતે સ્કૅન કરીએ?</translation>
 <translation id="9003647077635673607">તમામ વેબસાઇટ્સ પર મંજૂરી આપો</translation>

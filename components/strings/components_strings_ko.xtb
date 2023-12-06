@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />사용자가 데이터를 관리하는 방법:<ph name="END_BOLD" /> Chrome에서는 4주가 지난 주제를 자동 삭제합니다. 인터넷을 사용하다 보면 동일한 주제가 목록에 다시 표시될 수 있습니다. 사용자는 언제든지 Chrome 설정에서 Chrome이 사이트와 공유하길 원하지 않는 주제를 차단하고 광고 주제를 사용 중지할 수도 있습니다.</translation>
 <translation id="1697532407822776718">설정 완료</translation>
 <translation id="1699651774646344471">이제 Google 계정의 주소를 사용할 수 있습니다</translation>
+<translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" />에서 웹을 검색할 수 있습니다.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">확대/축소 수준</translation>
@@ -824,6 +825,7 @@
             <ph name="LIST_ITEM" />쿠키 및 사이트 데이터
             <ph name="LIST_ITEM" />양식에 입력된 정보
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">삽입</translation>
 <translation id="2625385379895617796">시간이 너무 먼 미래로 설정되어 있습니다.</translation>
 <translation id="262745152991669301">USB 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="2629325967560697240">Chrome에서 가장 강력한 보안 기능을 사용하려면 <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하세요.</translation>
@@ -1584,6 +1586,7 @@
 <translation id="4177501066905053472">광고 주제</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">가격 추적 취소</translation>
+<translation id="4191334393248735295">길이</translation>
 <translation id="4195459680867822611">Chrome 도움말 보기 버튼, Chrome 기능에 관해 자세히 알아보려면 활성화하세요.</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>

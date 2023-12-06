@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Määrittää näytön päivitystiheyden</translation>
 <translation id="1060570945511946595">Hallinnoi tukipyyntöjä</translation>
 <translation id="1061130374843955397">Tervetuloa käyttäjäksi: <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260"><ph name="HOST" /> ei saa ohjata eikä uudelleenohjelmoida MIDI-laitteitasi.</translation>
 <translation id="1061373870045429865">Luo QR-koodi tälle linkille</translation>
 <translation id="1061904396131502319">Pian on tauon paikka</translation>
 <translation id="10619348099955377">Kopioi julkisesti näkyvä nimi</translation>
@@ -277,6 +278,7 @@
 <translation id="1203559206734265703">Suojattujen yleisöjen virheenkorjaus on käytössä.</translation>
 <translation id="120368089816228251">Nuotti</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Turvakoodi on kortin kääntöpuolella.</translation>
 <translation id="1210678701920254279">Katso tai lisää tulostimia ja tarkista aktiiviset tulostustyöt</translation>
 <translation id="1211769675100312947">Sinä valitset pikakuvakkeet</translation>
 <translation id="1213254615020057352">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan lapsesi Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Omistaja on ottanut tämän asetuksen käyttöön. Omistaja voi lähettää tätä laitetta koskevaa diagnostiikka- ja käyttödataa Googlelle. Jos muun verkko- ja sovellustoiminnan asetus on lapsella päällä, tätä dataa voidaan tallentaa hänen Google-tililleen.</translation>
@@ -300,6 +302,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> edellyttää lisenssiä</translation>
 <translation id="1223853788495130632">Järjestelmänvalvoja suosittelee tälle asetukselle tiettyä arvoa.</translation>
 <translation id="1225177025209879837">Käsitellään pyyntöä…</translation>
+<translation id="1227107020813934021">Etsi dokumenttiskannereita</translation>
 <translation id="1227660082540388410">Avainkoodin muokkaaminen</translation>
 <translation id="1227993798763400520">Striimaus epäonnistui. Yritä uudelleen.</translation>
 <translation id="1230417814058465809">Perustason suojaus on päällä. Käytä parannettua suojausta, jos haluat lisäsuojaa.</translation>
@@ -449,6 +452,7 @@
 <translation id="1347625331607114917">Vahvista koodi Android-puhelimella</translation>
 <translation id="1347975661240122359">Päivitys alkaa, kun akun lataustaso on <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Hiiren saavutettavuusasetukset</translation>
+<translation id="1350962700620017446"><ph name="EXTENSION_NAME" /> haluaa löytää ja käyttää dokumenttiskannereita.</translation>
 <translation id="1352834119074414157">Paketti saattaa olla rikki tai vaarantunut. Sulje tämä ikkuna ja lataa se uudelleen.</translation>
 <translation id="1353275871123211385">Lapsella on oltava vanhemman ylläpitämä Google-tili, jotta tämä voi käyttää lapsilukkoasetuksia, kuten sovellusten hyväksyntää ja käyttöaikarajoituksia. Koulutili voidaan lisätä myöhemmin Google Classroomin kaltaisten työkalujen käyttöä varten.</translation>
 <translation id="135389172849514421">Toimii offline-tilassa</translation>
@@ -624,6 +628,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1485015260175968628">Se voi nyt:</translation>
 <translation id="1485141095922496924">Versio <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 edellyttää, että tiedostot tallennetaan OneDriveen. Paikalliset tiedostot siirretään ja muiden sijaintien tiedostot kopioidaan. Tiedostot löytyvät Tiedostot-sovelluksen Microsoft OneDrive ‐kansiosta.</translation>
+<translation id="1486012259353794050">Kun kysyt kysymyksiä, Google Assistant tarjoaa räätälöityjä vastauksia näytön perusteella</translation>
 <translation id="1486096554574027028">Hae salasanoista</translation>
 <translation id="1486486872607808064">Skannaa tämä QR-koodi sen laitteen kameralla, jolla haluat luoda avainkoodin tähän sovellukseen: <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Päällä – muokatut asetukset</translation>
@@ -690,6 +695,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1541346352678737112">Verkkoa ei löytynyt</translation>
 <translation id="154198613844929213">{0,plural, =0{Poistetaan nyt}=1{Poistetaan 1 sekunnin päästä}other{Poistetaan # sekunnin päästä}}</translation>
 <translation id="1542137295869176367">Kirjautumisdataasi ei voitu päivittää</translation>
+<translation id="1542524755306892917">Tämän avulla Google Assistant voi tarjota räätälöityjä vastauksia, kun <ph name="SUPERVISED_USER_NAME" /> esittää kysymyksiä.</translation>
 <translation id="1543284117603151572">Edgestä tuodut</translation>
 <translation id="1543538514740974167">Tule tänne nopeammin</translation>
 <translation id="1544588554445317666">Kokeile lyhyempää tiedoston nimeä tai tallenna toiseen kansioon</translation>
@@ -1913,6 +1919,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2439152382014731627">Salasanan vaihtaminen: <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Ladataan <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Näytä a&amp;lkuperä</translation>
+<translation id="2440632898584211188">Salli jatkossakin, että sivusto ohjaa ja uudelleenohjelmoi MIDI-laitteitasi.</translation>
 <translation id="2440823041667407902">Sijaintitietojen käyttöoikeus</translation>
 <translation id="2441719842399509963">Palauta oletukset</translation>
 <translation id="244231003699905658">Virheellinen osoite. Tarkista osoite ja yritä uudelleen.</translation>
@@ -2153,6 +2160,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="262154978979441594">Kouluta Google Assistantin äänimalli</translation>
 <translation id="26224892172169984">Älä anna sivustojen määrittää protokollien käsittelypalveluita</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">MIDI-laitteiden ohjaus ja uudelleenohjelmointi sallittu</translation>
 <translation id="2624142942574147739">Tämä sivu käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="2626799779920242286">Yritä myöhemmin uudelleen.</translation>
 <translation id="2627424346328942291">Jakaminen ei onnistu</translation>
@@ -2366,6 +2374,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2777251078198759550">Poista tämä säilö</translation>
 <translation id="2777525873368474674">Liitä linkki kuvaan</translation>
 <translation id="2778471504622896352">Etäsovellusten lisääminen Chrome-käyttöjärjestelmän käynnistysohjelmaan</translation>
+<translation id="2779728796406650689">Tämän avulla Google Assistant voi antaa räätälöityjä vastauksia, kun kysyt jotain.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Laajennukset on sallittu tällä sivustolla</translation>
 <translation id="2782104745158847185">Virhe Linux-sovelluksen asennuksessa</translation>
@@ -2443,6 +2452,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2836269494620652131">Kaatuminen</translation>
 <translation id="283669119850230892">Jos haluat käyttää verkkoa <ph name="NETWORK_ID" />, määritä ensin internetyhteyden muodostus alla.</translation>
 <translation id="2838379631617906747">Asennetaan</translation>
+<translation id="2838474726369447181">Tämä sivusto voi ohjata ja uudelleenohjelmoida MIDI-laitteitasi (SysEx).</translation>
 <translation id="2839032553903800133">Ilmoitukset estetty</translation>
 <translation id="2841013758207633010">Aika</translation>
 <translation id="2841837950101800123">Tarjoaja</translation>
@@ -2466,6 +2476,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2856776373509145513">Luo uusi säilö</translation>
 <translation id="2856907950922663165">Laitetaanko URL-salaus pois päältä?</translation>
 <translation id="2859741939921354763">Tuo salasanoja tänne: <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">Estä tätä sivustoa ohjaamasta ja uudelleenohjelmoimasta MIDI-laitteitasi myös jatkossa.</translation>
 <translation id="2861301611394761800">Järjestelmän päivitys valmis. Käynnistä järjestelmä uudelleen.</translation>
 <translation id="2861402191395139055">Passpoint-tilaukset</translation>
 <translation id="2861941300086904918">Asiakkaan tietosuojahallinnoija</translation>
@@ -4884,6 +4895,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4811212958317149293">Kytkimen käyttö: näppäimistön automaattinen skannaus</translation>
 <translation id="4811503964269049987">Lisää valittu välilehti ryhmään</translation>
 <translation id="4813512666221746211">Verkkovirhe</translation>
+<translation id="4813872509679988157">Salli tämän sivuston käyttää MIDI-laitteitasi jatkossakin.</translation>
 <translation id="4814114628197290459">Poista IBAN-numero</translation>
 <translation id="4814327014588285482">Ohita ja muistuta myöhemmin</translation>
 <translation id="4814378367953456825">Anna sormenjäljelle nimi</translation>
@@ -5196,6 +5208,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5063480226653192405">Käyttö</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Ylläpidä suojattua DNS:ää Chrome-käyttöjärjestelmän asetuksissa</translation>
+<translation id="5066891009360243320">Tältä sivustolta on estetty MIDI-laitteidesi käyttö.</translation>
 <translation id="5067399438976153555">Aina käytössä</translation>
 <translation id="5067867186035333991">Kysy, jos <ph name="HOST" /> haluaa käyttää mikrofoniasi</translation>
 <translation id="5068553687099139861">näytä salasanat</translation>
@@ -5913,6 +5926,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5641608986289282154">Aloita käyttö: <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Kuvakaappausten muokkaus</translation>
 <translation id="5642508497713047">CRL-allekirjoittaja</translation>
+<translation id="5643191124441701136">Turvakoodi on korttisi etupuolella</translation>
 <translation id="5643321261065707929">Maksullinen verkko</translation>
 <translation id="5646376287012673985">Sijainti</translation>
 <translation id="5646558797914161501">Liikemies</translation>
@@ -6189,6 +6203,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5869522115854928033">Tallennetut salasanat</translation>
 <translation id="5870086504539785141">Sulje käytettävyysvalikko</translation>
 <translation id="5870155679953074650">Levyn sivuvirheet</translation>
+<translation id="5870901441418842049">Tältä sivustolta on estetty MIDI-laitteidesi (SysEx) ohjaus ja uudelleenohjelmointi.</translation>
 <translation id="5875534259258494936">Näytön jakaminen on loppunut</translation>
 <translation id="5876576639916258720">Käynnissä…</translation>
 <translation id="5876851302954717356">Uusi välilehti oikealle</translation>
@@ -6567,6 +6582,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6171779718418683144">Kysy jokaisella käynnillä</translation>
 <translation id="617213288191670920">Kieliä ei lisätty</translation>
 <translation id="6173623053897475761">Kirjoita PIN-koodi uudelleen</translation>
+<translation id="6174116123142608180">Estä tätä sivustoa käyttämästä MIDI-laitteitasi myös jatkossa.</translation>
 <translation id="6175314957787328458">Microsoftin toimialueen GUID-tunnus</translation>
 <translation id="6175910054050815932">Hae linkki</translation>
 <translation id="6176701216248282552">Kontekstiapu on päällä. Nämä ominaisuudet voivat lähettää avoimia sivuja Googlelle.</translation>
@@ -7082,6 +7098,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6597324406048772521">Laajennukset eivät ole sallittuja tällä sivustolla</translation>
 <translation id="6597331566371766302">Järjestelmänvalvojasi on estänyt seuraavat laajennukset:</translation>
 <translation id="659894938503552850">uusin</translation>
+<translation id="6599934330666882772">Tämä sivusto käyttää MIDI-laitteitasi.</translation>
 <translation id="6601262427770154296">Hallinnoi käyttäjän sanakirjoja</translation>
 <translation id="6601612474695404578">Jotkut sivustot käyttävät sivujensa lataamiseen kolmannen osapuolen evästeitä. Jos sivusto ei toimi, voit kokeilla evästeiden sallimista.</translation>
 <translation id="6602173570135186741">Automaattinen täyttö ja salasanat</translation>
@@ -7646,6 +7663,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7036706669646341689">Linuxin käyttöön suositellaan <ph name="DISK_SIZE" /> vapaata tilaa. Lisää vapaata tilaa poistamalla laitteelta tiedostoja.</translation>
 <translation id="7037509989619051237">Esikatseltava teksti</translation>
 <translation id="7038632520572155338">Kytkimen käyttö</translation>
+<translation id="7038636380708661517"><ph name="HOST" /> ei saa käyttää MIDI-laitteitasi.</translation>
 <translation id="7038710352229712897">Lisää toinen Google-tili: <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Käyttää myyjän <ph name="VENDOR_NAME" /> USB-laitteita</translation>
 <translation id="7039912931802252762">Microsoftin älykorttikirjautuminen</translation>
@@ -7800,6 +7818,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7180865173735832675">Muokkaa</translation>
 <translation id="7181117767881540376">&amp;Piilota kirjanmerkkipalkki</translation>
 <translation id="7182063559013288142">Hotspotin pikajakaminen</translation>
+<translation id="718240920439497409">MIDI-laitteet estetty</translation>
 <translation id="7182791023900310535">Siirrä salasana</translation>
 <translation id="718427252411067142">Jos haluat estää muita käyttämästä salasanaasi, avaa sovellus, niin voit vaihtaa salasanan</translation>
 <translation id="7186088072322679094">Pidä yläpalkissa</translation>
@@ -7889,6 +7908,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7255002516883565667">Yhtä korteistasi voi juuri nyt käyttää vain tällä laitteella</translation>
 <translation id="7255935316994522020">Ota käyttöön</translation>
 <translation id="7256069762010468647">Sivusto käyttää kameraasi</translation>
+<translation id="7256265230922801769"><ph name="HOST" /> saa aina ohjata ja uudelleenohjelmoida MIDI-laitteitasi.</translation>
 <translation id="7256634071279256947">Takamikrofoni</translation>
 <translation id="7256710573727326513">Avaa välilehdessä</translation>
 <translation id="7257173066616499747">Wi-Fi-verkot</translation>
@@ -8919,6 +8939,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8041267120753677077">striimata puhelimen sovelluksia</translation>
 <translation id="8042142357103597104">Tekstin läpinäkyvyys</translation>
 <translation id="8042331986490021244">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
+<translation id="8044090981104134791">MIDI-laitteet sallittu</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ei vastaa.</translation>
 <translation id="8044899503464538266">Hidas</translation>
 <translation id="8045253504249021590">Synkronointi on keskeytetty Google Hallintapaneelin kautta.</translation>
@@ -9112,6 +9133,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Omat laitteet<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Voimakkuus</translation>
 <translation id="8195854162863398249">Poista <ph name="FEATURE_NAME" /> käytöstä</translation>
+<translation id="8197151971904389091"><ph name="HOST" /> saa aina käyttää MIDI-laitteitasi.</translation>
 <translation id="8197673340773315084">Lisää nimi tai tunniste, kuten Työ tai Henkilökohtainen</translation>
 <translation id="8198456017687137612">Välilehteä striimataan</translation>
 <translation id="8198457270656084773">Etsitkö järjestelmän laitelokisivua? Avaa <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9395,6 +9417,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8414396119627470038">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /> (<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)</translation>
 <translation id="8414685983518053656">Huomioitavaa</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (kotelo)</translation>
+<translation id="8417065541337558100">Kameran esikatselu</translation>
 <translation id="8417548266957501132">Vanhemman salasana</translation>
 <translation id="8418445294933751433">&amp;Näytä välilehtenä</translation>
 <translation id="8418675848396538775">Lisää <ph name="LANGUAGE_NAME" /></translation>
@@ -9889,6 +9912,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8811862054141704416">Crostinin mikrofonin käyttöoikeus</translation>
 <translation id="8811923271770626905">Tämä laajennus voi toimia taustalla</translation>
 <translation id="8812593354822910461">Poista myös selaustiedot (<ph name="URL" />), jolloin sinut kirjataan ulos <ph name="DOMAIN" />-sivulta. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI-laitteiden ohjaus ja uudelleenohjelmointi estetty</translation>
 <translation id="8813698869395535039">Sisäänkirjautuminen ei onnistu: <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Pyydä vanhempaa hyväksymään <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813937837706331325">Kohtalaiset säästöt</translation>
@@ -10141,7 +10165,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8999027165951679951">Ei-aktiivinen välilehti: <ph name="MEMORY_SAVINGS" /> vapautettu</translation>
 <translation id="8999560016882908256">Osion syntaksivirhe: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Kosketa sormenjälkitunnistinta, joka on laitteen (<ph name="DEVICE_TYPE" />) oikeassa reunassa. Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
-<translation id="9000532564152265066">Kaikki välilehdet</translation>
 <translation id="9003185744423389627">Yhteys Device Manager ‑palvelimeen epäonnistui ("<ph name="STATUS_TEXT" />", <ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Skannataanko eSIM-profiileja automaattisesti?</translation>
 <translation id="9003647077635673607">Salli kaikissa verkkosivustoissa</translation>

@@ -116,6 +116,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1206967143813997005">Ugyldig start på signaturen</translation>
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
 <translation id="121201262018556460">Du forsøkte å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som inneholder en svak nøkkel. En angriper kan ha løst den private nøkkelen, og tjeneren er kanskje ikke den tjeneren du forventet (det kan hende at du kommuniserer med en angriper).</translation>
+<translation id="1212527389003717329">Nedlastingen er startet. For å se den, trykk på og hold inne |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Systemsikkerhet</translation>
 <translation id="1222060260947439312">Høyre skuff</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1521655867290435174">Google Regneark</translation>
 <translation id="1524669537550112617">Møblerte leiligheter</translation>
 <translation id="1527263332363067270">Venter på tilkobling …</translation>
+<translation id="1528311629279578926">Tilkoblingen er blokkert fordi den ble startet av en offentlig side for å koble til enheter eller tjenere på det private nettverket ditt. Last inn denne siden på nytt for å tillate tilkoblingen.</translation>
 <translation id="1529789484829130889">Skuff 8</translation>
 <translation id="1530707389502320859">Nettstedet du nettopp prøvde å besøke, ser falskt ut. Noen ganger etterligner angripere nettsteder ved å gjøre små endringer som er vanskelige å se, i nettadressen.</translation>
 <translation id="1532118530259321453">På denne siden står det</translation>
@@ -825,6 +827,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
           <ph name="LIST_ITEM" />Informasjonskapsler og nettstedsdata
           <ph name="LIST_ITEM" />Informasjon du legger inn i skjemaer
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Sett inn</translation>
 <translation id="2625385379895617796">Klokken går for fort</translation>
 <translation id="262745152991669301">Kan be om å få koble til USB-enheter</translation>
 <translation id="2629325967560697240">For å få det høyeste sikkerhetsnivået som Chrome tilbyr, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />slå på økt beskyttelse<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1160,6 +1163,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3325027355611702542">Campingbiler og -vogner</translation>
 <translation id="3329013043687509092">Metning</translation>
 <translation id="3333762389743153920">Ikke kvalifisert for virtuelt kort</translation>
+<translation id="3336044043987989409">Trykk på last inn på nytt-knappen for å tillate tilkobling til enheter eller tjenere på det private nettverket ditt.</translation>
 <translation id="3338095232262050444">Sikker</translation>
 <translation id="333839153442689579">Høyintensitets intervalltrening</translation>
 <translation id="3339440062908617027">Løping og turgåing</translation>
@@ -1585,6 +1589,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4177501066905053472">Annonseemner</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Slutt å spore prisen</translation>
+<translation id="4191334393248735295">Lengde</translation>
 <translation id="4195459680867822611">Knappen «Se Chrome-tips» – aktiver for å lære om Chrome-funksjoner</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4196861286325780578">&amp;Flytt likevel</translation>

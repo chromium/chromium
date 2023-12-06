@@ -829,6 +829,7 @@
             <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
             <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Զետեղել</translation>
 <translation id="2625385379895617796">Ձեր ժամացույցը առաջ է ընկել</translation>
 <translation id="262745152991669301">Կարող է հայցել USB սարքերին միանալու թույլտվություն</translation>
 <translation id="2629325967560697240">Chrome-ի լավագույն պաշտպանության համակարգերն օգտագործելու համար <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />միացրեք լրացուցիչ պաշտպանությունը<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1593,6 +1594,7 @@
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
+<translation id="4191334393248735295">Երկարություն</translation>
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>

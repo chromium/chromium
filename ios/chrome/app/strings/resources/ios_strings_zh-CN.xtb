@@ -140,7 +140,6 @@
 <translation id="165877110639533037">没有已打开的标签页</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">请求切换到移动版网站</translation>
-<translation id="168715261339224929">要想将您的书签同步到您的所有设备上，请开启同步功能。</translation>
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
@@ -173,6 +172,7 @@
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1889872080060107187">您将登录 <ph name="URL" /></translation>
 <translation id="1890237935065108104">无法使用此设置。</translation>
+<translation id="1891199774460536658">自动跟踪检测到的所有包裹</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
 <translation id="189531189292803889">您最近恢复过您的 iPad，这可能更改了您的默认浏览器设置。</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
@@ -652,6 +652,7 @@
 <translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="4502566650163919158">立即检查</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
+<translation id="4509449376545878717">一律不自动检测包裹</translation>
 <translation id="4514889972748124117">建议一个安全系数高的密码…</translation>
 <translation id="4520798012560649652">详细了解无痕模式</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
@@ -1043,7 +1044,6 @@
 <translation id="6476253015009698798">无法在此网页上跟踪价格。</translation>
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="648164694371393720">身份验证出错</translation>
-<translation id="6482629121755362506">删除了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="6484712497741564393">目前登录的账号是 <ph name="EMAIL" />。您的数据已使用您的口令加密。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6497850081273517953">Chrome 版本过旧，请更新到最新版本以确保安全。</translation>
@@ -1334,6 +1334,7 @@
 <translation id="8023878949384262191">展开此部分。</translation>
 <translation id="8027581147000338959">在新窗口中打开</translation>
 <translation id="8032569120109842252">已关注</translation>
+<translation id="8040207962129315716">每次都询问我</translation>
 <translation id="804225253087497565">当您登录后，系统可能会将<ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8044568254381073661">直接保存，不加密</translation>
@@ -1408,7 +1409,6 @@
 <translation id="8428634594422941299">知道了</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8449347986464073209">删除数据并退出账号</translation>
-<translation id="8458397775385147834">删除了1项</translation>
 <translation id="8459333855531264009">不安全</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>

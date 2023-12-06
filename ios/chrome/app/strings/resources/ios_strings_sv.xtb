@@ -142,7 +142,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="165877110639533037">Inga öppna flikar</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Använd mobil webbplats</translation>
-<translation id="168715261339224929">Aktivera synkronisering om du vill få tillgång till dina bokmärken på alla enheter</translation>
 <translation id="1687475363370981210">Markera alla som lästa</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
@@ -1046,7 +1045,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6476253015009698798">Prisbevakning är inte tillgänglig för den här sidan.</translation>
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
 <translation id="648164694371393720">Autentiseringsfel</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt har tagits bort</translation>
 <translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
 
 Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
@@ -1413,7 +1411,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8428634594422941299">Jag förstår</translation>
 <translation id="8446884382197647889">Läs mer</translation>
 <translation id="8449347986464073209">Radera och logga ut</translation>
-<translation id="8458397775385147834">1 objekt har tagits bort</translation>
 <translation id="8459333855531264009">Inte säkert</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>

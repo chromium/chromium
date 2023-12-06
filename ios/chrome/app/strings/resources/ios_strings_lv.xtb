@@ -142,7 +142,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="165877110639533037">Nav atvērtu ciļņu</translation>
 <translation id="1674504678466460478">No <ph name="SOURCE_LANGUAGE" /> uz <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Pieprasīt vietni mobilajām ierīcēm</translation>
-<translation id="168715261339224929">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, ieslēdziet sinhronizāciju.</translation>
 <translation id="1687475363370981210">Atzīmēt visu kā izlasītu</translation>
 <translation id="1689333818294560261">Apzīmējums</translation>
 <translation id="1700629756560807968">Atlasītas: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -1045,7 +1044,6 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="6476253015009698798">Cenu izsekošana šai lapai nav pieejama.</translation>
 <translation id="6476800141292307438">Lapa tiek tulkota <ph name="LANGUAGE" /> valodā. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>
 <translation id="648164694371393720">Autentifikācijas kļūda</translation>
-<translation id="6482629121755362506">Dzēsti vienumi: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Jūs esat pierakstījies kā <ph name="EMAIL" />.
 
 Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai izmantotu un saglabātu Chrome datus savā Google kontā.</translation>
@@ -1412,7 +1410,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8428634594422941299">Labi</translation>
 <translation id="8446884382197647889">Uzziniet vairāk</translation>
 <translation id="8449347986464073209">Dzēst un izrakstīties</translation>
-<translation id="8458397775385147834">Tika dzēsts 1 vienums.</translation>
 <translation id="8459333855531264009">Nav drošs</translation>
 <translation id="8487667956631253959">Ieslēgts</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>

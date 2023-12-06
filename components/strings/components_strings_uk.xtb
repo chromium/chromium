@@ -824,6 +824,7 @@
             <ph name="LIST_ITEM" />файли cookie та дані із сайтів
             <ph name="LIST_ITEM" />інформацію, яку ви вводите у формах.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Вставити</translation>
 <translation id="2625385379895617796">Ваш годинник спішить</translation>
 <translation id="262745152991669301">Може просити дозвіл підключатися до пристроїв USB</translation>
 <translation id="2629325967560697240">Щоб веб-переглядач Chrome був максимально безпечним, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />увімкніть покращений захист<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1585,7 @@
 <translation id="4177501066905053472">Теми оголошень</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Не відстежувати ціну</translation>
+<translation id="4191334393248735295">Тривалість</translation>
 <translation id="4195459680867822611">Кнопка "Переглянути поради щодо Chrome"; активуйте, щоб дізнатися про функції Chrome</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4196861286325780578">&amp;Повторити переміщення</translation>

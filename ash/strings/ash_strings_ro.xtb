@@ -659,6 +659,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="36813544980941320">Se va permite accesul la rețelele Wi-Fi de pe telefon și de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, apoi <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Site-uri</translation>
+<translation id="3697991387880191195">Apasă pe comanda rapidă pentru capturi de ecran</translation>
 <translation id="3702809606464356667">Se afișează ferestrele de pe desktopul actual. Apasă tasta săgeată în sus pentru a afișa ferestrele de pe toate desktopurile.</translation>
 <translation id="3702846122927433391">Populația Nigeriei</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
 <translation id="439598569299422042">Întreruptă, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nu se poate salva înregistrarea de pe ecran</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> este conectat și gata de folosire. Poți personaliza mouse-ul din Setări.</translation>
 <translation id="4405151984121254935">Tipul de dispozitiv periferic conectat nu este acceptat</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
@@ -1293,6 +1295,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6199775032047436064">Reîncarcă pagina actuală</translation>
 <translation id="6200515304866777730">Nu este acceptată de aplicație</translation>
 <translation id="6210042900243040400">Conectează <ph name="NAME" /> salvat anterior în <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Personalizează-ți <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Fă o captură de ecran sau o înregistrare de ecran parțială</translation>
 <translation id="6220928844947387476">Acum poți să te înregistrezi pe tine și ecranul tău în același timp</translation>
 <translation id="622484624075952240">Jos</translation>
@@ -1534,6 +1537,7 @@ Instalare nouă</translation>
 <translation id="726276584504105859">Trage aici pentru a folosi ecranul împărțit</translation>
 <translation id="7262906531272962081">Creează un memento</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Folosește instrumentul Captură de ecran din setările rapide pentru a face capturi de ecran</translation>
 <translation id="7302889331339392448">Funcția Subtitrări live este dezactivată.</translation>
 <translation id="7303365578352795231">Se răspunde pe alt dispozitiv.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1921,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="888982883502837004">Sunt disponibile actualizări de firmware pentru dispozitivul tău. Dă clic pentru a examina și actualiza.</translation>
 <translation id="8896630965521842259">Șablonul <ph name="DESK_TEMPLATE_NAME" /> va fi șters definitiv</translation>
 <translation id="889790758758811533">Baterie rămasă: <ph name="PERCENTAGE" /> % (aproximativ <ph name="TIME_LEFT" />). Conectează dispozitivul la o sursă de alimentare.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> este conectat și gata de folosire. Poți personaliza tableta grafică din Setări.</translation>
 <translation id="88986195241502842">O pagină mai jos</translation>
 <translation id="8905919797434099235">(Fără titlu)</translation>
 <translation id="890616557918890486">Schimbă sursa</translation>

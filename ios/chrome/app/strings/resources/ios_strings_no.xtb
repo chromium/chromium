@@ -142,7 +142,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="165877110639533037">Ingen åpne faner</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Be om mobilversjonen av nettstedet</translation>
-<translation id="168715261339224929">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering.</translation>
 <translation id="1687475363370981210">Merk alle som lest</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> er valgt</translation>
@@ -838,6 +837,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5457226814769348910">Åpne versjon uten nett</translation>
 <translation id="5475069061743940393">Pakkesporing</translation>
 <translation id="5478327362747197944">Opprett kalenderaktiviteter direkte ved å klikke på datoer på nettsider.</translation>
+<translation id="5482922178977937393">Vil du ha varsler om nyheter, sport med mer basert på interessene dine?</translation>
 <translation id="5489208564673669003">For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger for informasjonskapsler<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="5497202150450073388">Forsøkt levert. Kommer til å prøve på nytt</translation>
@@ -1047,7 +1047,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6476253015009698798">Prissporing er ikke tilgjengelig for denne siden.</translation>
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="648164694371393720">Autentiseringsfeil</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer slettet</translation>
 <translation id="6484712497741564393">Logget på som <ph name="EMAIL" />.
 
 Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
@@ -1415,7 +1414,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8428634594422941299">Greit</translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8449347986464073209">Slett og logg av</translation>
-<translation id="8458397775385147834">1 element slettet</translation>
 <translation id="8459333855531264009">Ikke sikker</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>

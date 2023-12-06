@@ -824,6 +824,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
             <ph name="LIST_ITEM" />Cookies y datos de sitios
             <ph name="LIST_ITEM" />Información introducida en formularios
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insertar</translation>
 <translation id="2625385379895617796">Tu reloj está adelantado</translation>
 <translation id="262745152991669301">Puede solicitar permiso para conectarse a dispositivos USB</translation>
 <translation id="2629325967560697240">Para disfrutar del máximo nivel de seguridad en Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1584,6 +1585,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4177501066905053472">Temas de anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Dejar de seguir precio</translation>
+<translation id="4191334393248735295">Longitud</translation>
 <translation id="4195459680867822611">Botón Ver consejos de Chrome: actívalo para obtener información sobre las funciones de Chrome</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4196861286325780578">&amp;Rehacer movimiento</translation>

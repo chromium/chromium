@@ -824,6 +824,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
             <ph name="LIST_ITEM" />Las cookies y los datos de sitios
             <ph name="LIST_ITEM" />La información que ingreses en formularios
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insertar</translation>
 <translation id="2625385379895617796">El reloj está adelantado</translation>
 <translation id="262745152991669301">Puede solicitar permiso para establecer conexión con dispositivos USB</translation>
 <translation id="2629325967560697240">Para acceder al nivel más alto de seguridad de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1005,7 +1006,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="3014553260345122294">Noticias de negocios</translation>
 <translation id="301521992641321250">Bloqueado de forma automática</translation>
-<translation id="3016780570757425217">Determinar tu ubicación</translation>
+<translation id="3016780570757425217">Conocer tu ubicación</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, presiona Tab y, luego, Intro para quitar la sugerencia.</translation>
 <translation id="3023165109041533893">Los anuncios sugeridos por sitios ayudan a proteger tu identidad y tu historial de navegación, a la vez que permiten que los sitios te muestren anuncios relevantes. Basándose en tu actividad, un sitio que visitaste puede sugerir anuncios relacionados mientras sigues navegando. En la configuración, puedes ver una lista de estos sitios y bloquear aquellos que no deseas.</translation>
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
@@ -1585,6 +1586,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4177501066905053472">Temas de los anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Dejar de realizar el seguimiento de precios</translation>
+<translation id="4191334393248735295">Longitud</translation>
 <translation id="4195459680867822611">Botón Ver sugerencias para Chrome: actívalo para conocer las funciones de Chrome</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4196861286325780578">&amp;Rehacer Mover</translation>

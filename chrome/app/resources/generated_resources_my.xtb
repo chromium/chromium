@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">ဖန်သားပြင်အပ်ဒိတ်လုပ်သည့် ကြိမ်နှုန်းကို သတ်မှတ်ပေးသည်</translation>
 <translation id="1060570945511946595">တိုကင်များ စီမံရန်</translation>
 <translation id="1061130374843955397">သင့် <ph name="DEVICE_TYPE" /> က ကြိုဆိုပါသည်</translation>
+<translation id="1061309251982613260"><ph name="HOST" /> ကို သင့် MIDI စက်များအား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့အတွက် အမြဲပိတ်ထားရန်။</translation>
 <translation id="1061373870045429865">ဤလင့်ခ်အတွက် QR ကုဒ် ပြုလုပ်ရန်</translation>
 <translation id="1061904396131502319">ခေတ္တနားချိန် ရောက်တော့မည်</translation>
 <translation id="10619348099955377">ဖော်ပြချက်အမည် မိတ္တူကူးရန်</translation>
@@ -278,6 +279,7 @@
 <translation id="1203559206734265703">‘ကာကွယ်ထားသော ပရိသတ် အမှားရှာပြင်ခြင်း’ ကို ဖွင့်ထားသည်။</translation>
 <translation id="120368089816228251">သီချင်းသင်္ကေတ</translation>
 <translation id="1203942045716040624">မျှဝေထားသော ဆောင်ရွက်စနစ်- <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">သင့်ကတ်နောက်ခြမ်းတွင် လုံခြုံရေးကုဒ်ရှိသည်</translation>
 <translation id="1210678701920254279">ပရင်တာများ ကြည့်/ထည့်နိုင်ပြီး ပရင့်ထုတ်နေဆဲ ဖိုင်များကို ကြည့်နိုင်သည်</translation>
 <translation id="1211769675100312947">ဖြတ်လမ်းလင့်ခ်များကို သင် ရွေးချယ်ထားသည်</translation>
 <translation id="1213254615020057352">အသုံးပြုမှုနှင့် အမှားရှာဖွေမှုဒေတာ ပို့ပါ။ အမှားရှာဖွေမှု၊ စက်ပစ္စည်းနှင့်အက်ပ် အသုံးပြုမှုဒေတာများကို Google သို့ အလိုအလျောက်ပို့၍ သင့်ကလေး၏ Android အသုံးပြုမှု ပိုမိုကောင်းမွန်လာစေရန် ကူညီပါ။ ၎င်းကို အသုံးပြု၍ သင့်ကလေး မည်သူမည်ဝါဖြစ်ကြောင်း ထုတ်ဖော်သွားမည် မဟုတ်ဘဲ စနစ်နှင့် အက်ပ်တည်ငြိမ်မှု၊ အခြား တိုးတက်ပြင်ဆင်မှုများအတွက် အသုံးပြုသွားပါမည်။ စုစည်းထားသော ဒေတာအချို့က Google အက်ပ်နှင့် Android ဆော့ဖ်ဝဲအင်ဂျင်နီယာများကဲ့သို့ ပါတနာများကို ကူညီပေးပါမည်။ ဤဆက်တင်ကို ပိုင်ရှင်ဖြစ်သူက သတ်မှတ်ထားခြင်းဖြစ်သည်။ ပိုင်ရှင်သည် ဤစက်ပစ္စည်းအတွက် ပြဿနာအဖြေရှာခြင်းနှင့် အသုံးပြုမှုဒေတာများကို Google သို့ ပို့ရန် ရွေးချယ်နိုင်ပါသည်။ သင့်ကလေးအတွက် ထပ်တိုး 'ဝဘ်နှင့် အက်ပ်လုပ်ဆောင်ချက်' ကို ဖွင့်ထားသည့်အခါ ဤဒေတာကို သူ၏ Google အကောင့်သို့ သိမ်းသွားပါမည်။</translation>
@@ -301,6 +303,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> က လိုင်စင်လိုအပ်သည်</translation>
 <translation id="1223853788495130632">ဤဆက်တင်အတွက် သင့်ကြီးကြပ်သူသည် တိကျသည့် တန်ဖိုးအကြံပြုထားသည်။</translation>
 <translation id="1225177025209879837">တောင်းဆိုချက်ကို စီမံဆောင်ရွက်နေ...</translation>
+<translation id="1227107020813934021">မှတ်တမ်း စကင်ဖတ်စနစ်များ ရှာခြင်း</translation>
 <translation id="1227660082540388410">လျှို့ဝှက်ကီး ပြင်ရန်</translation>
 <translation id="1227993798763400520">ကာစ်လုပ်ခြင်း မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1230417814058465809">ပုံမှန်ကာကွယ်မှုကို ဖွင့်ထားသည်။ ထပ်ဆောင်းလုံခြုံရေးအတွက် အဆင့်မြင့်ကာကွယ်မှုကိုသုံးပါ။</translation>
@@ -450,6 +453,7 @@
 <translation id="1347625331607114917">သင်၏ Android ဖုန်းရှိ ကုဒ်ကို အတည်ပြုပါ</translation>
 <translation id="1347975661240122359">ဘက်ထရီ <ph name="BATTERY_LEVEL" />% သို့ရောက်သည့်အခါ အပ်ဒိတ်စတင်ပါမည်။</translation>
 <translation id="1348966090521113558">မောက်စ် သုံးနိုင်မှု ဆက်တင်များ</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" က မှတ်တမ်း စကင်ဖတ်စနစ်များကို ရှာပြီး အသုံးပြုလိုသည်။</translation>
 <translation id="1352834119074414157">ဤအတွဲလိုက်သည် ပျက်စီးနေသည် (သို့) အသုံးမပြုနိုင်ပါ။ ဤဝင်းဒိုးကို ပိတ်ပြီး ဒေါင်းလုဒ်ပြန်လုပ်ပါ</translation>
 <translation id="1353275871123211385">အက်ပ်ခွင့်ပြုချက်နှင့် အသုံးပြုချိန် ကန့်သတ်ချက်များကဲ့သို့သော မိဘအထိန်းအချုပ်များကို သုံးရန် ကလေးတွင် မိဘစီမံသည့် Google Account ရှိရမည်။ Google Classroom ကဲ့သို့ တူးလ်များအတွက် ကျောင်းအကောင့်ကို နောင်တွင်ထည့်နိုင်သည်။</translation>
 <translation id="135389172849514421">အော့ဖ်လိုင်း သုံးနိုင်သည်</translation>
@@ -624,6 +628,7 @@
 <translation id="1485015260175968628">၎င်းက ယခု လုပ်နိုင်သည်မှာ:</translation>
 <translation id="1485141095922496924">ဗားရှင်း <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 က OneDrive တွင်ဖိုင်များသိမ်းရန် လိုအပ်သည်။ စက်အတွင်းရှိဖိုင်များကို ရွှေ့ကာ အခြားနေရာမှဖိုင်များကို မိတ္တူကူးပါမည်။ သင့်ဖိုင်များကို Files အက်ပ်ရှိ Microsoft OneDrive ဖိုင်တွဲတွင် တွေ့နိုင်သည်။</translation>
+<translation id="1486012259353794050">မေးခွန်းများမေးသည့်အခါ Google Assistant က သင့်ဖန်သားပြင်ပေါ်မူတည်၍ သီးသန့်စီမံထားသည့် ပြန်ကြားချက်များပေးသည်</translation>
 <translation id="1486096554574027028">လျှို့ဝှက်စကားလုံးများ ရှာဖွေရန်</translation>
 <translation id="1486486872607808064"><ph name="APP_NAME" /> အတွက် လျှို့ဝှက်ကီးပြုလုပ်လိုသောစက်တွင် ကင်မရာဖြင့် ဤ QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="1487335504823219454">ဖွင့် - စိတ်ကြိုက်ဆက်တင်များ</translation>
@@ -690,6 +695,7 @@
 <translation id="1541346352678737112">ကွန်ရက် မတွေ့ပါ</translation>
 <translation id="154198613844929213">{0,plural, =0{ယခု ဖျက်နေသည်။}=1{ဖျက်ပါတော့မည်- ၁ စက္ကန့်}other{ဖျက်ပါတော့မည်- # စက္ကန့်}}</translation>
 <translation id="1542137295869176367">သင်၏ လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာများကို အပ်ဒိတ်လုပ်၍ မရပါ</translation>
+<translation id="1542524755306892917">Google Assistant ကို <ph name="SUPERVISED_USER_NAME" /> က မေးခွန်းများမေးသည့်အခါ သီးသန့်စီမံထားသည့် ပြန်ကြားချက်များ ပေးခွင့်ပြုသည်။</translation>
 <translation id="1543284117603151572">Edge မှတင်သွင်းခဲ့သည်</translation>
 <translation id="1543538514740974167">ဤနေရာသို့ အမြန်ရောက်ရှိစေခြင်း</translation>
 <translation id="1544588554445317666">ပိုတိုသော ဖိုင်အမည်ကို သုံး၍ စမ်းကြည့်ပါ သို့မဟုတ် အခြားဖိုင်တွဲတွင် သိမ်း၍ စမ်းကြည့်ပါ</translation>
@@ -1913,6 +1919,7 @@
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ကို ဖွင့်နေသည်</translation>
 <translation id="2440604414813129000">ရင်း&amp;မြစ်ကို ကြည့်ရန်</translation>
+<translation id="2440632898584211188">ဤဝဘ်ဆိုက်ကို သင့် MIDI စက်များအား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့အတွက် ဆက်လက်ခွင့်ပြုရန်။</translation>
 <translation id="2440823041667407902">တည်နေရာ ရယူသုံးမှု</translation>
 <translation id="2441719842399509963">မူလသို့ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="244231003699905658">လိပ်စာ မမှန်ကန်ပါ။ လိပ်စာကို ပြန်စစ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -2153,6 +2160,7 @@
 <translation id="262154978979441594">Google Assistant အသံ နမူနာ လေ့ကျင့်ရန်</translation>
 <translation id="26224892172169984">ဘယ်ဆိုက်ကိုမှ ပရိုတိုကောများကို ကိုင်တွယ်ခွင့် မပြုပါနှင့်</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">MIDI စက်များအား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့ကို ခွင့်ပြုထားသည်</translation>
 <translation id="2624142942574147739">ဒီစာမျက်နှာသည် သင်၏ ကင်မရာ နှင့် မိုက်ခရိုဖုန်းကို ရယူသုံးနေသည်။</translation>
 <translation id="2626799779920242286">ကျေးဇူးပြုပြီး နောက်မှာ ထပ်စမ်းပါ။</translation>
 <translation id="2627424346328942291">မျှဝေ၍ မရပါ</translation>
@@ -2366,6 +2374,7 @@
 <translation id="2777251078198759550">ဤကွန်တိန်နာကို ဖျက်ရန်</translation>
 <translation id="2777525873368474674">ပုံလင့်ခ်ကူးထည့်ရန်</translation>
 <translation id="2778471504622896352">ChromeOS Launcher တွင် အဝေးထိန်းအက်ပ်များ ထည့်နိုင်သည်</translation>
+<translation id="2779728796406650689">Google Assistant ကို သင်က မေးခွန်းများမေးသည့်အခါ သီးသန့်စီမံထားသည့် ပြန်ကြားချက်များ ပေးခွင့်ပြုသည်။</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ဤဝဘ်ဆိုက်တွင် နောက်ဆက်တွဲများကို ခွင့်ပြုသည်</translation>
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
@@ -2444,6 +2453,7 @@
 <translation id="2836269494620652131">ပျက်စီးမှု</translation>
 <translation id="283669119850230892">ကွန်ရက် <ph name="NETWORK_ID" /> အသုံးပြုရန်၊ အောက်ပါ အင်တာနက်သို့ ချိတ်ဆက်ခြင်း ပြီးမြောက်စေပါ။</translation>
 <translation id="2838379631617906747">တပ်ဆင်နေသည်...</translation>
+<translation id="2838474726369447181">ဤဝဘ်ဆိုက်က သင့် MIDI စက်များ (SysEx) ကို စီမံပြီး ပရိုဂရမ်ပြန်လုပ်နိုင်သည်။</translation>
 <translation id="2839032553903800133">အကြောင်းကြားချက်များ ပိတ်ထားသည်</translation>
 <translation id="2841013758207633010">အချိန်</translation>
 <translation id="2841837950101800123">ပံ့ပိုးပေးသူ</translation>
@@ -2467,6 +2477,7 @@
 <translation id="2856776373509145513">ကွန်တိန်နာအသစ် ပြုလုပ်ခြင်း</translation>
 <translation id="2856907950922663165">URL အသွင်ဝှက်ခြင်းကို ပိတ်မလား။</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> သို့ စကားဝှက်များ ထည့်သွင်းရန်</translation>
+<translation id="2861030231482411439">ဤဝဘ်ဆိုက်ကို သင့် MIDI စက်များအား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့အတွက် ဆက်လက်ပိတ်ထားရန်။</translation>
 <translation id="2861301611394761800">စနစ် မွမ်းမံမှု ပြီးဆုံးသွားပြီ။ ကျေးဇူးပြုပြီး စနစ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="2861402191395139055">ဖြတ်သန်းခွင့်ပြုမှတ် စာရင်းသွင်းမှုများ</translation>
 <translation id="2861941300086904918">ဒေသခံ ဖောက်သည်လုံခြုံရေး မန်နေဂျာ</translation>
@@ -4892,6 +4903,7 @@
 <translation id="4811212958317149293">ခလုတ်သုံးခြင်း လက်ကွက် အော်တိုရှာဖွေမှု</translation>
 <translation id="4811503964269049987">ရွေးထားသောတဘ်ကို အုပ်စုဖွဲ့ရန်</translation>
 <translation id="4813512666221746211">ကွန်ရက် ပြဿနာ</translation>
+<translation id="4813872509679988157">ဤဝဘ်ဆိုက်ကို သင့် MIDI စက်များသုံးရန်အတွက် အမြဲခွင့်ပြုရန်။</translation>
 <translation id="4814114628197290459">IBAN ဖျက်ခြင်း</translation>
 <translation id="4814327014588285482">ကျော်ပြီး နောက်မှသတိပေးပါ</translation>
 <translation id="4814378367953456825">ဤလက်ဗွေအတွက် အမည်တစ်ခု ထည့်ရန်</translation>
@@ -5204,6 +5216,7 @@
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ဆက်တင်များတွင် လုံခြုံသည့် DNS ကို စီမံရန်</translation>
+<translation id="5066891009360243320">ဤဝဘ်ဆိုက်ကို သင့် MIDI စက်များ အသုံးပြုခြင်း ပိတ်ထားလိုက်သည်။</translation>
 <translation id="5067399438976153555">အမြဲတမ်းဖွင့်ရန်</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> သည် သင့်မိုက်ခရိုဖုန်းအား အသုံးပြုလိုသလား မေးပါ</translation>
 <translation id="5068553687099139861">စကားဝှက်များ ပြရန်</translation>
@@ -5922,6 +5935,7 @@
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> စတင် အသုံးပြုခြင်း</translation>
 <translation id="5641648607875312660">ဖန်သားပြင်ဓာတ်ပုံ ပုံတည်းဖြတ်စနစ်</translation>
 <translation id="5642508497713047">CRL လက်မှတ်ထိုးသူ</translation>
+<translation id="5643191124441701136">သင့်ကတ်ရှေ့ခြမ်းတွင် လုံခြုံရေးကုဒ်ရှိသည်</translation>
 <translation id="5643321261065707929">အခမဲ့မဟုတ်သော ကွန်ရက်</translation>
 <translation id="5646376287012673985">တည်နေရာ</translation>
 <translation id="5646558797914161501">စီးပွားရေးလုပ်ငန်းရှင်</translation>
@@ -6198,6 +6212,7 @@
 <translation id="5869522115854928033">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="5870086504539785141">ရယူသုံးမှု  မီနူးကို ပိတ်ရန်</translation>
 <translation id="5870155679953074650">စက်ပစ္စည်း ချွတ်ယွင်းမှုများ</translation>
+<translation id="5870901441418842049">ဤဝဘ်ဆိုက်ကို သင့် MIDI စက်များ (SysEx) အား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့အတွက် ပိတ်ထားသည်။</translation>
 <translation id="5875534259258494936">မျက်နှာပြင် မျှဝေခြင်း ပြီးဆုံးသွားပြီ</translation>
 <translation id="5876576639916258720">လုပ်ဆောင်နေသည်...</translation>
 <translation id="5876851302954717356">ညာဘက်တွင် တဘ်အသစ်</translation>
@@ -6575,6 +6590,7 @@
 <translation id="6171779718418683144">ဝင်ကြည့်တိုင်း ခွင့်တောင်းရန်</translation>
 <translation id="617213288191670920">ဘာသာစကား ထည့်မထားပါ</translation>
 <translation id="6173623053897475761">သင်၏ 'ပင်နံပါတ်' ကို ထပ်မံထည့်သွင်းပါ</translation>
+<translation id="6174116123142608180">ဤဝဘ်ဆိုက်ကို သင့် MIDI စက်များအသုံးပြုခြင်း ဆက်လက်ပိတ်ထားရန်။</translation>
 <translation id="6175314957787328458">Microsoft ဒိုမိန်း GUID</translation>
 <translation id="6175910054050815932">လင့်ခ်ရယူရန်</translation>
 <translation id="6176701216248282552">အကြောင်းအရာအလိုက် အကူအညီ ဖွင့်ထားသည်။ ဤအင်္ဂါရပ်များသည် ဖွင့်ထားသောစာမျက်နှာများကို Google သို့ ပို့နိုင်သည်။</translation>
@@ -7089,6 +7105,7 @@
 <translation id="6597324406048772521">ဤဝဘ်ဆိုက်တွင် နောက်ဆက်တွဲများ ခွင့်မပြုပါ</translation>
 <translation id="6597331566371766302">အောက်ပါနောက်ဆက်တွဲများကို သင့်စီမံသူက ပိတ်ထားသည်-</translation>
 <translation id="659894938503552850">အသစ်ဆုံး</translation>
+<translation id="6599934330666882772">ဤဝဘ်ဆိုက်က သင့် MIDI စက်များကို သုံးနေသည်။</translation>
 <translation id="6601262427770154296">အသုံးပြုသူအဘိဓာန်များ စီမံရန်</translation>
 <translation id="6601612474695404578">အချို့ဝဘ်ဆိုက်များက ၎င်းတို့၏စာမျက်နှာများ ဖွင့်ရန် ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို အသုံးပြုသည်။ ဝဘ်ဆိုက်တစ်ခု အလုပ်မလုပ်ပါက ကွတ်ကီးများကို ခွင့်ပြုကြည့်နိုင်ပါသည်။</translation>
 <translation id="6602173570135186741">အော်တိုဖြည့်နှင့် စကားဝှက်များ</translation>
@@ -7652,6 +7669,7 @@
 <translation id="7036706669646341689">Linux အတွက် နေရာ <ph name="DISK_SIZE" /> ရှိရန် အကြံပြုပါသည်။ နေရာလွတ်ပိုရရန် သင့်စက်မှ ဖိုင်များကို ဖျက်ပါ။</translation>
 <translation id="7037509989619051237">အစမ်းကြည့်ရန် စာသား</translation>
 <translation id="7038632520572155338">ခလုတ်သုံးခြင်း</translation>
+<translation id="7038636380708661517"><ph name="HOST" /> ကို သင့် MIDI စက်များအသုံးပြုခြင်းအား အမြဲပိတ်ထားရန်။</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> အတွက် Google Account နောက်တစ်ခု ထည့်ပါ</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> မှ USB စက်ပစ္စည်းများအား သုံးစွဲပါ</translation>
 <translation id="7039912931802252762">Microsoft စမတ်ကဒ် ဝင်ရောက်မှု</translation>
@@ -7806,6 +7824,7 @@
 <translation id="7180865173735832675">ပြုပြင်ရန်</translation>
 <translation id="7181117767881540376">&amp;လိပ်စာစာရင်းဘား ဖျောက်ရန်</translation>
 <translation id="7182063559013288142">ချက်ချင်းသုံး ဟော့စပေါ့</translation>
+<translation id="718240920439497409">MIDI စက်များကို ပိတ်ထားသည်</translation>
 <translation id="7182791023900310535">သင့်စကားဝှက် ရွှေ့ရန်</translation>
 <translation id="718427252411067142">သင့်စကားဝှက်ကို အခြားသူများ သုံးနေခြင်းမှ ရပ်ရန် အက်ပ်ဖွင့်ပြီး စကားဝှက်ပြောင်းပါ</translation>
 <translation id="7186088072322679094">ကိရိယာဘားတွင် သိမ်းရန်</translation>
@@ -7895,6 +7914,7 @@
 <translation id="7255002516883565667">လက်ရှိတွင် ဤစက်ပစ္စည်းပေါ်၌ အသုံးပြုနိုင်သည့် ကတ်တစ်ကတ်သာရှိပါသည်</translation>
 <translation id="7255935316994522020">ကျင့်သုံးရန်</translation>
 <translation id="7256069762010468647">ဝဘ်ဆိုက်သည် သင့်ကင်မရာကို အသုံးပြုနေသည်</translation>
+<translation id="7256265230922801769"><ph name="HOST" /> ကို သင့် MIDI စက်များအား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့အတွက် အမြဲခွင့်ပြုရန်။</translation>
 <translation id="7256634071279256947">အနောက်မိုက်ခရိုဖုန်း</translation>
 <translation id="7256710573727326513">တဘ် တစ်ခု ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="7257173066616499747">ကြိုးမဲ့ကွန်ယက်များ</translation>
@@ -8928,6 +8948,7 @@
 <translation id="8041267120753677077">ဖုန်းရှိအက်ပ်များ တိုက်ရိုက်လွှင့်နိုင်သည်</translation>
 <translation id="8042142357103597104">စာသား အလင်းပိတ်နှုန်း</translation>
 <translation id="8042331986490021244">စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပြီးပါပြီ</translation>
+<translation id="8044090981104134791">MIDI စက်များ ခွင့်ပြုထားသည်</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> တုံ့ပြန်မှုမရှိခြင်း။</translation>
 <translation id="8044899503464538266">နှေး</translation>
 <translation id="8045253504249021590">Google Dashboard မှတစ်ဆင့် စင့်ခ်လုပ်ခြင်းကို ရပ်တန့်လိုက်ပါပြီ။</translation>
@@ -9121,6 +9142,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">အရောင်ပြင်းအား</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> ကိုပိတ်ပါ</translation>
+<translation id="8197151971904389091"><ph name="HOST" /> ကို သင့် MIDI စက်များသုံးရန်အတွက် အမြဲခွင့်ပြုရန်။</translation>
 <translation id="8197673340773315084">‘အလုပ်’ သို့မဟုတ် ‘ကိုယ်ရေးကိုယ်တာ’ ကဲ့သို့ အမည် (သို့) အညွှန်း ထည့်ရန်</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8198457270656084773">စနစ်၏ စက်မှတ်တမ်း စာမျက်နှာကို ရှာနေလား။ <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> သို့ ဝင်ကြည့်ပါ။</translation>
@@ -9404,6 +9426,7 @@
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> ကို <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8414685983518053656">မှတ်စုများ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (နားကြပ်ဘူး)</translation>
+<translation id="8417065541337558100">သင့်ကင်မရာ၏ အစမ်းပြကွက်</translation>
 <translation id="8417548266957501132">မိဘ၏ စကားဝှက်</translation>
 <translation id="8418445294933751433">တဲပ် အနေဖြင့် &amp;ပြ</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> ထည့်ရန်</translation>
@@ -9899,6 +9922,7 @@
 <translation id="8811862054141704416">Crostini မိုက်ခရိုဖုန်း သုံးခွင့်</translation>
 <translation id="8811923271770626905">ဤနောက်ဆက်တွဲသည် နောက်ခံတွင် လုပ်ဆောင်နိုင်သည်</translation>
 <translation id="8812593354822910461">ဖွင့်ကြည့်ထားသည့် မှတ်တမ်းဒေတာ (<ph name="URL" />) ကိုလည်း ရှင်းထုတ်မည်ဖြစ်ပြီး <ph name="DOMAIN" /> မှ ထွက်သွားပါမည်။ <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI စက်များအား စီမံခြင်းနှင့် ပရိုဂရမ်ပြန်လုပ်ခြင်းတို့ကို ပိတ်ထားသည်</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> သို့ လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />" အတွက် မိဘ အတည်ပြုချက် ရယူပါ</translation>
 <translation id="8813937837706331325">အလယ်အလတ် ချွေတာမှုများ</translation>
@@ -10151,7 +10175,6 @@
 <translation id="8999027165951679951">အသုံးမပြုသည့်တဘ်- <ph name="MEMORY_SAVINGS" /> နေရာလွတ်သွားသည်</translation>
 <translation id="8999560016882908256">အပိုင်း ဝါကျဖွဲ့စည်းပုံအမှား- <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">သင့် <ph name="DEVICE_TYPE" /> ၏ ညာဘက်ရှိ လက်ဗွေအာရုံခံကိရိယာကို ထိပါ။ သင့်လက်ဗွေဒေတာကို သင်၏ <ph name="DEVICE_TYPE" /> တွင်သာ လုံခြုံစွာ သိမ်းထားသည်။</translation>
-<translation id="9000532564152265066">တဘ်အားလုံး</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> တွင် ‘စက်စီမံစနစ်ဆာဗာ’ သို့ ချိတ်ဆက်၍မရဘဲ အခြေအနေမှာ ‘<ph name="STATUS_TEXT" />’ ဖြစ်သည်</translation>
 <translation id="90033698482696970">ရနိုင်သော eSIM ပရိုဖိုင်များကို အလိုအလျောက် စကင်ဖတ်မလား။</translation>
 <translation id="9003647077635673607">ဝဘ်ဆိုက် အားလုံးမှာ ခွင့်ပြုရန်</translation>

@@ -91,6 +91,7 @@
 <translation id="106855837688344862">Eventos de toque</translation>
 <translation id="1069104208554708737">Esta token de acesso só é guardada neste dispositivo</translation>
 <translation id="1069355737714877171">Remover perfil do eSIM com o nome <ph name="PROFILE_NAME" /></translation>
+<translation id="1069778954840159202">Aceder automaticamente à conta a partir do telemóvel Android</translation>
 <translation id="1069814191880976658">Escolher um ecrã diferente</translation>
 <translation id="1070377999570795893">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chrome.
 
@@ -2995,6 +2996,10 @@ Quer pará-lo?</translation>
 <translation id="3305389145870741612">O processo de formatação pode demorar alguns segundos. Aguarde.</translation>
 <translation id="3305661444342691068">Abrir PDF na Pré-visualização</translation>
 <translation id="3307176291962384345">Obtenha descontos para <ph name="MERCHANT_NAME" /></translation>
+<translation id="3307283429759317478">Está a ver separadores de outros dispositivos para ajudar a voltar facilmente à sua atividade mais recente.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pode gerir definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="3308134619352333507">Ocultar Botão</translation>
 <translation id="3308852433423051161">A carregar o Assistente Google...</translation>
 <translation id="3309330461362844500">ID do perfil do certificado</translation>
@@ -3223,6 +3228,7 @@ Quer pará-lo?</translation>
 <translation id="3497560059572256875">Partilhar doodle</translation>
 <translation id="3497915391670770295">Enviar para os seus &amp;dispositivos</translation>
 <translation id="3500417806337761827">Ocorreu um erro ao montar a partilha. Já se encontram montadas demasiadas partilhas do SMB.</translation>
+<translation id="350397915809787283">Se não tiver uma conta, selecione a primeira opção para criar uma.</translation>
 <translation id="3503995387997205657">Pode restaurar as suas apps anteriores</translation>
 <translation id="3505100368357440862">Sugestões de compras</translation>
 <translation id="3505602163050943406">Quando usa algumas funcionalidades, estas podem enviar partes de páginas abertas, páginas recentes relacionadas e os respetivos URLs para a Google</translation>
@@ -6464,6 +6470,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6103681770816982672">Aviso: Está a mudar para um canal do programador</translation>
 <translation id="6104068876731806426">Contas Google</translation>
 <translation id="6104311680260824317">Não é possível associar o dispositivo ao domínio. O servidor não suporta os tipos de encriptação Kerberos especificados. Selecione "Mais opções" para aceder às definições de encriptação.</translation>
+<translation id="6104667115274478616">Gerir as definições de áudio do ChromeOS</translation>
 <translation id="6104796831253957966">A fila da impressora está cheia.</translation>
 <translation id="610487644502954950">Painel lateral desafixado</translation>
 <translation id="6104929924898022309">Usar a tecla de pesquisa para alterar o comportamento das teclas de função</translation>
@@ -7978,6 +7985,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7340650977506865820">O site está a partilhar o ecrã.</translation>
 <translation id="7340757554212515731">Envia automaticamente relatórios de falhas, bem como dados de diagnóstico e utilização para a Google</translation>
 <translation id="734088800888587319">Métricas da rede</translation>
+<translation id="7341612916770129581">Ligue um microfone</translation>
 <translation id="7341834142292923918">Quer o acesso a este site</translation>
 <translation id="7343372807593926528">Descreva o problema antes de enviar feedback.</translation>
 <translation id="7344585835349671209">Faça a gestão de certificados HTTPS/SSL no seu dispositivo</translation>
@@ -8245,6 +8253,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> com a aplicação <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Sincronizada com outros dispositivos na sua conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">Informações de autenticação de rede PAE</translation>
+<translation id="7542619176101025604"><ph name="ACTION_NAME" /> - ação afixada</translation>
 <translation id="7543104066686362383">Ativar as funcionalidades de depuração neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7544227555407951270">Inscrever dispositivo</translation>
 <translation id="7544977292347272434">Pede aos teus pais para permitirem uma extensão</translation>
@@ -8882,6 +8891,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8017679124341497925">Atalho editado</translation>
 <translation id="8018298733481692628">Eliminar este perfil?</translation>
 <translation id="8018313076035239964">Controle as informações que os Sites podem utilizar e os conteúdos que podem apresentar</translation>
+<translation id="8022466874160067884">Introduzir a sua Conta Google e palavra-passe</translation>
 <translation id="8023133589013344428">Gerir idiomas nas definições do ChromeOS Flex</translation>
 <translation id="8023801379949507775">Atualizar extensões agora</translation>
 <translation id="8025151549289123443">Ecrã de bloqueio e início de sessão</translation>
@@ -9812,6 +9822,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8749863574775030885">Aceder a dispositivos USB de um fornecedor desconhecido</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quer estabelecer ligação a uma porta de série</translation>
 <translation id="8750346984209549530">APN de rede móvel</translation>
+<translation id="8750786237117206586">Gerir definições de áudio do ChromeOS Flex</translation>
 <translation id="8752451679755290210">Mova-se entre os itens automaticamente</translation>
 <translation id="8753948258138515839">A app Files fornece um acesso rápido aos ficheiros que guardou no Google Drive, armazenamento externo ou dispositivo com ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Ao executar o <ph name="PRODUCT_NAME" /> num ambiente de trabalho suportado, são utilizadas as definições de proxy do sistema. No entanto, o seu sistema não é suportado ou ocorreu um problema no início da configuração do sistema.&lt;/p&gt;
@@ -10132,7 +10143,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8999027165951679951">Separador inativo: <ph name="MEMORY_SAVINGS" /> libertados</translation>
 <translation id="8999560016882908256">Erro de sintaxe da secção: <ph name="ERROR_LINE" />.</translation>
 <translation id="9000185763019430629">Tocar no sensor de impressões digitais no lado direito do dispositivo <ph name="DEVICE_TYPE" />. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Todos os separadores</translation>
 <translation id="9003185744423389627">Falha na ligação ao servidor de gestão de dispositivos com o estado "<ph name="STATUS_TEXT" />" a <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Procurar automaticamente os perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os Sites</translation>

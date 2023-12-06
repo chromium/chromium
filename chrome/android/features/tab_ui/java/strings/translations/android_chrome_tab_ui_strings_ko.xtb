@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">탭을 오른쪽으로 이동</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>
 <translation id="8029301326595421733">매장에 관한 정보가 전체 높이로 열림</translation>
-<translation id="814503310257431685">전체 보기</translation>
 <translation id="8205266828577616993">탭을 위로 이동</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
 <translation id="8398929769197326728">새 폴더: <ph name="CURRENT_TIMESTAMP_MS" /></translation>

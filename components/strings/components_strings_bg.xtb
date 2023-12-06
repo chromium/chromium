@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Също така можете да блокирате темите, които не искате Chrome да споделя със сайтовете, и да изключвате рекламни теми по всяко време от настройките на браузъра.</translation>
 <translation id="1697532407822776718">Готово!</translation>
 <translation id="1699651774646344471">Вече можете да използвате адреси от профила си в Google</translation>
+<translation id="1700542542921501212">Можете да използвате <ph name="SEARCH_ENGINE_NAME" />, за да търсите в мрежата.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Нива на мащаба</translation>
@@ -824,6 +825,7 @@
 <ph name="LIST_ITEM" />„бисквитките“ и данните за сайтовете;
 <ph name="LIST_ITEM" />информацията, въведена във формуляри.
 <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Вмъкване</translation>
 <translation id="2625385379895617796">Часовникът ви е напред</translation>
 <translation id="262745152991669301">Може да поиска разрешение да се свързва с USB устройства</translation>
 <translation id="2629325967560697240">За да използвате най-високото ниво на сигурност на Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />включете подобрената защита<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1586,7 @@
 <translation id="4177501066905053472">Рекламни теми</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> – <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Спиране на проследяването на цената</translation>
+<translation id="4191334393248735295">Продължителност</translation>
 <translation id="4195459680867822611">Бутон за преглед на съветите за Chrome. Активирайте, за да научите повече за функциите на браузъра</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4196861286325780578">&amp;Възстановяване на преместването</translation>

@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
-<translation id="814503310257431685">Tingnan lahat</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

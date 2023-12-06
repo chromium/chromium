@@ -116,6 +116,7 @@
 <translation id="1206967143813997005">ลายเซ็นเริ่มต้นไม่ถูกต้อง</translation>
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
 <translation id="121201262018556460">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่มีคีย์ที่ไม่รัดกุม ผู้โจมตีอาจทำให้คีย์ส่วนตัวเสียหายไปแล้วและเซิร์ฟเวอร์นี้อาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
+<translation id="1212527389003717329">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
 <translation id="1222060260947439312">ถาดขวา</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@
 <translation id="1521655867290435174">Google ชีต</translation>
 <translation id="1524669537550112617">ห้องเช่าตกแต่งพร้อมอยู่</translation>
 <translation id="1527263332363067270">กำลังรอการเชื่อมต่อ…</translation>
+<translation id="1528311629279578926">การเชื่อมต่อถูกบล็อกเนื่องจากเริ่มต้นโดยหน้าเว็บสาธารณะเพื่อเชื่อมต่อกับอุปกรณ์หรือเซิร์ฟเวอร์ในเครือข่ายส่วนตัว โหลดหน้านี้ซ้ำเพื่ออนุญาตการเชื่อมต่อ</translation>
 <translation id="1529789484829130889">ถาด 8</translation>
 <translation id="1530707389502320859">เว็บไซต์ที่คุณเพิ่งพยายามเข้าถึงดูเป็นเว็บไซต์ปลอม บางครั้งผู้โจมตีจะเลียนแบบเว็บไซต์ต่างๆ โดยทำการเปลี่ยนแปลงเล็กๆ น้อยๆ ที่สังเกตเห็นได้ยากกับ URL</translation>
 <translation id="1532118530259321453">หน้านี้บอกว่า</translation>
@@ -825,6 +827,7 @@
             <ph name="LIST_ITEM" />คุกกี้และข้อมูลเว็บไซต์
             <ph name="LIST_ITEM" />ข้อมูลที่ป้อนในแบบฟอร์ม
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">แทรก</translation>
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
 <translation id="262745152991669301">สามารถขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />เปิดการปกป้องที่ปรับปรุงแล้ว<ph name="END_ENHANCED_PROTECTION_LINK" />เพื่อให้ Chrome รักษาความปลอดภัยในระดับสูงสุด</translation>
@@ -1160,6 +1163,7 @@
 <translation id="3325027355611702542">รถสำหรับตั้งแคมป์และรถบ้าน</translation>
 <translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
 <translation id="3333762389743153920">ไม่มีสิทธิ์ใช้บัตรเสมือน</translation>
+<translation id="3336044043987989409">กดปุ่มโหลดซ้ำเพื่ออนุญาตการเชื่อมต่อกับอุปกรณ์หรือเซิร์ฟเวอร์ในเครือข่ายส่วนตัว</translation>
 <translation id="3338095232262050444">ปลอดภัย</translation>
 <translation id="333839153442689579">การออกกำลังกายแบบ HIIT</translation>
 <translation id="3339440062908617027">วิ่งและเดิน</translation>
@@ -1584,6 +1588,7 @@
 <translation id="4177501066905053472">หัวข้อโฆษณา</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
+<translation id="4191334393248735295">ความยาว</translation>
 <translation id="4195459680867822611">ปุ่มดูเคล็ดลับในการใช้ Chrome เปิดใช้งานเพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4196861286325780578">&amp;ทำซ้ำการย้าย</translation>

@@ -10176,7 +10176,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8999027165951679951">Hindi aktibong tab: <ph name="MEMORY_SAVINGS" /> ang nabakante</translation>
 <translation id="8999560016882908256">Error sa syntax sa seksyon: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Pindutin ang sensor para sa fingerprint sa kanang bahagi ng iyong <ph name="DEVICE_TYPE" />. Secure na sino-store ang data ng iyong fingerprint at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> mo.</translation>
-<translation id="9000532564152265066">Lahat ng Tab</translation>
 <translation id="9003185744423389627">Hindi nagtagumpay ang Pagkonekta sa Pamamahala sa Device na may status na '<ph name="STATUS_TEXT" />' nang <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Awtomatikong mag-scan para sa mga available na profile ng eSIM?</translation>
 <translation id="9003647077635673607">Payagan sa lahat ng website</translation>

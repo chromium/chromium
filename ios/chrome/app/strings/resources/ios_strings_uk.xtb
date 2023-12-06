@@ -142,7 +142,6 @@
 <translation id="165877110639533037">Немає відкритих вкладок</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Мобільний сайт</translation>
-<translation id="168715261339224929">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="1687475363370981210">Позначити всі як прочитані</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -1045,7 +1044,6 @@
 <translation id="6476253015009698798">Відстеження цін недоступне для цієї сторінки.</translation>
 <translation id="6476800141292307438">Сторінка перекладається такою мовою: <ph name="LANGUAGE" />. Параметри розташовано внизу екрана.</translation>
 <translation id="648164694371393720">Помилка автентифікації</translation>
-<translation id="6482629121755362506">Видалено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Ви ввійшли як <ph name="EMAIL" />.
 
 Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб використовувати й зберігати дані Chrome в обліковому записі Google.</translation>
@@ -1412,7 +1410,6 @@
 <translation id="8428634594422941299">Зрозуміло</translation>
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8449347986464073209">Видалити й вийти</translation>
-<translation id="8458397775385147834">Видалено 1 елемент</translation>
 <translation id="8459333855531264009">Небезпечно</translation>
 <translation id="8487667956631253959">Увімкнено</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>

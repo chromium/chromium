@@ -10130,7 +10130,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8999027165951679951">Nofaol varaq: <ph name="MEMORY_SAVINGS" /> boʻshatildi</translation>
 <translation id="8999560016882908256">Boʻlim bilan bogʻliq imloviy xato: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> qurilmasining oʻng orqasidagi barmoq izi skaneriga tegining. Barmoq izlaringiz yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi.</translation>
-<translation id="9000532564152265066">Barcha varaqlar</translation>
 <translation id="9003185744423389627">Qurilmalar boshqaruvi serveriga ulanish “<ph name="STATUS_TEXT" />” holati bilan <ph name="FAILURE_TIME" /> da amalga oshmadi</translation>
 <translation id="90033698482696970">Mavjud eSIM profillari avtomatik skanerlansinmi?</translation>
 <translation id="9003647077635673607">Barcha satlarga ruxsat berish</translation>

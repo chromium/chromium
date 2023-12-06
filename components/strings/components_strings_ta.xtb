@@ -824,6 +824,7 @@
           <ph name="LIST_ITEM" />குக்கீகள் மற்றும் தளத் தரவு
           <ph name="LIST_ITEM" />படிவங்களில் டைப் செய்த தகவல்கள்
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">செருகு</translation>
 <translation id="2625385379895617796">உங்கள் கடிகாரம் மிகவும் முன்னோக்கி இருக்கிறது</translation>
 <translation id="262745152991669301">USB சாதனங்களுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="2629325967560697240">Chromeமின் அதிகபட்சப் பாதுகாப்பைப் பெற, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />மேம்பட்ட பாதுகாப்பை இயக்கவும்<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1580,6 +1581,7 @@
 <translation id="4177501066905053472">விளம்பரத் தலைப்புகள்</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
+<translation id="4191334393248735295">நீளம்</translation>
 <translation id="4195459680867822611">Chrome உதவிக்குறிப்புகளைக் காட்டும் பட்டன். Chrome அம்சங்கள் குறித்துத் தெரிந்துகொள்ள இதை இயக்குங்கள்</translation>
 <translation id="4195643157523330669">புதிய தாவலில் திற</translation>
 <translation id="4196861286325780578">&amp;நகர்த்தலை மீண்டும் செய்</translation>

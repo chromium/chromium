@@ -116,6 +116,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1206967143813997005">Assinatura inicial inválida</translation>
 <translation id="1209206284964581585">Ocultar por enquanto</translation>
 <translation id="121201262018556460">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado que contém uma chave fraca. Um invasor pode ter violado a chave privada, e o servidor pode não ser o servidor que você esperava (você pode estar se comunicando com um invasor).</translation>
+<translation id="1212527389003717329">O download foi iniciado. Para conferir, toque na tecla |<ph name="ACCELERATOR" />| e pressione.</translation>
 <translation id="1219129156119358924">Sistema de segurança</translation>
 <translation id="1222060260947439312">Bandeja direita</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1521655867290435174">Planilhas Google</translation>
 <translation id="1524669537550112617">Aluguel de imóveis mobiliados</translation>
 <translation id="1527263332363067270">Aguardando conexão...</translation>
+<translation id="1528311629279578926">A conexão está bloqueada porque foi iniciada por uma página pública para se conectar a dispositivos ou servidores na sua rede particular. Atualize esta página para permitir a conexão.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">O site que você tentou acessar parece falso. Os invasores às vezes imitam sites fazendo pequenas alterações quase imperceptíveis no URL.</translation>
 <translation id="1532118530259321453">Essa página diz</translation>
@@ -490,7 +492,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
-<translation id="192095259937375524">Botão "Compartilhar esta guia". Ative para compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
+<translation id="192095259937375524">Botão "Compartilhar esta guia". Ative para compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1939059826036755332">Picture-in-picture automático</translation>
@@ -825,6 +827,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
             <ph name="LIST_ITEM" />Cookies e dados de sites
             <ph name="LIST_ITEM" />Informações inseridas em formulários
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Inserir</translation>
 <translation id="2625385379895617796">Seu relógio está adiantado</translation>
 <translation id="262745152991669301">Pode pedir para se conectar a dispositivos USB</translation>
 <translation id="2629325967560697240">Para usar o nível mais alto de segurança do Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ative a proteção reforçada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1160,6 +1163,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3325027355611702542">Campers e veículos recreativos</translation>
 <translation id="3329013043687509092">Saturação</translation>
 <translation id="3333762389743153920">Não qualificado como cartão virtual</translation>
+<translation id="3336044043987989409">Pressione o botão "Atualizar" para permitir a conexão com dispositivos ou servidores na sua rede particular.</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="333839153442689579">Treino intervalado de alta intensidade</translation>
 <translation id="3339440062908617027">Corrida e caminhada</translation>
@@ -1585,6 +1589,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4177501066905053472">Temas de anúncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Não acompanhar preço</translation>
+<translation id="4191334393248735295">Duração</translation>
 <translation id="4195459680867822611">Botão "Ver dicas do Chrome". Ative para saber mais sobre os recursos do Chrome</translation>
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4196861286325780578">&amp;Refazer mover</translation>
@@ -2921,7 +2926,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6883221904761970440">A página de autenticação de credenciais para pagamento seguro está fechada</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
-<translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão não segura.</translation>
+<translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão sem segurança.</translation>
 <translation id="6890443033788248019">Permitir acesso à localização?</translation>
 <translation id="6890531741535756070">Você escolheu fazer a verificação com <ph name="DEVICE_LABEL" /> em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Ele pode ter armazenado informações sobre sua forma de pagamento, mas é possível <ph name="BEGIN_LINK" />solicitar a exclusão<ph name="END_LINK" /> desses dados.</translation>
 <translation id="6890956352250146925">Opções para cookies e dados do site</translation>
@@ -3187,7 +3192,7 @@ Mais detalhes:
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7403392780200267761">Compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
+<translation id="7403392780200267761">Compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Você verá esse erro se tiver o software Superfish no seu computador Windows.&lt;/p&gt;
@@ -4025,7 +4030,7 @@ Mais detalhes:
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
-<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="9023536760430404133">Rodas e pneus de veículos</translation>
 <translation id="9025348182339809926">(inválido)</translation>
 <translation id="902590795160480390">Carregando PDF</translation>

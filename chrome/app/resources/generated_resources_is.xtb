@@ -6091,7 +6091,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5782040878821624922">Tiltækt í öllum tækjum</translation>
 <translation id="5782227691023083829">Þýðir...</translation>
 <translation id="57838592816432529">Þagga</translation>
-<translation id="5784291589716625675">Breyta máli forrits?</translation>
+<translation id="5784291589716625675">Breyta máli forrits</translation>
 <translation id="5785583009707899920">Hjálparforrit Chrome fyrir skrár</translation>
 <translation id="5787146423283493983">Lykilsamningur</translation>
 <translation id="5787420647064736989">Heiti tækis</translation>
@@ -10183,7 +10183,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8999027165951679951">Óvirkur flipi: <ph name="MEMORY_SAVINGS" /> losað/losuð</translation>
 <translation id="8999560016882908256">Málskipunarvilla hluta: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Snertu fingrafaralesarann hægra megin í <ph name="DEVICE_TYPE" />. Fingrafaragögnin þín eru í öruggri geymslu og fara aldrei út fyrir <ph name="DEVICE_TYPE" />-tækið þitt.</translation>
-<translation id="9000532564152265066">Allir flipar</translation>
 <translation id="9003185744423389627">Ekki náðist tenging við þjón tækjastjórnunar með stöðunni „<ph name="STATUS_TEXT" />“ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Leita sjálfkrafa að tiltækum eSIM-prófílum?</translation>
 <translation id="9003647077635673607">Leyfa á öllum vefsvæðum</translation>

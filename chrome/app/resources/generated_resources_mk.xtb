@@ -10151,7 +10151,6 @@
 <translation id="8999027165951679951">Неактивна картичка: ослободен е простор од <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Синтаксичка грешка во делот: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Допрете го сензорот за отпечатоци десно на вашиот <ph name="DEVICE_TYPE" />. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Сите картички</translation>
 <translation id="9003185744423389627">Поврзувањето со серверот на „Управник со уреди“ не успеа и има статус „<ph name="STATUS_TEXT" />“ во <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Да се скенира автоматски за достапни профили на eSIM?</translation>
 <translation id="9003647077635673607">Дозволи на сите веб-локации</translation>

@@ -824,6 +824,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
           <ph name="LIST_ITEM" />cookieak eta webguneetako datuak
           <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Txertatu</translation>
 <translation id="2625385379895617796">Erlojua aurreratuta duzu</translation>
 <translation id="262745152991669301">USB bidezko gailuetara konektatzea eska dezake</translation>
 <translation id="2629325967560697240">Chrome-ren segurtasun-maila handiena lortzeko, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />aktibatu babes hobetua<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1580,6 +1581,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4177501066905053472">Iragarkien gaiak</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Utzi prezioaren jarraipena egiteari</translation>
+<translation id="4191334393248735295">Luzera</translation>
 <translation id="4195459680867822611">Chrome-ri buruzko aholkuak ikusteko botoia: aktiba ezazu Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4196861286325780578">&amp;Berregin mugitzea</translation>

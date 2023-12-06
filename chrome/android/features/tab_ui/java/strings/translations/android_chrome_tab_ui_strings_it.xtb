@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
 <translation id="7966321538264951561">Ignora i suggerimenti.</translation>
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
-<translation id="814503310257431685">Visualizza tutti</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

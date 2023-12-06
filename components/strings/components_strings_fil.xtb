@@ -825,6 +825,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
           <ph name="LIST_ITEM" />Cookies at data ng site
           <ph name="LIST_ITEM" />Impormasyong inilalagay sa mga form
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Ipasok</translation>
 <translation id="2625385379895617796">Nauuna ang iyong orasan</translation>
 <translation id="262745152991669301">Puwedeng hilinging kumonekta sa mga USB device</translation>
 <translation id="2629325967560697240">Para makuha ang pinakamataas na antas ng seguridad ng Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />i-on ang pinahusay na proteksyon<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1586,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4177501066905053472">Mga paksa ng ad</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Huwag subaybayan ang presyo</translation>
+<translation id="4191334393248735295">Haba</translation>
 <translation id="4195459680867822611">Button na Tingnan ang mga tip sa Chrome, i-activate para matuto tungkol sa mga feature ng Chrome</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4196861286325780578">&amp;Gawing muli ang paglilipat</translation>

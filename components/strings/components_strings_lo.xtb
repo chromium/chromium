@@ -87,6 +87,7 @@
 <translation id="11635448457105324">ປຸ່ມຈັດການທີ່ຢູ່, ເປີດນຳໃຊ້ເພື່ອເພີ່ມ ແລະ ຈັດການທີ່ຢູ່ໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1165174597379888365">ມີການເຂົ້າເບິ່ງໜ້າເວັບ</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{ບໍ່ມີ}=1{ຈາກ 1 ເວັບໄຊ (ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ)}other{ຈາກ # ເວັບໄຊ (ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ)}}</translation>
 <translation id="1165852471352757509">ສາລະຄະດີໂທລະທັດ</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">ທ່ານຕ້ອງການອະນຸຍາດໃຫ້ <ph name="EMBEDDED_URL" /> ໃຊ້ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊໃນ <ph name="TOP_LEVEL_URL" /> ບໍ?
@@ -825,6 +826,7 @@
           <ph name="LIST_ITEM" />ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ
           <ph name="LIST_ITEM" />ຂໍ້ມູນທີ່ປ້ອນໃສ່ແບບຟອມຕ່າງໆ
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">ສອດໃສ່</translation>
 <translation id="2625385379895617796">ໂມງ​ຂອ​ງ​ທ່ານ​ໄວ</translation>
 <translation id="262745152991669301">ສາມາດຂໍເຊື່ອມຕໍ່ຫາອຸປະກອນ USB ໄດ້</translation>
 <translation id="2629325967560697240">ເພື່ອຮັບຄວາມປອດໄພລະດັບສູງສຸດຂອງ Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ກະລຸນາເປີດການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນແລ້ວ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1587,7 @@
 <translation id="4177501066905053472">ຫົວຂໍ້ໂຄສະນາ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ເຊົາຕິດຕາມລາຄາ</translation>
+<translation id="4191334393248735295">ຄວາມຍາວ</translation>
 <translation id="4195459680867822611">ປຸ່ມເບິ່ງເຄັດລັບໃນການໃຊ້ Chrome, ເປີດນຳໃຊ້ເພື່ອສຶກສາກ່ຽວກັບຄຸນສົມບັດຕ່າງໆຂອງ Chrome</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4196861286325780578">ເຮັດຄືນຄໍາສັ່ງຍ້າຍ</translation>

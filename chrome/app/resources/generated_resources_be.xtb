@@ -10134,7 +10134,6 @@
 <translation id="8999027165951679951">Неактыўная ўкладка: вызвалена <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Памылка сінтаксісу раздзела: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Дакраніцеся да сканера адбіткаў пальцаў на правай бакавой частцы прылады <ph name="DEVICE_TYPE" />. Даныя адбіткаў пальцаў надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
-<translation id="9000532564152265066">Усе ўкладкі</translation>
 <translation id="9003185744423389627">Не ўдалося падключыцца да сервера кіравання прыладамі (стан: "<ph name="STATUS_TEXT" />", <ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Выконваць аўтаматычны пошук даступных профіляў eSIM-карт?</translation>
 <translation id="9003647077635673607">Дазволіць на ўсіх вэб-сайтах</translation>

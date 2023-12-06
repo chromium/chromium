@@ -142,7 +142,6 @@
 <translation id="165877110639533037">برگه‌ای باز نیست</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">درخواست سایت ویژه تلفن همراه</translation>
-<translation id="168715261339224929">برای دریافت نشانک‌ها در همه دستگاه‌هایتان، همگام‌سازی را روشن کنید.</translation>
 <translation id="1687475363370981210">علامت‌گذاری همه به‌‌عنوان خوانده‌شده</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
@@ -1047,7 +1046,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6476253015009698798">پیگیری قیمت برای این صفحه دردسترس نیست.</translation>
 <translation id="6476800141292307438">ترجمه صفحه به <ph name="LANGUAGE" />. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="648164694371393720">خطای اصالت‌سنجی</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> مورد حذف شد</translation>
 <translation id="6484712497741564393">‏با ایمیل <ph name="EMAIL" /> به سیستم وارد شده‌اید.
 
 داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، این گذرعبارت را وارد کنید.</translation>
@@ -1415,7 +1413,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8428634594422941299">متوجه شدم</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8449347986464073209">حذف و خروج از سیستم</translation>
-<translation id="8458397775385147834">۱ مورد حذف شد</translation>
 <translation id="8459333855531264009">امن نیست</translation>
 <translation id="8487667956631253959">فعال</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>

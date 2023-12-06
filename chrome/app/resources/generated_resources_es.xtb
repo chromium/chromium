@@ -10130,7 +10130,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8999027165951679951">Pestaña inactiva; memoria liberada: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Error de sintaxis de sección: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Toca el sensor de huellas digitales, que está en el lado derecho de tu <ph name="DEVICE_TYPE" />. Los datos de tu huella digital se almacenan de forma segura y nunca salen de tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Todas las pestañas</translation>
 <translation id="9003185744423389627">La conexión con el servidor de administración de dispositivos ha fallado con el estado "<ph name="STATUS_TEXT" />" a las <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">¿Buscar automáticamente perfiles de eSIM disponibles?</translation>
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>

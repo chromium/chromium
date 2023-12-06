@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. În plus, poți să blochezi subiectele pe care nu vrei să le trimită Chrome la site-uri și să dezactivezi oricând subiectele anunțurilor din setările Chrome.</translation>
 <translation id="1697532407822776718">Ești gata!</translation>
 <translation id="1699651774646344471">Acum poți folosi adrese din Contul Google</translation>
+<translation id="1700542542921501212">Poți folosi <ph name="SEARCH_ENGINE_NAME" /> pentru a căuta pe web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Niveluri de zoom</translation>
@@ -824,6 +825,7 @@
             <ph name="LIST_ITEM" />cookie-urile și datele de pe site-uri,
             <ph name="LIST_ITEM" />informațiile introduse în formulare.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Introduceți</translation>
 <translation id="2625385379895617796">Ora este setată în viitor</translation>
 <translation id="262745152991669301">Poate solicita permisiunea de a se conecta la dispozitive USB</translation>
 <translation id="2629325967560697240">Pentru a beneficia de cel mai înalt nivel de securitate, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activează protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1586,7 @@
 <translation id="4177501066905053472">Subiectele anunțurilor</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulează urmărirea prețului</translation>
+<translation id="4191334393248735295">Lungime</translation>
 <translation id="4195459680867822611">Butonul Vezi sfaturile privind Chrome, activează pentru a afla despre funcțiile Chrome</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4196861286325780578">&amp;Repetați mutarea</translation>

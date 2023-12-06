@@ -824,6 +824,7 @@
           <ph name="LIST_ITEM" />ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ 
           <ph name="LIST_ITEM" />ਫ਼ਾਰਮਾਂ ਵਿੱਚ ਦਾਖਲ ਕੀਤੀ ਜਾਣਕਾਰੀ
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">ਦਰਜ ਕਰੋ</translation>
 <translation id="2625385379895617796">ਤੁਹਾਡੀ ਘੜੀ ਅੱਗੇ ਹੈ</translation>
 <translation id="262745152991669301">ਸਾਈਟ USB ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="2629325967560697240">Chrome ਦੀ ਉੱਚਤਮ ਪੱਧਰ ਦੀ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕਰੋ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1581,6 +1582,7 @@
 <translation id="4177501066905053472">ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ਕੀਮਤ ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
+<translation id="4191334393248735295">ਲੰਬਾਈ</translation>
 <translation id="4195459680867822611">'Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਦੇਖੋ' ਬਟਨ, Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="4195643157523330669">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4196861286325780578">&amp;ਮੂਵ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>

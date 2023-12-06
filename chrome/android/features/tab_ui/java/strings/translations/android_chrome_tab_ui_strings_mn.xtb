@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Табыг баруун тийш зөөх</translation>
 <translation id="7966321538264951561">Зөвлөмжийг үл хэрэгсэх.</translation>
 <translation id="8029301326595421733">Энэ дэлгүүрийн талаарх мэдээллийг бүтэн өндөртэйгээр нээсэн</translation>
-<translation id="814503310257431685">Бүгдийг харах</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

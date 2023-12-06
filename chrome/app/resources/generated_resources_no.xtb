@@ -92,6 +92,7 @@
 <translation id="106855837688344862">Berøringshendelser</translation>
 <translation id="1069104208554708737">Denne tilgangsnøkkelen lagres bare på denne enheten</translation>
 <translation id="1069355737714877171">Fjern eSIM-profilen <ph name="PROFILE_NAME" /></translation>
+<translation id="1069778954840159202">Hent konto fra Android-telefon automatisk</translation>
 <translation id="1069814191880976658">Velg en annen skjerm</translation>
 <translation id="1070377999570795893">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.
 
@@ -3015,6 +3016,10 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3305389145870741612">Formateringsprosessen kan ta et par sekunder. Vent litt.</translation>
 <translation id="3305661444342691068">Åpne forhåndsvisning av PDF-en</translation>
 <translation id="3307176291962384345">Få rabatter hos <ph name="MERCHANT_NAME" /></translation>
+<translation id="3307283429759317478">Du ser faner fra andre enheter, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="3308134619352333507">Skjul knappen</translation>
 <translation id="3308852433423051161">Laster inn Google-assistenten …</translation>
 <translation id="3309330461362844500">Sertifikatprofil-ID</translation>
@@ -3243,6 +3248,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3497560059572256875">Del doodlen</translation>
 <translation id="3497915391670770295">Send til &amp;enhetene dine</translation>
 <translation id="3500417806337761827">Feil ved innsetting av delt nettverksressurs. Det er allerede satt inn for mange delte SMB-nettverksressurser.</translation>
+<translation id="350397915809787283">Hvis du ikke har noen konto, velger du det første alternativet for å opprette en.</translation>
 <translation id="3503995387997205657">Du kan gjenopprette de tidligere appene dine</translation>
 <translation id="3505100368357440862">Handelsforslag</translation>
 <translation id="3505602163050943406">Når du bruker enkelte funksjoner, kan de sende deler av åpne sider, relaterte nylige sider og nettadressene deres til Google</translation>
@@ -6484,6 +6490,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6103681770816982672">Advarsel: du bytter til utviklerkanal</translation>
 <translation id="6104068876731806426">Google-kontoer</translation>
 <translation id="6104311680260824317">Kan ikke knytte enheten til domenet. Tjeneren støtter ikke de angitte Kerberos-krypteringstypene. Du finner innstillinger for kryptering under «Flere alternativer».</translation>
+<translation id="6104667115274478616">Administrer ChromeOS-lydinnstillinger</translation>
 <translation id="6104796831253957966">Utskriftskøen er full</translation>
 <translation id="610487644502954950">Sidepanelet er løsnet</translation>
 <translation id="6104929924898022309">Bruk søketasten for å endre funksjonstastenes virkemåte</translation>
@@ -8003,6 +8010,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7340650977506865820">Nettstedet deler skjermen din</translation>
 <translation id="7340757554212515731">Sender programstopprapporter, diagnostikk og bruksdata automatisk til Google</translation>
 <translation id="734088800888587319">Nettverksberegninger</translation>
+<translation id="7341612916770129581">Koble til en mikrofon</translation>
 <translation id="7341834142292923918">Vil ha tilgang til dette nettstedet</translation>
 <translation id="7343372807593926528">Beskriv problemet før du sender tilbakemeldingen.</translation>
 <translation id="7344585835349671209">Administrer sertifikater for HTTPS/SSL på enheten din</translation>
@@ -8270,6 +8278,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> med <ph name="APP_NAME" />-appen</translation>
 <translation id="754207240458482646">Synkronisert med andre enheter på kontoen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">Informasjon om EAP-nettverksautentisering</translation>
+<translation id="7542619176101025604"><ph name="ACTION_NAME" /> – festet</translation>
 <translation id="7543104066686362383">Slå på feilsøkingsfunksjoner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten</translation>
 <translation id="7544227555407951270">Registrer enheten</translation>
 <translation id="7544977292347272434">Be forelderen din om å tillate en utvidelse</translation>
@@ -8907,6 +8916,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8017679124341497925">Snarveien er endret</translation>
 <translation id="8018298733481692628">Vil du slette denne profilen?</translation>
 <translation id="8018313076035239964">Kontroller hva slags informasjon nettsteder kan bruke, og hva slags innhold de kan vise deg</translation>
+<translation id="8022466874160067884">Skriv inn Google-kontoen din og passordet ditt</translation>
 <translation id="8023133589013344428">Administrer språk i ChromeOS Flex-innstillingene</translation>
 <translation id="8023801379949507775">Oppdater utvidelser nå</translation>
 <translation id="8025151549289123443">Låseskjerm og pålogging</translation>
@@ -9840,6 +9850,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8749863574775030885">Les USB-enheter fra en ukjent leverandør</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> vil koble til en seriell port</translation>
 <translation id="8750346984209549530">Mobil-APN</translation>
+<translation id="8750786237117206586">Administrer lydinnstillinger for ChromeOS Flex</translation>
 <translation id="8752451679755290210">Gå automatisk mellom elementer</translation>
 <translation id="8753948258138515839">Med Filer-appen får du rask tilgang til filer du har lagret på Google Disk, eksterne lagringsenheter eller ChromeOS Flex-enheten din.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Når <ph name="PRODUCT_NAME" /> kjører i et støttet skrivebordsmiljø, brukes systemets proxy-tjenerinnstillinger. Men enten støttes ikke systemet, eller så oppsto det et problem under oppstart av systemkonfigurasjonen.&lt;/p&gt;
@@ -10161,7 +10172,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8999027165951679951">Inaktiv fane: <ph name="MEMORY_SAVINGS" /> er frigjort</translation>
 <translation id="8999560016882908256">Syntaksfeil i seksjon: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Trykk på fingeravtrykkssensoren på høyre side av <ph name="DEVICE_TYPE" />. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Alle faner</translation>
 <translation id="9003185744423389627">Tilkoblingen til tjeneren for enhetsadministrasjon mislyktes med statusen «<ph name="STATUS_TEXT" />» <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Vil du automatisk skanne etter tilgjengelige eSIM-kortprofiler?</translation>
 <translation id="9003647077635673607">Tillat på alle nettsteder</translation>

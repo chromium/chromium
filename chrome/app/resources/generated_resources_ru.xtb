@@ -10140,7 +10140,6 @@
 <translation id="8999027165951679951">Неактивная вкладка, освобождено <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Ошибка синтаксиса раздела: <ph name="ERROR_LINE" />.</translation>
 <translation id="9000185763019430629">Приложите палец к сканеру отпечатков на правой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Все вкладки</translation>
 <translation id="9003185744423389627">При подключении к серверу Диспетчера устройств произошла ошибка "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />).</translation>
 <translation id="90033698482696970">Выполнить автоматический поиск доступных профилей eSIM?</translation>
 <translation id="9003647077635673607">Разрешить на всех сайтах</translation>

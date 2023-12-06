@@ -142,7 +142,6 @@
 <translation id="165877110639533037">ምንም ክፍት ትሮች የሉም</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ወደ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">የተንቀሳቃሽ ስልክ ጣቢያ ጠይቅ</translation>
-<translation id="168715261339224929">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ስምረትን ያብሩ።</translation>
 <translation id="1687475363370981210">ሁሉም እንደተነበቡ ምልክት አድርግባቸው</translation>
 <translation id="1689333818294560261">ቅጽል ስም</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ተመርጧል</translation>
@@ -1048,7 +1047,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6476253015009698798">የዋጋ ክትትል ለዚህ ገፅ አይገኝም።</translation>
 <translation id="6476800141292307438">ገጹን ወደ <ph name="LANGUAGE" /> በመተርጎም ላይ። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="648164694371393720">የማረጋገጥ ስህተት</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ንጥሎች ተሰርዘዋል</translation>
 <translation id="6484712497741564393">እንደ <ph name="EMAIL" /> ሆነው ገብተዋል።
 
 የእርስዎ ውሂብ በእርስዎ የይለፍ ሐረግ ተመስጥሯል። የChrome ውሂብን በGoogle መለያዎ ውስጥ ለመጠቀም እና ለማስቀመጥ እሱን ያስገቡ።</translation>
@@ -1416,7 +1414,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8428634594422941299">ገባኝ</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8449347986464073209">ሰርዝ እና ዘግተህ ውጣ</translation>
-<translation id="8458397775385147834">1 ንጥል ተሰርዟል</translation>
 <translation id="8459333855531264009">ደህንነቱ አልተጠበቀም</translation>
 <translation id="8487667956631253959">አብራ</translation>
 <translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>

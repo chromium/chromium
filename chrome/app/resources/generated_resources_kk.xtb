@@ -91,6 +91,7 @@
 <translation id="106855837688344862">Түрту іс-шаралары</translation>
 <translation id="1069104208554708737">Бұл кіру кілті тек осы құрылғыда сақталады.</translation>
 <translation id="1069355737714877171">"<ph name="PROFILE_NAME" />" атты eSIM профилін жою</translation>
+<translation id="1069778954840159202">Аккаунтты Android телефонынан автоматты түрде алу</translation>
 <translation id="1069814191880976658">Басқа экран таңдау</translation>
 <translation id="1070377999570795893">Компьютеріңіздегі басқа бір бағдарлама жаңа кеңейтім қосты, ол Chrome жұмысын өзгертуі мүмкін.
 
@@ -1858,6 +1859,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> модулін шолуды жалғастыру</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
+<translation id="2415117815770324983">Көп сайттан шығарыласыз. Бірақ Google аккаунтыңыздан шығарылмайсыз.</translation>
 <translation id="2416435988630956212">Пернетақтаның функциялық пернелері</translation>
 <translation id="2418307627282545839">Нәрселерді ашық әрі мөлдір етіп көрсетеді.</translation>
 <translation id="2419131370336513030">Орнатылған қолданбаларды көру</translation>
@@ -2375,6 +2377,7 @@
 <translation id="2799223571221894425">Қайта іске қосу</translation>
 <translation id="2800309299477632167">Арнаулы пернелер картасы</translation>
 <translation id="2800760947029405028">Кескін жүктеп салу</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" /> аккаунтына кірдіңіз</translation>
 <translation id="2801954693771979815">Экран өлшемі</translation>
 <translation id="2802557211515765772">Басқарылатын принтер жоқ.</translation>
 <translation id="2803313416453193357">Қалтаны ашу</translation>
@@ -2991,6 +2994,10 @@
 <translation id="3305389145870741612">Пішімдеу процесі бір-екі секундты алуы мүмкін. Күтіңіз.</translation>
 <translation id="3305661444342691068">PDF файлын алдын ала көру қолданбасында ашу</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> жеңілдігін алу</translation>
+<translation id="3307283429759317478">Соңғы іс-әрекеттеріңізге бірден оралу үшін басқа құрылғылардағы қойындылар көрсетіледі.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Параметрлерді карта мәзірінен басқаруға немесе басқа опцияларды "Chrome-ды реттеу" бөлімінен көруге болады.</translation>
 <translation id="3308134619352333507">Түймені жасыру</translation>
 <translation id="3308852433423051161">Google Assistant жүктелуде…</translation>
 <translation id="3309330461362844500">Сертификат профилінің идентификаторы</translation>
@@ -3219,6 +3226,7 @@
 <translation id="3497560059572256875">Дудлды бөлісу</translation>
 <translation id="3497915391670770295">&amp;Құрылғыларыңызға жіберу</translation>
 <translation id="3500417806337761827">Бөлісу кезінде қате шықты. Тым көп SMB бөлісілген.</translation>
+<translation id="350397915809787283">Аккаунтыңыз болмаса, жасау үшін бірінші опцияны таңдаңыз.</translation>
 <translation id="3503995387997205657">Алдыңғы қолданбаларды қалпына келтіре аласыз.</translation>
 <translation id="3505100368357440862">Сатып алу ұсыныстары</translation>
 <translation id="3505602163050943406">Белгілі бір функцияларды пайдаланған кезіңізде, олар ашық беттердің, соңғы қатысы бар беттердің бөліктерін және олардың URL мекенжайларын Google-ға жібере алады.</translation>
@@ -4016,6 +4024,7 @@
 <translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4110490973560452005">Жүктеп алу аяқталды: <ph name="FILE_NAME" />. Жүктеп алынғандар жолағы аумағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Сіз кірген сайттар атауларын шифрлау</translation>
 <translation id="4113743276555482284">Файл құпия сөзі</translation>
 <translation id="4114524937989710624">Google Drive қызметіндегі соңғы іс-әрекеттерге оңай оралуға көмектесетін файлдарды көріп тұрсыз.
         <ph name="BREAK" />
@@ -5744,6 +5753,7 @@
 <translation id="5517304475148761050">Қолданбаға Play Store дүкеніне кіру рұқсаты қажет</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android телефонымен реттеу</translation>
+<translation id="5519053700692355541">Бүйірлік панель функцияларының көпшілігін жоғарғы оң жақтағы Chrome мәзірінен ашуға болады</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Бұл аккаунтты күрделі құпия сөзбен қауіпсіз сақтаңыз. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5521078259930077036">Бұл сіз күткен бастапқы бет пе?</translation>
@@ -6456,6 +6466,7 @@
 <translation id="6103681770816982672">Ескерту: әзірлеуші арнасына ауысудасыз</translation>
 <translation id="6104068876731806426">Google аккаунттары</translation>
 <translation id="6104311680260824317">Құрылғыны доменге қосу мүмкін емес. Сервер көрсетілген Kerberos шифрлау түрлеріне қолдау көрсетпейді. Шифрлау параметрлерін "Қосымша опциялар" тармағынан қараңыз.</translation>
+<translation id="6104667115274478616">ChromeOS аудио параметрлерін басқару</translation>
 <translation id="6104796831253957966">Принтер кезегі толы.</translation>
 <translation id="610487644502954950">Бүйірлік панель босатылды</translation>
 <translation id="6104929924898022309">Функция пернелерінің әрекетін өзгерту үшін іздеу пернесін пайдалану</translation>
@@ -6702,6 +6713,7 @@
 <translation id="6294759976468837022">Автоматты сканерлеу жылдамдығы</translation>
 <translation id="6295158916970320988">Барлық сайттар</translation>
 <translation id="6295855836753816081">Сақталуда…</translation>
+<translation id="6298456705131259420">Осы жерде берілген сайттарға әсер етеді. Домен аты алдына "[*.]" енгізілсе, бүкіл домен үшін ерекше жағдай жасалады. Мысалы, "[*.]google.com" қосылса, үшінші тарап cookie файлдары mail.google.com ішінде де іске қосыла алады, себебі ол — google.com доменінің бір бөлігі.</translation>
 <translation id="6298962879096096191">Android қолданбаларын Google Play арқылы орнату</translation>
 <translation id="6300177430812514606">Дерек жіберуге не алуға рұқсаты жоқтар</translation>
 <translation id="6300654006256345126">Құпия сөзді өзгерту</translation>
@@ -7124,6 +7136,7 @@
 <translation id="6651762277693024112">Бұл сайтқа кірген сайын автоматты түрде іске қосылады.</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> интеграциясына тек x86_64 платформаларында қолдау көрсетіледі. ARM немесе x86 платформасында орнатылған Chromebook құрылғыларында бұл функция жұмыс істемейді.</translation>
 <translation id="6654509035557065241">Қалаған желіні таңдау</translation>
+<translation id="6654987855337442937">Интернет трафигіңізді пайдалана алатын адамдар қандай сайттарға кіретініңізді көрмеуі үшін, қауіпсіз DNS жүйесін пайдаланыңыз.</translation>
 <translation id="6655190889273724601">Әзірлеуші режимі</translation>
 <translation id="6655458902729017087">Аккаунттарды жасыру</translation>
 <translation id="6657180931610302174">Пайдаланушы атын қосу қажет пе?</translation>
@@ -7969,6 +7982,7 @@
 <translation id="7340650977506865820">Сайт экраныңызды бөлісуде</translation>
 <translation id="7340757554212515731">Жаңылыс туралы есептерді, сондай-ақ диагностика және пайдалану туралы деректі Google-ға автоматты түрде жібереді.</translation>
 <translation id="734088800888587319">Желі көрсеткіштері</translation>
+<translation id="7341612916770129581">Микрофон жалғаңыз</translation>
 <translation id="7341834142292923918">Осы сайтқа кіргісі келеді</translation>
 <translation id="7343372807593926528">Пікір жіберер алдында мәселені сипаттап жазыңыз.</translation>
 <translation id="7344585835349671209">Құрылғыда HTTPS/SSL сертификаттарын басқару</translation>
@@ -8235,6 +8249,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> қолданбасымен <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">Аккаунтыңыздағы басқа құрылғылармен синхрондалды. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">EAP желісінің аутентификациясы туралы ақпарат</translation>
+<translation id="7542619176101025604"><ph name="ACTION_NAME" /> – бекітілді</translation>
 <translation id="7543104066686362383">Осы <ph name="IDS_SHORT_PRODUCT_NAME" /> құрылғысындағы түзету мүмкіндіктерін қосу</translation>
 <translation id="7544227555407951270">Құрылғыны тіркеу</translation>
 <translation id="7544977292347272434">Ата-анаңыздан кеңейтімге рұқсат беруін сұраңыз</translation>
@@ -8871,6 +8886,7 @@
 <translation id="8017679124341497925">Таңбаша өзгерді</translation>
 <translation id="8018298733481692628">Бұл профиль жойылсын ба?</translation>
 <translation id="8018313076035239964">Вебсайттар қандай ақпаратты пайдалана алатынын және сізге қандай контент көрсете алатынын басқару</translation>
+<translation id="8022466874160067884">Google аккаунтыңыз бен құпия сөзіңізді енгізіңіз</translation>
 <translation id="8023133589013344428">ChromeOS Flex параметрлерінде тілдерді реттеу</translation>
 <translation id="8023801379949507775">Кеңейтімдерді қазір жаңарту</translation>
 <translation id="8025151549289123443">Құлыптаулы экран және кіру</translation>
@@ -9512,6 +9528,7 @@
 <translation id="8528074251912154910">Тілдерді қосу</translation>
 <translation id="8528479410903501741">IBAN нөмірін сақтау</translation>
 <translation id="8528962588711550376">Кіріп жатырсыз.</translation>
+<translation id="8529578450330869579">Интернет трафигіңізді пайдалана алатын адамдар қандай сайттарға кіретініңізді көрмеуі үшін, қауіпсіз DNS жүйесін пайдаланыңыз. Ол үшін <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> серверіндегі басқарылатын қызмет көрсетуші пайдаланылады.</translation>
 <translation id="8529925957403338845">Жылдам тетеринг байланысы орнатылмады</translation>
 <translation id="8531701051932785007">Күшейтілген Safe Browsing өшірулі</translation>
 <translation id="8533670235862049797">Safe Browsing қосулы</translation>
@@ -9801,6 +9818,7 @@
 <translation id="8749863574775030885">Белгісіз жеткізуші атынан USB құрылғыларына кіру</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> сериялық портқа қосылғысы келеді</translation>
 <translation id="8750346984209549530">Ұялы APN</translation>
+<translation id="8750786237117206586">ChromeOS Flex аудио параметрлерін басқару</translation>
 <translation id="8752451679755290210">Элементтер арасында автоматты түрде жылжу</translation>
 <translation id="8753948258138515839">Files қолданбасы Google Drive қызметінде, сыртқы жадта немесе ChromeOS Flex құрылғысында сақталған файлдарыңызға жылдам кіруге мүмкіндік береді.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Қолдау көрсетілген жұмыс үстелі ортасына негізделген <ph name="PRODUCT_NAME" /> іске қосу кезінде, жүйенің прокси параметрлері пайдаланылады. Бірақ жүйеңізге қолдау көрсетілмеген немесе жүйелік конфигурацияңызды іске қосу кезінде ақау орын алды.&lt;/p&gt;
@@ -10121,7 +10139,6 @@
 <translation id="8999027165951679951">Әрекетсіз қойынды: <ph name="MEMORY_SAVINGS" /> босатылды</translation>
 <translation id="8999560016882908256">Бөлімнің синтаксистік қатесі: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> оң жағындағы саусақ ізін оқу сканерін түртіңіз. Саусағыңыздың ізі туралы деректер қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
-<translation id="9000532564152265066">Барлық қойынды</translation>
 <translation id="9003185744423389627">Құрылғы менеджері серверіне қосылу мүмкін болмады. Күйі: "<ph name="STATUS_TEXT" />", уақыты: <ph name="FAILURE_TIME" />.</translation>
 <translation id="90033698482696970">Қолжетімді eSIM профильдерін автоматты түрде іздеу керек пе?</translation>
 <translation id="9003647077635673607">Барлық веб-сайттарда рұқсат беру</translation>

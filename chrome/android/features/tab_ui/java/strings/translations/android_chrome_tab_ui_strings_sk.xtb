@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Presunúť kartu doprava</translation>
 <translation id="7966321538264951561">Zavrieť návrhy.</translation>
 <translation id="8029301326595421733">Informácie o tomto obchode sú otvorené na úplnú výšku</translation>
-<translation id="814503310257431685">Zobraziť všetko</translation>
 <translation id="8205266828577616993">Presunúť kartu nahor</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Close <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="8398929769197326728">Nový priečinok – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

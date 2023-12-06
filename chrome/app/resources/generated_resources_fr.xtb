@@ -10135,7 +10135,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8999027165951679951">Onglet inactif : <ph name="MEMORY_SAVINGS" /> libérés</translation>
 <translation id="8999560016882908256">Erreur de syntaxe dans la section : <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Appuyez sur le lecteur d'empreinte digitale sur le côté droit de votre <ph name="DEVICE_TYPE" />. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Tous les onglets</translation>
 <translation id="9003185744423389627">Échec de la connexion au serveur de gestion des appareils avec l'état "<ph name="STATUS_TEXT" />" à <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Rechercher automatiquement les profils eSIM disponibles ?</translation>
 <translation id="9003647077635673607">Autoriser sur tous les sites Web</translation>

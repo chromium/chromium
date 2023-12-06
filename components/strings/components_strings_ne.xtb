@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तपाईं आफ्नो जानकारी कसरी व्यवस्थापन गर्न सक्नुहुन्छ:<ph name="END_BOLD" /> Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। तपाईं जुनसुकै बेला Chrome का सेटिङमा गई तपाईं Chrome ले साइटहरूसँग जुन जुन विषयहरू सेयर नगरोस् भन्ने चाहनुहुन्छ ती विषय ब्लक गर्नुका साथै विज्ञापनका विषयहरू अफ गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
 <translation id="1699651774646344471">तपाईं अब आफ्नो Google खातामा भएका ठेगानाहरू प्रयोग गर्न सक्नुहुन्छ</translation>
+<translation id="1700542542921501212">तपाईं इन्टरनेटमा कुनै कुरा खोज्नका निम्ति <ph name="SEARCH_ENGINE_NAME" /> प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">जुमका स्तरहरू</translation>
@@ -824,6 +825,7 @@
           <ph name="LIST_ITEM" />कुकी तथा साइट डेटा
           <ph name="LIST_ITEM" />फारामहरूमा भरिएको जानकारी
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">घुसाउनुहोस्</translation>
 <translation id="2625385379895617796">तपाईंको घडी धेरै छिटो छ</translation>
 <translation id="262745152991669301">USB डिभाइसमा कनेक्ट गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="2629325967560697240">Chrome को सबैभन्दा उच्च स्तरको सुरक्षा सुविधा प्रयोग गर्न <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />परिष्कृत सुरक्षा<ph name="END_ENHANCED_PROTECTION_LINK" /> अन गर्नुहोस्</translation>
@@ -1582,6 +1584,7 @@
 <translation id="4177501066905053472">विज्ञापनका विषयहरू</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
+<translation id="4191334393248735295">लम्बाइ</translation>
 <translation id="4195459680867822611">Chrome सम्बन्धी सुझावहरू हेर्ने बटन, Chrome का सुविधाहरूका बारेमा जान्न यो बटन थिच्नुहोस्</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>

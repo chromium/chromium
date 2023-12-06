@@ -824,6 +824,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
             <ph name="LIST_ITEM" />sīkfaili un vietņu dati;
             <ph name="LIST_ITEM" />veidlapās ievadītā informācija.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Ievietot</translation>
 <translation id="2625385379895617796">Norādītais laiks ir pārāk tālu nākotnē</translation>
 <translation id="262745152991669301">Var pieprasīt atļauju veidot savienojumu ar USB ierīcēm</translation>
 <translation id="2629325967560697240">Lai pārlūkprogrammā Chrome izmantotu visaugstāko drošības līmeni, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ieslēdziet uzlaboto aizsardzību<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1583,6 +1584,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Atcelt cenas izsekošanu</translation>
+<translation id="4191334393248735295">Garums</translation>
 <translation id="4195459680867822611">Poga “Skatīt Chrome padomus”. Aktivizējiet, lai uzzinātu par Chrome funkcijām.</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4196861286325780578">&amp;Atcelt pārvietošanas atsaukšanu</translation>

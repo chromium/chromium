@@ -10151,7 +10151,6 @@
 <translation id="8999027165951679951">非アクティブなタブ: <ph name="MEMORY_SAVINGS" /> を解放しました</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> の右側にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
-<translation id="9000532564152265066">すべてのタブ</translation>
 <translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
 <translation id="90033698482696970">利用可能な eSIM プロファイルを自動的にスキャンしますか？</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>

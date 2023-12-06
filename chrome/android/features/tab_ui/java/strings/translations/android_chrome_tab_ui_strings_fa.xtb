@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">انتقال برگه به چپ</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>
 <translation id="8029301326595421733">اطلاعات مربوط به این فروشگاه به‌صورت کامل باز شده است</translation>
-<translation id="814503310257431685">نمایش همه</translation>
 <translation id="8205266828577616993">انتقال برگه به بالا</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="8398929769197326728">پوشه جدید - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

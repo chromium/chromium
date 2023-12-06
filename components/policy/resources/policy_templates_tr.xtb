@@ -91,6 +91,35 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede otomatik dü
       Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (etkinse) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
+<translation id="1043965859599437362">Bu politika, Birinci Taraf Grup özellikleri için tarayıcı tarafından kullanılan grupların listesini geçersiz kılma imkanı sağlar.
+
+Tarayıcının Birinci Taraf Gruplar listesindeki her bir grup, Birinci Taraf Gruplar için gereken koşulları karşılamalıdır.
+Birinci Taraf Grup'ta birincil site ve en az bir tane üye site yer almalıdır.
+Ayrıca grup, sahibi olduğu hizmet sitelerinin listesinin yanı sıra bir sitenin ve bu siteye ait ccTLD varyantlarının haritasını da içerebilir.
+<ph name="PRODUCT_NAME" /> tarafından kullanılan Birinci Taraf Gruplar hakkında daha fazla bilgi için https://github.com/WICG/first-party-sets adresine göz atın.
+
+Birinci Taraf Grup'taki tüm siteler, HTTPS üzerinden sunulan kaydedilebilir bir alan olmalıdır. Birinci Taraf Grup içindeki her site aynı zamanda benzersiz olmalıdır. Bu demektir ki bir site, Birinci Taraf Grup'ta birden fazla kez listelenemez.
+
+Bu politikaya boş bir sözlük verilirse tarayıcı, herkese açık Birinci Taraf Grup listesini kullanır.
+
+<ph name="REPLACEMENTS" /> listesindeki Birinci Taraf Gruplardaki bir site aynı zamanda tarayıcının listesindeki bir Birinci Taraf Grup'ta da yer alıyorsa bu site, tarayıcının Birinci Taraf Grubundan kaldırılır.
+Bunun ardından politikanın Birinci Taraf Grubu, tarayıcının Birinci Taraf Gruplar listesine eklenir.
+
+<ph name="ADDITIONS" /> listesindeki Birinci Taraf Gruplardaki bir site aynı zamanda tarayıcının listesindeki bir Birinci Taraf Grup'ta da yer alıyorsa tarayıcının Birinci Taraf Grubu yeni Birinci Taraf Grubun eklenebileceği şekilde güncellenir. Tarayıcının listesi güncellendikten sonra, politikanın Birinci Taraf Grubu tarayıcının Birinci Taraf Gruplar listesine eklenir.
+
+Tarayıcının Birinci Taraf Gruplar listesindeki sitelerin hiçbiri, birden fazla grupta yer alamaz. Bu zorunluluk ayrıca, <ph name="REPLACEMENTS" /> ve <ph name="ADDITIONS" /> listelerinin her ikisi için de geçerlidir. Benzer şekilde, bir site hem <ph name="REPLACEMENTS" /> listesinde hem de <ph name="ADDITIONS" /> listesinde yer alamaz.
+
+Joker karakterler (*) bir politika değeri olarak veya bu listelerdeki herhangi bir Birinci Taraf Grup içinde desteklenmez.
+
+Politika tarafından sağlanan tüm gruplar geçerli bir Birinci Taraf Grup olmalıdır. Geçerli değilse uygun bir hata verilir.
+
+<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
+
+<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
+
+Bu, <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> politikasına eşdeğerdir.
+Her iki politika da kullanılabilir ancak bu politikanın desteği yakında sonlandırılacağı için <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> politikası tercih edilir.
+Her ikisi de tarayıcı davranışı üzerinde aynı etkiye sahiptir.</translation>
 <translation id="1046484220783400299">Kullanımdan kaldırılan web platformu özelliklerini sınırlı bir süre için etkinleştir</translation>
 <translation id="1047128214168693844">Hiçbir sitenin, kullanıcının fiziksel konumunu izlemesine izin verme</translation>
 <translation id="1049138910114524876"><ph name="PRODUCT_OS_NAME" /> oturum açma ekranında uygulanan yerel ayarı yapılandırır.
@@ -466,6 +495,14 @@ Politika devre dışı bırakılırsa <ph name="CACHE_CONTROL_NO_STORE_NAME" /> 
 <translation id="1426170570389588560">Yazdırma işleri meta verilerinin saklanacağı dönemi gün cinsinden ayarla</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1427655258943162134">Proxy sunucunun adresi veya URL'si</translation>
+<translation id="1432834104376790711">Bu politika, Pil Tasarrufu Modu ayarını etkinleştirir veya devre dışı bırakır.
+      Chrome'da bu ayar, güç tüketimini azaltmak için kare hızının kısıtlanmasını sağlar. Bu politika ayarlanmazsa son kullanıcı bu ayarı chrome://settings/performance bölümünden kontrol edebilir.
+      ChromeOS'te bu ayar, kare hızının ve CPU frekansının kısıtlanmasını, arka ışıkların kısılmasını ve Android'in, Pil Tasarrufu Modu'na alınmasını sağlar. Birden fazla CPU'su olan cihazlarda bazı CPU'lar kapatılır.
+      Farklı düzeyler şunlardır:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Pil Tasarrufu Modu devre dışı bırakılır.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Cihaz pil gücüyle çalışırken ve pil seviyesi düşük olduğunda Pil Tasarrufu Modu etkinleştirilir.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Bu değerin desteği, M121 sürümünden itibaren sonlandırılmıştır. Değerler, M121 sürümünden itibaren EnabledBelowThreshold olarak kabul edilir.
+      </translation>
 <translation id="1434300053894025056">Yazım denetimini devre dışı bırak</translation>
 <translation id="1434743866147056474">Politikayı ayarlamak, resimleri görüntüleyemeyen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
 
@@ -2068,6 +2105,7 @@ Sistem, AAAA kayıtlarını yalnızca küresel bir IPv6 ana makinesinden cihaza 
 <translation id="2707733461906745082">Profil Ayırma</translation>
 <translation id="2707873794476722903">Güvenli Tarama standart modda etkin.</translation>
 <translation id="2709516037105925701">Otomatik doldurma</translation>
+<translation id="2713913573196284609">Bu değerin desteği, M121 sürümünden itibaren sonlandırılmıştır. Değerler, M121 ve sonraki sürümlerde EnabledBelowThreshold olarak kabul edilir.</translation>
 <translation id="2713977837384407666">Google'a metrikleri her zaman gönderme</translation>
 <translation id="2714359695399346815">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa STUN sunucularının kullanılmasına izin verilir. Uzak istemciler, bir güvenlik duvarıyla ayrılmış olsa bile bu makineyi keşfedip bağlanabilir.
 
@@ -3676,6 +3714,17 @@ Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</
       Politika etkinleştirilirse Hızlı Yanıtlar'ın seçilen içeriğe erişmesine izin verilir.
       Politika devre dışı bırakılırsa Hızlı Yanıtlar'ın seçilen içeriğe erişmesine izin verilmez.
       Politika ayarlanmazsa Hızlı Yanıtlar'ın seçilen içeriğe erişmesine izin verilip verilmeyeceğine kullanıcılar karar verebilir.</translation>
+<translation id="4016523784669365747">Bu politika, Birinci Taraf Grup özelliğini devre dışı bırakma yöntemi olarak sağlanmıştır.
+
+Bu politika ayarlanmadığında veya Etkin değerine ayarlandığında Birinci Taraf Grup özelliği etkinleştirilir.
+
+Bu politika Devre dışı değerine ayarlandığında Birinci Taraf Grup özelliği devre dışı bırakılır.
+
+Chrome'un, Birinci Taraf Grup ile ilgili entegrasyonları destekleyip desteklemediğini kontrol eder.
+
+Bu, <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> politikasına eşdeğerdir.
+Her iki politika da kullanılabilir ancak bu politikanın desteği yakında sonlandırılacağı için <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> politikası tercih edilir.
+Her ikisi de tarayıcı davranışı üzerinde aynı etkiye sahiptir.</translation>
 <translation id="4016700865356669962">Politika, Etkin değerine ayarlanırsa kullanıcılar masaüstü düzeni şablonlarını kullanabilir.  Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa bu şablonlar kullanılamaz.</translation>
 <translation id="4020682745012723568">Android uygulamaları, kullanıcının profiline aktarılmış çerezlere erişemez.</translation>
 <translation id="4025500273782820766">Gelecekte onay istemlerini atlamak için harici protokol iletişim kutusu açıldığında kullanıcıların, "Her zaman izin ver"i seçmelerine izin ver</translation>

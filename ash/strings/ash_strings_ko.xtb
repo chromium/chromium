@@ -659,6 +659,7 @@
 <translation id="36813544980941320">Wi-Fi 네트워크가 휴대전화와 <ph name="DEVICE_NAME" /> 간에 공유됩니다.</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 키를 누른 후 <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">웹사이트</translation>
+<translation id="3697991387880191195">스크린샷 단축키 누르기</translation>
 <translation id="3702809606464356667">현재 데스크의 창을 표시합니다. 모든 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="3702846122927433391">나이지리아의 인구</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">고정 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="439598569299422042">일시중지됨, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">스크린캐스트를 저장할 수 없음</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> 주변기기가 연결되었으며 사용할 수 있습니다. 설정에서 마우스를 맞춤설정할 수 있습니다.</translation>
 <translation id="4405151984121254935">지원되지 않는 유형의 주변기기가 연결되었습니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">현재 페이지 새로고침</translation>
 <translation id="6200515304866777730">앱에서 지원되지 않음</translation>
 <translation id="6210042900243040400">이전에 <ph name="EMAIL" />에 저장된 <ph name="NAME" /> 연결</translation>
+<translation id="6212097153736801627"><ph name="PERIPHERAL_NAME" /> 주변기기를 맞춤설정하세요</translation>
 <translation id="6213808132343683860">부분 스크린샷 찍기 또는 화면 녹화</translation>
 <translation id="6220928844947387476">이제 내 모습과 화면을 동시에 녹화할 수 있습니다.</translation>
 <translation id="622484624075952240">아래</translation>
@@ -1534,6 +1537,7 @@
 <translation id="726276584504105859">화면 분할을 사용하려면 여기를 드래그하세요.</translation>
 <translation id="7262906531272962081">알림 만들기</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + 백스페이스</translation>
+<translation id="7285232777292757180">빠른 설정의 화면 캡처 도구를 사용하여 스크린샷 찍기</translation>
 <translation id="7302889331339392448">실시간 자막이 꺼져 있습니다.</translation>
 <translation id="7303365578352795231">다른 기기에서 응답 중입니다.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1921,7 @@
 <translation id="888982883502837004">이용할 수 있는 기기 펌웨어 업데이트가 있습니다. 클릭하여 확인한 후 업데이트하세요.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 템플릿이 완전히 삭제됩니다.</translation>
 <translation id="889790758758811533">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />). 기기를 전원에 연결합니다.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> 주변기기가 연결되었으며 사용할 수 있습니다. 설정에서 그래픽 태블릿을 맞춤설정할 수 있습니다.</translation>
 <translation id="88986195241502842">페이지 아래로</translation>
 <translation id="8905919797434099235">(제목 없음)</translation>
 <translation id="890616557918890486">소스 변경</translation>

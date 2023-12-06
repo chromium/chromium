@@ -827,6 +827,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
           <ph name="LIST_ITEM" />Fótspor og gögn vefsvæða
           <ph name="LIST_ITEM" />Upplýsingar sem eru færðar inn í eyðublöð
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Setja inn</translation>
 <translation id="2625385379895617796">Klukkan þín er á undan</translation>
 <translation id="262745152991669301">Getur beðið um að tengjast við USB-tæki</translation>
 <translation id="2629325967560697240">Til að fá mesta öryggi sem Chrome býður upp á skaltu <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />kveikja á aukinni vörn<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1588,6 +1589,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4177501066905053472">Umfjöllunarefni auglýsinga</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Hætta að vakta verð</translation>
+<translation id="4191334393248735295">Lengd</translation>
 <translation id="4195459680867822611">Hnappurinn „Sjá ábendingar um Chrome“, virkjaðu til að fá frekari upplýsingar um eiginleika Chrome</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4196861286325780578">&amp;Endurtaka flutning</translation>

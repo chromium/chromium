@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Ekranın güncəllənmə tezliyini təyin edir</translation>
 <translation id="1060570945511946595">Biletləri idarə edin</translation>
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> cihazına xoş gəlmisiniz</translation>
+<translation id="1061309251982613260"><ph name="HOST" /> saytının MIDI cihazlarını idarə etməsini və yenidən proqramlaşdırmasını həmişə bloklayın.</translation>
 <translation id="1061373870045429865">Bu Keçid üçün QR Kodu yaradın</translation>
 <translation id="1061904396131502319">Fasilə vaxtıdır</translation>
 <translation id="10619348099955377">Displey adını kopyalayın</translation>
@@ -273,6 +274,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1203559206734265703">Qorunan auditoriya sazlaması aktivləşdirilib.</translation>
 <translation id="120368089816228251">Musiqi notu</translation>
 <translation id="1203942045716040624">Ortaq İşçi: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Güvənlik kodu kartın arxasındadır</translation>
 <translation id="1210678701920254279">Printerlərə baxın, onları əlavə edin və aktiv çap işləri görün</translation>
 <translation id="1211769675100312947">Qısayolları siz seçirsiniz</translation>
 <translation id="1213254615020057352">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google'a göndərməklə uşağınızın Android təcrübəsini təkmilləşdirməyə kömək edin. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu ayar sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üzrə diaqnostika və istifadə datasını Google'a göndərməyi seçə bilər. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda saxlanıla bilər.</translation>
@@ -296,6 +298,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1223484782328004593"><ph name="APP_NAME" /> lisenziya tələb edir</translation>
 <translation id="1223853788495130632">Administratorunuz bu ayar üçün xüsusi dəyər tövsiyə edir.</translation>
 <translation id="1225177025209879837">Sorğu icra olunur...</translation>
+<translation id="1227107020813934021">Sənəd skanerlərinin tapılması</translation>
 <translation id="1227660082540388410">Giriş açarına düzəliş edin</translation>
 <translation id="1227993798763400520">Yayımlamaq mümkün olmadı. Yenidən cəhd edin.</translation>
 <translation id="1230417814058465809">Standart qoruma aktivdir. Təhlükəsizliyi daha da artırmaq üçün qabaqcıl qoruma işlədin.</translation>
@@ -445,6 +448,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1347625331607114917">Kodu Android telefonunuzda doğrulayın</translation>
 <translation id="1347975661240122359">Batareya <ph name="BATTERY_LEVEL" />% olduqda güncəlləmə başlayacaq.</translation>
 <translation id="1348966090521113558">Maus əlçatımlılıq ayarları</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" sənəd skanerlərini tapmaq və onlara daxil olmaq istəyir.</translation>
 <translation id="1352834119074414157">Bu paket zədələnmiş və ya oğurlanmış ola bilər. Bu pəncərəni bağlayın və onu yenidən endirin.</translation>
 <translation id="1353275871123211385">Tətbiq təsdiqi və ekran vaxtı limitləri kimi valideyn nəzarətlərindən istifadə etmək üçün uşağın valideyn tərəfindən idarə edilən Google Hesabı olmalıdır. Google Classroom kimi alətlər üçün daha sonra bir məktəb hesabı əlavə edilə bilər.</translation>
 <translation id="135389172849514421">Oflayn işləyir</translation>
@@ -619,6 +623,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1485015260175968628">İndi bunları bacarır:</translation>
 <translation id="1485141095922496924">Versiya <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 faylların OneDrive-da saxlanmasını tələb edir. Lokal fayllar köçürüləcək. Digər yerlərdəki fayllar kopyalanacaq. Fayllarınız Fayllar tətbiqində Microsoft OneDrive qovluğunda olacaq.</translation>
+<translation id="1486012259353794050">Sual soruşanda Google Assistent ekrana əsasən uyğun cavablar verir</translation>
 <translation id="1486096554574027028">Parolları axtarın</translation>
 <translation id="1486486872607808064"><ph name="APP_NAME" /> üçün giriş açarı yaratmaq istədiyiniz cihazda kamera ilə bu QR kodunu skanlayın</translation>
 <translation id="1487335504823219454">Aktiv - xüsusi ayarlar</translation>
@@ -685,6 +690,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1541346352678737112">Şəbəkə tapılmadı</translation>
 <translation id="154198613844929213">{0,plural, =0{İndi silinir.}=1{1 saniyə sonra silinəcək}other{# saniyə sonra silinəcək}}</translation>
 <translation id="1542137295869176367">Giriş datanız silinmədi</translation>
+<translation id="1542524755306892917">Bu, <ph name="SUPERVISED_USER_NAME" /> sual soruşanda Google Assistentin uyğun cavablar verməsini təmin edir.</translation>
 <translation id="1543284117603151572">Edge'dən import edildi</translation>
 <translation id="1543538514740974167">Bura daha tez keçin</translation>
 <translation id="1544588554445317666">Daha qısa fayl adından istifadə edin və ya başqa qovluqda saxlayın</translation>
@@ -1898,6 +1904,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolunu sıfırlayın</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> yüklənir</translation>
 <translation id="2440604414813129000">Mənbəyə baxın</translation>
+<translation id="2440632898584211188">Bu sayta MIDI cihazlarını idarə etmək və yenidən proqramlaşdırmaq icazəsi verməyə davam edin.</translation>
 <translation id="2440823041667407902">Məkan girişi</translation>
 <translation id="2441719842399509963">Defoltlara sıfırlayın</translation>
 <translation id="244231003699905658">Ünvan yanlışdır. Ünvanı yoxlayın və yenidən cəhd edin.</translation>
@@ -2138,6 +2145,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="262154978979441594">Google Assistentə səs modelini tanımağı öyrədin</translation>
 <translation id="26224892172169984">Heç bir sayta protokollarla işləməyə icazə verməyin</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">MIDI cihazlarının idarə edilməsi və yenidən proqramlaşdırılmasına icazə verilib</translation>
 <translation id="2624142942574147739">Bu səhifə kameranıza və mikrofonunuza daxil olur.</translation>
 <translation id="2626799779920242286">Zəhmət olmasa sonra yenidən cəhd edin.</translation>
 <translation id="2627424346328942291">Paylaşmaq mümkün deyil</translation>
@@ -2351,6 +2359,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2777251078198759550">Bu konteyneri silin</translation>
 <translation id="2777525873368474674">Şəkil keçidini əlavə edin</translation>
 <translation id="2778471504622896352">Uzaqdan tətbiqləri ChromeOS başladıcıya əlavə edin</translation>
+<translation id="2779728796406650689">Bu, sual soruşanda Google Assistentin uyğun cavablar verməsini təmin edir.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Bu saytda artırmalara icazə verilib</translation>
 <translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
@@ -2428,6 +2437,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2836269494620652131">Qəza</translation>
 <translation id="283669119850230892"><ph name="NETWORK_ID" /> şəbəkəsini istifadə etmək üçün ilk öncə internet bağlantınızı tamamlayın.</translation>
 <translation id="2838379631617906747">Qarşıya yükləmə ...</translation>
+<translation id="2838474726369447181">Bu sayt MIDI cihazlarını (SysEx) idarə edə və yenidən proqramlaşdıra bilər.</translation>
 <translation id="2839032553903800133">Bildirişlər blok edilib</translation>
 <translation id="2841013758207633010">Vaxt</translation>
 <translation id="2841837950101800123">Provayder</translation>
@@ -2451,6 +2461,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2856776373509145513">Yeni konteyner yaradın</translation>
 <translation id="2856907950922663165">URL şifrələmə deaktiv edilsin?</translation>
 <translation id="2859741939921354763">Parolları <ph name="BRAND" /> bölməsinə import edin</translation>
+<translation id="2861030231482411439">Bu saytın MIDI cihazlarını idarə etməsini və yenidən proqramlaşdırmasını blokmağa davam edin.</translation>
 <translation id="2861301611394761800">Sistem güncəlləməsi tamamdır. Lütfən, sistemi yenidən başladın.</translation>
 <translation id="2861402191395139055">Keçid nöqtəsi abunələri</translation>
 <translation id="2861941300086904918">Doğma Klient təhlükəsizlik meneceri</translation>
@@ -4869,6 +4880,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4811212958317149293">Düymə ilə giriş klaviaturasında avtomatik skanlama</translation>
 <translation id="4811503964269049987">Seçilmiş tabelin qrupa əlavə edilməsi</translation>
 <translation id="4813512666221746211">Şəbəkə xətası</translation>
+<translation id="4813872509679988157">Bu sayta MIDI cihazlarından istifadə icazəsi verməyə davam edin.</translation>
 <translation id="4814114628197290459">Silin: IBAN</translation>
 <translation id="4814327014588285482">Ötürün və sonra xatırladın</translation>
 <translation id="4814378367953456825">Bu barmaq izi üçün ad daxil edin</translation>
@@ -5181,6 +5193,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5063480226653192405">Istifadə</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ayarlarında güvənli DNS'i idarə edin</translation>
+<translation id="5066891009360243320">Bu saytın MIDI cihazlarından istifadəsi bloklanıb.</translation>
 <translation id="5067399438976153555">Həmişə aktivdir</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> mikforonu işlətmək istəyəndə icazə alsın</translation>
 <translation id="5068553687099139861">parolları göstərin</translation>
@@ -5898,6 +5911,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> istifadə etməyə başlayın</translation>
 <translation id="5641648607875312660">Skrinşot Şəkil Redaktoru</translation>
 <translation id="5642508497713047">CRL İmzalayıcısı</translation>
+<translation id="5643191124441701136">Güvənlik kodu kartın ön tərəfindədir</translation>
 <translation id="5643321261065707929">Limitli şəbəkə</translation>
 <translation id="5646376287012673985">Məkan</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
@@ -6174,6 +6188,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
 <translation id="5870086504539785141">Girişimlik menyusunu qapadın</translation>
 <translation id="5870155679953074650">Ağır zədələr</translation>
+<translation id="5870901441418842049">Bu saytın MIDI cihazlarını (SysEx) idarə etməsi və yenidən proqramlaşdırması bloklanıb.</translation>
 <translation id="5875534259258494936">Ekran paylaşımı sona çatdı</translation>
 <translation id="5876576639916258720">İcra edilir...</translation>
 <translation id="5876851302954717356">Sağa Yeni Panel</translation>
@@ -6550,6 +6565,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6171779718418683144">Hər dəfə girişdə soruşulsun</translation>
 <translation id="617213288191670920">Dil əlavə edilməyib</translation>
 <translation id="6173623053897475761">PIN kodu yenidən yazın</translation>
+<translation id="6174116123142608180">Bu saytın MIDI cihazlarından istifadəsini bloklamağa davam edin.</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Keçid əldə edin</translation>
 <translation id="6176701216248282552">Kontekstual kömək aktivdir. Bu funksiyalar açıq səhifələri Google-a göndərə bilər.</translation>
@@ -7065,6 +7081,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6597324406048772521">Bu saytda artırmalara icazə verilməyib</translation>
 <translation id="6597331566371766302">Aşağıdakı artırmalar administratorunuz tərəfindən bloklanıb:</translation>
 <translation id="659894938503552850">ən yeni</translation>
+<translation id="6599934330666882772">Bu sayt MIDI cihazlarından istifadə edir.</translation>
 <translation id="6601262427770154296">İstifadəçi lüğətlərini idarə edin</translation>
 <translation id="6601612474695404578">Bəzi saytlar səhifələri yükləmək üçün üçüncü tərəf kukilərindən istifadə edir. Sayt işləmirsə, kukilərə icazə verməyi sınayın.</translation>
 <translation id="6602173570135186741">Avto doldurma və parollar</translation>
@@ -7628,6 +7645,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7036706669646341689">Linux üçün <ph name="DISK_SIZE" /> boş yerin olması tövsiyə edilir. Yer boşaltmaq üçün cihazdan faylları silin.</translation>
 <translation id="7037509989619051237">Önizləniləcək mətn</translation>
 <translation id="7038632520572155338">Açarlı idarəetmə</translation>
+<translation id="7038636380708661517"><ph name="HOST" /> saytının MIDI cihazlarından istifadəsini həmişə bloklayın.</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> üçün başqa Google Hesabı əlavə edin</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> vendordan USB cihazlara giriş</translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7782,6 +7800,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7181117767881540376">&amp;Əlfəcin panelini gizlədin</translation>
 <translation id="7182063559013288142">Ani hotspot</translation>
+<translation id="718240920439497409">MIDI cihazları bloklanıb</translation>
 <translation id="7182791023900310535">Parolunuzu daşıyın</translation>
 <translation id="718427252411067142">Digərlərinin parolunuzdan istifadə etməməsi üçün tətbiqi açaraq parolu dəyişin</translation>
 <translation id="7186088072322679094">Alətlər panelində saxlayın</translation>
@@ -7871,6 +7890,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7255002516883565667">Hazırda yalnız bu cihazda istifadə edilə bilən bir kart var</translation>
 <translation id="7255935316994522020">Tətbiq edin</translation>
 <translation id="7256069762010468647">Sayt kameradan istifadə edir</translation>
+<translation id="7256265230922801769"><ph name="HOST" /> saytına həmişə MIDI cihazlarını idarə etmək və yenidən proqramlaşdırmaq icazəsi verin.</translation>
 <translation id="7256634071279256947">Arxa mikrofon</translation>
 <translation id="7256710573727326513">Paneldə açın</translation>
 <translation id="7257173066616499747">Wi-Fi şəbəkələri</translation>
@@ -8901,6 +8921,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8041267120753677077">Telefonunuzun tətbiqlərini yayımlayın</translation>
 <translation id="8042142357103597104">Mətnin qeyri-şəffaflığı</translation>
 <translation id="8042331986490021244">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir</translation>
+<translation id="8044090981104134791">MIDI cihazlarına icazə verilir</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> cavab vermir.</translation>
 <translation id="8044899503464538266">Yavaş</translation>
 <translation id="8045253504249021590">Sinxronizasiya Google Alətlər Paneli vasitəsilə dayandırıldı.</translation>
@@ -9094,6 +9115,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">İntensivlik</translation>
 <translation id="8195854162863398249">Deaktiv edin: <ph name="FEATURE_NAME" /></translation>
+<translation id="8197151971904389091"><ph name="HOST" /> saytına həmişə MIDI cihazlarından istifadə icazəsi verin.</translation>
 <translation id="8197673340773315084">İş və ya Şəxsi kimi ad və ya etiket əlavə edin</translation>
 <translation id="8198456017687137612">Yayım tabı</translation>
 <translation id="8198457270656084773">Sistemin cihaz jurnalı səhifəsini axtarırsınız? Daxil olun: <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9377,6 +9399,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytına <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə daxil olun</translation>
 <translation id="8414685983518053656">Qeydlər</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Keys)</translation>
+<translation id="8417065541337558100">Kameranın önbaxışı</translation>
 <translation id="8417548266957501132">Valideyn parolu</translation>
 <translation id="8418445294933751433">Panel kimi göstərin</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> əlavə edin</translation>
@@ -9869,6 +9892,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8811862054141704416">Crostini mikrofona girişi</translation>
 <translation id="8811923271770626905">Bu artırma arxa fonda işləyə bilər</translation>
 <translation id="8812593354822910461">Həmçinin baxış datasını (<ph name="URL" />) silin, bunun nəticəsində <ph name="DOMAIN" /> ünvanından çıxacaqsınız. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI cihazlarının idarə edilməsi və yenidən proqramlaşdırılması bloklanıb</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> istifadəçi adına daxil ola bilməz</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />" təsdiq etməsi üçün valideyninizə müraciət edin</translation>
 <translation id="8813937837706331325">Orta səviyyədə qənaət</translation>
@@ -10121,7 +10145,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="8999027165951679951">Deaktiv tab: <ph name="MEMORY_SAVINGS" /> boşaldılıb</translation>
 <translation id="8999560016882908256">Bölmə sintaksisi xətası: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629"><ph name="DEVICE_TYPE" /> cihazınızın sağ tərəfində olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
-<translation id="9000532564152265066">Bütün tablar</translation>
 <translation id="9003185744423389627">Cihaz Meneceri Serverinə <ph name="FAILURE_TIME" /> radələrində bağlanma '<ph name="STATUS_TEXT" />' statusu ilə alınmadı</translation>
 <translation id="90033698482696970">Əlçatan eSIM profilləri avtomatik skanlansın?</translation>
 <translation id="9003647077635673607">Bütün saytlarda icazə verin</translation>

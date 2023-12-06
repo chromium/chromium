@@ -659,6 +659,7 @@
 <translation id="36813544980941320">Wi-Fi сүлжээг таны утас болон <ph name="DEVICE_NAME" />-н хооронд хуваалцана</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> дараа нь <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Вебсайт</translation>
+<translation id="3697991387880191195">Дэлгэцийн агшны товчлолыг дарна уу</translation>
 <translation id="3702809606464356667">Одоогийн дэлгэцээс цонхнуудыг харуулж байна. Бүх дэлгэцээс цонхнуудыг харуулахын тулд Дээш сум товчийг дарна уу</translation>
 <translation id="3702846122927433391">Нигери улсын хүн ам</translation>
 <translation id="3705722231355495246">-</translation>
@@ -835,6 +836,7 @@
 <translation id="4389184120735010762">Та суурилуулсан томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
 <translation id="439598569299422042">Түр зогсоосон, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Дэлгэцийн видео бичлэгийг хадгалах боломжгүй</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> холбогдсон бөгөөд ашиглахад бэлэн байна. Та хулганаа Тохиргоонд өөрчлөх боломжтой.</translation>
 <translation id="4405151984121254935">Холбогдсон нэмэлтийн төрлийг дэмждэггүй</translation>
 <translation id="4406883609789734330">Шууд тайлбар</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> унтраалттай байна.</translation>
@@ -1294,6 +1296,7 @@
 <translation id="6199775032047436064">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="6200515304866777730">Аппаас дэмждэггүй</translation>
 <translation id="6210042900243040400">Өмнө нь <ph name="EMAIL" />-д хадгалсан <ph name="NAME" />-г холбоно уу</translation>
+<translation id="6212097153736801627">Өөрийн <ph name="PERIPHERAL_NAME" />-г өөрчлөх</translation>
 <translation id="6213808132343683860">Дэлгэцийн хэсэгчилсэн агшин авах эсвэл дэлгэцийн үйлдэл бичих</translation>
 <translation id="6220928844947387476">Та одоо өөрийгөө болон дэлгэцээ зэрэг бичих боломжтой</translation>
 <translation id="622484624075952240">Бууруулсан жагсаалт</translation>
@@ -1535,6 +1538,7 @@
 <translation id="726276584504105859">Хуваасан дэлгэцийг ашиглахын тулд энд чирэх</translation>
 <translation id="7262906531272962081">Сануулагч үүсгэх</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + ухраах</translation>
+<translation id="7285232777292757180">Дэлгэцийн агшин авахын тулд шуурхай тохиргоонд дэлгэцийн зураг авах хэрэгслийг ашиглана уу</translation>
 <translation id="7302889331339392448">Шууд тайлбар унтраалттай байна.</translation>
 <translation id="7303365578352795231">Өөр төхөөрөмж дээр хариулж байна.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1919,6 +1923,7 @@
 <translation id="888982883502837004">Таны төхөөрөмжид жижиг программын шинэчлэлтүүд боломжтой байна. Шалгах болон шинэчлэхийн тулд товшино уу.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-г бүрмөсөн устгана</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% батарей үлдсэн (ойролцоогоор <ph name="TIME_LEFT" />). Төхөөрөмжөө тэжээлд залгана уу.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> холбогдсон бөгөөд ашиглахад бэлэн байна. Та графикийн таблетаа Тохиргоонд өөрчлөх боломжтой.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(Нэргүй)</translation>
 <translation id="890616557918890486">Эх сурвалжийг өөрчлөх</translation>

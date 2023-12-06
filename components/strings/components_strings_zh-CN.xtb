@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
 <translation id="1699651774646344471">您现在可以使用您 Google 账号中的地址</translation>
+<translation id="1700542542921501212">您可以使用 <ph name="SEARCH_ENGINE_NAME" /> 在网络上搜索。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">缩放级别</translation>
@@ -824,6 +825,7 @@
             <ph name="LIST_ITEM" />Cookie 和网站数据
             <ph name="LIST_ITEM" />在表单中填写的信息
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">插入</translation>
 <translation id="2625385379895617796">您的时钟快了</translation>
 <translation id="262745152991669301">可以询问能否连接到 USB 设备</translation>
 <translation id="2629325967560697240">如果您想获得 Chrome 最高级别的安全保护，请<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />开启增强型保护<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1580,6 +1582,7 @@
 <translation id="4177501066905053472">广告主题</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
+<translation id="4191334393248735295">长度</translation>
 <translation id="4195459680867822611">“查看 Chrome 提示”按钮，激活它即可了解各项 Chrome 功能</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4196861286325780578">恢复移动(&amp;R)</translation>

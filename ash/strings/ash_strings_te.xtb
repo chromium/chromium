@@ -659,6 +659,7 @@
 <translation id="36813544980941320">Wi-Fi నెట్‌వర్క్‌లు మీ ఫోన్, <ph name="DEVICE_NAME" /> మధ్య షేర్ చేయబడతాయి</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> తర్వాత <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">వెబ్‌సైట్‌లు</translation>
+<translation id="3697991387880191195">స్క్రీన్‌షాట్ షార్ట్‌కట్‌ను నొక్కండి</translation>
 <translation id="3702809606464356667">ప్రస్తుత డెస్క్ నుండి విండోలను చూపుతోంది, అన్ని డెస్క్‌ల నుండి విండోలను చూపడానికి పై వైపు బాణం కీని నొక్కండి</translation>
 <translation id="3702846122927433391">నైజీరియాలో జనాభా</translation>
 <translation id="3705722231355495246">-</translation>
@@ -835,6 +836,7 @@
 <translation id="4389184120735010762">మీరు డాక్ చేసిన మాగ్నిఫైయర్‌ కోసం కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="439598569299422042">పాజ్ చేయబడింది, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">స్క్రీన్‌కాస్ట్‌ను సేవ్ చేయడం సాధ్యం కాదు</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> కనెక్ట్ అయింది, ఉపయోగించడానికి సిద్ధంగా ఉంది. సెట్టింగ్‌లలో మీ మౌస్‌ను అనుకూలంగా మార్చుకోవచ్చు.</translation>
 <translation id="4405151984121254935">కనెక్ట్ చేయబడిన పెరిఫెరల్ రకానికి సపోర్ట్ లేదు</translation>
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
@@ -1294,6 +1296,7 @@
 <translation id="6199775032047436064">ప్రస్తుత పేజీని మళ్ళీ లోడ్ చేయి</translation>
 <translation id="6200515304866777730">యాప్ సపోర్ట్ చేయనివి</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ఈమెయిల్‌కు మునుపు సేవ్ చేయబడిన <ph name="NAME" />‌కు కనెక్ట్ చేయండి</translation>
+<translation id="6212097153736801627">మీ <ph name="PERIPHERAL_NAME" />‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="6213808132343683860">పాక్షిక స్క్రీన్‌షాట్ తీయండి లేదా స్క్రీన్ రికార్డింగ్ చేయండి</translation>
 <translation id="6220928844947387476">ఇప్పుడు మీరు మిమ్మల్ని, మీ స్క్రీన్‌ను ఒకే సమయంలో రికార్డ్ చేయవచ్చు</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1535,6 +1538,7 @@
 <translation id="726276584504105859">విభజన స్క్రీన్‌ను ఉపయోగించడానికి ఇక్కడికి లాగండి</translation>
 <translation id="7262906531272962081">రిమైండర్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + బ్యాక్‌స్పేస్</translation>
+<translation id="7285232777292757180">క్విక్ సెట్టింగ్‌లలోని స్క్రీన్ క్యాప్చర్ టూల్‌ను ఉపయోగించి స్క్రీన్‌షాట్‌లు తీయండి</translation>
 <translation id="7302889331339392448">లైవ్ క్యాప్షన్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7303365578352795231">మరొక పరికరంలో సమాధానం ఇవ్వబడుతోంది.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1922,7 @@
 <translation id="888982883502837004">మీ పరికరం కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి. రివ్యూ చేసి, అప్‌డేట్ చేయడానికి క్లిక్ చేయండి.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> శాశ్వతంగా తొలగించబడుతుంది</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది). మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> కనెక్ట్ అయింది, ఉపయోగించడానికి సిద్ధంగా ఉంది. సెట్టింగ్‌లలో మీ గ్రాఫిక్స్ టాబ్లెట్‌ను అనుకూలంగా మార్చుకోవచ్చు.</translation>
 <translation id="88986195241502842">దిగువ పేజీకి వెళుతుంది</translation>
 <translation id="8905919797434099235">(టైటిల్ లేదు)</translation>
 <translation id="890616557918890486">మూలాధారాన్ని మార్చు</translation>

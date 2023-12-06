@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Teisalda vaheleht paremale</translation>
 <translation id="7966321538264951561">Loobuge soovitustest.</translation>
 <translation id="8029301326595421733">Selle poe teave on avatud täiskõrgusel</translation>
-<translation id="814503310257431685">Vaata kõiki</translation>
 <translation id="8205266828577616993">Teisalda vaheleht üles</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Sule <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="8398929769197326728">Uus kaust – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

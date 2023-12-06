@@ -375,6 +375,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Taip pat galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis, ir bet kuriuo metu išjungti skelbimų temas „Chrome“ nustatymuose.</translation>
 <translation id="1697532407822776718">Viskas nustatyta!</translation>
 <translation id="1699651774646344471">Dabar galite naudoti adresus iš „Google“ paskyros</translation>
+<translation id="1700542542921501212">Galite naudoti „<ph name="SEARCH_ENGINE_NAME" />“, jei norite ieškoti žiniatinklyje.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706625117072057435">Mastelio keitimo lygiai</translation>
@@ -824,6 +825,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
             <ph name="LIST_ITEM" />slapukų ir svetainių duomenų;
             <ph name="LIST_ITEM" />formose įvestos informacijos.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Įterpti</translation>
 <translation id="2625385379895617796">Jūsų laikrodis skuba</translation>
 <translation id="262745152991669301">Gali būti prašoma prisijungti prie USB įrenginių</translation>
 <translation id="2629325967560697240">Jei norite, kad būtų užtikrinta aukščiausio lygio „Chrome“ sauga, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />įjunkite sustiprintą apsaugą<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1587,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4177501066905053472">Skelbimų temos</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Nebestebėti kainų</translation>
+<translation id="4191334393248735295">Ilgis</translation>
 <translation id="4195459680867822611">Mygtukas „Žr. „Chrome“ patarimus“; suaktyvinkite, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4196861286325780578">&amp;Perkelti dar kartą</translation>

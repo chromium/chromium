@@ -375,6 +375,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Themen, die älter als vier Wochen sind, werden in Chrome automatisch gelöscht. Je nach deinen Browseraktivitäten können die Themen wieder in der Liste erscheinen. Du kannst in den Einstellungen von Chrome auch Themen blockieren, die Chrome nicht mit Websites teilen soll, und Werbethemen deaktivieren.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
 <translation id="1699651774646344471">Du kannst jetzt Adressen aus deinem Google-Konto verwenden</translation>
+<translation id="1700542542921501212">Du kannst mit <ph name="SEARCH_ENGINE_NAME" /> im Web suchen.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoomstufen</translation>
@@ -824,6 +825,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
             <ph name="LIST_ITEM" />Cookies und Websitedaten
             <ph name="LIST_ITEM" />In Formulare eingegebene Informationen
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Einfügen</translation>
 <translation id="2625385379895617796">Deine Uhr geht vor</translation>
 <translation id="262745152991669301">Darf nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchte</translation>
 <translation id="2629325967560697240">Schalte für größtmögliche Sicherheit in Chrome das <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />erweiterte Safe Browsing<ph name="END_ENHANCED_PROTECTION_LINK" /> ein</translation>
@@ -1582,6 +1584,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4177501066905053472">Werbethemen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Preis nicht mehr beobachten</translation>
+<translation id="4191334393248735295">Länge</translation>
 <translation id="4195459680867822611">Schaltfläche „Chrome-Tipps aufrufen“ – aktivieren, um mehr über die Funktionen von Chrome zu erfahren</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4196861286325780578">&amp;Verschieben wiederholen</translation>

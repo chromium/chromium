@@ -142,7 +142,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="165877110639533037">Avatud vahelehti ei ole</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Mobiilisaidi taotlemine</translation>
-<translation id="168715261339224929">Järjehoidjate hankimiseks kõigisse oma seadmetesse lülitage sünkroonimine sisse.</translation>
 <translation id="1687475363370981210">Märgi kõik loetuks</translation>
 <translation id="1689333818294560261">Hüüdnimi</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valitud</translation>
@@ -175,6 +174,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="1883255238294161206">Ahenda loend</translation>
 <translation id="1889872080060107187">Logite sisse saidile <ph name="URL" /></translation>
 <translation id="1890237935065108104">See seade pole saadaval.</translation>
+<translation id="1891199774460536658">Jälgi kõiki tuvastatud saadetisi automaatselt</translation>
 <translation id="1894023287452300670">Siin saate hinda jälgida</translation>
 <translation id="189531189292803889">Teie iPad taastati hiljuti, mistõttu võis teie vaikebrauseri muutuda.</translation>
 <translation id="1910975740091000991">Chrome iOS-ile</translation>
@@ -654,6 +654,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4493604894403585654">Olete logitud sisse kontole <ph name="USER_EMAIL" />. Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="4502566650163919158">Kontrolli kohe</translation>
 <translation id="4508750114462689118">Sule sisselogimisviip</translation>
+<translation id="4509449376545878717">Ära tuvasta saadetisi kunagi automaatselt</translation>
 <translation id="4514889972748124117">Soovita tugevat parooli …</translation>
 <translation id="4520798012560649652">Lisateave inkognito režiimi kohta</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} järjehoidja}other{{count} järjehoidjat}}</translation>
@@ -1045,7 +1046,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6476253015009698798">Hindade jälgimine ei ole selle lehe puhul saadaval.</translation>
 <translation id="6476800141292307438">Leht tõlgitakse <ph name="LANGUAGE" /> keelde. Valikud leiate ekraanikuva allosast.</translation>
 <translation id="648164694371393720">Autentimise viga</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> üksust on kustutatud</translation>
 <translation id="6484712497741564393">Sisse logitud kasutajana <ph name="EMAIL" />.
 
 Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
@@ -1338,6 +1338,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8023878949384262191">Laiendab jaotist.</translation>
 <translation id="8027581147000338959">Ava uues aknas</translation>
 <translation id="8032569120109842252">Jälgitav</translation>
+<translation id="8040207962129315716">Küsi iga kord</translation>
 <translation id="804225253087497565">Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK" />otsinguajalugu<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />muud tegevused<ph name="END_LINK" /> teie Google'i kontole salvestada. Saate need alati kustutada.</translation>
 <translation id="804427445359061970">Muude seadmete vahelehed leiate siit</translation>
 <translation id="8044568254381073661">Ilma krüpteerimata salvestamine</translation>
@@ -1412,7 +1413,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8428634594422941299">Selge</translation>
 <translation id="8446884382197647889">Lisateave</translation>
 <translation id="8449347986464073209">Kustuta ja logi välja</translation>
-<translation id="8458397775385147834">1 üksus on kustutatud</translation>
 <translation id="8459333855531264009">Pole turvaline</translation>
 <translation id="8487667956631253959">Sees</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>

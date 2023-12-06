@@ -824,6 +824,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
             <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
             <ph name="LIST_ITEM" />Informacionet e futura në formularë
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2625385379895617796">Ora jote është përpara</translation>
 <translation id="262745152991669301">Mund të kërkojë të lidhet me pajisjet me USB</translation>
 <translation id="2629325967560697240">Për të marrë nivelin më të lartë të sigurisë së Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />aktivizo mbrojtjen e përmirësuar<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1585,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4177501066905053472">Temat e reklamave</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulo monitorimin e çmimeve</translation>
+<translation id="4191334393248735295">Gjatësia</translation>
 <translation id="4195459680867822611">Butoni "Shiko këshilla për Chrome". Aktivizoje për të mësuar për veçoritë e Chrome</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4196861286325780578">&amp;Bëje përsëri zhvendosjen</translation>

@@ -116,6 +116,7 @@
 <translation id="1206967143813997005">ತಪ್ಪು ಪ್ರಾರಂಭಿಕ ಸಹಿ</translation>
 <translation id="1209206284964581585">ಸದ್ಯಕ್ಕೆ ಮರೆಮಾಡಿ</translation>
 <translation id="121201262018556460">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ, ಆದರೆ ದುರ್ಬಲ ಕೀಲಿಯನ್ನು ಹೊಂದಿರುವ ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಒದಗಿಸಿದೆ. ಆಕ್ರಮಣಕಾರರು ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ಮುರಿದುಹಾಕಿರಬಹುದು, ಮತ್ತು ನೀವು ನಿರೀಕ್ಷಿಸಿದ ಸರ್ವರ್ ಅದಾಗಿರದೇ ಇರಬಹುದು. (ನೀವು ದಾಳಿಕೋರರೊಂದಿಗೆ ಸಂವಹನ ಮಾಡುತ್ತಿರಬಹುದು)</translation>
+<translation id="1212527389003717329">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭವಾಗಿದೆ. ಅದನ್ನು ನೋಡಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
 <translation id="1219129156119358924">ಸಿಸ್ಟಂ ಭದ್ರತೆ</translation>
 <translation id="1222060260947439312">ಬಲಭಾಗದ ಟ್ರೇ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -285,6 +286,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">ಸುಸಜ್ಜಿತ ಬಾಡಿಗೆಗಳು</translation>
 <translation id="1527263332363067270">ಸಂಪರ್ಕಕ್ಕೆ ಕಾಯಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="1528311629279578926">ನಿಮ್ಮ ಖಾಸಗಿ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿನ ಸಾಧನಗಳು ಅಥವಾ ಸರ್ವರ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾರ್ವಜನಿಕ ಪುಟವೊಂದರಿಂದ ಇದನ್ನು ಪ್ರಾರಂಭಿಸಿದ ಕಾರಣ ಕನೆಕ್ಷನ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ಕನೆಕ್ಷನ್ ಅನ್ನು ಅನುಮತಿಸಲು ಈ ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="1529789484829130889">ಟ್ರೇ 8</translation>
 <translation id="1530707389502320859">ನೀವು ಇದೀಗ ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸಿದ ವೆಬ್‌ಸೈಟ್ ನಕಲಿ ವೆಬ್‌ಸೈಟ್‌ನಂತೆ ಕಾಣುತ್ತದೆ. ದಾಳಿಕೋರರು ಕೆಲವೊಮ್ಮೆ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ನಕಲಿಸುತ್ತಾರೆ ಮತ್ತು URL ನಲ್ಲಿ ಸಣ್ಣ ಪ್ರಮಾಣದ ಅಥವಾ ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗದ ರೀತಿಯಲ್ಲಿ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡುತ್ತಾರೆ.</translation>
 <translation id="1532118530259321453">ಈ ಪುಟವು ಹೀಗೆ ಹೇಳುತ್ತದೆ</translation>
@@ -825,6 +827,7 @@
             <ph name="LIST_ITEM" />ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ
             <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2625385379895617796">ನಿಮ್ಮ ಗಡಿಯಾರವು ಮುಂದೆ ಇದೆ</translation>
 <translation id="262745152991669301">USB ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="2629325967560697240">Chrome ನ ಉನ್ನತ ಮಟ್ಟದ ಸುರಕ್ಷತೆಯನ್ನು ಪಡೆಯಲು, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ವರ್ಧಿತ ಸುರಕ್ಷತೆಯನ್ನು ಆನ್ ಮಾಡಿ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1158,6 +1161,7 @@
 <translation id="3325027355611702542">ಕ್ಯಾಂಪರ್ಸ್ ಮತ್ತು RV ಗಳು</translation>
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
 <translation id="3333762389743153920">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗೆ ಅರ್ಹವಾಗಿಲ್ಲ</translation>
+<translation id="3336044043987989409">ನಿಮ್ಮ ಖಾಸಗಿ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಸಾಧನಗಳು ಅಥವಾ ಸರ್ವರ್‌ಗಳಿಗೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಅನುಮತಿಸಲು ಪುನಃ ಲೋಡ್ ಮಾಡಿ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="3338095232262050444">ಸುರಕ್ಷಿತ</translation>
 <translation id="333839153442689579">ಹೆಚ್ಚು ತೀವ್ರತೆಯ ಮಧ್ಯಂತರ ತರಬೇತಿ</translation>
 <translation id="3339440062908617027">ಓಟ ಮತ್ತು ನಡಿಗೆ</translation>
@@ -1582,6 +1586,7 @@
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
+<translation id="4191334393248735295">ಉದ್ದ</translation>
 <translation id="4195459680867822611">Chrome ಸಲಹೆಗಳನ್ನು ನೋಡಿ ಬಟನ್, Chrome ಫೀಚರ್‌ಗಳ ಕುರಿತು ತಿಳಿಯಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4196861286325780578">&amp;ಸರಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>

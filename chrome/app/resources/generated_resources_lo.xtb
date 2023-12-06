@@ -1881,6 +1881,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">ສືບຕໍ່ເລືອກເບິ່ງສຳລັບ <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">ມືດ</translation>
+<translation id="2415117815770324983">ພາທ່ານອອກຈາກລະບົບຢູ່ເວັບໄຊສ່ວນໃຫຍ່. ທ່ານຈະເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ.</translation>
 <translation id="2416435988630956212">ປຸ່ມຟັງຊັນໃນແປ້ນພິມ</translation>
 <translation id="2418307627282545839">ເຮັດໃຫ້ສິ່ງຕ່າງໆແຈ້ງ ແລະ ເບິ່ງສະບາຍ</translation>
 <translation id="2419131370336513030">ເບິ່ງແອັບທີ່ຕິດຕັ້ງ</translation>
@@ -2401,6 +2402,7 @@
 <translation id="2799223571221894425">ເລີ່ມເປີດໃຊ້ໃໝ່</translation>
 <translation id="2800309299477632167">ແຜນຜັງປຸ່ມແບບກຳນົດເອງ</translation>
 <translation id="2800760947029405028">ອັບໂຫລດຮູບ</translation>
+<translation id="2801134910297796778">ເຂົ້າສູ່ລະບົບ <ph name="EMAIL" /> ແລ້ວ</translation>
 <translation id="2801954693771979815">ຂະໜາດໜ້າຈໍ</translation>
 <translation id="2802557211515765772">ບໍ່ມີເຄື່ອງພິມທີ່ມີການຈັດການ.</translation>
 <translation id="2803313416453193357">ເປີດ​ໂຟລເດີ</translation>
@@ -4044,6 +4046,7 @@
 <translation id="4110485659976215879">ກູ້ຄຳເຕືອນຄືນ</translation>
 <translation id="4110490973560452005">ການດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />. ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
+<translation id="4113483184628671608">ເຂົ້າລະຫັດຊື່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="4113743276555482284">ລະຫັດຜ່ານໄຟລ໌</translation>
 <translation id="4114524937989710624">ທ່ານກຳລັງເບິ່ງໄຟລ໌ທີ່ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໃນ Google Drive ໄດ້ຢ່າງງ່າຍດາຍ.
         <ph name="BREAK" />
@@ -5774,6 +5777,7 @@
 <translation id="5517304475148761050">ແອັບນີ້ຈໍາເປັນຕ້ອງເຂົ້າເຖິງ Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">ຕັ້ງຄ່າດ້ວຍໂທລະສັບ Android</translation>
+<translation id="5519053700692355541">ທ່ານສາມາດເປີດຄຸນສົມບັດແຜງຄວບຄຸມດ້ານຂ້າງສ່ວນໃຫຍ່ຜ່ານເມນູ Chrome ຢູ່ເບື້ອງຂວາເທິງສຸດໄດ້</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">ຮັກສາບັນຊີນີ້ໃຫ້ປອດໄພຍິ່ງຂຶ້ນດ້ວຍລະຫັດຜ່ານຍາກ. ໂດຍມັນຈະຖືກບັນທຶກໄວ້ໃນ <ph name="GOOGLE_PASSWORD_MANAGER" /> ສຳລັບ <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">ນີ້ແມ່ນໜ້າຫຼັກທີ່ທ່ານຄາດໄວ້ບໍ?</translation>
@@ -6738,6 +6742,7 @@
 <translation id="6294759976468837022">ຄວາມໄວສະແກນອັດຕະໂນມັດ</translation>
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="6295855836753816081">ກໍາລັງບັນທຶກ...</translation>
+<translation id="6298456705131259420">ສົ່ງຜົນຕໍ່ເວັບໄຊທີ່ມີລາຍຊື່ຢູ່ບ່ອນນີ້. ການໃສ່ “[*.]” ກ່ອນຊື່ໂດເມນຈະສ້າງຂໍ້ຍົກເວັ້ນສໍາລັບໂດເມນທັງໝົດ. ຕົວຢ່າງ: ການເພີ່ມ “[*.]google.com” ໝາຍຄວາມວ່າຄຸກກີ້ພາກສ່ວນທີສາມຈະສາມາດໃຊ້ໄດ້ກັບ mail.google.com ນຳ, ເນື່ອງຈາກມັນເປັນສ່ວນໜຶ່ງຂອງ google.com.</translation>
 <translation id="6298962879096096191">ໃຊ້ Google Play ເພື່ອຕິດຕັ້ງແອັບ Android</translation>
 <translation id="6300177430812514606">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຮັດສຳເລັດການສົ່ງ ຫຼື ຮັບຂໍ້ມູນ</translation>
 <translation id="6300654006256345126">ແກ້ໄຂລະຫັດຜ່ານ</translation>
@@ -7161,6 +7166,7 @@
 <translation id="6651762277693024112">ເຮັດວຽກໂດຍອັດຕະໂນມັດທຸກເທື່ອທີ່ທ່ານເຂົ້າເບິ່ງເວັບໄຊນີ້</translation>
 <translation id="665355505818177700">ຮອງຮັບການລວມ <ph name="MS_AD_NAME" /> ຂອງ Chrome ໃນລະບົບປະຕິບັດການ x86_64 ເທົ່ານັ້ນ. Chromebooks ທີ່ສ້າງຈາກສ່ວນເທິງຂອງ ARM ຫຼື ລະບົບປະຕິບັດການ x86 ບໍ່ຮອງຮັບຟັງຊັນນີ້.</translation>
 <translation id="6654509035557065241">ຕ້ອງການໃຊ້ເຄືອຂ່າຍນີ້</translation>
+<translation id="6654987855337442937">ໃຊ້ລະບົບຊື່ໂດເມນທີ່ປອດໄພ (DNS) ເພື່ອປ້ອງກັນບໍ່ໃຫ້ຄົນທີ່ມີສິດເຂົ້າເຖິງອິນເຕີເນັດຂອງທ່ານເບິ່ງວ່າທ່ານເຂົ້າເບິ່ງເວັບໄຊໃດ</translation>
 <translation id="6655190889273724601">ໂໝດຜູ້​ພັດ​ທະ​ນາ​</translation>
 <translation id="6655458902729017087">ເຊື່ອງ​ບັນ​ຊີ</translation>
 <translation id="6657180931610302174">ເພີ່ມຊື່ຜູ້ໃຊ້ບໍ?</translation>
@@ -9554,6 +9560,7 @@
 <translation id="8528074251912154910">ເພີ່ມພາສາ</translation>
 <translation id="8528479410903501741">ບັນທຶກ IBAN</translation>
 <translation id="8528962588711550376">ກໍາລັງລົງຊື່ເຂົ້າ​ໃຊ້.</translation>
+<translation id="8529578450330869579">ໃຊ້ລະບົບຊື່ໂດເມນທີ່ປອດໄພ (DNS) ເພື່ອປ້ອງກັນບໍ່ໃຫ້ຄົນທີ່ມີສິດເຂົ້າເຖິງອິນເຕີເນັດຂອງທ່ານເບິ່ງວ່າທ່ານເຂົ້າເບິ່ງເວັບໄຊໃດ. ການດຳເນີນການນີ້ຈະໃຊ້ຜູ້ໃຫ້ບໍລິການທີ່ມີການຈັດການຢູ່ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">ການເຊື່ອມຕໍ່ການປ່ອຍສັນຍາທັນທີບໍ່ສຳເລັດ</translation>
 <translation id="8531701051932785007">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຖືກປິດໄວ້ຢູ່</translation>
 <translation id="8533670235862049797">Safe Browsing ເປີດຢູ່</translation>
@@ -10164,7 +10171,6 @@
 <translation id="8999027165951679951">ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້: ເພີ່ມພື້ນທີ່ຫວ່າງ <ph name="MEMORY_SAVINGS" /> ແລ້ວ</translation>
 <translation id="8999560016882908256">ຂໍ້ຜິດພາດທາງໄວຍະກອນຂອງສ່ວນ: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">ແຕະໃສ່ເຊັນເຊີລາຍນິ້ວມືຢູ່ເບື້ອງຂວາຂອງ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ຂໍ້ມູນລາຍນິ້ວມືຂອງທ່ານແມ່ນຖືກເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຢູ່ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານສະເໝີ.</translation>
-<translation id="9000532564152265066">ແຖບທັງໝົດ</translation>
 <translation id="9003185744423389627">ການເຊື່ອມຕໍ່ຫາເຊີບເວີການຈັດການອຸປະກອນບໍ່ສຳເລັດໂດຍມີສະຖານະ '<ph name="STATUS_TEXT" />' ເວລາ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">ສະແກນຫາໂປຣໄຟລ໌ eSIM ທີ່ມີຢູ່ໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="9003647077635673607">ອະ​ນຸ​ຍາດ​ໃຫ້​ຢູ່​ໃນ​ທຸກເວັບ​ໄຊ​ທ​໌​</translation>

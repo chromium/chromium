@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
 <translation id="7966321538264951561">Vorschläge ablehnen.</translation>
 <translation id="8029301326595421733">Informationen zu diesem Händler sind vollständig geöffnet</translation>
-<translation id="814503310257431685">Alle anzeigen</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
 <translation id="8398929769197326728">Neuer Ordner – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

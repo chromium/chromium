@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Déplacer l'onglet vers la droite</translation>
 <translation id="7966321538264951561">Ignorer les suggestions.</translation>
 <translation id="8029301326595421733">Les renseignements à propos de ce magasin sont ouverts à pleine hauteur</translation>
-<translation id="814503310257431685">Tout afficher</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

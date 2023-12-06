@@ -142,7 +142,6 @@
 <translation id="165877110639533037">ಯಾವುದೇ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ನಿಂದ <ph name="TARGET_LANGUAGE" /> ಗೆ</translation>
 <translation id="1683483432843341018">ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
-<translation id="168715261339224929">ನಿಮ್ಮ ಎಲ್ಲ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="1687475363370981210">ಎಲ್ಲವನ್ನೂ ಓದಿದಂತೆ ಗುರುತಿಸಿ</translation>
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -838,6 +837,7 @@
 <translation id="5457226814769348910">ಆಫ್‌ಲೈನ್ ಆವೃತ್ತಿಯನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5475069061743940393">ಪ್ಯಾಕೇಜ್ ಟ್ರಾಕಿಂಗ್</translation>
 <translation id="5478327362747197944">ವೆಬ್ ಪುಟದಲ್ಲಿನ ದಿನಾಂಕವನ್ನು ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ನೇರವಾಗಿ ಕ್ಯಾಲೆಂಡರ್ ಈವೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಿ.</translation>
+<translation id="5482922178977937393">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸುದ್ದಿ, ಕ್ರೀಡೆ ಮತ್ತು ಇನ್ನಷ್ಟಕ್ಕಾಗಿ ನೀವು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="5489208564673669003">ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="BEGIN_LINK" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="5490005495580364134">ಎಲ್ಲಾ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ)</translation>
 <translation id="5497202150450073388">ಡೆಲಿವರಿಯನ್ನು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ. ಮರುಪ್ರಯತ್ನಿಸುತ್ತೇವೆ</translation>
@@ -1047,7 +1047,6 @@
 <translation id="6476253015009698798">ಈ ಪುಟಕ್ಕಾಗಿ ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="6476800141292307438">ಪುಟವನ್ನು <ph name="LANGUAGE" /> ಭಾಷೆಗೆ ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ. ಪರದೆಯ ಕೆಳಭಾಗದ ಸಮೀಪದಲ್ಲಿ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.</translation>
 <translation id="648164694371393720">ದೃಢೀಕರಣ ದೋಷ</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ಐಟಂಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.
 
 ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಮೂಲಕ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್‌ ಮಾಡಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
@@ -1415,7 +1414,6 @@
 <translation id="8428634594422941299">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8446884382197647889">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8449347986464073209">ಅಳಿಸಿ ಮತ್ತು ಸೈನ್ ಔಟ್ ಆಗಿ</translation>
-<translation id="8458397775385147834">1 ಐಟಂ ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8459333855531264009">ಸುರಕ್ಷಿತವಲ್ಲ</translation>
 <translation id="8487667956631253959">ಆನ್</translation>
 <translation id="8487700953926739672">ಆಫ್‌ಲೈನ್ ಲಭ್ಯವಿದೆ</translation>

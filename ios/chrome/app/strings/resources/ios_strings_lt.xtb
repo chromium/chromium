@@ -142,7 +142,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="165877110639533037">Nėra atidarytų skirtukų</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> į <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Pateikti užklausą dėl svetainės mobiliesiems</translation>
-<translation id="168715261339224929">Jei norite gauti žymes visuose įrenginiuose, įjunkite sinchronizavimą.</translation>
 <translation id="1687475363370981210">Pažymėti visus kaip skaitytus</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="1700629756560807968">Pasirinkta: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -175,6 +174,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1883255238294161206">Sutraukti sąrašą</translation>
 <translation id="1889872080060107187">Prisijungsite prie svetainės <ph name="URL" /></translation>
 <translation id="1890237935065108104">Šis nustatymas nepasiekiamas.</translation>
+<translation id="1891199774460536658">Automatiškai stebėti visus aptiktus siuntinius</translation>
 <translation id="1894023287452300670">Čia stebėkite kainą</translation>
 <translation id="189531189292803889">„iPad“ neseniai atkurtas, todėl galėjo būti pakeista numatytoji naršyklė.</translation>
 <translation id="1910975740091000991">„Chrome“, skirta „iOS“</translation>
@@ -654,6 +654,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4493604894403585654">Esate prisijungę kaip <ph name="USER_EMAIL" />. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4502566650163919158">Tikrinti dabar</translation>
 <translation id="4508750114462689118">Uždaryti prisijungimo reklamą</translation>
+<translation id="4509449376545878717">Niekada automatiškai neaptikti siuntinių</translation>
 <translation id="4514889972748124117">Siūlyti sudėtingą slaptažodį...</translation>
 <translation id="4520798012560649652">Sužinokite daugiau apie inkognito režimą</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} žymė}one{{count} žymė}few{{count} žymės}many{{count} žymės}other{{count} žymių}}</translation>
@@ -1045,7 +1046,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="6476253015009698798">Šiame puslapyje kainų stebėjimas nepasiekiamas.</translation>
 <translation id="6476800141292307438">Puslapis verčiamas į <ph name="LANGUAGE" />. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="648164694371393720">Autentifikavimo klaida</translation>
-<translation id="6482629121755362506">Ištrinta elementų: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Prisijungta kaip <ph name="EMAIL" />.
 
 Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje.</translation>
@@ -1338,6 +1338,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8023878949384262191">Išplečia skiltį.</translation>
 <translation id="8027581147000338959">Atidaryti naujame lange</translation>
 <translation id="8032569120109842252">Stebima</translation>
+<translation id="8040207962129315716">Klausti kiekvieną kartą</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Paieškos istorija<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />kitos veiklos formos<ph name="END_LINK" /> gali būti išsaugotos jūsų „Google“ paskyroje, kai esate prisijungę. Galite bet kada jas ištrinti.</translation>
 <translation id="804427445359061970">Čia bus rodomi skirtukai iš kitų įrenginių</translation>
 <translation id="8044568254381073661">Išsaugoti be šifruotės</translation>
@@ -1412,7 +1413,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8428634594422941299">Supratau</translation>
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8449347986464073209">Ištrinti ir atsijungti</translation>
-<translation id="8458397775385147834">Ištrinta elementų: 1</translation>
 <translation id="8459333855531264009">Nesaugūs</translation>
 <translation id="8487667956631253959">Įjungta</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>

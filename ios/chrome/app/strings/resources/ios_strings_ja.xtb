@@ -142,7 +142,6 @@
 <translation id="165877110639533037">開いているタブはありません</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">モバイルサイトをリクエスト</translation>
-<translation id="168715261339224929">お使いのどのデバイスでも同じブックマークを使用するには、同期を有効にします。</translation>
 <translation id="1687475363370981210">すべて既読にする</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
@@ -1048,7 +1047,6 @@
 <translation id="6476253015009698798">このページでは価格のトラッキングを利用できません。</translation>
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="648164694371393720">認証エラー</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を削除しました</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> としてログインしています。
 
 データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用して保存するには、パスフレーズを入力してください。</translation>
@@ -1416,7 +1414,6 @@
 <translation id="8428634594422941299">OK</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8449347986464073209">削除してログアウト</translation>
-<translation id="8458397775385147834">1件の項目を削除しました</translation>
 <translation id="8459333855531264009">この通信は保護されていません</translation>
 <translation id="8487667956631253959">オン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>

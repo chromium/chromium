@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
 <translation id="7966321538264951561">Παράβλεψη των προτάσεων.</translation>
 <translation id="8029301326595421733">Άνοιγμα σε πλήρες ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
-<translation id="814503310257431685">Προβολή όλων</translation>
 <translation id="8205266828577616993">Μετακίνηση καρτέλας επάνω</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

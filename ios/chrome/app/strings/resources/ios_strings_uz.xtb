@@ -142,7 +142,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="165877110639533037">Ochiq tablar yo‘q</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Mobil versiya</translation>
-<translation id="168715261339224929">Brauzer varaqlarini barcha qurilmalaringizda ko‘rish uchun sinxronizatsiyani yoqing.</translation>
 <translation id="1687475363370981210">Hammasi o‘qildi</translation>
 <translation id="1689333818294560261">Nik</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p tanlandi</translation>
@@ -1045,7 +1044,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="6476253015009698798">Bu saytdagi narxlarni kuzatish imkonsiz.</translation>
 <translation id="6476800141292307438">Sahifa <ph name="LANGUAGE" /> tiliga tarjima qilinmoqda. Parametrlar ekranning pastiga yaqin joyda joylashgan.</translation>
 <translation id="648164694371393720">Autentifikatsiya xatosi</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p o‘chirildi</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> hisobi bilan kirgansiz.
 
 Maʼlumotlaringiz kodli ibora bilan shifrlangan. Chrome maʼlumotlarini Google hisobingizda saqlash va ulardan foydalanish uchun uni kiriting.</translation>
@@ -1412,7 +1410,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8428634594422941299">OK</translation>
 <translation id="8446884382197647889">Batafsil</translation>
 <translation id="8449347986464073209">Oʻchirish va hisobdan chiqish</translation>
-<translation id="8458397775385147834">1 ta xatcho‘p o‘chirildi</translation>
 <translation id="8459333855531264009">Xavfsiz emas</translation>
 <translation id="8487667956631253959">Yoniq</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>

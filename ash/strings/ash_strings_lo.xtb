@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">ປັດຂຶ້ນຄ້າງໄວ້ເພື່ອເບິ່ງແອັບທີ່ເປີດຢູ່</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
 <translation id="3596012367874587041">ການຕັ້ງຄ່າແອັບ</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">ປິດ</translation>
 <translation id="3604801046548457007">ສ້າງເດັສ <ph name="DESK_TITILE" /> ແລ້ວ</translation>
 <translation id="3606978283550408104">ການສະແດງຕົວໜັງສືນູນເຊື່ອມ​ຕໍ່ແລ້ວ​.</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">ປິດການຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
 <translation id="4192112279662688596">ຫຼື</translation>
 <translation id="4193857202545160520">ສະແດງການຄລິກ ແລະ ແປ້ນພິມ</translation>
+<translation id="4193969623755915875">ເປີດ "ຊ່ວຍເຫຼືອ" ໃນແອັບສຳຫຼວດດ້ວຍ "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">ເວີຊັນປັດຈຸບັນ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ສືບ​ຕໍ່​ບ່ອນທີ່ທ່ານອອກໄປ</translation>
 <translation id="4195877955194704651">ປຸ່ມຄລິກອັດຕະໂນມັດ</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">ສົ່ງຄຳຕິຊົມເພື່ອປັບປຸງການແນະນຳ (ບໍ່ບັງຄັບ):</translation>
 <translation id="4890187583552566966">ຜູ້ຊ່ວຍ Google ຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="4890408602550914571">ກວດໃຫ້ແນ່ໃຈວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ ແລະ ເປີດ Bluetooth ແລ້ວ.</translation>
+<translation id="4892981359753171125">ການຄວບຄຸມໃບໜ້າ</translation>
 <translation id="4895488851634969361">ແບັດເຕີຣີເຕັມ.</translation>
 <translation id="490375751687810070">ລວງຕັ້ງ</translation>
 <translation id="490788395437447240">ລະດັບແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" /></translation>

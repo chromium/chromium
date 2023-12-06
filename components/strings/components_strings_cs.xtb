@@ -824,6 +824,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
             <ph name="LIST_ITEM" />soubory cookie a data webů,
             <ph name="LIST_ITEM" />údaje zadané do formulářů.
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Vložit</translation>
 <translation id="2625385379895617796">Vaše hodiny jdou napřed</translation>
 <translation id="262745152991669301">Může žádat o připojení k zařízením USB</translation>
 <translation id="2629325967560697240">Pokud v Chromu chcete mít nejvyšší úroveň zabezpečení, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />zapněte vylepšenou ochranu<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1580,6 +1581,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4177501066905053472">Témata reklam</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Zrušit sledování ceny</translation>
+<translation id="4191334393248735295">Délka</translation>
 <translation id="4195459680867822611">Tlačítko Zobrazit tipy k Chromu, aktivací zobrazíte další informace o funkcích Chromu</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4196861286325780578">&amp;Opakovat přesunutí</translation>

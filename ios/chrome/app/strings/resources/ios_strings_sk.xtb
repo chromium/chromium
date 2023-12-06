@@ -142,7 +142,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="165877110639533037">Žiadne otvorené karty</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Vyžiadať mobilný web</translation>
-<translation id="168715261339224929">Ak chcete získať záložky vo všetkých zariadeniach, zapnite synchronizáciu.</translation>
 <translation id="1687475363370981210">Označiť všetko ako prečítané</translation>
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -838,6 +837,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5457226814769348910">Otvoriť offline verziu</translation>
 <translation id="5475069061743940393">Sledovanie zásielky</translation>
 <translation id="5478327362747197944">Vytvorte udalosti v kalendári priamo kliknutím na dátum na webovej stránke.</translation>
+<translation id="5482922178977937393">Chcete dostávať upozornenia na správy, šport a ďalší obsah na základe svojich záujmov?</translation>
 <translation id="5489208564673669003">Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení súborov cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="5497202150450073388">Bol vykonaný pokus o doručenie. Zopakuje sa.</translation>
@@ -1047,7 +1047,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6476253015009698798">Sledovanie ceny nie je k dispozícii pre túto stránku.</translation>
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="648164694371393720">Chyba overenia</translation>
-<translation id="6482629121755362506">Počet odstránených položiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Prihlásili ste sa ako <ph name="EMAIL" />.
 
 Údaje sú šifrované pomocou vašej prístupovej frázy. Zadajte ju, ak chcete používať a ukladať údaje Chromu do svojho účtu Google.</translation>
@@ -1415,7 +1414,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8428634594422941299">Dobre</translation>
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8449347986464073209">Odstrániť a odhlásiť</translation>
-<translation id="8458397775385147834">Počet odstránených záložiek: 1</translation>
 <translation id="8459333855531264009">Nezabezpečené</translation>
 <translation id="8487667956631253959">Zapnúť</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>

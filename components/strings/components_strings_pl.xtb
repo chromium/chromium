@@ -827,6 +827,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <ph name="LIST_ITEM" />pliki cookie ani dane witryn,
 <ph name="LIST_ITEM" />informacje podane w formularzach.
 <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Wstaw</translation>
 <translation id="2625385379895617796">Twój zegar się śpieszy</translation>
 <translation id="262745152991669301">Może prosić o zgodę na połączenie z urządzeniami USB</translation>
 <translation id="2629325967560697240">Aby korzystać z najwyższego poziomu zabezpieczeń Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />włącz silniejszą ochronę<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1588,6 +1589,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Wyłącz śledzenie ceny</translation>
+<translation id="4191334393248735295">Długość</translation>
 <translation id="4195459680867822611">Przycisk Zobacz wskazówki na temat Chrome; aktywuj, aby dowiedzieć się więcej o funkcjach Chrome</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4196861286325780578">&amp;Ponów przeniesienie</translation>

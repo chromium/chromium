@@ -142,7 +142,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="165877110639533037">Ei avoimia välilehtiä</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Mobiiliversion pyytäminen</translation>
-<translation id="168715261339224929">Ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejä kaikilla laitteillasi.</translation>
 <translation id="1687475363370981210">Merkitse kaikki luetuiksi</translation>
 <translation id="1689333818294560261">Lempinimi</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valittu</translation>
@@ -175,6 +174,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1883255238294161206">Tiivistä luettelo</translation>
 <translation id="1889872080060107187">Kirjaudut sisään osoitteeseen <ph name="URL" /></translation>
 <translation id="1890237935065108104">Asetus ei ole käytettävissä.</translation>
+<translation id="1891199774460536658">Seuraa kaikkia tunnistettuja paketteja automaattisesti</translation>
 <translation id="1894023287452300670">Seuraa hintaa täältä</translation>
 <translation id="189531189292803889">iPad on palautettu äskettäin, mikä on saattanut vaihtaa oletusselaimesi.</translation>
 <translation id="1910975740091000991">Chrome iOS:lle</translation>
@@ -654,6 +654,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4493604894403585654">Olet kirjautunut sisään tilillä <ph name="USER_EMAIL" />. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="4502566650163919158">Tarkista nyt</translation>
 <translation id="4508750114462689118">Sulje kirjautumismainos</translation>
+<translation id="4509449376545878717">Älä koskaan tunnista paketteja automaattisesti</translation>
 <translation id="4514889972748124117">Ehdota vahvaa salasanaa…</translation>
 <translation id="4520798012560649652">Lue lisää incognito-tilasta</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} kirjanmerkki}other{{count} kirjanmerkkiä}}</translation>
@@ -1045,7 +1046,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="6476253015009698798">Hintaseuranta ei ole käytettävissä tällä sivulla.</translation>
 <translation id="6476800141292307438">Käännetään sivua kielelle <ph name="LANGUAGE" />. Vaihtoehdot näkyvät näytön alareunan lähellä.</translation>
 <translation id="648164694371393720">Todennusvirhe</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kohdetta poistettu</translation>
 <translation id="6484712497741564393">Kirjautuneena tilillä <ph name="EMAIL" />.
 
 Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
@@ -1338,6 +1338,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8023878949384262191">Laajentaa osion.</translation>
 <translation id="8027581147000338959">Avaa uudessa ikkunassa</translation>
 <translation id="8032569120109842252">Seurataan</translation>
+<translation id="8040207962129315716">Kysy aina</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Hakuhistoriaa<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />muita toimintoja<ph name="END_LINK" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.</translation>
 <translation id="804427445359061970">Näet täällä välilehtiä muilta laitteilta</translation>
 <translation id="8044568254381073661">Tallenna ilman salausta</translation>
@@ -1412,7 +1413,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8428634594422941299">Selvä</translation>
 <translation id="8446884382197647889">Lisätietoja</translation>
 <translation id="8449347986464073209">Poista ja kirjaudu ulos</translation>
-<translation id="8458397775385147834">1 kohde poistettu</translation>
 <translation id="8459333855531264009">Ei turvallinen</translation>
 <translation id="8487667956631253959">Päällä</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>

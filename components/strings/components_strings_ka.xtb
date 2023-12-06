@@ -827,6 +827,7 @@
             <ph name="LIST_ITEM" />ქუქი-ჩანაწერები და საიტების მონაცემები
             <ph name="LIST_ITEM" />ფორმებში მითითებული ინფორმაცია
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">ჩადეთ</translation>
 <translation id="2625385379895617796">თქვენი საათი წინაა</translation>
 <translation id="262745152991669301">შეუძლია USB-მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="2629325967560697240">Chrome-ის უსაფრთხოების ყველაზე ძლიერი ფუნქციებით სარგებლობისთვის <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ჩართეთ გაძლიერებული დაცვა<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1588,6 +1589,7 @@
 <translation id="4177501066905053472">სარეკლამო თემები</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ფასისთვის თვალის მიდევნების გაუქმება</translation>
+<translation id="4191334393248735295">სიგრძე</translation>
 <translation id="4195459680867822611">Chrome-ის მინიშნებების ნახვის ღილაკი, Chrome-ის ფუნქციების შესახებ ინფორმაციისთვის გაააქტიურეთ ის</translation>
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4196861286325780578">გადატანის &amp;გამეორება</translation>

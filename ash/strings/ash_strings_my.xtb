@@ -659,6 +659,7 @@
 <translation id="36813544980941320">သင့်ဖုန်းနှင့် <ph name="DEVICE_NAME" /> အကြားတွင် Wi-Fi ကွန်ရက်များကို မျှဝေပါမည်</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ထို့နောက် <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ဝဘ်ဆိုက်များ</translation>
+<translation id="3697991387880191195">ဖန်သားပြင်ဓာတ်ပုံ ဖြတ်လမ်းလင့်ခ်ကို နှိပ်ပါ</translation>
 <translation id="3702809606464356667">လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြနေသည်၊ မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="3702846122927433391">နိုင်ဂျီးရီးယားရှိ လူဦးရေ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">တပ်ဆင်ထားသည့် မှန်ဘီလူးအတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="439598569299422042">ခဏရပ်ထားသည်၊ <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ဖန်သားပြင် ထုတ်လွှင့်ခြင်းကို သိမ်း၍မရပါ</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ကို ချိတ်ဆက်ထားပြီး သုံးရန် အသင့်ဖြစ်ပါပြီ။ သင့်မောက်စ်ကို ဆက်တင်များတွင် စိတ်ကြိုက်လုပ်နိုင်သည်။</translation>
 <translation id="4405151984121254935">တပ်ဆင်ထားသည့် ချိတ်ဆက်ပစ္စည်းအမျိုးအစားကို ပံ့ပိုးမထားပါ</translation>
 <translation id="4406883609789734330">တိုက်ရိုက်စာတန်း</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ပိတ်ထားသည်။</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">လက်ရှိ စာမျက်နှာကို ပြန်ဖွင့်ရန်</translation>
 <translation id="6200515304866777730">အက်ပ်က ပံ့ပိုးမထားပါ</translation>
 <translation id="6210042900243040400">ယခင်က <ph name="EMAIL" /> သို့ သိမ်းထားသော <ph name="NAME" /> သို့ ချိတ်ဆက်ပါ</translation>
+<translation id="6212097153736801627">သင်၏ <ph name="PERIPHERAL_NAME" /> ကို စိတ်ကြိုက်လုပ်ခြင်း</translation>
 <translation id="6213808132343683860">ဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု တစ်စိတ်တစ်ပိုင်း ရယူရန်</translation>
 <translation id="6220928844947387476">သင့်စခရင်နှင့် သင့်ကို တစ်ချိန်တည်း ယခု မှတ်တမ်းတင်နိုင်ပါပြီ</translation>
 <translation id="622484624075952240">အောက်သို့</translation>
@@ -1534,6 +1537,7 @@
 <translation id="726276584504105859">မျက်နှာပြင် ခွဲခြမ်းပြသခြင်းကို အသုံးပြုရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
 <translation id="7262906531272962081">သတိပေးချက် ပြုလုပ်ပါ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + နောက်ပြန်ခလုတ်</translation>
+<translation id="7285232777292757180">ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန်အတွက် အမြန်ဆက်တင်များရှိ ဖန်သားပြင် ပုံဖမ်းသည့်တူးလ်ကို သုံးရန်</translation>
 <translation id="7302889331339392448">'တိုက်ရိုက်စာတန်း' ကို ပိတ်ထားသည်။</translation>
 <translation id="7303365578352795231">အခြား ကိရိယာတွင် ဖြေကြားနေသည်။</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1922,7 @@
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ကို အပြီးဖျက်လိုက်ပါမည်</translation>
 <translation id="889790758758811533">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
 စက်ကို အားသွင်းပါ။</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ကို ချိတ်ဆက်ထားပြီး သုံးရန် အသင့်ဖြစ်ပါပြီ။ တက်ဘလက် ဂရပ်ဖစ်ကို ဆက်တင်များတွင် စိတ်ကြိုက်လုပ်နိုင်သည်။</translation>
 <translation id="88986195241502842">စာမျက်နှာ အောက်သို့</translation>
 <translation id="8905919797434099235">(ခေါင်းစဉ်မဲ့)</translation>
 <translation id="890616557918890486">အရင်းအမြစ် ပြောင်းရန်</translation>

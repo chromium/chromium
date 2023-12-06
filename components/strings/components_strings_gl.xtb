@@ -375,6 +375,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Chrome elimina automaticamente os temas que teñen máis de 4 semanas de antigüidade. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios, así como desactivar os temas de anuncios en calquera momento na configuración de Chrome.</translation>
 <translation id="1697532407822776718">Listo!</translation>
 <translation id="1699651774646344471">Agora podes utilizar os enderezos da túa Conta de Google</translation>
+<translation id="1700542542921501212">Podes usar <ph name="SEARCH_ENGINE_NAME" /> para buscar contido na Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Niveis de zoom</translation>
@@ -824,6 +825,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <ph name="LIST_ITEM" />As cookies e os datos dos sitios
 <ph name="LIST_ITEM" />Os datos que puxeses en formularios
 <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Inserir</translation>
 <translation id="2625385379895617796">O teu reloxo está adiantado</translation>
 <translation id="262745152991669301">Pode pedirche permiso para conectarse aos dispositivos USB</translation>
 <translation id="2629325967560697240">Para gozar do máximo nivel de seguranza de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa a protección mellorada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1586,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4177501066905053472">Temas dos anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
+<translation id="4191334393248735295">Lonxitude</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196861286325780578">&amp;Refacer movemento</translation>

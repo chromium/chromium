@@ -142,7 +142,6 @@
 <translation id="165877110639533037">אין כרטיסיות פתוחות</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">בקשת אתר שמותאם לנייד</translation>
-<translation id="168715261339224929">כדי שהסימניות שלך יופיעו בכל המכשירים, יש להפעיל סנכרון.</translation>
 <translation id="1687475363370981210">סימון הכול כ'נקרא'</translation>
 <translation id="1689333818294560261">כינוי</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
@@ -1045,7 +1044,6 @@
 <translation id="6476253015009698798">המעקב אחר מחירים לא זמין בדף הזה.</translation>
 <translation id="6476800141292307438">מתבצע תרגום של הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="648164694371393720">שגיאת אימות</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים נמחקו</translation>
 <translation id="6484712497741564393">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
 
 הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>
@@ -1412,7 +1410,6 @@
 <translation id="8428634594422941299">הבנתי</translation>
 <translation id="8446884382197647889">למידע נוסף</translation>
 <translation id="8449347986464073209">מחיקה ויציאה מהחשבון</translation>
-<translation id="8458397775385147834">פריט אחד נמחק</translation>
 <translation id="8459333855531264009">לא מאובטח</translation>
 <translation id="8487667956631253959">מופעל</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>

@@ -824,6 +824,7 @@
             <ph name="LIST_ITEM" />කුකි සහ අඩවි දත්ත
             <ph name="LIST_ITEM" />පෝරම තුළ ඇතුළත් කළ තොරතුරු
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">ඇතුළත් කරන්න</translation>
 <translation id="2625385379895617796">ඔබගේ ඔරලෝසුව ඉදිරියෙන් සිටියි</translation>
 <translation id="262745152991669301">USB උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="2629325967560697240">Chrome හි ඉහළම ආරක්ෂාව ලබා ගැනීමට, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />වැඩි දියුණු කළ ආරක්ෂාව ක්‍රියාත්මක කරන්න<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1585,7 @@
 <translation id="4177501066905053472">දැන්වීම් මාතෘකා</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">මිල හඹා නොයන්න</translation>
+<translation id="4191334393248735295">දිග</translation>
 <translation id="4195459680867822611">Chrome ඉඟි බලන්න බොත්තම, Chrome විශේෂාංග පිළිබඳව දැන ගැනීමට සක්‍රිය කරන්න</translation>
 <translation id="4195643157523330669">නව ටැබයක විවෘත කරන්න</translation>
 <translation id="4196861286325780578">&amp;ගෙන යාම යළි කරන්න</translation>

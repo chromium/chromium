@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">タブを右に移動</translation>
 <translation id="7966321538264951561">提案を閉じます。</translation>
 <translation id="8029301326595421733">このショップに関する情報が画面全体に表示されています</translation>
-<translation id="814503310257431685">すべて表示</translation>
 <translation id="8205266828577616993">タブを上に移動</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
 <translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

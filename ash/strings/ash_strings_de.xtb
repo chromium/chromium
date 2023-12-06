@@ -659,6 +659,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="36813544980941320">WLANs werden zwischen deinem Smartphone und <ph name="DEVICE_NAME" /> geteilt</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, dann <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Websites</translation>
+<translation id="3697991387880191195">Screenshot-Kurzbefehl drücken</translation>
 <translation id="3702809606464356667">Fenster vom aktuellen Desktop werden angezeigt – drücke den Aufwärtspfeil, um die Fenster von allen Desktops anzuzeigen</translation>
 <translation id="3702846122927433391">Einwohnerzahl von Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4389184120735010762">Du hast die Tastenkombination für den Modus "Angedockte Lupe" gedrückt. Möchtest du ihn aktivieren?</translation>
 <translation id="439598569299422042">Pausiert, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Screencast konnte nicht gespeichert werden</translation>
+<translation id="4403371424034411727">„<ph name="PERIPHERAL_NAME" />“ ist verbunden und einsatzbereit. Du kannst die Maus in den Einstellungen anpassen.</translation>
 <translation id="4405151984121254935">Das angeschlossene Peripheriegerät wird nicht unterstützt</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ist deaktiviert.</translation>
@@ -1293,6 +1295,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="6199775032047436064">Aktuelle Seite neu laden</translation>
 <translation id="6200515304866777730">Wird von der App nicht unterstützt</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> verbinden, wurde(n) bereits in <ph name="EMAIL" /> gespeichert</translation>
+<translation id="6212097153736801627">„<ph name="PERIPHERAL_NAME" />“ personalisieren</translation>
 <translation id="6213808132343683860">Screenshot oder Bildschirmaufzeichnung eines Bildschirmausschnitts erstellen</translation>
 <translation id="6220928844947387476">Jetzt kannst du dich selbst und deinen Bildschirm gleichzeitig aufnehmen</translation>
 <translation id="622484624075952240">Abwärts</translation>
@@ -1534,6 +1537,7 @@ Neuinstallation</translation>
 <translation id="726276584504105859">Für Splitscreen hierher ziehen</translation>
 <translation id="7262906531272962081">Erinnerung erstellen</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Rücktaste</translation>
+<translation id="7285232777292757180">Screenshots mit der Funktion „Bildschirmaufnahme“ in den Schnelleinstellungen aufnehmen</translation>
 <translation id="7302889331339392448">Automatische Untertitel sind aus.</translation>
 <translation id="7303365578352795231">Antwort auf einem anderen Gerät.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1921,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="888982883502837004">Für dein Gerät sind Firmwareupdates verfügbar. Zum Prüfen und Herunterladen klicke hier.</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ wird endgültig gelöscht</translation>
 <translation id="889790758758811533">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> % (noch ungefähr <ph name="TIME_LEFT" />). Schließ dein Gerät an eine Steckdose an.</translation>
+<translation id="8897940060812808966">„<ph name="PERIPHERAL_NAME" />“ ist verbunden und einsatzbereit. Du kannst dein Grafiktablet in den Einstellungen anpassen.</translation>
 <translation id="88986195241502842">Bildlauf nach unten</translation>
 <translation id="8905919797434099235">(Kein Titel)</translation>
 <translation id="890616557918890486">Quelle ändern</translation>

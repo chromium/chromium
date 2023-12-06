@@ -116,6 +116,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1206967143813997005">Assinatura com inicial incorreta</translation>
 <translation id="1209206284964581585">Ocultar para já</translation>
 <translation id="121201262018556460">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado que contém uma chave fraca. Um utilizador mal intencionado poderá ter quebrado a chave privada e o servidor pode não ser o servidor esperado (pode estar a comunicar com um utilizador mal intencionado).</translation>
+<translation id="1212527389003717329">Transferência iniciada. Para a ver, prima sem soltar |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Segurança do sistema</translation>
 <translation id="1222060260947439312">Tabuleiro direito</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Arrendamentos com mobiliário</translation>
 <translation id="1527263332363067270">A aguardar ligação…</translation>
+<translation id="1528311629279578926">A ligação está bloqueada porque foi iniciada por uma página pública para estabelecer ligação a dispositivos ou servidores na sua rede privada. Atualize esta página para permitir a ligação.</translation>
 <translation id="1529789484829130889">Tabuleiro 8</translation>
 <translation id="1530707389502320859">O site que acabou de tentar visitar parece falso. Por vezes, os atacantes imitam sites ao efetuarem pequenas alterações difíceis de detetar no URL.</translation>
 <translation id="1532118530259321453">Esta página diz</translation>
@@ -824,6 +826,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
             <ph name="LIST_ITEM" />Os cookies e os dados de sites
             <ph name="LIST_ITEM" />As informações introduzidas em formulários
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Inserir</translation>
 <translation id="2625385379895617796">O seu relógio está adiantado</translation>
 <translation id="262745152991669301">Pode solicitar a ligação a dispositivos USB</translation>
 <translation id="2629325967560697240">Para obter o nível de segurança mais elevado do Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ative a proteção melhorada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1159,6 +1162,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3325027355611702542">Caravanas e autocaravanas</translation>
 <translation id="3329013043687509092">Saturação</translation>
 <translation id="3333762389743153920">Não é elegível para um cartão virtual</translation>
+<translation id="3336044043987989409">Prima o botão de atualização para permitir a ligação a dispositivos ou servidores na sua rede privada.</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="333839153442689579">Treino intervalado de alta intensidade</translation>
 <translation id="3339440062908617027">Corrida e marcha</translation>
@@ -1584,6 +1588,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4177501066905053472">Tópicos de anúncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Desativar acompanhamento de preços</translation>
+<translation id="4191334393248735295">Comprimento</translation>
 <translation id="4195459680867822611">Botão Ver sugestões do Chrome; ative para saber mais acerca das funcionalidades do Chrome</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4196861286325780578">&amp;Refazer movimentação</translation>

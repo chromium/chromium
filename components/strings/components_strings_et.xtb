@@ -375,6 +375,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Chrome kustutab automaatselt teemad, mis on vanemad kui 4 nädalat. Sirvimise jätkamisel võib mõni teema loendisse tagasi ilmuda. Samuti saate Chrome'i seadetes igal ajal blokeerida teemad, mille puhul te ei soovi, et Chrome neid saitidega jagaks, ning reklaamiteemad välja lülitada.</translation>
 <translation id="1697532407822776718">Kõik on valmis!</translation>
 <translation id="1699651774646344471">Nüüd saate kasutada aadresse oma Google’i kontolt</translation>
+<translation id="1700542542921501212">Otsingumootoriga <ph name="SEARCH_ENGINE_NAME" /> saate teha veebiotsinguid.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Suumitasemed</translation>
@@ -824,6 +825,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
           <ph name="LIST_ITEM" />Küpsisefailid ja saidi andmed.
           <ph name="LIST_ITEM" />Vormidesse sisestatud teave.
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Lisa</translation>
 <translation id="2625385379895617796">Teie kell on ees</translation>
 <translation id="262745152991669301">Saab küsida luba USB-seadmetega ühenduse loomiseks</translation>
 <translation id="2629325967560697240">Chrome'i kõrgeima taseme turvalisuse saavutamiseks <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />lülitage sisse täiustatud kaitse<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1586,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4177501066905053472">Reklaamiteemad</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Peata hinna jälgimine</translation>
+<translation id="4191334393248735295">Pikkus</translation>
 <translation id="4195459680867822611">Nupp Kuva Chrome'i nõuanded, aktiveerige nupp Chrome'i funktsioonide kohta lisateabe saamiseks</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4196861286325780578">&amp;Teisalda uuesti</translation>

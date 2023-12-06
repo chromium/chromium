@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Premakni zavihek v desno</translation>
 <translation id="7966321538264951561">Opustitev predlogov.</translation>
 <translation id="8029301326595421733">Informacije o tej trgovini, odprte pri polni višini.</translation>
-<translation id="814503310257431685">Prikaži vse</translation>
 <translation id="8205266828577616993">Premakni zavihek navzgor</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega zavihka}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega zavihka}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

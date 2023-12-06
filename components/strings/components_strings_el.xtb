@@ -824,6 +824,7 @@
             <ph name="LIST_ITEM" />Cookie και δεδομένα ιστοτόπου
             <ph name="LIST_ITEM" />Πληροφορίες που εισάγετε σε φόρμες
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Εισαγωγή</translation>
 <translation id="2625385379895617796">Το ρολόι σας πάει μπροστά</translation>
 <translation id="262745152991669301">Μπορεί να ζητά να συνδεθεί σε συσκευές USB.</translation>
 <translation id="2629325967560697240">Για να λάβετε το υψηλότερο επίπεδο ασφάλειας του Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ενεργοποιήστε τη βελτιωμένη προστασία<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1584,6 +1585,7 @@
 <translation id="4177501066905053472">Θέματα διαφημίσεων</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Κατάργηση παρακολούθησης τιμής</translation>
+<translation id="4191334393248735295">Μήκος</translation>
 <translation id="4195459680867822611">Κουμπί Εμφάνιση συμβουλών Chrome, ενεργοποιήστε το για να μάθετε σχετικά με τις λειτουργίες του Chrome</translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4196861286325780578">&amp;Επανάληψη μετακίνησης</translation>

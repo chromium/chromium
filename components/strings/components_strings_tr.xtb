@@ -824,6 +824,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
           <ph name="LIST_ITEM" />Çerezler ve site verileri
           <ph name="LIST_ITEM" />Formlara girilen bilgiler
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Ekle</translation>
 <translation id="2625385379895617796">Saatiniz ileri</translation>
 <translation id="262745152991669301">USB cihazlara bağlanmak isteyebilir</translation>
 <translation id="2629325967560697240">Chrome’un sağladığı en yüksek güvenlik düzeyinden faydalanmak için <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />gelişmiş korumayı açın<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1585,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4177501066905053472">Reklam konuları</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Fiyat takibini bırak</translation>
+<translation id="4191334393248735295">Uzunluk</translation>
 <translation id="4195459680867822611">Chrome ipuçlarını göster düğmesi, Chrome özellikleri hakkında bilgi edinmek için etkinleştirin</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
 <translation id="4196861286325780578">Taşımayı &amp;yeniden yap</translation>

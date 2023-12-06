@@ -655,6 +655,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="36813544980941320">Il tuo telefono e il dispositivo <ph name="DEVICE_NAME" /> useranno le stesse reti Wi-Fi</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> poi <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Siti web</translation>
+<translation id="3697991387880191195">Premi la scorciatoia per gli screenshot</translation>
 <translation id="3702809606464356667">Dalla visualizzazione delle finestre della scrivania corrente, premi il tasto Freccia su per mostrare le finestre di tutte le scrivanie</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -831,6 +832,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
 <translation id="439598569299422042">In pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Impossibile salvare lo screencast</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> è connesso e pronto per l'uso. Puoi personalizzare il mouse in Impostazioni.</translation>
 <translation id="4405151984121254935">Il tipo periferico connesso non è supportato</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
@@ -1290,6 +1292,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6199775032047436064">Ricarica la pagina corrente</translation>
 <translation id="6200515304866777730">Non supportate dall'app</translation>
 <translation id="6210042900243040400">Connetti il dispositivo <ph name="NAME" />, che è già stato salvato in <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Personalizza il tuo <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Acquisisci registrazione dello schermo o screenshot parziali</translation>
 <translation id="6220928844947387476">Ora puoi registrarti e registrare il tuo schermo nello stesso momento</translation>
 <translation id="622484624075952240">Giù</translation>
@@ -1531,6 +1534,7 @@ Nuova installazione</translation>
 <translation id="726276584504105859">Trascina qui per utilizzare la modalità Schermo diviso</translation>
 <translation id="7262906531272962081">Crea promemoria</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Usa lo strumento di acquisizione schermo nelle Impostazioni rapide per acquisire screenshot</translation>
 <translation id="7302889331339392448">La funzionalità Sottotitoli in tempo reale è disattivata.</translation>
 <translation id="7303365578352795231">Risposta su un altro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1913,6 +1917,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="888982883502837004">Sono disponibili degli aggiornamenti del firmware per il tuo dispositivo. Fai clic per esaminarli ed eseguire gli aggiornamenti.</translation>
 <translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
 <translation id="889790758758811533">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />). Collega il dispositivo all'alimentazione.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> è connesso e pronto per l'uso. Puoi personalizzare la tavoletta grafica in Impostazioni.</translation>
 <translation id="88986195241502842">Pagina giù</translation>
 <translation id="8905919797434099235">(Senza titolo)</translation>
 <translation id="890616557918890486">Cambia origine</translation>

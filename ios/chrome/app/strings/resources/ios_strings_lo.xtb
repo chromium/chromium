@@ -142,7 +142,6 @@
 <translation id="165877110639533037">ບໍ່​ມີ​ແຖບ​ເປີດ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ເປັນ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">ຮ້ອງຂໍເວັບໄຊມືຖື</translation>
-<translation id="168715261339224929">ເພື່ອມີບຸກມາກຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="1687475363370981210">ໝາຍທັງໝົດວ່າອ່ານແລ້ວ</translation>
 <translation id="1689333818294560261">ຊື່ຫຼິ້ນ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
@@ -1047,7 +1046,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6476253015009698798">ການຕິດຕາມລາຄາບໍ່ມີໃຫ້ສຳລັບໜ້ານີ້.</translation>
 <translation id="6476800141292307438">ກຳລັງແປໜ້າເວັບເປັນ <ph name="LANGUAGE" />. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="648164694371393720">ການຮອງຮັບຄວາມຖືກຕ້ອງຜິດພາດ</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ລາຍ​ການ​ຖືກ​ລຶບ​ແລ້ວ</translation>
 <translation id="6484712497741564393">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL" />.
 
 ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍລະຫັດຜ່ານຂອງທ່ານ. ລະບຸລະຫັດຜ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -1415,7 +1413,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8428634594422941299">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8446884382197647889">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="8449347986464073209">ລຶບ ແລະ ອອກຈາກລະບົບ</translation>
-<translation id="8458397775385147834">1 ລາຍ​ການ​ຖືກ​ລຶບ​ໄປ​ແລ້ວ</translation>
 <translation id="8459333855531264009">ບໍ່ປອດໄພ</translation>
 <translation id="8487667956631253959">ເປີດ</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
@@ -1481,6 +1478,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8766790350274092814">ລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" /> ແລະ <ph name="SECOND_WEBSITE" /> ຈະບໍ່ຖືກລຶບ. ບັນຊີຂອງທ່ານຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="8775144690796719618">URL ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="8780076847684176174">{count,plural, =1{ກວດສອບແຖບ...}other{ກວດສອບແຖບທັງໝົດ...}}</translation>
+<translation id="8782570580170191813">ຕິດຕາມແພັກ​ເກດສະເໝີ</translation>
 <translation id="8787968206789828143">ຊອກຫາຢູ່ເວັບ</translation>
 <translation id="8792626944327216835">ໄມໂຄຣໂຟນ</translation>
 <translation id="8803639129939845298">ປອດໄພ</translation>

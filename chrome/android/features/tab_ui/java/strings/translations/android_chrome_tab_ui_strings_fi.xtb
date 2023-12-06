@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Siirrä välilehti oikealle</translation>
 <translation id="7966321538264951561">Ohita ehdotukset.</translation>
 <translation id="8029301326595421733">"Tietoja tästä kaupasta" avattu koko näytön kokoisena</translation>
-<translation id="814503310257431685">Näytä kaikki</translation>
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

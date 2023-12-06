@@ -142,7 +142,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="165877110639533037">Ez dago irekitako fitxarik</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> - <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Eskatu mugikorretarako webgunea</translation>
-<translation id="168715261339224929">Laster-markak gailu guztietan eskura izateko, aktibatu sinkronizazioa.</translation>
 <translation id="1687475363370981210">Markatu guztiak irakurritako gisa</translation>
 <translation id="1689333818294560261">Goitizena</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> hautatu dira</translation>
@@ -1045,7 +1044,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6476253015009698798">Ezin da egin orri honetako produktuen prezioen jarraipena.</translation>
 <translation id="6476800141292307438">Orria itzultzen ari gara. <ph name="LANGUAGE" /> erabiliko da orria bistaratzeko. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="648164694371393720">Autentifikazio-errorea</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementu ezabatu dira</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> gisa hasi duzu saioa.
 
 Datuak pasaesaldiarekin enkriptatuta daude. Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatz ezazu.</translation>
@@ -1412,7 +1410,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8428634594422941299">Ados</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>
 <translation id="8449347986464073209">Ezabatu datuak eta amaitu saioa</translation>
-<translation id="8458397775385147834">Elementu bat ezabatu da</translation>
 <translation id="8459333855531264009">Ez da segurua</translation>
 <translation id="8487667956631253959">Aktibatuta</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>

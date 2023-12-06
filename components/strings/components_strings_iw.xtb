@@ -824,6 +824,7 @@
           <ph name="LIST_ITEM" />קובצי cookie ונתוני אתרים
           <ph name="LIST_ITEM" />מידע שהוזן בטפסים
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">הוסף</translation>
 <translation id="2625385379895617796">השעון שלך מקדים</translation>
 <translation id="262745152991669301">‏האתר יכול לבקש הרשאה להתחבר אל התקני USB</translation>
 <translation id="2629325967560697240">‏כדי ליהנות מאבטחה ברמה הגבוהה ביותר ב-Chrome, יש <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />להפעיל את ההגנה המשופרת<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1584,6 +1585,7 @@
 <translation id="4177501066905053472">נושאים של מודעות</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
+<translation id="4191334393248735295">אורך</translation>
 <translation id="4195459680867822611">‏הלחצן להצגת טיפים ל-Chrome, מפעילים אותו כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4196861286325780578">&amp;ביצוע מחדש של העברה</translation>

@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Premestite karticu udesno</translation>
 <translation id="7966321538264951561">Odbacite predloge.</translation>
 <translation id="8029301326595421733">Informacije o ovoj prodavnici su otvorene na celom ekranu</translation>
-<translation id="814503310257431685">Prikaži sve</translation>
 <translation id="8205266828577616993">Premesti karticu nagore</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zatvorite <ph name="TABS_COUNT_ONE" /> izabranu karticu}one{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranu karticu}few{Zatvorite <ph name="TABS_COUNT_MANY" /> izabrane kartice}other{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranih kartica}}</translation>
 <translation id="8398929769197326728">Novi folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

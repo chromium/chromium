@@ -825,6 +825,7 @@
           <ph name="LIST_ITEM" />колачиће и податке о сајтовима
           <ph name="LIST_ITEM" />информације које уносите у обрасцима
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Уметање</translation>
 <translation id="2625385379895617796">Сат вам жури</translation>
 <translation id="262745152991669301">Може да тражи да се повезује са USB уређајима</translation>
 <translation id="2629325967560697240">Да бисте добили највиши ниво заштите у Chrome-у, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />укључите побољшану заштиту<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1586,7 @@
 <translation id="4177501066905053472">Теме огласа</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Опозови праћење цене</translation>
+<translation id="4191334393248735295">Дужина</translation>
 <translation id="4195459680867822611">Дугме Прикажи Chrome савете, активирајте га да бисте сазнали више о Chrome функцијама</translation>
 <translation id="4195643157523330669">Отвори на новој картици</translation>
 <translation id="4196861286325780578">&amp;Понови премештање</translation>

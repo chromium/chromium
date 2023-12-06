@@ -91,6 +91,44 @@ Jika kebijakan ini disetel ke Nonaktif, fitur koreksi otomatis tidak akan diizin
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
+<translation id="1043965859599437362">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama.
+
+Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
+Set Pihak Pertama harus berisi situs utama dan satu atau beberapa situs anggota.
+Set juga dapat berisi daftar situs layanan yang dimilikinya, serta peta dari situs ke semua varian ccTLD-nya.
+Lihat https://github.com/WICG/first-party-sets untuk mendapatkan informasi selengkapnya terkait Set Pihak Pertama yang digunakan oleh <ph name="PRODUCT_NAME" />.
+
+Semua situs dalam Set Pihak Pertama harus berupa domain yang dapat didaftarkan yang disajikan melalui HTTPS. Setiap situs dalam Set Pihak Pertama juga harus unik.
+Artinya, situs tidak boleh tercantum lebih dari sekali dalam Set Pihak Pertama.
+
+Jika kebijakan ini diberi kamus kosong, browser akan menggunakan daftar Set Pihak Pertama publik.
+
+Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
+di Set Pihak Pertama dalam daftar browser, situs tersebut akan dihapus dari Set Pihak Pertama browser.
+Setelahnya, Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
+
+Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
+di Set Pihak Pertama dalam daftar browser, Set Pihak Pertama browser akan diperbarui agar
+Set Pihak Pertama baru dapat ditambahkan ke daftar browser. Setelah daftar browser diperbarui,
+Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
+
+Daftar Set Pihak Pertama browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
+lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
+dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
+<ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
+
+Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
+
+Semua set yang disediakan oleh kebijakan harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
+error yang sesuai akan ditampilkan.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Kebijakan ini setara dengan kebijakan <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Salah satu kebijakan dapat digunakan, tetapi kebijakan ini tidak akan digunakan lagi dalam waktu dekat sehingga kebijakan <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> lebih disarankan.
+Kedua kebijakan tersebut memiliki efek yang sama pada perilaku browser.</translation>
 <translation id="1046484220783400299">Aktifkan fitur platform web usang untuk waktu yang terbatas</translation>
 <translation id="1047128214168693844">Jangan izinkan situs mana pun melacak lokasi fisik pengguna</translation>
 <translation id="1049138910114524876">Mengonfigurasi lokal yang diterapkan pada layar login <ph name="PRODUCT_OS_NAME" />.
@@ -468,6 +506,14 @@ Jika kebijakan ini disetel ke nonaktif, halaman dengan header <ph name="CACHE_CO
 <translation id="1426170570389588560">Menentukan jangka waktu penyimpanan metadata pekerjaan cetak dalam hari</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1427655258943162134">Alamat atau URL server proxy</translation>
+<translation id="1432834104376790711">Kebijakan ini mengaktifkan atau menonaktifkan setelan Mode Penghemat Baterai.
+      Di Chrome, setelan ini membuat kecepatan frame di-throttle agar mengurangi konsumsi daya. Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.
+      Di ChromeOS, setelan ini membuat kecepatan frame dan frekuensi CPU di-throttle, lampu latar diredupkan, dan Android disetel ke Mode Penghemat Baterai. Pada perangkat dengan beberapa CPU, sebagian CPU akan dinonaktifkan.
+      Level yang berbeda adalah:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): Mode Penghemat Baterai akan dinonaktifkan.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): Mode Penghemat Baterai akan diaktifkan saat perangkat menggunakan daya baterai dan level baterai rendah.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Nilai ini tidak digunakan lagi mulai M121. Mulai M121 dan seterusnya, nilai akan      diperlakukan sebagai EnabledBelowThreshold.
+      </translation>
 <translation id="1434300053894025056">Nonaktifkan periksa ejaan</translation>
 <translation id="1434743866147056474">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan gambar.
 
@@ -2096,6 +2142,7 @@ Sistem hanya akan mengkueri data AAAA ketika perangkat dapat menjangkau host IPv
 <translation id="2707733461906745082">Pemisahan Profil</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
+<translation id="2713913573196284609">Mulai M121, nilai ini tidak digunakan lagi. Pada M121 dan selanjutnya, nilai akan diperlakukan sebagai EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Selalu kirim metrik ke Google</translation>
 <translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
 
@@ -3705,6 +3752,17 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
       Jika kebijakan ini diaktifkan, Jawaban Cepat akan diizinkan mengakses konten yang dipilih.
       Jika kebijakan ini dinonaktifkan, Jawaban Cepat tidak akan diizinkan mengakses konten yang dipilih.
       Jika kebijakan ini tidak disetel, pengguna dapat memilih untuk mengizinkan Jawaban Cepat mengakses konten yang dipilih atau tidak.</translation>
+<translation id="4016523784669365747">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama.
+
+Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
+
+Kebijakan ini mengontrol apakah Chrome akan mendukung integrasi terkait Set Pihak Pertama.
+
+Kebijakan ini setara dengan kebijakan <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Salah satu kebijakan dapat digunakan, tetapi kebijakan ini tidak akan digunakan lagi dalam waktu dekat sehingga kebijakan <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> lebih disarankan.
+Kedua kebijakan tersebut memiliki efek yang sama pada perilaku browser.</translation>
 <translation id="4016700865356669962">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan template tata letak desktop.  Jika kebijakan disetel ke Nonaktif atau tidak disetel, template tersebut tidak akan tersedia.</translation>
 <translation id="4020682745012723568">Cookie yang ditransfer ke profil pengguna tidak dapat diakses oleh aplikasi Android.</translation>
 <translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>

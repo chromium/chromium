@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Chrome 4 həftədən köhnə mövzuları avtomatik silir. Baxmağa davam etdikcə mövzu siyahıda yenidən görünə bilər. Həmçinin Chrome-un saytlarla paylaşmasını istəmədiyiniz mövzuları bloklaya və istənilən vaxt Chrome ayarlarında reklam mövzularını deaktiv edə bilərsiniz.</translation>
 <translation id="1697532407822776718">Hər şey hazırdır!</translation>
 <translation id="1699651774646344471">Artıq Google Hesabındakı ünvanları istifadə edə bilərsiniz</translation>
+<translation id="1700542542921501212">Vebdə axtarış üçün <ph name="SEARCH_ENGINE_NAME" /> istifadə edə bilərsiniz.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoom səviyyələri</translation>
@@ -824,6 +825,7 @@
           <ph name="LIST_ITEM" />Kuki və sayt datası
           <ph name="LIST_ITEM" />Formalara daxil edilmiş məlumatlar
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Daxil edin</translation>
 <translation id="2625385379895617796">Saatınız irəlidədir</translation>
 <translation id="262745152991669301">Saytlar USB cihazlarına qoşulmaq icazəsi istəyə bilər</translation>
 <translation id="2629325967560697240">Chrome'un ən yüksək təhlükəsizlik səviyyəsini əldə etmək üçün<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />genişləndirilmiş qorumanı aktiv edin<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1580,6 +1582,7 @@
 <translation id="4177501066905053472">Reklam mövzuları</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Qiyməti izləməyin</translation>
+<translation id="4191334393248735295">Məsafə</translation>
 <translation id="4195459680867822611">"Chrome ipucularına baxın" düyməsi, aktivləşdirərək Chrome funksiyaları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4196861286325780578">Hərəkəti təkrarlayın</translation>

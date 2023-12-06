@@ -142,7 +142,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="165877110639533037">Nu există file deschise</translation>
 <translation id="1674504678466460478">Din <ph name="SOURCE_LANGUAGE" /> în <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Solicită un site mobil</translation>
-<translation id="168715261339224929">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="1687475363370981210">Marchează-le pe toate ca citite</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selectate</translation>
@@ -175,6 +174,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1883255238294161206">Restrângeți lista</translation>
 <translation id="1889872080060107187">Te vei conecta la <ph name="URL" /></translation>
 <translation id="1890237935065108104">Setarea nu este disponibilă.</translation>
+<translation id="1891199774460536658">Urmărește automat toate coletele detectate</translation>
 <translation id="1894023287452300670">Urmărește prețul aici</translation>
 <translation id="189531189292803889">Dispozitivul iPad a fost restabilit recent, acțiune care ar fi putut schimba browserul prestabilit.</translation>
 <translation id="1910975740091000991">Chrome pentru iOS</translation>
@@ -654,6 +654,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4493604894403585654">Te-ai conectat ca <ph name="USER_EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4502566650163919158">Verifică acum</translation>
 <translation id="4508750114462689118">Închide mesajul promoțional de conectare</translation>
+<translation id="4509449376545878717">Nu detecta niciodată automat coletele</translation>
 <translation id="4514889972748124117">Sugerează o parolă puternică</translation>
 <translation id="4520798012560649652">Află mai multe despre modul incognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcaj}few{{count} marcaje}other{{count} de marcaje}}</translation>
@@ -1045,7 +1046,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6476253015009698798">Urmărirea prețurilor nu este disponibilă pentru această pagină.</translation>
 <translation id="6476800141292307438">Se traduce această pagină în <ph name="LANGUAGE" />. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
 <translation id="648164694371393720">Eroare de autentificare</translation>
-<translation id="6482629121755362506">Elemente șterse: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="6484712497741564393">Te-ai conectat ca <ph name="EMAIL" />.
 
 Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a salva datele Chrome în Contul Google.</translation>
@@ -1338,6 +1338,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8023878949384262191">Extinde secțiunea.</translation>
 <translation id="8027581147000338959">Deschideți într-o fereastră nouă</translation>
 <translation id="8032569120109842252">Urmărești</translation>
+<translation id="8040207962129315716">Întreabă de fiecare dată</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Istoricul căutărilor<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="804427445359061970">Aici vei vedea filele tale de pe alte dispozitive</translation>
 <translation id="8044568254381073661">Salvează fără criptare</translation>
@@ -1412,7 +1413,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8428634594422941299">Am înțeles</translation>
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8449347986464073209">Șterge și deconectează-te</translation>
-<translation id="8458397775385147834">Un element șters</translation>
 <translation id="8459333855531264009">Nesecurizat</translation>
 <translation id="8487667956631253959">Aprinsă</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>

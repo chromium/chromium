@@ -827,6 +827,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
           <ph name="LIST_ITEM" />Les galetes o les dades de llocs web
           <ph name="LIST_ITEM" />La informació introduïda en formularis
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insereix</translation>
 <translation id="2625385379895617796">El rellotge està avançat</translation>
 <translation id="262745152991669301">Pot demanar permís per connectar-se a dispositius USB</translation>
 <translation id="2629325967560697240">Per obtenir el màxim nivell de seguretat de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa la protecció millorada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1588,6 +1589,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4177501066905053472">Temes d'anuncis</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixa de seguir el preu</translation>
+<translation id="4191334393248735295">Llargada</translation>
 <translation id="4195459680867822611">Botó Mostra consells per a Chrome: activa'l per obtenir informació sobre les funcions de Chrome</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4196861286325780578">&amp;Refés el moviment</translation>

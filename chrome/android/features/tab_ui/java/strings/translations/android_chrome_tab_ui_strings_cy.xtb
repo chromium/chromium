@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Symud tab i'r dde</translation>
 <translation id="7966321538264951561">Diystyru'r awgrymiadau.</translation>
 <translation id="8029301326595421733">Gwybodaeth am y siop hon wedi'i hagor ar uchder llawn</translation>
-<translation id="814503310257431685">Gweld popeth</translation>
 <translation id="8205266828577616993">Symud y tab i fyny</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cau'r <ph name="TABS_COUNT_ONE" /> tab a ddewisir}zero{Cau'r <ph name="TABS_COUNT_MANY" /> tab a ddewisir}two{Cau'r <ph name="TABS_COUNT_MANY" /> dab a ddewisir}few{Cau'r <ph name="TABS_COUNT_MANY" /> thab a ddewisir}many{Cau'r <ph name="TABS_COUNT_MANY" /> thab a ddewisir}other{Cau'r <ph name="TABS_COUNT_MANY" /> tab a ddewisir}}</translation>
 <translation id="8398929769197326728">Ffolder Newydd - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

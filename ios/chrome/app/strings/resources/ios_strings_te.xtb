@@ -142,7 +142,6 @@
 <translation id="165877110639533037">తెరిచి ఉన్న ట్యాబ్‌లు లేవు</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> నుండి <ph name="TARGET_LANGUAGE" />లోకి</translation>
 <translation id="1683483432843341018">మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
-<translation id="168715261339224929">మీ బుక్‌మార్క్‌లను మీ అన్ని పరికరాలలోనూ పొందాలంటే, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="1687475363370981210">అన్నీ చదివినట్లు గుర్తు పెట్టు</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ఎంచుకోబడ్డాయి</translation>
@@ -175,6 +174,7 @@
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
 <translation id="1889872080060107187">మీరు <ph name="URL" />‌కు సైన్ ఇన్ చేయబోతున్నారు</translation>
 <translation id="1890237935065108104">ఈ సెట్టింగ్ అందుబాటులో లేదు.</translation>
+<translation id="1891199774460536658">గుర్తించిన ప్యాకేజీలన్నింటిని ఆటోమేటిక్‌గా ట్రాక్ చేయండి</translation>
 <translation id="1894023287452300670">ధరను ఇక్కడ ట్రాక్ చేయండి</translation>
 <translation id="189531189292803889">మీ iPad ఇటీవల రీస్టోర్ అయింది, దాని వలన మీ ఆటోమేటిక్ బ్రౌజర్ మారి ఉండవచ్చు.</translation>
 <translation id="1910975740091000991">iOS కోసం Chrome</translation>
@@ -654,6 +654,7 @@
 <translation id="4493604894403585654">మీరు <ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేశారు. మీరు సింక్ అవ్వడాన్ని ఏ సమయంలోనైనా సెట్టింగ్‌లలో ఆపివేయవచ్చు. మీ హిస్టరీ ఆధారంగా Searchను, ఇతర సర్వీస్‌లను Google వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="4502566650163919158">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="4508750114462689118">సైన్ ఇన్ ప్రోమోను మూసివేయండి</translation>
+<translation id="4509449376545878717">ప్యాకేజీలను ఎన్నడూ ఆటోమేటిక్‌గా గుర్తించవద్దు</translation>
 <translation id="4514889972748124117">శక్తివంతమైన పాస్‌వర్డ్‌ను సూచించండి...</translation>
 <translation id="4520798012560649652">అజ్ఞాత మోడ్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} బుక్‌మార్క్}other{{count} బుక్‌మార్క్‌లు}}</translation>
@@ -836,6 +837,7 @@
 <translation id="5457226814769348910">ఆఫ్‌లైన్ వెర్షన్‌ను తెరవండి</translation>
 <translation id="5475069061743940393">ప్యాకేజీ ట్రాకింగ్</translation>
 <translation id="5478327362747197944">వెబ్ పేజీలోని తేదీని క్లిక్ చేయడం ద్వారా నేరుగా క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయండి.</translation>
+<translation id="5482922178977937393">మీరు మీ ఆసక్తుల ఆధారంగా వార్తలు, క్రీడలు, అలాగే మరిన్నింటి కోసం నోటిఫికేషన్‌లను పొందాలనుకుంటున్నారా?</translation>
 <translation id="5489208564673669003">అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="BEGIN_LINK" />కుక్కీ సెట్టింగ్‌ల<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="5490005495580364134">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="5497202150450073388">డెలివరీ చేయడానికి ప్రయత్నం జరిగింది. మళ్లీ ట్రై చేస్తాము</translation>
@@ -1045,7 +1047,6 @@
 <translation id="6476253015009698798">ఈ పేజీకి ధర ట్రాకింగ్ అందుబాటులో లేదు.</translation>
 <translation id="6476800141292307438">పేజీని <ph name="LANGUAGE" />లోకి అనువదిస్తోంది. స్క్రీన్ దిగువ భాగానికి దగ్గర్లో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="648164694371393720">ప్రామాణీకరణ ఎర్రర్</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తొలగించబడ్డాయి</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" />‌గా సైన్ ఇన్ చేశారు.
 
 మీ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయబడింది. మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి దాన్ని ఎంటర్ చేయండి.</translation>
@@ -1338,6 +1339,7 @@
 <translation id="8023878949384262191">విభాగాన్ని విస్తరింపజేస్తుంది.</translation>
 <translation id="8027581147000338959">కొత్త విండోలో తెరవండి</translation>
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
+<translation id="8040207962129315716">నన్ను ప్రతిసారి అడగాలి</translation>
 <translation id="804225253087497565">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK" />సెర్చ్ హిస్టరీ<ph name="END_LINK" />, <ph name="BEGIN_LINK" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="804427445359061970">ఇతర పరికరాలలో ఉన్న మీ ట్యాబ్‌లను మీరు ఇక్కడ చూడవచ్చు</translation>
 <translation id="8044568254381073661">ఎన్‌క్రిప్షన్ చేయకుండా సేవ్ చేయండి</translation>
@@ -1412,7 +1414,6 @@
 <translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8449347986464073209">తొలగించి, సైన్ అవుట్ చేయండి</translation>
-<translation id="8458397775385147834">1 అంశం తొలగించబడింది</translation>
 <translation id="8459333855531264009">సురక్షితం కాదు</translation>
 <translation id="8487667956631253959">ఆన్‌లో ఉంది</translation>
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>

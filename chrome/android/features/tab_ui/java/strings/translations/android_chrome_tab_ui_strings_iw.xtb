@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
 <translation id="8029301326595421733">המידע על החנות הזו פתוח בגובה מלא</translation>
-<translation id="814503310257431685">הצגת הכול</translation>
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="8398929769197326728">תיקייה חדשה – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

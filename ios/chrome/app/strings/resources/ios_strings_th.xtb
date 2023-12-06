@@ -118,7 +118,7 @@
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
 <translation id="1563071802032385236">เปิด "ขอเปิดลิงก์จากแอปอื่นๆ ในโหมดไม่ระบุตัวตน"</translation>
 <translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
-<translation id="1565395699240341063">ซ่อน</translation>
+<translation id="1565395699240341063">ซ่อนอยู่</translation>
 <translation id="1580715474678097352">รับการปกป้องจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
@@ -142,7 +142,6 @@
 <translation id="165877110639533037">ไม่มีแท็บที่เปิดไว้</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
-<translation id="168715261339224929">เปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="1687475363370981210">ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว</translation>
 <translation id="1689333818294560261">ชื่อเล่น</translation>
 <translation id="1700629756560807968">เลือก <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
@@ -260,7 +259,7 @@
 <translation id="2348630484974447747">พัสดุ</translation>
 <translation id="2351097562818989364">รีเซ็ตการตั้งค่าการแปลภาษาของคุณแล้ว</translation>
 <translation id="235789365079050412">นโยบายความเป็นส่วนตัวของ Google</translation>
-<translation id="2359043044084662842">แปล</translation>
+<translation id="2359043044084662842">แปลภาษา</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2360196772093551345">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="2361721159900796207">ซ่อนรายการนี้</translation>
@@ -838,6 +837,7 @@
 <translation id="5457226814769348910">เปิดเวอร์ชันออฟไลน์</translation>
 <translation id="5475069061743940393">การติดตามพัสดุภัณฑ์</translation>
 <translation id="5478327362747197944">สร้างกิจกรรมในปฏิทินโดยตรงด้วยการคลิกวันที่ในหน้าเว็บ</translation>
+<translation id="5482922178977937393">ต้องการรับการแจ้งเตือนเกี่ยวกับข่าว กีฬา และอื่นๆ ตามความสนใจของคุณไหม</translation>
 <translation id="5489208564673669003">ดู<ph name="BEGIN_LINK" />การตั้งค่าคุกกี้<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="5490005495580364134">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="5497202150450073388">พยายามนำส่งแล้ว จะลองอีกครั้งภายหลัง</translation>
@@ -1047,7 +1047,6 @@
 <translation id="6476253015009698798">การติดตามราคาใช้ไม่ได้กับหน้านี้</translation>
 <translation id="6476800141292307438">กำลังแปลหน้าเว็บเป็นภาษา<ph name="LANGUAGE" /> ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="648164694371393720">ข้อผิดพลาดในการตรวจสอบสิทธิ์</translation>
-<translation id="6482629121755362506">ลบแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
 <translation id="6484712497741564393">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" />
 
 ข้อมูลของคุณมีการเข้ารหัสด้วยรหัสผ่าน ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
@@ -1415,7 +1414,6 @@
 <translation id="8428634594422941299">รับทราบ</translation>
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8449347986464073209">ลบและออกจากระบบ</translation>
-<translation id="8458397775385147834">ลบแล้ว 1 รายการ</translation>
 <translation id="8459333855531264009">ไม่ปลอดภัย</translation>
 <translation id="8487667956631253959">เปิด</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>

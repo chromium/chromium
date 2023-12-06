@@ -823,6 +823,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
           <ph name="LIST_ITEM" />Cookie fayllar va sayt maʼlumotlari
           <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Joylash</translation>
 <translation id="2625385379895617796">Soatingiz oldinda</translation>
 <translation id="262745152991669301">USB qurilmalarga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="2629325967560697240">Chrome brauzerining yuqori darajadagi xavfsizligidan foydalanish uchun <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />kengaytirilgan himoyani yoqing<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1579,6 +1580,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4177501066905053472">Reklamadagi mavzular</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Narxni kuzatmaslik</translation>
+<translation id="4191334393248735295">Uzunlik</translation>
 <translation id="4195459680867822611">Chrome maslahatlari tugmasi, Chrome funksiyalari bilan tanishish uchun faollashtiring</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4196861286325780578">&amp;Ko‘chirib o‘tkazishni qayta bajarish</translation>

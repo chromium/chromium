@@ -375,6 +375,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Sådan administrerer du dine data:<ph name="END_BOLD" /> Chrome sletter automatisk emner, der er mere end 4 uger gamle. Når du browser videre, kan et emne dukke op på listen igen. Du kan også til enhver tid blokere emner, som du ikke vil have Chrome til at dele med websites, og deaktivere annonceemner i Chrome-indstillingerne.</translation>
 <translation id="1697532407822776718">Fuldført</translation>
 <translation id="1699651774646344471">Du kan nu bruge adresser fra din Google-konto</translation>
+<translation id="1700542542921501212">Du kan bruge <ph name="SEARCH_ENGINE_NAME" /> til at søge på nettet.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoomniveauer</translation>
@@ -824,6 +825,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
           <ph name="LIST_ITEM" />Cookies og websitedata
           <ph name="LIST_ITEM" />Oplysninger, der er angivet i formularer
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Indsæt</translation>
 <translation id="2625385379895617796">Dit ur er foran</translation>
 <translation id="262745152991669301">Websitet kan anmode om tilladelse til at oprette forbindelse til USB-enheder</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivér forbedret beskyttelse<ph name="END_ENHANCED_PROTECTION_LINK" /> for at få Chromes højeste sikkerhedsniveau</translation>
@@ -1584,6 +1586,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4177501066905053472">Annonceemner</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Hold ikke længere øje med prisen</translation>
+<translation id="4191334393248735295">Længde</translation>
 <translation id="4195459680867822611">Knappen Se tips til Chrome, aktivér for at få flere oplysninger om Chrome-funktioner</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4196861286325780578">&amp;Annuller fortryd flytning</translation>

@@ -142,7 +142,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="165877110639533037">Sem separadores abertos</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Pedir site para dispositivos móveis</translation>
-<translation id="168715261339224929">Para obter os seus marcadores em todos os dispositivos, ative a sincronização.</translation>
 <translation id="1687475363370981210">Marcar tudo como lido</translation>
 <translation id="1689333818294560261">Alcunha</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
@@ -836,6 +835,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5457226814769348910">Abrir versão offline</translation>
 <translation id="5475069061743940393">acompanhamento de embalagens</translation>
 <translation id="5478327362747197944">Crie eventos do Calendário diretamente ao clicar numa data numa página Web.</translation>
+<translation id="5482922178977937393">Quer receber notificações de notícias, desporto e muito mais com base nos seus interesses?</translation>
 <translation id="5489208564673669003">Para gerir cookies de todos os sites, veja <ph name="BEGIN_LINK" />Definições de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="5497202150450073388">Tentativa de entrega. Vai ser feita uma nova tentativa</translation>
@@ -1045,7 +1045,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="6476253015009698798">O acompanhamento de preços não está disponível para esta página.</translation>
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>
 <translation id="648164694371393720">Erro de autenticação</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens eliminados</translation>
 <translation id="6484712497741564393">Com sessão iniciada como <ph name="EMAIL" />.
 
 Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chrome na sua Conta Google.</translation>
@@ -1412,7 +1411,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8428634594422941299">OK</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8449347986464073209">Eliminar e terminar sessão</translation>
-<translation id="8458397775385147834">1 item eliminado</translation>
 <translation id="8459333855531264009">Inseguro</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível offline</translation>

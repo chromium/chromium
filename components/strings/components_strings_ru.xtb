@@ -824,6 +824,7 @@
           <ph name="LIST_ITEM" />файлы cookie и данные сайтов;
           <ph name="LIST_ITEM" />сведения, указанные в формах.
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Вставить</translation>
 <translation id="2625385379895617796">Часы спешат</translation>
 <translation id="262745152991669301">Разрешено отправлять запрос на подключение к USB-устройствам</translation>
 <translation id="2629325967560697240">Чтобы браузер Chrome стал максимально безопасным, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />включите режим "Улучшенная защита"<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
@@ -1583,6 +1584,7 @@
 <translation id="4177501066905053472">Темы рекламы</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перестать отслеживать цену</translation>
+<translation id="4191334393248735295">Длина</translation>
 <translation id="4195459680867822611">Кнопка "Посмотреть советы по работе с Chrome". Нажмите ее, чтобы узнать больше о функциях Chrome.</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4196861286325780578">&amp;Повторить перемещение</translation>

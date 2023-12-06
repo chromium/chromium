@@ -144,7 +144,6 @@
 <translation id="165877110639533037">لا توجد علامات تبويب مفتوحة</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">طلب عرض الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة</translation>
-<translation id="168715261339224929">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تفعيل المزامنة.</translation>
 <translation id="1687475363370981210">وضع العلامة كمقروءة على الكل</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -1049,7 +1048,6 @@
 <translation id="6476253015009698798">ميزة تتبُّع السعر غير متاحة لهذه الصفحة.</translation>
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
 <translation id="648164694371393720">خطأ في المصادقة</translation>
-<translation id="6482629121755362506">تم حذف <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
 <translation id="6484712497741564393">‏تم تسجيل الدخول باستخدام حساب "<ph name="EMAIL" />".
 
 وتم تشفير بياناتك باستخدام عبارة المرور. عليك إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
@@ -1417,7 +1415,6 @@
 <translation id="8428634594422941299">حسنًا</translation>
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8449347986464073209">الحذف وتسجيل الخروج</translation>
-<translation id="8458397775385147834">تم حذف عنصر واحد</translation>
 <translation id="8459333855531264009">غير آمن</translation>
 <translation id="8487667956631253959">مفعّل</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>

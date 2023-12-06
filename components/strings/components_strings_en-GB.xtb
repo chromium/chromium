@@ -825,6 +825,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
             <ph name="LIST_ITEM" />Cookies and site data
             <ph name="LIST_ITEM" />Information entered in forms
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2625385379895617796">Your clock is ahead</translation>
 <translation id="262745152991669301">Can ask to connect to USB devices</translation>
 <translation id="2629325967560697240">To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1586,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4177501066905053472">Ad topics</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Untrack price</translation>
+<translation id="4191334393248735295">Length</translation>
 <translation id="4195459680867822611">See Chrome tips button, activate to learn about Chrome features</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>

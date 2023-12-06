@@ -825,6 +825,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           <ph name="LIST_ITEM" />kolačiće i podatke o sajtovima
           <ph name="LIST_ITEM" />informacije koje unosite u obrascima
         <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Umetanje</translation>
 <translation id="2625385379895617796">Sat vam žuri</translation>
 <translation id="262745152991669301">Može da traži da se povezuje sa USB uređajima</translation>
 <translation id="2629325967560697240">Da biste dobili najviši nivo zaštite u Chrome-u, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />uključite poboljšanu zaštitu<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1586,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Opozovi praćenje cene</translation>
+<translation id="4191334393248735295">Dužina</translation>
 <translation id="4195459680867822611">Dugme Prikaži Chrome savete, aktivirajte ga da biste saznali više o Chrome funkcijama</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4196861286325780578">&amp;Ponovi premeštanje</translation>

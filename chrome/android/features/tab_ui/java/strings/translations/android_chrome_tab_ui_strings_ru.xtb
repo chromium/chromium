@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Переместить вкладку вправо</translation>
 <translation id="7966321538264951561">Скрыть подсказки.</translation>
 <translation id="8029301326595421733">Информация об этом магазине открыта на весь экран</translation>
-<translation id="814503310257431685">Показать все</translation>
 <translation id="8205266828577616993">Переместить вкладку вверх</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыть <ph name="TABS_COUNT_ONE" /> выбранную вкладку}one{Закрыть <ph name="TABS_COUNT_MANY" /> выбранную вкладку}few{Закрыть <ph name="TABS_COUNT_MANY" /> выбранные вкладки}many{Закрыть <ph name="TABS_COUNT_MANY" /> выбранных вкладок}other{Закрыть <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="8398929769197326728">Новая папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

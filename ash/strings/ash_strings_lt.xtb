@@ -659,6 +659,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="36813544980941320">„Wi-Fi“ tinklai bus bendrinami telefone ir „<ph name="DEVICE_NAME" />“ įrenginyje</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /> <ph name="MODIFIER_TWO" /> <ph name="KEY_ONE" />, tada <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Svetainės</translation>
+<translation id="3697991387880191195">Paspauskite ekrano kopijos spartųjį klavišą</translation>
 <translation id="3702809606464356667">Rodomi dabartinio darbastalio langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi visų darbastalių langai</translation>
 <translation id="3702846122927433391">Populiacija Nigerijoje</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4389184120735010762">Paspaudėte prie doko prijungto didintuvo spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="439598569299422042">Pristabdyta, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nepavyko išsaugoti ekrano vaizdo įrašo</translation>
+<translation id="4403371424034411727">„<ph name="PERIPHERAL_NAME" />“ prijungtas ir paruoštas naudoti. Galite tinkinti pelę skiltyje „Nustatymai“.</translation>
 <translation id="4405151984121254935">Prijungto išorinio įrenginio tipas nepalaikomas</translation>
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ išjungta.</translation>
@@ -1293,6 +1295,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6199775032047436064">Iš naujo įkelti dabartinį puslapį</translation>
 <translation id="6200515304866777730">Nepalaikoma programoje</translation>
 <translation id="6210042900243040400">Susiekite su įrenginiu „<ph name="NAME" />“, kuris anksčiau buvo išsaugotas adresu <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">„<ph name="PERIPHERAL_NAME" />“ tinkinimas</translation>
 <translation id="6213808132343683860">Kurti dalies ekrano kopiją ar dalies ekrano vaizdo įrašą</translation>
 <translation id="6220928844947387476">Dabar galite įrašyti save ir savo ekraną tuo pačiu metu</translation>
 <translation id="622484624075952240">Žemiau</translation>
@@ -1534,6 +1537,7 @@ Naujas įdiegimas</translation>
 <translation id="726276584504105859">Vilkite čia, kad naudotumėte skaidytą ekraną</translation>
 <translation id="7262906531272962081">Sukurti priminimą</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + naikinimo klavišas</translation>
+<translation id="7285232777292757180">Sparčiuosiuose nustatymuose naudokite ekrano fiksavimo įrankį ir kurkite ekrano kopijas</translation>
 <translation id="7302889331339392448">Subtitrai realiuoju laiku išjungti.</translation>
 <translation id="7303365578352795231">Atsakoma kitame įrenginyje.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1921,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="888982883502837004">Pasiekiami jūsų įrenginio programinės aparatinės įrangos naujiniai. Spustelėkite, kad peržiūrėtumėte ir atnaujintumėte.</translation>
 <translation id="8896630965521842259">Šablonas „<ph name="DESK_TEMPLATE_NAME" />“ bus visam laikui ištrintas.</translation>
 <translation id="889790758758811533">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos (apie <ph name="TIME_LEFT" />). Prijunkite įrenginį prie maitinimo šaltinio.</translation>
+<translation id="8897940060812808966">„<ph name="PERIPHERAL_NAME" />“ prijungtas ir paruoštas naudoti. Galite tinkinti grafikos planšetinį kompiuterį skiltyje „Nustatymai“.</translation>
 <translation id="88986195241502842">Puslapiu žemyn</translation>
 <translation id="8905919797434099235">(Nėra pavadinimo)</translation>
 <translation id="890616557918890486">Keisti šaltinį</translation>

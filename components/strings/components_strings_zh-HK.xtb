@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著您持續瀏覽，清單可能會再次出現特定主題。此外，您亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
 <translation id="1699651774646344471">您現可使用 Google 帳戶中的地址</translation>
+<translation id="1700542542921501212">你可使用 <ph name="SEARCH_ENGINE_NAME" /> 搜尋網絡。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">縮放等級</translation>
@@ -824,6 +825,7 @@
             <ph name="LIST_ITEM" />Cookie 和網站資料
             <ph name="LIST_ITEM" />在表格中輸入的資料
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">插入</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
 <translation id="2629325967560697240">如要獲得 Chrome 最高程度的安全防護，請<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />啟用強化保護功能<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1583,6 +1585,7 @@
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
+<translation id="4191334393248735295">長度</translation>
 <translation id="4195459680867822611">睇 Chrome 提示按鈕，啟用之後就可以了解解各項 Chrome 功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196861286325780578">重做移動(&amp;R)</translation>

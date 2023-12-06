@@ -142,7 +142,6 @@
 <translation id="165877110639533037">Không có thẻ nào đang mở</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Yêu cầu trang web dành cho thiết bị di động</translation>
-<translation id="168715261339224929">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật đồng bộ hóa.</translation>
 <translation id="1687475363370981210">Đánh dấu tất cả là đã đọc</translation>
 <translation id="1689333818294560261">Biệt hiệu</translation>
 <translation id="1700629756560807968">Đã chọn <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang</translation>
@@ -1045,7 +1044,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="6476253015009698798">Tính năng theo dõi giá không hoạt động trên trang này.</translation>
 <translation id="6476800141292307438">Đang dịch trang sang <ph name="LANGUAGE" />. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="648164694371393720">Lỗi xác thực</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang đã bị xóa</translation>
 <translation id="6484712497741564393">Bạn đã đăng nhập bằng <ph name="EMAIL" />.
 
 Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu Chrome vào Tài khoản Google của bạn.</translation>
@@ -1412,7 +1410,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8428634594422941299">Tôi hiểu</translation>
 <translation id="8446884382197647889">Tìm hiểu thêm</translation>
 <translation id="8449347986464073209">Xoá và đăng xuất</translation>
-<translation id="8458397775385147834">1 dấu trang đã bị xóa</translation>
 <translation id="8459333855531264009">Không bảo mật</translation>
 <translation id="8487667956631253959">Đang bật</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>

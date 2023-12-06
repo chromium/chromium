@@ -824,6 +824,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <ph name="LIST_ITEM" />Cookies en sitegegevens
 <ph name="LIST_ITEM" />Informatie die je in formulieren hebt opgegeven
 <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Invoegen</translation>
 <translation id="2625385379895617796">Je klok loopt voor</translation>
 <translation id="262745152991669301">Kan vragen of deze site verbinding mag maken met USB-apparaten</translation>
 <translation id="2629325967560697240"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Zet de geoptimaliseerde beveiliging aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om het hoogste beveiligingsniveau van Chrome te gebruiken</translation>
@@ -1281,7 +1282,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3575168918110434329">A4x7</translation>
-<translation id="3575589330755445706">De optie Straatnaam is geselecteerd</translation>
+<translation id="3575589330755445706">De optie Straat is geselecteerd</translation>
 <translation id="3576616784287504635">Een ingesloten pagina op <ph name="SITE" /> meldt het volgende</translation>
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="3577902790357386792">Turnen</translation>
@@ -1579,6 +1580,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4177501066905053472">Advertentieonderwerpen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prijs volgen</translation>
+<translation id="4191334393248735295">Lengte</translation>
 <translation id="4195459680867822611">Knop Chrome-tips bekijken. Activeer deze voor meer informatie over Chrome-functies.</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4196861286325780578">&amp;Opnieuw verplaatsen</translation>

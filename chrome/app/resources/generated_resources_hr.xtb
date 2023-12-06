@@ -92,6 +92,7 @@
 <translation id="106855837688344862">Događaji dodira</translation>
 <translation id="1069104208554708737">Ovaj će se pristupni ključ spremiti samo na ovom uređaju</translation>
 <translation id="1069355737714877171">Uklonite eSIM profil <ph name="PROFILE_NAME" /></translation>
+<translation id="1069778954840159202">Automatski dohvati račun s Android telefona</translation>
 <translation id="1069814191880976658">Odaberite neki drugi zaslon</translation>
 <translation id="1070377999570795893">Drugi program na vašem računalu dodao je proširenje koje može promijeniti Chromeov način rada.
 
@@ -3008,6 +3009,10 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3305389145870741612">Postupak formatiranja može potrajati nekoliko sekundi. Pričekajte.</translation>
 <translation id="3305661444342691068">Otvori PDF u Pregledu</translation>
 <translation id="3307176291962384345">Traži popuste za trgovinu <ph name="MERCHANT_NAME" /></translation>
+<translation id="3307283429759317478">Prikazuju vam se kartice s drugih uređaja kako biste se lakše vratili na svoju posljednju aktivnost.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="3308134619352333507">Gumb za skrivanje</translation>
 <translation id="3308852433423051161">Učitavanje Google asistenta...</translation>
 <translation id="3309330461362844500">ID profila certifikata</translation>
@@ -3236,6 +3241,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3497560059572256875">Dijeljenje doodle logotipa</translation>
 <translation id="3497915391670770295">Pošalji na svoje uređaje</translation>
 <translation id="3500417806337761827">Pogreška prilikom učitavanja dijeljenja. Već je učitano previše SMB dijeljenja.</translation>
+<translation id="350397915809787283">Ako nemate račun, odaberite prvu opciju da biste ga izradili.</translation>
 <translation id="3503995387997205657">Možete vratiti svoje prethodne aplikacije</translation>
 <translation id="3505100368357440862">Prijedlozi za kupnju</translation>
 <translation id="3505602163050943406">Kad upotrebljavate neke značajke, one Googleu mogu slati dijelove otvorenih stranica, povezane nedavne stranice i njihove URL-ove.</translation>
@@ -6477,6 +6483,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6103681770816982672">Upozorenje: prelazite na razvojni kanal</translation>
 <translation id="6104068876731806426">Google računi</translation>
 <translation id="6104311680260824317">Uređaj nije moguće pridružiti domeni. Poslužitelj ne podržava navedene vrste enkripcije Kerberos. Postavke enkripcije potražite u odjeljku "Više opcija".</translation>
+<translation id="6104667115274478616">Upravljanje postavkama zvuka za ChromeOS</translation>
 <translation id="6104796831253957966">Red za pisač je pun</translation>
 <translation id="610487644502954950">Bočna ploča je otkvačena</translation>
 <translation id="6104929924898022309">Upotrijebite tipku za pretraživanje da biste promijenili ponašanje funkcijskih tipki</translation>
@@ -8000,6 +8007,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7340650977506865820">Web-lokacija dijeli vaš zaslon</translation>
 <translation id="7340757554212515731">Automatski Googleu šalje izvješća o padu programa kao i podatke o upotrebi i dijagnostici</translation>
 <translation id="734088800888587319">Mrežni mjerni podaci</translation>
+<translation id="7341612916770129581">Povežite mikrofon</translation>
 <translation id="7341834142292923918">Želi pristup ovoj web-lokaciji</translation>
 <translation id="7343372807593926528">Prije slanja povratnih informacija opišite problem.</translation>
 <translation id="7344585835349671209">Upravljanje HTTPS/SSL certifikatima na uređaju</translation>
@@ -8267,6 +8275,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Sinkronizirano s drugim uređajima na vašem računu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">Podaci za EAP mrežnu autentifikaciju</translation>
+<translation id="7542619176101025604"><ph name="ACTION_NAME" /> – prikvačeno</translation>
 <translation id="7543104066686362383">Omogući značajke za otklanjanje pogrešaka na ovom uređaju <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7544227555407951270">Prijavi uređaj</translation>
 <translation id="7544977292347272434">Zamoli roditelja da dopusti proširenje</translation>
@@ -8904,6 +8913,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8017679124341497925">Prečac je uređen</translation>
 <translation id="8018298733481692628">Želite li izbrisati ovaj profil?</translation>
 <translation id="8018313076035239964">Kontrolirajte koje informacije web-lokacije mogu upotrebljavati i koji vam sadržaj mogu prikazivati</translation>
+<translation id="8022466874160067884">Unesite Google račun i zaporku</translation>
 <translation id="8023133589013344428">Upravljajte jezicima u postavkama ChromeOS Flexa</translation>
 <translation id="8023801379949507775">Ažuriraj proširenja sada</translation>
 <translation id="8025151549289123443">Zaključani zaslon i prijava</translation>
@@ -9837,6 +9847,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8749863574775030885">pristupiti USB uređajima nepoznatog dobavljača</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> želi se povezati sa serijskim priključkom</translation>
 <translation id="8750346984209549530">APN mobilne mreže</translation>
+<translation id="8750786237117206586">Upravljanje postavkama zvuka za ChromeOS Flex</translation>
 <translation id="8752451679755290210">Automatsko kretanje po stavkama</translation>
 <translation id="8753948258138515839">Aplikacija Datoteke pruža brzi pristup datotekama spremljenima na Google disku, u vanjskoj pohrani ili na uređaju s ChromeOS Flexom.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Kada se <ph name="PRODUCT_NAME" /> izvodi u podržanom okruženju radne površine, upotrebljavaju se proxy postavke sustava. Međutim, vaš sustav nije podržan ili je došlo do problema pri pokretanju konfiguracije sustava.&lt;/p&gt;
@@ -10160,7 +10171,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8999027165951679951">Neaktivna kartica: oslobodili ste <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Sintaktička pogreška odjeljka: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Dodirnite senzor otiska prsta na desnoj strani uređaja <ph name="DEVICE_TYPE" />. Podaci o otisku prsta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
-<translation id="9000532564152265066">Sve kartice</translation>
 <translation id="9003185744423389627">Povezivanje s poslužiteljem upravljanja uređajima nije uspjelo uz status "<ph name="STATUS_TEXT" />" u <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Želite li automatski skenirati dostupne eSIM profile?</translation>
 <translation id="9003647077635673607">Dopusti na svim web-lokacijama</translation>

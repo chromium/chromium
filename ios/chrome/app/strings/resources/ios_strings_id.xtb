@@ -142,7 +142,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="165877110639533037">Tidak Ada Tab yang Terbuka</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Minta Situs Seluler</translation>
-<translation id="168715261339224929">Agar bookmark tersedia di semua perangkat Anda, aktifkan sinkronisasi.</translation>
 <translation id="1687475363370981210">Tandai Semua Sudah Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
@@ -175,6 +174,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1883255238294161206">Ciutkan daftar</translation>
 <translation id="1889872080060107187">Anda akan login ke <ph name="URL" /></translation>
 <translation id="1890237935065108104">Setelan ini tidak tersedia.</translation>
+<translation id="1891199774460536658">Lacak Otomatis Semua Paket yang Terdeteksi</translation>
 <translation id="1894023287452300670">Pantau harga di sini</translation>
 <translation id="189531189292803889">iPad Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
 <translation id="1910975740091000991">Chrome untuk iOS</translation>
@@ -654,6 +654,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4493604894403585654">Anda login sebagai <ph name="USER_EMAIL" />. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4502566650163919158">Periksa Sekarang</translation>
 <translation id="4508750114462689118">Tutup promo login</translation>
+<translation id="4509449376545878717">Jangan Pernah Deteksi Otomatis Paket</translation>
 <translation id="4514889972748124117">Sarankan Sandi Kuat ...</translation>
 <translation id="4520798012560649652">Pelajari lebih lanjut mode Samaran</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmark}}</translation>
@@ -1045,7 +1046,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="6476253015009698798">Pemantauan harga tidak tersedia untuk halaman ini.</translation>
 <translation id="6476800141292307438">Menerjemahkan halaman ke dalam bahasa <ph name="LANGUAGE" />. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="648164694371393720">Error saat Autentikasi</translation>
-<translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dihapus</translation>
 <translation id="6484712497741564393">Login sebagai <ph name="EMAIL" />.
 
 Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di Akun Google Anda.</translation>
@@ -1338,6 +1338,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8023878949384262191">Luaskan bagian.</translation>
 <translation id="8027581147000338959">Buka di Jendela Baru</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
+<translation id="8040207962129315716">Selalu Tanya Saya</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Histori penelusuran<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="804427445359061970">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
 <translation id="8044568254381073661">Simpan Tanpa Enkripsi</translation>
@@ -1412,7 +1413,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8428634594422941299">Mengerti</translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8449347986464073209">Hapus dan Logout</translation>
-<translation id="8458397775385147834">1 item dihapus</translation>
 <translation id="8459333855531264009">Tidak Aman</translation>
 <translation id="8487667956631253959">Aktif</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>

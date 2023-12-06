@@ -375,6 +375,7 @@
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Та өгөгдлөө хэрхэн удирдах боломжтой вэ?:<ph name="END_BOLD" /> Chrome 4 долоо хоногоос дээш удсан сэдвүүдийг автоматаар устгадаг. Таныг үргэлжлүүлэн үзэх явцад жагсаалтад ямар нэг сэдэв дахин гарч ирж магадгүй. Та мөн Chrome-н тохиргоонд хүссэн үедээ Chrome-г сайтуудтай хуваалцахыг хүсэхгүй байгаа сэдвүүдээ блоклож, зарын сэдвүүдийг унтраах боломжтой.</translation>
 <translation id="1697532407822776718">Тохируулга дууссан</translation>
 <translation id="1699651774646344471">Та одоо Google Бүртгэлээсээ хаягууд ашиглах боломжтой</translation>
+<translation id="1700542542921501212">Та <ph name="SEARCH_ENGINE_NAME" />-г вебээс хайхад ашиглах боломжтой.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706625117072057435">Томруулах түвшин</translation>
@@ -824,6 +825,7 @@
             <ph name="LIST_ITEM" />Күүки болон сайтын өгөгдөл
             <ph name="LIST_ITEM" />Маягтад оруулсан мэдээлэл
           <ph name="END_LIST" /></translation>
+<translation id="2619052155095999743">Оруулах</translation>
 <translation id="2625385379895617796">Таны цаг түрүүлж явж байна.</translation>
 <translation id="262745152991669301">USB төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="2629325967560697240">Chrome-н хамгийн дээд түвшний аюулгүй байдлыг авахын тулд <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />сайжруулсан хамгаалалтыг асаана уу<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -1585,6 +1587,7 @@
 <translation id="4177501066905053472">Зарын сэдвүүд</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Үнэ хянахаа болих</translation>
+<translation id="4191334393248735295">Урт</translation>
 <translation id="4195459680867822611">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>

@@ -659,6 +659,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="36813544980941320">WiFi-võrke jagatakse teie telefoni ja seadme <ph name="DEVICE_NAME" /> vahel</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, seejärel <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Veebisaidid</translation>
+<translation id="3697991387880191195">Vajutage ekraanipildi otseteed</translation>
 <translation id="3702809606464356667">Kuvatud on praeguse töölaua aknad. Kõigi töölaudade akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="3702846122927433391">Nigeeria rahvaarv</translation>
 <translation id="3705722231355495246">-</translation>
@@ -835,6 +836,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
 <translation id="439598569299422042">Pausil, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ei saa ekraaniülekannet salvestada</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> on ühendatud ja kasutamiseks valmis. Hiirt saate kohandada menüüs Seaded.</translation>
 <translation id="4405151984121254935">Ühendatud välisseadme tüüpi ei toetata</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
@@ -1294,6 +1296,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6199775032047436064">Laadib praeguse lehe uuesti</translation>
 <translation id="6200515304866777730">Rakendus ei toeta</translation>
 <translation id="6210042900243040400">Ühendage <ph name="NAME" />, mis oli varem salvestatud kontole <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Seadme <ph name="PERIPHERAL_NAME" /> kohandamine</translation>
 <translation id="6213808132343683860">Jäädvusta osaline ekraanipilt või ekraanisalvestis</translation>
 <translation id="6220928844947387476">Saate nüüd ennast ja oma ekraanikuva salvestada samaaegselt</translation>
 <translation id="622484624075952240">Alla</translation>
@@ -1535,6 +1538,7 @@ Uus installimine</translation>
 <translation id="726276584504105859">Jagatud ekraani kasutamiseks lohistage siia</translation>
 <translation id="7262906531272962081">Loo meeldetuletus</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + tagasilüke</translation>
+<translation id="7285232777292757180">Ekraanipiltide tegemiseks kasutage kiirseadetes ekraani jäädvustamise tööriista</translation>
 <translation id="7302889331339392448">Reaalajas subtiitrid on välja lülitatud.</translation>
 <translation id="7303365578352795231">Vastamine muus seadmes.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1922,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="888982883502837004">Teie seadme jaoks on saadaval püsivara värskendused. Klõpsake ülevaatamiseks ja värskendamiseks.</translation>
 <translation id="8896630965521842259">Mall <ph name="DESK_TEMPLATE_NAME" /> kustutatakse jäädavalt</translation>
 <translation id="889790758758811533">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />). Ühendage seade toiteallikaga.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> on ühendatud ja kasutamiseks valmis. Joonestustahvlit saate kohandada menüüs Seaded.</translation>
 <translation id="88986195241502842">Lehe lõppu</translation>
 <translation id="8905919797434099235">(Pealkirjata)</translation>
 <translation id="890616557918890486">Vaheta allikat</translation>

@@ -88,7 +88,6 @@
 <translation id="7885132941432959125">Przenieś kartę w prawo</translation>
 <translation id="7966321538264951561">Zamknij sugestie.</translation>
 <translation id="8029301326595421733">Informacje o tym sklepie zostały otwarte na pełną wysokość</translation>
-<translation id="814503310257431685">Wyświetl wszystko</translation>
 <translation id="8205266828577616993">Przesuń kartę w górę</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="8398929769197326728">Nowy folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
