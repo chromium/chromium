@@ -37,6 +37,7 @@
 #include "third_party/pdfium/public/fpdf_progressive.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -533,9 +534,7 @@ class PDFiumEngine : public PDFEngine,
   // updated to include `rect` if `rect` has not already been highlighted.
   void Highlight(const RegionData& region,
                  const gfx::Rect& rect,
-                 int color_red,
-                 int color_green,
-                 int color_blue,
+                 SkColor color,
                  std::vector<gfx::Rect>& highlighted_rects) const;
 
   // Helper function to convert a device to page coordinates.  If the page is
