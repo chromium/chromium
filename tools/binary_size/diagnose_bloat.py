@@ -549,16 +549,26 @@ class _DiffArchiveManager:
         after.archived_size_path, report_path
     ]
 
-    logging.info('Creating .sizediff')
-    _RunCmd(supersize_cmd)
+    is_single_rev = before_id == after_id
+
+    if not is_single_rev:
+      logging.info('Creating .sizediff')
+      _RunCmd(supersize_cmd)
+
     gsutil_cmd = ['gsutil.py', 'cp']
     if is_internal:
       oneoffs_dir = 'private-oneoffs'
     else:
       oneoffs_dir = 'oneoffs'
       gsutil_cmd += ['-a', 'public-read']
-    unique_name = '{}_{}.sizediff'.format(before.rev, after.rev)
-    local = os.path.relpath(report_path)
+
+    if is_single_rev:
+      unique_name = '{}.size'.format(before.rev)
+      local = os.path.relpath(before.archived_size_path)
+    else:
+      unique_name = '{}_{}.sizediff'.format(before.rev, after.rev)
+      local = os.path.relpath(report_path)
+
     gsutil_cmd += [local, f'gs://chrome-supersize/{oneoffs_dir}/{unique_name}']
 
     if self.share:
