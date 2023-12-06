@@ -32,6 +32,7 @@ ts_modules = [
   "select_to_speak/metrics_utils.ts",
   "select_to_speak/select_to_speak_constants.ts",
   "select_to_speak/tts_manager.ts",
+  "select_to_speak/input_handler.ts",
 ]
 
 # JS files required for ts build.
@@ -51,6 +52,8 @@ ts_library("ts_build") {
     "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
     "../definitions/tabs.d.ts",
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
@@ -70,6 +73,7 @@ run_jsbundler("select_to_speak_copied_files") {
     "../common:ts_build",
   ]
   sources = [
+    "$select_to_speak_tsc_out_dir/input_handler.js",
     "$select_to_speak_tsc_out_dir/metrics_utils.js",
     "$select_to_speak_tsc_out_dir/select_to_speak_constants.js",
     "$select_to_speak_tsc_out_dir/select_to_speak_main.js",
@@ -78,7 +82,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
-    "input_handler.js",
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
