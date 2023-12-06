@@ -596,13 +596,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   EXPECT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0);
 
-  RenderWidgetHostViewAura* parent_view =
-      static_cast<RenderWidgetHostViewAura*>(
-          root->current_frame_host()->GetRenderWidgetHost()->GetView());
-  TestTouchSelectionControllerClientAura* parent_selection_controller_client =
-      new TestTouchSelectionControllerClientAura(parent_view, true);
-  parent_view->SetSelectionControllerClientForTest(
-      base::WrapUnique(parent_selection_controller_client));
+  InitSelectionController(true);
 
   // We need to load the desired subframe and then wait until it's stable, i.e.
   // generates no new frames for some reasonable time period: a stray frame
@@ -633,6 +627,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   EXPECT_EQ(child_url, observer.last_navigation_url());
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
+  RenderWidgetHostViewAura* parent_view = GetRenderWidgetHostViewAura();
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
             parent_view->selection_controller()->active_status());
   EXPECT_EQ(gfx::RectF(),
@@ -648,12 +643,12 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Initiate selection with a sequence of events that go through the targeting
   // system.
-  parent_selection_controller_client->InitWaitForSelectionEvent(
+  selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
   SelectWithLongTap(gfx::Point(point_f.x(), point_f.y()), child_view);
 
-  parent_selection_controller_client->Wait();
+  selection_controller_client()->Wait();
 
   // Check that selection is active and the quick menu is showing.
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
@@ -664,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Check that selection handles are cleared after tapping inside/outside the
   // iframe.
-  parent_selection_controller_client->InitWaitForSelectionEvent(
+  selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_CLEARED);
   const gfx::RectF rect_between_selection_bounds =
       parent_view->selection_controller()->GetRectBetweenBounds();
@@ -683,7 +678,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
         rect_between_selection_bounds.right_center().y());
     SimpleTap(point_inside_iframe, child_view);
   }
-  parent_selection_controller_client->Wait();
+  selection_controller_client()->Wait();
 
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
             parent_view->selection_controller()->active_status());
@@ -715,14 +710,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
                      "document.body.style.height = '900px'; "
                      "document.body.style.overFlowY = 'scroll';"));
 
-  RenderWidgetHostViewAura* parent_view =
-      static_cast<RenderWidgetHostViewAura*>(
-          root->current_frame_host()->GetRenderWidgetHost()->GetView());
-
-  TestTouchSelectionControllerClientAura* parent_selection_controller_client =
-      new TestTouchSelectionControllerClientAura(parent_view, true);
-  parent_view->SetSelectionControllerClientForTest(
-      base::WrapUnique(parent_selection_controller_client));
+  InitSelectionController(true);
 
   // We need to load the desired subframe and then wait until it's stable, i.e.
   // generates no new frames for some reasonable time period: a stray frame
@@ -753,6 +741,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   EXPECT_EQ(child_url, observer.last_navigation_url());
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
+  RenderWidgetHostViewAura* parent_view = GetRenderWidgetHostViewAura();
   ui::TouchSelectionController* selection_controller =
       parent_view->selection_controller();
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
@@ -777,12 +766,12 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Initiate selection with a sequence of events that go through the targeting
   // system.
-  parent_selection_controller_client->InitWaitForSelectionEvent(
+  selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
   SelectWithLongTap(gfx::Point(point_f.x(), point_f.y()), child_view);
 
-  parent_selection_controller_client->Wait();
+  selection_controller_client()->Wait();
 
   // Check that selection is active and the quick menu is showing.
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
@@ -908,13 +897,8 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   EXPECT_EQ(root->child_count(), 1u);
   FrameTreeNode* child = root->child_at(0);
 
-  RenderWidgetHostViewAura* parent_view =
-      static_cast<RenderWidgetHostViewAura*>(
-          root->current_frame_host()->GetRenderWidgetHost()->GetView());
-  TestTouchSelectionControllerClientAura* parent_selection_controller_client =
-      new TestTouchSelectionControllerClientAura(parent_view, true);
-  parent_view->SetSelectionControllerClientForTest(
-      base::WrapUnique(parent_selection_controller_client));
+  InitSelectionController(true);
+  RenderWidgetHostViewAura* parent_view = GetRenderWidgetHostViewAura();
   parent_view->SetSize(gfx::Size(600, 500));
   WaitForHitTestData(root->current_frame_host());
 
@@ -953,11 +937,11 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   point_in_text = child_view->TransformPointToRootCoordSpaceF(point_in_text);
 
   // Long press to show selection handles.
-  parent_selection_controller_client->InitWaitForSelectionEvent(
+  selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
   SelectWithLongTap(gfx::Point(point_in_text.x(), point_in_text.y()),
                     child_view);
-  parent_selection_controller_client->Wait();
+  selection_controller_client()->Wait();
 
   // Selection handles should be shown.
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
@@ -973,10 +957,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
                                 initial_selection_bounds_in_parent_coords);
 
   // Resize the parent view.
-  parent_selection_controller_client->InitWaitForSelectionEvent(
+  selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_MOVED);
   parent_view->SetSize(gfx::Size(200, 200));
-  parent_selection_controller_client->Wait();
+  selection_controller_client()->Wait();
 
   // Resizing the parent view changes the position of the child view within this
   // parent, so we expect the selection handles to have moved and the selection
