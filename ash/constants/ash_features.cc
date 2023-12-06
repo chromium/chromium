@@ -1527,6 +1527,11 @@ BASE_FEATURE(kImeFstDecoderParamsUpdate,
              "ImeFstDecoderParamsUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled use experimental US English IME language model.
+BASE_FEATURE(kImeUsEnglishExperimentalModel,
+             "ImeUsEnglishExperimentalModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled use the updated US English IME language models.
 BASE_FEATURE(kImeUsEnglishModelUpdate,
              "ImeUsEnglishModelUpdate",
