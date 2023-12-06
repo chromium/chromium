@@ -1277,7 +1277,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
       // remove new-folder command.
       // @ts-ignore: error TS2367: This comparison appears to be unintentional
       // because the types 'FileSystemEntry[]' and 'number' have no overlap.
-      if (entries == 0 &&
+      if (entries.length === 0 &&
           !CommandUtil.currentVolumeIsInteractive(fileManager)) {
         event.canExecute = false;
         event.command.setHidden(true);
@@ -1863,7 +1863,8 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
     } else if (
         // @ts-ignore: error TS2367: This comparison appears to be unintentional
         // because the types 'FileSystemEntry[]' and 'number' have no overlap.
-        entries == 0 && !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+        entries.length === 0 &&
+        !CommandUtil.currentVolumeIsInteractive(fileManager)) {
       // If blank space was clicked and current volume is non-interactive,
       // remove paste command.
       event.canExecute = false;
@@ -2081,7 +2082,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       // remove cut/copy command.
       // @ts-ignore: error TS2367: This comparison appears to be unintentional
       // because the types 'FileSystemEntry[]' and 'number' have no overlap.
-      if (entries == 0 &&
+      if (entries.length === 0 &&
           !CommandUtil.currentVolumeIsInteractive(fileManager)) {
         command.setHidden(true);
         return false;
