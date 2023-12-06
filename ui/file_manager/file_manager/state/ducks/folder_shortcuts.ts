@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {comparePath} from '../../common/js/entry_utils.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey, State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
 import {getEntry} from '../store.js';
@@ -17,7 +18,7 @@ export const refreshFolderShortcut =
     slice.addReducer('refresh', refreshFolderShortcutReducer);
 
 function refreshFolderShortcutReducer(currentState: State, payload: {
-  entries: DirectoryEntry[],
+  entries: Array<Entry|FilesAppEntry>,
 }): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, payload.entries);
@@ -33,7 +34,7 @@ export const addFolderShortcut =
     slice.addReducer('add', addFolderShortcutReducer);
 
 function addFolderShortcutReducer(currentState: State, payload: {
-  entry: DirectoryEntry,
+  entry: Entry|FilesAppEntry,
 }): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, [payload.entry]);
