@@ -7,9 +7,16 @@
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace pdf_frame_util {
+
+// For full-page OOPIF PDF viewer only. Searches the children of the primary
+// main frame of `contents` to find a `RenderFrameHost` that hosts the PDF
+// extension. Full-page PDF viewers must have only one PDF extension host.
+content::RenderFrameHost* FindFullPagePdfExtensionHost(
+    content::WebContents* contents);
 
 // Searches the children of the given `rfh` to find a `RenderFrameHost` that
 // hosts PDF content.
