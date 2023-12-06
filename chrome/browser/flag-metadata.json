@@ -2176,7 +2176,7 @@
   {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "enable-builtin-hls",
