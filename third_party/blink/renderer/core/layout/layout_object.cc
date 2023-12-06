@@ -1368,15 +1368,20 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
-  // Inside multicol it's generally problematic to allow relayout roots. The
-  // multicol container itself may be scheduled for relayout as well (due to
-  // other changes that may have happened since the previous layout pass),
-  // which might affect the column heights, which may affect how this object
-  // breaks across columns). Spanners may also have been added or removed since
-  // the previous layout pass, which is just another way of affecting the column
-  // heights (and the number of rows). Instead of identifying cases where it's
-  // safe to allow relayout roots, just disallow them inside multicol.
-  if (box->IsInsideFlowThread()) {
+  // Inside block fragmentation it's generally problematic to allow relayout
+  // roots. A multicol container ancestor may be scheduled for relayout as well
+  // (due to other changes that may have happened since the previous layout
+  // pass), which might affect the column heights, which may affect how this
+  // object breaks across columns). Column spanners may also have been added or
+  // removed since the previous layout pass, which is just another way of
+  // affecting the column heights (and the number of rows). Another problematic
+  // case is out-of-flow positioned objects, since they are being laid out by
+  // the fragmentation context root (to become direct fragmentainer children),
+  // rather than being laid out by their actual CSS containing block.
+  //
+  // Instead of identifying cases where it's safe to allow relayout roots, just
+  // disallow them inside block fragmentation.
+  if (box->MightBeInsideFragmentationContext()) {
     return false;
   }
 
