@@ -8095,11 +8095,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "use-shared-images-for-pepper-video",
-    "owners": [ "vasilyt@chromium.org", "blundell@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "use-stork-smds-server-address",
     "owners": [ "cros-connectivity@google.com", "hsuregan@chromium.org"],
     // This flag is required for dev testing via Stork profiles which can be quickly
