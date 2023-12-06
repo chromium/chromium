@@ -1066,6 +1066,11 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     if (!status_or_layout.has_value())
       return std::move(status_or_layout).error();
 
+    // TODO(mcasas): Consider changing the code here to update
+    // viable_candidate->modifier to be |status_or_layout|'s modifier(), so
+    // that callers of this method don't need to inspect GetGpuBufferLayout()
+    // of this class' GetVideoFramePool().
+
 #if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
     // Linux and Lacros do not check the modifiers,
     // since they do not set any.
