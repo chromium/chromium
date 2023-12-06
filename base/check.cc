@@ -79,7 +79,6 @@ class NotReachedLogMessage : public LogMessage {
 
 class DCheckLogMessage : public LogMessage {
  public:
-  using LogMessage::LogMessage;
   DCheckLogMessage(const base::Location& location, LogSeverity severity)
       : LogMessage(location.file_name(), location.line_number(), severity),
         location_(location) {}
@@ -95,7 +94,6 @@ class DCheckLogMessage : public LogMessage {
 
 class DumpWillBeCheckLogMessage : public LogMessage {
  public:
-  using LogMessage::LogMessage;
   DumpWillBeCheckLogMessage(const base::Location& location,
                             LogSeverity severity)
       : LogMessage(location.file_name(), location.line_number(), severity),
@@ -180,8 +178,7 @@ CheckError CheckError::DCheck(const char* condition,
 
 CheckError CheckError::DCheckOp(char* log_message_str,
                                 const base::Location& location) {
-  auto* const log_message = new DCheckLogMessage(
-      location.file_name(), location.line_number(), LOGGING_DCHECK);
+  auto* const log_message = new DCheckLogMessage(location, LOGGING_DCHECK);
   log_message->stream() << log_message_str;
   free(log_message_str);
   return CheckError(log_message);
