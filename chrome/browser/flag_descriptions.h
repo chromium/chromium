@@ -2742,6 +2742,9 @@ extern const char kAppManagementAppDetailsDescription[];
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 
+extern const char kButterOnDesktopFollowupName[];
+extern const char kButterOnDesktopFollowupDescription[];
+
 extern const char kDialMediaRouteProviderName[];
 extern const char kDialMediaRouteProviderDescription[];
 

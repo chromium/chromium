@@ -17,6 +17,11 @@ namespace password_manager::features {
 
 BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_DECLARE_FEATURE(kButterOnDesktopFollowup);
+#endif
+
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 

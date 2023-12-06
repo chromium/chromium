@@ -4755,6 +4755,13 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
+const char kButterOnDesktopFollowupName[] =
+    "Followup work for saving passwords in the account.";
+const char kButterOnDesktopFollowupDescription[] =
+    "Enables multiple small features resposible for aligning "
+    "using/accesing passwords saved in the account on Desktop with "
+    "what is possible on mobile.";
+
 const char kDialMediaRouteProviderName[] =
     "Allow cast device discovery with DIAL protocol";
 const char kDialMediaRouteProviderDescription[] =

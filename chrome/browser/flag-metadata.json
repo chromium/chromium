@@ -978,6 +978,13 @@
       "expiry_milestone": 127
   },
   {
+    "name": "butter-on-desktop-followup",
+    "owners": [
+      "sygiet@google.com",
+      "vasilii@chromium.org"],
+      "expiry_milestone": 130
+  },
+  {
     "name": "bypass-app-banner-engagement-checks",
     "owners": [ "dmurph@chromium.org" ],
     "expiry_milestone": 120

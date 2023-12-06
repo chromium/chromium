@@ -28949,6 +28949,7 @@ from previous Chrome versions.
   <int value="-2112547309" label="ClickToCallReceiver:enabled"/>
   <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
+  <int value="-2110507629" label="ButterOnDesktopFollowup:disabled"/>
   <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
   <int value="-2108836417" label="ArcvmSwapoutKeyboardShortcut:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
@@ -36719,6 +36720,7 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>
   <int value="1568172566"
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
+  <int value="1569327162" label="ButterOnDesktopFollowup:enabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>

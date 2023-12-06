@@ -11341,6 +11341,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kRemoveUPMUnenrollment)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"butter-on-desktop-followup",
+     flag_descriptions::kButterOnDesktopFollowupName,
+     flag_descriptions::kButterOnDesktopFollowupDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::kButterOnDesktopFollowup)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
