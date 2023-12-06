@@ -1311,8 +1311,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                         (web::WebStateID)selectedItemID
                                           snapshot:(GridSnapshot*)snapshot {
   // Consistency check: `item`'s ID is not in `items`.
-  // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
-  DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
+  DCHECK_EQ(static_cast<NSInteger>([self indexOfItemWithID:item.identifier]),
+            NSNotFound);
 
   // Store the identifier of the current item at the given index, if any, prior
   // to model updates.
@@ -1589,6 +1589,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // Returns the index in `self.items` of the first item whose identifier is
 // `identifier`.
 - (NSUInteger)indexOfItemWithID:(web::WebStateID)identifier {
+  DUMP_WILL_BE_CHECK(self.items);
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
         return item.identifier == identifier;
