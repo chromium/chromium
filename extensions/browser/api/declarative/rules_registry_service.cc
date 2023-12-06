@@ -28,17 +28,6 @@
 
 namespace extensions {
 
-namespace {
-
-void NotifyWithExtensionSafe(
-    scoped_refptr<const Extension> extension,
-    void (RulesRegistry::*notification_callback)(const Extension*),
-    scoped_refptr<RulesRegistry> registry) {
-  (registry.get()->*notification_callback)(extension.get());
-}
-
-}  // namespace
-
 const int RulesRegistryService::kDefaultRulesRegistryID = 0;
 const int RulesRegistryService::kInvalidRulesRegistryID = -1;
 
@@ -60,6 +49,11 @@ int RulesRegistryService::GetNextRulesRegistryID() {
 }
 
 void RulesRegistryService::Shutdown() {
+  // Notify the registries.
+  for (const auto& [_, registry] : rule_registries_) {
+    registry->OnShutdown();
+  }
+
   // Release the references to all registries, and remove the default registry
   // from ExtensionWebRequestEventRouter.
   rule_registries_.clear();
@@ -245,15 +239,7 @@ void RulesRegistryService::NotifyRegistriesHelper(
   RulesRegistryMap::iterator i;
   for (i = rule_registries_.begin(); i != rule_registries_.end(); ++i) {
     scoped_refptr<RulesRegistry> registry = i->second;
-    if (content::BrowserThread::CurrentlyOn(registry->owner_thread())) {
-      (registry.get()->*notification_callback)(extension);
-    } else {
-      content::BrowserThread::GetTaskRunnerForThread(registry->owner_thread())
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&NotifyWithExtensionSafe,
-                                    base::WrapRefCounted(extension),
-                                    notification_callback, registry));
-    }
+    (registry.get()->*notification_callback)(extension);
   }
 }
 

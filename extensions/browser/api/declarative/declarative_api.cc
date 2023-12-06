@@ -183,16 +183,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
   // there should never be a request for a nonexisting rules registry.
   EXTENSION_FUNCTION_VALIDATE(rules_registry_.get());
 
-  if (content::BrowserThread::CurrentlyOn(rules_registry_->owner_thread()))
-    return RespondNow(RunAsyncOnCorrectThread());
-
-  content::BrowserThread::GetTaskRunnerForThread(
-      rules_registry_->owner_thread())
-      ->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&RulesFunction::RunAsyncOnCorrectThread, this),
-          base::BindOnce(&RulesFunction::SendResponse, this));
-  return RespondLater();
+  return RespondNow(RunInternal());
 }
 
 void RulesFunction::SendResponse(ResponseValue response) {
@@ -209,8 +200,7 @@ bool EventsEventAddRulesFunction::CreateParams() {
   return params_.has_value();
 }
 
-ExtensionFunction::ResponseValue
-EventsEventAddRulesFunction::RunAsyncOnCorrectThread() {
+ExtensionFunction::ResponseValue EventsEventAddRulesFunction::RunInternal() {
   std::vector<const api::events::Rule*> rules_out;
   std::string error = rules_registry_->AddRules(
       extension_id(), std::move(params_->rules), &rules_out);
@@ -253,8 +243,7 @@ bool EventsEventRemoveRulesFunction::CreateParams() {
   return params_.has_value();
 }
 
-ExtensionFunction::ResponseValue
-EventsEventRemoveRulesFunction::RunAsyncOnCorrectThread() {
+ExtensionFunction::ResponseValue EventsEventRemoveRulesFunction::RunInternal() {
   std::string error;
   if (params_->rule_identifiers) {
     error = rules_registry_->RemoveRules(extension_id(),
@@ -295,8 +284,7 @@ bool EventsEventGetRulesFunction::CreateParams() {
   return params_.has_value();
 }
 
-ExtensionFunction::ResponseValue
-EventsEventGetRulesFunction::RunAsyncOnCorrectThread() {
+ExtensionFunction::ResponseValue EventsEventGetRulesFunction::RunInternal() {
   std::vector<const Rule*> rules;
   if (params_->rule_identifiers) {
     rules_registry_->GetRules(extension_id(), *params_->rule_identifiers,

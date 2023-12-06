@@ -46,7 +46,6 @@ WebRequestRulesRegistry::WebRequestRulesRegistry(
     int rules_registry_id)
     : RulesRegistry(browser_context,
                     declarative_webrequest_constants::kOnRequest,
-                    content::BrowserThread::UI,
                     cache_delegate,
                     rules_registry_id),
       browser_context_(browser_context) {}

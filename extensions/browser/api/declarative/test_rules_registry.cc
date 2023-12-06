@@ -8,23 +8,19 @@
 
 namespace extensions {
 
-TestRulesRegistry::TestRulesRegistry(content::BrowserThread::ID owner_thread,
-                                     const std::string& event_name,
+TestRulesRegistry::TestRulesRegistry(const std::string& event_name,
                                      int rules_registry_id)
     : RulesRegistry(nullptr /*profile*/,
                     event_name,
-                    owner_thread,
                     nullptr,
                     rules_registry_id) {}
 
 TestRulesRegistry::TestRulesRegistry(content::BrowserContext* browser_context,
                                      const std::string& event_name,
-                                     content::BrowserThread::ID owner_thread,
                                      RulesCacheDelegate* cache_delegate,
                                      int rules_registry_id)
     : RulesRegistry(browser_context,
                     event_name,
-                    owner_thread,
                     cache_delegate,
                     rules_registry_id) {
 }

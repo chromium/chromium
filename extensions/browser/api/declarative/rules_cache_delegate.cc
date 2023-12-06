@@ -63,7 +63,6 @@ void RulesCacheDelegate::Init(RulesRegistry* registry) {
   // WARNING: The first use of |registry_| will bind it to the calling thread
   // so don't use this here.
   registry_ = registry->GetWeakPtr();
-  rules_registry_thread_ = registry->owner_thread();
   browser_context_ = registry->browser_context();
   extension_registry_ = ExtensionRegistry::Get(browser_context_);
 
@@ -141,9 +140,7 @@ void RulesCacheDelegate::CheckIfReady() {
   if (notified_registry_ || !waiting_for_extensions_.empty())
     return;
 
-  content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&RulesRegistry::MarkReady, registry_));
+  registry_->MarkReady();
   notified_registry_ = true;
 }
 
@@ -204,10 +201,7 @@ void RulesCacheDelegate::ReadFromStorageCallback(
     std::optional<base::Value> value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(Type::kPersistent, type_);
-  content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&RulesRegistry::DeserializeAndAddRules,
-                                registry_, extension_id, std::move(value)));
+  registry_->DeserializeAndAddRules(extension_id, std::move(value));
 
   waiting_for_extensions_.erase(extension_id);
 

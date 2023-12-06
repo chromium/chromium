@@ -34,7 +34,7 @@ class RulesFunction : public ExtensionFunction {
   // Concrete implementation of the RulesFunction that is being called
   // on the thread on which the respective RulesRegistry lives.
   // Returns false in case of errors.
-  virtual ResponseValue RunAsyncOnCorrectThread() = 0;
+  virtual ResponseValue RunInternal() = 0;
 
   // Records UMA metrics for the kind of declarative API call.
   virtual void RecordUMA(const std::string& event_name) const = 0;
@@ -56,7 +56,7 @@ class EventsEventAddRulesFunction : public RulesFunction {
 
   // RulesFunction:
   bool CreateParams() override;
-  ResponseValue RunAsyncOnCorrectThread() override;
+  ResponseValue RunInternal() override;
   void RecordUMA(const std::string& event_name) const override;
 
  private:
@@ -74,7 +74,7 @@ class EventsEventRemoveRulesFunction : public RulesFunction {
 
   // RulesFunction:
   bool CreateParams() override;
-  ResponseValue RunAsyncOnCorrectThread() override;
+  ResponseValue RunInternal() override;
   void RecordUMA(const std::string& event_name) const override;
 
  private:
@@ -92,7 +92,7 @@ class EventsEventGetRulesFunction : public RulesFunction {
 
   // RulesFunction:
   bool CreateParams() override;
-  ResponseValue RunAsyncOnCorrectThread() override;
+  ResponseValue RunInternal() override;
   void RecordUMA(const std::string& event_name) const override;
 
  private:
