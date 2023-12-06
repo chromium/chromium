@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/mirroring/service/openscreen_rpc_dispatcher.h"
+#include "components/mirroring/service/rpc_dispatcher_impl.h"
 
 #include <string>
 
@@ -58,9 +58,9 @@ class MockMessagePort : public openscreen::cast::MessagePort {
 
 }  // namespace
 
-class OpenscreenRpcDispatcherTest : public ::testing::Test {
+class RpcDispatcherImplTest : public ::testing::Test {
  public:
-  OpenscreenRpcDispatcherTest()
+  RpcDispatcherImplTest()
       : task_environment_runner_(task_environment_.GetMainThreadTaskRunner()),
         messenger_(
             &mock_message_port_,
@@ -70,7 +70,7 @@ class OpenscreenRpcDispatcherTest : public ::testing::Test {
             task_environment_runner_),
         dispatcher_(messenger_) {}
 
-  ~OpenscreenRpcDispatcherTest() override { task_environment_.RunUntilIdle(); }
+  ~RpcDispatcherImplTest() override { task_environment_.RunUntilIdle(); }
 
   MOCK_METHOD(void, OnMessengerError, (openscreen::Error), ());
   MOCK_METHOD(void, OnMessage, (const std::vector<uint8_t>&), ());
@@ -78,9 +78,7 @@ class OpenscreenRpcDispatcherTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
-  openscreen::cast::SenderSessionMessenger& messenger() { return messenger_; }
-
-  OpenscreenRpcDispatcher& dispatcher() { return dispatcher_; }
+  RpcDispatcherImpl& dispatcher() { return dispatcher_; }
 
   MockMessagePort& message_port() { return mock_message_port_; }
 
@@ -89,10 +87,10 @@ class OpenscreenRpcDispatcherTest : public ::testing::Test {
   openscreen_platform::TaskRunner task_environment_runner_;
   testing::NiceMock<MockMessagePort> mock_message_port_;
   openscreen::cast::SenderSessionMessenger messenger_;
-  OpenscreenRpcDispatcher dispatcher_;
+  RpcDispatcherImpl dispatcher_;
 };
 
-TEST_F(OpenscreenRpcDispatcherTest, ReceivesMessages) {
+TEST_F(RpcDispatcherImplTest, ReceivesMessages) {
   static const openscreen::cast::ReceiverMessage kMessage{
       .type = openscreen::cast::ReceiverMessage::Type::kRpc,
       .sequence_number = -1,
@@ -105,11 +103,11 @@ TEST_F(OpenscreenRpcDispatcherTest, ReceivesMessages) {
 
   EXPECT_CALL(*this, OnMessage(testing::ElementsAre(1, 2, 3, 4)));
   dispatcher().Subscribe(base::BindRepeating(
-      &OpenscreenRpcDispatcherTest::OnMessage, base::Unretained(this)));
+      &RpcDispatcherImplTest::OnMessage, base::Unretained(this)));
   dispatcher().OnMessage(kMessage);
 }
 
-TEST_F(OpenscreenRpcDispatcherTest, SendsMessages) {
+TEST_F(RpcDispatcherImplTest, SendsMessages) {
   static const std::vector<uint8_t> kMessage{1, 2, 3, 4};
 
   EXPECT_CALL(message_port(),

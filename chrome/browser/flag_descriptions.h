@@ -1059,9 +1059,6 @@ extern const char kGoogleOneOfferFilesBannerDescription[];
 extern const char kObservableAPIName[];
 extern const char kObservableAPIDescription[];
 
-extern const char kOpenscreenCastStreamingSessionName[];
-extern const char kOpenscreenCastStreamingSessionDescription[];
-
 extern const char kCastStreamingAv1Name[];
 extern const char kCastStreamingAv1Description[];
 

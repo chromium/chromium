@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/media_switches.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
@@ -55,9 +54,7 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                   FrameSender::Create(cast_environment,
                                       audio_config,
                                       std::move(sender),
-                                      *this)) {
-  DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
-}
+                                      *this)) {}
 
 AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,

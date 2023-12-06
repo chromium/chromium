@@ -10,7 +10,6 @@
 #include <cstring>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -148,9 +147,7 @@ VideoSender::VideoSender(
                                       std::move(get_bitrate_cb)),
                   std::move(encoder_metrics_provider),
                   std::move(playout_delay_change_cb),
-                  std::move(feedback_cb)) {
-  DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
-}
+                  std::move(feedback_cb)) {}
 
 // Note, we use a fixed bitrate value when external video encoder is used.
 // Some hardware encoder shows bad behavior if we set the bitrate too

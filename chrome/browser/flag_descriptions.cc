@@ -1878,13 +1878,6 @@ const char kObservableAPIDescription[] =
     "A reactive programming primitive for ergonomically handling streams of "
     "async data. See https://github.com/WICG/observable.";
 
-const char kOpenscreenCastStreamingSessionName[] =
-    "Enable Open Screen Library (libcast) as the Mirroring Service's Cast "
-    "Streaming implementation";
-const char kOpenscreenCastStreamingSessionDescription[] =
-    "Enables Open Screen Library's (libcast) Cast Streaming implementation to "
-    "be used for negotiating and executing mirroring and remoting sessions.";
-
 const char kCastStreamingAv1Name[] =
     "Enable AV1 video encoding for Cast Streaming";
 const char kCastStreamingAv1Description[] =
