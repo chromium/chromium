@@ -15,8 +15,6 @@ import {traceFirstScreenShown} from '../../oobe_trace.js';
 
 /** @polymerBehavior */
 export const OobeDialogHostBehavior = {
-  properties: {},
-
   /**
    * Triggers onBeforeShow for descendants.
    * @suppress {missingProperties} invokePolymerMethod
@@ -51,3 +49,8 @@ export const OobeDialogHostBehavior = {
   },
 
 };
+
+/** @interface */
+export class OobeDialogHostBehaviorInterface {
+  onBeforeShow() {}
+}

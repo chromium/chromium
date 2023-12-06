@@ -125,22 +125,14 @@ export const LoginScreenBehavior = {
 
 /** @interface */
 export class LoginScreenBehaviorInterface {
-  /**
-   * @param {string} screenName
-   */
+  /** @param {string} screenName */
   initializeLoginScreen(screenName) {}
-
+  /** @param {string|Array<?>} action_id */
   userActed(action_id) {}
-
+  /** @return {OOBE_UI_STATE} */
+  getOobeUIInitialState() {}
   /** @return {!Array<string>} */
-  get EXTERNAL_API() {
-    return [];
-  }
-
-  /**
-   * @return {Object}
-   */
-  get defaultControl() {
-    return this;
-  }
+  get EXTERNAL_API() {}
+  /** @return {Object} */
+  get defaultControl() {}
 }
