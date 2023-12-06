@@ -5,6 +5,9 @@
 <script src="../../../../resources/gesture-util.js"></script>
 <script src="../../../../resources/blink-coordinates-util.js"></script>
 <script src="../../../../resources/scrollbar-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
 <style>
 .appearance {
   width: 100px;
@@ -55,20 +58,26 @@ window.onload = () => {
   }
 
   promise_test (async () => {
-    resetScrollOffset(standardDivFast);
+    await waitForScrollReset(standardDivFast);
 
     // Click on the track part just above the down arrow.
-    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y - 10);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_approx_equals(standardDivFast.scrollTop, 74, 1/window.devicePixelRatio,
-      "Pressing the down trackpart didn't scroll.");
-  }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
+    await clickScroll(SCROLLBAR_BUTTON_FWD.x,
+                      SCROLLBAR_BUTTON_FWD.y - 10,
+                      standardDivFast);
+    assert_approx_equals(standardDivFast.scrollTop, 74,
+                         1/window.devicePixelRatio,
+                         "Pressing the down trackpart didn't scroll.");
+  }, "Test mouse click on non-custom composited div scrollbar empty " +
+     "trackparts.");
 
   promise_test (async () => {
-    resetScrollOffset(standardDivFast);
+    await waitForScrollReset(standardDivFast);
 
     // Testing the vertical scrollbar thumb.
-    await mouseDragAndDrop(SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y, SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y + 20);
+    const dx = 0;
+    const dy = 20;
+    await mouseDragScroll(SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y, dx, dy,
+                          standardDivFast);
     let expected_offset = 0;
 
     // If Fluent is enabled, Linux and Windows behavior should match
@@ -78,9 +87,9 @@ window.onload = () => {
       expected_offset = 46.5;
     else
       expected_offset = window.devicePixelRatio == 1 ? 71 : 73;
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
-      "Vertical thumb drag downwards did not scroll as expected.");
+    assert_approx_equals(
+        standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
+        "Vertical thumb drag downwards did not scroll as expected.");
   }, "Test mouse drags on non-custom composited div scrollbar thumb.");
 
   promise_test (async () => {
@@ -88,24 +97,30 @@ window.onload = () => {
     if(onMacPlatform)
       return;
 
-    resetScrollOffset(standardDivFast);
+    await waitForScrollReset(standardDivFast);
 
     // Click on the Down arrow for standardRectFast.
-    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
+    await clickScroll(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y,
+                      standardDivFast);
 
     const EXPECTED_SCROLL = getScrollbarButtonScrollDelta(standardDivFast).y;
-    assert_approx_equals(standardDivFast.scrollTop, EXPECTED_SCROLL, 1/window.devicePixelRatio,
-      "Pressing the down arrow didn't scroll.");
+    assert_approx_equals(
+        standardDivFast.scrollTop, EXPECTED_SCROLL, 1/window.devicePixelRatio,
+        "Pressing the down arrow didn't scroll.");
   }, "Test mouse click on non-custom composited div scrollbar arrows.");
 
   promise_test (async () => {
-    resetScrollOffset(standardDivFast);
+    await waitForScrollReset(standardDivFast);
 
     // Testing forward scroll on vertical scrollbar. Mac uses "Option" key
     // instead of "Shift". The Option key is mapped to "Alt" in GPUbenchmarking.
     const modifier = onMacPlatform ? "Alt" : "Shift";
-    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top + 50, /*left_click*/0, modifier);
+    let scrollPromise = waitForScrollendEvent(standardDivFast);
+    // TODO: Switch to test-driver variant. Unclear from the test-driver
+    // documentation if pointerDown supports a 'keys' option.
+    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top + 50,
+          /*left_click*/0, modifier);
+    await scrollPromise;
     let expected_offset = 0;
     // If Fluent is enabled, Linux and Windows behavior should match
     if (onLinuxPlatform && !internals.runtimeFlags.fluentScrollbarsEnabled)
@@ -115,10 +130,16 @@ window.onload = () => {
     else
       expected_offset = 82;
 
-    assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
-      modifier + " + click forward didn't scroll.");
-    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top +
-    ((onMacPlatform ? 0 : BUTTON_WIDTH) + 2), /*left_click*/0, modifier);
+    assert_approx_equals(
+        standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
+        modifier + " + click forward didn't scroll.");
+
+    scrollPromise = waitForScrollendEvent(standardDivFast);
+    await mouseClickOn(
+        SCROLLBAR_BUTTON_FWD.x,
+        standardRectFast.top + ((onMacPlatform ? 0 : BUTTON_WIDTH) + 2),
+        /*left_click*/0, modifier);
+    await scrollPromise;
     assert_equals(standardDivFast.scrollTop, 0, modifier + " + click backward didn't scroll.");
   }, "Test non-animated click scroll on non-custom composited scrollbars.");
 }
