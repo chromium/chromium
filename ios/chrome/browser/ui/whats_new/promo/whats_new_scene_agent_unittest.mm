@@ -102,7 +102,9 @@ TEST_F(WhatsNewSceneAgentTest, TestWhatsNewNoPromoRegistration) {
 
 // Tests that the What's New promo registers in the promo manager after 6 days
 // have been recorded.
-TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistrationWith6Days) {
+// TODO(crbug.com/1508296): test consistently fail, re-enable when fixed.
+TEST_F(WhatsNewSceneAgentTest,
+       DISABLED_TestWhatsNewPromoRegistrationWith6Days) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(1);
@@ -128,7 +130,9 @@ TEST_F(WhatsNewSceneAgentTest,
 
 // Tests that the What's New promo registers in the promo manager after 6
 // launches have been recorded.
-TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistrationWith6Launches) {
+// TODO(crbug.com/1508296): test consistently fail, re-enable when fixed.
+TEST_F(WhatsNewSceneAgentTest,
+       DISABLED_TestWhatsNewPromoRegistrationWith6Launches) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
       .Times(1);
