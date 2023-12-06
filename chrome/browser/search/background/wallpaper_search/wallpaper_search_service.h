@@ -27,17 +27,29 @@ class WallpaperSearchService
 
   ~WallpaperSearchService() override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SkipChromeOSDeviceCheckForTesting(bool should_skip_check) {
+    skip_chrome_os_device_check_for_testing_ = should_skip_check;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   // KeyedService implementation:
   void Shutdown() override;
 
   void EnableWallpaperSearchFeatures(flags_ui::FlagsStorage* flags_storage);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void EnableWallpaperSearchFeaturesForChromeAsh(bool is_owner);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // optimization_guide::SettingsEnabledObserver implementation;
   void PrepareToEnableOnRestart() override;
 
   raw_ptr<Profile> profile_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool skip_chrome_os_device_check_for_testing_ = false;
+#endif
   base::WeakPtrFactory<WallpaperSearchService> weak_factory_{this};
 };
 
