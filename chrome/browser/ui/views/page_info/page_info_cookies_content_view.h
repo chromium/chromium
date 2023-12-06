@@ -53,10 +53,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // information if necessary.
   void InitCookiesDialogButton();
 
-  //  Checks if |blocking_third_party_cookies_row_| should be initiated and if
-  //  so does it  and sets its info.
-  void SetBlockingThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
-
   // Sets `third_party_cookies_title_` and `third_party_cookies_description_`
   // text using `cookie_info`.
   void SetThirdPartyCookiesTitleAndDescription(
@@ -76,15 +72,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
-
-  // Creates the child view of |blocking_third_party_cookies_row_| which is
-  // either toggle or icon depending on the |enforcement|.
-  void InitBlockingThirdPartyCookiesToggleOrIcon(
-      CookieControlsEnforcement enforcement);
-
-  // Ensures the blocked sites information UI is present, with placeholder
-  // information if necessary.
-  void InitBlockingThirdPartyCookiesRow();
 
   //  Checks if |fps_button_| should be initiated and if so does it and sets its
   //  info.

@@ -20,7 +20,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
-import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.embedder_support.util.Origin;
@@ -58,8 +57,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
             PageInfoControllerDelegate delegate) {
         super(delegate);
 
-        mTrackingProtectionUI =
-                PageInfoFeatures.USER_BYPASS_UI.isEnabled() && delegate.showTrackingProtectionUI();
+        mTrackingProtectionUI = delegate.showTrackingProtectionUI();
         mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
         mIsIncognito = delegate.isIncognito();
 
@@ -83,13 +81,11 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
-        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            // Need to get the status and confidence level synchronously since the callbacks are
-            // only invoked when those change.
-            mStatus = mBridge.getCookieControlsStatus();
-            mConfidenceLevel = mBridge.getBreakageConfidenceLevel();
-            updateRowViewSubtitle();
-        }
+        // Need to get the status and confidence level synchronously since the callbacks are
+        // only invoked when those change.
+        mStatus = mBridge.getCookieControlsStatus();
+        mConfidenceLevel = mBridge.getBreakageConfidenceLevel();
+        updateRowViewSubtitle();
     }
 
     private void launchSubpage() {
@@ -130,13 +126,8 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         params.blockAll3PC = mBlockAll3PC;
         params.isIncognito = mIsIncognito;
         mSubPage.setParams(params);
-        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            mSubPage.setCookieStatus(mStatus, mEnforcement, mExpiration);
-            mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
-        } else {
-            mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
-            mSubPage.setCookiesCount(mAllowedCookies, mBlockedCookies);
-        }
+        mSubPage.setCookieStatus(mStatus, mEnforcement, mExpiration);
+        mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
@@ -204,36 +195,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     public void onSubpageRemoved() {
         mSubPage = null;
         removeSubpageFragment();
-    }
-
-    @Override
-    public void onCookiesCountChanged(int allowedCookies, int blockedCookies) {
-        mAllowedCookies = allowedCookies;
-        mBlockedCookies = blockedCookies;
-        String subtitle =
-                blockedCookies > 0
-                        ? mRowView.getContext()
-                                .getResources()
-                                .getQuantityString(
-                                        R.plurals.cookie_controls_blocked_cookies,
-                                        blockedCookies,
-                                        blockedCookies)
-                        : null;
-
-        mRowView.updateSubtitle(subtitle);
-
-        if (mSubPage != null) {
-            mSubPage.setCookiesCount(allowedCookies, blockedCookies);
-        }
-    }
-
-    @Override
-    public void onCookieBlockingStatusChanged(int status, int enforcement) {
-        mStatus = status;
-        mIsEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
-        if (mSubPage != null) {
-            mSubPage.setCookieBlockingStatus(mStatus, mIsEnforced);
-        }
     }
 
     @Override

@@ -276,7 +276,6 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   if (web_contents) {
     controller_ = delegate_->CreateCookieControlsController();
     observation_.Observe(controller_.get());
-    old_observation_.Observe(controller_.get());
 
     // TODO(crbug.com/1430440): SetCookieInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
@@ -325,22 +324,6 @@ PageInfo::~PageInfo() {
 
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
-
-void PageInfo::OnStatusChanged(CookieControlsStatus status,
-                               CookieControlsEnforcement enforcement,
-                               int allowed_cookies,
-                               int blocked_cookies) {
-  if (status != status_ || enforcement != enforcement_) {
-    status_ = status;
-    enforcement_ = enforcement;
-    PresentSiteData(base::DoNothing());
-  }
-}
-
-void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
-}
-
-void PageInfo::OnStatefulBounceCountChanged(int bounce_count) {}
 
 void PageInfo::OnStatusChanged(CookieControlsStatus status,
                                CookieControlsEnforcement enforcement,

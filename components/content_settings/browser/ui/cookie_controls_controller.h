@@ -31,7 +31,6 @@ namespace content_settings {
 
 class CookieSettings;
 class CookieControlsObserver;
-class OldCookieControlsObserver;
 
 // Handles the tab specific state for cookie controls.
 class CookieControlsController
@@ -74,9 +73,6 @@ class CookieControlsController
 
   // Returns the current cookie controls status.
   CookieControlsStatus GetCookieControlsStatus();
-
-  void AddObserver(OldCookieControlsObserver* obs);
-  void RemoveObserver(OldCookieControlsObserver* obs);
 
   void AddObserver(CookieControlsObserver* obs);
   void RemoveObserver(CookieControlsObserver* obs);
@@ -218,7 +214,6 @@ class CookieControlsController
   CookieControlsStatus initial_page_cookie_controls_status_ =
       CookieControlsStatus::kUninitialized;
 
-  base::ObserverList<OldCookieControlsObserver> old_observers_;
   base::ObserverList<CookieControlsObserver> observers_;
 };
 

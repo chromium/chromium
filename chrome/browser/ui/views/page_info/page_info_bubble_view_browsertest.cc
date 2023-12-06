@@ -1173,25 +1173,18 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSiteSettingsBrowserTest,
 
 class PageInfoBubbleViewBrowserTestCookiesSubpage
     : public PageInfoBubbleViewBrowserTest,
-      public testing::WithParamInterface<
-          testing::tuple</*is_3pcd_enabled*/ bool,
-                         /*is_user_bypass_ui_enabled*/ bool>> {
+      public testing::WithParamInterface</*is_3pcd_enabled*/ bool> {
  public:
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     std::vector<base::test::FeatureRef>
         enabled_features = {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
         disabled_features = {};
-    if (Is3pcdEnabled()) {
+    if (GetParam()) {
       enabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
     } else {
       disabled_features.push_back(
           content_settings::features::kTrackingProtection3pcd);
-    }
-    if (IsUserBypassUIEnabled()) {
-      enabled_features.push_back(content_settings::features::kUserBypassUI);
-    } else {
-      disabled_features.push_back(content_settings::features::kUserBypassUI);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -1250,10 +1243,6 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
               block_third_party);
   }
 
-  bool Is3pcdEnabled() { return testing::get<0>(GetParam()); }
-
-  bool IsUserBypassUIEnabled() { return testing::get<1>(GetParam()); }
-
  private:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<PrefService, DanglingUntriaged> prefs_;
@@ -1263,12 +1252,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewBrowserTestCookiesSubpage,
-                         testing::ValuesIn(
-                             /*{is_3pcd_enabled, is_user_bypass_ui_enabled}*/
-                             std::vector<testing::tuple<bool, bool>>{
-                                 {false, true},
-                                 {false, false},
-                                 {true, true}}));
+                         testing::Bool());
 
 // Checks if there is correct number of buttons in cookies subpage when fps are
 // blocked and based on the third party cookies state (dependent on 3PCD) and
@@ -1279,7 +1263,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   // FPS blocked and 3pc allowed -> button for opening cookie dialog +
   // separator.
-  size_t kExpectedChildren = IsUserBypassUIEnabled() ? 2 : 1;
+  size_t kExpectedChildren = 2;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1306,18 +1290,10 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
-  if (IsUserBypassUIEnabled()) {
-    size_t kExpectedChildren = 3;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-  } else {
-    // FPS allowed and 3pc blocked -> buttons for cookie dialog and 3pc and fps.
-    size_t kExpectedChildren = 3;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-  }
+  size_t kExpectedChildren = 3;
+  auto* cookies_buttons_container =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
   EXPECT_TRUE(GetView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
   auto* fps_button = GetView(
@@ -1358,7 +1334,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
   // cookies.
-  if (IsUserBypassUIEnabled()) {
     size_t kExpectedChildren = 2;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
@@ -1383,30 +1358,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
     PerformMouseClickOnView(third_party_cookies_toggle);
     EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
     EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
-  } else {
-    size_t kExpectedChildren = 2;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-    EXPECT_TRUE(GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
-    EXPECT_TRUE(GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_ROW));
-    auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(
-        GetView(PageInfoViewFactory::
-                    VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE));
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
-
-    base::UserActionTester user_actions_stats;
-
-    PerformMouseClickOnView(third_party_cookies_toggle);
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
-    EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Allowed"), 1);
-
-    PerformMouseClickOnView(third_party_cookies_toggle);
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
-    EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
-  }
 }
 
 // Checks if there is a correct number of buttons in cookies subpage when fps
@@ -1423,7 +1374,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button and
   // separator.
-  size_t kExpectedChildren = IsUserBypassUIEnabled() ? 3 : 2;
+  size_t kExpectedChildren = 3;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());

@@ -24,9 +24,7 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -84,12 +82,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             getParentFragmentManager().beginTransaction().remove(this).commit();
             return;
         }
-        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            SettingsUtils.addPreferencesFromResource(
-                    this, R.xml.page_info_cookie_preference_user_bypass);
-        } else {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
-        }
+        SettingsUtils.addPreferencesFromResource(
+                this, R.xml.page_info_cookie_preference_user_bypass);
         mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
@@ -143,27 +137,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mCookieSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean boolValue = (Boolean) newValue;
-                    // Invert when the flag is on, since the switch is inverted.
-                    if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-                        boolValue = !boolValue;
-                    }
+                    // Invert since the switch is inverted.
+                    boolValue = !boolValue;
                     params.onThirdPartyCookieToggleChanged.onResult(boolValue);
                     return true;
                 });
-        boolean areAllCookiesBlocked =
-                !WebsitePreferenceBridge.isCategoryEnabled(
-                        getSiteSettingsDelegate().getBrowserContextHandle(),
-                        ContentSettingsType.COOKIES);
-        if (areAllCookiesBlocked && !PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            mCookieSwitch.setTitle(R.string.page_info_all_cookies_block);
-        }
 
-        mCookieInUse.setIcon(
-                SettingsUtils.getTintedIcon(
-                        getContext(),
-                        PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-                                ? R.drawable.gm_database_24
-                                : R.drawable.permission_cookie));
+        mCookieInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.gm_database_24));
         mCookieInUse.setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
         // Disabling enables passthrough of clicks to the main preference.
@@ -200,9 +180,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     // Only used when UserBypassUI flag is off.
     public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {
-        assert !PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-                : "This should only be invoked when UserBypassUI is off.";
-
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean enabled = status == CookieControlsStatus.ENABLED;
         mCookieSwitch.setVisible(visible);
@@ -219,9 +196,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             @CookieControlsStatus int status,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
-        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-                : "This should only be invoked when UserBypassUI is enabled.";
-
         boolean visible = status != CookieControlsStatus.DISABLED;
         boolean blockingEnabled = status == CookieControlsStatus.ENABLED;
         boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
@@ -352,19 +326,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     public void setStorageUsage(long storageUsage) {
-        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            mCookieInUse.setTitle(
-                    String.format(
-                            getString(R.string.origin_settings_storage_usage_brief),
-                            Formatter.formatShortFileSize(getContext(), storageUsage)));
-        } else {
-            mCookieInUse.setSummary(
-                    storageUsage > 0
-                            ? String.format(
-                                    getString(R.string.origin_settings_storage_usage_brief),
-                                    Formatter.formatShortFileSize(getContext(), storageUsage))
-                            : null);
-        }
+        mCookieInUse.setTitle(
+                String.format(
+                        getString(R.string.origin_settings_storage_usage_brief),
+                        Formatter.formatShortFileSize(getContext(), storageUsage)));
 
         mDataUsed |= storageUsage != 0;
         updateCookieDeleteButton();
@@ -426,8 +391,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     // Only invoked when UserBypassUI is on.
     private void updateCookieSwitch() {
-        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-                : "This should only be invoked when UserBypassUI is enabled.";
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
             if (mTrackingProtectionUI) {
@@ -452,8 +415,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     private void updateStorageSubtitle() {
-        assert PageInfoFeatures.USER_BYPASS_UI.isEnabled()
-                : "This should only be invoked when UserBypassUI is enabled.";
         if (!mTrackingProtectionUI) return;
         if (!mCookieSwitch.isChecked()) {
             mCookieInUse.setSummary(

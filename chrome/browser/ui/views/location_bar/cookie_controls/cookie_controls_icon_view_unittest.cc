@@ -80,8 +80,6 @@ class CookieControlsIconViewUnitTest
   CookieControlsIconViewUnitTest()
       : a11y_counter_(views::AXEventManager::Get()) {}
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kUserBypassUI);
     TestWithBrowserView::SetUp();
 
     delegate_ = browser_view()->GetLocationBarView();

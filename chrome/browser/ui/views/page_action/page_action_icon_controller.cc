@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
-#include "chrome/browser/ui/views/location_bar/old_cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
@@ -125,18 +124,10 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                           SharingDialogView::GetAsBubbleForClickToCall)));
         break;
       case PageActionIconType::kCookieControls:
-        if (base::FeatureList::IsEnabled(
-                content_settings::features::kUserBypassUI)) {
-          add_page_action_icon(
-              type, std::make_unique<CookieControlsIconView>(
-                        params.browser, params.icon_label_bubble_delegate,
-                        params.page_action_icon_delegate));
-        } else {
-          add_page_action_icon(type,
-                               std::make_unique<OldCookieControlsIconView>(
-                                   params.icon_label_bubble_delegate,
-                                   params.page_action_icon_delegate));
-        }
+        add_page_action_icon(
+            type, std::make_unique<CookieControlsIconView>(
+                      params.browser, params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate));
         break;
       case PageActionIconType::kFind:
         add_page_action_icon(

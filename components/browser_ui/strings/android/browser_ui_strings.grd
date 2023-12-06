@@ -604,12 +604,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TRACKING_PROTECTION" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
         Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_BLOCK" desc="Label for a toggle to allow or block third-party cookies for a site.">
-        Block third-party cookies
-      </message>
-      <message name="IDS_PAGE_INFO_ALL_COOKIES_BLOCK" desc="Label for a toggle to allow or block all cookies for a site.">
-        Block cookies
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_IN_USE" desc="Label showing the amount of cookies being used by a site.">
         {NUM_SELECTED, plural,
           =1 {1 cookie in use}

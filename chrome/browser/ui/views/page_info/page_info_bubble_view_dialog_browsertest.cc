@@ -691,40 +691,18 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHistoryDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-enum class UserBypassFeatureState {
-  kOff = 0,
-  kOnTemporaryExceptions = 1,
-  kOnPermanentExceptions = 2,
-};
-
 class PageInfoBubbleViewCookiesSubpageBrowserTest
     : public DialogBrowserTest,
-      public testing::WithParamInterface<UserBypassFeatureState> {
+      public testing::WithParamInterface</*temporary_exception*/ bool> {
  public:
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::string expiration = GetParam() ? "30d" : "0d";
     // TODO(http://b/306151669): Add coverage for 3PCD state.
-    std::vector<base::test::FeatureRef> disabled_features = {
-        content_settings::features::kTrackingProtection3pcd};
-
-    enabled_features.push_back(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI, {}});
-
-    switch (GetParam()) {
-      case UserBypassFeatureState::kOff:
-        disabled_features.push_back(content_settings::features::kUserBypassUI);
-        break;
-      case UserBypassFeatureState::kOnTemporaryExceptions:
-        enabled_features.push_back({content_settings::features::kUserBypassUI,
-                                    {{"expiration", "30d"}}});
-        break;
-      case UserBypassFeatureState::kOnPermanentExceptions:
-        enabled_features.push_back({content_settings::features::kUserBypassUI,
-                                    {{"expiration", "0d"}}});
-        break;
-    }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxFirstPartySetsUI, {}},
+         {content_settings::features::kUserBypassUI,
+          {{"expiration", expiration}}}},
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   static base::Time GetReferenceTime() {
@@ -806,7 +784,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       cookie_info.status = CookieControlsStatus::kDisabled;
     }
 
-    if (GetParam() == UserBypassFeatureState::kOnTemporaryExceptions) {
+    if (GetParam()) {
       cookie_info.expiration = GetReferenceTime() + base::Days(30);
     }
     cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
@@ -876,9 +854,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
-    testing::ValuesIn({UserBypassFeatureState::kOff,
-                       UserBypassFeatureState::kOnTemporaryExceptions,
-                       UserBypassFeatureState::kOnPermanentExceptions}));
+    testing::Bool());
 
 // Show different sets of buttons in cookies subpage with different
 // enforcements:
@@ -922,10 +898,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     PageInfoBubbleViewCookiesSubpageBrowserTest,
-    testing::ValuesIn({UserBypassFeatureState::kOff,
-                       UserBypassFeatureState::kOnTemporaryExceptions,
-                       UserBypassFeatureState::kOnPermanentExceptions}));
-
+    testing::Bool());
 class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:
   PageInfoBubbleViewIsolatedWebAppBrowserTest() {
