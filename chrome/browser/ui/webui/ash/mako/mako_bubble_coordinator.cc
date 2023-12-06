@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,6 +57,18 @@ class MakoRewriteView : public WebUIBubbleDialogView {
   MakoRewriteView(const MakoRewriteView&) = delete;
   MakoRewriteView& operator=(const MakoRewriteView&) = delete;
   ~MakoRewriteView() override = default;
+
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override {
+    if (event.GetType() == content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+        event.dom_key == ui::DomKey::ESCAPE) {
+      return true;
+    }
+
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
+  }
 
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
@@ -106,6 +119,7 @@ class MakoRewriteView : public WebUIBubbleDialogView {
   }
 
  private:
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   gfx::Rect caret_bounds_;
 };
 
@@ -169,7 +183,8 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            freeform_text);
 
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-      url, profile, IDS_ACCNAME_ORCA);
+      url, profile, IDS_ACCNAME_ORCA, /*webui_resizes_host=*/true,
+      /*esc_closes_ui=*/false);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
