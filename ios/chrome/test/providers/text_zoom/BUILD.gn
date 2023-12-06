@@ -6,7 +6,7 @@ source_set("text_zoom") {
   testonly = true
   sources = [ "test_text_zoom.mm" ]
   deps = [
-    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web/model/font_size",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
   ]
 }

@@ -1,0 +1,10 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ "//ios/chrome/browser/web/choose_file:unit_tests" ]
+}

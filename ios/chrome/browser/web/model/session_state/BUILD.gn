@@ -12,3 +12,8 @@ source_set("session_state") {
 
   public_deps = [ "//ios/chrome/browser/web/session_state" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ "//ios/chrome/browser/web/session_state:unit_tests" ]
+}

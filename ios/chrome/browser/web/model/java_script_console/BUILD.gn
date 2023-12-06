@@ -13,3 +13,8 @@ source_set("java_script_console") {
   ]
   public_deps = [ "//ios/chrome/browser/web/java_script_console" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ "//ios/chrome/browser/web/java_script_console:unit_tests" ]
+}

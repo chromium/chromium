@@ -12,3 +12,12 @@ source_set("image_fetch") {
   ]
   public_deps = [ "//ios/chrome/browser/web/image_fetch" ]
 }
+
+fuzzer_test("image_fetch_java_script_feature_fuzzer") {
+  public_deps = [ "//ios/chrome/browser/web/image_fetch:image_fetch_java_script_feature_fuzzer" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ "//ios/chrome/browser/web/image_fetch:unit_tests" ]
+}

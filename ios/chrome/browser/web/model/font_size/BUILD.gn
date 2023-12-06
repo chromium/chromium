@@ -11,3 +11,8 @@ source_set("font_size") {
   ]
   public_deps = [ "//ios/chrome/browser/web/font_size" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ "//ios/chrome/browser/web/font_size:unit_tests" ]
+}

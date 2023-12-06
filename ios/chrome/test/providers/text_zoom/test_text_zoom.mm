@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 
 namespace ios {
