@@ -337,16 +337,24 @@ function addVolumeReducer(currentState: State, payload: {
       // Update the siblings too.
       Object.values<Volume>(currentState.volumes)
           .filter(
-              // volume with `prefixKey` has already been processed.
-              v => !v.prefixKey && v.volumeType === VolumeType.REMOVABLE &&
+              v => v.volumeType === VolumeType.REMOVABLE &&
                   removableGroupKey(v) === groupingKey,
               )
           .forEach(v => {
-            v.prefixKey = parentEntry!.toURL();
             const fileData = getFileData(currentState, v.rootKey!);
-            if (fileData?.entry) {
+            if (!fileData) {
+              return;
+            }
+            // Volume with `prefixKey` has already been processed, however,
+            // regardless of processed or not we always need to put it in
+            // `partitionChildEntries` because we are trying to construct the
+            // full children array here, at the end we will use
+            // `partitionChildEntries` to replace the current
+            // `FileData.children`.
+            partitionChildEntries.push(fileData.entry);
+            if (!v.prefixKey) {
+              v.prefixKey = parentEntry!.toURL();
               appendChildIfNotExisted(parentEntry!, fileData.entry);
-              partitionChildEntries.push(fileData.entry);
               // For sub-partition from a removable volume, its children icon
               // should be UNKNOWN_REMOVABLE, and it shouldn't be ejectable.
               currentState.allEntries[v.rootKey!] = {

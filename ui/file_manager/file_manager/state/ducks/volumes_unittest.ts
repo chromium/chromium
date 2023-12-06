@@ -345,24 +345,20 @@ export async function testAddVolumeForSinglePartitionRemovableWithFlagOn(
 
 /** Tests that multiple partition volumes can be added correctly. */
 async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
-  const initialState = getEmptyState();
-  // Put partition-1 volume in the store.
+  const store = setupStore();
+  // Dispatch an action to add partition-1 volume.
   const {volumeManager} = window.fileManager;
   const partition1VolumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.REMOVABLE, 'removable:partition1', 'Partition 1',
       '/device/path/1');
   volumeManager.volumeInfoList.add(partition1VolumeInfo);
-  const partition1VolumeEntry = new VolumeEntry(partition1VolumeInfo);
-  const partition1FileData = convertEntryToFileData(partition1VolumeEntry);
   const partition1VolumeMetadata =
       createFakeVolumeMetadata(partition1VolumeInfo);
   partition1VolumeMetadata.driveLabel = 'USB_Drive';
-  const partition1Volume = convertVolumeInfoAndMetadataToVolume(
-      partition1VolumeInfo, partition1VolumeMetadata);
-  initialState.volumes[partition1Volume.volumeId] = partition1Volume;
-  initialState.allEntries[partition1VolumeEntry.toURL()] = partition1FileData;
-
-  const store = setupStore(initialState);
+  store.dispatch(addVolume({
+    volumeInfo: partition1VolumeInfo,
+    volumeMetadata: partition1VolumeMetadata,
+  }));
 
   // Dispatch an action to add partition-2 volume.
   const partition2VolumeInfo = MockVolumeManager.createMockVolumeInfo(
@@ -376,20 +372,35 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
     volumeMetadata: partition2VolumeMetadata,
   }));
 
-  // Expect the partition-2 volume is in the store and there will be a wrapper
-  // entry created to group both partition-1 and partition-2.
+  // Dispatch an action to add partition-3 volume.
+  const partition3VolumeInfo = MockVolumeManager.createMockVolumeInfo(
+      VolumeType.REMOVABLE, 'removable:partition3', 'Partition 3',
+      partition1VolumeInfo.devicePath);
+  const partition3VolumeMetadata =
+      createFakeVolumeMetadata(partition3VolumeInfo);
+  partition3VolumeMetadata.driveLabel = partition1VolumeMetadata.driveLabel;
+  store.dispatch(addVolume({
+    volumeInfo: partition3VolumeInfo,
+    volumeMetadata: partition3VolumeMetadata,
+  }));
+
+  // Expect all 3 partition volumes are in the store and there will be a wrapper
+  // entry created to group all 3 partitions.
   const myFilesFileData = createMyFilesDataWithEntryList();
+  const partition1VolumeEntry = new VolumeEntry(partition1VolumeInfo);
   const partition2VolumeEntry = new VolumeEntry(partition2VolumeInfo);
+  const partition3VolumeEntry = new VolumeEntry(partition3VolumeInfo);
   const parentEntry = new EntryList(
       partition1VolumeMetadata.driveLabel, RootType.REMOVABLE,
       partition1VolumeInfo.devicePath);
   parentEntry.addEntry(partition1VolumeEntry);
   parentEntry.addEntry(partition2VolumeEntry);
+  parentEntry.addEntry(partition3VolumeEntry);
   const want: Partial<State> = {
     allEntries: {
       // Partition-1 volume.
       [partition1VolumeEntry.toURL()]: {
-        ...partition1FileData,
+        ...convertEntryToFileData(partition1VolumeEntry),
         icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       },
@@ -399,24 +410,39 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
         icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       },
+      // Partition-3 volume.
+      [partition3VolumeEntry.toURL()]: {
+        ...convertEntryToFileData(partition3VolumeEntry),
+        icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        isEjectable: false,
+      },
       // My Files entry list.
       [myFilesFileData.entry.toURL()]: myFilesFileData,
       // Parent wrapper entry.
       [parentEntry.toURL()]: {
         ...convertEntryToFileData(parentEntry),
         isEjectable: true,
-        children:
-            [partition1VolumeEntry.toURL(), partition2VolumeEntry.toURL()],
+        children: [
+          partition1VolumeEntry.toURL(),
+          partition2VolumeEntry.toURL(),
+          partition3VolumeEntry.toURL(),
+        ],
       },
     },
     volumes: {
       [partition1VolumeInfo.volumeId]: {
-        ...partition1Volume,
+        ...convertVolumeInfoAndMetadataToVolume(
+            partition1VolumeInfo, partition1VolumeMetadata),
         prefixKey: parentEntry.toURL(),
       },
       [partition2VolumeInfo.volumeId]: {
         ...convertVolumeInfoAndMetadataToVolume(
             partition2VolumeInfo, partition2VolumeMetadata),
+        prefixKey: parentEntry.toURL(),
+      },
+      [partition3VolumeInfo.volumeId]: {
+        ...convertVolumeInfoAndMetadataToVolume(
+            partition3VolumeInfo, partition3VolumeMetadata),
         prefixKey: parentEntry.toURL(),
       },
     },
