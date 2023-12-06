@@ -245,6 +245,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif
     "HidDeviceManager",
     "HostContentSettingsMap",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "KAnonymityServiceFactory",
+#endif
     "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
@@ -421,6 +424,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InstallVerifier",
     "InstanceIDProfileService",
     "InvalidationService",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "KAnonymityServiceFactory",
+#endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "KidsChromeManagementClient",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
