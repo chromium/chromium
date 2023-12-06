@@ -73,8 +73,6 @@ crbug.com/1499775 external/wpt/css/css-transitions/all-with-discrete.tentative.h
 crbug.com/1499775 external/wpt/css/css-transitions/retargetted-transition-with-box-sizing.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/motion/offset-path-shape-circle-007.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/motion/offset-path-ray-012.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-003.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-030.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=backspace&block=blockquote [ Pass Timeout ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=backspace&block=div [ Pass Timeout ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=backspace&block=p [ Pass Timeout ]
@@ -95,26 +93,15 @@ crbug.com/1499775 external/wpt/scroll-to-text-fragment/redirects.html [ Pass Tim
 # Chrome specific failures
 crbug.com/1499775 external/wpt/webxr/xr_viewport_scale.https.html [ Pass Timeout ]
 crbug.com/1499775 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/crashtests/fieldset-middleclick.html [ Timeout ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-not-displayed.tentative.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-base-url-2.html [ Failure ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=forwarddelete&block=blockquote [ Timeout ]
 crbug.com/1499775 external/wpt/editing/other/join-pre-and-other-block.html?method=forwarddelete&block=p [ Pass Timeout ]
 crbug.com/1499775 external/wpt/document-policy/font-display/override-to-optional.tentative.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vlr.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vrl.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-raise-under-ruby.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-001.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-002.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-004.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-images/object-view-box-fit-fill-img.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-with-tab.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-002.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Failure ]
@@ -218,12 +205,8 @@ crbug.com/1499775 external/wpt/css/css-fonts/font-variant-position-04.html [ Fai
 crbug.com/1499775 external/wpt/css/css-fonts/quoted-generic-ignored.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-fonts/size-adjust-01.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-fonts/size-adjust-unicode-range-system-fallback.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby-tall.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-rtl.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-002.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-rtl.html [ Failure ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-vrl.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-lists/content-property/marker-text-matches-lower-greek.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-006.html [ Failure ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]  # Reftest image failure
@@ -281,7 +264,6 @@ crbug.com/1499775 external/wpt/css/css-text/i18n/css3-text-line-break-opclns-201
 crbug.com/1499775 external/wpt/css/css-text/letter-spacing/letter-spacing-bengali-yaphala-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-text/line-break/line-break-normal-hyphens-001.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-text/line-break/line-break-strict-hyphens-001.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-text/white-space/pre-wrap-018.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-002.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/css-text/white-space/trailing-space-and-text-alignment-004.html [ Failure ]  # Reftest image failure
@@ -492,7 +474,6 @@ crbug.com/1499775 wpt_internal/speech/scripted/speechrecognition-restart-onend.h
 crbug.com/1499775 wpt_internal/storage-access-api/storage-access-origin-trial.sub.https.window.html [ Timeout ]
 crbug.com/1499775 wpt_internal/webusb/usbDevice-iframe.https.html [ Timeout ]
 crbug.com/1499775 wpt_internal/webxr/ar/iframe-oopif.sub.https.html [ Timeout ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-under-ruby-tall.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-overflow/incremental-scroll.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-scroll-anchoring/fullscreen-crash.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/css-shadow-parts/interaction-with-nested-pseudo-class.html [ Timeout ]
@@ -579,8 +560,6 @@ crbug.com/1499775 external/wpt/acid/acid2/reftest.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-paint-api/geometry-background-image-001.https.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-position/overlay/overlay-transition-backdrop.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-sizing/aspect-ratio/replaced-element-035.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-016.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-022.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/appearance-button-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/appearance-menulist-button-001.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ui/outline-027.html [ Failure Pass ]
@@ -635,14 +614,53 @@ crbug.com/1499775 external/wpt/css/css-backgrounds/color-mix-currentcolor-outlin
 crbug.com/1499775 external/wpt/css/css-transitions/animations/animate-with-color-mix.html [ Crash ]
 crbug.com/1499775 external/wpt/svg/painting/color-mix-currentcolor-fill-stroke-repaint.html [ Failure ]
 
+# Those tests are flaky
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vlr.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-vrl.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-raise-under-ruby.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-float-001.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-float-002.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-float-004.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-with-tab.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby-tall.html [ Failure ]  # Reftest image failure
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-rtl.html [ Failure ]  # Reftest image failure
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/Initial-letter-breaking-rtl.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-vrl.html [ Failure ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-under-ruby-tall.html [ Failure Pass ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-vlr.html [ Failure Pass ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-block-position-raise-under-ruby-tall.html [ Failure Pass ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure Pass ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-raise-initial-vrl.html [ Failure Pass ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-raised-sunken-caps-raise.html [ Failure Pass ]
+crbug.com/1509033 external/wpt/css/css-inline/initial-letter/initial-letter-sunk-initial-rtl.html [ Failure Pass ]
+
+# Those tests are flaky
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-001.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-003.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-005.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-007.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-009.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-010.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-016.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-020.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-022.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-030.html [ Failure Pass ]
+crbug.com/1509026 external/wpt/css/css-text/text-transform/text-transform-capitalize-034.html [ Failure Pass ]
+
 # 12-05-2023 Flaky tests that trigger shard level retry
 crbug.com/1499775 external/wpt/css/css-contain/contain-paint-clip-015.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-raised-sunken-caps-raise.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-inline/initial-letter/initial-letter-sunk-initial-rtl.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-page/page-left-right-002-print.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-ruby/ruby-inlinize-blocks-003.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-001.html [ Failure Pass ]
-crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-005.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/css/css-sizing/box-sizing-replaced-002.xht [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/motion/offset-path-shape-inset-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-wrapped.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/mathml/presentation-markup/operators/embellished-op-4-2.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/mathml/presentation-markup/scripts/stretchy-msup-1a.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/mathml/presentation-markup/scripts/underover-stretchy-001.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/mathml/presentation-markup/scripts/underover-stretchy-003.html [ Failure Pass ]
