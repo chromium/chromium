@@ -1726,12 +1726,6 @@ bool EventHandler::BestNodeForHitTestResult(
     return false;
   }
 
-  CHECK(location.BoundingBox().Contains(location.Point()) ||
-        (location.BoundingBox().Right() == LayoutUnit::Max() &&
-         location.Point().left == LayoutUnit::Max()) ||
-        (location.BoundingBox().Bottom() == LayoutUnit::Max() &&
-         location.Point().top == LayoutUnit::Max()));
-
   gfx::Point touch_hotspot =
       frame_->View()->ConvertToRootFrame(location.RoundedPoint());
   gfx::Rect touch_rect =
@@ -1740,6 +1734,12 @@ bool EventHandler::BestNodeForHitTestResult(
   if (touch_rect.IsEmpty()) {
     return false;
   }
+
+  CHECK(location.BoundingBox().Contains(location.Point()) ||
+        (location.BoundingBox().Right() == LayoutUnit::Max() &&
+         location.Point().left == LayoutUnit::Max()) ||
+        (location.BoundingBox().Bottom() == LayoutUnit::Max() &&
+         location.Point().top == LayoutUnit::Max()));
 
   HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
 
