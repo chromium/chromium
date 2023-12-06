@@ -5,6 +5,7 @@
 #include "services/network/ip_protection_token_cache_manager_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -197,9 +198,14 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     last_token_rate_measurement_ = now;
 
     auto spend_rate = tokens_spent_ * denominator / interval_ms;
+    std::string proxy_layer =
+        proxy_layer_ == network::mojom::IpProtectionProxyLayer::kProxyA
+            ? "ProxyA"
+            : "ProxyB";
     // A maximum of 1000 would correspond to a spend rate of about 16/min,
     // which is higher than we expect to see.
-    base::UmaHistogramCounts1000("NetworkService.IpProtection.TokenSpendRate",
+    base::UmaHistogramCounts1000(base::StrCat({"NetworkService.IpProtection.",
+                                               proxy_layer, ".TokenSpendRate"}),
                                  spend_rate);
 
     auto expiration_rate = tokens_expired_ * denominator / interval_ms;
@@ -207,7 +213,9 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     // measurement interval. 1024 tokens in 5 minutes is equivalent to 12288
     // tokens per hour, comfortably under 100,000.
     base::UmaHistogramCounts100000(
-        "NetworkService.IpProtection.TokenExpirationRate", expiration_rate);
+        base::StrCat({"NetworkService.IpProtection.", proxy_layer,
+                      ".TokenExpirationRate"}),
+        expiration_rate);
   }
 
   last_token_rate_measurement_ = now;
