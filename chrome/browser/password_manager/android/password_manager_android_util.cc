@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 
@@ -31,6 +32,12 @@ bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
     return true;
   }
   return UsesSplitStoresAndUPMForLocal(pref_service);
+}
+
+void SetUsesSplitStoresAndUPMForLocal(
+    PrefService* pref_service,
+    const base::FilePath& login_db_directory) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace password_manager_android_util

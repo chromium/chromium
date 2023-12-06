@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefs/browser_prefs.h"
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -21,7 +22,7 @@ class BrowserPrefsTest : public testing::Test {
 };
 
 TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedDefaultValue) {
-  MigrateObsoleteProfilePrefs(&prefs_);
+  MigrateObsoleteProfilePrefs(&prefs_, /*profile_path=*/base::FilePath());
   EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(kSyncRequested));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -32,7 +33,7 @@ TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedDefaultValue) {
 
 TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedSetToTrue) {
   prefs_.SetBoolean(kSyncRequested, true);
-  MigrateObsoleteProfilePrefs(&prefs_);
+  MigrateObsoleteProfilePrefs(&prefs_, /*profile_path=*/base::FilePath());
   EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(kSyncRequested));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -43,7 +44,7 @@ TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedSetToTrue) {
 
 TEST_F(BrowserPrefsTest, MigrateObsoleteProfilePrefSyncRequestedSetToFalse) {
   prefs_.SetBoolean(kSyncRequested, false);
-  MigrateObsoleteProfilePrefs(&prefs_);
+  MigrateObsoleteProfilePrefs(&prefs_, /*profile_path=*/base::FilePath());
   EXPECT_EQ(nullptr, prefs_.GetUserPrefValue(kSyncRequested));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -14,6 +14,10 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace base {
+class FilePath;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -57,6 +61,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state);
 // deprecated prefs should be removed as new ones are added, but this call
 // should never go away (even if it becomes an empty call for some time) as it
 // should remain *the* place to drop deprecated profile prefs at.
-void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
+void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
+                                 const base::FilePath& profile_path);
 
 #endif  // CHROME_BROWSER_PREFS_BROWSER_PREFS_H_

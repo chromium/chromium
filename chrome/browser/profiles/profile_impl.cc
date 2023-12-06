@@ -1117,7 +1117,7 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   TRACE_EVENT0("browser", "ProfileImpl::OnLocaleReady");
 
   // Migrate obsolete prefs.
-  MigrateObsoleteProfilePrefs(GetPrefs());
+  MigrateObsoleteProfilePrefs(GetPrefs(), GetPath());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Note: Extension preferences can be keyed off the extension ID, so need to
   // be handled specially (rather than directly as part of
