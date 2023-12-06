@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -42,7 +41,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -435,9 +433,8 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @EnableFeatures(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)
     public void testSyncWithBrowserControl() throws Exception {
-        final TestListener infobarListener = addInfoBarToCurrentTab(false);
+        addInfoBarToCurrentTab(false);
         Assert.assertEquals(1, sActivityTestRule.getInfoBars().size());
         final InfoBar infoBar = sActivityTestRule.getInfoBars().get(0);
         Assert.assertEquals(0, infoBar.getView().getTranslationY(), /* delta= */ 0.1);

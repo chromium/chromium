@@ -250,7 +250,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kHideTabOnTabSwitcher,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
-    &kInfobarScrollOptimization,
     &kInstanceSwitcher,
     &kInstantStart,
     &kLensCameraAssistedSearch,
@@ -798,10 +797,6 @@ BASE_FEATURE(kIncognitoReauthenticationForAndroid,
 BASE_FEATURE(kIncognitoScreenshot,
              "IncognitoScreenshot",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInfobarScrollOptimization,
-             "InfobarScrollOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
 

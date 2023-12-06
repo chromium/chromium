@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.banners.SwipableOverlayView;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
@@ -80,14 +79,10 @@ public class InfoBarContainerView extends SwipableOverlayView
             @NonNull ContainerViewObserver containerViewObserver,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             boolean isTablet) {
-        super(
-                context,
-                null,
-                !ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION));
+        super(context, null, false);
         mContainerViewObserver = containerViewObserver;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        if (mBrowserControlsStateProvider != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+        if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.addObserver(this);
         }
 
@@ -123,8 +118,7 @@ public class InfoBarContainerView extends SwipableOverlayView
     }
 
     void destroy() {
-        if (mBrowserControlsStateProvider != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+        if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.removeObserver(this);
         }
         removeFromParentView();

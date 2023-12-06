@@ -2105,10 +2105,6 @@ const char kIndexedDBDefaultDurabilityRelaxedDescription[] =
     "IDBTransaction \"readwrite\" transaction durability defaults to relaxed "
     "when not specified";
 
-const char kInfobarScrollOptimizationName[] = "Infobar scroll optimiaztion";
-const char kInfobarScrollOptimizationDescription[] =
-    "Optimize Infobar scroll on Android.";
-
 const char kInProductHelpDemoModeChoiceName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeChoiceDescription[] =
     "Selects the In-Product Help demo mode.";

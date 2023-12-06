@@ -17,7 +17,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -490,8 +489,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
                         mContainerViewObserver,
                         browserControlsManager,
                         DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroid()));
-        if (browserControlsManager != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+        if (browserControlsManager != null) {
             browserControlsManager.getFullscreenManager().removeObserver(mFullscreenObserver);
             browserControlsManager.getFullscreenManager().addObserver(mFullscreenObserver);
         }
@@ -550,8 +548,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
         BrowserControlsManager browserControlsManager =
                 BrowserControlsManagerSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
-        if (browserControlsManager != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+        if (browserControlsManager != null) {
             browserControlsManager.getFullscreenManager().removeObserver(mFullscreenObserver);
         }
 

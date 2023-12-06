@@ -4844,11 +4844,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "infobar-scroll-optimization",
-    "owners": [ "lazzzis@google.com", "mdjones@chromium.org", "twellington@chromium.org" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "insecure-download-warnings",
     "owners": [ "jdeblasio@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 120

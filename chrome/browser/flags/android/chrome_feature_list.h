@@ -112,7 +112,6 @@ BASE_DECLARE_FEATURE(kGridTabSwitcherAndroidAnimations);
 BASE_DECLARE_FEATURE(kHideTabOnTabSwitcher);
 BASE_DECLARE_FEATURE(kIncognitoReauthenticationForAndroid);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
-BASE_DECLARE_FEATURE(kInfobarScrollOptimization);
 BASE_DECLARE_FEATURE(kImprovedA2HS);
 BASE_DECLARE_FEATURE(kInstanceSwitcher);
 BASE_DECLARE_FEATURE(kInstantStart);
