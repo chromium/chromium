@@ -39,31 +39,9 @@ ShadowPredictionComparison GetBaseComparison(
   }
 }
 
-}  // namespace
-
-int GetShadowPrediction(ServerFieldType current,
-                        ServerFieldType next,
-                        const ServerFieldTypeSet& submitted_types) {
-  ShadowPredictionComparison comparison =
-      GetBaseComparison(current, next, submitted_types);
-  // Encode the `current` type and `comparison` into an int.
-  int encoding = static_cast<int>(comparison);
-  if (comparison != ShadowPredictionComparison::kNoPrediction) {
-    // Multiplying by `kMaxValue` (instead of `kMaxValue + 1`) is fine, because
-    // the `kNoPrediction` case is ignored.
-    // When `comparison == kMaxValue`, the base-`kMaxValue` representation of
-    // the `encoding` "overflows" into `static_cast<int>(current) + 1`, but
-    // since `kNoPrediction` is skipped, this doesn't cause an overlap.
-    encoding += static_cast<int>(current) *
-                static_cast<int>(ShadowPredictionComparison::kMaxValue);
-  }
-  return encoding;
-}
-
-void LogShadowPredictionComparison(const AutofillField& field) {
-  const auto& submitted_types = field.possible_types();
-
+void LogRegexShadowPredictions(const AutofillField& field) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  const ServerFieldTypeSet& submitted_types = field.possible_types();
   base::UmaHistogramSparse(
       "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
       GetShadowPrediction(field.heuristic_type(), field.server_type(),
@@ -87,32 +65,67 @@ void LogShadowPredictionComparison(const AutofillField& field) {
                           field.heuristic_type(HeuristicSource::kNextGen),
                           submitted_types));
 #endif
+}
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    base::UmaHistogramSparse(
-        "Autofill.ShadowPredictions.DefaultServerToMLModel",
-        GetShadowPrediction(
-            field.server_type(),
-            field.heuristic_type(HeuristicSource::kMachineLearning),
-            submitted_types));
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    base::UmaHistogramSparse(
-        "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
-        GetShadowPrediction(
-            field.heuristic_type(HeuristicSource::kLegacy),
-            field.heuristic_type(HeuristicSource::kMachineLearning),
-            submitted_types));
-#else
+void LogMlShadowPredictions(const AutofillField& field) {
+#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return;
+#endif
+  if (!base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
+    return;
+  }
+  const ServerFieldTypeSet& submitted_types = field.possible_types();
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.DefaultServerToMLModel",
+      GetShadowPrediction(
+          field.server_type(),
+          field.heuristic_type(HeuristicSource::kMachineLearning),
+          submitted_types));
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
     base::UmaHistogramSparse(
         "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
         GetShadowPrediction(
             field.heuristic_type(HeuristicSource::kDefault),
             field.heuristic_type(HeuristicSource::kMachineLearning),
             submitted_types));
-#endif
+    return;
   }
 #endif
+  // In builds without internal patterns or if pattern provider is disabled,
+  // compare the the legacy heuristic type instead.
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
+      GetShadowPrediction(
+          field.heuristic_type(HeuristicSource::kLegacy),
+          field.heuristic_type(HeuristicSource::kMachineLearning),
+          submitted_types));
+}
+
+}  // namespace
+
+int GetShadowPrediction(ServerFieldType current,
+                        ServerFieldType next,
+                        const ServerFieldTypeSet& submitted_types) {
+  ShadowPredictionComparison comparison =
+      GetBaseComparison(current, next, submitted_types);
+  // Encode the `current` type and `comparison` into an int.
+  int encoding = static_cast<int>(comparison);
+  if (comparison != ShadowPredictionComparison::kNoPrediction) {
+    // Multiplying by `kMaxValue` (instead of `kMaxValue + 1`) is fine, because
+    // the `kNoPrediction` case is ignored.
+    // When `comparison == kMaxValue`, the base-`kMaxValue` representation of
+    // the `encoding` "overflows" into `static_cast<int>(current) + 1`, but
+    // since `kNoPrediction` is skipped, this doesn't cause an overlap.
+    encoding += static_cast<int>(current) *
+                static_cast<int>(ShadowPredictionComparison::kMaxValue);
+  }
+  return encoding;
+}
+
+void LogShadowPredictionComparison(const AutofillField& field) {
+  LogRegexShadowPredictions(field);
+  LogMlShadowPredictions(field);
 }
 
 }  // namespace autofill::autofill_metrics
