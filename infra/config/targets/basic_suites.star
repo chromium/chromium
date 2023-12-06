@@ -715,8 +715,10 @@ targets.legacy_basic_suite(
             # put the stub string here.
             tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
             test_level_retries = 2,
-            timeout_sec = 21600,
-            shards = 10,
+            # Timeout including DUT privisioning.
+            timeout_sec = 14400,
+            # Number of shards. Might be overriden for slower boards.
+            shards = 15,
         ),
     },
 )

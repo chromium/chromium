@@ -400,6 +400,12 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chromeos-jacuzzi-skylab-chrome-all-tast-tests",
+    # jacuzzi is slow. So that we use more number of shards.
+    shards = 20,
+)
+
+targets.mixin(
     name = "chromeos-octopus",
     swarming = targets.swarming(
         dimensions = {
@@ -436,6 +442,12 @@ targets.mixin(
             ),
         ],
     ),
+)
+
+targets.mixin(
+    name = "chromeos-trogdor-skylab-chrome-all-tast-tests",
+    # jacuzzi is slow. So that we use more number of shards.
+    shards = 20,
 )
 
 targets.mixin(

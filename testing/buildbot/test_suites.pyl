@@ -579,8 +579,8 @@
       'chrome_all_tast_tests': {
         'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
         'test_level_retries': 2,
-        'timeout_sec': 21600,
-        'shards': 10,
+        'timeout_sec': 14400,
+        'shards': 15,
       },
     },
 
@@ -6799,6 +6799,9 @@
 
     'chromeos_jacuzzi_rel_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'chromeos-jacuzzi-skylab-chrome-all-tast-tests',
+        ],
         'variants': [
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
         ],
@@ -6817,6 +6820,9 @@
 
     'chromeos_jacuzzi_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'chromeos-jacuzzi-skylab-chrome-all-tast-tests',
+        ],
         'variants': [
           'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ],
@@ -6856,6 +6862,9 @@
 
     'chromeos_trogdor_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'chromeos-trogdor-skylab-chrome-all-tast-tests',
+        ],
         'variants': [
           'CROS_TROGDOR_RELEASE_ASH_LKGM',
         ],

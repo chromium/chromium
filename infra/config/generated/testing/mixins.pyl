@@ -330,6 +330,9 @@
       },
     },
   },
+  'chromeos-jacuzzi-skylab-chrome-all-tast-tests': {
+    'shards': 20,
+  },
   'chromeos-octopus': {
     'swarming': {
       'dimensions': {
@@ -362,6 +365,9 @@
         },
       ],
     },
+  },
+  'chromeos-trogdor-skylab-chrome-all-tast-tests': {
+    'shards': 20,
   },
   'chromium-tester-dev-service-account': {
     'swarming': {

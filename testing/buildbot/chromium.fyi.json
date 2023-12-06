@@ -4581,12 +4581,12 @@
         "name": "chrome_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
-        "shards": 10,
+        "shards": 20,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
-        "timeout_sec": 21600,
+        "timeout_sec": 14400,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
@@ -4638,12 +4638,12 @@
         "cros_board": "octopus",
         "cros_img": "octopus-public/R121-15684.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_PUBLIC_LKGM",
-        "shards": 10,
+        "shards": 15,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
-        "timeout_sec": 21600,
+        "timeout_sec": 14400,
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       }
     ]
