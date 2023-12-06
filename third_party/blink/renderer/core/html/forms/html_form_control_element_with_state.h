@@ -116,9 +116,12 @@ struct DowncastTraits<HTMLFormControlElementWithState> {
   static bool AllowFrom(const ListedElement& control) {
     return control.IsFormControlElementWithState();
   }
+  static bool AllowFrom(const Element& element) {
+    return element.IsFormControlElementWithState();
+  }
   static bool AllowFrom(const Node& node) {
-    auto* form_control = DynamicTo<HTMLFormControlElement>(node);
-    return form_control && form_control->IsFormControlElementWithState();
+    const Element* element = DynamicTo<Element>(node);
+    return element && element->IsFormControlElementWithState();
   }
 };
 

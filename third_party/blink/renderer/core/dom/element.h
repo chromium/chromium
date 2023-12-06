@@ -1020,6 +1020,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual bool IsPickerIndicatorElement() const { return false; }
 
   virtual bool IsFormControlElement() const { return false; }
+  virtual bool IsFormControlElementWithState() const { return false; }
   virtual bool IsSpinButtonElement() const { return false; }
   // This returns true for <textarea> and some types of <input>.
   virtual bool IsTextControl() const { return false; }
