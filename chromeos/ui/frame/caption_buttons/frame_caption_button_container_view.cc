@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -191,11 +192,21 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   }
   bool InZoomMode() const override { return false; }
 
+  void SetCloseButtonEnabled(bool is_close_button_enabled) {
+    is_close_button_enabled_ = is_close_button_enabled;
+  }
+
+  base::WeakPtr<DefaultCaptionButtonModel> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   raw_ptr<views::Widget> frame_;
 
   // Configures whether the close button is enabled.
   bool is_close_button_enabled_ = true;
+
+  base::WeakPtrFactory<DefaultCaptionButtonModel> weak_factory_{this};
 };
 
 }  // namespace
@@ -204,11 +215,16 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     views::Widget* frame,
     bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
-    : views::AnimationDelegateViews(frame->GetRootView()),
-      frame_(frame),
-      model_(std::make_unique<DefaultCaptionButtonModel>(
-          frame,
-          is_close_button_enabled)) {
+    : views::AnimationDelegateViews(frame->GetRootView()), frame_(frame) {
+  auto default_caption_button_model =
+      std::make_unique<DefaultCaptionButtonModel>(frame,
+                                                  is_close_button_enabled);
+  on_close_button_enabled_changed_callback_ =
+      base::BindRepeating(&DefaultCaptionButtonModel::SetCloseButtonEnabled,
+                          default_caption_button_model->GetWeakPtr());
+
+  model_ = std::move(default_caption_button_model);
+
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
@@ -428,6 +444,10 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       model_->IsVisible(views::CAPTION_BUTTON_ICON_CLOSE));
   close_button_->SetEnabled(
       model_->IsEnabled(views::CAPTION_BUTTON_ICON_CLOSE));
+  close_button_->SetTooltipText(
+      model_->IsEnabled(views::CAPTION_BUTTON_ICON_CLOSE)
+          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE)
+          : l10n_util::GetStringUTF16(IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN));
 }
 
 void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {
@@ -470,9 +490,18 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   SetMinimumCrossAxisSize(size.height());
 }
 
+void FrameCaptionButtonContainerView::SetCloseButtonEnabled(
+    bool close_button_enabled) {
+  if (on_close_button_enabled_changed_callback_) {
+    on_close_button_enabled_changed_callback_.Run(close_button_enabled);
+    UpdateCaptionButtonState(false /*=animate*/);
+  }
+}
+
 void FrameCaptionButtonContainerView::SetModel(
     std::unique_ptr<CaptionButtonModel> model) {
   model_ = std::move(model);
+  on_close_button_enabled_changed_callback_.Reset();
 }
 
 void FrameCaptionButtonContainerView::SetOnSizeButtonPressedCallback(

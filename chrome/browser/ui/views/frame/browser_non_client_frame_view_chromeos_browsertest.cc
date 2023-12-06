@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -32,6 +33,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/aura_constants.h"
@@ -137,6 +139,10 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using views::Widget;
 
@@ -1305,6 +1311,23 @@ class PreventCloseBrowserNonClientFrameViewChromeOSTest
 
   ~PreventCloseBrowserNonClientFrameViewChromeOSTest() override = default;
 
+  void SetUpOnMainThread() override {
+    PreventCloseTestBase::SetUpOnMainThread();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    loopback_crosapi_ =
+        std::make_unique<web_app::LoopbackCrosapiAppServiceProxy>(profile());
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    loopback_crosapi_ = nullptr;
+#endif
+
+    PreventCloseTestBase::TearDownOnMainThread();
+  }
+
   views::Button* getWindowCloseButton(Browser* browser) {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* const frame_view = GetFrameViewChromeOS(browser_view);
@@ -1313,6 +1336,11 @@ class PreventCloseBrowserNonClientFrameViewChromeOSTest
         frame_view->caption_button_container());
     return test_api.close_button();
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<web_app::LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
@@ -1324,11 +1352,27 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
-  auto* const close_button = getWindowCloseButton(browser);
-  ASSERT_TRUE(close_button);
-  EXPECT_FALSE(close_button->GetEnabled());
+  {
+    auto* const close_button = getWindowCloseButton(browser);
+    ASSERT_TRUE(close_button);
+    EXPECT_FALSE(close_button->GetEnabled());
+  }
 
-  ClearWebAppSettings();
+  {
+    apps::AppUpdateWaiter waiter(
+        browser->profile(), web_app::kCalculatorAppId,
+        base::BindRepeating([](const apps::AppUpdate& update) {
+          return update.AllowClose().has_value() && update.AllowClose().value();
+        }));
+    ClearWebAppSettings();
+    waiter.Wait();
+  }
+
+  {
+    auto* const close_button = getWindowCloseButton(browser);
+    ASSERT_TRUE(close_button);
+    EXPECT_TRUE(close_button->GetEnabled());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,

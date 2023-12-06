@@ -11,6 +11,8 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -40,6 +42,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -180,6 +183,13 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   UpdateProfileIcons();
 
   window_observation_.Observe(GetFrameWindow());
+
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          browser->profile())) {
+    app_registry_cache_observation_.Observe(
+        &apps::AppServiceProxyFactory::GetForProfile(browser->profile())
+             ->AppRegistryCache());
+  }
 
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
@@ -820,6 +830,25 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveFullscreenExited() {
   OnImmersiveRevealEnded();
+}
+
+void BrowserNonClientFrameViewChromeOS::OnAppUpdate(
+    const apps::AppUpdate& update) {
+  Browser* browser = browser_view()->browser();
+
+  if (!browser->app_controller() ||
+      browser->app_controller()->app_id() != update.AppId() ||
+      !caption_button_container_) {
+    return;
+  }
+
+  caption_button_container_->SetCloseButtonEnabled(
+      update.AllowClose().value_or(true));
+}
+
+void BrowserNonClientFrameViewChromeOS::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observation_.Reset();
 }
 
 void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {

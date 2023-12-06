@@ -3129,6 +3129,7 @@ if (!is_android) {
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/web_applications/app_service",
+        "//chrome/browser/web_applications/app_service:test_support",
         "//chromeos/constants",
         "//chromeos/dbus/dlp:dlp",
         "//chromeos/ui/frame",
