@@ -2919,7 +2919,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
       const bulkPinningPref = state.preferences.driveFsBulkPinningEnabled;
       if (bulkPinningPref && CommandUtil.isOnlyMyDriveEntries(entries, state)) {
         command.setHidden(true);
-        command.canExecute = false;
+        event.canExecute = false;
         return;
       }
     }
