@@ -129,7 +129,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
-    std::optional<std::string> account,
+    std::string account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }

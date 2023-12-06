@@ -80,7 +80,7 @@ class PasswordStoreBackend
   // called with an error result. Callback is called on the main sequence.
   // TODO(crbug.com/1315594): Clean up/refactor to avoid having methods
   // introduced for a specific backend in this interface.
-  virtual void GetAllLoginsForAccountAsync(std::optional<std::string> account,
+  virtual void GetAllLoginsForAccountAsync(std::string account,
                                            LoginsOrErrorReply callback) = 0;
 
   // Returns all PasswordForms with the same signon_realm as a form in |forms|.

@@ -134,7 +134,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
-    std::optional<std::string> account,
+    std::string account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }

@@ -76,17 +76,11 @@ using password_manager::GetRegexForPSLMatching;
 using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
-absl::optional<std::string> GetSyncingAccount(
-    const syncer::SyncService* sync_service) {
+std::string GetSyncingAccount(const syncer::SyncService* sync_service) {
   // TODO(crbug.com/1466445): Migrate away from `ConsentLevel::kSync` on
   // Android.
-  std::string email =
-      sync_util::GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
-          sync_service);
-  if (email.empty()) {
-    return absl::nullopt;
-  }
-  return email;
+  return sync_util::GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+      sync_service);
 }
 
 std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
@@ -223,10 +217,10 @@ LoginsResultOrError JoinRetrievedLoginsOrError(
 }
 
 PasswordStoreAndroidBackendDispatcherBridge::Account GetAccount(
-    std::optional<std::string> syncing_account) {
-  if (syncing_account.has_value()) {
+    std::string syncing_account) {
+  if (!syncing_account.empty()) {
     return PasswordStoreAndroidBackendDispatcherBridge::SyncingAccount(
-        syncing_account.value());
+        syncing_account);
   }
   return PasswordStoreOperationTarget::kLocalStorage;
 }
@@ -651,9 +645,9 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccountAsync(
-    std::optional<std::string> account,
+    std::string account,
     LoginsOrErrorReply callback) {
-  DCHECK(account.has_value());
+  CHECK(!account.empty());
   GetAllLoginsForAccount(GetAccount(account), std::move(callback));
 }
 

@@ -496,7 +496,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLoginsForAccount) {
                         base::NullCallback(), base::DoNothing());
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
-  std::optional<std::string> account = "mytestemail@gmail.com";
+  std::string account = "mytestemail@gmail.com";
   backend().GetAllLoginsForAccountAsync(account, mock_reply.Get());
 
   EXPECT_CALL(

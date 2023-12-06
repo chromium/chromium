@@ -109,8 +109,9 @@ void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
 }
 
 void FakePasswordStoreBackend::GetAllLoginsForAccountAsync(
-    std::optional<std::string> account,
+    std::string account,
     LoginsOrErrorReply callback) {
+  CHECK(!account.empty());
   GetAllLoginsAsync(std::move(callback));
 }
 
