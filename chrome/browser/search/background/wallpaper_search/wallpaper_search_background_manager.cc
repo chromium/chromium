@@ -28,8 +28,19 @@
 
 namespace {
 
+const char kWallpaperSearchHistoryId[] = "id";
+
 void WriteFileToPath(const std::string& data, const base::FilePath& path) {
   base::WriteFile(path, base::as_bytes(base::make_span(data)));
+}
+
+void DeleteWallpaperSearchImage(const std::string& id,
+                                const base::FilePath& profile_path) {
+  base::FilePath path = profile_path.AppendASCII(
+      id + chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::GetDeleteFileCallback(path));
 }
 
 }  // namespace
@@ -54,15 +65,15 @@ void WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(
     // since an image is moved up in history when it is picked.
     // If it is not in history, we delete its file. Otherwise, we leave
     // the file there for history to use.
-    if (history.empty() ||
-        (history.front().is_string() &&
-         history.front().GetString() != local_background_id)) {
-      base::FilePath path = profile->GetPath().AppendASCII(
-          local_background_id +
-          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-          base::GetDeleteFileCallback(path));
+    if (history.empty()) {
+      DeleteWallpaperSearchImage(local_background_id, profile->GetPath());
+    } else {
+      const base::Value::Dict& history_dict = history.front().GetDict();
+      const std::string* id_string =
+          history_dict.FindString(kWallpaperSearchHistoryId);
+      if (!id_string || *id_string != local_background_id) {
+        DeleteWallpaperSearchImage(local_background_id, profile->GetPath());
+      }
     }
   }
 }
@@ -72,13 +83,11 @@ void WallpaperSearchBackgroundManager::ResetProfilePrefs(Profile* profile) {
   auto* pref_service = profile->GetPrefs();
   for (const auto& entry :
        pref_service->GetList(prefs::kNtpWallpaperSearchHistory)) {
-    if (entry.is_string()) {
-      base::FilePath path = profile->GetPath().AppendASCII(
-          entry.GetString() +
-          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-          base::GetDeleteFileCallback(path));
+    if (entry.is_dict()) {
+      const base::Value* id = entry.GetDict().Find(kWallpaperSearchHistoryId);
+      if (id->is_string()) {
+        DeleteWallpaperSearchImage(id->GetString(), profile->GetPath());
+      }
     }
   }
   pref_service->ClearPref(prefs::kNtpWallpaperSearchHistory);
@@ -100,10 +109,13 @@ std::vector<base::Token> WallpaperSearchBackgroundManager::GetHistory() {
       pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
   std::vector<base::Token> history;
   for (auto& entry : history_list) {
-    if (entry.is_string()) {
-      auto token = base::Token::FromString(entry.GetString());
-      if (token.has_value()) {
-        history.push_back(token.value());
+    if (entry.is_dict()) {
+      const base::Value* id = entry.GetDict().Find(kWallpaperSearchHistoryId);
+      if (id->is_string()) {
+        auto token = base::Token::FromString(id->GetString());
+        if (token.has_value()) {
+          history.push_back(token.value());
+        }
       }
     }
   }
@@ -174,23 +186,23 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory() {
         pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
     std::string background_id_str =
         current_theme->local_background_id.value().ToString();
-    base::Value::List new_history =
-        base::Value::List().Append(background_id_str);
+    base::Value::List new_history = base::Value::List().Append(
+        base::Value::Dict().Set(kWallpaperSearchHistoryId, background_id_str));
     // Add each value in |current_history| to |new_history| until
     // |new_history| reaches the max size of 6. Do not append the
     // value if it is the same as the id of |current_theme|.
     for (const auto& value : current_history) {
-      const std::string* value_str = value.GetIfString();
-      if (value_str && *value_str != background_id_str) {
-        if (new_history.size() >= 6) {
-          // Delete values that will no longer be in the history.
-          base::ThreadPool::PostTask(
-              FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-              base::GetDeleteFileCallback(profile_->GetPath().AppendASCII(
-                  *value_str +
-                  chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)));
-        } else {
-          new_history.Append(*value_str);
+      if (value.is_dict()) {
+        const base::Value* id = value.GetDict().Find(kWallpaperSearchHistoryId);
+        const std::string* value_str = id ? id->GetIfString() : nullptr;
+        if (value_str && *value_str != background_id_str) {
+          if (new_history.size() >= 6) {
+            // Delete values that will no longer be in the history.
+            DeleteWallpaperSearchImage(*value_str, profile_->GetPath());
+          } else {
+            new_history.Append(
+                base::Value::Dict().Set(kWallpaperSearchHistoryId, *value_str));
+          }
         }
       }
     }

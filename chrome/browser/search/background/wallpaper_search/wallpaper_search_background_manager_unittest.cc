@@ -27,6 +27,8 @@
 
 namespace {
 
+const char kWallpaperSearchHistoryId[] = "id";
+
 using testing::Return;
 using testing::SaveArg;
 
@@ -114,7 +116,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest, GetHistory) {
   for (int i = 0; i < 3; i++) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(temp_token.ToString());
+    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
+                                           temp_token.ToString()));
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
 
@@ -238,8 +241,11 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {
   const base::Value::List& history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(history.size(), 1u);
-  ASSERT_TRUE(history.front().is_string());
-  EXPECT_EQ(token.ToString(), history.front().GetString());
+  ASSERT_TRUE(history.front().is_dict());
+  const base::Value* id =
+      history.front().GetDict().Find(kWallpaperSearchHistoryId);
+  ASSERT_TRUE(id->is_string());
+  EXPECT_EQ(token.ToString(), id->GetString());
 }
 
 // Test that the last history entry is deleted when a new entry is added,
@@ -252,7 +258,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(temp_token.ToString());
+    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
+                                           temp_token.ToString()));
     base::WriteFile(GetFilePathForBackground(temp_token), "hi");
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -271,8 +278,11 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   const base::Value::List& new_history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(new_history.size(), 6u);
-  ASSERT_TRUE(new_history.front().is_string());
-  EXPECT_EQ(theme_token.ToString(), new_history.front().GetString());
+  ASSERT_TRUE(new_history.front().is_dict());
+  const base::Value* id =
+      new_history.front().GetDict().Find(kWallpaperSearchHistoryId);
+  ASSERT_TRUE(id->is_string());
+  EXPECT_EQ(theme_token.ToString(), id->GetString());
 
   // Check that the file for deleted history entry has been deleted and the
   // rest are still there.
@@ -292,7 +302,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(temp_token.ToString());
+    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
+                                           temp_token.ToString()));
     base::WriteFile(GetFilePathForBackground(temp_token), "hi");
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -313,16 +324,21 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   const base::Value::List& new_history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(new_history.size(), 6u);
-  ASSERT_TRUE(new_history.front().is_string());
-  EXPECT_EQ(theme_token.ToString(), new_history.front().GetString());
+  ASSERT_TRUE(new_history.front().is_dict());
+  const base::Value* first_id =
+      new_history.front().GetDict().Find(kWallpaperSearchHistoryId);
+  ASSERT_TRUE(first_id->is_string());
+  EXPECT_EQ(theme_token.ToString(), first_id->GetString());
   bool before_entry_pos = true;
   for (int i = 1; i < 6; ++i) {
     // If we haven't hit where |theme_token| used to be in the history,
     // the entry we are looking at will be one index back in |tokens| vs
     // |new_history|.
-    ASSERT_TRUE(new_history[i].is_string());
-    EXPECT_EQ(new_history[i].GetString(),
-              tokens[before_entry_pos ? i - 1 : i].ToString());
+    ASSERT_TRUE(new_history[i].is_dict());
+    const base::Value* id =
+        new_history[i].GetDict().Find(kWallpaperSearchHistoryId);
+    ASSERT_TRUE(id->is_string());
+    EXPECT_EQ(id->GetString(), tokens[before_entry_pos ? i - 1 : i].ToString());
 
     if (tokens[i].ToString() == theme_token.ToString()) {
       before_entry_pos = false;
@@ -345,7 +361,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(temp_token.ToString());
+    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
+                                           temp_token.ToString()));
     base::WriteFile(GetFilePathForBackground(temp_token), "hi");
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -366,11 +383,17 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   const base::Value::List& new_history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(new_history.size(), 6u);
-  ASSERT_TRUE(new_history.front().is_string());
-  EXPECT_EQ(theme_token.ToString(), new_history.front().GetString());
+  ASSERT_TRUE(new_history.front().is_dict());
+  const base::Value* first_id =
+      new_history.front().GetDict().Find(kWallpaperSearchHistoryId);
+  ASSERT_TRUE(first_id->is_string());
+  EXPECT_EQ(theme_token.ToString(), first_id->GetString());
   for (int i = 0; i < 5; ++i) {
-    ASSERT_TRUE(new_history[i + 1].is_string());
-    EXPECT_EQ(new_history[i + 1].GetString(), tokens[i].ToString());
+    ASSERT_TRUE(new_history[i + 1].is_dict());
+    const base::Value* id =
+        new_history[i + 1].GetDict().Find(kWallpaperSearchHistoryId);
+    ASSERT_TRUE(id->is_string());
+    EXPECT_EQ(id->GetString(), tokens[i].ToString());
   }
 
   // Check that no files were deleted.
@@ -402,7 +425,8 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
        RemoveWallpaperSearchBackground_History) {
   // Set theme to prefs, add it to history, and write it to file.
   base::Token token = base::Token::CreateRandom();
-  base::Value::List history = base::Value::List().Append(token.ToString());
+  base::Value::List history = base::Value::List().Append(
+      base::Value::Dict().Set(kWallpaperSearchHistoryId, token.ToString()));
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
   base::WriteFile(GetFilePathForBackground(token), "hi");
 
