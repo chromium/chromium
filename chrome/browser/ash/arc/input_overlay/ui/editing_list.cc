@@ -7,12 +7,16 @@
 #include <memory>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -24,6 +28,7 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -58,6 +63,8 @@ constexpr float kHaloThickness = 2.0f;
 
 constexpr size_t kMaxActionCount = 50;
 
+constexpr char kKeyEditNudgeID[] = "kGameControlsKeyEditNudge";
+
 }  // namespace
 
 EditingList::EditingList(DisplayOverlayController* controller)
@@ -78,12 +85,28 @@ void EditingList::UpdateWidget() {
       widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
 }
 
-void EditingList::ShowEduNudgeForEditingTip() {
-  DCHECK_EQ(scroll_content_->children().size(), 1u);
-  DCHECK(!is_zero_state_);
+void EditingList::MayShowEduNudgeForEditingTip() {
+  // If key edit nudge has already shown once, no need to show it again.
+  if (!show_nudge_) {
+    return;
+  }
 
-  static_cast<ActionViewListItem*>(scroll_content_->children()[0])
-      ->ShowEduNudgeForEditingTip();
+  const auto& list_children = scroll_content_->children();
+  DCHECK_EQ(list_children.size(), 1u);
+
+  // TODO(b/274690042): Replace it with localized strings.
+  auto nudge_data = ash::AnchoredNudgeData(
+      kKeyEditNudgeID, ash::NudgeCatalogName::kGameDashboardControlsNudge,
+      u"Reassign by selecting a new key", list_children[0]);
+  nudge_data.title_text = u"Quickly switch keys";
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON);
+  nudge_data.background_color_id = cros_tokens::kCrosSysBaseHighlight;
+  nudge_data.image_background_color_id = cros_tokens::kCrosSysOnBaseHighlight;
+  nudge_data.arrow = views::BubbleBorder::LEFT_CENTER;
+  ash::Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+  show_nudge_ = false;
 }
 
 bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
@@ -307,6 +330,11 @@ void EditingList::UpdateOnZeroState(bool is_zero_state) {
 
 void EditingList::OnAddButtonPressed() {
   // TODO(b/304819827): Support action type choose.
+  DCHECK(scroll_content_);
+  // Key edit nudge only shows up after adding the first action.
+  if (scroll_content_->children().size() == 1u) {
+    ash::Shell::Get()->anchored_nudge_manager()->Cancel(kKeyEditNudgeID);
+  }
   controller_->EnterButtonPlaceMode(ActionType::TAP);
 }
 
@@ -482,6 +510,7 @@ void EditingList::OnActionAdded(Action& action) {
     // Clear the zero-state.
     controller_->RemoveNudgeWidget(GetWidget());
     UpdateOnZeroState(/*is_zero_state=*/false);
+    show_nudge_ = true;
   }
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));
@@ -562,6 +591,18 @@ void EditingList::OnActionNewStateRemoved(const Action& action) {
       break;
     }
   }
+}
+
+bool EditingList::IsKeyEditNudgeShownForTesting() const {
+  return ash::Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
+      kKeyEditNudgeID);
+}
+
+ash::AnchoredNudge* EditingList::GetKeyEditNudgeForTesting() const {
+  return ash::Shell::Get()
+      ->anchored_nudge_manager()
+      ->GetShownNudgeForTest(  // IN-TEST
+          kKeyEditNudgeID);
 }
 
 BEGIN_METADATA(EditingList, views::View)

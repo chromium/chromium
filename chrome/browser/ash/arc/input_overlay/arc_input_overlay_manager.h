@@ -155,9 +155,9 @@ class ArcInputOverlayManager : public KeyedService,
   ArcAppListPrefs* GetArcAppListPrefs();
 
   // Returns `window`'s anchor window if `window` is a game dashboard main menu
-  // dialog window or a transient window, or returns `window` itself if `window`
-  // is none of above windows. For Alpha/AlphaV2 version, it still returns
-  // `window` itself.
+  // dialog window or `ash::AnchoredNudge` or a transient window, or returns
+  // `window` itself if `window` is none of above windows. For Alpha/AlphaV2
+  // version, it still returns `window` itself.
   aura::Window* GetAnchorWindow(aura::Window* window);
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};

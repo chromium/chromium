@@ -110,8 +110,8 @@ int GetTitleFontSize(bool portrait_mode) {
 void SetBanner(views::ImageView& image) {
   image.SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       ash::DarkLightModeController::Get()->IsDarkModeEnabled()
-          ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON
-          : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON));
+          ? IDR_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON
+          : IDR_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON));
 }
 
 }  // namespace

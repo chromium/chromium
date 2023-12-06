@@ -830,12 +830,9 @@ void DisplayOverlayController::HideActionHighlightWidget() {
 }
 
 void DisplayOverlayController::MayShowEduNudgeForEditingTip() {
-  if (GetActiveActionsSize() != 1u) {
-    return;
-  }
   DCHECK(editing_list_widget_);
   if (auto* editing_list = GetEditingList()) {
-    editing_list->ShowEduNudgeForEditingTip();
+    editing_list->MayShowEduNudgeForEditingTip();
   }
 }
 

@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/style/icon_button.h"
+#include "ash/system/toast/anchored_nudge.h"
 #include "base/check.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
@@ -166,6 +168,20 @@ class EditingListTest : public OverlayViewTestBase {
   bool IsButtonOptionsMenuVisible() {
     auto* menu_widget = controller_->button_options_widget_.get();
     return menu_widget && menu_widget->IsVisible();
+  }
+
+  bool IsKeyEditNudgeShown() const {
+    DCHECK(controller_);
+    auto* editing_list = controller_->GetEditingList();
+    DCHECK(editing_list);
+    return editing_list->IsKeyEditNudgeShownForTesting();
+  }
+
+  ash::AnchoredNudge* GetKeyEditNudge() const {
+    DCHECK(controller_);
+    auto* editing_list = controller_->GetEditingList();
+    DCHECK(editing_list);
+    return editing_list->GetKeyEditNudgeForTesting();
   }
 
   void PressDoneButtonOnButtonOptionsMenu() {
@@ -405,21 +421,46 @@ TEST_F(EditingListTest, TestEducationNudge) {
   EXPECT_TRUE(input_mapping_nudge);
   EXPECT_TRUE(
       input_mapping_nudge->IsStackedAbove(input_mapping->GetNativeView()));
+}
 
-  // After editing the first action, which means closing `ButtonOptionsMenu`,
-  // education nudge shows up for editing tip.
-  PressDoneButtonOnButtonOptionsMenu();
-  editing_list_nudge = GetEducationNudge(editing_list);
-  EXPECT_TRUE(editing_list_nudge);
-  EXPECT_TRUE(
-      editing_list_nudge->IsStackedAbove(editing_list->GetNativeView()));
-  EXPECT_FALSE(GetEducationNudge(input_mapping));
+TEST_F(EditingListTest, TestKeyEditNudge) {
+  // Key edit nudge shows up after the first action's `ButtonOptionsMenu`.
+  EXPECT_FALSE(IsKeyEditNudgeShown());
 
-  // No education nudge after adding another action.
+  // Remove all actions.
+  for (const auto& action : touch_injector_->actions()) {
+    controller_->RemoveAction(action.get());
+  }
+
+  // Add the first action.
   AddNewAction();
   PressDoneButtonOnButtonOptionsMenu();
-  EXPECT_FALSE(GetEducationNudge(editing_list));
-  EXPECT_FALSE(GetEducationNudge(input_mapping));
+  EXPECT_TRUE(IsKeyEditNudgeShown());
+
+  // Click on key edit nudge and it still shows GC UIs.
+  auto* key_edit_nudge = GetKeyEditNudge();
+  EXPECT_TRUE(key_edit_nudge);
+  LeftClickOn(key_edit_nudge->GetContentsView());
+  EXPECT_TRUE(GetEditingListWidget());
+
+  // Move mouse outside of the nudge and it will close in 6 seconds.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  task_environment()->FastForwardBy(base::Seconds(6));
+  EXPECT_FALSE(IsKeyEditNudgeShown());
+
+  // Open the button options menu and close it again, it won't show eidt nudge
+  // again because it only shows once.
+  const auto& actions = touch_injector_->actions();
+  EXPECT_EQ(1u, GetActionListItemsSize());
+  ShowButtonOptionsMenu(actions[actions.size() - 1].get());
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_FALSE(IsKeyEditNudgeShown());
+
+  // No key edit nudge after adding another action.
+  AddNewAction();
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_FALSE(IsKeyEditNudgeShown());
 }
 
 TEST_F(EditingListTest, TestScrollView) {

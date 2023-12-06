@@ -31,7 +31,7 @@ void OverlayViewTestBase::PressAddButton() {
   if (!editing_list_) {
     return;
   }
-  editing_list_->OnAddButtonPressed();
+  LeftClickOn(editing_list_->add_button_);
 }
 
 size_t OverlayViewTestBase::GetActionViewSize() {

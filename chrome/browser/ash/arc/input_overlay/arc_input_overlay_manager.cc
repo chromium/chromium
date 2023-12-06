@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -36,6 +37,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
 namespace arc::input_overlay {
@@ -78,6 +80,44 @@ void CheckWriteResult(std::string package_name, bool result) {
     return;
   }
   LOG(ERROR) << "Failed to write proto for " << package_name;
+}
+
+// Returns the anchor window where `window` is anchored to if `window` is
+// `BubbleDialogDelegateView` related and `window` has
+// `ash::GameDashboardMainMenuView` or `ash::AnchoredNudge` as its contents
+// view. Otherwise, returns nullptr.
+aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
+  DCHECK(window);
+
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  DCHECK(widget);
+
+  // Check whether `window` has `BubbleDialogDelegateView` or its sub-class
+  // instance as its contents view.
+  auto* window_delegate = widget->widget_delegate();
+  if (!window_delegate) {
+    return nullptr;
+  }
+  auto* bubble_delegate = window_delegate->AsBubbleDialogDelegate();
+  if (!bubble_delegate) {
+    return nullptr;
+  }
+
+  auto* contents_view = bubble_delegate->GetContentsView();
+  views::Widget* anchor_widget = nullptr;
+  if (views::AsViewClass<ash::GameDashboardMainMenuView>(contents_view)) {
+    // `window` has `ash::GameDashboardMainMenuView` as contents view.
+    anchor_widget = widget->parent();
+    DCHECK(anchor_widget);
+  } else if (views::AsViewClass<ash::AnchoredNudge>(contents_view)) {
+    // `window` has `ash::AnchoredNudge` as contents view.
+    if (auto* nudge_anchor_view = bubble_delegate->GetAnchorView()) {
+      anchor_widget = nudge_anchor_view->GetWidget();
+      DCHECK(anchor_widget);
+    }
+  }
+
+  return anchor_widget ? anchor_widget->GetNativeWindow() : nullptr;
 }
 
 }  // namespace
@@ -729,36 +769,16 @@ aura::Window* ArcInputOverlayManager::GetAnchorWindow(aura::Window* window) {
   // TODO(b/314687082): It still needs to find a way to reproduce the crash.
   // Right now, return `window` directly for pre-beta version to stabilize
   // ChromeOS.
-  if (!IsBeta()) {
+  if (!IsBeta() || !window) {
     return window;
   }
 
-  if (window) {
-    auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-    DCHECK(widget);
-    // Check whether `window` is the Game Dashboard main menu dialog window.
-    if (auto* widget_delegate = widget->widget_delegate()) {
-      if (auto* bubble_delegate = widget_delegate->AsBubbleDialogDelegate()) {
-        if (views::AsViewClass<ash::GameDashboardMainMenuView>(
-                bubble_delegate->GetContentsView())) {
-          auto* widget_parent = widget->parent();
-          DCHECK(widget_parent);
-          auto* native_parent_window = widget_parent->GetNativeWindow();
-          DCHECK(native_parent_window);
-          return wm::GetTransientParent(native_parent_window);
-        }
-      }
-    }
+  auto* bubble_anchor_window = GetGameBubbleDialogAnchorWindow(window);
+  auto* pending_window = bubble_anchor_window ? bubble_anchor_window : window;
 
-    // Check whether `window` is a transient sibling window.
-    auto* native_window = widget->GetNativeWindow();
-    DCHECK(native_window);
-    if (auto* anchor_window = wm::GetTransientParent(native_window)) {
-      return anchor_window;
-    }
-  }
-
-  return window;
+  // Check whether `pending_window` is a transient sibling window.
+  auto* transient_parent = wm::GetTransientParent(pending_window);
+  return transient_parent ? transient_parent : window;
 }
 
 }  // namespace arc::input_overlay
