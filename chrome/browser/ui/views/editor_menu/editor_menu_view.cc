@@ -14,8 +14,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_badge_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
-#include "chrome/browser/ui/views/editor_menu/editor_menu_gradient_badge.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
@@ -31,7 +31,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -56,6 +55,8 @@ constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
 
 // Min width in rewrite mode to ensure there is space for the chips.
 constexpr int kEditorMenuRewriteModeMinWidth = 288;
+
+constexpr int kBadgeHorizontalPadding = 8;
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
@@ -210,11 +211,10 @@ void EditorMenuView::AddTitleContainer() {
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
   title->SetEnabledColorId(ui::kColorSysOnSurface);
 
-  auto* badge = title_container_->AddChildView(
-      std::make_unique<EditorMenuGradientBadge>());
-  badge->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(0, views::BadgePainter::kBadgeHorizontalMargin));
+  auto* badge =
+      title_container_->AddChildView(std::make_unique<EditorMenuBadgeView>());
+  badge->SetProperty(views::kMarginsKey,
+                     gfx::Insets::VH(0, kBadgeHorizontalPadding));
 
   auto* spacer =
       title_container_->AddChildView(std::make_unique<views::View>());
