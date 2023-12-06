@@ -139,16 +139,16 @@ void SyncSchedulerImpl::OnConnectionStatusChange(
 void SyncSchedulerImpl::OnServerConnectionErrorFixed() {
   // There could be a pending nudge or configuration job in several cases:
   //
-  // 1. We're in exponential backoff.
-  // 2. We're silenced / throttled.
-  // 3. A nudge was saved previously due to not having a valid access token.
-  // 4. A nudge was scheduled + saved while in configuration mode.
+  // 1. The client is in exponential backoff.
+  // 2. The client is throttled.
+  // 3. A previous auth error got fixed.
+  // 4. A nudge happened while in configuration mode.
   //
-  // In all cases except (2), we want to retry contacting the server. We use
-  // CANARY_PRIORITY to achieve this, and note that nothing -- not even a
-  // canary job -- can bypass a THROTTLED WaitInterval. The only thing that
-  // has the authority to do that is the Unthrottle timer.
-  TrySyncCycleJob(CANARY_PRIORITY);
+  // In all cases except (2), we want to retry contacting the server. We ignore
+  // global backoff to achieve this, and note that nothing can bypass a
+  // kThrottled WaitInterval - the only thing that has the authority to do that
+  // is the Unthrottle timer.
+  TrySyncCycleJob(RespectGlobalBackoff(false));
 }
 
 void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
@@ -189,8 +189,8 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
     // Update our current time before checking IsRetryRequired().
     nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes()) &&
-        CanRunNudgeJobNow(NORMAL_PRIORITY)) {
-      TrySyncCycleJob(NORMAL_PRIORITY);
+        CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
+      TrySyncCycleJob(RespectGlobalBackoff(true));
     }
   }
 }
@@ -251,14 +251,14 @@ void SyncSchedulerImpl::ScheduleConfiguration(
     // Cache configuration parameters since TrySyncCycleJob() posts a task.
     pending_configure_params_ = std::make_unique<ConfigurationParams>(
         origin, types_to_download, std::move(ready_task));
-    TrySyncCycleJob(NORMAL_PRIORITY);
+    TrySyncCycleJob(RespectGlobalBackoff(true));
   } else {
     SDVLOG(2) << "No change in routing info, calling ready task directly.";
     std::move(ready_task).Run();
   }
 }
 
-bool SyncSchedulerImpl::CanRunJobNow(JobPriority priority) {
+bool SyncSchedulerImpl::CanRunJobNow(RespectGlobalBackoff respect_backoff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsGlobalThrottle()) {
@@ -266,7 +266,7 @@ bool SyncSchedulerImpl::CanRunJobNow(JobPriority priority) {
     return false;
   }
 
-  if (IsGlobalBackoff() && priority != CANARY_PRIORITY) {
+  if (IsGlobalBackoff() && respect_backoff) {
     SDVLOG(1) << "Unable to run a job because we're backing off.";
     return false;
   }
@@ -280,10 +280,11 @@ bool SyncSchedulerImpl::CanRunJobNow(JobPriority priority) {
   return true;
 }
 
-bool SyncSchedulerImpl::CanRunNudgeJobNow(JobPriority priority) {
+bool SyncSchedulerImpl::CanRunNudgeJobNow(
+    RespectGlobalBackoff respect_backoff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!CanRunJobNow(priority)) {
+  if (!CanRunJobNow(respect_backoff)) {
     SDVLOG(1) << "Unable to run a nudge job right now";
     return false;
   }
@@ -356,8 +357,9 @@ void SyncSchedulerImpl::ScheduleNudgeImpl(const base::TimeDelta& delay) {
   SDVLOG(2) << "In ScheduleNudgeImpl with delay " << delay.InMilliseconds()
             << " ms";
 
-  if (!CanRunNudgeJobNow(NORMAL_PRIORITY))
+  if (!CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
     return;
+  }
 
   if (!IsEarlierThanCurrentPendingJob(delay)) {
     // Old job arrives sooner than this one.  Don't reschedule it.
@@ -427,11 +429,10 @@ void SyncSchedulerImpl::DoNudgeSyncCycleJob() {
     nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(types);
     HandleSuccess();
 
-    // If this was a canary, we may need to restart the poll timer (the poll
-    // timer may have fired while the scheduler was in an error state, ignoring
-    // the poll).
+    // The poll timer may need to be restarted, in case it fired while the
+    // scheduler was in an error state, ignoring the poll.
     if (!poll_timer_.IsRunning()) {
-      SDVLOG(1) << "Canary succeeded, restarting polling.";
+      SDVLOG(1) << "Job succeeded, restarting polling.";
       AdjustPolling(UPDATE_INTERVAL);
     }
   } else {
@@ -439,12 +440,13 @@ void SyncSchedulerImpl::DoNudgeSyncCycleJob() {
   }
 }
 
-void SyncSchedulerImpl::DoConfigurationSyncCycleJob(JobPriority priority) {
+void SyncSchedulerImpl::DoConfigurationSyncCycleJob(
+    RespectGlobalBackoff respect_backoff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(mode_, CONFIGURATION_MODE);
   DCHECK(pending_configure_params_ != nullptr);
 
-  if (!CanRunJobNow(priority)) {
+  if (!CanRunJobNow(respect_backoff)) {
     SDVLOG(2) << "Unable to run configure job right now.";
     return;
   }
@@ -618,13 +620,15 @@ void SyncSchedulerImpl::Stop() {
     started_ = false;
 }
 
-void SyncSchedulerImpl::TrySyncCycleJob(JobPriority priority) {
+void SyncSchedulerImpl::TrySyncCycleJob(RespectGlobalBackoff respect_backoff) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&SyncSchedulerImpl::TrySyncCycleJobImpl,
-                                weak_ptr_factory_.GetWeakPtr(), priority));
+      FROM_HERE,
+      base::BindOnce(&SyncSchedulerImpl::TrySyncCycleJobImpl,
+                     weak_ptr_factory_.GetWeakPtr(), respect_backoff));
 }
 
-void SyncSchedulerImpl::TrySyncCycleJobImpl(JobPriority priority) {
+void SyncSchedulerImpl::TrySyncCycleJobImpl(
+    RespectGlobalBackoff respect_backoff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
@@ -632,9 +636,9 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(JobPriority priority) {
   if (mode_ == CONFIGURATION_MODE) {
     if (pending_configure_params_) {
       SDVLOG(2) << "Found pending configure job";
-      DoConfigurationSyncCycleJob(priority);
+      DoConfigurationSyncCycleJob(respect_backoff);
     }
-  } else if (CanRunNudgeJobNow(priority)) {
+  } else if (CanRunNudgeJobNow(respect_backoff)) {
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes())) {
       SDVLOG(2) << "Found pending nudge job";
       DoNudgeSyncCycleJob();
@@ -647,7 +651,7 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(JobPriority priority) {
     }
   } else {
     // We must be in an error state. Transitioning out of each of these
-    // error states should trigger a canary job.
+    // error states should trigger a sync cycle job.
     DCHECK(IsGlobalThrottle() || IsGlobalBackoff() ||
            cycle_context_->connection_manager()->HasInvalidAccessToken());
   }
@@ -659,11 +663,11 @@ void SyncSchedulerImpl::PollTimerCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!syncer_->IsSyncing());
 
-  TrySyncCycleJob(NORMAL_PRIORITY);
+  TrySyncCycleJob(RespectGlobalBackoff(true));
 }
 
 void SyncSchedulerImpl::RetryTimerCallback() {
-  TrySyncCycleJob(NORMAL_PRIORITY);
+  TrySyncCycleJob(RespectGlobalBackoff(true));
 }
 
 void SyncSchedulerImpl::Unthrottle() {
@@ -673,12 +677,12 @@ void SyncSchedulerImpl::Unthrottle() {
   // We're no longer throttled, so clear the wait interval.
   wait_interval_.reset();
 
-  // We treat this as a 'canary' in the sense that it was originally scheduled
-  // to run some time ago, failed, and we now want to retry, versus a job that
-  // was just created (e.g via ScheduleNudgeImpl). The main implication is
+  // Ignore global backoff here, because this work was originally scheduled
+  // to run some time ago, failed, and should now be retried, versus a job that
+  // was just created (e.g. via ScheduleNudgeImpl). The main implication is
   // that we're careful to update routing info (etc) with such potentially
-  // stale canary jobs.
-  TrySyncCycleJob(CANARY_PRIORITY);
+  // stale jobs.
+  TrySyncCycleJob(RespectGlobalBackoff(false));
 }
 
 void SyncSchedulerImpl::OnTypesUnblocked() {
@@ -689,8 +693,8 @@ void SyncSchedulerImpl::OnTypesUnblocked() {
   // Maybe this is a good time to run a nudge job.  Let's try it.
   // If not a good time, reschedule a new run.
   if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes()) &&
-      CanRunNudgeJobNow(NORMAL_PRIORITY)) {
-    TrySyncCycleJob(NORMAL_PRIORITY);
+      CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
+    TrySyncCycleJob(RespectGlobalBackoff(true));
   } else {
     RestartWaiting();
   }
@@ -699,8 +703,8 @@ void SyncSchedulerImpl::OnTypesUnblocked() {
 void SyncSchedulerImpl::PerformDelayedNudge() {
   // Circumstances may have changed since we scheduled this delayed nudge.
   // We must check to see if it's OK to run the job before we do so.
-  if (CanRunNudgeJobNow(NORMAL_PRIORITY)) {
-    TrySyncCycleJob(NORMAL_PRIORITY);
+  if (CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
+    TrySyncCycleJob(RespectGlobalBackoff(true));
   } else {
     // If we set |wait_interval_| while this PerformDelayedNudge was pending
     // callback scheduled to |retry_timer_|, it's possible we didn't re-schedule
@@ -711,7 +715,7 @@ void SyncSchedulerImpl::PerformDelayedNudge() {
 }
 
 void SyncSchedulerImpl::ExponentialBackoffRetry() {
-  TrySyncCycleJob(CANARY_PRIORITY);
+  TrySyncCycleJob(RespectGlobalBackoff(false));
 }
 
 void SyncSchedulerImpl::NotifyRetryTime(base::Time retry_time) {
