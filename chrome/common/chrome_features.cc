@@ -461,7 +461,7 @@ BASE_FEATURE(kFileTransferEnterpriseConnector,
 
 BASE_FEATURE(kFileTransferEnterpriseConnectorUI,
              "FileTransferEnterpriseConnectorUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
