@@ -693,7 +693,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Cancelled at fallback"/>
   <int value="9" label="Cancelled at setup"/>
   <int value="10" label="Local file task"/>
-  <int value="11" label="File already being uploaded"/>
 </enum>
 
 <enum name="RestoreFailedNoParentType">
