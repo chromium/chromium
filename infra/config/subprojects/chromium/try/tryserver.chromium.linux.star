@@ -450,6 +450,7 @@ try_.builder(
     ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_enabled = True,
     tryjob = try_.job(),
 )
 
