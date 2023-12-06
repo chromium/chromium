@@ -7575,7 +7575,7 @@
   {
     "name": "surface-control-magnifier",
     "owners": [ "boliu@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "swap-backquote-keys-in-iso-keyboard",
