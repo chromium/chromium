@@ -111,6 +111,18 @@ class FloatingWorkspaceService : public KeyedService,
 
   std::vector<const ash::DeskTemplate*> GetFloatingWorkspaceTemplateEntries();
 
+  // Setups the convenience pointers to the dependent services and observers.
+  // This will be called when the service is first initialized and when the
+  // active user session is changed back to the first logged in user.
+  void SetUpServiceAndObservers(
+      syncer::SyncService* sync_service,
+      desks_storage::DeskSyncService* desk_sync_service);
+
+  // Shuts down the observers and dependent services.
+  // This will be called when the user session changes to a different user or on
+  // service shutdown.
+  void ShutDownServicesAndObservers();
+
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
@@ -229,18 +241,6 @@ class FloatingWorkspaceService : public KeyedService,
   // Updates the `is_cache_ready_` status if all the required app types are
   // initialized.
   bool AreRequiredAppTypesInitialized();
-
-  // Shuts down the observers and dependent services.
-  // This will be called when the user session changes to a different user or on
-  // service shutdown.
-  void ShutDownServicesAndObservers();
-
-  // Setups the convenience pointers to the dependent services and observers.
-  // This will be called when the service is first initialized and when the
-  // active user session is changed back to the first logged in user.
-  void SetUpServiceAndObservers(
-      syncer::SyncService* sync_service,
-      desks_storage::DeskSyncService* desk_sync_service);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 

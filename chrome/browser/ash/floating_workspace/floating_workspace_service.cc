@@ -976,9 +976,7 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   // Remove `this` service as an observer so we do not run into an issue where
   // chrome sync data is downloaded and the capture is kicked started after we
   // stopped the capture timer below.
-  if (sync_service_ && sync_service_->HasObserver(this)) {
-    sync_service_->RemoveObserver(this);
-  }
+  OnSyncShutdown(sync_service_);
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   if (app_cache_obs_.IsObserving()) {

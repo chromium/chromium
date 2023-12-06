@@ -167,7 +167,8 @@ class DesksClient : public ash::SessionObserver {
 
   // Uses `app_launch_handler_` to launch apps from the restore data found in
   // `desk_template`.
-  void LaunchAppsFromTemplate(std::unique_ptr<ash::DeskTemplate> desk_template);
+  virtual void LaunchAppsFromTemplate(
+      std::unique_ptr<ash::DeskTemplate> desk_template);
 
   // Returns either the local desk storage backend or Chrome sync desk storage
   // backend depending on the feature flag DeskTemplateSync.
@@ -188,7 +189,7 @@ class DesksClient : public ash::SessionObserver {
                                        bool all_desk);
 
   // Returns the UUID of active desk.
-  base::Uuid GetActiveDesk();
+  virtual base::Uuid GetActiveDesk();
 
   // Retrieves desk by its UUID.
   virtual base::expected<const ash::Desk*, DesksClient::DeskActionError>
