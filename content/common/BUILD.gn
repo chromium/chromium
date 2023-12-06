@@ -170,6 +170,8 @@ source_set("common") {
     "input/tap_suppression_controller.h",
     "input/touch_event_stream_validator.cc",
     "input/touch_event_stream_validator.h",
+    "input/touchpad_pinch_event_queue.cc",
+    "input/touchpad_pinch_event_queue.h",
     "input/touchpad_tap_suppression_controller.cc",
     "input/touchpad_tap_suppression_controller.h",
     "input/touchscreen_tap_suppression_controller.cc",

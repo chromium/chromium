@@ -1749,8 +1749,6 @@ source_set("browser") {
     "renderer_host/input/touch_selection_controller_client_child_frame.h",
     "renderer_host/input/touch_timeout_handler.cc",
     "renderer_host/input/touch_timeout_handler.h",
-    "renderer_host/input/touchpad_pinch_event_queue.cc",
-    "renderer_host/input/touchpad_pinch_event_queue.h",
     "renderer_host/ipc_utils.cc",
     "renderer_host/ipc_utils.h",
     "renderer_host/isolated_web_app_throttle.cc",

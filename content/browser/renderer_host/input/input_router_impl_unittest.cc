@@ -138,7 +138,7 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   void OnImeCancelComposition() override {}
 
-  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() override {
+  StylusInterface* GetStylusInterface() override {
     return render_widget_host_view_;
   }
 
@@ -2347,8 +2347,7 @@ TEST_F(InputRouterImplStylusWritingTest,
   // Set RequestStartStylusWriting() to return true, to ensure scroll events are
   // not filtered when touch action is not writable.
   mock_view_->set_supports_stylus_writing(true);
-  ASSERT_TRUE(
-      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  ASSERT_TRUE(client_->GetStylusInterface()->RequestStartStylusWriting());
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
   // scroll begin is not filtered when kInternalNotWritable is set.
@@ -2365,8 +2364,7 @@ TEST_F(InputRouterImplStylusWritingTest,
   PressAndSetTouchActionWritable();
 
   // RequestStartStylusWriting() returns false by default.
-  ASSERT_FALSE(
-      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  ASSERT_FALSE(client_->GetStylusInterface()->RequestStartStylusWriting());
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
@@ -2414,8 +2412,7 @@ TEST_F(InputRouterImplStylusWritingTest, StylusWritingNotStartedForMultiTouch) {
 
   // Set RequestStartStylusWriting() to return true.
   mock_view_->set_supports_stylus_writing(true);
-  ASSERT_TRUE(
-      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  ASSERT_TRUE(client_->GetStylusInterface()->RequestStartStylusWriting());
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 2));
   DispatchedMessages dispatched_messages = GetAndResetDispatchedMessages();
@@ -2434,8 +2431,7 @@ TEST_F(InputRouterImplStylusWritingTest,
 
   // Set RequestStartStylusWriting() to return true.
   mock_view_->set_supports_stylus_writing(true);
-  ASSERT_TRUE(
-      client_->GetRenderWidgetHostViewBase()->RequestStartStylusWriting());
+  ASSERT_TRUE(client_->GetStylusInterface()->RequestStartStylusWriting());
   // GestureScrollBegin is filtered.
   SimulateGestureEvent(SyntheticWebGestureEventBuilder::BuildScrollBegin(
       2.f, 2.f, blink::WebGestureDevice::kTouchscreen, /* pointer_count */ 1));

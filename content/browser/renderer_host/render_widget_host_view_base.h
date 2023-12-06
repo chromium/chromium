@@ -24,6 +24,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "content/browser/renderer_host/display_feature.h"
+#include "content/browser/renderer_host/input/input_router_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
@@ -78,7 +79,8 @@ class WebContentsAccessibility;
 class DelegatedFrameHost;
 
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
-class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
+class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
+                                                public StylusInterface {
  public:
   // The TooltipObserver is used in browser tests only.
   class CONTENT_EXPORT TooltipObserver {
@@ -260,11 +262,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void FocusedNodeChanged(bool is_editable_node,
                                   const gfx::Rect& node_bounds_in_screen) {}
 
+  // StylusInterface overrides
   // Requests to start stylus writing and returns true if successful.
-  virtual bool RequestStartStylusWriting();
-
+  bool RequestStartStylusWriting() override;
   // Notify whether the hovered element action is stylus writable or not.
-  virtual void NotifyHoverActionStylusWritable(bool stylus_writable) {}
+  void NotifyHoverActionStylusWritable(bool stylus_writable) override {}
 
   // This message is received when the stylus writable element is focused.
   // It receives the focused edit element bounds and the current caret bounds

@@ -3011,6 +3011,10 @@ RenderWidgetHostViewBase* RenderWidgetHostImpl::GetRenderWidgetHostViewBase() {
   return GetView();
 }
 
+StylusInterface* RenderWidgetHostImpl::GetStylusInterface() {
+  return static_cast<StylusInterface*>(GetView());
+}
+
 void RenderWidgetHostImpl::OnStartStylusWriting() {
   if (blink_frame_widget_) {
     auto callback = base::BindOnce(

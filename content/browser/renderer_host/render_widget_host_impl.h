@@ -786,7 +786,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const absl::optional<std::vector<gfx::Rect>>& character_bounds,
       const absl::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
-  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() override;
+  StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
@@ -807,6 +807,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void ProgressFlingIfNeeded(base::TimeTicks current_time);
   void StopFling();
+
+  RenderWidgetHostViewBase* GetRenderWidgetHostViewBase();
 
   // The RenderWidgetHostImpl will keep showing the old page (for a while) after
   // navigation until the first frame of the new page arrives. This reduces
