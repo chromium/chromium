@@ -2381,6 +2381,9 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kEnablePasswordsAccountStorageName[];
 extern const char kEnablePasswordsAccountStorageDescription[];
 
+extern const char kEnablePixDetectionName[];
+extern const char kEnablePixDetectionDescription[];
+
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 

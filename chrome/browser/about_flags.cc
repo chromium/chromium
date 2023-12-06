@@ -5908,6 +5908,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillVirtualViewStructureAndroid)},
+    {"enable-pix-detection", flag_descriptions::kEnablePixDetectionName,
+     flag_descriptions::kEnablePixDetectionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(autofill::features::kEnablePixDetection)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

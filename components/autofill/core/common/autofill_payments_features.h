@@ -58,6 +58,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnablePixDetection);
 BASE_DECLARE_FEATURE(kEnablePixPayments);
 #endif
 

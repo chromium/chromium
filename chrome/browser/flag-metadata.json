@@ -3258,6 +3258,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "enable-pix-detection",
+    "owners": [ "vishwasuppoor@google.com", "rouslan@chromium.org", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav@chromium.org", "oshima@chromium.org" ],
     "expiry_milestone": 116
