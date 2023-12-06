@@ -250,12 +250,15 @@ export class ParserMetadata {
   };
   height?: number;
   width?: number;
+  duration?: number;
   mimeType?: string;
 
   title?: string;
   artist?: string;
   album?: string;
   description?: Array<{key: string, value: string}>;
+
+  mpegBrand?: string;
 
   id3v2?: {
     majorVersion: number,
