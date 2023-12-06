@@ -12,7 +12,7 @@
 # If needed, update the unzip line as appropriate.
 
 # CLDR release to checkout. See http://cldr.unicode.org/index/downloads
-CLDR_URL='http://unicode.org/Public/cldr/40/cldr-common-40.0.zip'
+CLDR_URL='http://unicode.org/Public/cldr/44/cldr-common-44.0.zip'
 # To update the CLDR files, change this URL and also update the Version
 # field in README.chromium. Then run this script and commit the changes.
 
