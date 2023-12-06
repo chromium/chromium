@@ -32,6 +32,12 @@
 </style>
 
 <div class="tab-organization-container">
+  <picture>
+    <source media="(prefers-color-scheme: dark)"
+        srcset="./images/not_started_dark.svg">
+    <!-- TODO(emshack): Add alt text -->
+    <img id="product-logo" srcset="./images/not_started.svg" alt="">
+  </picture>
   <div class="tab-organization-text-container">
     <div class="tab-organization-header">[[getTitle_(showFre)]]</div>
     <div class="tab-organization-body">
@@ -41,7 +47,7 @@
   <template is="dom-if" if="[[shouldShowAccountInfo_(sync_, account_)]]">
     <div class="account-row">
       <!-- TODO(emshack): Add alt text -->
-      <img class="account-image" alt="" 
+      <img class="account-image" alt=""
           src="[[getAccountImageSrc_(account_.avatarImage)]]">
       <div class="account-text">
         <div class="tab-organization-header">[[account_.name]]</div>

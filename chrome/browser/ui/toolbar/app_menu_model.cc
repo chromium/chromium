@@ -1872,7 +1872,7 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_VIEW_PASSWORDS, kKeyOpenChromeRefreshIcon);
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
     SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
-    SetCommandIcon(this, IDC_ORGANIZE_TABS, kPaintbrushIcon);
+    SetCommandIcon(this, IDC_ORGANIZE_TABS, kAutoTabGroupsIcon);
     SetCommandIcon(this, IDC_SHOW_TRANSLATE, kTranslateIcon);
     SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     SetCommandIcon(this, IDC_SAVE_AND_SHARE_MENU, kFileSaveChromeRefreshIcon);

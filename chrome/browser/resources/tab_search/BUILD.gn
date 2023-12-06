@@ -18,6 +18,10 @@ build_webui("build") {
     "alert_indicators/tab_audio_muting_rounded.svg",
     "alert_indicators/tab_audio_rounded.svg",
     "alert_indicators/tab_media_recording.svg",
+    "images/auto_tab_groups.svg",
+    "images/not_started.svg",
+    "images/not_started_dark.svg",
+    "images/tab_search.svg",
     "tab_search.html",
   ]
 

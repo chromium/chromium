@@ -36,8 +36,8 @@ export class TabSearchAppElement extends PolymerElement {
       tabIcons_: {
         type: Array,
         value: () =>
-            ['chrome://resources/images/error.svg',
-             'chrome://resources/images/error.svg',
+            ['images/tab_search.svg',
+             'images/auto_tab_groups.svg',
     ],
       },
 
