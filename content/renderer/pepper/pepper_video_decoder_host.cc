@@ -152,6 +152,19 @@ PepperVideoDecoderHost::MappedBuffer::MappedBuffer(MappedBuffer&&) = default;
 PepperVideoDecoderHost::MappedBuffer& PepperVideoDecoderHost::MappedBuffer::
 operator=(MappedBuffer&&) = default;
 
+PepperVideoDecoderHost::SharedImage::SharedImage(
+    gfx::Size size,
+    PictureBufferState state,
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image)
+    : size(size),
+      state(state),
+      client_shared_image(std::move(client_shared_image)) {}
+
+PepperVideoDecoderHost::SharedImage::SharedImage(
+    const SharedImage& shared_image) = default;
+
+PepperVideoDecoderHost::SharedImage::~SharedImage() = default;
+
 PepperVideoDecoderHost::PepperVideoDecoderHost(RendererPpapiHost* host,
                                                PP_Instance instance,
                                                PP_Resource resource)
@@ -179,10 +192,11 @@ PepperVideoDecoderHost::~PepperVideoDecoderHost() {
 
       auto* sii = context_provider->SharedImageInterface();
 
-      for (const auto& shared_image : shared_images_) {
+      for (auto& shared_image : shared_images_) {
         // All assigned textures should have been destroyed by `decoder_`
         CHECK_NE(shared_image.second.state, PictureBufferState::ASSIGNED);
-        sii->DestroySharedImage(sync_token, shared_image.first);
+        sii->DestroySharedImage(
+            sync_token, std::move(shared_image.second.client_shared_image));
       }
     }
   }
@@ -560,9 +574,9 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
   // SyncTokens just for creation wait on it here.
   rii->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-  shared_images_.emplace(
-      mailbox,
-      SharedImage{.size = size, .state = PictureBufferState::ASSIGNED});
+  shared_images_.emplace(mailbox,
+                         SharedImage{size, PictureBufferState::ASSIGNED,
+                                     std::move(client_shared_image)});
   return mailbox;
 }
 
@@ -590,7 +604,8 @@ void PepperVideoDecoderHost::DestroySharedImageInternal(
       sync_token.GetData());
 
   auto* sii = context_provider->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, it->first);
+  sii->DestroySharedImage(sync_token,
+                          std::move(it->second.client_shared_image));
   shared_images_.erase(it);
 }
 
