@@ -55,9 +55,10 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
  public:
   ~BitmapSoftwareBacking() override {
     if (shared_bitmap_id.IsSharedImage()) {
-      DCHECK(frame_sink->shared_image_interface());
-      frame_sink->shared_image_interface()->DestroySharedImage(
-          mailbox_sync_token, std::move(shared_image));
+      if (frame_sink->shared_image_interface()) {
+        frame_sink->shared_image_interface()->DestroySharedImage(
+            mailbox_sync_token, std::move(shared_image));
+      }
     } else {
       frame_sink->DidDeleteSharedBitmap(shared_bitmap_id);
     }
@@ -123,7 +124,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
 
     auto* shared_image_interface =
         backing_->frame_sink->shared_image_interface();
-    if (shared_image_interface) {
+    if (backing_->shared_bitmap_id.IsSharedImage() && shared_image_interface) {
       backing_->mailbox_sync_token =
           shared_image_interface->GenVerifiedSyncToken();
     }
