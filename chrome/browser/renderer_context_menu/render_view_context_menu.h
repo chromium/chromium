@@ -361,6 +361,7 @@ class RenderViewContextMenu
   void ExecSearchWebInCompanionSidePanel(const GURL& url);
   void ExecSearchWebInSidePanel(const GURL& url);
   void ExecOpenWebApp();
+  void ExecOpenLinkPreview();
   void ExecProtocolHandler(int event_flags, int handler_index);
   void ExecOpenLinkInProfile(int profile_index);
   void ExecInspectElement();

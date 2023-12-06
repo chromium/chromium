@@ -9085,6 +9085,7 @@ Called by update_net_error_codes.py.-->
       label="Translate text in image with non-Google visual search provider"/>
   <int value="28" label="Translate text in image with Google Lens"/>
   <int value="29" label="Search web for... in new tab"/>
+  <int value="30" label="Open link in preview"/>
 </enum>
 
 <enum name="ContextualSearchCardTag">
@@ -47107,6 +47108,7 @@ Called by update_net_error_codes.py.-->
   <int value="141" label="IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS"/>
   <int value="142" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME"/>
   <int value="143" label="IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME"/>
+  <int value="144" label="IDC_CONTENT_CONTEXT_OPENLINKPREVIEW"/>
 </enum>
 
 <enum name="ReportProcessingResult">

@@ -203,6 +203,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -515,13 +516,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS, 141},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME, 142},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME, 143},
+       {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 144},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 144}});
+       {0, 145}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -556,13 +558,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 27},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 29},
+       {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 30},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 30}});
+       {0, 31}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -1713,6 +1716,15 @@ void RenderViewContextMenu::AppendLinkItems() {
                  : IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
     }
 
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(b:315076421): Remove "New" badge for preview.
+    if (base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
+                                      IDS_CONTENT_CONTEXT_OPENLINKPREVIEW);
+      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     AppendOpenInWebAppLinkItems();
     AppendOpenWithLinkItems();
 
@@ -2684,6 +2696,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
+    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url);
 
@@ -3035,6 +3048,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
       ExecOpenWebApp();
+      break;
+
+    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
+      ExecOpenLinkPreview();
       break;
 
     case IDC_CONTENT_CONTEXT_SAVELINKAS:
@@ -3868,6 +3885,14 @@ void RenderViewContextMenu::ExecOpenWebApp() {
   launch_params.override_url = params_.link_url;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->LaunchAppWithParams(std::move(launch_params));
+}
+
+void RenderViewContextMenu::ExecOpenLinkPreview() {
+  CHECK(embedder_web_contents_);
+  CHECK(embedder_web_contents_->GetDelegate());
+
+  embedder_web_contents_->GetDelegate()->InitiatePreview(
+      *embedder_web_contents_, params_.link_url);
 }
 
 void RenderViewContextMenu::ExecProtocolHandler(int event_flags,
