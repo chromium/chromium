@@ -28,6 +28,14 @@
 
 namespace content {
 
+namespace {
+constexpr uint64_t kBytesPerKB = 1024;
+constexpr int kMinDatabaseSizeKB = 0;
+// Used for histogram reporting, the max size of the database we expect in KB.
+constexpr uint64_t kMaxDatabaseSizeKB = 512000 * 10;
+constexpr int kSizeKBBuckets = 1000;
+}  // namespace
+
 // static
 void MediaLicenseStorageHost::ReportDatabaseOpenError(
     MediaLicenseStorageHostOpenError error,
@@ -192,7 +200,25 @@ void MediaLicenseStorageHost::DidReadFile(
         storage_key(), cdm_type, file_name, data.value(), base::DoNothing());
     files_migrated_.emplace_back(file_name, cdm_type, storage_key());
   }
+
+  if (!database_size_reported_) {
+    db_.AsyncCall(&MediaLicenseDatabase::GetDatabaseSize)
+        .Then(base::BindOnce(&MediaLicenseStorageHost::DidGetDatabaseSize,
+                             weak_factory_.GetWeakPtr()));
+  }
+
   std::move(callback).Run(data);
+}
+
+void MediaLicenseStorageHost::DidGetDatabaseSize(const uint64_t size) {
+  // One time report DatabaseSize.
+
+  base::UmaHistogramCustomCounts(
+      "Media.EME.MediaLicenseStorageHost.CurrentDatabaseUsageKB",
+      size / kBytesPerKB, kMinDatabaseSizeKB, kMaxDatabaseSizeKB,
+      kSizeKBBuckets);
+
+  database_size_reported_ = true;
 }
 
 void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,

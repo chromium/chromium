@@ -34,6 +34,8 @@ class MediaLicenseDatabase {
 
   bool ClearDatabase();
 
+  uint64_t GetDatabaseSize();
+
  private:
   // Opens and sets up a database if one is not already set up.
   MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenDatabase(

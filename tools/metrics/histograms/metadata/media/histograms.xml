@@ -2916,6 +2916,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.QueryPageCount"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when querying for
+    page_count from the Media License Database. This UMA is recorded on every
+    error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.QueryPageSize"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when querying for page
+    size from the Media License Database. This UMA is recorded on every error
+    for this operation.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.ReadFile"
     enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2935,6 +2957,17 @@ chromium-metrics-reviews@google.com.
     This UMA records SQLite specific errors that occur when writing a file to
     the Media License Database. This UMA is recorded on every error for this
     operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseStorageHost.CurrentDatabaseUsageKB"
+    units="KB" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records the current MediaLicenseDatabase size in KB. This UMA is
+    recorded only once, on the first read, to retrieve usage levels of the
+    MediaLicenseDatabase.
   </summary>
 </histogram>
 
