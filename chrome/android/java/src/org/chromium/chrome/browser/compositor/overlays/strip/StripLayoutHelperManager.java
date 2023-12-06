@@ -143,7 +143,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private float mWidth; // in dp units
     private final float mHeight; // in dp units
     private int mOrientation;
-    private CompositorButton mModelSelectorButton;
+    private TintedCompositorButton mModelSelectorButton;
     private Context mContext;
     private boolean mBrowserScrimShowing;
     private boolean mIsHidden;
@@ -316,23 +316,17 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
-        CompositorOnClickHandler selectorClickHandler =
-                new CompositorOnClickHandler() {
-                    @Override
-                    public void onClick(long time) {
-                        handleModelSelectorButtonClick();
-                    }
-                };
+        CompositorOnClickHandler selectorClickHandler = time -> handleModelSelectorButtonClick();
         createModelSelectorButton(context, selectorClickHandler);
         // Model selector button background color.
         // Default bg color is surface inverse.
         @ColorInt
-        int BackgroundDefaultColor =
+        int backgroundDefaultColor =
                 context.getResources().getColor(R.color.model_selector_button_bg_color);
 
         // Incognito bg color is surface 1 baseline.
         @ColorInt
-        int BackgroundIncognitoColor =
+        int backgroundIncognitoColor =
                 context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline);
 
         @ColorInt
@@ -364,20 +358,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         int iconIncognitoColor =
                 context.getResources().getColor(R.color.default_icon_color_secondary_light);
 
-        ((TintedCompositorButton) mModelSelectorButton)
-                .setTint(
-                        iconDefaultColor, iconDefaultColor, iconIncognitoColor, iconIncognitoColor);
+        mModelSelectorButton.setTint(
+                iconDefaultColor, iconDefaultColor, iconIncognitoColor, iconIncognitoColor);
 
-        ((TintedCompositorButton) mModelSelectorButton)
-                .setBackgroundTint(
-                        BackgroundDefaultColor,
-                        BackgroundDefaultColor,
-                        BackgroundIncognitoColor,
-                        BackgroundIncognitoColor,
-                        apsBackgroundHoveredColor,
-                        apsBackgroundPressedColor,
-                        apsBackgroundHoveredIncognitoColor,
-                        apsBackgroundPressedIncognitoColor);
+        mModelSelectorButton.setBackgroundTint(
+                backgroundDefaultColor,
+                backgroundDefaultColor,
+                backgroundIncognitoColor,
+                backgroundIncognitoColor,
+                apsBackgroundHoveredColor,
+                apsBackgroundPressedColor,
+                apsBackgroundHoveredIncognitoColor,
+                apsBackgroundPressedIncognitoColor);
 
         // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
         // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
@@ -480,8 +472,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         R.drawable.ic_incognito);
 
         // Tab strip redesign button bg size is 32 * 32.
-        ((TintedCompositorButton) mModelSelectorButton)
-                .setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
+        mModelSelectorButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
         mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP;
     }
@@ -627,10 +618,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     public TintedCompositorButton getNewTabButton() {
         return getActiveStripLayoutHelper().getNewTabButton();
-    }
-
-    public boolean isTabStripFull() {
-        return getActiveStripLayoutHelper().isTabStripFull();
     }
 
     /**

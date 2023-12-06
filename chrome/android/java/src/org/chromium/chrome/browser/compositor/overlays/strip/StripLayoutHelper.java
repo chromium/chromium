@@ -515,7 +515,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      *
      * @return Whether the tab strip is full.
      */
-    protected boolean isTabStripFull() {
+    private boolean isTabStripFull() {
         return mCachedTabWidth < TabUiThemeUtil.getMaxTabStripTabWidthDp();
     }
 
