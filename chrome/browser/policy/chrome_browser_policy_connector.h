@@ -64,6 +64,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
+  // Called to signal the browser has started.
+  virtual void OnBrowserStarted();
+
   bool IsDeviceEnterpriseManaged() const override;
 
   bool HasMachineLevelPolicies() override;

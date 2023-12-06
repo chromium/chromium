@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -285,8 +287,16 @@ void BrowserPolicyConnectorAsh::Init(
           std::make_unique<ScheduledTaskExecutorImpl>(
               DeviceScheduledRebootHandler::kRebootTimerTag),
           reboot_notifications_scheduler_.get());
+}
 
-  crd_admin_session_controller_->Init(local_state);
+void BrowserPolicyConnectorAsh::OnBrowserStarted() {
+  ChromeBrowserPolicyConnector::OnBrowserStarted();
+
+  // `ash::Shell` is not available when `BrowserPolicyConnectorAsh::Init` is
+  // invoked, so we must delay this initialization until now.
+  crd_admin_session_controller_->Init(
+      local_state_,
+      CHECK_DEREF(ash::Shell::Get()).security_curtain_controller());
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {
@@ -300,6 +310,10 @@ void BrowserPolicyConnectorAsh::PreShutdown() {
   if (affiliated_invalidation_service_provider_) {
     affiliated_invalidation_service_provider_->Shutdown();
   }
+
+  // This controller depends on the `SecurityCurtainController` which will be
+  // destroyed before `BrowserPolicyConnectorAsh::Shutdown` is invoked.
+  crd_admin_session_controller_->Shutdown();
 }
 
 void BrowserPolicyConnectorAsh::Shutdown() {
@@ -345,8 +359,6 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   }
 
   adb_sideloading_allowance_mode_policy_handler_.reset();
-
-  crd_admin_session_controller_->Shutdown();
 
   ChromeBrowserPolicyConnector::Shutdown();
 }

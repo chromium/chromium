@@ -1403,6 +1403,8 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostBrowserStart();
 
+  browser_process_->browser_policy_connector()->OnBrowserStarted();
+
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // Allow ProcessSingleton to process messages.
   // This is done here instead of just relying on the main message loop's start

@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
@@ -23,6 +24,10 @@
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/session_id.h"
 #include "remoting/host/mojom/remote_support.mojom-forward.h"
+
+namespace ash::curtain {
+class SecurityCurtainController;
+}  // namespace ash::curtain
 
 namespace policy {
 
@@ -74,6 +79,7 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   void Init(PrefService* local_state,
+            ash::curtain::SecurityCurtainController& curtain_controller,
             base::OnceClosure done_callback = base::DoNothing());
   void Shutdown();
 
@@ -114,10 +120,12 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
                      const std::string& message) override;
 
   std::unique_ptr<RemotingServiceProxy> remoting_service_;
-  std::unique_ptr<CrdHostSession> active_session_;
-
   std::unique_ptr<RemoteActivityNotificationController>
       notification_controller_;
+  std::unique_ptr<CrdHostSession> active_session_;
+
+  raw_ptr<ash::curtain::SecurityCurtainController> curtain_controller_ =
+      nullptr;
 
   // During unittests the `DeviceOAuth2TokenService` will be null and the code
   // will instead use this OAuth token to restart a reconnectable session.

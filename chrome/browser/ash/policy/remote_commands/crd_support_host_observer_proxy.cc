@@ -38,10 +38,9 @@ void SupportHostObserverProxy::Bind(
   }
 
   // Ensure we can inform our observers if the mojom connection drops.
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &SupportHostObserverProxy::ReportHostStopped, base::Unretained(this),
-      ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
-      "mojom connection dropped"));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&SupportHostObserverProxy::OnMojomConnectionDropped,
+                     base::Unretained(this)));
 }
 
 // `remoting::mojom::SupportHostObserver` implementation:
@@ -120,6 +119,13 @@ void SupportHostObserverProxy::OnInvalidDomainError() {
   ReportHostStopped(
       ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError,
       "invalid domain error");
+}
+
+void SupportHostObserverProxy::OnMojomConnectionDropped() {
+  CRD_DVLOG(3) << "Mojom connection with CRD host dropped";
+
+  ReportHostStopped(ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
+                    "mojom connection dropped");
 }
 
 void SupportHostObserverProxy::ReportHostStopped(

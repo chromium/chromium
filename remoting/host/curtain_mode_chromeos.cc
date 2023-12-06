@@ -62,6 +62,25 @@ std::unique_ptr<CurtainMode> CurtainMode::Create(
   return std::make_unique<CurtainModeChromeOs>(ui_task_runner);
 }
 
+// static
+SecurityCurtainController::InitParams CurtainModeChromeOs::CreateInitParams() {
+  SecurityCurtainController::InitParams params{
+      /*event_filter=*/base::BindRepeating(OnlyEventsFromSource,
+                                           ui::ED_REMOTE_INPUT_DEVICE),
+      /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay),
+  };
+  params.mute_audio_output_after = MuteAudioOutputDelay();
+  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
+    params.mute_audio_input = true;
+    params.disable_camera_access = true;
+  } else {
+    params.mute_audio_input = false;
+    params.disable_camera_access = false;
+  }
+
+  return params;
+}
+
 CurtainModeChromeOs::CurtainModeChromeOs(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : core_(ui_task_runner) {}
@@ -78,21 +97,12 @@ CurtainModeChromeOs::Core::~Core() {
 }
 
 void CurtainModeChromeOs::Core::Activate() {
-  SecurityCurtainController::InitParams params{
-      /*event_filter=*/base::BindRepeating(OnlyEventsFromSource,
-                                           ui::ED_REMOTE_INPUT_DEVICE),
-      /*curtain_factory=*/base::BindRepeating(CreateCurtainOverlay),
-  };
-  params.mute_audio_output_after = MuteAudioOutputDelay();
-  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    params.mute_audio_input = true;
-    params.disable_camera_access = true;
-  } else {
-    params.mute_audio_input = false;
-    params.disable_camera_access = false;
+  // Ensure a security curtain is started with our `InitParams`, so terminate
+  // any previously present curtain.
+  if (security_curtain_controller().IsEnabled()) {
+    security_curtain_controller().Disable();
   }
-
-  security_curtain_controller().Enable(params);
+  security_curtain_controller().Enable(CreateInitParams());
 }
 
 SecurityCurtainController&

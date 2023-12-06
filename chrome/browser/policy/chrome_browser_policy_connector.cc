@@ -110,7 +110,7 @@ void ChromeBrowserPolicyConnector::OnResourceBundleCreated() {
 void ChromeBrowserPolicyConnector::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-    PolicyLogger::GetInstance()->EnableLogDeletion();
+  PolicyLogger::GetInstance()->EnableLogDeletion();
   auto configuration = std::make_unique<DeviceManagementServiceConfiguration>(
       GetDeviceManagementUrl(), GetRealtimeReportingUrl(),
       GetEncryptedReportingUrl());
@@ -126,6 +126,8 @@ void ChromeBrowserPolicyConnector::Init(
 
   InitInternal(local_state, std::move(device_management_service));
 }
+
+void ChromeBrowserPolicyConnector::OnBrowserStarted() {}
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ChromeBrowserPolicyConnector::IsMainUserManaged() const {
@@ -148,14 +150,17 @@ bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
 }
 
 bool ChromeBrowserPolicyConnector::HasMachineLevelPolicies() {
-  if (ProviderHasPolicies(GetPlatformProvider()))
+  if (ProviderHasPolicies(GetPlatformProvider())) {
     return true;
+  }
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ProviderHasPolicies(machine_level_user_cloud_policy_manager()))
+  if (ProviderHasPolicies(machine_level_user_cloud_policy_manager())) {
     return true;
+  }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ProviderHasPolicies(command_line_provider_))
+  if (ProviderHasPolicies(command_line_provider_)) {
     return true;
+  }
   return false;
 }
 

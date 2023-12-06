@@ -59,6 +59,8 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
                          const std::string& error_message);
 
  private:
+  void OnMojomConnectionDropped();
+
   mojo::Receiver<remoting::mojom::SupportHostObserver> receiver_{this};
   base::ObserverList<CrdSessionObserver> observers_;
   std::vector<std::unique_ptr<CrdSessionObserver>> owned_session_observers_;
