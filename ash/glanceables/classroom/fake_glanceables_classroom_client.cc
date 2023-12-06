@@ -70,11 +70,6 @@ void FakeGlanceablesClassroomClient::GetStudentAssignmentsWithoutDueDate(
       true, CreateAssignmentsWithStringForStudents("No Due Date", 3));
 }
 
-void FakeGlanceablesClassroomClient::IsTeacherRoleActive(
-    IsRoleEnabledCallback callback) {
-  std::move(callback).Run(false);
-}
-
 void FakeGlanceablesClassroomClient::
     GetTeacherAssignmentsWithApproachingDueDate(
         GetAssignmentsCallback callback) {}

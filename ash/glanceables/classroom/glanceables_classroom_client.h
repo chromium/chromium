@@ -44,10 +44,6 @@ class ASH_EXPORT GlanceablesClassroomClient {
   virtual void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) = 0;
 
-  // Returns `true` if current teacher has least one classroom course
-  // as a teacher.
-  virtual void IsTeacherRoleActive(IsRoleEnabledCallback callback) = 0;
-
   // Return teacher assignments based on different due date/time and graded
   // state filter.
   virtual void GetTeacherAssignmentsWithApproachingDueDate(

@@ -21,7 +21,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
-#include "ash/system/unified/classroom_bubble_teacher_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -245,18 +244,8 @@ void GlanceableTrayBubbleView::InitializeContents() {
   if (should_show_non_calendar_glanceables && classroom_client) {
     if (!classroom_bubble_student_view_) {
       classroom_client->IsStudentRoleActive(base::BindOnce(
-          &GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded<
-              ClassroomBubbleStudentView>,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::Unretained(&classroom_bubble_student_view_)));
-    }
-    if (features::IsGlanceablesV2ClassroomTeacherViewEnabled() &&
-        !classroom_bubble_teacher_view_) {
-      classroom_client->IsTeacherRoleActive(base::BindOnce(
-          &GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded<
-              ClassroomBubbleTeacherView>,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::Unretained(&classroom_bubble_teacher_view_)));
+          &GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded,
+          weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
@@ -281,9 +270,6 @@ void GlanceableTrayBubbleView::OnWidgetClosing(views::Widget* widget) {
   if (tasks_bubble_view_) {
     tasks_bubble_view_->CancelUpdates();
   }
-  if (classroom_bubble_teacher_view_) {
-    classroom_bubble_teacher_view_->CancelUpdates();
-  }
   if (classroom_bubble_student_view_) {
     classroom_bubble_student_view_->CancelUpdates();
   }
@@ -306,9 +292,7 @@ void GlanceableTrayBubbleView::OnDisplayConfigurationChanged() {
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
 }
 
-template <typename T>
-void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
-    raw_ptr<T, ExperimentalAsh>* view,
+void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     bool is_role_active) {
   if (!is_role_active) {
     return;
@@ -320,8 +304,8 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
       std::find(scroll_contents->children().begin(),
                 scroll_contents->children().end(), calendar_view_) -
       scroll_contents->children().begin();
-  *view = scroll_contents->AddChildViewAt(std::make_unique<T>(),
-                                          calendar_view_index);
+  classroom_bubble_student_view_ = scroll_contents->AddChildViewAt(
+      std::make_unique<ClassroomBubbleStudentView>(), calendar_view_index);
 
   views::View* const default_focused_child =
       scroll_contents->GetChildrenFocusList().front();

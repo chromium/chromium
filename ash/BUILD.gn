@@ -2177,8 +2177,6 @@ component("ash") {
     "system/unified/classroom_bubble_base_view.h",
     "system/unified/classroom_bubble_student_view.cc",
     "system/unified/classroom_bubble_student_view.h",
-    "system/unified/classroom_bubble_teacher_view.cc",
-    "system/unified/classroom_bubble_teacher_view.h",
     "system/unified/collapse_button.cc",
     "system/unified/collapse_button.h",
     "system/unified/current_locale_view.cc",

@@ -366,18 +366,6 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
       std::move(callback)));
 }
 
-void GlanceablesClassroomClientImpl::IsTeacherRoleActive(
-    IsRoleEnabledCallback callback) {
-  CHECK(callback);
-
-  FetchTeacherCourses(base::BindOnce(
-      [](IsRoleEnabledCallback callback, bool success,
-         const CourseList& courses) {
-        std::move(callback).Run(!courses.empty());
-      },
-      std::move(callback)));
-}
-
 void GlanceablesClassroomClientImpl::
     GetTeacherAssignmentsWithApproachingDueDate(
         GetAssignmentsCallback callback) {

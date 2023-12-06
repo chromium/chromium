@@ -23,7 +23,6 @@
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
-#include "ash/system/unified/classroom_bubble_teacher_view.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -49,18 +48,6 @@
 namespace ash {
 
 namespace {
-
-std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
-CreateAssignmentsForTeachers(int count) {
-  std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments;
-  for (int i = 0; i < count; ++i) {
-    assignments.push_back(std::make_unique<GlanceablesClassroomAssignment>(
-        base::StringPrintf("Course %d", i),
-        base::StringPrintf("Course work %d", i), GURL(), std::nullopt,
-        base::Time(), GlanceablesClassroomAggregatedSubmissionsState(2, 2, 0)));
-  }
-  return assignments;
-}
 
 std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
 CreateAssignmentsForStudents(int count) {
@@ -91,10 +78,6 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
   void IsStudentRoleActive(
       GlanceablesClassroomClient::IsRoleEnabledCallback cb) override {
     pending_is_student_role_enabled_callbacks_.push_back(std::move(cb));
-  }
-  void IsTeacherRoleActive(
-      GlanceablesClassroomClient::IsRoleEnabledCallback cb) override {
-    pending_is_teacher_role_enabled_callbacks_.push_back(std::move(cb));
   }
   void GetCompletedStudentAssignments(
       GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
@@ -144,13 +127,6 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
     pending_is_student_role_enabled_callbacks_.clear();
   }
 
-  void RespondToPendingIsTeacherRoleEnabledCallbacks(bool is_active) {
-    for (auto& cb : pending_is_teacher_role_enabled_callbacks_) {
-      std::move(cb).Run(is_active);
-    }
-    pending_is_teacher_role_enabled_callbacks_.clear();
-  }
-
   bool RespondToNextPendingStudentAssignmentsCallback(
       std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>
           assignments) {
@@ -180,9 +156,6 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
  private:
   std::vector<GlanceablesClassroomClient::IsRoleEnabledCallback>
       pending_is_student_role_enabled_callbacks_;
-  std::vector<GlanceablesClassroomClient::IsRoleEnabledCallback>
-      pending_is_teacher_role_enabled_callbacks_;
-
   std::list<GlanceablesClassroomClient::GetAssignmentsCallback>
       pending_student_assignments_callbacks_;
   std::list<GlanceablesClassroomClient::GetAssignmentsCallback>
@@ -664,8 +637,6 @@ TEST_P(DateTrayTest, DoesNotRenderClassroomBubblesForInactiveRoles) {
 
   glanceables_classroom_client()->RespondToPendingIsStudentRoleEnabledCallbacks(
       false);
-  glanceables_classroom_client()->RespondToPendingIsTeacherRoleEnabledCallbacks(
-      false);
 
   // Only static bubbles are rendered in `scroll_view` (tasks and calendar).
   const auto* const scroll_view = views::AsViewClass<views::ScrollView>(
@@ -694,11 +665,6 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
   glanceables_classroom_client()->RespondToPendingIsStudentRoleEnabledCallbacks(
       true);
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);
-
-  // Classroom teacher bubble is added.
-  glanceables_classroom_client()->RespondToPendingIsTeacherRoleEnabledCallbacks(
-      true);
-  EXPECT_EQ(scroll_view->contents()->children().size(), 4u);
 }
 
 TEST_P(DateTrayTest, EmptyClientsFallbackToLegacyDateBubble) {
@@ -728,77 +694,6 @@ TEST_P(DateTrayTest, EmptyClientsFallbackToLegacyDateBubble) {
   EXPECT_FALSE(GetGlanceableTrayBubble());
 }
 
-TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsWithTeacherGlanceableViews) {
-  UpdateDisplay("512x1536");
-
-  LeftClickOn(GetDateTray());
-  EXPECT_TRUE(IsBubbleShown());
-  EXPECT_TRUE(AreContentsViewShown());
-
-  ASSERT_TRUE(GetGlanceableTrayBubble());
-
-  auto* const scroll_view = views::AsViewClass<views::ScrollView>(
-      GetGlanceableTrayBubble()->GetBubbleView()->children().at(0));
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-
-  glanceables_classroom_client()->RespondToPendingIsTeacherRoleEnabledCallbacks(
-      true);
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-
-  auto* teacher_view = GetGlanceableTrayBubble()->GetClassroomTeacherView();
-  ASSERT_TRUE(teacher_view);
-
-  auto* calendar_view = GetGlanceableTrayBubble()->GetCalendarView();
-  ASSERT_TRUE(calendar_view);
-
-  auto* tasks_view = GetTasksView();
-  ASSERT_TRUE(tasks_view);
-
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      tasks_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  ASSERT_TRUE(glanceables_classroom_client()
-                  ->RespondToNextPendingTeacherAssignmentsCallback(
-                      CreateAssignmentsForTeachers(/*count=*/3)));
-
-  // Verify that the glanceable bubble expands so both teacher view and calendar
-  // view remain in the scroll view viewport.
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      tasks_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  const int calendar_view_bottom = calendar_view->GetBoundsInScreen().bottom();
-  const int tasks_view_top = tasks_view->GetBoundsInScreen().y();
-
-  Combobox* assignment_selector =
-      views::AsViewClass<Combobox>(teacher_view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
-  ASSERT_TRUE(assignment_selector);
-
-  assignment_selector->SelectMenuItemForTest(2);
-  ASSERT_TRUE(glanceables_classroom_client()
-                  ->RespondToNextPendingTeacherAssignmentsCallback(
-                      CreateAssignmentsForTeachers(/*count=*/1)));
-
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      tasks_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  EXPECT_EQ(calendar_view_bottom, calendar_view->GetBoundsInScreen().bottom());
-  EXPECT_LT(tasks_view_top, tasks_view->GetBoundsInScreen().y());
-}
 
 TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsWithStudentGlanceableView) {
   UpdateDisplay("512x1536");
@@ -885,124 +780,13 @@ TEST_P(GlanceablesDateTrayTest, TrayBubbleGrowsUpward) {
       GetGlanceableTrayBubble()->GetBubbleView()->children().at(0));
   scroll_view->GetWidget()->LayoutRootViewIfNecessary();
 
-  glanceables_classroom_client()->RespondToPendingIsTeacherRoleEnabledCallbacks(
-      true);
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-
-  auto* teacher_view = GetGlanceableTrayBubble()->GetClassroomTeacherView();
-  ASSERT_TRUE(teacher_view);
-
   auto* calendar_view = GetGlanceableTrayBubble()->GetCalendarView();
   ASSERT_TRUE(calendar_view);
 
   // The display size cannot accommodate both teacher view and the calendar view
   // - calendar view should be visible in the scroll view's viewport.
-  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
   EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
       calendar_view->GetBoundsInScreen()));
-
-  ASSERT_TRUE(glanceables_classroom_client()
-                  ->RespondToNextPendingTeacherAssignmentsCallback(
-                      CreateAssignmentsForTeachers(/*count=*/3)));
-
-  // The display size is not sufficient to fit both teacher glanceable and the
-  // calendar view. Verify that it's scrolled so the calendar remains visible.
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  Combobox* assignment_selector =
-      views::AsViewClass<Combobox>(teacher_view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
-  ASSERT_TRUE(assignment_selector);
-
-  teacher_view->ScrollViewToVisible();
-
-  const int calendar_view_bottom = calendar_view->GetBoundsInScreen().bottom();
-  assignment_selector->SelectMenuItemForTest(2);
-  ASSERT_TRUE(glanceables_classroom_client()
-                  ->RespondToNextPendingTeacherAssignmentsCallback(
-                      CreateAssignmentsForTeachers(/*count=*/2)));
-
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  EXPECT_EQ(calendar_view_bottom, calendar_view->GetBoundsInScreen().bottom());
-}
-
-TEST_P(GlanceablesDateTrayTest,
-       TeacherGlanceableGrowthDoesNotMoveFocusedViewOffscreen) {
-  UpdateDisplay("1024x512");
-
-  LeftClickOn(GetDateTray());
-  EXPECT_TRUE(IsBubbleShown());
-  EXPECT_TRUE(AreContentsViewShown());
-
-  ASSERT_TRUE(GetGlanceableTrayBubble());
-
-  auto* const scroll_view = views::AsViewClass<views::ScrollView>(
-      GetGlanceableTrayBubble()->GetBubbleView()->children().at(0));
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-
-  glanceables_classroom_client()->RespondToPendingIsTeacherRoleEnabledCallbacks(
-      true);
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-
-  auto* teacher_view = GetGlanceableTrayBubble()->GetClassroomTeacherView();
-  ASSERT_TRUE(teacher_view);
-
-  auto* calendar_view = GetGlanceableTrayBubble()->GetCalendarView();
-  ASSERT_TRUE(calendar_view);
-
-  // The display size cannot accommodate both teacher view and the calendar view
-  // - calendar view should be visible in the scroll view's viewport.
-  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  ASSERT_TRUE(glanceables_classroom_client()
-                  ->RespondToNextPendingTeacherAssignmentsCallback(
-                      CreateAssignmentsForTeachers(/*count=*/1)));
-
-  // The display size is not sufficient to fit both teacher glanceable and the
-  // calendar view. Verify that it's scrolled so the calendar remains visible.
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
-      teacher_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-
-  Combobox* assignment_selector =
-      views::AsViewClass<Combobox>(teacher_view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
-  ASSERT_TRUE(assignment_selector);
-
-  // Focus the selector, and increase the glanceable size in response to the
-  // selection change - verify that the focused selector remains visible.
-  assignment_selector->ScrollViewToVisible();
-  assignment_selector->RequestFocus();
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      assignment_selector->GetBoundsInScreen()));
-
-  assignment_selector->SelectMenuItemForTest(2);
-
-  ASSERT_TRUE(glanceables_classroom_client()
-                  ->RespondToNextPendingTeacherAssignmentsCallback(
-                      CreateAssignmentsForTeachers(/*count=*/3)));
-
-  scroll_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
-      calendar_view->GetBoundsInScreen()));
-  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
-      assignment_selector->GetBoundsInScreen()));
 }
 
 TEST_P(GlanceablesDateTrayTest,
