@@ -670,10 +670,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
   }
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
-  if (base::FeatureList::IsEnabled(blink::features::kWebRtcMetronome)) {
-    pcf_deps.decode_metronome =
-        StaticDeps().metronome_source().CreateWebRtcMetronome();
-  }
+  pcf_deps.decode_metronome =
+      StaticDeps().metronome_source().CreateWebRtcMetronome();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());
   pcf_deps.adm = audio_device_.get();

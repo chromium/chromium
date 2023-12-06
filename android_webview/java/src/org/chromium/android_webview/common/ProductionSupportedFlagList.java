@@ -491,10 +491,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.WEB_RTC_INITIALIZE_ENCODER_ON_FIRST_FRAME,
                 "Initialize VideoEncodeAccelerator on the first encode."),
         Flag.baseFeature(
-                BlinkFeatures.WEB_RTC_METRONOME,
-                "Inject a metronome into webrtc to allow task coalescing, "
-                        + " including synchronized decoding."),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.SPARSE_OBJECT_PAINT_PROPERTIES),

@@ -2177,10 +2177,6 @@ BASE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame,
              "WebRtcInitializeEncoderOnFirstFrame",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcMetronome,
-             "WebRtcMetronome",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables negotiation of experimental multiplex codec in SDP.
 BASE_FEATURE(kWebRtcMultiplexCodec,
              "WebRTC-MultiplexCodec",
