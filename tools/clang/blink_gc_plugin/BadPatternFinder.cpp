@@ -472,14 +472,6 @@ class PaddingInGCedMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
-bool IsInPdfiumFolder(const clang::ASTContext& ast_context) {
-  const clang::SourceManager& source_manager = ast_context.getSourceManager();
-  clang::StringRef filename =
-      source_manager.getFileEntryForID(source_manager.getMainFileID())
-          ->getName();
-  return filename.contains("/pdfium/");
-}
-
 }  // namespace
 
 void FindBadPatterns(clang::ASTContext& ast_context,
@@ -496,9 +488,7 @@ void FindBadPatterns(clang::ASTContext& ast_context,
 
   CollectionOfGarbageCollectedMatcher collection_of_gc(diagnostics,
                                                        record_cache);
-  if (options.enable_off_heap_collections_of_gced_check &&
-      (options.enable_off_heap_collections_of_gced_check_pdfium ||
-       !IsInPdfiumFolder(ast_context))) {
+  if (options.enable_off_heap_collections_of_gced_check) {
     collection_of_gc.Register(match_finder);
   }
 

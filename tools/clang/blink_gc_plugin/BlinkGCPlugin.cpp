@@ -47,8 +47,8 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.forbid_associated_remote_receiver = true;
       } else if (arg == "enable-off-heap-collections-of-gced-check") {
         options_.enable_off_heap_collections_of_gced_check = true;
-      } else if (arg == "enable-off-heap-collections-of-gced-check-pdfium") {
-        options_.enable_off_heap_collections_of_gced_check_pdfium = true;
+      } else if (arg == "disable-off-heap-collections-of-gced-check") {
+        options_.enable_off_heap_collections_of_gced_check = false;
       } else if (arg == "enable-weak-ptrs-check") {
         options_.enable_weak_ptrs_check = true;
       } else {

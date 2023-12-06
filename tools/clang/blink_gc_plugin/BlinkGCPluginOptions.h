@@ -46,8 +46,7 @@ struct BlinkGCPluginOptions {
 
   // Enables checks for GCed objects, Members, and pointers or references to
   // GCed objects and in stl and WTF collections.
-  bool enable_off_heap_collections_of_gced_check = true;
-  bool enable_off_heap_collections_of_gced_check_pdfium = false;
+  bool enable_off_heap_collections_of_gced_check = false;
 
   // Enables checks for WeakPtr and WeakPtrFactory with GCed types.
   bool enable_weak_ptrs_check = false;
