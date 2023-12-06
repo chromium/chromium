@@ -998,7 +998,7 @@
   {
     "name": "camera-app-autoqr-detection",
     "owners": [ "dorahkim@chromium.org", "chromeos-camera-app-eng@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 125
   },
   {
     "name": "camera-mic-effects",
