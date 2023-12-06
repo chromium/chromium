@@ -410,6 +410,9 @@ void SoftNavigationHeuristics::SetCurrentTimeAsStartTime(
     data->user_interaction_timestamp = base::TimeTicks::Now();
   }
   if (soft_navigation_conditions_met_ && paint_conditions_met_) {
+    // This can happen in a case where the paint conditions were met by a
+    // previous interaction. That's a correctness tradeoff we made when
+    // supporting multiple interactions.
     v8::HandleScope handle_scope(script_state->GetIsolate());
     LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
     if (frame && frame->IsOutermostMainFrame()) {
