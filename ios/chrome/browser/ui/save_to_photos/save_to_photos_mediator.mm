@@ -57,6 +57,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 
 NSString* const kGooglePhotosAppProductIdentifier = @"962194608";
 
+NSString* const kGooglePhotosStoreKitProviderToken = @"9008";
+
 NSString* const kGooglePhotosStoreKitCampaignToken = @"chrome-x-photos";
 
 NSString* const kGooglePhotosRecentlyAddedURLString =
@@ -464,6 +466,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   if (![UIApplication.sharedApplication canOpenURL:GetGooglePhotosAppURL()]) {
     [self.delegate
         showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier
+                            providerToken:kGooglePhotosStoreKitProviderToken
                             campaignToken:kGooglePhotosStoreKitCampaignToken];
     return;
   }

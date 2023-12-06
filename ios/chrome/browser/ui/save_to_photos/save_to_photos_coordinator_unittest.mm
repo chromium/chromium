@@ -250,6 +250,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
       [coordinator conformsToProtocol:@protocol(SaveToPhotosMediatorDelegate)]);
 
   NSString* productIdentifier = @"product_identifier";
+  NSString* providerToken = @"provider_token";
   NSString* campaignToken = @"campaign_token";
 
   id mock_store_kit_coordinator = OCMClassMock([StoreKitCoordinator class]);
@@ -263,6 +264,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
       setDelegate:static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)]);
   NSDictionary* expectedITunesProductParameters = @{
     SKStoreProductParameterITunesItemIdentifier : productIdentifier,
+    SKStoreProductParameterProviderToken : providerToken,
     SKStoreProductParameterCampaignToken : campaignToken
   };
   OCMExpect([mock_store_kit_coordinator
@@ -272,6 +274,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
 
   [static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)
       showStoreKitWithProductIdentifier:productIdentifier
+                          providerToken:providerToken
                           campaignToken:campaignToken];
   EXPECT_OCMOCK_VERIFY(mock_store_kit_coordinator);
 
