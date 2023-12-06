@@ -292,6 +292,10 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
       base::StrCat({"Actions.PinnedToolbarButton.",
                     updated_pin_state ? "Pinned" : "Unpinned",
                     ".ByContextMenu.", metrics_name.value()}));
+  // TODO(corising): Update the text for these notifications once pinning
+  // expands past side panels.
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      updated_pin_state ? IDS_SIDE_PANEL_PINNED : IDS_SIDE_PANEL_UNPINNED));
   actions_model->UpdatePinnedState(action_id, updated_pin_state);
 }
 
