@@ -2909,6 +2909,7 @@ test("content_unittests") {
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
       "//media/test:media_bundle_data",
+      "//testing/buildbot/filters:content_unittests_filters_bundle_data",
     ]
   }
 

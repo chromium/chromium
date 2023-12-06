@@ -4659,7 +4659,13 @@ targets.legacy_basic_suite(
             ),
             timeout_sec = 14400,
         ),
-        "content_unittests": None,
+        "content_unittests": targets.legacy_test_config(
+            test = "content_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
+            ],
+        ),
         "crashpad_tests": None,
         "crypto_unittests": None,
         "device_unittests": None,

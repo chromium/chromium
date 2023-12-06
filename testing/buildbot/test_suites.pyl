@@ -3987,7 +3987,13 @@
           'hard_timeout': 14400,
         },
       },
-      'content_unittests': {},
+      'content_unittests': {
+        'test': 'content_unittests',
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter',
+        ],
+      },
       'crashpad_tests': {},
       'crypto_unittests': {},
       'device_unittests': {},
