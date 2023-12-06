@@ -521,7 +521,7 @@
     {
       name: "BoundaryEventDispatchTracksNodeRemoval",
       public: true,
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "BrowserVerifiedUserActivationKeyboard",
