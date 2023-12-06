@@ -450,6 +450,8 @@ source_set("test_support") {
     "input_method_test_interface_ash.h",
     "metrics_reporting_ash_test_helper.cc",
     "metrics_reporting_ash_test_helper.h",
+    "mock_download_status_updater_client.cc",
+    "mock_download_status_updater_client.h",
     "test_controller_ash.cc",
     "test_controller_ash.h",
     "test_crosapi_dependency_registry.cc",

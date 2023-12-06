@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/crosapi/mock_download_status_updater_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,30 +29,6 @@ using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::TestWithParam;
 using ::testing::Values;
-
-// Mocks -----------------------------------------------------------------------
-
-// A mock `DownloadStatusUpdaterClient` for testing.
-class MockDownloadStatusUpdaterClient : public DownloadStatusUpdaterClient {
- public:
-  // DownloadStatusUpdaterClient:
-  MOCK_METHOD(void,
-              Cancel,
-              (const std::string& guid, CancelCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              Pause,
-              (const std::string& guid, PauseCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              Resume,
-              (const std::string& guid, ResumeCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              ShowInBrowser,
-              (const std::string& guid, ShowInBrowserCallback callback),
-              (override));
-};
 
 // DownloadStatusUpdaterAshCommandTest -----------------------------------------
 
