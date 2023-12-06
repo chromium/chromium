@@ -320,6 +320,12 @@ BASE_FEATURE(kEvictOnAXEvents,
              "EvictOnAXEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(https://crbug.com/1502760): This is a kill switch landed in M122. Please
+// remove after M124.
+BASE_FEATURE(kForceBrowserInitiatedPageClose,
+             "ForceBrowserInitiatedPageClose",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace content {
@@ -6004,7 +6010,10 @@ bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
 }
 
 void RenderFrameHostImpl::ClosePageTimeout(ClosePageSource source) {
-  if (delegate_->ShouldIgnoreUnresponsiveRenderer()) {
+  if ((source == ClosePageSource::kRenderer ||
+       !base::FeatureList::IsEnabled(
+           features::kForceBrowserInitiatedPageClose)) &&
+      delegate_->ShouldIgnoreUnresponsiveRenderer()) {
     return;
   }
 

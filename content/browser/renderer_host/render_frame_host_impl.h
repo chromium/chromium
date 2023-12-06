@@ -3137,6 +3137,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest, LastCommittedOrigin);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
                            CloseWithPendingWhileUnresponsive);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
+                           CloseWithPendingWhileUnresponsiveWithDevTools);
   FRIEND_TEST_ALL_PREFIXES(
       RenderFrameHostManagerUnloadBrowserTest,
       PendingDeleteRFHProcessShutdownDoesNotRemoveSubframes);
