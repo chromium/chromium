@@ -113,6 +113,8 @@ const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kEnhancedSafeBrowsingPromoCriterionMet[] =
     "enhanced_safe_browsing_promo_criterion_met";
+const char kEnhancedSafeBrowsingInlinePromoClosed[] =
+    "enhanced_safe_browsing_inline_promo_closed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
