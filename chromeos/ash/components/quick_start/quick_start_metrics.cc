@@ -4,9 +4,11 @@
 
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
+#include <memory>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace ash::quick_start {
 
@@ -16,6 +18,8 @@ constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
     "QuickStart.AttestationCertificate.FailureReason";
 constexpr const char kAttestationCertificateFetchResultHistogramName[] =
     "QuickStart.AttestationCertificate.FetchResult";
+constexpr const char kAttestationCertificateFetchDurationHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchDuration";
 constexpr const char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
@@ -148,14 +152,18 @@ void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
   base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
 }
 
-// static
 void QuickStartMetrics::RecordAttestationCertificateRequested() {
-  // TODO(b/314143137): Add remote attestation metrics.
+  CHECK(!attestation_certificate_timer_)
+      << "Only 1 attestation certificate request can be active at a time";
+  attestation_certificate_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
-// static
 void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
     absl::optional<AttestationCertificateRequestErrorCode> error_code) {
+  CHECK(attestation_certificate_timer_)
+      << "Attestation certificate request timer was not active. Unexpected "
+         "response.";
+
   if (error_code) {
     base::UmaHistogramEnumeration(
         kAttestationCertificateFailureReasonHistogramName, error_code.value());
@@ -165,6 +173,10 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
     base::UmaHistogramBoolean(kAttestationCertificateFetchResultHistogramName,
                               true);
   }
+
+  base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
+                          attestation_certificate_timer_->Elapsed());
+  attestation_certificate_timer_.reset();
 }
 
 // static

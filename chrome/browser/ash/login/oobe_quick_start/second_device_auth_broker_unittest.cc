@@ -19,6 +19,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -407,7 +409,13 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
 
  private:
   // `task_environment_` must be the first member.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // Bringing `base::ScopedMockElapsedTimersForTest` into scope magically
+  // changes all elapsed times to
+  // `base::ScopedMockElapsedTimersForTest::kMockElapsedTime`.
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
 
   PEMCertChain certificate_ = PEMCertChain(kPemCertificateString);
 
@@ -601,6 +609,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   histogram_tester.ExpectBucketCount(
       "QuickStart.AttestationCertificate.FetchResult",
       /*sample=*/false, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.AttestationCertificate.FetchDuration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -616,6 +627,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   histogram_tester.ExpectBucketCount(
       "QuickStart.AttestationCertificate.FetchResult",
       /*sample=*/false, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.AttestationCertificate.FetchDuration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -631,6 +645,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   histogram_tester.ExpectBucketCount(
       "QuickStart.AttestationCertificate.FetchResult",
       /*sample=*/false, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.AttestationCertificate.FetchDuration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
@@ -642,6 +659,9 @@ TEST_F(SecondDeviceAuthBrokerTest,
   histogram_tester.ExpectBucketCount(
       "QuickStart.AttestationCertificate.FetchResult",
       /*sample=*/true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "QuickStart.AttestationCertificate.FetchDuration",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,

@@ -258,8 +258,9 @@ void HandleFetchChallengeBytesErrorResponse(
 }
 
 void HandleAttestationNotAvailableError(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AttestationCertificateCallback callback) {
-  QuickStartMetrics::RecordAttestationCertificateRequestEnded(
+  metrics.RecordAttestationCertificateRequestEnded(
       QuickStartMetrics::AttestationCertificateRequestErrorCode::
           kAttestationNotSupportedOnDevice);
   std::move(callback).Run(base::unexpected(
@@ -267,48 +268,12 @@ void HandleAttestationNotAvailableError(
 }
 
 void HandleAttestationUnknownError(
+    QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AttestationCertificateCallback callback,
     const SecondDeviceAuthBroker::AttestationErrorType& error_type) {
-  QuickStartMetrics::RecordAttestationCertificateRequestEnded(
+  metrics.RecordAttestationCertificateRequestEnded(
       QuickStartMetrics::AttestationCertificateRequestErrorCode::kUnknownError);
   std::move(callback).Run(base::unexpected(error_type));
-}
-
-void RunAttestationCertificateCallback(
-    SecondDeviceAuthBroker::AttestationCertificateCallback callback,
-    attestation::AttestationStatus status,
-    const std::string& pem_certificate_chain) {
-  switch (status) {
-    case attestation::ATTESTATION_SUCCESS:
-      if (pem_certificate_chain.empty()) {
-        QS_LOG(ERROR)
-            << "Got an empty certificate chain with a success response "
-               "from attestation server";
-        HandleAttestationUnknownError(
-            std::move(callback),
-            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
-        return;
-      }
-      QuickStartMetrics::RecordAttestationCertificateRequestEnded(
-          /*error_code=*/absl::nullopt);
-      std::move(callback).Run(PEMCertChain(pem_certificate_chain));
-      return;
-    case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
-      HandleAttestationUnknownError(
-          std::move(callback),
-          SecondDeviceAuthBroker::AttestationErrorType::kTransientError);
-      return;
-    case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
-      QuickStartMetrics::RecordAttestationCertificateRequestEnded(
-          QuickStartMetrics::AttestationCertificateRequestErrorCode::
-              kBadRequest);
-      std::move(callback).Run(base::unexpected(
-          SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
-      return;
-    case attestation::ATTESTATION_NOT_AVAILABLE:
-      HandleAttestationNotAvailableError(std::move(callback));
-      return;
-  }
 }
 
 std::string CreateStartSessionRequestData(
@@ -646,6 +611,7 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
 void SecondDeviceAuthBroker::FetchAttestationCertificate(
     const Base64UrlString& fido_credential_id,
     AttestationCertificateCallback certificate_callback) {
+  metrics_.RecordAttestationCertificateRequested();
   attestation::AttestationFeatures::GetFeatures(base::BindOnce(
       &SecondDeviceAuthBroker::FetchAttestationCertificateInternal,
       weak_ptr_factory_.GetWeakPtr(), fido_credential_id,
@@ -708,21 +674,23 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
   if (!attestation_features) {
     QS_LOG(ERROR) << "Failed to get AttestationFeatures";
     HandleAttestationUnknownError(
-        std::move(certificate_callback),
+        metrics_, std::move(certificate_callback),
         SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
     return;
   }
 
   if (!attestation_features->IsAttestationAvailable()) {
     QS_LOG(ERROR) << "Attestation is not available";
-    HandleAttestationNotAvailableError(std::move(certificate_callback));
+    HandleAttestationNotAvailableError(metrics_,
+                                       std::move(certificate_callback));
     return;
   }
 
   if (!attestation_features->IsEccSupported() &&
       !attestation_features->IsRsaSupported()) {
     QS_LOG(ERROR) << "Could not find any supported attestation key type";
-    HandleAttestationNotAvailableError(std::move(certificate_callback));
+    HandleAttestationNotAvailableError(metrics_,
+                                       std::move(certificate_callback));
     return;
   }
 
@@ -742,8 +710,46 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
       absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
           profile_specific_data)),
       /*callback=*/
-      base::BindOnce(&RunAttestationCertificateCallback,
+      base::BindOnce(&SecondDeviceAuthBroker::RunAttestationCertificateCallback,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(certificate_callback)));
+}
+
+void SecondDeviceAuthBroker::RunAttestationCertificateCallback(
+    SecondDeviceAuthBroker::AttestationCertificateCallback callback,
+    attestation::AttestationStatus status,
+    const std::string& pem_certificate_chain) {
+  switch (status) {
+    case attestation::ATTESTATION_SUCCESS:
+      if (pem_certificate_chain.empty()) {
+        QS_LOG(ERROR)
+            << "Got an empty certificate chain with a success response "
+               "from attestation server";
+        HandleAttestationUnknownError(
+            metrics_, std::move(callback),
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError);
+        return;
+      }
+      metrics_.RecordAttestationCertificateRequestEnded(
+          /*error_code=*/absl::nullopt);
+      std::move(callback).Run(PEMCertChain(pem_certificate_chain));
+      return;
+    case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
+      HandleAttestationUnknownError(
+          metrics_, std::move(callback),
+          SecondDeviceAuthBroker::AttestationErrorType::kTransientError);
+      return;
+    case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+      metrics_.RecordAttestationCertificateRequestEnded(
+          QuickStartMetrics::AttestationCertificateRequestErrorCode::
+              kBadRequest);
+      std::move(callback).Run(base::unexpected(
+          SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+      return;
+    case attestation::ATTESTATION_NOT_AVAILABLE:
+      HandleAttestationNotAvailableError(metrics_, std::move(callback));
+      return;
+  }
 }
 
 std::ostream& operator<<(

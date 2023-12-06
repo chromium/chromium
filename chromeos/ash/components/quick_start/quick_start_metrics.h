@@ -202,14 +202,6 @@ class QuickStartMetrics {
 
   static void RecordForcedUpdateRequired(int32_t session_id);
 
-  static void RecordAttestationCertificateRequested();
-
-  // Records the end of a Remote Attestation certificate request. `error_code`
-  // is empty if the request was successful - otherwise it contains the details
-  // of the error.
-  static void RecordAttestationCertificateRequestEnded(
-      absl::optional<AttestationCertificateRequestErrorCode> error_code);
-
   static void RecordGaiaTransferResult(
       bool succeeded,
       absl::optional<GaiaTransferResultFailureReason> failure_reason);
@@ -220,6 +212,14 @@ class QuickStartMetrics {
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
   virtual ~QuickStartMetrics();
+
+  void RecordAttestationCertificateRequested();
+
+  // Records the end of a Remote Attestation certificate request. `error_code`
+  // is empty if the request was successful - otherwise it contains the details
+  // of the error.
+  void RecordAttestationCertificateRequestEnded(
+      absl::optional<AttestationCertificateRequestErrorCode> error_code);
 
   void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
 
@@ -263,6 +263,11 @@ class QuickStartMetrics {
   // constructed when the request is sent and destroyed when the response is
   // received.
   std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
+
+  // Timer to keep track of remote attestation certificate fetch requests. It
+  // should be set at the start of a certificate fetch and destroyed when a
+  // response is received.
+  std::unique_ptr<base::ElapsedTimer> attestation_certificate_timer_;
 };
 
 }  // namespace ash::quick_start

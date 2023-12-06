@@ -35,6 +35,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.AttestationCertificate.FetchDuration" units="ms"
+    expires_after="2024-12-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed from attempting to fetch a Remote Attestation certificate to
+    receiving a certificate or an error. It is recorded when an attestation
+    certificate request finishes.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.AttestationCertificate.FetchResult"
     enum="BooleanSuccess" expires_after="2024-12-01">
   <owner>sinhak@chromium.org</owner>

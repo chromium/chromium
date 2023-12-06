@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -188,10 +189,18 @@ class SecondDeviceAuthBroker {
       AttestationCertificateCallback certificate_callback,
       const attestation::AttestationFeatures* attestation_features);
 
+  // Internal helper method to respond to `callback`.
+  void RunAttestationCertificateCallback(
+      SecondDeviceAuthBroker::AttestationCertificateCallback callback,
+      attestation::AttestationStatus status,
+      const std::string& pem_certificate_chain);
+
   // Must be between 0 (exclusive) and 64 (inclusive) characters.
   const std::string device_id_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  QuickStartMetrics metrics_;
 
   // Used for fetching results from Gaia endpoints.
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_ = nullptr;
