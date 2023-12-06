@@ -4,13 +4,15 @@
 
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include <limits>
+
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(AnimationTimeDeltaTest, Construction) {
+  test::TaskEnvironment task_environment;
   // The default constructor is a zero-length delta.
   EXPECT_EQ(AnimationTimeDelta(), ANIMATION_TIME_DELTA_FROM_SECONDS(0));
   EXPECT_EQ(AnimationTimeDelta(), ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
@@ -22,6 +24,7 @@ TEST(AnimationTimeDeltaTest, Construction) {
 }
 
 TEST(AnimationTimeDeltaTest, Conversion) {
+  test::TaskEnvironment task_environment;
   AnimationTimeDelta delta = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
   EXPECT_EQ(delta.InSecondsF(), 5);
   EXPECT_EQ(delta.InMillisecondsF(), 5000);
@@ -32,6 +35,7 @@ TEST(AnimationTimeDeltaTest, Conversion) {
 }
 
 TEST(AnimationTimeDeltaTest, Max) {
+  test::TaskEnvironment task_environment;
   AnimationTimeDelta max_delta = AnimationTimeDelta::Max();
   EXPECT_TRUE(max_delta.is_max());
   EXPECT_EQ(max_delta, AnimationTimeDelta::Max());
@@ -43,6 +47,7 @@ TEST(AnimationTimeDeltaTest, Max) {
 }
 
 TEST(AnimationTimeDeltaTest, Zero) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(AnimationTimeDelta().is_zero());
   EXPECT_TRUE(ANIMATION_TIME_DELTA_FROM_SECONDS(0).is_zero());
   EXPECT_TRUE(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0).is_zero());
@@ -53,6 +58,7 @@ TEST(AnimationTimeDeltaTest, Zero) {
 }
 
 TEST(AnimationTimeDeltaTest, Computation) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(4.5) +
                 ANIMATION_TIME_DELTA_FROM_MILLISECONDS(500),
             ANIMATION_TIME_DELTA_FROM_SECONDS(5));
@@ -72,6 +78,7 @@ TEST(AnimationTimeDeltaTest, Computation) {
 }
 
 TEST(AnimationTimeDeltaTest, Comparison) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(ANIMATION_TIME_DELTA_FROM_SECONDS(10) ==
               ANIMATION_TIME_DELTA_FROM_SECONDS(10));
   EXPECT_TRUE(ANIMATION_TIME_DELTA_FROM_SECONDS(10) !=
@@ -89,6 +96,7 @@ TEST(AnimationTimeDeltaTest, Comparison) {
 }
 
 TEST(AnimationTimeDeltaTest, Division) {
+  test::TaskEnvironment task_environment;
   double inf = std::numeric_limits<double>::infinity();
   AnimationTimeDelta inf_time_delta = AnimationTimeDelta::Max();
   AnimationTimeDelta zero = AnimationTimeDelta();

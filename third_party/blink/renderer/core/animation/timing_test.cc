@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/timing.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -40,6 +41,7 @@ class AnimationTimingTest : public testing::Test {
     normalized_timing_.active_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
     normalized_timing_.end_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
   }
+  test::TaskEnvironment task_environment_;
   Timing timing_;
   Timing::NormalizedTiming normalized_timing_;
 };
