@@ -239,6 +239,7 @@ This builder should be removed after migrating chromeos-amd64-generic-rel from N
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = "try/chromeos-amd64-generic-rel-renamed",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,
@@ -436,6 +437,7 @@ This builder should be removed after migrating linux-chromeos-compile-dbg from N
         is_compile_only = True,
     ),
     contact_team_email = "chrome-build-team@google.com",
+    gn_args = "try/linux-chromeos-compile-dbg",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     siso_enabled = True,

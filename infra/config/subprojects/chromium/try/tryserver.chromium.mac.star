@@ -630,6 +630,7 @@ This builder should be removed after migrating ios-simulator from Ninja to Siso.
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = "try/ios-simulator",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,

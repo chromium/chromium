@@ -576,6 +576,7 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = "try/linux_chromium_asan_rel_ng",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,
@@ -822,6 +823,7 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
+    gn_args = "try/linux_chromium_tsan_rel_ng",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 10,

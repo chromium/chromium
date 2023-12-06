@@ -420,11 +420,9 @@
     },
 
     'tryserver.chromium.chromiumos': {
-      'chromeos-amd64-generic-siso-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'gpu-fyi-try-chromeos-skylab-volteer': 'gpu_tests_chromeos_volteer_release_trybot_dcheck_off_no_symbols_reclient_skylab',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
-      'linux-chromeos-compile-siso-dbg': 'chromeos_with_codecs_debug_trybot_reclient_no_symbols',
     },
 
     'tryserver.chromium.codesearch': {
@@ -446,18 +444,14 @@
       'linux-layout-tests-edit-ng': 'release_trybot_reclient',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
-      'linux_chromium_asan_siso_rel_ng': 'asan_lsan_failsan_release_trybot_reclient',
       'linux_chromium_clobber_deterministic': 'release_trybot_reclient',
       'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
-
-      'linux_chromium_tsan_siso_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
 
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
     },
 
     'tryserver.chromium.mac': {
-      'ios-simulator-siso': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_x64_reclient',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
@@ -496,7 +490,6 @@
     'tryserver.chromium.win': {
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
-      'win-siso-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'win_upload_clang': 'release_bot',
     },
@@ -624,10 +617,6 @@
       'android_without_codecs', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
-    'asan_lsan_failsan_release_trybot_reclient': [
-      'asan', 'lsan', 'fail_on_san_warnings', 'release_trybot_minimal_symbols_reclient',
-    ],
-
     'asan_lsan_release_bot': [
       'asan', 'lsan', 'release_bot',
     ],
@@ -676,11 +665,6 @@
 
     'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient': [
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on', 'is_skylab',
-    ],
-
-    'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient': [
-      'chromeos_amd64-generic-vm_reclient', 'use_fake_dbus_clients', 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma': [
@@ -858,10 +842,6 @@
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
-    'chromeos_with_codecs_debug_trybot_reclient_no_symbols': [
-      'chromeos_with_codecs', 'debug_bot_reclient', 'no_symbols', 'use_cups',
-    ],
-
     'chromeos_with_codecs_release_trybot_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
     ],
@@ -1032,12 +1012,6 @@
       'gpu_tests', 'release_trybot_reclient',
     ],
 
-    'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_feature_flag',
-    ],
-
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
     ],
@@ -1048,10 +1022,6 @@
 
     'ios_device_release_compile_only_reclient': [
         'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient',
-    ],
-
-    'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
-      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_xctest_reclient': [
@@ -1369,10 +1339,6 @@
       'release_trybot_reclient',
     ],
 
-    'tsan_disable_nacl_release_trybot_reclient': [
-      'tsan', 'disable_nacl', 'release_trybot_minimal_symbols_reclient',
-    ],
-
     'v8_future_debug_bot_reclient': [
       'v8_future', 'debug_bot_reclient',
     ],
@@ -1537,10 +1503,6 @@
       'mixins': ['chromeos_device', 'amd64-generic-vm',]
     },
 
-    'chromeos_amd64-generic-vm_reclient': {
-      'mixins': ['chromeos_device_reclient', 'amd64-generic-vm', 'ozone_headless']
-    },
-
     'chromeos_arm-generic-crostoolchain': {
       'mixins': ['chromeos_device', 'arm-generic-crostoolchain',]
     },
@@ -1687,30 +1649,12 @@
       'gn_args': 'enable_widevine_cdm_host_verification = false'
     },
 
-    # Enables dangling raw pointer detection.
-    # This configuration will silently deactivate the ref count cookie in:
-    # https://crsrc.org/c/base/allocator/partition_allocator/partition_alloc_config.h;l=208-216;drc=2d195004c75699bdd87c69cdb7e8d293249dcfdd
-    'enable_dangling_raw_ptr_checks': {
-      'gn_args': 'enable_dangling_raw_ptr_checks=true',
-    },
-
-    # Changes the default of the dangling raw pointer detection feature flag, enabling it on all
-    # runs.
-    'enable_dangling_raw_ptr_feature_flag': {
-      'gn_args': 'enable_dangling_raw_ptr_feature_flag=true',
-      'mixins': ["enable_dangling_raw_ptr_checks"],
-    },
-
     'eve': {
       'args_file': '//build/args/chromeos/eve.gni',
     },
 
     'eve-arc-r': {
       'args_file': '//build/args/chromeos/eve-arc-r.gni',
-    },
-
-    'fail_on_san_warnings': {
-      'gn_args': 'fail_on_san_warnings=true',
     },
 
     'ffmpeg_branding_chrome': {
@@ -1860,10 +1804,6 @@
       'gn_args': 'use_remoteexec=false',
     },
 
-    'no_resource_allowlisting': {
-      'gn_args': 'enable_resource_allowlist_generation=false',
-    },
-
     'no_symbols': {
       'gn_args': 'symbol_level=0',
     },
@@ -1895,17 +1835,6 @@
 
     'ozone_headless': {
       'gn_args': 'ozone_platform_headless=true',
-    },
-
-    # Used to pass the list of files to instrument for coverage to the compile
-    # wrapper. See:
-    # https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/code_coverage/api.py
-    # and
-    # https://cs.chromium.org/chromium/src/docs/clang_code_coverage_wrapper.md
-    # For Java, see:
-    # https://cs.chromium.org/chromium/src/build/android/gyp/jacoco_instr.py
-    'partial_code_coverage_instrumentation': {
-      'gn_args': 'coverage_instrumentation_input_file="//.code-coverage/files_to_instrument.txt"'
     },
 
     'pdf_xfa': {
@@ -2043,14 +1972,6 @@
 
     'trogdor': {
       'args_file': '//build/args/chromeos/trogdor.gni',
-    },
-
-    'tsan': {
-      'gn_args': 'is_tsan=true',
-    },
-
-    'use_clang_coverage': {
-      'gn_args': 'use_clang_coverage=true',
     },
 
     'use_cups': {

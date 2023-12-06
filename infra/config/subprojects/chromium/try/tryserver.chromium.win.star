@@ -159,6 +159,7 @@ This builder should be removed after migrating win-rel from Ninja to Siso. b/277
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
     },
+    gn_args = "try/win-rel",
     main_list_view = "try",
     tryjob = try_.job(
         # Decreasing the experiment percentage while enabling tests to reduce
