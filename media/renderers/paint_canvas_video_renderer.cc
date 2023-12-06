@@ -771,7 +771,7 @@ BASE_FEATURE(kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture,
 
 BASE_FEATURE(kOneCopyLegacyMPVideoFrameUploadViaSI,
              "OneCopyLegacyMPVideoFrameUploadViaSI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // anonymous namespace
 
