@@ -29,7 +29,10 @@ class BoundSessionCookieRefreshService
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnBoundSessionTerminated() = 0;
+    // TODO(b/314280617): Consider passing
+    // `bound_session_credentials::BoundSessionParams` instead.
+    // `site` is the top-most origin covered by the terminated session.
+    virtual void OnBoundSessionTerminated(const GURL& site) = 0;
   };
 
   BoundSessionCookieRefreshService() = default;

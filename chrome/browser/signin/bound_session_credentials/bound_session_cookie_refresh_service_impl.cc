@@ -247,6 +247,7 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     SessionTerminationTrigger trigger) {
   CHECK(cookie_controller_);
+  GURL session_url = cookie_controller_->url();
   cookie_controller_.reset();
   // TODO(b/300627729): stop clearing all params once multiple sessions are
   // supported.
@@ -254,7 +255,7 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession(
   UpdateAllRenderers();
   RecordSessionTerminationTrigger(trigger);
 
-  NotifyBoundSessionTerminated();
+  NotifyBoundSessionTerminated(session_url);
 }
 
 void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
@@ -263,8 +264,9 @@ void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
       "Signin.BoundSessionCredentials.SessionTerminationTrigger", trigger);
 }
 
-void BoundSessionCookieRefreshServiceImpl::NotifyBoundSessionTerminated() {
+void BoundSessionCookieRefreshServiceImpl::NotifyBoundSessionTerminated(
+    const GURL& site) {
   for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
-    observer.OnBoundSessionTerminated();
+    observer.OnBoundSessionTerminated(site);
   }
 }

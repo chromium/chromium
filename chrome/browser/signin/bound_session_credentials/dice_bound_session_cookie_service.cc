@@ -6,6 +6,7 @@
 
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_urls.h"
 
 DiceBoundSessionCookieService::DiceBoundSessionCookieService(
     BoundSessionCookieRefreshService& bound_session_cookie_refresh_service,
@@ -17,9 +18,10 @@ DiceBoundSessionCookieService::DiceBoundSessionCookieService(
 
 DiceBoundSessionCookieService::~DiceBoundSessionCookieService() = default;
 
-void DiceBoundSessionCookieService::OnBoundSessionTerminated() {
-  // TODO(b/300627729): Check the session being terminated includes
-  // `kGaiaUrl`.
+void DiceBoundSessionCookieService::OnBoundSessionTerminated(const GURL& site) {
+  if (!GaiaUrls::GetInstance()->gaia_url().DomainIs(site.host_piece())) {
+    return;
+  }
   // TODO(b/300627729): Ensure bound cookies are expired.
   // The Gaia cookie might not be sufficiently authorized after bound session
   // termination on the client, force trigger /ListAccounts.

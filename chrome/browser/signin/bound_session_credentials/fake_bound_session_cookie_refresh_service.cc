@@ -43,8 +43,9 @@ bool FakeBoundSessionCookieRefreshService::IsRequestBlocked() {
   return !resume_blocked_request_.is_null();
 }
 
-void FakeBoundSessionCookieRefreshService::SimulateOnBoundSessionTerminated() {
+void FakeBoundSessionCookieRefreshService::SimulateOnBoundSessionTerminated(
+    const GURL& site) {
   for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
-    observer.OnBoundSessionTerminated();
+    observer.OnBoundSessionTerminated(site);
   }
 }
