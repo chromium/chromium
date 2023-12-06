@@ -85,4 +85,11 @@ VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return nullptr;
 }
 
+void VariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
+    std::string_view group_name) {
+  // This trial should only be registered on platforms that support the limited
+  // entropy mode.
+  NOTREACHED();
+}
+
 }  // namespace variations

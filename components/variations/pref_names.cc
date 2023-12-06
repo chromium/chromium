@@ -113,6 +113,10 @@ const char kVariationsSafeSeedLocale[] = "variations_safe_seed_locale";
 // The milestone with which the "safe" seed was fetched.
 const char kVariationsSafeSeedMilestone[] = "variations_safe_seed_milestone";
 
+// The seed that is used to randomize the limited entropy synthetic trial.
+const char kVariationsLimitedEntropySyntheticTrialSeed[] =
+    "variations_limited_entropy_synthetic_trial_seed";
+
 // A saved copy of |kVariationsPermanentConsistencyCountry|. The saved value is
 // the most recent value that was successfully used by the VariationsService for
 // evaluating permanent consistency studies.

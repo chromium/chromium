@@ -14,6 +14,7 @@
 
 class ApplicationBreadcrumbsLogger;
 class DiscoverFeedExperimentsTracker;
+class IOSChromeVariationsServiceClient;
 class OptimizationGuideService;
 
 namespace {
@@ -42,6 +43,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
  private:
   friend class IOSChromeMetricsServicesManagerClient;
+  friend class IOSChromeVariationsServiceClient;
 
   friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
