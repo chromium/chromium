@@ -10,8 +10,7 @@ import {AndroidApp, DialogType, NavigationKey, NavigationRoot, NavigationSection
 import {Slice} from '../../lib/base_store.js';
 import {getMyFiles} from '../ducks/all_entries.js';
 import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
-import type {FileKey} from '../file_key.js';
-import {getEntry, getFileData} from '../store.js';
+import {getEntry} from '../store.js';
 
 /**
  * @fileoverview Navigation slice of the store.
@@ -263,25 +262,4 @@ function refreshNavigationRootsReducer(currentState: State): State {
       roots,
     },
   };
-}
-
-/** Create action to update navigation data in FileData for a given entry. */
-export const updateNavigationEntry =
-    slice.addReducer('update-entry', updateNavigationEntryReducer);
-
-function updateNavigationEntryReducer(currentState: State, payload: {
-  key: FileKey,
-  expanded: boolean,
-}): State {
-  const {key, expanded} = payload;
-  const fileData = getFileData(currentState, key);
-  if (!fileData) {
-    return currentState;
-  }
-
-  currentState.allEntries[key] = {
-    ...fileData,
-    expanded,
-  };
-  return {...currentState};
 }

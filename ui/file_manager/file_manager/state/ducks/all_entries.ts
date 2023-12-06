@@ -23,7 +23,6 @@ import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
 import {hasDlpDisabledFiles} from './current_directory.js';
-import {updateNavigationEntry} from './navigation.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey} from './volumes.js';
 
 /**
@@ -303,12 +302,12 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
     // value for the following fields. For example, for "expanded" entries with
     // expanded=true, we don't want to override it with expanded=false derived
     // from `convertEntryToFileData` function above.
-    expanded: existingFileData.expanded || fileData.expanded,
-    isEjectable: existingFileData.isEjectable || fileData.isEjectable,
-    shouldDelayLoadingChildren: existingFileData.shouldDelayLoadingChildren ||
+    expanded: existingFileData.expanded ?? fileData.expanded,
+    isEjectable: existingFileData.isEjectable ?? fileData.isEjectable,
+    shouldDelayLoadingChildren: existingFileData.shouldDelayLoadingChildren ??
         fileData.shouldDelayLoadingChildren,
     // Keep children to prevent sudden removal of the children items on the UI.
-    children: existingFileData.children || fileData.children,
+    children: existingFileData.children ?? fileData.children,
   };
 
   state.allEntries = allEntries;
@@ -316,8 +315,10 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
 
 /**
  * Updates `FileData` from a `FileKey`.
+ *
+ * Note: the state will be updated in place.
  */
-export function updateFileData(
+export function updateFileDataInPlace(
     state: State, key: FileKey, changes: Partial<FileData>): FileData|
     undefined {
   if (!state.allEntries[key]) {
@@ -745,7 +746,8 @@ export async function*
   // [entryA, entryB, entryC]` but somehow entryB doesn't exist, we don't want
   // to expand `entryA`.
   for (let i = 0; i < pathEntryKeys.length - 1; i++) {
-    yield updateNavigationEntry({key: pathEntryKeys[i]!, expanded: true});
+    yield updateFileData(
+        {key: pathEntryKeys[i]!, partialFileData: {expanded: true}});
   }
 }
 
@@ -757,3 +759,25 @@ export async function*
  */
 export const traverseAndExpandPathEntries =
     keepLatest(traverseAndExpandPathEntriesInternal);
+
+
+/** Create action to update FileData for a given entry. */
+export const updateFileData =
+    slice.addReducer('update-file-data', updateFileDataReducer);
+
+function updateFileDataReducer(currentState: State, payload: {
+  key: FileKey,
+  partialFileData: Partial<FileData>,
+}): State {
+  const {key, partialFileData} = payload;
+  const fileData = getFileData(currentState, key);
+  if (!fileData) {
+    return currentState;
+  }
+
+  currentState.allEntries[key] = {
+    ...fileData,
+    ...partialFileData,
+  };
+  return {...currentState};
+}

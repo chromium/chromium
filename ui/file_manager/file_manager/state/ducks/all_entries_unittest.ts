@@ -15,11 +15,10 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {addChildEntries, traverseAndExpandPathEntriesInternal} from '../ducks/all_entries.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, type Store} from '../store.js';
 
-import {clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories} from './all_entries.js';
+import {addChildEntries, clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories, traverseAndExpandPathEntriesInternal, updateFileData} from './all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, myFilesEntryListKey} from './volumes.js';
 
 let store: Store;
@@ -866,6 +865,42 @@ export async function testTraverseAndExpandPathEntriesNotFound(
   };
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
+
+  done();
+}
+
+/** Tests that file data can be updated correctly. */
+export async function testUpdateFileData(done: () => void) {
+  const initialState = getEmptyState();
+  // Add MyFiles entry to the store.
+  const {fileData} = createMyFilesDataWithVolumeEntry();
+  const myFilesEntryKey = fileData.entry.toURL();
+  initialState.allEntries[myFilesEntryKey] = fileData;
+
+  const store = setupStore(initialState);
+
+  // Dispatch an action to update file data.
+  store.dispatch(updateFileData(
+      {key: myFilesEntryKey, partialFileData: {expanded: true}}));
+
+  // Expect MyFiles entry is expanded in the store.
+  await waitDeepEquals(
+      store, true, (state) => state.allEntries[myFilesEntryKey]?.expanded);
+
+  done();
+}
+
+/** Tests that file data won't be updated without valid file data. */
+export async function testUpdateFileDataWithoutValidFileData(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  // Dispatch an action to update an non existed file data.
+  store.dispatch(updateFileData(
+      {key: 'not-exist-key', partialFileData: {expanded: true}}));
+
+  // Check state won't be touched.
+  await waitDeepEquals(store, initialState, (state) => state);
 
   done();
 }

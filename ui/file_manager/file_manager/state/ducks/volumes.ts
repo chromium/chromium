@@ -14,7 +14,7 @@ import {constants} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
 import {getEntry, getFileData} from '../store.js';
 
-import {cacheEntries, getMyFiles, updateFileData} from './all_entries.js';
+import {cacheEntries, getMyFiles, updateFileDataInPlace} from './all_entries.js';
 import {updateDeviceConnectionState} from './device.js';
 
 /**
@@ -525,7 +525,8 @@ function updateDeviceConnectionStateReducer(
     }
     // Make the ODFS FileData/VolumeEntry consistent with its volume in the
     // store.
-    updateFileData(currentState, volume.rootKey!, {disabled: disableODFS});
+    updateFileDataInPlace(
+        currentState, volume.rootKey!, {disabled: disableODFS});
     const odfsVolumeEntry =
         getEntry(currentState, volume.rootKey!) as VolumeEntry;
     if (odfsVolumeEntry) {

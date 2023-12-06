@@ -13,7 +13,7 @@ import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState} from '../store.js';
 
-import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
+import {refreshNavigationRoots} from './navigation.js';
 import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from './volumes.js';
 
 export function setUp() {
@@ -641,41 +641,6 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
     },
   ];
   await waitDeepEquals(store, want, (state) => state.navigation.roots);
-
-  done();
-}
-
-/** Tests that navigation entry can be updated correctly. */
-export async function testUpdateNavigationEntry(done: () => void) {
-  const initialState = getEmptyState();
-  // Add MyFiles entry to the store.
-  const myFilesVolume = createMyFilesEntryFileData();
-  const myFilesEntryKey = myFilesVolume.fileData.entry.toURL();
-  initialState.allEntries[myFilesEntryKey] = myFilesVolume.fileData;
-
-  const store = setupStore(initialState);
-
-  // Dispatch an action to update navigation entry.
-  store.dispatch(updateNavigationEntry({key: myFilesEntryKey, expanded: true}));
-
-  // Expect MyFiles entry is expanded in the store.
-  await waitDeepEquals(
-      store, true, (state) => state.allEntries[myFilesEntryKey]?.expanded);
-
-  done();
-}
-
-/** Tests that navigation entry won't be updated without valid file data. */
-export async function testUpdateNavigationEntryWithoutValidFileData(
-    done: () => void) {
-  const initialState = getEmptyState();
-  const store = setupStore(initialState);
-
-  // Dispatch an action to update an non existed navigation entry.
-  store.dispatch(updateNavigationEntry({key: 'not-exist-key', expanded: true}));
-
-  // Check state won't be touched.
-  await waitDeepEquals(store, initialState, (state) => state);
 
   done();
 }

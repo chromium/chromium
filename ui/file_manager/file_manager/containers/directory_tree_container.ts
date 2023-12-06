@@ -19,9 +19,9 @@ import {DirectoryModel} from '../foreground/js/directory_model.js';
 import {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
 import {Menu} from '../foreground/js/ui/menu.js';
-import {convertEntryToFileData, readSubDirectories, traverseAndExpandPathEntries} from '../state/ducks/all_entries.js';
+import {convertEntryToFileData, readSubDirectories, traverseAndExpandPathEntries, updateFileData} from '../state/ducks/all_entries.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
-import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
+import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
 import {getEntry, getFileData, getStore, getVolume, getVolumeType, type Store} from '../state/store.js';
@@ -741,9 +741,9 @@ export class DirectoryTreeContainer {
     }
 
     const {fileData} = navigationData;
-    this.store_.dispatch(updateNavigationEntry({
+    this.store_.dispatch(updateFileData({
       key: navigationKey,
-      expanded: true,
+      partialFileData: {expanded: true},
     }));
 
     // UMA: expand time.
@@ -769,9 +769,9 @@ export class DirectoryTreeContainer {
 
     const {fileData} = navigationData;
     if (fileData.expanded) {
-      this.store_.dispatch(updateNavigationEntry({
+      this.store_.dispatch(updateFileData({
         key: navigationKey,
-        expanded: false,
+        partialFileData: {expanded: false},
       }));
     }
 
