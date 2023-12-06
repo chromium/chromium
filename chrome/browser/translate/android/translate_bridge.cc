@@ -63,6 +63,16 @@ class TranslationObserver
                                                        jsource_contents);
   }
 
+  void OnPageTranslated(const std::string& source_lang,
+                        const std::string& translated_lang,
+                        translate::TranslateErrors error_type) override {
+    Java_TranslationObserver_onPageTranslated(
+        env_, j_observer_,
+        base::android::ConvertUTF8ToJavaString(env_, source_lang),
+        base::android::ConvertUTF8ToJavaString(env_, translated_lang),
+        static_cast<int>(error_type));
+  }
+
  private:
   raw_ptr<JNIEnv> env_;
   ScopedJavaGlobalRef<jobject> j_observer_;

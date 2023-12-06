@@ -13,4 +13,8 @@ public interface TranslationObserver {
 
     @CalledByNative
     default void onIsPageTranslatedChanged(WebContents contents) {}
+
+    @CalledByNative
+    default void onPageTranslated(
+            String sourceLanguage, String translatedLanguage, int errorCode) {}
 }

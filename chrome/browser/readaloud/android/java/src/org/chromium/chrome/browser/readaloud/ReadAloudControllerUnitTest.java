@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -893,14 +891,12 @@ public class ReadAloudControllerUnitTest {
         doReturn(List.of(new PlaybackVoice("en", "voiceA", "")))
                 .when(mPlaybackHooks)
                 .getVoicesFor(anyString());
+
         // User changes voices before the first playback is ready.
         mController.setVoiceOverrideAndApplyToPlayback(new PlaybackVoice("en", "1234", ""));
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-
-        // Playback succeeds just once. No seeking.
-        onPlaybackSuccess(mPlayback);
-        verify(mPlayback, times(1)).play();
-        verify(mPlayback, never()).seekToParagraph(anyInt(), anyLong());
+        // TODO(b/315028038): If changing voice during loading is possible, then we
+        // should instead cancel the first request and request again.
+        verify(mPlaybackHooks, never()).createPlayback(any(), any());
     }
 
     @Test
@@ -964,7 +960,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testTranslationStopsPlayback() {
+    public void testIsTranslatedChangedStopsPlayback() {
         // Play tab.
         mFakeTranslateBridge.setCurrentLanguage("en");
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
@@ -972,11 +968,39 @@ public class ReadAloudControllerUnitTest {
         verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
         onPlaybackSuccess(mPlayback);
 
-        // trigger translation. Playback should stop
+        // Trigger isTranslated state changed. Playback should stop.
         mController
                 .getTranslationObserverForTest()
                 .onIsPageTranslatedChanged(mTab.getWebContents());
         verify(mPlayback).release();
+    }
+
+    @Test
+    public void testSuccessfulTranslationStopsPlayback() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+
+        // Finish translating (status code 0 means "no error"). Playback should stop.
+        mController.getTranslationObserverForTest().onPageTranslated("en", "es", 0);
+        verify(mPlayback).release();
+    }
+
+    @Test
+    public void testFailedTranslationDoesNotStopPlayback() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+
+        // Fail to translate (status code 1). Playback should not stop.
+        mController.getTranslationObserverForTest().onPageTranslated("en", "es", 1);
+        verify(mPlayback, never()).release();
     }
 
     @Test

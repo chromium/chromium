@@ -166,10 +166,17 @@ public class ReadAloudController
     private long mTranslationObserverHandle;
     private final TranslationObserver mTranslationObserver =
             new TranslationObserver() {
-
                 @Override
                 public void onIsPageTranslatedChanged(WebContents webContents) {
                     if (mCurrentlyPlayingTab != null) {
+                        maybeStopPlayback(mCurrentlyPlayingTab);
+                    }
+                }
+
+                @Override
+                public void onPageTranslated(
+                        String sourceLanguage, String translatedLanguage, int errorCode) {
+                    if (mCurrentlyPlayingTab != null && errorCode == 0) {
                         maybeStopPlayback(mCurrentlyPlayingTab);
                     }
                 }
@@ -395,8 +402,6 @@ public class ReadAloudController
                             ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
-
-                    updateVoiceMenu(playback.getMetadata().languageCode());
                 },
                 exception -> {
                     Log.e(TAG, exception.getMessage());
@@ -405,6 +410,7 @@ public class ReadAloudController
 
         // Notify player UI that playback is happening soon.
         mPlayerCoordinator.playTabRequested();
+        updateVoiceMenu(playbackLanguage);
         return promise;
     }
 
@@ -564,8 +570,15 @@ public class ReadAloudController
         if (language == null) {
             return;
         }
-        mCurrentLanguageVoices.set(mPlaybackHooks.getVoicesFor(language));
-        mSelectedVoiceId.set(ReadAloudPrefs.getVoices(getPrefService()).get(language));
+
+        List<PlaybackVoice> voices = mPlaybackHooks.getVoicesFor(language);
+        mCurrentLanguageVoices.set(voices);
+
+        String selectedVoiceId = ReadAloudPrefs.getVoices(getPrefService()).get(language);
+        if (selectedVoiceId == null) {
+            selectedVoiceId = voices.get(0).getVoiceId();
+        }
+        mSelectedVoiceId.set(selectedVoiceId);
     }
 
     // Player.Delegate
@@ -616,7 +629,7 @@ public class ReadAloudController
         ReadAloudPrefs.setVoice(getPrefService(), voice.getLanguage(), voice.getVoiceId());
         mSelectedVoiceId.set(voice.getVoiceId());
 
-        if (mCurrentlyPlayingTab != null) {
+        if (mCurrentlyPlayingTab != null && mPlayback != null) {
             RestoreState state = new RestoreState(mCurrentlyPlayingTab, mCurrentPlaybackData);
             resetCurrentPlayback();
             // This should re-request playback with the same playback state and paragraph
