@@ -22,20 +22,13 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader
  */
 
-import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {ErrorCallback, FakeEntry, FileEntryCallback, FileErrorCallback, FilesAppDirEntry, FilesAppEntry, MetadataCallback} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import {vmTypeToIconName} from './icon_util.js';
 import {getVolumeTypeFromRootType, RootType, VolumeType} from './volume_manager_types.js';
 
-type ErrorCallback = (e: Error) => void;
-type FileErrorCallback = (e: FileError) => void;
-type EntryCallback = (a: Entry) => void;
 type EntriesCallback = (a: Entry[]) => void;
-type FilesAppEntryCallback = (a: FilesAppEntry) => void;
-type FileEntryCallback = (a: FileEntry) => void;
-type DirEntryCallback = (a: DirectoryEntry) => void;
-type FilesAppDirEntryCallback = (a: FilesAppDirEntry) => void;
 
 /**
  * A reader compatible with DirectoryEntry.createReader (from Web Standards)
@@ -138,18 +131,20 @@ export class EntryList extends FilesAppDirEntry {
   disabled = false;
 
   /**
-   * @param label_: Label to be used when displaying to user, it should
+   * @param label: Label to be used when displaying to user, it should
    *    already translated.
    * @param rootType root type.
-   * @param devicePath_ Path belonging to the external media device. Partitions
+   * @param devicePath Path belonging to the external media device. Partitions
    * on the same external drive have the same device path.
    */
   constructor(
-      private label_: string, rootType: RootType,
-      private devicePath_: string = '') {
-    super();
-    this.typeName = 'EntryList';
-    this.rootType = rootType;
+      public readonly label: string, rootType: RootType,
+      public readonly devicePath: string = '') {
+    super(rootType);
+  }
+
+  override get typeName() {
+    return 'EntryList';
   }
 
   override get isDirectory() {
@@ -173,25 +168,15 @@ export class EntryList extends FilesAppDirEntry {
     return this.children_;
   }
 
-  get label() {
-    return this.label_;
-  }
-
   override get name() {
-    return this.label_;
-  }
-
-  get devicePath() {
-    return this.devicePath_;
+    return this.label;
   }
 
   override get isNativeType() {
     return false;
   }
 
-  override getMetadata(
-      success: (arg: {modificationTime: Date, size: number}) => void,
-      _error?: FileErrorCallback) {
+  override getMetadata(success: MetadataCallback, _error?: FileErrorCallback) {
     // Defaults modificationTime to current time just to have a valid value.
     setTimeout(success, 0, {modificationTime: new Date(), size: 0});
   }
@@ -200,8 +185,8 @@ export class EntryList extends FilesAppDirEntry {
   override toURL(): string {
     // There may be multiple entry lists. Append the device path to return
     // a unique identifiable URL for the entry list.
-    if (this.devicePath_) {
-      return 'entry-list://' + this.rootType + '/' + this.devicePath_;
+    if (this.devicePath) {
+      return 'entry-list://' + this.rootType + '/' + this.devicePath;
     }
     return 'entry-list://' + this.rootType;
   }
@@ -328,32 +313,6 @@ export class EntryList extends FilesAppDirEntry {
         return null;
     }
   }
-
-  override copyTo(
-      _newParent: DirectoryEntry|FilesAppDirEntry, _newName?: string,
-      _success?: EntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback) {}
-
-  override moveTo(
-      _newParent: DirectoryEntry|FilesAppDirEntry, _newName: string,
-      _success?: EntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback) {}
-
-  override remove(
-      _success: EntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback) {}
-
-  override getFile(
-      _path: string, _options?: FileSystemFlags,
-      _success?: FileEntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback) {}
-
-  override getDirectory(
-      _path: string, _options?: FileSystemFlags,
-      _success?: (DirEntryCallback|FilesAppDirEntryCallback),
-      _error?: FileErrorCallback) {}
-
-  override removeRecursively(_success: VoidCallback, _error?: ErrorCallback) {}
 }
 
 /**
@@ -374,32 +333,24 @@ export class VolumeEntry extends FilesAppDirEntry {
   private rootEntry_: DirectoryEntry;
   disabled = false;
 
-  /** @param volumeInfo_ VolumeInfo for this entry. */
-  constructor(private volumeInfo_: VolumeInfo) {
+  /** @param volumeInfo VolumeInfo for this entry. */
+  constructor(public readonly volumeInfo: VolumeInfo) {
     super();
 
-    this.rootEntry_ = this.volumeInfo_.displayRoot;
+    this.rootEntry_ = this.volumeInfo.displayRoot;
     if (!this.rootEntry_) {
-      this.volumeInfo_.resolveDisplayRoot((displayRoot: DirectoryEntry) => {
+      this.volumeInfo.resolveDisplayRoot((displayRoot: DirectoryEntry) => {
         this.rootEntry_ = displayRoot;
       });
     }
-
-    this.typeName = 'VolumeEntry';
-
-    // TODO(b/271485133): consider deriving this from volumeInfo. Setting
-    // rootType here breaks some integration tests, e.g.
-    // saveAsDlpRestrictedAndroid.
-    this.rootType = null;
   }
 
-  /** This method is only valid for VolumeEntry instances. */
-  get volumeInfo(): VolumeInfo {
-    return this.volumeInfo_;
+  override get typeName() {
+    return 'VolumeEntry';
   }
 
   get volumeType(): VolumeType {
-    return this.volumeInfo_.volumeType;
+    return this.volumeInfo.volumeType;
   }
 
   override get filesystem(): FileSystem|null {
@@ -438,10 +389,11 @@ export class VolumeEntry extends FilesAppDirEntry {
       error?: FileErrorCallback) {
     if (!this.rootEntry_) {
       if (error) {
-        setTimeout(error, 0, new Error('root entry not resolved yet.'));
+        setTimeout(error, 0, new Error('Root entry not resolved yet'));
       }
       return;
     }
+
     this.rootEntry_.getDirectory(
         path, options, success, error as (ErrorCallback | undefined));
   }
@@ -454,16 +406,17 @@ export class VolumeEntry extends FilesAppDirEntry {
       error?: FileErrorCallback) {
     if (!this.rootEntry_) {
       if (error) {
-        setTimeout(error, 0, new Error('root entry not resolved yet.'));
+        setTimeout(error, 0, new Error('Root entry not resolved yet'));
       }
       return;
     }
+
     this.rootEntry_.getFile(
         path, options, success, error as (ErrorCallback | undefined));
   }
 
   override get name(): string {
-    return this.volumeInfo_.label;
+    return this.volumeInfo.label;
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -473,13 +426,13 @@ export class VolumeEntry extends FilesAppDirEntry {
 
   /** String used to determine the icon. */
   get iconName(): string {
-    if (this.volumeInfo_.volumeType == VolumeType.GUEST_OS) {
-      return vmTypeToIconName(this.volumeInfo_.vmType);
+    if (this.volumeInfo.volumeType == VolumeType.GUEST_OS) {
+      return vmTypeToIconName(this.volumeInfo.vmType);
     }
-    if (this.volumeInfo_.volumeType == VolumeType.DOWNLOADS) {
+    if (this.volumeInfo.volumeType == VolumeType.DOWNLOADS) {
       return VolumeType.MY_FILES;
     }
-    return this.volumeInfo_.volumeType;
+    return this.volumeInfo.volumeType;
   }
 
   /**
@@ -495,9 +448,7 @@ export class VolumeEntry extends FilesAppDirEntry {
     }
   }
 
-  override getMetadata(
-      success: (arg: {modificationTime: Date, size: number}) => void,
-      error?: FileErrorCallback) {
+  override getMetadata(success: MetadataCallback, error?: FileErrorCallback) {
     this.rootEntry_.getMetadata(success, error as ErrorCallback);
   }
 
@@ -533,7 +484,7 @@ export class VolumeEntry extends FilesAppDirEntry {
    *     "Downloads" VolumeInfo.
    */
   setPrefix(entry: FilesAppEntry) {
-    this.volumeInfo_.prefixEntry = entry;
+    this.volumeInfo.prefixEntry = entry;
   }
 
   /**
@@ -621,22 +572,6 @@ export class VolumeEntry extends FilesAppDirEntry {
     }
     return false;
   }
-
-  override copyTo(
-      _newParent: DirectoryEntry|FilesAppDirEntry, _newName?: string,
-      _success?: (EntryCallback|FilesAppEntryCallback),
-      _error?: FileErrorCallback) {}
-
-  override moveTo(
-      _newParent: DirectoryEntry|FilesAppDirEntry, _newName: string,
-      _success?: (EntryCallback|FilesAppEntryCallback),
-      _error?: FileErrorCallback) {}
-
-  override remove(
-      _success: EntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback) {}
-
-  override removeRecursively(_success: VoidCallback, _error?: ErrorCallback) {}
 }
 
 /**
@@ -709,12 +644,10 @@ export class FakeEntryImpl extends FakeEntry {
       return RootType.DRIVE;
     }
 
-    return this.rootType;
+    return this.rootType ?? '';
   }
 
-  override getMetadata(
-      success: (arg: {modificationTime: Date, size: number}) => void,
-      _error?: FileErrorCallback) {
+  override getMetadata(success: MetadataCallback, _error?: FileErrorCallback) {
     setTimeout(success, 0, {modificationTime: new Date(), size: 0});
   }
 
@@ -746,34 +679,9 @@ export class FakeEntryImpl extends FakeEntry {
     if (this.rootType === RootType.RECENT) {
       return null;
     }
-    return getVolumeTypeFromRootType(this.rootType);
+
+    return getVolumeTypeFromRootType(this.rootType!);
   }
-
-  override copyTo(
-      _newParent: DirectoryEntry|FilesAppDirEntry, _newName?: string,
-      _success?: EntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback): void {}
-
-  override moveTo(
-      _newParent: DirectoryEntry|FilesAppDirEntry, _newName: string,
-      _success?: (EntryCallback|FilesAppEntryCallback),
-      _error?: FileErrorCallback) {}
-
-  override remove(
-      _success: EntryCallback|FilesAppEntryCallback,
-      _error?: FileErrorCallback) {}
-
-  override getFile(
-      _path: string, _options?: FileSystemFlags,
-      _success?: (FileEntryCallback|FilesAppEntryCallback),
-      _error?: FileErrorCallback) {}
-
-  override getDirectory(
-      _path: string, _options?: FileSystemFlags,
-      _success?: (DirEntryCallback|FilesAppDirEntryCallback),
-      _error?: FileErrorCallback) {}
-
-  override removeRecursively(_success: VoidCallback, _error?: ErrorCallback) {}
 }
 
 /**
@@ -789,8 +697,11 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   constructor(
       label: string, public guest_id: number,
       public vm_type: chrome.fileManagerPrivate.VmType) {
-    super(label, RootType.GUEST_OS, undefined, undefined);
-    this.typeName = 'GuestOsPlaceholder';
+    super(label, RootType.GUEST_OS);
+  }
+
+  override get typeName() {
+    return 'GuestOsPlaceholder';
   }
 
   /** String used to determine the icon. */

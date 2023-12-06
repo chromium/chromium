@@ -117,7 +117,7 @@ export class MockVolumeManager implements VolumeManager {
       const isReadOnly = entry.rootType !== RootType.RECENT &&
           entry.rootType !== RootType.TRASH;
       return new EntryLocationImpl(
-          this.volumeInfoList.item(0), entry.rootType, /* isRootType= */ true,
+          this.volumeInfoList.item(0), entry.rootType!, /* isRootType= */ true,
           isReadOnly);
     }
 

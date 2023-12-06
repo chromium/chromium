@@ -104,7 +104,7 @@ export function removeUiEntryReducer(currentState: State, payload: {
 
   // We also need to remove it from the children of MyFiles if it's existed
   // there.
-  if (entry && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
+  if (entry?.rootType && uiEntryRootTypesInMyFiles.has(entry.rootType)) {
     const {myFilesEntry} = getMyFiles(currentState);
     const children = myFilesEntry.getUiChildren();
     const isUiEntryExistedInMyFiles =

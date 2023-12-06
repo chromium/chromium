@@ -32,7 +32,6 @@ static_js_files = [
   "file_manager/externs/command_handler_deps.js",
   "file_manager/externs/entry_location.js",
   "file_manager/externs/exif_entry.js",
-  "file_manager/externs/files_app_entry_interfaces.js",
   "file_manager/externs/metadata_model.js",
   "file_manager/externs/progress_center_panel.js",
   "file_manager/externs/volume_info_list.js",
@@ -135,6 +134,12 @@ ts_files = [
   "file_manager/common/js/url_constants.ts",
   "file_manager/common/js/util.ts",
   "file_manager/common/js/volume_manager_types.ts",
+
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
+  # Externs:
+  "file_manager/externs/files_app_entry_interfaces.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
