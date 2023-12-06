@@ -2417,7 +2417,7 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
         linux_dmabuf->buffer_params()[0]->resource(),
         linux_dmabuf->buffer_params()[0]->buffer_resource());
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
-    EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
+    EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
     EXPECT_CALL(*mock_surface, Commit()).Times(1);
   });
 }
@@ -2721,7 +2721,9 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
-    server->GetObject<wl::MockSurface>(id)->ClearBufferReleases();
+    auto* root_surface = server->GetObject<wl::MockSurface>(id);
+    root_surface->ClearBufferReleases();
+    root_surface->SendFrameCallback();
   });
 
   auto interface_ptr = manager_host_->BindInterface();

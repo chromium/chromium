@@ -342,7 +342,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     EXPECT_CALL(*mock_primary_surface, Damage(_, _, _, _)).Times(0);
     // 1 buffer committed on root surface.
     EXPECT_CALL(*root_surface, Attach(_, _, _)).Times(1);
-    EXPECT_CALL(*root_surface, Frame(_)).Times(0);
+    EXPECT_CALL(*root_surface, Frame(_)).Times(1);
     EXPECT_CALL(*root_surface, Commit()).Times(1);
 
     // The wl_buffers are requested during ScheduleOverlays. Thus, we have
@@ -456,7 +456,7 @@ TEST_P(WaylandSurfaceFactoryTest,
 
     // Also send the frame callback so that pending buffer for swap id=1u is
     // processed and swapped.
-    server->GetObject<wl::MockSurface>(overlay_surface_id)->SendFrameCallback();
+    root_surface->SendFrameCallback();
   });
 
   // Give a client a chance to send requests and then verify our expectations on
@@ -702,10 +702,10 @@ TEST_P(WaylandSurfaceFactoryTest,
         server->GetObject<wl::MockSurface>(primary_subsurface_id);
 
     EXPECT_CALL(*mock_primary_surface, Attach(_, _, _)).Times(1);
-    EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(1);
+    EXPECT_CALL(*mock_primary_surface, Frame(_)).Times(0);
     EXPECT_CALL(*mock_primary_surface, Damage(_, _, _, _)).Times(1);
     EXPECT_CALL(*mock_primary_surface, Commit()).Times(1);
-    EXPECT_CALL(*root_surface, Frame(_)).Times(0);
+    EXPECT_CALL(*root_surface, Frame(_)).Times(1);
     EXPECT_CALL(*root_surface, Commit()).Times(1);
 
     testing::Mock::VerifyAndClearExpectations(server->zwp_linux_dmabuf_v1());
@@ -720,11 +720,13 @@ TEST_P(WaylandSurfaceFactoryTest,
     }
   });
 
-  PostToServerAndWait(
-      [primary_subsurface_id](wl::TestWaylandServerThread* server) {
-        testing::Mock::VerifyAndClearExpectations(
-            server->GetObject<wl::MockSurface>(primary_subsurface_id));
-      });
+  PostToServerAndWait([main_surface_id = surface_id_, primary_subsurface_id](
+                          wl::TestWaylandServerThread* server) {
+    testing::Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(primary_subsurface_id));
+    testing::Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(main_surface_id));
+  });
 
   auto* subsurface = window_->wayland_subsurfaces().begin()->get();
   const uint32_t overlay_surface_id =
@@ -838,16 +840,12 @@ TEST_P(WaylandSurfaceFactoryTest,
     }
   });
 
-  PostToServerAndWait([overlay_surface_id, primary_subsurface_id](
-                          wl::TestWaylandServerThread* server) {
-    auto* mock_primary_surface =
-        server->GetObject<wl::MockSurface>(primary_subsurface_id);
-    auto* mock_overlay_surface =
-        server->GetObject<wl::MockSurface>(overlay_surface_id);
+  PostToServerAndWait([main_surface_id =
+                           surface_id_](wl::TestWaylandServerThread* server) {
+    auto* root_surface = server->GetObject<wl::MockSurface>(main_surface_id);
     // Send the frame callback so that pending buffer for swap id=1u is
     // processed and swapped.
-    mock_primary_surface->SendFrameCallback();
-    mock_overlay_surface->SendFrameCallback();
+    root_surface->SendFrameCallback();
   });
 
   PostToServerAndWait(

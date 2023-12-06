@@ -226,7 +226,8 @@ class WaylandSurface {
 
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
-  void ApplyPendingState();
+  // Returns whether or not changes require a commit to the wl_surface.
+  bool ApplyPendingState();
 
   // Commits the underlying wl_surface, triggers a wayland connection flush if
   // |flush| is true.
