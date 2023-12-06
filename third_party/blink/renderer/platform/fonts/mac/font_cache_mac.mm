@@ -97,12 +97,6 @@ static void FontCacheRegisteredFontsChangedNotificationCallback(
   FontCache::InvalidateFromAnyThread();
 }
 
-static bool UseHinting() {
-  // Enable hinting only when antialiasing is disabled in web tests.
-  return (WebTestSupport::IsRunningWebTest() &&
-          !WebTestSupport::IsFontAntialiasingEnabledForTest());
-}
-
 void FontCache::PlatformInit() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetLocalCenter(), this,
@@ -210,9 +204,6 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     }
   }
 
-  substitute_font =
-      UseHinting() ? substitute_font.screenFont : substitute_font.printerFont;
-
   substitute_font_traits = [font_manager traitsOfFont:substitute_font];
   substitute_font_weight = [font_manager weightOfFont:substitute_font];
 
@@ -285,8 +276,6 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     actual_traits = [font_manager traitsOfFont:matched_font];
   NSInteger actual_weight = [font_manager weightOfFont:matched_font];
 
-  NSFont* platform_font =
-      UseHinting() ? matched_font.screenFont : matched_font.printerFont;
   NSInteger app_kit_weight = ToAppKitFontWeight(font_description.Weight());
 
   bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
@@ -306,7 +295,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
   std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromNSFont(
-      platform_font, size, font_description.SpecifiedSize(), synthetic_bold,
+      matched_font, size, font_description.SpecifiedSize(), synthetic_bold,
       synthetic_italic, font_description.TextRendering(),
       ResolvedFontFeatures(), font_description.Orientation(),
       font_description.FontOpticalSizing(),
