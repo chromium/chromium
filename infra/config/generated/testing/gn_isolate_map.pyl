@@ -1252,6 +1252,14 @@
     "label": "//chrome/notification_helper:notification_helper_unittests",
     "type": "windowed_test_launcher",
   },
+  "ondevice_model_benchmark": {
+    "label": "//components/optimization_guide/internal:ondevice_model_benchmark",
+    "type": "additional_compile_target",
+  },
+  "ondevice_model_example": {
+    "label": "//components/optimization_guide/internal:ondevice_model_example",
+    "type": "additional_compile_target",
+  },
   "openscreen_unittests": {
     "label": "//chrome/browser/media/router:openscreen_unittests",
     "type": "console_test_launcher",

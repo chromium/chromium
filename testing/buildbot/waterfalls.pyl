@@ -6813,6 +6813,10 @@
         'os_type': 'cros',
       },
       'optimization_guide-linux': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark',
+          'ondevice_model_example',
+        ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'linux-jammy',
@@ -6824,6 +6828,10 @@
         'os_type': 'linux',
       },
       'optimization_guide-mac-arm64': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark',
+          'ondevice_model_example',
+        ],
         'mixins': [
           'chrome-swarming-pool',
           'mac_default_arm64',
@@ -6835,6 +6843,10 @@
         'os_type': 'mac',
       },
       'optimization_guide-mac-x64': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark',
+          'ondevice_model_example',
+        ],
         'mixins': [
           'chrome-swarming-pool',
           'mac_default_x64',
@@ -6846,6 +6858,10 @@
         'os_type': 'mac',
       },
       'optimization_guide-win32': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark',
+          'ondevice_model_example',
+        ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'win10',
@@ -6857,6 +6873,10 @@
         'os_type': 'win',
       },
       'optimization_guide-win64': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark',
+          'ondevice_model_example',
+        ],
         'browser_config': 'release_x64',
         'mixins': [
           'chrome-intelligence-swarming-pool',

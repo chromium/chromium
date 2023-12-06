@@ -1533,6 +1533,16 @@ targets.windowed_test_launcher(
     label = "//chrome/notification_helper:notification_helper_unittests",
 )
 
+targets.compile_target(
+    name = "ondevice_model_benchmark",
+    label = "//components/optimization_guide/internal:ondevice_model_benchmark",
+)
+
+targets.compile_target(
+    name = "ondevice_model_example",
+    label = "//components/optimization_guide/internal:ondevice_model_example",
+)
+
 targets.console_test_launcher(
     name = "openscreen_unittests",
     label = "//chrome/browser/media/router:openscreen_unittests",

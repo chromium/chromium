@@ -99,6 +99,10 @@
     ]
   },
   "optimization_guide-linux": {
+    "additional_compile_targets": [
+      "ondevice_model_benchmark",
+      "ondevice_model_example"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -206,6 +210,10 @@
     ]
   },
   "optimization_guide-mac-arm64": {
+    "additional_compile_targets": [
+      "ondevice_model_benchmark",
+      "ondevice_model_example"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -318,6 +326,10 @@
     ]
   },
   "optimization_guide-mac-x64": {
+    "additional_compile_targets": [
+      "ondevice_model_benchmark",
+      "ondevice_model_example"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -430,6 +442,10 @@
     ]
   },
   "optimization_guide-win32": {
+    "additional_compile_targets": [
+      "ondevice_model_benchmark",
+      "ondevice_model_example"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -538,6 +554,10 @@
     ]
   },
   "optimization_guide-win64": {
+    "additional_compile_targets": [
+      "ondevice_model_benchmark",
+      "ondevice_model_example"
+    ],
     "gtest_tests": [
       {
         "args": [
