@@ -182,7 +182,7 @@ public class ReadingListTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkId bookmarkId =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        () -> mBookmarkModel.addToReadingList(title, url));
+                        () -> mBookmarkModel.addToDefaultReadingList(title, url));
         return bookmarkId;
     }
 
@@ -263,10 +263,10 @@ public class ReadingListTest {
     @Test
     @SmallTest
     public void testReadingListItemMenuItems_ReadItem() throws Exception {
-        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        BookmarkId id = addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mBookmarkModel.setReadStatusForReadingList(mTestUrlA, /* read= */ true);
+                    mBookmarkModel.setReadStatusForReadingList(id, /* read= */ true);
                 });
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);

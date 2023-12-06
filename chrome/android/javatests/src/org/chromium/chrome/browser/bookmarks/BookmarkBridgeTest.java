@@ -347,9 +347,9 @@ public class BookmarkBridgeTest {
     public void testAddToReadingList() {
         Assert.assertNull(
                 "Should return null for non http/https URLs.",
-                mBookmarkBridge.addToReadingList("a", new GURL("chrome://flags")));
+                mBookmarkBridge.addToDefaultReadingList("a", new GURL("chrome://flags")));
         BookmarkId readingListId =
-                mBookmarkBridge.addToReadingList("a", new GURL("https://www.google.com/"));
+                mBookmarkBridge.addToDefaultReadingList("a", new GURL("https://www.google.com/"));
         Assert.assertNotNull("Failed to add to reading list", readingListId);
         Assert.assertEquals(BookmarkType.READING_LIST, readingListId.getType());
         BookmarkItem readingListItem = mBookmarkBridge.getBookmarkById(readingListId);

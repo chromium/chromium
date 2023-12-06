@@ -1395,12 +1395,12 @@ class BookmarkManagerMediator
                     } else if (textId == R.string.reading_list_mark_as_read) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         mBookmarkModel.setReadStatusForReadingList(
-                                bookmarkItem.getUrl(), /* read= */ true);
+                                bookmarkItem.getId(), /* read= */ true);
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
                     } else if (textId == R.string.reading_list_mark_as_unread) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         mBookmarkModel.setReadStatusForReadingList(
-                                bookmarkItem.getUrl(), /* read= */ false);
+                                bookmarkItem.getId(), /* read= */ false);
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
                     } else if (textId == R.string.bookmark_item_move) {
                         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
@@ -1630,10 +1630,12 @@ class BookmarkManagerMediator
     private void updateSearchBoxShoppingFilterVisibility(PropertyModel searchBoxPropertyModel) {
         // We purposefully hide the shopping filter in reading list even though search is
         // global to avoid confusing users.
+        // TODO(crbug.com/1501998): Add account reading list folder support here.
         boolean filterVisible =
                 mShoppingFilterAvailable
                         && !Objects.equals(
-                                mBookmarkModel.getReadingListFolder(), getCurrentFolderId());
+                                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                                getCurrentFolderId());
         searchBoxPropertyModel.set(
                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, filterVisible);
         Set<PowerBookmarkType> powerFilter = mCurrentPowerFilter;

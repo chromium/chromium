@@ -51,8 +51,8 @@ class BookmarkBridgeTest : public testing::Test {
 
   BookmarkBridge* bookmark_bridge() { return bookmark_bridge_.get(); }
 
-  ReadingListManager* reading_list_manager() {
-    return reading_list_manager_.get();
+  ReadingListManager* local_or_syncable_reading_list_manager() {
+    return local_or_syncable_reading_list_manager_.get();
   }
 
   const BookmarkNode* AddURL(const BookmarkNode* parent,
@@ -89,14 +89,17 @@ class BookmarkBridgeTest : public testing::Test {
         std::move(storage), syncer::StorageType::kUnspecified,
         syncer::WipeModelUponSyncDisabledBehavior::kNever, &clock_);
     EXPECT_TRUE(storage_ptr->TriggerLoadCompletion());
-    auto reading_list_manager =
+    // TODO(crbug.com/1501998): Add account reading list manager support.
+    auto local_or_syncable_reading_list_manager =
         std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
-    reading_list_manager_ = reading_list_manager.get();
+    local_or_syncable_reading_list_manager_ =
+        local_or_syncable_reading_list_manager.get();
 
     // TODO(crbug.com/1503231): Add image_service once a mock is available.
     bookmark_bridge_ = std::make_unique<BookmarkBridge>(
         profile, bookmark_model_, managed_bookmark_service_,
-        partner_bookmarks_shim_, std::move(reading_list_manager), nullptr);
+        partner_bookmarks_shim_,
+        std::move(local_or_syncable_reading_list_manager), nullptr);
 
     bookmark_bridge_->LoadEmptyPartnerBookmarkShimForTesting(
         AttachCurrentThread());
@@ -117,7 +120,7 @@ class BookmarkBridgeTest : public testing::Test {
   raw_ptr<ManagedBookmarkService> managed_bookmark_service_;
   raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
   std::unique_ptr<ReadingListModel> reading_list_model_;
-  raw_ptr<ReadingListManager> reading_list_manager_;
+  raw_ptr<ReadingListManager> local_or_syncable_reading_list_manager_;
   std::unique_ptr<BookmarkBridge> bookmark_bridge_;
 
   content::BrowserTaskEnvironment task_environment_;
@@ -141,7 +144,7 @@ TEST_F(BookmarkBridgeTest, TestGetMostRecentlyAddedUserBookmarkIdForUrl) {
   ASSERT_EQ(JavaBookmarkIdGetId(env, java_id), recently_added->id());
 
   // Add to the reading list and verify that it's the most recently added.
-  recently_added = reading_list_manager()->Add(url, "fourth");
+  recently_added = local_or_syncable_reading_list_manager()->Add(url, "fourth");
   java_id = bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrl(
       env, JavaParamRef<jobject>(env, java_url.obj()));
   ASSERT_EQ(JavaBookmarkIdGetId(env, java_id), recently_added->id());
@@ -180,4 +183,24 @@ TEST_F(BookmarkBridgeTest, GetChildIdsMobileShowsPartner) {
   children =
       bookmark_bridge()->GetChildIdsImpl(bookmark_model()->mobile_node());
   ASSERT_EQ(0u, children.size());
+}
+
+TEST_F(BookmarkBridgeTest, GetUnreadCountLocalOrSyncable) {
+  GURL url = GURL("http://foo.com");
+  local_or_syncable_reading_list_manager()->Add(url, "foo");
+  local_or_syncable_reading_list_manager()->Add(GURL("http://bar.com"), "bar");
+
+  JNIEnv* const env = AttachCurrentThread();
+  ASSERT_EQ(2, bookmark_bridge()->GetUnreadCount(
+                   env, JavaParamRef<jobject>(
+                            env, bookmark_bridge()
+                                     ->GetLocalOrSyncableReadingListFolder(env)
+                                     .obj())));
+
+  local_or_syncable_reading_list_manager()->SetReadStatus(url, true);
+  ASSERT_EQ(1, bookmark_bridge()->GetUnreadCount(
+                   env, JavaParamRef<jobject>(
+                            env, bookmark_bridge()
+                                     ->GetLocalOrSyncableReadingListFolder(env)
+                                     .obj())));
 }

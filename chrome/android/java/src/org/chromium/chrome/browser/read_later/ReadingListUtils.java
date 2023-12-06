@@ -70,7 +70,9 @@ public final class ReadingListUtils {
             } else if (newParentId.getType() == BookmarkType.READING_LIST) {
                 newBookmark =
                         bookmarkModel.addToReadingList(
-                                existingBookmark.getTitle(), existingBookmark.getUrl());
+                                newParentId,
+                                existingBookmark.getTitle(),
+                                existingBookmark.getUrl());
             }
 
             if (newBookmark == null) {

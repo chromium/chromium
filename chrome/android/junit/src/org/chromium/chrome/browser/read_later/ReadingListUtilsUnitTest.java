@@ -36,16 +36,9 @@ import java.util.ArrayList;
 public class ReadingListUtilsUnitTest {
     @Mock BookmarkModel mBookmarkModel;
 
-    @Mock BookmarkId mBookmarkId;
-    @Mock BookmarkItem mBookmarkItem;
-    @Mock BookmarkId mReadingListId;
-    @Mock BookmarkItem mReadingListItem;
-    @Mock BookmarkId mReadingListFolder;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        doReturn(mReadingListId).when(mReadingListItem).getId();
         doAnswer(
                         (invocation) -> {
                             ((Runnable) invocation.getArgument(0)).run();
@@ -53,11 +46,6 @@ public class ReadingListUtilsUnitTest {
                         })
                 .when(mBookmarkModel)
                 .finishLoadingBookmarkModel(any());
-        doReturn(BookmarkType.NORMAL).when(mBookmarkId).getType();
-        doReturn(BookmarkType.READING_LIST).when(mReadingListFolder).getType();
-        doReturn(mReadingListFolder).when(mBookmarkModel).getReadingListFolder();
-        doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
-        doReturn(mReadingListId).when(mBookmarkModel).addToReadingList(any(), any());
     }
 
     @Test
@@ -99,14 +87,14 @@ public class ReadingListUtilsUnitTest {
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
         doReturn(newBookmarkId)
                 .when(bookmarkModel)
-                .addToReadingList("Test", JUnitTestGURLs.NTP_URL);
+                .addToReadingList(parentId, "Test", JUnitTestGURLs.NTP_URL);
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
         bookmarks.add(existingBookmarkId);
         ArrayList<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(
                 bookmarkModel, bookmarks, typeSwappedBookmarks, parentId);
-        verify(bookmarkModel).addToReadingList("Test", JUnitTestGURLs.NTP_URL);
+        verify(bookmarkModel).addToReadingList(parentId, "Test", JUnitTestGURLs.NTP_URL);
         verify(bookmarkModel).deleteBookmark(existingBookmarkId);
         Assert.assertEquals(0, bookmarks.size());
         Assert.assertEquals(1, typeSwappedBookmarks.size());

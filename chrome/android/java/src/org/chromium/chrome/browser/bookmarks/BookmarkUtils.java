@@ -282,7 +282,7 @@ public class BookmarkUtils {
             Context context,
             @NonNull Profile profile) {
         assert bookmarkBridge.isBookmarkModelLoaded();
-        BookmarkId bookmarkId = bookmarkBridge.addToReadingList(title, url);
+        BookmarkId bookmarkId = bookmarkBridge.addToDefaultReadingList(title, url);
 
         if (bookmarkId != null) {
             Snackbar snackbar =
@@ -404,7 +404,7 @@ public class BookmarkUtils {
         // 2. The last used parent implicitly specifies READING_LIST.
         if (bookmarkType == BookmarkType.READING_LIST
                 || parent.getType() == BookmarkType.READING_LIST) {
-            return bookmarkModel.addToReadingList(title, url);
+            return bookmarkModel.addToReadingList(parent, title, url);
         }
 
         BookmarkId bookmarkId = null;
@@ -739,7 +739,7 @@ public class BookmarkUtils {
      */
     public static int getChildCountForDisplay(BookmarkId id, BookmarkModel bookmarkModel) {
         if (id.getType() == BookmarkType.READING_LIST) {
-            return bookmarkModel.getUnreadCount();
+            return bookmarkModel.getUnreadCount(id);
         } else {
             return bookmarkModel.getTotalBookmarkCount(id);
         }
@@ -822,7 +822,10 @@ public class BookmarkUtils {
      */
     public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
         if (!canAddBookmarkToParent(bookmarkModel, parentId)) return false;
-        if (Objects.equals(parentId, bookmarkModel.getReadingListFolder())) return false;
+        // TODO(crbug.com/1501998): Add account reading list folder support here.
+        if (Objects.equals(parentId, bookmarkModel.getLocalOrSyncableReadingListFolder())) {
+            return false;
+        }
 
         return true;
     }

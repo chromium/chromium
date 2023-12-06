@@ -53,7 +53,9 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     @Override
     public List<BookmarkListEntry> buildBookmarkListForParent(
             BookmarkId parentId, Set<PowerBookmarkType> powerFilter) {
-        boolean isReadingList = Objects.equals(parentId, mBookmarkModel.getReadingListFolder());
+        // TODO(crbug.com/1501998): Add account reading list folder support here.
+        boolean isReadingList =
+                Objects.equals(parentId, mBookmarkModel.getLocalOrSyncableReadingListFolder());
         final List<BookmarkListEntry> bookmarkListEntries;
         if (!isReadingList && powerFilter != null && !powerFilter.isEmpty()) {
             bookmarkListEntries = collectLeafNodes(parentId);

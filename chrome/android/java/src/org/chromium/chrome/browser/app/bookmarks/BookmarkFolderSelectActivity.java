@@ -198,7 +198,7 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
         List<BookmarkId> folderList = new ArrayList<>();
         // Reading List doesn't support folders as children.
         if (!mIsCreatingFolder) {
-            folderList.add(mModel.getReadingListFolder());
+            folderList.add(mModel.getLocalOrSyncableReadingListFolder());
         }
         List<Integer> depthList = new ArrayList<>();
         depthList.add(0);

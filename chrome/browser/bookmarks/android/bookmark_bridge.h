@@ -95,7 +95,10 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   base::android::ScopedJavaLocalRef<jobject> GetOtherFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetDesktopFolderId(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jobject> GetReadingListFolder(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject>
+  GetLocalOrSyncableReadingListFolder(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetDefaultReadingListFolder(
+      JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jstring> GetBookmarkGuidByIdForTesting(
       JNIEnv* env,
@@ -204,12 +207,16 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   base::android::ScopedJavaLocalRef<jobject> AddToReadingList(
       JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_parent_id_obj,
       const base::android::JavaParamRef<jstring>& j_title,
       const base::android::JavaParamRef<jobject>& j_url);
 
   void SetReadStatus(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& j_url,
+                     const base::android::JavaParamRef<jobject>& j_id,
                      jboolean j_read);
+
+  jint GetUnreadCount(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& j_id);
 
   void Undo(JNIEnv* env);
 
@@ -221,8 +228,6 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
                     const base::android::JavaParamRef<jobject>& gurl);
 
   std::u16string GetTitle(const bookmarks::BookmarkNode* node) const;
-
-  jint GetUnreadCount(JNIEnv* env);
 
   // ProfileObserver override
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -264,6 +269,10 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       const std::vector<const bookmarks::BookmarkNode*>& nodes);
   void FilterUnreachableBookmarks(
       std::vector<const bookmarks::BookmarkNode*>* nodes);
+  // Returns the correct `ReadingListManager` given the corresponding `node`
+  // which is the root.
+  ReadingListManager* GetReadingListManagerFromParentNode(
+      const bookmarks::BookmarkNode* node);
 
   // Override bookmarks::BaseBookmarkModelObserver.
   // Called when there are changes to the bookmark model that don't trigger
@@ -322,7 +331,8 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
 
   // Holds reading list data as an in-memory BookmarkNode tree.
-  const std::unique_ptr<ReadingListManager> reading_list_manager_;
+  const std::unique_ptr<ReadingListManager>
+      local_or_syncable_reading_list_manager_;
 
   raw_ptr<page_image_service::ImageService> image_service_;  // weak
 

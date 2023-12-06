@@ -250,7 +250,7 @@ class BookmarkToolbarMediator
 
                 BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmark);
                 mBookmarkModel.setReadStatusForReadingList(
-                        bookmarkItem.getUrl(), /* read= */ id == R.id.reading_list_mark_as_read_id);
+                        bookmarkItem.getId(), /* read= */ id == R.id.reading_list_mark_as_read_id);
             }
             mSelectionDelegate.clearSelection();
             return true;
@@ -362,8 +362,10 @@ class BookmarkToolbarMediator
             // Special behavior in reading list:
             // - Select CHRONOLOGICAL as sort order.
             // - Disable sort menu items.
+            // TODO(crbug.com/1501998): Add account reading list folder support here.
             boolean inReadingList =
-                    Objects.equals(mCurrentFolder, mBookmarkModel.getReadingListFolder());
+                    Objects.equals(
+                            mCurrentFolder, mBookmarkModel.getLocalOrSyncableReadingListFolder());
             mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS_ENABLED, !inReadingList);
             if (inReadingList) {
                 // Reading list items are always sorted by date added.
