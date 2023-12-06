@@ -403,6 +403,13 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
   const String new_stack_trace =
       String::FromUTF8(&stack_trace_str[0], stack_trace_str.length());
 
+  // [RUN-2650] source_id is sometimes a divergent URL.
+  std::string source_id_str = source_id.Ascii();
+  recordreplay::RecordReplayString(
+      "ChromeClientImpl::AddMessageToConsole source_id", source_id_str);
+  const String new_source_id =
+      String::FromUTF8(&stack_trace_str[0], stack_trace_str.length());
+
   if (!message.IsNull()) {
     mojo::internal::AutoRecordReplayAssertBufferAllocations rraba(
         "RUN-2650-2651");
@@ -416,7 +423,7 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
     frame->Client()->DidAddMessageToConsole(
         WebConsoleMessage(static_cast<mojom::ConsoleMessageLevel>(level),
                           message),
-        source_id, line_number, new_stack_trace);
+        new_source_id, line_number, new_stack_trace);
   }
 }
 
