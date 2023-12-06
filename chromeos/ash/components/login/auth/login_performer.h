@@ -56,6 +56,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
     ~Delegate() override {}
     virtual void AllowlistCheckFailed(const std::string& email) = 0;
     virtual void PolicyLoadFailed() = 0;
+    // Sends AuthSuccess metrics to LoginUnlockThroughputRecorder if needed.
+    virtual void ReportOnAuthSuccessMetrics() {}
   };
 
   explicit LoginPerformer(Delegate* delegate,

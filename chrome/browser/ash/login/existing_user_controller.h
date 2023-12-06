@@ -189,6 +189,7 @@ class ExistingUserController : public content::NotificationObserver,
                                bool has_incomplete_migration) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
+  void ReportOnAuthSuccessMetrics() override;
 
   void OnOnlinePasswordUnusableImpl(std::unique_ptr<UserContext>,
                                     bool online_password_mismatch);

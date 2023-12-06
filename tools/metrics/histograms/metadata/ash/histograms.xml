@@ -3929,6 +3929,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Login.LoggedInStateChanged" units="ms"
+    expires_after="2024-11-17">
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from the OnAuthSuccess Chrome OS cryptohome login event and
+    LoggedInStateChanged event.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Login.Login.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2024-01-14">
   <owner>emaamari@google.com</owner>

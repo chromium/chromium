@@ -663,6 +663,8 @@ void StartupBrowserCreator::LaunchBrowser(
     chrome::startup::IsFirstRun is_first_run,
     std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder) {
   TRACE_EVENT0("ui", "StartupBrowserCreator::LaunchBrowser");
+  SCOPED_UMA_HISTOGRAM_TIMER("Startup.StartupBrowserCreator.LaunchBrowser");
+
   DCHECK(profile);
 #if BUILDFLAG(IS_WIN)
   DCHECK(!command_line.HasSwitch(credential_provider::kGcpwSigninSwitch));

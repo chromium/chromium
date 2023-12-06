@@ -999,6 +999,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.StartupBrowserCreator.LaunchBrowser" units="ms"
+    expires_after="2024-11-17">
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf+metrics@google.com</owner>
+  <summary>
+    The amount of time that elapsed during
+    StartupBrowserCreator::LaunchBrowser().
+  </summary>
+</histogram>
+
 <histogram name="Startup.Temperature" enum="StartupTemperature"
     expires_after="2024-05-19">
 <!-- expires-after: Diagnosis metric for changes in StartupTemperature suffix.

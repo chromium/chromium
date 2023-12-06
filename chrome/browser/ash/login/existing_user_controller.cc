@@ -14,8 +14,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/shell.h"
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -1044,6 +1046,10 @@ void ExistingUserController::PolicyLoadFailed() {
 
   PerformLoginFinishedActions(false /* don't start auto login timer */);
   ClearRecordedNames();
+}
+
+void ExistingUserController::ReportOnAuthSuccessMetrics() {
+  ash::Shell::Get()->login_unlock_throughput_recorder()->OnAuthSuccess();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

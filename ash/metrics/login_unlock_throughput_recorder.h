@@ -79,6 +79,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // This is called when list of ARC++ apps is updated.
   void OnArcAppListReady();
 
+  // This is called when cryptohome was successfully created/unlocked.
+  void OnAuthSuccess();
+
   // This is true if we need to report Ash.ArcAppInitialAppsInstallDuration
   // histogram in this session but it has not been reported yet.
   bool NeedReportArcAppListReady() const;
@@ -137,6 +140,11 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   void MaybeReportLoginFinished();
 
   void OnLoginAnimationFinishedTimerFired();
+
+  // We only want to initialize the slice name on certain expected events.
+  // If we miss these, it will ne names "Unordered" and we will know that
+  // we missed the expected event.
+  void EnsureTracingSliceNamed();
 
   UiMetricsRecorder ui_recorder_;
 
