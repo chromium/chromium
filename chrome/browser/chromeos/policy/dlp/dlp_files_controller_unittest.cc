@@ -12,7 +12,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
-#include "chrome/common/chrome_paths_lacros.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/component.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +55,7 @@ class DlpFilesControllerTest : public DlpFilesTestBase {
     chromeos::DlpClient::InitializeFake();
     chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
 
-    base::PathService::Get(base::DIR_HOME, &my_files_dir_);
+    base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_dir_);
     ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
     my_files_dir_url_ = CreateFileSystemURL(my_files_dir_.value());
 

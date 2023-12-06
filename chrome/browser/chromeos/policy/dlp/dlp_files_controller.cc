@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/enterprise/data_controls/component.h"
@@ -99,7 +100,7 @@ void GotFilesSourcesOfCopy(
 // Returns true if `file_path` is in My Files directory.
 bool IsInLocalFileSystem(const base::FilePath& file_path) {
   base::FilePath my_files_folder;
-  base::PathService::Get(base::DIR_HOME, &my_files_folder);
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_folder);
   if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
     return true;
   }
