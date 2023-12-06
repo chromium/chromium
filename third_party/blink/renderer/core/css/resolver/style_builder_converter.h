@@ -99,6 +99,7 @@ class StyleBuilderConverterBase {
       const CSSToLengthConversionData&,
       FontDescription::Size parent_size,
       const Document*);
+  static DynamicRangeLimit ConvertDynamicRangeLimit(const CSSValue&);
   static FontSizeAdjust ConvertFontSizeAdjust(const StyleResolverState&,
                                               const CSSValue&);
   static scoped_refptr<FontPalette> ConvertFontPalette(const CSSValue&);
@@ -117,6 +118,8 @@ class StyleBuilderConverter {
   static LengthBox ConvertClip(StyleResolverState&, const CSSValue&);
   static ClipPathOperation* ConvertClipPath(StyleResolverState&,
                                             const CSSValue&);
+  static DynamicRangeLimit ConvertDynamicRangeLimit(StyleResolverState&,
+                                                    const CSSValue&);
   static StyleSVGResource* ConvertElementReference(StyleResolverState&,
                                                    const CSSValue&);
   static FilterOperations ConvertFilterOperations(StyleResolverState&,

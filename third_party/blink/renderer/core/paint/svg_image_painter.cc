@@ -112,8 +112,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
   ScopedImageRenderingSettings image_rendering_settings_scope(
       paint_info.context,
       layout_svg_image_.StyleRef().GetInterpolationQuality(),
-      static_cast<cc::PaintFlags::DynamicRangeLimit>(
-          layout_svg_image_.StyleRef().DynamicRangeLimit()));
+      layout_svg_image_.StyleRef().GetDynamicRangeLimit());
   Image::ImageDecodingMode decode_mode =
       image_element->GetDecodingModeForPainting(image->paint_image_id());
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(

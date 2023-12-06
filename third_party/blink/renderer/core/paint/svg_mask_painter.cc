@@ -406,7 +406,7 @@ struct FillInfo {
 
  public:
   const InterpolationQuality interpolation_quality;
-  const cc::PaintFlags::DynamicRangeLimit dynamic_range_limit;
+  const DynamicRangeLimit dynamic_range_limit;
   const RespectImageOrientationEnum respect_orientation;
   const LayoutObject& object;
 };
@@ -538,7 +538,7 @@ void PaintMaskLayers(GraphicsContext& context, const LayoutObject& object) {
   }
   const FillInfo fill_info = {
       style.GetInterpolationQuality(),
-      static_cast<cc::PaintFlags::DynamicRangeLimit>(style.DynamicRangeLimit()),
+      style.GetDynamicRangeLimit(),
       style.ImageOrientation(),
       object,
   };

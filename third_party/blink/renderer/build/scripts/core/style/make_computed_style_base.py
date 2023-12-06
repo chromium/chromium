@@ -32,6 +32,7 @@ ALIGNMENT_ORDER = [
     'NGGridTrackList',
     'StyleHighlightData',
     'FilterOperations',
+    'DynamicRangeLimit',
     'ComputedGridTrackList',
     'absl::optional<gfx::Size>',
     'double',

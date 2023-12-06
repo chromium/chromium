@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -159,6 +160,29 @@ scoped_refptr<StyleReflection> StyleBuilderConverter::ConvertBoxReflect(
   }
 
   return reflection;
+}
+
+DynamicRangeLimit StyleBuilderConverter::ConvertDynamicRangeLimit(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return StyleBuilderConverterBase::ConvertDynamicRangeLimit(value);
+}
+
+DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
+    const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kHigh:
+        return DynamicRangeLimit::kHigh;
+      case CSSValueID::kConstrainedHigh:
+        return DynamicRangeLimit::kConstrainedHigh;
+      case CSSValueID::kStandard:
+        return DynamicRangeLimit::kStandard;
+      default:
+        break;
+    }
+  }
+  return DynamicRangeLimit::kHigh;
 }
 
 StyleSVGResource* StyleBuilderConverter::ConvertElementReference(

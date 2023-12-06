@@ -3179,7 +3179,15 @@ const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.DynamicRangeLimit());
+  switch (style.GetDynamicRangeLimit()) {
+    case cc::PaintFlags::DynamicRangeLimit::kStandard:
+      return CSSIdentifierValue::Create(CSSValueID::kStandard);
+    case cc::PaintFlags::DynamicRangeLimit::kConstrainedHigh:
+      return CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh);
+    case cc::PaintFlags::DynamicRangeLimit::kHigh:
+      return CSSIdentifierValue::Create(CSSValueID::kHigh);
+  }
+  return CSSIdentifierValue::Create(CSSValueID::kHigh);
 }
 
 const CSSValue* EmptyCells::CSSValueFromComputedStyleInternal(

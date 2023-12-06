@@ -1212,10 +1212,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
                                             image_style,
                                             gfx::SizeF(geometry.TileSize()));
 
-    image_rendering_settings_context.emplace(
-        context, style_.GetInterpolationQuality(),
-        static_cast<cc::PaintFlags::DynamicRangeLimit>(
-            style_.DynamicRangeLimit()));
+    image_rendering_settings_context.emplace(context,
+                                             style_.GetInterpolationQuality(),
+                                             style_.GetDynamicRangeLimit());
   }
 
   PhysicalBoxStrut border = ComputeSnappedBorders();

@@ -2864,11 +2864,4 @@ STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kNone,
                    EOverscrollBehavior::kNone);
 
-STATIC_ASSERT_ENUM(cc::PaintFlags::DynamicRangeLimit::kStandard,
-                   EDynamicRangeLimit::kStandard);
-STATIC_ASSERT_ENUM(cc::PaintFlags::DynamicRangeLimit::kHigh,
-                   EDynamicRangeLimit::kHigh);
-STATIC_ASSERT_ENUM(cc::PaintFlags::DynamicRangeLimit::kConstrainedHigh,
-                   EDynamicRangeLimit::kConstrainedHigh);
-
 }  // namespace blink

@@ -336,7 +336,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kDominantBaseline:
       return a.DominantBaseline() == b.DominantBaseline();
     case CSSPropertyID::kDynamicRangeLimit:
-      return a.DynamicRangeLimit() == b.DynamicRangeLimit();
+      return a.GetDynamicRangeLimit() == b.GetDynamicRangeLimit();
     case CSSPropertyID::kEmptyCells:
       return a.EmptyCells() == b.EmptyCells();
     case CSSPropertyID::kFill:

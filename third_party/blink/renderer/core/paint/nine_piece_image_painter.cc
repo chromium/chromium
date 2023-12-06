@@ -120,9 +120,7 @@ void PaintPieces(GraphicsContext& context,
   auto image_auto_dark_mode = ImageAutoDarkMode::Disabled();
 
   ScopedImageRenderingSettings image_rendering_settings_scope(
-      context, style.GetInterpolationQuality(),
-      static_cast<cc::PaintFlags::DynamicRangeLimit>(
-          style.DynamicRangeLimit()));
+      context, style.GetInterpolationQuality(), style.GetDynamicRangeLimit());
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
         grid.GetNinePieceDrawInfo(piece);

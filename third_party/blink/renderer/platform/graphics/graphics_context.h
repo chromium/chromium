@@ -258,10 +258,10 @@ class PLATFORM_EXPORT GraphicsContext {
     return ImmutableState()->GetInterpolationQuality();
   }
 
-  void SetDynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit limit) {
+  void SetDynamicRangeLimit(DynamicRangeLimit limit) {
     MutableState()->SetDynamicRangeLimit(limit);
   }
-  cc::PaintFlags::DynamicRangeLimit DynamicRangeLimit() const {
+  DynamicRangeLimit DynamicRangeLimit() const {
     return ImmutableState()->GetDynamicRangeLimit();
   }
 

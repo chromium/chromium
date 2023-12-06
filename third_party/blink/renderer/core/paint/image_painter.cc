@@ -278,8 +278,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
 
   ScopedImageRenderingSettings image_rendering_settings_scope(
       context, layout_image_.StyleRef().GetInterpolationQuality(),
-      static_cast<cc::PaintFlags::DynamicRangeLimit>(
-          layout_image_.StyleRef().DynamicRangeLimit()));
+      layout_image_.StyleRef().GetDynamicRangeLimit());
 
   Node* node = layout_image_.GetNode();
   auto* image_element = DynamicTo<HTMLImageElement>(node);
