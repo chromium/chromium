@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {dom, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dom} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import { traceFirstScreenShown } from '../../oobe_trace.js';
 import {invokePolymerMethod} from '../../display_manager.js';
-// clang-format on
+import {traceFirstScreenShown} from '../../oobe_trace.js';
 
 /**
  * @fileoverview
@@ -53,11 +51,3 @@ export const OobeDialogHostBehavior = {
   },
 
 };
-
-/**
- * TODO(alemate): Replace with an interface. b/24294625
- * @typedef {{
- *   onBeforeShow: function()
- * }}
- */
-OobeDialogHostBehavior.Proto;
