@@ -351,8 +351,6 @@ export class DirectoryItem extends FilesTreeItem {
    * @type {DirectoryEntry|null}
    */
   get entry() {
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type 'Object |
-    // FileSystemDirectoryEntry'.
     return null;
   }
 

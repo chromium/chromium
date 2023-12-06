@@ -10,6 +10,7 @@ import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
 
@@ -306,7 +307,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   }
 
   /**
-   * @param {Entry} value Value of the element to be retrieved.
+   * @param {Entry|FilesAppEntry} value Value of the element to be retrieved.
    * @return {number} Index of the element with the specified |value|.
    */
   getIndex(value) {
@@ -323,8 +324,8 @@ export class FolderShortcutsDataModel extends EventTarget {
    * Compares 2 entries and returns a number indicating one entry comes before
    * or after or is the same as the other entry in sort order.
    *
-   * @param {Entry} a First entry.
-   * @param {Entry} b Second entry.
+   * @param {Entry|FilesAppEntry} a First entry.
+   * @param {Entry|FilesAppEntry} b Second entry.
    * @return {number} Returns -1, if |a| < |b|. Returns 0, if |a| === |b|.
    *     Otherwise, returns 1.
    */
@@ -337,7 +338,7 @@ export class FolderShortcutsDataModel extends EventTarget {
    * list, return the index of the existing item without adding a duplicate
    * item.
    *
-   * @param {Entry} value Value to be added into the array.
+   * @param {Entry|FilesAppEntry} value Value to be added into the array.
    * @return {number} Index in the list which the element added to.
    */
   add(value) {
@@ -356,7 +357,7 @@ export class FolderShortcutsDataModel extends EventTarget {
    * list, return the index of the existing item without adding a duplicate
    * item.
    *
-   * @param {Entry} value Value to be added into the array.
+   * @param {Entry|FilesAppEntry} value Value to be added into the array.
    * @return {number} Index in the list which the element added to.
    * @private
    */
@@ -391,7 +392,7 @@ export class FolderShortcutsDataModel extends EventTarget {
 
   /**
    * Removes the given item from the array.
-   * @param {Entry} value Value to be removed from the array.
+   * @param {Entry|FilesAppEntry} value Value to be removed from the array.
    * @return {number} Index in the list which the element removed from.
    */
   remove(value) {
@@ -407,7 +408,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   /**
    * Removes the given item from the array.
    *
-   * @param {Entry} value Value to be removed from the array.
+   * @param {Entry|FilesAppEntry} value Value to be removed from the array.
    * @return {number} Index in the list which the element removed from.
    * @private
    */
@@ -434,7 +435,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   }
 
   /**
-   * @param {Entry} entry Entry to be checked.
+   * @param {Entry|FilesAppEntry} entry Entry to be checked.
    * @return {boolean} True if the given |entry| exists in the array. False
    *     otherwise.
    */

@@ -830,7 +830,7 @@ export class FileTable extends Table {
    * @param div The table cell.
    * @param entry The corresponding entry.
    */
-  private updateSize_(div: HTMLElement, entry: Entry) {
+  private updateSize_(div: HTMLElement, entry: Entry|FilesAppEntry) {
     const metadata = this.metadataModel_!.getCache(
         [entry], ['size', 'hosted', 'contentMimeType'])[0]!;
     const size = metadata.size;
@@ -895,7 +895,7 @@ export class FileTable extends Table {
    * @param div The table cell.
    * @param entry Entry of file to update.
    */
-  private updateDate_(div: HTMLElement, entry: Entry) {
+  private updateDate_(div: HTMLElement, entry: Entry|FilesAppEntry) {
     const item = this.metadataModel_!.getCache(
         [entry], ['modificationTime', 'modificationByMeTime'])[0]!;
     const modTime = this.useModificationByMeTime_ ?
@@ -930,14 +930,15 @@ export class FileTable extends Table {
    * @param type Type of metadata change.
    * @param entries Entries to update.
    */
-  updateListItemsMetadata(type: string, entries: Entry[]) {
+  updateListItemsMetadata(type: string, entries: Array<Entry|FilesAppEntry>) {
     const urls = entriesToURLs(entries);
     assert(this.dataModel);
     const dataModel = this.dataModel;
     const forEachCell =
         (selector: string,
-         callback: (cell: HTMLElement, entry: Entry, item: ListItem|null) =>
-             void) => {
+         callback: (
+             cell: HTMLElement, entry: Entry|FilesAppEntry,
+             item: ListItem|null) => void) => {
           const cells = this.querySelectorAll<HTMLElement>(selector);
           for (let i = 0; i < cells.length; i++) {
             const cell = cells[i]!;
@@ -961,7 +962,8 @@ export class FileTable extends Table {
       // The cell name does not matter as the entire list item is needed.
       forEachCell(
           '.table-row-cell .date',
-          (_item: HTMLElement, entry: Entry, listItem: ListItem|null) => {
+          (_item: HTMLElement, entry: Entry|FilesAppEntry,
+           listItem: ListItem|null) => {
             updateListItemExternalProps(
                 listItem!, entry,
                 this.metadataModel_!.getCache(

@@ -13,6 +13,7 @@ import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {getIcon, getType, isEncrypted} from '../../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../../common/js/translations.js';
+import type {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
 import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
@@ -667,7 +668,7 @@ export class FileGrid extends Grid {
    * @param _type Type of metadata changed.
    * @param entries Entries whose metadata changed.
    */
-  updateListItemsMetadata(_type: string, entries: Entry[]) {
+  updateListItemsMetadata(_type: string, entries: Array<Entry|FilesAppEntry>) {
     const urls = entriesToURLs(entries);
     const boxes =
         Array.from(this.querySelectorAll<HTMLElement>('.img-container'));

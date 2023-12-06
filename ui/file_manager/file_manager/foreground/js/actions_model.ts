@@ -11,6 +11,7 @@ import {recordBoolean} from '../../common/js/metrics.js';
 import {strf} from '../../common/js/translations.js';
 import {visitURL} from '../../common/js/util.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
@@ -42,16 +43,17 @@ export abstract class Action {
   /**
    * Entries that this Action will execute upon.
    */
-  abstract getEntries(): Array<Entry|FileEntry>;
+  abstract getEntries(): Array<Entry|FilesAppEntry>;
 }
 
 class DriveShareAction implements Action {
   constructor(
-      private entry_: Entry, private metadataModel_: MetadataModel,
+      private entry_: Entry|FilesAppEntry,
+      private metadataModel_: MetadataModel,
       private volumeManager_: VolumeManager) {}
 
   static create(
-      entries: Entry[], metadataModel: MetadataModel,
+      entries: Array<Entry|FilesAppEntry>, metadataModel: MetadataModel,
       volumeManager: VolumeManager) {
     if (entries.length !== 1) {
       return null;
@@ -103,13 +105,13 @@ class DriveShareAction implements Action {
 
 class DriveToggleOfflineAction implements Action {
   constructor(
-      private entries_: Entry[], private metadataModel_: MetadataModel,
-      private ui_: ActionModelUI, private value_: boolean,
-      private onExecute_: VoidCallback) {}
+      private entries_: Array<Entry|FilesAppEntry>,
+      private metadataModel_: MetadataModel, private ui_: ActionModelUI,
+      private value_: boolean, private onExecute_: VoidCallback) {}
 
   static create(
-      entries: Entry[], metadataModel: MetadataModel, ui: ActionModelUI,
-      value: boolean, onExecute: VoidCallback) {
+      entries: Array<Entry|FilesAppEntry>, metadataModel: MetadataModel,
+      ui: ActionModelUI, value: boolean, onExecute: VoidCallback) {
     const actionableEntries = entries.filter(
         entry =>
             metadataModel.getCache([entry], ['pinned'])[0]?.pinned !== value);
@@ -128,7 +130,7 @@ class DriveToggleOfflineAction implements Action {
       return;
     }
 
-    let currentEntry: Entry;
+    let currentEntry: Entry|FilesAppEntry;
     let error = false;
 
     const steps = {
@@ -143,7 +145,8 @@ class DriveToggleOfflineAction implements Action {
         if (this.metadataModel_.getCache([currentEntry], ['canPin'])[0]
                 ?.canPin) {
           chrome.fileManagerPrivate.pinDriveFile(
-              currentEntry, this.value_, steps.entryPinned);
+              unwrapEntry(currentEntry) as Entry, this.value_,
+              steps.entryPinned);
         } else {
           steps.start();
         }
@@ -210,11 +213,12 @@ class DriveToggleOfflineAction implements Action {
 
 class DriveCreateFolderShortcutAction implements Action {
   constructor(
-      private entry_: Entry, private shortcutsModel_: FolderShortcutsDataModel,
+      private entry_: Entry|FilesAppEntry,
+      private shortcutsModel_: FolderShortcutsDataModel,
       private onExecute_: VoidCallback) {}
 
   static create(
-      entries: Entry[], volumeManager: VolumeManager,
+      entries: Array<Entry|FilesAppEntry>, volumeManager: VolumeManager,
       shortcutsModel: FolderShortcutsDataModel, onExecute: VoidCallback) {
     if (entries.length !== 1 || !isDirectoryEntry(entries[0]!)) {
       return null;
@@ -249,12 +253,13 @@ class DriveCreateFolderShortcutAction implements Action {
 
 class DriveRemoveFolderShortcutAction implements Action {
   constructor(
-      private entry_: Entry, private shortcutsModel_: FolderShortcutsDataModel,
+      private entry_: Entry|FilesAppEntry,
+      private shortcutsModel_: FolderShortcutsDataModel,
       private onExecute_: VoidCallback) {}
 
   static create(
-      entries: Entry[], shortcutsModel: FolderShortcutsDataModel,
-      onExecute: VoidCallback) {
+      entries: Array<Entry|FilesAppEntry>,
+      shortcutsModel: FolderShortcutsDataModel, onExecute: VoidCallback) {
     if (entries.length !== 1 || !isDirectoryEntry(entries[0]!) ||
         !shortcutsModel.exists(entries[0])) {
       return null;
@@ -289,13 +294,16 @@ class DriveManageAction implements Action {
   /**
    * @param entry The entry to open the 'Manage' page for.
    */
-  constructor(private entry_: Entry, private volumeManager_: VolumeManager) {}
+  constructor(
+      private entry_: Entry|FilesAppEntry,
+      private volumeManager_: VolumeManager) {}
 
   /**
    * Creates a new DriveManageAction object.
    * |entries| must contain only a single entry.
    */
-  static create(entries: Entry[], volumeManager: VolumeManager) {
+  static create(
+      entries: Array<Entry|FilesAppEntry>, volumeManager: VolumeManager) {
     if (entries.length !== 1) {
       return null;
     }
@@ -345,7 +353,7 @@ class DriveManageAction implements Action {
  */
 class CustomAction implements Action {
   constructor(
-      private entries_: Entry[], private id_: string,
+      private entries_: Array<Entry|FilesAppEntry>, private id_: string,
       private title_: string|null, private onExecute_: VoidCallback) {}
 
   execute() {
@@ -390,7 +398,8 @@ export class ActionsModel extends EventTarget {
       private volumeManager_: VolumeManager,
       private metadataModel_: MetadataModel,
       private shortcutsModel_: FolderShortcutsDataModel,
-      private ui_: ActionModelUI, private entries_: Entry[]) {
+      private ui_: ActionModelUI,
+      private entries_: Array<Entry|FilesAppEntry>) {
     super();
   }
 

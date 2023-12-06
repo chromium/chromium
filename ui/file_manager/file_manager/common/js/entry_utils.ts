@@ -8,14 +8,16 @@ import {CurrentDirectory, EntryType, FileData} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {constants} from '../../foreground/js/constants.js';
+import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/ducks/volumes.js';
-import {getStore} from '../../state/store.js';
+import {getEntry, getStore} from '../../state/store.js';
+import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {createDOMError} from './dom_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
-import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
+import {isArcVmEnabled, isNewDirectoryTreeEnabled, isPluginVmEnabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
-import {TrashEntry} from './trash.js';
+import type {TrashEntry} from './trash.js';
 import {FileErrorToDomError} from './util.js';
 import {COMPUTERS_DIRECTORY_NAME, COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_NAME, SHARED_DRIVES_DIRECTORY_PATH, VolumeType} from './volume_manager_types.js';
 
@@ -906,4 +908,24 @@ export function shouldSupportDriveSpecificIcons(fileData: FileData): boolean {
   return (isEntryInsideMyDrive(fileData) && !isVolumeEntry(fileData.entry)) ||
       (isEntryInsideComputers(fileData) &&
        !isGrandRootEntryInDrives(fileData.entry));
+}
+
+/**
+ * Extracts the `entry` from the supplied `treeItem` depending on if the new
+ * directory tree is enabled or not.
+ */
+export function getTreeItemEntry(treeItem: DirectoryItem|XfTreeItem|
+                                 null): Entry|FilesAppEntry|null {
+  if (!treeItem) {
+    return null;
+  }
+
+  if (isNewDirectoryTreeEnabled()) {
+    const item = treeItem as XfTreeItem;
+    const state = getStore().getState();
+    return getEntry(state, item.dataset['navigationKey']!);
+  }
+
+  const item = treeItem as DirectoryItem;
+  return item.entry;
 }

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
+import {getTreeItemEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 
@@ -62,7 +64,7 @@ export class ActionsController {
         'update', this.onMetadataUpdated_.bind(this));
   }
 
-  private getEntriesFor_(element: Element): Array<Entry|FileEntry> {
+  private getEntriesFor_(element: Element): Array<Entry|FilesAppEntry> {
     // Element can be null, eg. when invoking a command via a keyboard shortcut.
     if (!element) {
       return [];
@@ -91,8 +93,8 @@ export class ActionsController {
       }
       // DirectoryTree has the focused item.
       const focusedItem = getFocusedTreeItem(element);
-      if (focusedItem && 'entry' in focusedItem) {
-        const focusedEntry = focusedItem.entry as unknown as FileEntry;
+      const focusedEntry = getTreeItemEntry(focusedItem);
+      if (focusedEntry) {
         return [focusedEntry];
       }
     }
@@ -100,7 +102,7 @@ export class ActionsController {
     return [];
   }
 
-  private getEntriesKey_(entries: Array<Entry|FileEntry>): string {
+  private getEntriesKey_(entries: Array<Entry|FilesAppEntry>): string {
     return entries.map(entry => entry.toURL()).join(';');
   }
 
@@ -195,13 +197,13 @@ export class ActionsController {
     }
   }
 
-  getInitializedActionsForEntries(entries: Array<Entry|FileEntry>): null
+  getInitializedActionsForEntries(entries: Array<Entry|FilesAppEntry>): null
       |ActionsModel {
     const key = this.getEntriesKey_(entries);
     return this.readyModels_.get(key) || null;
   }
 
-  getActionsForEntries(entries: Array<Entry|FileEntry>):
+  getActionsForEntries(entries: Array<Entry|FilesAppEntry>):
       Promise<ActionsModel|void> {
     const key = this.getEntriesKey_(entries);
     if (!key) {
