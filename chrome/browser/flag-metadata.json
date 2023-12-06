@@ -3065,7 +3065,7 @@
   {
     "name": "enable-mac-pwas-notification-attribution",
     "owners": [ "mek@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 126
   },
   {
     "name": "enable-machine-learning-model-loader-web-platform-api",
