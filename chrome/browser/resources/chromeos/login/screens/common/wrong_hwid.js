@@ -20,6 +20,8 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 
+import {getTemplate} from './wrong_hwid.html.js';
+
 
 /**
  * @constructor
@@ -40,7 +42,7 @@ class WrongHWID extends WrongHWIDBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
 

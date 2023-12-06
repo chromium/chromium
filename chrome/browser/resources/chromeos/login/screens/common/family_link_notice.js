@@ -21,6 +21,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import {getTemplate} from './family_link_notice.html.js';
+
 
 /**
  * @constructor
@@ -48,7 +50,7 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

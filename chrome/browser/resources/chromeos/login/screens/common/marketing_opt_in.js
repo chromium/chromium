@@ -28,6 +28,8 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 
+import {getTemplate} from './marketing_opt_in.html.js';
+
 
 /**
  * @constructor
@@ -76,7 +78,7 @@ class MarketingOptIn extends MarketingScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

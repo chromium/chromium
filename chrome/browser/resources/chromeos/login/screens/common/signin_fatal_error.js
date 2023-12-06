@@ -22,6 +22,8 @@ import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 
+import {getTemplate} from './signin_fatal_error.html.js';
+
 
 /**
  * @constructor
@@ -62,7 +64,7 @@ class SigninFatalScreen extends SigninFatalErrorBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
 

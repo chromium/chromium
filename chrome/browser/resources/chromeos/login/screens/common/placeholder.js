@@ -14,6 +14,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
+import {getTemplate} from './placeholder.html.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -33,7 +35,7 @@ class PlaceholderScreen extends PlaceholderScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

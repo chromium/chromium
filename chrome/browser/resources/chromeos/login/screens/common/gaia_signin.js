@@ -33,6 +33,8 @@ import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import {invokePolymerMethod} from '../../display_manager.js';
 
+import {getTemplate} from './gaia_signin.html.js';
+
 
 // GAIA animation guard timer. Started when GAIA page is loaded (Authenticator
 // 'ready' event) and is intended to guard against edge cases when 'showView'
@@ -122,7 +124,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

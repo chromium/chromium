@@ -17,6 +17,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
+import {getTemplate} from './gesture_navigation.html.js';
+
 
 /**
  * Enum to represent each page in the gesture navigation screen.
@@ -55,7 +57,7 @@ class GestureNavigation extends GestureScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
 

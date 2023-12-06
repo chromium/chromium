@@ -20,6 +20,8 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import {getTemplate} from './tpm_error.html.js';
+
 
 /**
  * UI state for the dialog.
@@ -54,7 +56,7 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {}

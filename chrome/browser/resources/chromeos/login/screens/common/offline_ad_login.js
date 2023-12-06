@@ -30,6 +30,8 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.js';
 
+import {getTemplate} from './offline_ad_login.html.js';
+
 
 // The definitions below (JoinConfigType, ActiveDirectoryErrorState) are
 // used in enterprise_enrollment.js as well.
@@ -97,7 +99,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -24,6 +24,8 @@ import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
+import {getTemplate} from './saml_confirm_password.html.js';
+
 
 /**
  * UI mode for the dialog.
@@ -71,7 +73,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
