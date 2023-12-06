@@ -511,7 +511,9 @@ void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
   absl::optional<cx_diag::CreateMemoryRoutine::Params> params(
       cx_diag::CreateMemoryRoutine::Params::Create(args()));
 
-  if (!params.has_value() || params.value().args.max_testing_mem_kib < 0) {
+  if (!params.has_value() ||
+      (params.value().args.max_testing_mem_kib.has_value() &&
+       params.value().args.max_testing_mem_kib < 0)) {
     SetBadMessage();
     Respond(BadMessage());
     return;
@@ -519,7 +521,9 @@ void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
 
   auto memory_arg =
       crosapi::mojom::TelemetryDiagnosticMemoryRoutineArgument::New();
-  memory_arg->max_testing_mem_kib = params.value().args.max_testing_mem_kib;
+  if (params.value().args.max_testing_mem_kib.has_value()) {
+    memory_arg->max_testing_mem_kib = params.value().args.max_testing_mem_kib;
+  }
 
   auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
   auto result = routines_manager->CreateRoutine(
