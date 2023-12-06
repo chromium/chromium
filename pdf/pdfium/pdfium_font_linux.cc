@@ -37,8 +37,6 @@ namespace {
 // GetFontTable loads a specified font table from an open SFNT file.
 //   fd: a file descriptor to the SFNT file. The position doesn't matter.
 //   table_tag: the table tag in *big-endian* format, or 0 for the entire font.
-//   offset: offset into the table or entire font where loading should start.
-//     The offset must be between 0 and 1 GB - 1.
 //   output: a buffer of size output_length that gets the data.  can be 0, in
 //     which case output_length will be set to the required size in bytes.
 //   output_length: size of output, if it's not 0.
@@ -49,13 +47,8 @@ namespace {
 // purpose instead of reimplementing table parsing.
 bool GetFontTable(int fd,
                   uint32_t table_tag,
-                  off_t offset,
                   uint8_t* output,
                   size_t* output_length) {
-  if (offset < 0) {
-    return false;
-  }
-
   size_t data_length = 0;  // the length of the file data.
   off_t data_offset = 0;   // the offset of the data in the file.
   if (table_tag == 0) {
@@ -103,18 +96,6 @@ bool GetFontTable(int fd,
   if (!data_length) {
     return false;
   }
-  // Clamp |offset| inside the allowable range. This allows the read to succeed
-  // but return 0 bytes.
-  offset = std::min(offset, base::checked_cast<off_t>(data_length));
-  // Make sure it's safe to add the data offset and the caller's logical offset.
-  // Define the maximum positive offset on 32 bit systems.
-  static const off_t kMaxPositiveOffset32 = 0x7FFFFFFF;  // 2 GB - 1.
-  if ((offset > kMaxPositiveOffset32 / 2) ||
-      (data_offset > kMaxPositiveOffset32 / 2)) {
-    return false;
-  }
-  data_offset += offset;
-  data_length -= offset;
 
   if (output) {
     // 'output_length' holds the maximum amount of data the caller can accept.
@@ -194,7 +175,7 @@ class BlinkFontMapper {
     base::PlatformFile platform_file =
         FileFromFontId(font_id)->GetPlatformFile();
     size_t size = buf_size;
-    if (!GetFontTable(platform_file, table_tag, /*offset=*/0, buffer, &size)) {
+    if (!GetFontTable(platform_file, table_tag, buffer, &size)) {
       return 0;
     }
     return size;
