@@ -658,15 +658,9 @@ function Pause_evaluateInFrame({ frameId, expression }) {
   const frame = frames[index];
 
   if (expression === '[...arguments]') {
-    // Short-circuit hackfix: "universal `arguments`" for any frame. This
-    // serves to allow the `MAPPER` used by the `devtools` event analysis
-    // to get all arguments for any JS event callback. `arguments` are available
-    // by default in many function frames. However, arrow functions do not
-    // support them. This "solution" makes sure, `[...arguments]` are
-    // always available.
-    // See: https://linear.app/replay/issue/RUN-1061#comment-fc1c3ee4
-    const args = fromJsGetArgumentsInFrame(frame.callFrameId);
-    const argsCdp = makeDebuggeeValue(args && [...args] || []);
+    // Short-circuit hackfix: Get array of arguments, no matter where we are.
+    const argsArray = getFrameArgumentsArray(frameId);
+    const argsCdp = makeDebuggeeValue(argsArray);
     return buildRrpObjectResult({ result: argsCdp });
   }
 
@@ -1039,6 +1033,18 @@ function registerRrpCpdId(rrpId, cdpId, cdpObject = null) {
   if (cdpObject) {
     gCdpObjectsByRrpId.set(rrpId, cdpObject);
   }
+}
+
+function getFrameArgumentsArray(frameId) {
+  // "Universal `arguments`" for any frame: This
+  // serves to allow the `MAPPER` used by the `devtools` event analysis
+  // to get all arguments for any JS event callback. `arguments` are available
+  // by default in many function frames. However, arrow functions do not
+  // support them. This "solution" makes sure, `[...arguments]` are
+  // always available.
+  // See: https://linear.app/replay/issue/RUN-1061#comment-fc1c3ee4
+  const args = fromJsGetArgumentsInFrame(frame.callFrameId);
+  return args && [...args] || [];
 }
 
 
@@ -2993,6 +2999,9 @@ Object.assign(__RECORD_REPLAY__, {
   getObjectFromProtocolId(rrpId) {
     return getPlainObjectByRrpId(rrpId);
   },
+  getFrameArgumentsArray(frameId) {
+    return getFrameArgumentsArray(frameId);
+  }
 });
 
 } catch (e) {
@@ -3002,6 +3011,12 @@ Object.assign(__RECORD_REPLAY__, {
 })();
 
 )"""";
+
+
+
+
+
+
 
 /** ###########################################################################
  * gSourceMapScript
@@ -4335,7 +4350,7 @@ static void fromJsMakeDebuggeeValue(
 static void fromJsGetArgumentsInFrame(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
-        "must be called with a single object");
+        "must be called with a single string");
   v8::Isolate* isolate = args.GetIsolate();
   auto contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
 
