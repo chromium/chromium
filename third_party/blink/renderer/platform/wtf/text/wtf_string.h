@@ -177,6 +177,7 @@ class WTF_EXPORT String {
       UTF8ConversionMode mode = kLenientUTF8Conversion) const {
     return StringView(*this).Utf8(mode);
   }
+  [[nodiscard]] std::string Utf8ByStd() const;
 
   UChar operator[](wtf_size_t index) const {
     if (!impl_ || index >= impl_->length())
