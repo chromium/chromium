@@ -2595,6 +2595,8 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
             .LayoutAtomicInline(constraint_space_, node_.Style(),
                                 /* use_first_line_style */ false,
                                 baseline_algorithm_type);
+    // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
+    CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
 
     const auto& physical_box_fragment = To<PhysicalBoxFragment>(
         item_result->layout_result->GetPhysicalFragment());
@@ -2675,6 +2677,8 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
 
   const MinMaxSizesResult result =
       ComputeMinAndMaxContentContribution(node_.Style(), child, space);
+  // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
+  CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
   const LayoutUnit inline_margins = item_result->margins.InlineSum();
   if (mode_ == LineBreakerMode::kMinContent) {
     item_result->inline_size = result.sizes.min_size + inline_margins;
@@ -2724,6 +2728,8 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
     const LayoutResult* layout_result =
         block_node.Layout(constraint_space_, block_break_token,
                           /* early_break */ nullptr, spanner_path_for_child);
+    // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
+    CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
     line_info->SetBlockInInlineLayoutResult(layout_result);
 
     // Early exit if the layout didn't succeed.
@@ -2893,6 +2899,8 @@ void LineBreaker::HandleFloat(const InlineItem& item,
 
   item_result->positioned_float =
       PositionFloat(&unpositioned_float, exclusion_space_);
+  // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
+  CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
 
   if (constraint_space_.HasBlockFragmentation()) {
     if (const auto* break_token = item_result->positioned_float->BreakToken()) {
