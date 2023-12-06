@@ -510,14 +510,13 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       // Check submit button text without results.
-      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Search');
+      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Create');
 
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
 
       // Check submit button text with results.
-      assertEquals(
-          wallpaperSearchElement.$.submitButton.innerText, 'Search Again');
+      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Recreate');
     });
 
     test('current theme is checked', async () => {
@@ -668,10 +667,10 @@ suite('WallpaperSearchTest', () => {
       assertEquals(historyEmptyTiles.length, 4);
       assertEquals(
           (historyTiles[0]! as HTMLElement).getAttribute('aria-label'),
-          'Recent theme 1');
+          'Recent AI theme 1');
       assertEquals(
           (historyTiles[1]! as HTMLElement).getAttribute('aria-label'),
-          'Recent theme 2');
+          'Recent AI theme 2');
     });
   });
 
@@ -735,7 +734,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previous results below.');
+            'Try again or select from one of the previously generated themes below.');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
@@ -793,7 +792,7 @@ suite('WallpaperSearchTest', () => {
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'Check your internet and try again. ' +
-                'You can still select from one of the previous results below.');
+                'You can still select from one of the previously generated themes below.');
       });
     });
 
@@ -902,7 +901,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previous results below.');
+            'Try again or select from one of the previously generated themes below.');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
