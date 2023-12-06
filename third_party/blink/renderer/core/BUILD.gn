@@ -1479,6 +1479,7 @@ source_set("unit_tests_v2") {
   # the deps section below.
   sources = []
 
+  sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
   sources +=
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
 
