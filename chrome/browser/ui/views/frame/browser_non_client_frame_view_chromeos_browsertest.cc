@@ -1328,7 +1328,7 @@ class PreventCloseBrowserNonClientFrameViewChromeOSTest
     PreventCloseTestBase::TearDownOnMainThread();
   }
 
-  views::Button* getWindowCloseButton(Browser* browser) {
+  views::Button* GetWindowCloseButton(Browser* browser) {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* const frame_view = GetFrameViewChromeOS(browser_view);
 
@@ -1353,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
   ASSERT_TRUE(browser);
 
   {
-    auto* const close_button = getWindowCloseButton(browser);
+    auto* const close_button = GetWindowCloseButton(browser);
     ASSERT_TRUE(close_button);
     EXPECT_FALSE(close_button->GetEnabled());
   }
@@ -1369,7 +1369,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
   }
 
   {
-    auto* const close_button = getWindowCloseButton(browser);
+    auto* const close_button = GetWindowCloseButton(browser);
     ASSERT_TRUE(close_button);
     EXPECT_TRUE(close_button->GetEnabled());
   }
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
-  auto* const close_button = getWindowCloseButton(browser);
+  auto* const close_button = GetWindowCloseButton(browser);
   ASSERT_TRUE(close_button);
   EXPECT_TRUE(close_button->GetEnabled());
 
