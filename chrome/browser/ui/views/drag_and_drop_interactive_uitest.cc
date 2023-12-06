@@ -1508,10 +1508,10 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -1697,10 +1697,10 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -2091,10 +2091,10 @@ void DragAndDropBrowserTest::CrossTabDrag_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
