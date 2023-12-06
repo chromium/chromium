@@ -449,7 +449,7 @@ TEST_F(FullscreenControllerStateUnitTest,
   GetFullscreenController()->RunOrDeferUntilTransitionIsComplete(
       base::BindLambdaForTesting([&lambda_called]() { lambda_called = true; }));
   EXPECT_FALSE(lambda_called);
-  GetFullscreenController()->FullscreenTransititionCompleted();
+  GetFullscreenController()->FullscreenTransitionCompleted();
   EXPECT_TRUE(lambda_called);
 }
 
