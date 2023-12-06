@@ -16,6 +16,10 @@
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace autofill::autofill_metrics {
 
 namespace {
@@ -88,6 +92,14 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
   // Initialize the TestPersonalDataManager with some default data.
   CreateTestAutofillProfiles();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Mandatory re-auth is required for credit card autofill on automotive, so
+  // the authenticator response needs to be properly mocked.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    autofill_client_->SetUpDeviceBiometricAuthenticatorSuccessResponseMock();
+  }
+#endif
 }
 
 void AutofillMetricsBaseTest::TearDownHelper() {

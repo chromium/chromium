@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -286,14 +288,33 @@ class TestAutofillClientTemplate : public T {
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override {}
 
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override {
+  payments::MockMandatoryReauthManager*
+  GetOrCreatePaymentsMandatoryReauthManager() override {
     if (!mock_payments_mandatory_reauth_manager_) {
       mock_payments_mandatory_reauth_manager_ = std::make_unique<
           testing::NiceMock<payments::MockMandatoryReauthManager>>();
     }
     return mock_payments_mandatory_reauth_manager_.get();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Set up a mock to simulate successful mandatory reauth when autofilling
+  // payment methods.
+  void SetUpDeviceBiometricAuthenticatorSuccessResponseMock() {
+    payments::MockMandatoryReauthManager& mandatory_reauth_manager =
+        *GetOrCreatePaymentsMandatoryReauthManager();
+
+    ON_CALL(mandatory_reauth_manager, GetAuthenticationMethod)
+        .WillByDefault(testing::Return(
+            payments::MandatoryReauthAuthenticationMethod::kBiometric));
+
+    ON_CALL(mandatory_reauth_manager, Authenticate)
+        .WillByDefault(testing::WithArg<0>(
+            testing::Invoke([](base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            })));
+  }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void ShowLocalCardMigrationDialog(
