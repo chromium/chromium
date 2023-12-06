@@ -46,6 +46,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
                     absl::optional<AttestedCredentialData> data,
                     absl::optional<cbor::Value> extensions = absl::nullopt);
 
+  AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
+                    std::initializer_list<Flag> flags,
+                    uint32_t sign_counter,
+                    absl::optional<AttestedCredentialData> data,
+                    absl::optional<cbor::Value> extensions = absl::nullopt);
+
   // Creates an AuthenticatorData with flags and signature counter encoded
   // according to the supplied arguments.
   AuthenticatorData(
@@ -97,6 +103,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   const std::array<uint8_t, kRpIdHashLength>& application_parameter() const {
     return application_parameter_;
   }
+
+  uint8_t flags() const { return flags_; }
 
   bool obtained_user_presence() const {
     return flags_ & base::strict_cast<uint8_t>(Flag::kTestOfUserPresence);

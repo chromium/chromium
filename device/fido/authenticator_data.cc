@@ -49,13 +49,32 @@ uint8_t AuthenticatorDataFlags(bool user_present,
               : 0);
 }
 
+uint8_t CombineAuthenticatorDataFlags(
+    base::span<const AuthenticatorData::Flag> flags) {
+  uint8_t val = 0u;
+  for (auto flag : flags) {
+    val |= base::strict_cast<uint8_t>(flag);
+  }
+  return val;
+}
+
+inline std::array<uint8_t, kSignCounterLength> MarshalSignCounter(
+    uint32_t sign_counter) {
+  return std::array<uint8_t, kSignCounterLength>{
+      static_cast<uint8_t>(sign_counter >> 24),
+      static_cast<uint8_t>(sign_counter >> 16),
+      static_cast<uint8_t>(sign_counter >> 8),
+      static_cast<uint8_t>(sign_counter)};
+}
+
 }  // namespace
 
 // static
 absl::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
     base::span<const uint8_t> auth_data) {
-  if (auth_data.size() < kAttestedCredentialDataOffset)
+  if (auth_data.size() < kAttestedCredentialDataOffset) {
     return absl::nullopt;
+  }
   auto application_parameter = auth_data.first<kRpIdHashLength>();
   uint8_t flag_byte = auth_data[kRpIdHashLength];
   auto counter =
@@ -114,6 +133,18 @@ AuthenticatorData::AuthenticatorData(
 
 AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
+    std::initializer_list<Flag> flags,
+    uint32_t sign_counter,
+    absl::optional<AttestedCredentialData> data,
+    absl::optional<cbor::Value> extensions)
+    : AuthenticatorData(rp_id_hash,
+                        CombineAuthenticatorDataFlags(flags),
+                        MarshalSignCounter(sign_counter),
+                        std::move(data),
+                        std::move(extensions)) {}
+
+AuthenticatorData::AuthenticatorData(
+    base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
     bool user_present,
     bool user_verified,
     bool backup_eligible,
@@ -145,8 +176,9 @@ AuthenticatorData& AuthenticatorData::operator=(AuthenticatorData&& other) =
 AuthenticatorData::~AuthenticatorData() = default;
 
 bool AuthenticatorData::DeleteDeviceAaguid() {
-  if (!attested_data_)
+  if (!attested_data_) {
     return false;
+  }
 
   return attested_data_->DeleteAaguid();
 }
@@ -200,8 +232,9 @@ std::vector<uint8_t> AuthenticatorData::SerializeToByteArray() const {
 }
 
 std::vector<uint8_t> AuthenticatorData::GetCredentialId() const {
-  if (!attested_data_)
+  if (!attested_data_) {
     return std::vector<uint8_t>();
+  }
 
   return attested_data_->credential_id();
 }

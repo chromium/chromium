@@ -16,6 +16,48 @@ enum UserVerificationRequirement {
 };
 
 [Stable]
+// A request to create a new passkey with the given RP ID and credential ID.
+struct PasskeyCreationRequest {
+  string rp_id;
+  array<uint8> user_id;
+  string user_name;
+  string user_display_name;
+  UserVerificationRequirement user_verification;
+};
+
+[Stable, Extensible]
+// Response status for a `PasskeyCreationRequest`.
+enum PasskeyCreationError {
+  // Catch-all for all unexpected error conditions.
+  [Default] kInternalError,
+  // The request originates from a profile whose user is not the signed-in user
+  // for the device.
+  kNonPrimaryAccount,
+  // Another request is in progress.
+  kPendingRequest,
+  // Retrieving the security domain secret failed.
+  kSecurityDomainSecretUnavailable,
+};
+
+[Stable]
+// The response for a successful `PasskeyCreationRequest`.
+struct PasskeyCreationResponse {
+  // The WebAuthn Authenticator Data, as defined in
+  // https://w3c.github.io/webauthn/#sctn-authenticator-data.
+  array<uint8> authenticator_data;
+};
+
+[Stable]
+// The result of a `PasskeyCreationRequest`.
+union PasskeyCreationResult {
+  // Set on success.
+  PasskeyCreationResponse response;
+
+  // Set on error.
+  PasskeyCreationError error;
+};
+
+[Stable]
 // A request to generate a WebAuthn assertion for a passkey with the given RP
 // ID and credential ID.
 struct PasskeyAssertionRequest {
@@ -46,7 +88,12 @@ enum PasskeyAssertionError {
 // The response for a successful PasskeyAssertionRequest. Contains a WebAuthn
 // signature for the chosen credential.
 struct PasskeyAssertionResponse {
+  // The WebAuthn Assertion Signature, as defined in
+  // https://w3c.github.io/webauthn/#assertion-signature.
   array<uint8> signature;
+  // The WebAuthn Authenticator Data, as defined in
+  // https://w3c.github.io/webauthn/#sctn-authenticator-data.
+  [MinVersion=1] array<uint8>? authenticator_data;
 };
 
 [Stable]
@@ -62,12 +109,20 @@ union PasskeyAssertionResult {
 [Stable, Uuid="43bd6bb3-ca9e-4625-b05a-6353ab22847a"]
 // Defines an API for accessing passkeys (implemented in ash-chrome).
 //
-// Methods on this service will trigger OS-level UI, for example to verify the
-// user with an authentication prompt. Hence, methods may return an error if
-// another request is already in progress.
+// This can trigger OS-level UI, for example to verify the user with a local
+// user authentication prompt.
+//
+// Methods will return an error if another request is already in progress.
 interface PasskeyAuthenticator {
-  // Generates a WebAuthn assertion signature for a given passkey. The returned
-  // `assertion` is non-null iff `status` equals `kOk`.
+  // Creates a new passkey in the given user account. On success, returns
+  // information necessary to construct a WebAuthn response for the newly
+  // created passkey, such as its credential ID and public key.
+  [MinVersion=1]
+  Create@1(AccountKey account,
+           PasskeyCreationRequest request) => (PasskeyCreationResult result);
+
+  // Generates a WebAuthn assertion signature for an existing passkey from the
+  // given user account.
   Assert@0(AccountKey account,
            PasskeyAssertionRequest request) => (PasskeyAssertionResult result);
 };

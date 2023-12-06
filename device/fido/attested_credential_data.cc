@@ -30,14 +30,16 @@ namespace device {
 absl::optional<std::pair<AttestedCredentialData, base::span<const uint8_t>>>
 AttestedCredentialData::ConsumeFromCtapResponse(
     base::span<const uint8_t> buffer) {
-  if (buffer.size() < kAaguidLength)
+  if (buffer.size() < kAaguidLength) {
     return absl::nullopt;
+  }
 
   auto aaguid = buffer.first<kAaguidLength>();
   buffer = buffer.subspan(kAaguidLength);
 
-  if (buffer.size() < kCredentialIdLengthLength)
+  if (buffer.size() < kCredentialIdLengthLength) {
     return absl::nullopt;
+  }
 
   auto credential_id_length_span = buffer.first<kCredentialIdLengthLength>();
   const size_t credential_id_length =
@@ -45,8 +47,9 @@ AttestedCredentialData::ConsumeFromCtapResponse(
       base::strict_cast<size_t>(credential_id_length_span[1]);
   buffer = buffer.subspan(kCredentialIdLengthLength);
 
-  if (buffer.size() < credential_id_length)
+  if (buffer.size() < credential_id_length) {
     return absl::nullopt;
+  }
 
   auto credential_id = buffer.first(credential_id_length);
   buffer = buffer.subspan(credential_id_length);
@@ -205,14 +208,34 @@ AttestedCredentialData::AttestedCredentialData(AttestedCredentialData&& other) =
 
 AttestedCredentialData::AttestedCredentialData(
     base::span<const uint8_t, kAaguidLength> aaguid,
-    base::span<const uint8_t, kCredentialIdLengthLength> credential_id_length,
+    base::span<const uint8_t, kCredentialIdLengthLength>
+        credential_id_length_bytes,
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PublicKey> public_key)
     : aaguid_(fido_parsing_utils::Materialize(aaguid)),
       credential_id_length_(
-          fido_parsing_utils::Materialize(credential_id_length)),
+          fido_parsing_utils::Materialize(credential_id_length_bytes)),
       credential_id_(std::move(credential_id)),
-      public_key_(std::move(public_key)) {}
+      public_key_(std::move(public_key)) {
+  const size_t credential_id_length =
+      (base::strict_cast<size_t>(credential_id_length_[0]) << 8) |
+      base::strict_cast<size_t>(credential_id_length_[1]);
+  CHECK_EQ(credential_id_length, credential_id_.size());
+}
+
+AttestedCredentialData::AttestedCredentialData(
+    base::span<const uint8_t, kAaguidLength> aaguid,
+    base::span<const uint8_t> credential_id,
+    std::unique_ptr<PublicKey> public_key)
+    : AttestedCredentialData(
+          aaguid,
+          std::array<uint8_t, kCredentialIdLengthLength>{
+              base::checked_cast<uint8_t>((0xff00 & credential_id.size()) >> 8),
+              base::checked_cast<uint8_t>(0xff & credential_id.size())},
+          fido_parsing_utils::Materialize(credential_id),
+          std::move(public_key)) {
+  CHECK_LE(credential_id.size(), 0xffffu);
+}
 
 AttestedCredentialData& AttestedCredentialData::operator=(
     AttestedCredentialData&& other) = default;

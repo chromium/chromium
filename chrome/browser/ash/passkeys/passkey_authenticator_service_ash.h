@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_PASSKEYS_PASSKEY_AUTHENTICATOR_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_PASSKEYS_PASSKEY_AUTHENTICATOR_SERVICE_ASH_H_
 
-#include <memory>
+#include <cstdint>
+#include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -47,32 +49,59 @@ class PasskeyAuthenticatorServiceAsh
   void BindReceiver(mojo::PendingReceiver<crosapi::mojom::PasskeyAuthenticator>
                         pending_receiver);
 
+  void Create(crosapi::mojom::AccountKeyPtr account_key,
+              crosapi::mojom::PasskeyCreationRequestPtr request,
+              CreateCallback callback) override;
   void Assert(crosapi::mojom::AccountKeyPtr account_key,
               crosapi::mojom::PasskeyAssertionRequestPtr request,
               AssertCallback callback) override;
 
  private:
-  struct RequestState {
-    RequestState();
-    ~RequestState();
-    crosapi::mojom::PasskeyAssertionRequestPtr assert_request;
-    AssertCallback pending_assert_callback;
-    absl::optional<std::vector<uint8_t>> security_domain_secret;
+  struct CreateRequestContext {
+    CreateRequestContext();
+    CreateRequestContext(CreateRequestContext&&);
+    CreateRequestContext& operator=(CreateRequestContext&&);
+    ~CreateRequestContext();
+
+    crosapi::mojom::PasskeyCreationRequestPtr request;
+    CreateCallback pending_callback;
   };
 
-  void FetchTrustedVaultKeys(base::OnceCallback<void()> callback);
-  void OnHaveTrustedVaultKeys(const std::vector<std::vector<uint8_t>>& keys);
+  struct AssertRequestContext {
+    AssertRequestContext();
+    AssertRequestContext(AssertRequestContext&&);
+    AssertRequestContext& operator=(AssertRequestContext&&);
+    ~AssertRequestContext();
 
-  void DoAssert();
-  void FinishAssert(crosapi::mojom::PasskeyAssertionResultPtr result);
+    crosapi::mojom::PasskeyAssertionRequestPtr request;
+    AssertCallback pending_callback;
+  };
+
+  // Receives the result of a security domain secret fetch. If no domain secret
+  // could be retrieved, `std::nullopt` is passed.
+  using SecurityDomainSecretCallback =
+      base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>;
+
+  void FetchTrustedVaultKeys(SecurityDomainSecretCallback callback);
+  void OnHaveTrustedVaultKeys(SecurityDomainSecretCallback callback,
+                              const std::vector<std::vector<uint8_t>>& keys);
+
+  void DoCreate(CreateRequestContext ctx,
+                std::optional<std::vector<uint8_t>> security_domain_secret);
+  void DoAssert(AssertRequestContext ctx,
+                std::optional<std::vector<uint8_t>> security_domain_secret);
+
+  void FinishCreate(CreateRequestContext ctx,
+                    crosapi::mojom::PasskeyCreationResultPtr result);
+  void FinishAssert(AssertRequestContext ctx,
+                    crosapi::mojom::PasskeyAssertionResultPtr result);
 
   bool IsPrimaryAccount(const crosapi::mojom::AccountKeyPtr& account_key) const;
 
   const CoreAccountInfo primary_account_info_;
   const raw_ptr<webauthn::PasskeyModel> passkey_model_;
   const raw_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
-
-  absl::optional<RequestState> request_state_;
+  bool processing_request_ = false;
 
   mojo::ReceiverSet<crosapi::mojom::PasskeyAuthenticator> receivers_;
 
