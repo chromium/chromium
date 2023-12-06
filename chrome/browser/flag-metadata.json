@@ -7699,7 +7699,7 @@
   {
     "name": "tab-resumption",
     "owners": [ "ewannpv@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "tab-scrolling-button-position",
