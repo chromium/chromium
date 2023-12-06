@@ -19,7 +19,6 @@ def _CheckNoJsChanges(input_api, output_api):
     if (
         path.endswith("js")
         and not path.endswith("test.js")
-        and path.find("braille_ime") == -1
         and not filename[0] == "."
     ):
       results.append(

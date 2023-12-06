@@ -19,6 +19,7 @@ group("build") {
     ":accessibility_strings",
     ":chromevox_guest_manifest",
     ":chromevox_manifest",
+    "braille_ime:build",
     "chromevox:build",
     "common:build",
   ]

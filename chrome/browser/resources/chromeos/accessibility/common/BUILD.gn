@@ -33,7 +33,6 @@ ts_modules = [
   "word_utils.ts",
 ]
 
-# Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
   in_files = ts_modules
   out_dir = tsc_out_dir
