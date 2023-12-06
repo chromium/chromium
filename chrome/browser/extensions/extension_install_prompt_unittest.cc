@@ -68,6 +68,10 @@ class ExtensionInstallPromptUnitTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  private:
+  // This test does not create a root window. Because of this,
+  // ScopedDisableRootChecking needs to be used (which disables the root window
+  // check).
+  test::ScopedDisableRootChecking disable_root_checking_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
@@ -144,6 +148,10 @@ TEST_F(ExtensionInstallPromptUnitTest,
 using ExtensionInstallPromptTestWithService = ExtensionServiceTestWithInstall;
 
 TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
+  // This test does not create a root window. Because of this,
+  // ScopedDisableRootChecking needs to be used (which disables the root window
+  // check).
+  test::ScopedDisableRootChecking disable_root_checking;
   InitializeEmptyExtensionService();
 
   const Extension* extension = PackAndInstallCRX(

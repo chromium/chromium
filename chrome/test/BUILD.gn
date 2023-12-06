@@ -9162,6 +9162,10 @@ test("unit_tests") {
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
 
+    if (use_aura) {
+      sources += [ "../browser/extensions/extension_install_prompt_show_params_unittest.cc" ]
+    }
+
     if (enterprise_data_controls) {
       sources += [
         "../../components/enterprise/data_controls/data_controls_policy_handler_unittest.cc",
