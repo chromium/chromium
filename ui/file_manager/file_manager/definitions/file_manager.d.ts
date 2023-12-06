@@ -5,6 +5,7 @@
 import type {FileManagerBase} from '../background/js/file_manager_base.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import type {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
+import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 /**
  * Type definition for foreground/js/file_manager.js:FileManager.
@@ -20,6 +21,7 @@ interface FileManager {
   dialogType: DialogType;
   directoryModel: DirectoryModel;
   directoryTreeNamingController: DirectoryTreeNamingController;
+  ui: FileManagerUI;
 }
 
 interface AppState {

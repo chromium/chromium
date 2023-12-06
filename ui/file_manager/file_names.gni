@@ -15,7 +15,6 @@ image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
   # Background:
-  "file_manager/background/js/runtime_loaded_test_util.js",
   "file_manager/background/js/test_util.js",
 
   # Files Common:
@@ -277,6 +276,7 @@ ts_files = [
   "file_manager/background/js/mock_volume_manager.ts",
   "file_manager/foreground/js/path_component.ts",
   "file_manager/background/js/progress_center.ts",
+  "file_manager/background/js/runtime_loaded_test_util.ts",
   "file_manager/background/js/test_util_base.ts",
   "file_manager/background/js/volume_info_impl.ts",
   "file_manager/background/js/volume_info_list_impl.ts",

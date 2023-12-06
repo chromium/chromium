@@ -15,6 +15,7 @@ import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from '../foreground/js/mock_directory_model.js';
 import {TaskController} from '../foreground/js/task_controller.js';
+import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 import {type EntryMetadata, updateMetadata} from './ducks/all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateSelection} from './ducks/current_directory.js';
@@ -143,6 +144,7 @@ export function setUpFileManagerOnWindow() {
   window.fileManager = {
     volumeManager: volumeManager,
     metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
+    ui: {} as unknown as FileManagerUI,
     crostini: {} as unknown as Crostini,
     selectionHandler: new FakeFileSelectionHandler(),
     taskController: {} as unknown as TaskController,
