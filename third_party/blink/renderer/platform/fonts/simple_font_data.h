@@ -109,6 +109,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   // axis. This is currently used to support the `ic` unit.
   // https://drafts.csswg.org/css-values-4/#ic
   const absl::optional<float>& IdeographicInlineSize() const;
+  absl::optional<float> IdeographicAdvanceWidth() const;
 
   // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
   // This metrics can simulate ideographics em-box when the font doesn't have
@@ -222,7 +223,9 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const scoped_refptr<CustomFontData> custom_font_data_;
 
   mutable std::once_flag ideographic_inline_size_once_;
+  mutable std::once_flag ideographic_advance_width_once_;
   mutable absl::optional<float> ideographic_inline_size_;
+  mutable absl::optional<float> ideographic_advance_width_;
 
   // Simple LRU cache for `HanKerning::FontData`. The cache has 2 entries
   // because one additional language or horizontal/vertical mixed document is

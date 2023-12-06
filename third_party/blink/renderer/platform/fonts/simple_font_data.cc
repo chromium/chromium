@@ -418,21 +418,30 @@ LayoutUnit SimpleFontData::VerticalPosition(
   return LayoutUnit();
 }
 
+absl::optional<float> SimpleFontData::IdeographicAdvanceWidth() const {
+  std::call_once(ideographic_advance_width_once_, [this] {
+    if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
+      ideographic_advance_width_ = WidthForGlyph(cjk_water_glyph);
+    }
+  });
+  return ideographic_advance_width_;
+}
+
 const absl::optional<float>& SimpleFontData::IdeographicInlineSize() const {
   std::call_once(ideographic_inline_size_once_, [this] {
+    // It should be computed without shaping; i.e., it doesn't include font
+    // features, ligatures/kerning, nor `letter-spacing`.
+    // https://github.com/w3c/csswg-drafts/issues/5498#issuecomment-686902802
+    if (PlatformData().Orientation() != FontOrientation::kVerticalUpright) {
+      ideographic_inline_size_ = IdeographicAdvanceWidth();
+      return;
+    }
+
     // Use the advance of the CJK water character U+6C34 as the approximated
     // advance of fullwidth ideographic characters, as specified at
     // https://drafts.csswg.org/css-values-4/#ic.
     const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter);
     if (!cjk_water_glyph) {
-      return;
-    }
-
-    // It should be computed without shaping; i.e., it doesn't include font
-    // features, ligatures/kerning, nor `letter-spacing`.
-    // https://github.com/w3c/csswg-drafts/issues/5498#issuecomment-686902802
-    if (PlatformData().Orientation() != FontOrientation::kVerticalUpright) {
-      ideographic_inline_size_ = WidthForGlyph(cjk_water_glyph);
       return;
     }
 

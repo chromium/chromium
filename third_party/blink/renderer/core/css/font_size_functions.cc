@@ -220,7 +220,7 @@ static float AspectValue(const SimpleFontData& font_data,
       break;
     case FontSizeAdjust::Metric::kIcWidth:
       if (const absl::optional<float> size =
-              font_data.IdeographicInlineSize()) {
+              font_data.IdeographicAdvanceWidth()) {
         aspect_value = *size / computed_size;
       }
       break;
