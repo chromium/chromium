@@ -22,7 +22,7 @@ using FieldPrediction =
 using FillEventId = base::IdTypeU32<class FillEventIdClass>;
 FillEventId GetNextFillEventId();
 
-enum class OptionalBoolean {
+enum class OptionalBoolean : uint8_t {
   kFalse = 0,
   kTrue = 1,
   kUndefined = 2,
@@ -32,7 +32,7 @@ OptionalBoolean ToOptionalBoolean(bool value);
 bool OptionalBooleanToBool(OptionalBoolean value);
 
 // Whether and why filling for a field was skipped during autofill.
-enum class FieldFillingSkipReason {
+enum class FieldFillingSkipReason : uint8_t {
   // Values are recorded as metrics and must not change or be reused.
   kUnknown = 0,
   kNotSkipped = 1,
@@ -55,7 +55,7 @@ enum class FieldFillingSkipReason {
 // Enum for different data types filled during autofill filling events,
 // including those of the SingleFieldFormFiller.
 // Values are recorded as metrics and must not change or be reused.
-enum class FillDataType {
+enum class FillDataType : uint8_t {
   kUndefined = 0,
   kAutofillProfile = 1,
   kCreditCard = 2,

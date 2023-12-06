@@ -71,7 +71,7 @@ class MatchPatternRef {
 // Each enum constant corresponds to a JSON file.
 // When adding a new value, it's require to add it to
 // `HeuristicSource` as well.
-enum class PatternSource {
+enum class PatternSource : uint8_t {
   // Patterns whose stability is above suspicion.
   kLegacy,
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
