@@ -28,13 +28,16 @@ class TargetView : public views::View {
 
   void UpdateWidgetBounds();
 
+  // Returns the bounds of the overall circle in this view.
+  gfx::Rect GetTargetCircleBounds() const;
+
  private:
   friend class TargetViewTest;
 
   // The overall target circle radius.
-  int GetCircleRadius();
+  int GetCircleRadius() const;
   // The target circle ring radius excluding the ring thickness.
-  int GetCircleRingRadius();
+  int GetCircleRingRadius() const;
 
   // Clamps `center_` so that the target circle can show completely and
   // constraint the action position.

@@ -39,6 +39,8 @@ class InputMenuView;
 class MenuEntryView;
 class MessageView;
 class NudgeView;
+class RichNudge;
+class TargetView;
 class TouchInjector;
 class TouchInjectorObserver;
 
@@ -117,6 +119,7 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void EnterButtonPlaceMode(ActionType action_type);
   void ExitButtonPlaceMode();
+  void UpdateButtonPlacementNudgeAnchorRect();
 
   void AddActionHighlightWidget(Action* action);
   void RemoveActionHighlightWidget();
@@ -164,6 +167,7 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class MenuEntryView;
   friend class MenuEntryViewTest;
   friend class OverlayViewTestBase;
+  friend class RichNudgeTest;
 
   // Display overlay is added for starting `display_mode`.
   void AddOverlay(DisplayMode display_mode);
@@ -249,6 +253,11 @@ class DisplayOverlayController : public ui::EventHandler,
   // Shows or removes target view when in or out button place mode.
   void AddTargetWidget(ActionType action_type);
   void RemoveTargetWidget();
+  TargetView* GetTargetView() const;
+
+  void AddRichNudge();
+  void RemoveRichNudge();
+  RichNudge* GetRichNudge() const;
 
   // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
   // window bounds in root window. Convert `bounds_in_root_window` in screen
@@ -288,6 +297,7 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> delete_edit_shortcut_widget_;
   std::unique_ptr<views::Widget> target_widget_;
   std::unique_ptr<views::Widget> action_highlight_widget_;
+  raw_ptr<views::Widget> rich_nudge_widget_;
 
   // Each widget can associate with one education nudge widget.
   base::flat_map<views::Widget*, std::unique_ptr<views::Widget>> nudge_widgets_;

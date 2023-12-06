@@ -13,6 +13,7 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_highlight.h"
@@ -29,12 +30,14 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/rich_nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
@@ -874,9 +877,7 @@ void DisplayOverlayController::UpdateTargetWidgetBounds() {
     return;
   }
 
-  auto* target_view =
-      views::AsViewClass<TargetView>(target_widget_->GetContentsView());
-  if (target_view) {
+  if (auto* target_view = GetTargetView()) {
     target_view->UpdateWidgetBounds();
   }
 }
@@ -1137,6 +1138,7 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
 }
 
 void DisplayOverlayController::RemoveAllWidgets() {
+  RemoveRichNudge();
   RemoveTargetWidget();
   RemoveButtonOptionsMenuWidget();
   RemoveEditingListWidget();
@@ -1231,13 +1233,28 @@ void DisplayOverlayController::EnterButtonPlaceMode(ActionType action_type) {
   RemoveDeleteEditShortcutWidget();
   SetEditingListVisibility(/*visible=*/false);
   AddTargetWidget(action_type);
-  // TODO(b/304806934): add rich nudge view.
+  AddRichNudge();
 }
 
 void DisplayOverlayController::ExitButtonPlaceMode() {
-  // TODO(b/304806934): remove rich nudge view.
+  RemoveRichNudge();
   RemoveTargetWidget();
   SetEditingListVisibility(/*visible=*/true);
+}
+
+void DisplayOverlayController::UpdateButtonPlacementNudgeAnchorRect() {
+  auto* target_view = GetTargetView();
+  if (!target_view) {
+    return;
+  }
+
+  auto target_circle_bounds = target_view->GetTargetCircleBounds();
+  views::View::ConvertRectToScreen(target_view, &target_circle_bounds);
+  auto* rich_nudge = GetRichNudge();
+  if (rich_nudge && rich_nudge_widget_->GetWindowBoundsInScreen().Intersects(
+                        target_circle_bounds)) {
+    rich_nudge->FlipPosition();
+  }
 }
 
 void DisplayOverlayController::AddTargetWidget(ActionType action_type) {
@@ -1256,6 +1273,35 @@ void DisplayOverlayController::RemoveTargetWidget() {
     target_widget_->Close();
     target_widget_.reset();
   }
+}
+
+TargetView* DisplayOverlayController::GetTargetView() const {
+  return target_widget_
+             ? views::AsViewClass<TargetView>(target_widget_->GetContentsView())
+             : nullptr;
+}
+
+void DisplayOverlayController::AddRichNudge() {
+  if (auto* target_view = GetTargetView()) {
+    rich_nudge_widget_ = views::BubbleDialogDelegateView::CreateBubble(
+        std::make_unique<RichNudge>(target_widget_->GetNativeWindow()));
+    rich_nudge_widget_->ShowInactive();
+  }
+}
+
+void DisplayOverlayController::RemoveRichNudge() {
+  if (rich_nudge_widget_) {
+    rich_nudge_widget_->Close();
+    rich_nudge_widget_ = nullptr;
+  }
+}
+
+RichNudge* DisplayOverlayController::GetRichNudge() const {
+  return rich_nudge_widget_ ? views::AsViewClass<RichNudge>(
+                                  rich_nudge_widget_->widget_delegate()
+                                      ->AsBubbleDialogDelegate()
+                                      ->GetContentsView())
+                            : nullptr;
 }
 
 void DisplayOverlayController::UpdateEventRewriteCapability() {

@@ -20,6 +20,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -89,7 +90,13 @@ void TargetView::UpdateWidgetBounds() {
   widget->SetBounds(controller_->touch_injector()->content_bounds());
 }
 
-int TargetView::GetCircleRadius() {
+gfx::Rect TargetView::GetTargetCircleBounds() const {
+  gfx::Rect bounds = gfx::Rect(center_.x(), center_.y(), 0, 0);
+  bounds.Outset(GetCircleRadius());
+  return bounds;
+}
+
+int TargetView::GetCircleRadius() const {
   switch (action_type_) {
     case ActionType::TAP:
       return kActionTapCircleRadius;
@@ -100,7 +107,7 @@ int TargetView::GetCircleRadius() {
   }
 }
 
-int TargetView::GetCircleRingRadius() {
+int TargetView::GetCircleRingRadius() const {
   switch (action_type_) {
     case ActionType::TAP:
       return kActionTapCircleRingRadius;
@@ -123,6 +130,7 @@ void TargetView::ClampCenter() {
 void TargetView::OnCenterChanged() {
   ClampCenter();
   SchedulePaint();
+  controller_->UpdateButtonPlacementNudgeAnchorRect();
 }
 
 void TargetView::MoveCursorToViewCenter() {

@@ -4649,6 +4649,13 @@
         <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS" desc="Text presented via a tooltip so the user knows how to interact when the touch point is focused.">
           Move the blue touch point to an action. Select the associated key to customize.
         </message>
+        <!-- TODO(b/274690042): Make the strings translatable. -->
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_TITLE" desc="Button placement mode rich nudge title text." translateable="false">
+          Create control
+        </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_NUDGE_BODY" desc="Button placement mode rich nudge body text." translateable="false">
+          Place control on game action to play with your keyboard
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 

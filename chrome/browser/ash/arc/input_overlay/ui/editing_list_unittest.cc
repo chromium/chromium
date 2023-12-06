@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
@@ -52,9 +53,9 @@ class EditingListTest : public OverlayViewTestBase {
   // Add a new action in the center of the main window.
   void AddNewAction() {
     PressAddButton();
-    auto* target_widget = GetTargetViewWidget();
-    DCHECK(target_widget);
-    LeftClickOn(target_widget->GetContentsView());
+    auto* target_view = GetTargetView();
+    DCHECK(target_view);
+    LeftClickOn(target_view);
   }
 
   void LeftClickAtActionViewListItem(int index) {
@@ -238,11 +239,11 @@ TEST_F(EditingListTest, TestAddNewAction) {
   EXPECT_FALSE(ButtonOptionsMenuExists());
   // Press add button and it enters into the button placement mode.
   PressAddButton();
-  auto* target_widget = GetTargetViewWidget();
-  EXPECT_TRUE(target_widget);
+  auto* target_view = GetTargetView();
+  EXPECT_TRUE(target_view);
   // Click on the `target_widget` and then the new action is added.
-  LeftClickOn(target_widget->GetContentsView());
-  EXPECT_FALSE(GetTargetViewWidget());
+  LeftClickOn(target_view);
+  EXPECT_FALSE(GetTargetView());
   CheckActions(
       touch_injector_, /*expect_size=*/4u, /*expect_types=*/
       {ActionType::TAP, ActionType::TAP, ActionType::MOVE, ActionType::TAP},

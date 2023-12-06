@@ -15,6 +15,7 @@ class ActionViewListItem;
 class ButtonOptionsMenu;
 class EditingList;
 class InputMappingView;
+class TargetView;
 
 // UI test base for beta+ version.
 class OverlayViewTestBase : public GameControlsTestBase {
@@ -29,7 +30,7 @@ class OverlayViewTestBase : public GameControlsTestBase {
   size_t GetActionViewSize();
 
   ButtonOptionsMenu* ShowButtonOptionsMenu(Action* action);
-  views::Widget* GetTargetViewWidget();
+  TargetView* GetTargetView() const;
 
   // GameControlsTestBase:
   void SetUp() override;
