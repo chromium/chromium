@@ -9,16 +9,9 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/trusted_vault/features.h"
-#import "components/trusted_vault/trusted_vault_registration_verifier.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-
-namespace {
-
-constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);
-
-}  // namespace
 
 IOSTrustedVaultClient::IOSTrustedVaultClient(
     ChromeAccountManagerService* account_manager_service,
@@ -26,18 +19,9 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
     TrustedVaultClientBackend* trusted_vault_client_backend,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : account_manager_service_(account_manager_service),
-      backend_(trusted_vault_client_backend),
-      registration_verifier_(identity_manager,
-                             std::move(shared_url_loader_factory)) {
+      backend_(trusted_vault_client_backend) {
   DCHECK(account_manager_service_);
   DCHECK(backend_);
-
-  if (base::FeatureList::IsEnabled(
-          trusted_vault::kSyncTrustedVaultVerifyDeviceRegistration)) {
-    backend_->SetDeviceRegistrationPublicKeyVerifierForUMA(
-        base::BindOnce(&IOSTrustedVaultClient::VerifyDeviceRegistration,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
@@ -99,51 +83,4 @@ void IOSTrustedVaultClient::ClearLocalDataForAccount(
 id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(
     const CoreAccountInfo& account_info) {
   return account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
-}
-
-void IOSTrustedVaultClient::VerifyDeviceRegistration(
-    const std::string& gaia_id) {
-  // It is possible for this method to be called with a `gaia_id` for an
-  // account that is no longer known by the AccountManagerService. It is
-  // not possible to verify the registration in that case, so bail out.
-  //
-  // One possible scenario is when an EG test signin with a real identity
-  // and leak the gaia id in the backend, then another EG test restarts
-  // the tested application with a fake identity service. In that case the
-  // backend will call the registration with the previously recorded gaia
-  // id but it will not be know to the identity service which will return
-  // a null identity.
-  //
-  // See https://crbug.com/1448766 for investigation of the resulting crash.
-  id<SystemIdentity> identity =
-      account_manager_service_->GetIdentityWithGaiaID(gaia_id);
-  if (!identity) {
-    return;
-  }
-
-  backend_->GetPublicKeyForIdentity(
-      identity,
-      base::BindOnce(
-          &IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey,
-          weak_ptr_factory_.GetWeakPtr(), gaia_id));
-}
-
-void IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey(
-    const std::string& gaia_id,
-    const std::vector<uint8_t>& public_key) {
-  // Delay the logic, to be consistent with how other implementations do it.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          &IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKeyDelayed,
-          weak_ptr_factory_.GetWeakPtr(), gaia_id, public_key),
-      kVerifyDeviceRegistrationDelay);
-}
-
-void IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKeyDelayed(
-    const std::string& gaia_id,
-    const std::vector<uint8_t>& public_key) {
-  // Note that this code is reachable once at most, because
-  // SetDeviceRegistrationPublicKeyVerifierForUMA() registers a OnceCallback.
-  registration_verifier_.VerifyMembership(gaia_id, public_key);
 }

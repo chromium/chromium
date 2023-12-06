@@ -46,7 +46,6 @@ namespace {
 
 constexpr int kCurrentLocalTrustedVaultVersion = 2;
 constexpr int kCurrentDeviceRegistrationVersion = 1;
-constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);
 
 trusted_vault_pb::LocalTrustedVault ReadEncryptedFile(
     const base::FilePath& file_path) {
@@ -587,22 +586,6 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
         "Sync.TrustedVaultDeviceRegistered",
         per_user_vault->local_device_registration_info().device_registered());
     RecordTrustedVaultDeviceRegistrationState(*registration_state);
-
-    // If the local state indicates that the device is already registered and
-    // there is no ongoing re-registration attempt, and behind a feature toggle,
-    // trigger a procedure to verify that the server has a consistent state
-    // (i.e. downloading of new keys should succeed but return no new keys).
-    if (*registration_state ==
-            TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1 &&
-        base::FeatureList::IsEnabled(
-            kSyncTrustedVaultVerifyDeviceRegistration)) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA,
-              base::WrapRefCounted(this), primary_account->gaia),
-          kVerifyDeviceRegistrationDelay);
-    }
   }
 
   MaybeProcessPendingTrustedRecoveryMethod();
@@ -1232,60 +1215,6 @@ StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
     }
   }
   return nullptr;
-}
-
-void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
-    const std::string& gaia_id) {
-  const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
-
-  // Ignore call if things have changed since the task was scheduled, although
-  // in normal circumstances it shouldn't happen.
-  if (!connection_ || !primary_account_.has_value() ||
-      primary_account_->gaia != gaia_id || !per_user_vault ||
-      !per_user_vault->local_device_registration_info().device_registered()) {
-    return;
-  }
-
-  static_assert(kCurrentDeviceRegistrationVersion == 1);
-  // There should be no way to downgrade registration version.
-  CHECK_EQ(per_user_vault->local_device_registration_info()
-               .device_registered_version(),
-           1);
-
-  if (AreConnectionRequestsThrottled()) {
-    // Keys download attempt is not possible.
-    RecordVerifyRegistrationStatus(
-        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide);
-    return;
-  }
-
-  std::unique_ptr<SecureBoxKeyPair> key_pair =
-      SecureBoxKeyPair::CreateByPrivateKeyImport(
-          ProtoStringToBytes(per_user_vault->local_device_registration_info()
-                                 .private_key_material()));
-  if (!key_pair) {
-    RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA::
-                                       kCorruptedLocalDeviceRegistration);
-    return;
-  }
-
-  // Guaranteed by |device_registered| check above.
-  DCHECK(!per_user_vault->vault_key().empty());
-
-  ongoing_verify_registration_request_ = connection_->DownloadNewKeys(
-      *primary_account_,
-      TrustedVaultKeyAndVersion(
-          ProtoStringToBytes(
-              per_user_vault->vault_key().rbegin()->key_material()),
-          per_user_vault->last_vault_key_version()),
-      std::move(key_pair),
-      base::BindOnce([](TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
-                        int last_vault_key_version) {
-        RecordVerifyRegistrationStatus(
-            GetDownloadKeysStatusForUMAFromResponse(status));
-      }));
 }
 
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {

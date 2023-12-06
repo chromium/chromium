@@ -17719,26 +17719,6 @@
             ]
         }
     ],
-    "SyncTrustedVaultVerifyDeviceRegistration": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_10",
-                    "enable_features": [
-                        "SyncTrustedVaultVerifyDeviceRegistration"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncWebauthnCredentials": [
         {
             "platforms": [

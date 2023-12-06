@@ -117,12 +117,6 @@ void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status,
     bool also_log_with_v1_suffix);
 
-// Records the outcome of verifying a device registration status, which is
-// achieved by trying to download keys (without actually having the need to
-// download keys), which is the reason why the same enum is used.
-void RecordVerifyRegistrationStatus(
-    TrustedVaultDownloadKeysStatusForUMA status);
-
 void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status);
 
 enum class IsOffTheRecord { kNo, kYes };

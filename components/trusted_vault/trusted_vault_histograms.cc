@@ -107,12 +107,6 @@ void RecordTrustedVaultDownloadKeysStatus(
   }
 }
 
-void RecordVerifyRegistrationStatus(
-    TrustedVaultDownloadKeysStatusForUMA status) {
-  base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
-}
-
 void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultFileReadStatus", status);
 }

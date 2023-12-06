@@ -223,8 +223,6 @@ class StandaloneTrustedVaultBackend
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
-  void VerifyDeviceRegistrationForUMA(const std::string& gaia_id);
-
   void WriteDataToDisk();
 
   const base::FilePath md5_hashed_file_path_;
@@ -291,8 +289,6 @@ class StandaloneTrustedVaultBackend
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_device_registration_request_;
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_verify_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/1201659): Move elsewhere.
