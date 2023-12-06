@@ -444,8 +444,9 @@
     </div>
   </div>
 </div>
-<hr class="sp-cards-separator">
-<div class="sp-card" id="historyCard">
+<hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">
+<div class="sp-card" id="historyCard"
+    hidden$="[[!shouldShowHistory_(history_)]]">
   <sp-heading hide-back-button>
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>

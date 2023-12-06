@@ -167,7 +167,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
-  private history_: WallpaperSearchResult[];
+  private history_: WallpaperSearchResult[] = [];
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultsDescriptors = {};
@@ -252,7 +252,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kError:
         return {
           title: this.i18n('genericErrorTitle'),
-          description: this.history_ ?
+          description: this.shouldShowHistory_() ?
               this.i18n('genericErrorDescriptionWithHistory') :
               this.i18n('genericErrorDescription'),
           callToAction: this.i18n('tryAgain'),
@@ -266,7 +266,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOffline:
         return {
           title: this.i18n('offlineTitle'),
-          description: this.history_ ?
+          description: this.shouldShowHistory_() ?
               this.i18n('offlineDescriptionWithHistory') :
               this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
@@ -525,6 +525,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private shouldShowGrid_(): boolean {
     return this.results_.length > 0 || this.emptyResultContainers_.length > 0;
+  }
+
+  private shouldShowHistory_(): boolean {
+    return this.history_.length > 0;
   }
 }
 
