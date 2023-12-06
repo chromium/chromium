@@ -83,6 +83,29 @@ void LCPCriticalPathPredictor::Reset() {
   lcp_element_locator_strings_.clear();
   lcp_influencer_scripts_.clear();
   fetched_fonts_.clear();
+
+  lcp_predicted_callbacks_.clear();
+  called_predicted_callbacks_ = false;
+  is_lcp_candidate_found_ = false;
+  is_outermost_main_frame_document_loaded_ = false;
+}
+
+void LCPCriticalPathPredictor::AddLCPPredictedCallback(LCPCallback callback) {
+  lcp_predicted_callbacks_.push_back(std::move(callback));
+}
+
+void LCPCriticalPathPredictor::MayRunPredictedCallbacks(
+    const Element* lcp_element) {
+  if (called_predicted_callbacks_) {
+    return;
+  }
+  called_predicted_callbacks_ = true;
+  // TODO(crbug.com/1493255): Trigger callbacks for the entire frame tree.
+  Vector<LCPCallback> callbacks;
+  callbacks.swap(lcp_predicted_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(lcp_element);
+  }
 }
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
@@ -91,16 +114,19 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element).SerializeAsString();
 
-    wtf_size_t predicted_lcp_index;
+    is_lcp_candidate_found_ = true;
     // Regard `lcp_element` is the candidate if its locator is found in
     // set_lcp_element_locators(lcp_element_locator_strings).
     // See PredictLcpElementLocators() for the contents detail.
-    // TODO(crbug.com/1493255): We might need another predictor e.g. checking
-    // other element_locators as well.
-    if ((predicted_lcp_index = lcp_element_locator_strings_.Find(
-             lcp_element_locator_string)) != kNotFound) {
-      // TODO(crbug.com/1493255): Trigger callbacks for the entire frame tree.
-      frame_->GetDocument()->RunLCPPredictedCallbacks(lcp_element);
+    const wtf_size_t predicted_lcp_index =
+        lcp_element_locator_strings_.Find(lcp_element_locator_string);
+    if (predicted_lcp_index != kNotFound) {
+      MayRunPredictedCallbacks(&lcp_element);
+    }
+    if (is_outermost_main_frame_document_loaded_) {
+      // Call callbacks as fallback regardless of prediction because
+      // This LCP is much too late.
+      MayRunPredictedCallbacks(nullptr);
     }
 
     features::LcppRecordedLcpElementTypes recordable_lcp_element_type =
@@ -208,6 +234,15 @@ LCPCriticalPathPredictor::GetHost() {
 
 bool LCPCriticalPathPredictor::IsLcpInfluencerScript(const KURL& url) {
   return lcp_influencer_scripts_.Contains(url);
+}
+
+void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
+  is_outermost_main_frame_document_loaded_ = true;
+  // Call callbacks as fallback because we can not detect
+  // which is lcp in the lcps before onload.
+  if (is_lcp_candidate_found_) {
+    MayRunPredictedCallbacks(nullptr);
+  }
 }
 
 void LCPCriticalPathPredictor::Trace(Visitor* visitor) const {
