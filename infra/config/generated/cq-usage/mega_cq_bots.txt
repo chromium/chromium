@@ -40,6 +40,7 @@ chromium/try/chromeos-arm64-generic-rel
 chromium/try/dawn-android-arm-deps-rel
 chromium/try/dawn-android-arm64-deps-rel
 chromium/try/dawn-linux-x64-deps-rel
+chromium/try/dawn-mac-arm64-deps-rel
 chromium/try/dawn-mac-x64-deps-rel
 chromium/try/dawn-try-linux-tsan-rel
 chromium/try/dawn-try-mac-amd-exp
@@ -127,6 +128,7 @@ chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
 chromium/try/linux_chromium_tsan_siso_rel_ng
 chromium/try/mac-arm64-clobber-rel
+chromium/try/mac-arm64-dawn-rel
 chromium/try/mac-arm64-on-arm64-rel
 chromium/try/mac-asan-media-rel
 chromium/try/mac-asan-rel

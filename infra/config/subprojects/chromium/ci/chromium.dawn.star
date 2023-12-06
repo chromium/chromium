@@ -518,6 +518,7 @@ ci.thin_tester(
 
 ci.gpu.mac_builder(
     name = "Dawn Mac arm64 DEPS Release (Apple M2)",
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

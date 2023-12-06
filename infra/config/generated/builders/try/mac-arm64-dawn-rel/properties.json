@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/Dawn Mac arm64 Release (Apple M2)/gn-args.json"
+        "infra/config/generated/builders/try/mac-arm64-dawn-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -43,22 +43,12 @@
           "builder": "Dawn Mac arm64 Release (Apple M2)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "dawn-try-mac-arm64-rel",
-          "group": "tryserver.chromium.dawn"
-        },
-        {
-          "builder": "mac-arm64-dawn-rel",
-          "group": "tryserver.chromium.dawn"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -66,12 +56,10 @@
     "column_keys": [],
     "grouping_keys": [
       "status",
-      "v.test_suite"
+      "v.test_suite",
+      "v.gpu"
     ]
   },
-  "builder_group": "chromium.dawn",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "dawn"
-  ]
+  "builder_group": "tryserver.chromium.dawn",
+  "recipe": "chromium_trybot"
 }

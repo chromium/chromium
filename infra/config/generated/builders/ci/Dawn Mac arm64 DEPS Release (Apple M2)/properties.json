@@ -43,6 +43,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "dawn-mac-arm64-deps-rel",
+          "group": "tryserver.chromium.dawn"
+        },
+        {
           "builder": "dawn-try-mac-arm64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }

@@ -634,6 +634,7 @@
     "dawn-android-arm-deps-rel": "try/dawn-android-arm-deps-rel/gn-args.json",
     "dawn-android-arm64-deps-rel": "try/dawn-android-arm64-deps-rel/gn-args.json",
     "dawn-linux-x64-deps-rel": "try/dawn-linux-x64-deps-rel/gn-args.json",
+    "dawn-mac-arm64-deps-rel": "try/dawn-mac-arm64-deps-rel/gn-args.json",
     "dawn-mac-x64-deps-rel": "try/dawn-mac-x64-deps-rel/gn-args.json",
     "dawn-try-linux-tsan-rel": "try/dawn-try-linux-tsan-rel/gn-args.json",
     "dawn-try-mac-amd-exp": "try/dawn-try-mac-amd-exp/gn-args.json",
@@ -648,6 +649,7 @@
     "dawn-win10-x64-deps-rel": "try/dawn-win10-x64-deps-rel/gn-args.json",
     "dawn-win10-x86-deps-rel": "try/dawn-win10-x86-deps-rel/gn-args.json",
     "linux-dawn-rel": "try/linux-dawn-rel/gn-args.json",
+    "mac-arm64-dawn-rel": "try/mac-arm64-dawn-rel/gn-args.json",
     "mac-dawn-rel": "try/mac-dawn-rel/gn-args.json",
     "win-dawn-rel": "try/win-dawn-rel/gn-args.json"
   },
