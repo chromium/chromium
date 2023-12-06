@@ -166,6 +166,7 @@ try_.builder(
     mirrors = [
         "ci/linux-exp-tsan-fyi-rel",
     ],
+    gn_args = "ci/linux-exp-tsan-fyi-rel",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
