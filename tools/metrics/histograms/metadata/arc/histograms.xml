@@ -2674,18 +2674,6 @@ chromium-metrics-reviews@google.com.
   <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
 </histogram>
 
-<histogram name="Arc.WM.WindowRotateDelayTime.{ChromeOSAppType}" units="ms"
-    expires_after="2024-11-30">
-  <owner>lingyufeng@google.com</owner>
-  <owner>arc-framework@google.com</owner>
-  <summary>
-    Records the time elapsed from display rotates in tablet mode until the
-    window bounds is changed. The data is only collected for the top maximized
-    window shown in tablet mode.
-  </summary>
-  <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
