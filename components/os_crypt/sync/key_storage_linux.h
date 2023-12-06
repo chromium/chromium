@@ -59,13 +59,12 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLinux {
   static const char kKey[];
 
  private:
-#if defined(USE_LIBSECRET) || defined(USE_KEYRING) || defined(USE_KWALLET)
+#if defined(USE_LIBSECRET) || defined(USE_KWALLET)
   // Tries to load the appropriate key storage. Returns null if none succeed.
   static std::unique_ptr<KeyStorageLinux> CreateServiceInternal(
       os_crypt::SelectedLinuxBackend selected_backend,
       const os_crypt::Config& config);
-#endif  // defined(USE_LIBSECRET) || defined(USE_KEYRING) ||
-        // defined(USE_KWALLET)
+#endif  // defined(USE_LIBSECRET) || defined(USE_KWALLET)
 
   // Performs Init() on the backend's preferred thread.
   bool WaitForInitOnTaskRunner();
