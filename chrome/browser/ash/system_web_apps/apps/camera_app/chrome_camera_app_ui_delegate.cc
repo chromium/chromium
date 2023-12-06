@@ -321,6 +321,8 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                     DeviceTypeToString(chromeos::GetDeviceType()));
   source->AddBoolean("auto_qr", base::FeatureList::IsEnabled(
                                     ash::features::kCameraAppAutoQRDetection));
+  source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
+                                         ash::features::kCameraAppDigitalZoom));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   source->AddBoolean("video_capture_disallowed",

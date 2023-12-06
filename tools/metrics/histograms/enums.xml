@@ -33127,6 +33127,7 @@ from previous Chrome versions.
   <int value="-152349324" label="CameraAppMultiPageDocScan:disabled"/>
   <int value="-150820109" label="ProjectorAppDebug:disabled"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
+  <int value="-149667706" label="CameraAppDigitalZoom:enabled"/>
   <int value="-149365748" label="CbdTimeframeRequired:enabled"/>
   <int value="-148627978" label="GlanceablesV2CalendarView:enabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>
@@ -33635,6 +33636,7 @@ from previous Chrome versions.
   <int value="89758831" label="FontAccessChooser:enabled"/>
   <int value="89785725"
       label="DataReductionProxyEnabledWithNetworkService:disabled"/>
+  <int value="89909398" label="CameraAppDigitalZoom:disabled"/>
   <int value="89934221" label="MediaAppPhotosIntegrationImage:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>
   <int value="90673685" label="cast-mirroring-target-playout-delay"/>

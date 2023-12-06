@@ -3473,6 +3473,9 @@ extern const char kCrostiniUseLxd5Description[];
 extern const char kCameraAppAutoQRDetectionName[];
 extern const char kCameraAppAutoQRDetectionDescription[];
 
+extern const char kCameraAppDigitalZoomName[];
+extern const char kCameraAppDigitalZoomDescription[];
+
 extern const char kDisableBufferBWCompressionName[];
 extern const char kDisableBufferBWCompressionDescription[];
 

@@ -1001,6 +1001,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "camera-app-digital-zoom",
+    "owners": [ "kamchonlathorn@chromium.org", "chromeos-camera-app-eng@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "camera-mic-effects",
     "owners": [
       "bryantchandler@chromium.org",

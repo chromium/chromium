@@ -6028,6 +6028,10 @@ const char kCameraAppAutoQRDetectionName[] =
 const char kCameraAppAutoQRDetectionDescription[] =
     "Enable this flag to detect QR code in Camera app Photo mode.";
 
+const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
+const char kCameraAppDigitalZoomDescription[] =
+    "Enable this flag to use digital zoom in Camera app.";
+
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =
