@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -355,6 +356,11 @@ void PlusAddressCreationDialogDelegate::WaitUntilResultShownForTesting() {
 
 void PlusAddressCreationDialogDelegate::MaybeBlockUntilResultShows() {
   if (blocking_until_result_shown_.has_value()) {
+    // This code path is intended to be run only for testing. Bail early if not.
+    // While all paths that set this variable are in `ForTesting` blocks and
+    // therefore excluded, this check should ensure a mistake isn't made in the
+    // future.
+    CHECK_IS_TEST();
     std::move(blocking_until_result_shown_.value()).Run();
     blocking_until_result_shown_.reset();
   }
