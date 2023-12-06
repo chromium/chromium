@@ -103,9 +103,9 @@ crypto_test_sources = [
   "src/crypto/test/gtest_main.cc",
   "src/crypto/thread_test.cc",
   "src/crypto/trust_token/trust_token_test.cc",
+  "src/crypto/x509/tab_test.cc",
   "src/crypto/x509/x509_test.cc",
   "src/crypto/x509/x509_time_test.cc",
-  "src/crypto/x509v3/tab_test.cc",
 ]
 
 crypto_test_data = [
@@ -2389,8 +2389,6 @@ pki_test_sources = [
   "src/pki/crl_unittest.cc",
   "src/pki/encode_values_unittest.cc",
   "src/pki/extended_key_usage_unittest.cc",
-  "src/pki/fillins/file_util.cc",
-  "src/pki/fillins/path_service.cc",
   "src/pki/general_names_unittest.cc",
   "src/pki/input_unittest.cc",
   "src/pki/ip_util_unittest.cc",
@@ -2412,6 +2410,7 @@ pki_test_sources = [
   "src/pki/string_util_unittest.cc",
   "src/pki/test_helpers.cc",
   "src/pki/trust_store_collection_unittest.cc",
+  "src/pki/trust_store_in_memory_unittest.cc",
   "src/pki/verify_certificate_chain_pkits_unittest.cc",
   "src/pki/verify_certificate_chain_unittest.cc",
   "src/pki/verify_name_match_unittest.cc",
