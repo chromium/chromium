@@ -114,6 +114,14 @@ TEST_F(SceneControllerTest, UpdatesIncognitoContentVisibility) {
 
 // Tests that scene controller correctly handles an external intent to
 // OpenIncognitoSearch.
+// TODO(crbug.com/1506950): Flaky on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TestOpenIncognitoSearchForShortcutItem \
+  TestOpenIncognitoSearchForShortcutItem
+#else
+#define MAYBE_TestOpenIncognitoSearchForShortcutItem \
+  DISABLED_TestOpenIncognitoSearchForShortcutItem
+#endif
 TEST_F(SceneControllerTest, TestOpenIncognitoSearchForShortcutItem) {
   UIApplicationShortcutItem* shortcut = [[UIApplicationShortcutItem alloc]
         initWithType:kShortcutNewIncognitoSearch
