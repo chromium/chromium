@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <limits>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -11,10 +12,15 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
+#include "ash/test/view_drawn_waiter.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
+#include "chrome/browser/ash/crosapi/mock_download_status_updater_client.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
@@ -24,7 +30,9 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -32,6 +40,15 @@
 #include "ui/views/view_utils.h"
 
 namespace ash::download_status {
+
+namespace {
+
+// Aliases ---------------------------------------------------------------------
+
+using ::testing::_;
+using ::testing::NiceMock;
+
+}  // namespace
 
 class HoldingSpaceDisplayClientBrowserTest
     : public HoldingSpaceUiBrowserTestBase {
@@ -47,6 +64,10 @@ class HoldingSpaceDisplayClientBrowserTest
 
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindDownloadStatusUpdater(
         download_status_updater_remote_.BindNewPipeAndPassReceiver());
+    download_status_updater_remote_->BindClient(
+        download_status_updater_client_receiver_
+            .BindNewPipeAndPassRemoteWithVersion());
+    download_status_updater_remote_.FlushForTesting();
   }
 
   // Updates download through the download status updater.
@@ -55,30 +76,218 @@ class HoldingSpaceDisplayClientBrowserTest
     download_status_updater_remote_.FlushForTesting();
   }
 
+  crosapi::MockDownloadStatusUpdaterClient& download_status_updater_client() {
+    return download_status_updater_client_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
   mojo::Remote<crosapi::mojom::DownloadStatusUpdater>
       download_status_updater_remote_;
+
+  // The client bound to the download status updater under test.
+  crosapi::MockDownloadStatusUpdaterClient download_status_updater_client_;
+  mojo::Receiver<crosapi::mojom::DownloadStatusUpdaterClient>
+      download_status_updater_client_receiver_{
+          &download_status_updater_client_};
 };
 
-IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CancelDownload) {
-  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
-      ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
-      /*target_bytes=*/1024);
-  Update(download->Clone());
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       CancelDownloadViaContextMenu) {
+  // Create an in-progress download and a completed download.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr in_progress_download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  in_progress_download->cancellable = true;
+  Update(in_progress_download->Clone());
+  crosapi::mojom::DownloadStatusPtr completed_download =
+      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kComplete,
+                           /*received_bytes=*/1024, /*target_bytes=*/1024);
+  Update(completed_download->Clone());
   test_api().Show();
 
-  // Verify the existence of a single download chip.
-  ASSERT_EQ(test_api().GetDownloadChips().size(), 1u);
+  // Expect two download chips, one for each created download item.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 2u);
 
-  // Cancel `download`. Verify that the associated download chip is removed.
-  // TODO(http://b/307353486): Cancel the download by UI events when download
-  // action handling is implemented.
-  download->state = crosapi::mojom::DownloadState::kCancelled;
-  Update(download->Clone());
-  EXPECT_TRUE(test_api().GetDownloadChips().empty());
+  // Cache download chips. NOTE: Chips are displayed in reverse order of their
+  // underlying holding space item creation.
+  const views::View* const completed_download_chip = download_chips.at(0);
+  const views::View* const in_progress_download_chip = download_chips.at(1);
+
+  // Right click the `completed_download_chip`. Because the underlying download
+  // is completed, the context menu should not contain a "Cancel" command.
+  RightClick(completed_download_chip);
+  EXPECT_FALSE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kCancelItem));
+
+  // Close the context menu and control-right click the
+  // `in_progress_download_chip`. Because the `completed_download_chip` is still
+  // selected and its underlying download is completed, the context menu should
+  // not contain a "Cancel" command.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  RightClick(in_progress_download_chip, ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kCancelItem));
+
+  // Close the context menu, press the `in_progress_download_chip` and then
+  // right click it. Because the `in_progress_download_chip` is the only chip
+  // selected and its underlying download is in-progress, the context menu
+  // should contain a "Cancel" command.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  test::Click(in_progress_download_chip);
+  RightClick(in_progress_download_chip);
+  EXPECT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kCancelItem));
+
+  // Cache the holding space item IDs associated with the two download chips.
+  const std::string completed_download_id =
+      test_api().GetHoldingSpaceItemId(completed_download_chip);
+  const std::string in_progress_download_id =
+      test_api().GetHoldingSpaceItemId(in_progress_download_chip);
+
+  // Bind an observer to watch for updates to the holding space model.
+  NiceMock<MockHoldingSpaceModelObserver> mock;
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
+
+  // Implement download cancellation for the mock client.
+  ON_CALL(download_status_updater_client(),
+          Cancel(in_progress_download->guid, _))
+      .WillByDefault(
+          [&](const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::CancelCallback
+                  callback) {
+            in_progress_download->state =
+                crosapi::mojom::DownloadState::kCancelled;
+            Update(std::move(in_progress_download));
+            std::move(callback).Run(/*handled=*/true);
+          });
+
+  // Press ENTER to execute the "Cancel" command, expecting and waiting for
+  // the in-progress download item to be removed from the holding space model.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+        ASSERT_EQ(items.size(), 1u);
+        EXPECT_EQ(items[0]->id(), in_progress_download_id);
+        run_loop.Quit();
+      });
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  run_loop.Run();
+
+  // Verify that there is now only a single download chip.
+  download_chips = test_api().GetDownloadChips();
+  EXPECT_EQ(download_chips.size(), 1u);
+
+  // Because the in-progress download was canceled, only the completed download
+  // chip should still be present in the UI.
+  EXPECT_TRUE(test_api().GetHoldingSpaceItemView(download_chips,
+                                                 completed_download_id));
+  EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips,
+                                                  in_progress_download_id));
+}
+
+IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
+                       CancelDownloadViaPrimaryAction) {
+  // Create an in-progress download and a completed download.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr in_progress_download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
+                                     /*target_bytes=*/1024);
+  in_progress_download->cancellable = true;
+  Update(in_progress_download->Clone());
+  crosapi::mojom::DownloadStatusPtr completed_download =
+      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kComplete,
+                           /*received_bytes=*/1024, /*target_bytes=*/1024);
+  Update(completed_download->Clone());
+  test_api().Show();
+
+  // Expect two download chips, one for each created download item.
+  std::vector<views::View*> download_chips = test_api().GetDownloadChips();
+  ASSERT_EQ(download_chips.size(), 2u);
+
+  // Cache download chips. NOTE: Chips are displayed in reverse order of their
+  // underlying holding space item creation.
+  views::View* const completed_download_chip = download_chips.at(0);
+  views::View* const in_progress_download_chip = download_chips.at(1);
+
+  // Hover over the `completed_download_chip`. Because the underlying download
+  // is completed, the chip should contain a visible primary action for "Pin".
+  test::MoveMouseTo(completed_download_chip, /*count=*/10);
+  auto* primary_action_container = completed_download_chip->GetViewByID(
+      kHoldingSpaceItemPrimaryActionContainerId);
+  const auto* primary_action_cancel =
+      primary_action_container->GetViewByID(kHoldingSpaceItemCancelButtonId);
+  const auto* primary_action_pin =
+      primary_action_container->GetViewByID(kHoldingSpaceItemPinButtonId);
+  ViewDrawnWaiter().Wait(primary_action_container);
+  EXPECT_FALSE(primary_action_cancel->GetVisible());
+  EXPECT_TRUE(primary_action_pin->GetVisible());
+
+  // Hover over the `in_progress_download_chip`. Because the underlying download
+  // is in-progress, the chip should contain a visible primary action for
+  // "Cancel".
+  test::MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  primary_action_container = in_progress_download_chip->GetViewByID(
+      kHoldingSpaceItemPrimaryActionContainerId);
+  primary_action_cancel =
+      primary_action_container->GetViewByID(kHoldingSpaceItemCancelButtonId);
+  primary_action_pin =
+      primary_action_container->GetViewByID(kHoldingSpaceItemPinButtonId);
+  ViewDrawnWaiter().Wait(primary_action_container);
+  EXPECT_TRUE(primary_action_cancel->GetVisible());
+  EXPECT_FALSE(primary_action_pin->GetVisible());
+
+  // Cache the holding space item IDs associated with the two download chips.
+  const std::string completed_download_id =
+      test_api().GetHoldingSpaceItemId(completed_download_chip);
+  const std::string in_progress_download_id =
+      test_api().GetHoldingSpaceItemId(in_progress_download_chip);
+
+  // Bind an observer to watch for updates to the holding space model.
+  NiceMock<MockHoldingSpaceModelObserver> mock;
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
+
+  // Implement download cancellation for the mock client.
+  ON_CALL(download_status_updater_client(),
+          Cancel(in_progress_download->guid, _))
+      .WillByDefault(
+          [&](const std::string& guid,
+              crosapi::MockDownloadStatusUpdaterClient::CancelCallback
+                  callback) {
+            in_progress_download->state =
+                crosapi::mojom::DownloadState::kCancelled;
+            Update(std::move(in_progress_download));
+            std::move(callback).Run(/*handled=*/true);
+          });
+
+  // Press the `primary_action_container` to execute "Cancel", expecting and
+  // waiting for the in-progress download item to be removed from the holding
+  // space model.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+      .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+        ASSERT_EQ(items.size(), 1u);
+        EXPECT_EQ(items[0]->id(), in_progress_download_id);
+        run_loop.Quit();
+      });
+  test::Click(primary_action_container);
+  run_loop.Run();
+
+  // Verify that there is now only a single download chip.
+  download_chips = test_api().GetDownloadChips();
+  EXPECT_EQ(download_chips.size(), 1u);
+
+  // Because the in-progress download was canceled, only the completed download
+  // chip should still be present in the UI.
+  EXPECT_TRUE(test_api().GetHoldingSpaceItemView(download_chips,
+                                                 completed_download_id));
+  EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips,
+                                                  in_progress_download_id));
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {

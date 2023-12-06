@@ -9,15 +9,24 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 class Profile;
 
-namespace crosapi::mojom {
+namespace crosapi {
+
+class DownloadStatusUpdaterAsh;
+
+namespace mojom {
 class DownloadStatus;
-}  // namespace crosapi::mojom
+}  // namespace mojom
+
+}  // namespace crosapi
 
 namespace ash::download_status {
 
 class DisplayClient;
+struct DisplayMetadata;
 
 // Acts as an intermediary between Lacros download updates and Ash displayed
 // download updates by:
@@ -29,7 +38,8 @@ class DisplayClient;
 // such as pausing the download, to `DownloadStatusUpdaterAsh` for handling.
 class DisplayManager {
  public:
-  explicit DisplayManager(Profile* profile);
+  DisplayManager(Profile* profile,
+                 crosapi::DownloadStatusUpdaterAsh* download_status_updater);
   DisplayManager(const DisplayManager&) = delete;
   DisplayManager& operator=(const DisplayManager&) = delete;
   ~DisplayManager();
@@ -38,9 +48,19 @@ class DisplayManager {
   void Update(const crosapi::mojom::DownloadStatus& download_status);
 
  private:
+  // Calculates the metadata to display the download update specified by
+  // `download_status`. This function should be called only when the specified
+  // download can be displayed.
+  DisplayMetadata CalculateDisplayMetadata(
+      const crosapi::mojom::DownloadStatus& download_status);
+
   // Removes the displayed download specified by `guid` from all clients. No op
   // if the specified download is not displayed.
   void Remove(const std::string& guid);
+
+  // Used to handle download actions, including pausing, resuming, and canceling
+  // downloads. NOTE: `download_status_updater_` owns this instance.
+  const raw_ptr<crosapi::DownloadStatusUpdaterAsh> download_status_updater_;
 
   // Responsible for displaying download updates.
   // All clients are ready when `DisplayManager` is created to ensure
