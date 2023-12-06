@@ -352,36 +352,6 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
 };
 
 /**
- * Creates the volume switch command with index.
- * @param {number} index Volume index from 1 to 9.
- * @return {FilesCommand} Volume switch command.
- */
-CommandUtil.createVolumeSwitchCommand = index =>
-    new (class extends FilesCommand {
-      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
-      // 'any' type.
-      execute(event, fileManager) {
-        if (isNewDirectoryTreeEnabled()) {
-          const items = fileManager.ui.directoryTree.items;
-          if (items[index - 1]?.entry) {
-            getStore().dispatch(
-                changeDirectory({toKey: items[index - 1].entry.toURL()}));
-          }
-        } else {
-          fileManager.ui.directoryTree.activateByIndex(index - 1);
-        }
-      }
-
-      /** @override */
-      // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
-      // 'any' type.
-      canExecute(event, fileManager) {
-        event.canExecute =
-            index > 0 && index <= fileManager.ui.directoryTree.items.length;
-      }
-    })();
-
-/**
  * Returns a directory entry when only one entry is selected and it is
  * directory. Otherwise, returns null.
  * @param {FileSelection} selection Instance of FileSelection.
@@ -2819,45 +2789,68 @@ CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
   }
 })();
 
+class VolumeSwitch extends FilesCommand {
+  /**
+   * @param {number} index
+   */
+  constructor(index) {
+    super();
+    this.index_ = index;
+  }
+
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+  // 'any' type.
+  execute(event, fileManager) {
+    if (isNewDirectoryTreeEnabled()) {
+      const items = fileManager.ui.directoryTree.items;
+      if (items[this.index_ - 1]?.entry) {
+        getStore().dispatch(
+            changeDirectory({toKey: items[this.index_ - 1].entry.toURL()}));
+      }
+    } else {
+      fileManager.ui.directoryTree.activateByIndex(this.index_ - 1);
+    }
+  }
+
+  /** @override */
+  // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
+  // 'any' type.
+  canExecute(event, fileManager) {
+    event.canExecute = this.index_ > 0 &&
+        this.index_ <= fileManager.ui.directoryTree.items.length;
+  }
+}
+
 /**
  * Activates the n-th volume.
  */
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-1'] =
-    CommandUtil.createVolumeSwitchCommand(1);
+CommandHandler.COMMANDS_['volume-switch-1'] = new VolumeSwitch(1);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-2'] =
-    CommandUtil.createVolumeSwitchCommand(2);
+CommandHandler.COMMANDS_['volume-switch-2'] = new VolumeSwitch(2);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-3'] =
-    CommandUtil.createVolumeSwitchCommand(3);
+CommandHandler.COMMANDS_['volume-switch-3'] = new VolumeSwitch(3);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-4'] =
-    CommandUtil.createVolumeSwitchCommand(4);
+CommandHandler.COMMANDS_['volume-switch-4'] = new VolumeSwitch(4);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-5'] =
-    CommandUtil.createVolumeSwitchCommand(5);
+CommandHandler.COMMANDS_['volume-switch-5'] = new VolumeSwitch(5);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-6'] =
-    CommandUtil.createVolumeSwitchCommand(6);
+CommandHandler.COMMANDS_['volume-switch-6'] = new VolumeSwitch(6);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-7'] =
-    CommandUtil.createVolumeSwitchCommand(7);
+CommandHandler.COMMANDS_['volume-switch-7'] = new VolumeSwitch(7);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-8'] =
-    CommandUtil.createVolumeSwitchCommand(8);
+CommandHandler.COMMANDS_['volume-switch-8'] = new VolumeSwitch(8);
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
 // within class 'CommandHandler'.
-CommandHandler.COMMANDS_['volume-switch-9'] =
-    CommandUtil.createVolumeSwitchCommand(9);
+CommandHandler.COMMANDS_['volume-switch-9'] = new VolumeSwitch(9);
 
 /**
  * Flips 'available offline' flag on the file.
