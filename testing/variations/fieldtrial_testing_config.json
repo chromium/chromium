@@ -12596,6 +12596,32 @@
             ]
         }
     ],
+    "PartitionAllocAdvancedMemorySafetyChecks": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "PartitionAllocSchedulerLoopQuarantineCapacity": "1048576"
+                    },
+                    "enable_features": [
+                        "PartitionAllocSchedulerLoopQuarantine",
+                        "PartitionAllocZappingByFreeFlags"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocBackupRefPtr16BRefcount": [
         {
             "platforms": [
@@ -12809,30 +12835,6 @@
             ]
         }
     ],
-    "PartitionAllocSchedulerLoopQuarantine": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "PartitionAllocSchedulerLoopQuarantineCapacity": "1048576"
-                    },
-                    "enable_features": [
-                        "PartitionAllocSchedulerLoopQuarantine"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocUnretainedDanglingPtr": [
         {
             "platforms": [
@@ -12852,27 +12854,6 @@
                     },
                     "enable_features": [
                         "PartitionAllocUnretainedDanglingPtr"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocZappingByFreeFlags": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocZappingByFreeFlags"
                     ]
                 }
             ]
