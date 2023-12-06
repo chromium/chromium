@@ -671,7 +671,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   }
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMetronome)) {
-    pcf_deps.metronome =
+    pcf_deps.decode_metronome =
         StaticDeps().metronome_source().CreateWebRtcMetronome();
   }
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
