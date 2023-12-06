@@ -274,13 +274,9 @@ class RootsRecursionDelegate {
 // Converts files paths to file system URLs.
 std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
     Profile* profile,
+    const storage::FileSystemContext& file_system_context,
     const std::vector<base::FilePath>& files_paths) {
   std::vector<storage::FileSystemURL> file_system_urls;
-
-  auto* file_system_context = GetFileSystemContext(profile);
-  if (!file_system_context) {
-    return file_system_urls;
-  }
 
   for (const auto& file_path : files_paths) {
     GURL gurl;
@@ -288,7 +284,7 @@ std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
             profile, file_path, file_manager::util::GetFileManagerURL(),
             &gurl)) {
       file_system_urls.push_back(
-          file_system_context->CrackURLInFirstPartyContext(gurl));
+          file_system_context.CrackURLInFirstPartyContext(gurl));
     }
   }
 
@@ -511,22 +507,22 @@ void DlpFilesControllerAsh::FilterDisallowedUploads(
     return;
   }
 
+  auto* file_system_context = GetFileSystemContext(profile_);
+  if (!file_system_context) {
+    std::move(result_callback).Run(std::move(selected_files));
+    return;
+  }
+
   std::vector<base::FilePath> files_paths;
   for (const auto& file : selected_files) {
     files_paths.push_back(file.local_path.empty() ? file.file_path
                                                   : file.local_path);
   }
-
   std::vector<storage::FileSystemURL> file_system_urls =
-      ConvertFilePathsToFileSystemUrls(profile_, files_paths);
+      ConvertFilePathsToFileSystemUrls(profile_, *file_system_context,
+                                       files_paths);
 
   if (file_system_urls.empty()) {
-    std::move(result_callback).Run(std::move(selected_files));
-    return;
-  }
-
-  auto* file_system_context = GetFileSystemContext(profile_);
-  if (!file_system_context) {
     std::move(result_callback).Run(std::move(selected_files));
     return;
   }
@@ -878,6 +874,12 @@ void DlpFilesControllerAsh::CheckIfPasteOrDropIsAllowed(
     const std::vector<base::FilePath>& files,
     const ui::DataTransferEndpoint* data_dst,
     CheckIfDlpAllowedCallback result_callback) {
+  auto* file_system_context = GetFileSystemContext(profile_);
+  if (!file_system_context) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
   std::vector<base::FilePath> local_files;
   for (const auto& path : files) {
     if (!IsInLocalFileSystem(profile_, path)) {
@@ -887,19 +889,14 @@ void DlpFilesControllerAsh::CheckIfPasteOrDropIsAllowed(
   }
 
   std::vector<storage::FileSystemURL> files_urls =
-      ConvertFilePathsToFileSystemUrls(profile_, local_files);
+      ConvertFilePathsToFileSystemUrls(profile_, *file_system_context,
+                                       local_files);
   if (files_urls.empty()) {
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
   }
 
   DlpFileDestination destination = DTEndpointToFileDestination(data_dst);
-
-  auto* file_system_context = GetFileSystemContext(profile_);
-  if (!file_system_context) {
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
 
   auto* roots_recursion_delegate = new RootsRecursionDelegate(
       file_system_context, std::move(files_urls),
