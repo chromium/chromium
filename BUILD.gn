@@ -288,7 +288,7 @@ group("gn_all") {
 
     if (enable_ml_internal) {
       deps +=
-          [ "//components/optimization_guide/internal:text_generator_example" ]
+          [ "//components/optimization_guide/internal:ondevice_model_example" ]
     }
 
     if (enable_pdf) {
