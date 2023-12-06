@@ -26,9 +26,7 @@
 </style>
 <div id="container">
   <div id="deviceStateSettings" class="settings-box two-line first">
-    <iron-icon id="statusIcon"
-        icon="[[getBluetoothStateIcon_(isDeviceConnected_)]]">
-    </iron-icon>
+    <bluetooth-icon device="[[device_.deviceProperties]]"></bluetooth-icon>
     <div id="bluetoothState"
         class="middle settings-box-text">
       <div
