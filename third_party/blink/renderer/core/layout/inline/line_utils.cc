@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 
 namespace blink {
 
@@ -18,7 +18,8 @@ void TrimLeadingSpace(LayoutUnit& leading_space) {
 }  // namespace
 
 InlineCursor NGContainingLineBoxOf(const PositionWithAffinity& position) {
-  const CaretPosition caret_position = ComputeCaretPosition(position);
+  const InlineCaretPosition caret_position =
+      ComputeInlineCaretPosition(position);
   if (caret_position.IsNull())
     return InlineCursor();
   InlineCursor line = caret_position.cursor;

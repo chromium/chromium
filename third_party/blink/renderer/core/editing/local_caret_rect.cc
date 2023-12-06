@@ -35,8 +35,8 @@
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -50,7 +50,7 @@ namespace {
 //  - A position before/after atomic inline element. Note: This function
 //    doesn't check whether anchor node is atomic inline level or not.
 template <typename Strategy>
-PositionWithAffinityTemplate<Strategy> AdjustForCaretPosition(
+PositionWithAffinityTemplate<Strategy> AdjustForInlineCaretPosition(
     const PositionWithAffinityTemplate<Strategy>& position_with_affinity) {
   switch (position_with_affinity.GetPosition().AnchorType()) {
     case PositionAnchorType::kAfterAnchor:
@@ -101,8 +101,8 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
   const PositionWithAffinityTemplate<Strategy>& adjusted =
       ComputeInlineAdjustedPosition(position, rule);
   if (adjusted.IsNotNull()) {
-    if (auto caret_position =
-            ComputeCaretPosition(AdjustForCaretPosition(adjusted))) {
+    if (auto caret_position = ComputeInlineCaretPosition(
+            AdjustForInlineCaretPosition(adjusted))) {
       return ComputeLocalCaretRect(caret_position);
     }
   }
@@ -145,7 +145,7 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
     return LocalCaretRect();
 
   if (auto caret_position =
-          ComputeCaretPosition(AdjustForCaretPosition(adjusted))) {
+          ComputeInlineCaretPosition(AdjustForInlineCaretPosition(adjusted))) {
     return ComputeLocalSelectionRect(caret_position);
   }
 

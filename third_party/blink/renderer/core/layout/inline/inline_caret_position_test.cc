@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class CaretPositionTest : public RenderingTest {
+class InlineCaretPositionTest : public RenderingTest {
  public:
   void SetUp() override {
     RenderingTest::SetUp();
@@ -42,9 +42,9 @@ class CaretPositionTest : public RenderingTest {
     DCHECK(context_->IsLayoutNGObject());
   }
 
-  CaretPosition ComputeCaretPosition(unsigned offset,
-                                     TextAffinity affinity) const {
-    return blink::ComputeCaretPosition(*context_, offset, affinity);
+  InlineCaretPosition ComputeInlineCaretPosition(unsigned offset,
+                                                 TextAffinity affinity) const {
+    return blink::ComputeInlineCaretPosition(*context_, offset, affinity);
   }
 
   InlineCursor FragmentOf(const Node* node) const {
@@ -60,57 +60,57 @@ class CaretPositionTest : public RenderingTest {
 #define TEST_CARET(caret, fragment_, type_, offset_)                         \
   {                                                                          \
     EXPECT_EQ(caret.cursor, fragment_);                                      \
-    EXPECT_EQ(caret.position_type, CaretPositionType::type_);                \
+    EXPECT_EQ(caret.position_type, InlineCaretPositionType::type_);          \
     EXPECT_EQ(caret.text_offset, offset_) << caret.text_offset.value_or(-1); \
   }
 
-TEST_F(CaretPositionTest, AfterSpan) {
+TEST_F(InlineCaretPositionTest, AfterSpan) {
   InsertStyleElement("b { background-color: yellow; }");
   SetBodyInnerHTML("<div><b id=target>ABC</b></div>");
   const auto& target = *GetElementById("target");
 
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(Position::AfterNode(target))),
              FragmentOf(&target), kAfterBox, absl::nullopt);
 }
 
-TEST_F(CaretPositionTest, AfterSpanCulled) {
+TEST_F(InlineCaretPositionTest, AfterSpanCulled) {
   SetBodyInnerHTML("<div><b id=target>ABC</b></div>");
   const auto& target = *GetElementById("target");
 
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(Position::AfterNode(target))),
              FragmentOf(target.firstChild()), kAtTextOffset,
              absl::optional<unsigned>(3));
 }
 
-TEST_F(CaretPositionTest, CaretPositionInOneLineOfText) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionInOneLineOfText) {
   SetInlineFormattingContext("t", "foo", 3);
   const Node* text = container_->firstChild();
   const InlineCursor& text_fragment = FragmentOf(text);
 
   // Beginning of line
-  TEST_CARET(ComputeCaretPosition(0, TextAffinity::kDownstream), text_fragment,
-             kAtTextOffset, absl::optional<unsigned>(0));
-  TEST_CARET(ComputeCaretPosition(0, TextAffinity::kUpstream), text_fragment,
-             kAtTextOffset, absl::optional<unsigned>(0));
+  TEST_CARET(ComputeInlineCaretPosition(0, TextAffinity::kDownstream),
+             text_fragment, kAtTextOffset, absl::optional<unsigned>(0));
+  TEST_CARET(ComputeInlineCaretPosition(0, TextAffinity::kUpstream),
+             text_fragment, kAtTextOffset, absl::optional<unsigned>(0));
 
   // Middle in the line
-  TEST_CARET(ComputeCaretPosition(1, TextAffinity::kDownstream), text_fragment,
-             kAtTextOffset, absl::optional<unsigned>(1));
-  TEST_CARET(ComputeCaretPosition(1, TextAffinity::kUpstream), text_fragment,
-             kAtTextOffset, absl::optional<unsigned>(1));
+  TEST_CARET(ComputeInlineCaretPosition(1, TextAffinity::kDownstream),
+             text_fragment, kAtTextOffset, absl::optional<unsigned>(1));
+  TEST_CARET(ComputeInlineCaretPosition(1, TextAffinity::kUpstream),
+             text_fragment, kAtTextOffset, absl::optional<unsigned>(1));
 
   // End of line
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kDownstream), text_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kUpstream), text_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kDownstream),
+             text_fragment, kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kUpstream),
+             text_fragment, kAtTextOffset, absl::optional<unsigned>(3));
 }
 
 // For http://crbug.com/1021993
 // We should not call |InlineCursor::CurrentBidiLevel()| for soft hyphen
-TEST_F(CaretPositionTest, CaretPositionAtSoftHyphen) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionAtSoftHyphen) {
   // We have three fragment "foo\u00AD", "\u2010", "bar"
   SetInlineFormattingContext("t", "foo&shy;bar", 3, TextDirection::kLtr, "");
   const LayoutText& text =
@@ -119,13 +119,13 @@ TEST_F(CaretPositionTest, CaretPositionAtSoftHyphen) {
   cursor.MoveTo(text);
   const InlineCursor foo_fragment = cursor;
 
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kDownstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kUpstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kDownstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kUpstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(4));
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrap) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionAtSoftLineWrap) {
   SetInlineFormattingContext("t", "foobar", 3);
   const LayoutText& text =
       *To<Text>(container_->firstChild())->GetLayoutObject();
@@ -135,13 +135,13 @@ TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrap) {
   cursor.MoveToNextForSameLayoutObject();
   const InlineCursor bar_fragment = cursor;
 
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kDownstream), bar_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kUpstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kDownstream),
+             bar_fragment, kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kUpstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(3));
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapWithSpace) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionAtSoftLineWrapWithSpace) {
   SetInlineFormattingContext("t", "foo bar", 3);
   const LayoutText& text =
       *To<Text>(container_->firstChild())->GetLayoutObject();
@@ -152,19 +152,19 @@ TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapWithSpace) {
   const InlineCursor bar_fragment = cursor;
 
   // Before the space
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kDownstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kUpstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kDownstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kUpstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(3));
 
   // After the space
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kDownstream), bar_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kUpstream), bar_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kDownstream),
+             bar_fragment, kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kUpstream),
+             bar_fragment, kAtTextOffset, absl::optional<unsigned>(4));
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtForcedLineBreak) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionAtForcedLineBreak) {
   SetInlineFormattingContext("t", "foo<br>bar", 3);
   const Node* foo = container_->firstChild();
   const Node* br = foo->nextSibling();
@@ -173,50 +173,51 @@ TEST_F(CaretPositionTest, CaretPositionAtForcedLineBreak) {
   const InlineCursor& bar_fragment = FragmentOf(bar);
 
   // Before the BR
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kDownstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
-  TEST_CARET(ComputeCaretPosition(3, TextAffinity::kUpstream), foo_fragment,
-             kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kDownstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(ComputeInlineCaretPosition(3, TextAffinity::kUpstream),
+             foo_fragment, kAtTextOffset, absl::optional<unsigned>(3));
 
   // After the BR
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kDownstream), bar_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kUpstream), bar_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kDownstream),
+             bar_fragment, kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kUpstream),
+             bar_fragment, kAtTextOffset, absl::optional<unsigned>(4));
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtEmptyLine) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionAtEmptyLine) {
   SetInlineFormattingContext("f", "foo<br><br>bar", 3);
   const Node* foo = container_->firstChild();
   const Node* br1 = foo->nextSibling();
   const Node* br2 = br1->nextSibling();
   const InlineCursor& br2_fragment = FragmentOf(br2);
 
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kDownstream), br2_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
-  TEST_CARET(ComputeCaretPosition(4, TextAffinity::kUpstream), br2_fragment,
-             kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kDownstream),
+             br2_fragment, kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(ComputeInlineCaretPosition(4, TextAffinity::kUpstream),
+             br2_fragment, kAtTextOffset, absl::optional<unsigned>(4));
 }
 
-TEST_F(CaretPositionTest, CaretPositionInOneLineOfImage) {
+TEST_F(InlineCaretPositionTest, InlineCaretPositionInOneLineOfImage) {
   SetInlineFormattingContext("t", "<img>", 3);
   const Node* img = container_->firstChild();
   const InlineCursor& img_fragment = FragmentOf(img);
 
   // Before the image
-  TEST_CARET(ComputeCaretPosition(0, TextAffinity::kDownstream), img_fragment,
-             kBeforeBox, absl::nullopt);
-  TEST_CARET(ComputeCaretPosition(0, TextAffinity::kUpstream), img_fragment,
-             kBeforeBox, absl::nullopt);
+  TEST_CARET(ComputeInlineCaretPosition(0, TextAffinity::kDownstream),
+             img_fragment, kBeforeBox, absl::nullopt);
+  TEST_CARET(ComputeInlineCaretPosition(0, TextAffinity::kUpstream),
+             img_fragment, kBeforeBox, absl::nullopt);
 
   // After the image
-  TEST_CARET(ComputeCaretPosition(1, TextAffinity::kDownstream), img_fragment,
-             kAfterBox, absl::nullopt);
-  TEST_CARET(ComputeCaretPosition(1, TextAffinity::kUpstream), img_fragment,
-             kAfterBox, absl::nullopt);
+  TEST_CARET(ComputeInlineCaretPosition(1, TextAffinity::kDownstream),
+             img_fragment, kAfterBox, absl::nullopt);
+  TEST_CARET(ComputeInlineCaretPosition(1, TextAffinity::kUpstream),
+             img_fragment, kAfterBox, absl::nullopt);
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapBetweenImages) {
+TEST_F(InlineCaretPositionTest,
+       InlineCaretPositionAtSoftLineWrapBetweenImages) {
   SetInlineFormattingContext("t",
                              "<img id=img1><img id=img2>"
                              "<style>img{width: 1em; height: 1em}</style>",
@@ -226,13 +227,14 @@ TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapBetweenImages) {
   const InlineCursor& img1_fragment = FragmentOf(img1);
   const InlineCursor& img2_fragment = FragmentOf(img2);
 
-  TEST_CARET(ComputeCaretPosition(1, TextAffinity::kDownstream), img2_fragment,
-             kBeforeBox, absl::nullopt);
-  TEST_CARET(ComputeCaretPosition(1, TextAffinity::kUpstream), img1_fragment,
-             kAfterBox, absl::nullopt);
+  TEST_CARET(ComputeInlineCaretPosition(1, TextAffinity::kDownstream),
+             img2_fragment, kBeforeBox, absl::nullopt);
+  TEST_CARET(ComputeInlineCaretPosition(1, TextAffinity::kUpstream),
+             img1_fragment, kAfterBox, absl::nullopt);
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapBetweenMultipleTextNodes) {
+TEST_F(InlineCaretPositionTest,
+       InlineCaretPositionAtSoftLineWrapBetweenMultipleTextNodes) {
   SetInlineFormattingContext("t",
                              "<span>A</span>"
                              "<span>B</span>"
@@ -250,14 +252,14 @@ TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapBetweenMultipleTextNodes) {
   const OffsetMapping& mapping = *OffsetMapping::GetFor(wrap_position);
   const unsigned wrap_offset = *mapping.GetTextContentOffset(wrap_position);
 
-  TEST_CARET(ComputeCaretPosition(wrap_offset, TextAffinity::kUpstream),
+  TEST_CARET(ComputeInlineCaretPosition(wrap_offset, TextAffinity::kUpstream),
              fragment_c, kAtTextOffset, absl::optional<unsigned>(wrap_offset));
-  TEST_CARET(ComputeCaretPosition(wrap_offset, TextAffinity::kDownstream),
+  TEST_CARET(ComputeInlineCaretPosition(wrap_offset, TextAffinity::kDownstream),
              fragment_d, kAtTextOffset, absl::optional<unsigned>(wrap_offset));
 }
 
-TEST_F(CaretPositionTest,
-       CaretPositionAtSoftLineWrapBetweenMultipleTextNodesRtl) {
+TEST_F(InlineCaretPositionTest,
+       InlineCaretPositionAtSoftLineWrapBetweenMultipleTextNodesRtl) {
   SetInlineFormattingContext("t",
                              "<span>A</span>"
                              "<span>B</span>"
@@ -275,13 +277,14 @@ TEST_F(CaretPositionTest,
   const OffsetMapping& mapping = *OffsetMapping::GetFor(wrap_position);
   const unsigned wrap_offset = *mapping.GetTextContentOffset(wrap_position);
 
-  TEST_CARET(ComputeCaretPosition(wrap_offset, TextAffinity::kUpstream),
+  TEST_CARET(ComputeInlineCaretPosition(wrap_offset, TextAffinity::kUpstream),
              fragment_c, kAtTextOffset, absl::optional<unsigned>(wrap_offset));
-  TEST_CARET(ComputeCaretPosition(wrap_offset, TextAffinity::kDownstream),
+  TEST_CARET(ComputeInlineCaretPosition(wrap_offset, TextAffinity::kDownstream),
              fragment_d, kAtTextOffset, absl::optional<unsigned>(wrap_offset));
 }
 
-TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapBetweenDeepTextNodes) {
+TEST_F(InlineCaretPositionTest,
+       InlineCaretPositionAtSoftLineWrapBetweenDeepTextNodes) {
   SetInlineFormattingContext(
       "t",
       "<style>span {border: 1px solid black}</style>"
@@ -301,13 +304,13 @@ TEST_F(CaretPositionTest, CaretPositionAtSoftLineWrapBetweenDeepTextNodes) {
   const OffsetMapping& mapping = *OffsetMapping::GetFor(wrap_position);
   const unsigned wrap_offset = *mapping.GetTextContentOffset(wrap_position);
 
-  TEST_CARET(ComputeCaretPosition(wrap_offset, TextAffinity::kUpstream),
+  TEST_CARET(ComputeInlineCaretPosition(wrap_offset, TextAffinity::kUpstream),
              fragment_c, kAtTextOffset, absl::optional<unsigned>(wrap_offset));
-  TEST_CARET(ComputeCaretPosition(wrap_offset, TextAffinity::kDownstream),
+  TEST_CARET(ComputeInlineCaretPosition(wrap_offset, TextAffinity::kDownstream),
              fragment_d, kAtTextOffset, absl::optional<unsigned>(wrap_offset));
 }
 
-TEST_F(CaretPositionTest, GeneratedZeroWidthSpace) {
+TEST_F(InlineCaretPositionTest, GeneratedZeroWidthSpace) {
   LoadAhem();
   InsertStyleElement(
       "p { font: 10px/1 Ahem; }"
@@ -325,19 +328,19 @@ TEST_F(CaretPositionTest, GeneratedZeroWidthSpace) {
   cursor.MoveTo(*text.GetLayoutObject());
 
   ASSERT_EQ(TextOffsetRange(0, 4), cursor.Current().TextOffset());
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kUpstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(4));
 
   cursor.MoveToNextForSameLayoutObject();
   ASSERT_EQ(TextOffsetRange(5, 9), cursor.Current().TextOffset());
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kDownstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(5));
 }
 
 // See also ParameterizedLocalCaretRectTest.MultiColumnSingleText
-TEST_F(CaretPositionTest, MultiColumnSingleText) {
+TEST_F(InlineCaretPositionTest, MultiColumnSingleText) {
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
@@ -352,99 +355,99 @@ TEST_F(CaretPositionTest, MultiColumnSingleText) {
   cursor.MoveTo(*text.GetLayoutObject());
 
   // "abc " in column 1
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 0))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(0));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 1))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(1));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 2))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(2));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 3))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(3));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 0))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(0));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 1))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(1));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 2))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(2));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 3))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(3));
   cursor.MoveToNextForSameLayoutObject();
 
   // "def " in column 1
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 4))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(4));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 5))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(5));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 6))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(6));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 7))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(7));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 4))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(4));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 5))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(5));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 6))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(6));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 7))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(7));
   cursor.MoveToNextForSameLayoutObject();
 
   // "ghi " in column 2
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 8))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(8));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 9))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(9));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 10))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(10));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 11))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(11));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 8))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(8));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 9))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(9));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 10))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(10));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 11))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(11));
   cursor.MoveToNextForSameLayoutObject();
 
   // "jkl " in column 2
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 12))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(12));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 13))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(13));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 14))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(14));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 15))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(15));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 12))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(12));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 13))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(13));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 14))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(14));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 15))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(15));
   cursor.MoveToNextForSameLayoutObject();
 
   // "mno " in column 3
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 16))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(16));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 17))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(17));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 18))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(18));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 19))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(19));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 16))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(16));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 17))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(17));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 18))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(18));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 19))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(19));
   cursor.MoveToNextForSameLayoutObject();
 
   // "pqr" in column 3
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 20))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(20));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 21))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(21));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 22))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(22));
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(text, 23))),
-      cursor, kAtTextOffset, absl::optional<unsigned>(23));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 20))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(20));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 21))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(21));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 22))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(22));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(text, 23))),
+             cursor, kAtTextOffset, absl::optional<unsigned>(23));
   cursor.MoveToNextForSameLayoutObject();
 }
 
 // http://crbug.com/1183269
-// See also CaretPositionTest.CaretPositionAtSoftLineWrap
-TEST_F(CaretPositionTest, SoftLineWrap) {
+// See also InlineCaretPositionTest.InlineCaretPositionAtSoftLineWrap
+TEST_F(InlineCaretPositionTest, SoftLineWrap) {
   LoadAhem();
   InsertStyleElement(
       "p { font: 10px/1 Ahem; }"
@@ -462,18 +465,18 @@ TEST_F(CaretPositionTest, SoftLineWrap) {
   // Note: upstream/downstream before "xyz" are in different line.
 
   ASSERT_EQ(TextOffsetRange(0, 3), cursor.Current().TextOffset());
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(before_xyz, TextAffinity::kUpstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(3));
 
   cursor.MoveToNextForSameLayoutObject();
   ASSERT_EQ(TextOffsetRange(4, 7), cursor.Current().TextOffset());
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(before_xyz, TextAffinity::kDownstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(4));
 }
 
-TEST_F(CaretPositionTest, ZeroWidthSpace) {
+TEST_F(InlineCaretPositionTest, ZeroWidthSpace) {
   LoadAhem();
   InsertStyleElement(
       "p { font: 10px/1 Ahem; }"
@@ -490,18 +493,18 @@ TEST_F(CaretPositionTest, ZeroWidthSpace) {
   cursor.MoveTo(*text.GetLayoutObject());
 
   ASSERT_EQ(TextOffsetRange(0, 5), cursor.Current().TextOffset());
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kUpstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(4));
 
   cursor.MoveToNextForSameLayoutObject();
   ASSERT_EQ(TextOffsetRange(5, 9), cursor.Current().TextOffset());
-  TEST_CARET(blink::ComputeCaretPosition(
+  TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(after_zws, TextAffinity::kDownstream)),
              cursor, kAtTextOffset, absl::optional<unsigned>(5));
 }
 
-TEST_F(CaretPositionTest, InlineBlockBeforeContent) {
+TEST_F(InlineCaretPositionTest, InlineBlockBeforeContent) {
   SetInlineFormattingContext(
       "t",
       "<style>span::before{display:inline-block; content:'foo'}</style>"
@@ -515,12 +518,12 @@ TEST_F(CaretPositionTest, InlineBlockBeforeContent) {
   const OffsetMapping& mapping = *OffsetMapping::GetFor(position);
   const unsigned text_offset = *mapping.GetTextContentOffset(position);
 
-  TEST_CARET(ComputeCaretPosition(text_offset, TextAffinity::kDownstream),
+  TEST_CARET(ComputeInlineCaretPosition(text_offset, TextAffinity::kDownstream),
              text_fragment, kAtTextOffset,
              absl::optional<unsigned>(text_offset));
 }
 
-TEST_F(CaretPositionTest, InlineBoxesLTR) {
+TEST_F(InlineCaretPositionTest, InlineBoxesLTR) {
   SetBodyInnerHTML(
       "<div dir=ltr>"
       "<bdo id=box1 dir=ltr>ABCD</bdo>"
@@ -536,16 +539,16 @@ TEST_F(CaretPositionTest, InlineBoxesLTR) {
   const Node& box1 = *GetElementById("box1")->firstChild();
   const Node& box2 = *GetElementById("box1")->firstChild();
 
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(box1, 4))),
-      FragmentOf(&box1), kAtTextOffset, absl::optional<unsigned>(5));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(box1, 4))),
+             FragmentOf(&box1), kAtTextOffset, absl::optional<unsigned>(5));
 
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(box2, 0))),
-      FragmentOf(&box2), kAtTextOffset, absl::optional<unsigned>(1));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(box2, 0))),
+             FragmentOf(&box2), kAtTextOffset, absl::optional<unsigned>(1));
 }
 
-TEST_F(CaretPositionTest, InlineBoxesRTL) {
+TEST_F(InlineCaretPositionTest, InlineBoxesRTL) {
   SetBodyInnerHTML(
       "<div dir=rtl>"
       "<bdo id=box1 dir=rtl>ABCD</bdo>"
@@ -561,27 +564,27 @@ TEST_F(CaretPositionTest, InlineBoxesRTL) {
   const Node& box1 = *GetElementById("box1")->firstChild();
   const Node& box2 = *GetElementById("box1")->firstChild();
 
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(box1, 4))),
-      FragmentOf(&box1), kAtTextOffset, absl::optional<unsigned>(5));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(box1, 4))),
+             FragmentOf(&box1), kAtTextOffset, absl::optional<unsigned>(5));
 
-  TEST_CARET(
-      blink::ComputeCaretPosition(PositionWithAffinity(Position(box2, 0))),
-      FragmentOf(&box2), kAtTextOffset, absl::optional<unsigned>(1));
+  TEST_CARET(blink::ComputeInlineCaretPosition(
+                 PositionWithAffinity(Position(box2, 0))),
+             FragmentOf(&box2), kAtTextOffset, absl::optional<unsigned>(1));
 }
 
 // https://crbug.com/1340236
-TEST_F(CaretPositionTest, BeforeOrAfterInlineAreaElement) {
+TEST_F(InlineCaretPositionTest, BeforeOrAfterInlineAreaElement) {
   SetBodyInnerHTML("<area id=area>");
 
   const Node& area = *GetElementById("area");
   const PositionWithAffinity position1(Position::AfterNode(area));
   // DCHECK failure or crash happens here.
-  blink::ComputeCaretPosition(position1);
+  blink::ComputeInlineCaretPosition(position1);
 
   const PositionWithAffinity position2(Position::BeforeNode(area));
   // DCHECK failure or crash happens here.
-  blink::ComputeCaretPosition(position2);
+  blink::ComputeInlineCaretPosition(position2);
 }
 
 }  // namespace blink

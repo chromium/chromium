@@ -7,8 +7,8 @@
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
@@ -1098,8 +1098,8 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());
   DCHECK_LE(text_offset, EndOffset());
-  const CaretPosition unadjusted_position{
-      cursor, CaretPositionType::kAtTextOffset, text_offset};
+  const InlineCaretPosition unadjusted_position{
+      cursor, InlineCaretPositionType::kAtTextOffset, text_offset};
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
     return unadjusted_position.ToPositionInDOMTreeWithAffinity();
   if (text_offset > StartOffset() && text_offset < EndOffset())

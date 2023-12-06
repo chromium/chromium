@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -174,7 +174,7 @@ absl::optional<TextDirection> DirectionAt(
     return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    const InlineCursor& cursor = ComputeCaretPosition(adjusted).cursor;
+    const InlineCursor& cursor = ComputeInlineCaretPosition(adjusted).cursor;
     if (cursor)
       return cursor.Current().ResolvedDirection();
     return absl::nullopt;
@@ -194,7 +194,7 @@ absl::optional<TextDirection> LineDirectionAt(
     return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    InlineCursor line = ComputeCaretPosition(adjusted).cursor;
+    InlineCursor line = ComputeInlineCaretPosition(adjusted).cursor;
     if (!line)
       return absl::nullopt;
     line.MoveToContainingLine();

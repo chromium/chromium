@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -36,8 +36,9 @@ TextDirection ResolvedDirection(const InlineCursor& cursor) {
   return line_box.Current().BaseDirection();
 }
 
-PhysicalRect ComputeLocalCaretRectByBoxSide(const InlineCursor& cursor,
-                                            CaretPositionType position_type) {
+PhysicalRect ComputeLocalCaretRectByBoxSide(
+    const InlineCursor& cursor,
+    InlineCaretPositionType position_type) {
   const bool is_horizontal = cursor.Current().Style().IsHorizontalWritingMode();
   InlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
@@ -64,7 +65,7 @@ PhysicalRect ComputeLocalCaretRectByBoxSide(const InlineCursor& cursor,
   if (!cursor.Current().IsAtomicInline()) {
     caret_left = is_horizontal ? offset.left : offset.top;
   }
-  if (is_ltr != (position_type == CaretPositionType::kBeforeBox)) {
+  if (is_ltr != (position_type == InlineCaretPositionType::kBeforeBox)) {
     if (is_horizontal)
       caret_left += cursor.Current().Size().width - caret_width;
     else
@@ -188,7 +189,8 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
 
 }  // namespace
 
-LocalCaretRect ComputeLocalCaretRect(const CaretPosition& caret_position) {
+LocalCaretRect ComputeLocalCaretRect(
+    const InlineCaretPosition& caret_position) {
   if (caret_position.IsNull())
     return LocalCaretRect();
 
@@ -197,14 +199,14 @@ LocalCaretRect ComputeLocalCaretRect(const CaretPosition& caret_position) {
   const PhysicalBoxFragment& container_fragment =
       caret_position.cursor.ContainerFragment();
   switch (caret_position.position_type) {
-    case CaretPositionType::kBeforeBox:
-    case CaretPositionType::kAfterBox: {
+    case InlineCaretPositionType::kBeforeBox:
+    case InlineCaretPositionType::kAfterBox: {
       DCHECK(!caret_position.cursor.Current().IsText());
       const PhysicalRect fragment_local_rect = ComputeLocalCaretRectByBoxSide(
           caret_position.cursor, caret_position.position_type);
       return {layout_object, fragment_local_rect, &container_fragment};
     }
-    case CaretPositionType::kAtTextOffset: {
+    case InlineCaretPositionType::kAtTextOffset: {
       DCHECK(caret_position.cursor.Current().IsText());
       DCHECK(caret_position.text_offset.has_value());
       const PhysicalRect caret_rect = ComputeLocalCaretRectAtTextOffset(
@@ -217,7 +219,8 @@ LocalCaretRect ComputeLocalCaretRect(const CaretPosition& caret_position) {
   return {layout_object, PhysicalRect()};
 }
 
-LocalCaretRect ComputeLocalSelectionRect(const CaretPosition& caret_position) {
+LocalCaretRect ComputeLocalSelectionRect(
+    const InlineCaretPosition& caret_position) {
   const LocalCaretRect caret_rect = ComputeLocalCaretRect(caret_position);
   if (!caret_rect.layout_object)
     return caret_rect;

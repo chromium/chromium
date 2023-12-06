@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
@@ -95,11 +95,12 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
 
-    const CaretPosition caret_position = ComputeCaretPosition(adjusted);
+    const InlineCaretPosition caret_position =
+        ComputeInlineCaretPosition(adjusted);
     if (caret_position.IsNull()) {
-      // TODO(crbug.com/947593): Support |ComputeCaretPosition()| on content
-      // hidden by 'text-overflow:ellipsis' so that we always have a non-null
-      // |caret_position| here.
+      // TODO(crbug.com/947593): Support |ComputeInlineCaretPosition()| on
+      // content hidden by 'text-overflow:ellipsis' so that we always have a
+      // non-null |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
     }
     InlineCursor line_box = caret_position.cursor;
@@ -133,11 +134,12 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
 
-    const CaretPosition caret_position = ComputeCaretPosition(adjusted);
+    const InlineCaretPosition caret_position =
+        ComputeInlineCaretPosition(adjusted);
     if (caret_position.IsNull()) {
-      // TODO(crbug.com/947593): Support |ComputeCaretPosition()| on content
-      // hidden by 'text-overflow:ellipsis' so that we always have a non-null
-      // |caret_position| here.
+      // TODO(crbug.com/947593): Support |ComputeInlineCaretPosition()| on
+      // content hidden by 'text-overflow:ellipsis' so that we always have a
+      // non-null |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
     }
     InlineCursor line_box = caret_position.cursor;

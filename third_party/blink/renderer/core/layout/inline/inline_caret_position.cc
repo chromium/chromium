@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -24,71 +24,78 @@ namespace {
 // - A TextAffinity
 //
 // The calculation iterates all inline fragments in the context, and tries to
-// compute an CaretPosition using the "caret resolution process" below:
+// compute an InlineCaretPosition using the "caret resolution process" below:
 //
 // The (offset, affinity) pair is compared against each inline fragment to see
 // if the corresponding caret should be placed in the fragment, using the
-// |TryResolveCaretPositionInXXX()| functions. These functions may return:
+// |TryResolveInlineCaretPositionInXXX()| functions. These functions may return:
 // - Failed, indicating that the caret must not be placed in the fragment;
 // - Resolved, indicating that the care should be placed in the fragment, and
-//   no further search is required. The result CaretPosition is returned
+//   no further search is required. The result InlineCaretPosition is returned
 //   together.
 // - FoundCandidate, indicating that the caret may be placed in the fragment;
 //   however, further search may find a better position. The candidate
-//   CaretPosition is also returned together.
+//   InlineCaretPosition is also returned together.
 
 enum class ResolutionType { kFailed, kFoundCandidate, kResolved };
-struct CaretPositionResolution {
+struct InlineCaretPositionResolution {
   STACK_ALLOCATED();
 
  public:
   ResolutionType type = ResolutionType::kFailed;
-  CaretPosition caret_position;
+  InlineCaretPosition caret_position;
 };
 
-bool CanResolveCaretPositionBeforeFragment(const InlineCursor& cursor,
-                                           TextAffinity affinity) {
-  if (affinity == TextAffinity::kDownstream)
+bool CanResolveInlineCaretPositionBeforeFragment(const InlineCursor& cursor,
+                                                 TextAffinity affinity) {
+  if (affinity == TextAffinity::kDownstream) {
     return true;
-  if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
+  }
+  if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled()) {
     return false;
+  }
   InlineCursor current_line(cursor);
   current_line.MoveToContainingLine();
   // A fragment after line wrap must be the first logical leaf in its line.
   InlineCursor first_logical_leaf(current_line);
   first_logical_leaf.MoveToFirstLogicalLeaf();
-  if (cursor != first_logical_leaf)
+  if (cursor != first_logical_leaf) {
     return true;
+  }
   InlineCursor last_line(current_line);
   last_line.MoveToPreviousLine();
   return !last_line || !last_line.Current().HasSoftWrapToNextLine();
 }
 
-bool CanResolveCaretPositionAfterFragment(const InlineCursor& cursor,
-                                          TextAffinity affinity) {
-  if (affinity == TextAffinity::kUpstream)
+bool CanResolveInlineCaretPositionAfterFragment(const InlineCursor& cursor,
+                                                TextAffinity affinity) {
+  if (affinity == TextAffinity::kUpstream) {
     return true;
-  if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
+  }
+  if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled()) {
     return false;
+  }
   InlineCursor current_line(cursor);
   current_line.MoveToContainingLine();
   // A fragment before line wrap must be the last logical leaf in its line.
   InlineCursor last_logical_leaf(current_line);
   last_logical_leaf.MoveToLastLogicalLeaf();
-  if (cursor != last_logical_leaf)
+  if (cursor != last_logical_leaf) {
     return true;
+  }
   return !current_line.Current().HasSoftWrapToNextLine();
 }
 
 // Returns a |kFailed| resolution if |offset| doesn't belong to the text
 // fragment. Otherwise, return either |kFoundCandidate| or |kResolved| depending
 // on |affinity|.
-CaretPositionResolution TryResolveCaretPositionInTextFragment(
+InlineCaretPositionResolution TryResolveInlineCaretPositionInTextFragment(
     const InlineCursor& cursor,
     unsigned offset,
     TextAffinity affinity) {
-  if (cursor.Current().IsGeneratedText())
-    return CaretPositionResolution();
+  if (cursor.Current().IsGeneratedText()) {
+    return InlineCaretPositionResolution();
+  }
 
   const OffsetMapping& mapping =
       *OffsetMapping::GetFor(cursor.Current().GetLayoutObject());
@@ -107,8 +114,9 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
   const unsigned start_offset = current_offset.start;
   const unsigned end_offset = current_offset.end;
   if (offset < start_offset &&
-      !mapping.HasBidiControlCharactersOnly(offset, start_offset))
-    return CaretPositionResolution();
+      !mapping.HasBidiControlCharactersOnly(offset, start_offset)) {
+    return InlineCaretPositionResolution();
+  }
   if (affinity == TextAffinity::kUpstream && offset == current_offset.end + 1 &&
       cursor.Current().Style().NeedsTrailingSpace() &&
       cursor.Current().Style().IsCollapsibleWhiteSpace(
@@ -116,27 +124,30 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
     // |offset| is after soft line wrap, e.g. "abc |xyz".
     // See http://crbug.com/1183269 and |AdjustForSoftLineWrap()|
     return {ResolutionType::kResolved,
-            {cursor, CaretPositionType::kAtTextOffset, offset - 1}};
+            {cursor, InlineCaretPositionType::kAtTextOffset, offset - 1}};
   }
   if (offset > current_offset.end &&
-      !mapping.HasBidiControlCharactersOnly(end_offset, offset))
-    return CaretPositionResolution();
+      !mapping.HasBidiControlCharactersOnly(end_offset, offset)) {
+    return InlineCaretPositionResolution();
+  }
 
   offset = std::max(offset, start_offset);
   offset = std::min(offset, end_offset);
-  CaretPosition candidate = {cursor, CaretPositionType::kAtTextOffset, offset};
+  InlineCaretPosition candidate = {
+      cursor, InlineCaretPositionType::kAtTextOffset, offset};
 
   // Offsets in the interior of a fragment can be resolved directly.
-  if (offset > start_offset && offset < end_offset)
+  if (offset > start_offset && offset < end_offset) {
     return {ResolutionType::kResolved, candidate};
+  }
 
   if (offset == start_offset &&
-      CanResolveCaretPositionBeforeFragment(cursor, affinity)) {
+      CanResolveInlineCaretPositionBeforeFragment(cursor, affinity)) {
     return {ResolutionType::kResolved, candidate};
   }
 
   if (offset == end_offset && !cursor.Current().IsLineBreak() &&
-      CanResolveCaretPositionAfterFragment(cursor, affinity)) {
+      CanResolveInlineCaretPositionAfterFragment(cursor, affinity)) {
     return {ResolutionType::kResolved, candidate};
   }
 
@@ -159,7 +170,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
 // Returns a |kFailed| resolution if |offset| doesn't belong to the atomic
 // inline box fragment. Otherwise, return either |kFoundCandidate| or
 // |kResolved| depending on |affinity|.
-CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
+InlineCaretPositionResolution TryResolveInlineCaretPositionByBoxFragmentSide(
     const InlineCursor& cursor,
     unsigned offset,
     TextAffinity affinity) {
@@ -168,49 +179,56 @@ CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
   if (!node || node->IsPseudoElement()) {
     // TODO(xiaochengh): This leads to false negatives for, e.g., RUBY, where an
     // anonymous wrapping inline block is created.
-    return CaretPositionResolution();
+    return InlineCaretPositionResolution();
   }
 
   const unsigned offset_before = GetTextOffsetBefore(*node);
   const unsigned offset_after = offset_before + 1;
   // TODO(xiaochengh): Ignore bidi control characters before & after the box.
-  if (offset != offset_before && offset != offset_after)
-    return CaretPositionResolution();
-  const CaretPositionType position_type = offset == offset_before
-                                              ? CaretPositionType::kBeforeBox
-                                              : CaretPositionType::kAfterBox;
-  CaretPosition candidate{cursor, position_type, absl::nullopt};
+  if (offset != offset_before && offset != offset_after) {
+    return InlineCaretPositionResolution();
+  }
+  const InlineCaretPositionType position_type =
+      offset == offset_before ? InlineCaretPositionType::kBeforeBox
+                              : InlineCaretPositionType::kAfterBox;
+  InlineCaretPosition candidate{cursor, position_type, absl::nullopt};
 
   if (offset == offset_before &&
-      CanResolveCaretPositionBeforeFragment(cursor, affinity)) {
+      CanResolveInlineCaretPositionBeforeFragment(cursor, affinity)) {
     return {ResolutionType::kResolved, candidate};
   }
 
   if (offset == offset_after &&
-      CanResolveCaretPositionAfterFragment(cursor, affinity)) {
+      CanResolveInlineCaretPositionAfterFragment(cursor, affinity)) {
     return {ResolutionType::kResolved, candidate};
   }
 
   return {ResolutionType::kFoundCandidate, candidate};
 }
 
-CaretPositionResolution TryResolveCaretPositionWithFragment(
+InlineCaretPositionResolution TryResolveInlineCaretPositionWithFragment(
     const InlineCursor& cursor,
     unsigned offset,
     TextAffinity affinity) {
-  if (cursor.Current().IsText())
-    return TryResolveCaretPositionInTextFragment(cursor, offset, affinity);
-  if (cursor.Current().IsAtomicInline())
-    return TryResolveCaretPositionByBoxFragmentSide(cursor, offset, affinity);
-  return CaretPositionResolution();
+  if (cursor.Current().IsText()) {
+    return TryResolveInlineCaretPositionInTextFragment(cursor, offset,
+                                                       affinity);
+  }
+  if (cursor.Current().IsAtomicInline()) {
+    return TryResolveInlineCaretPositionByBoxFragmentSide(cursor, offset,
+                                                          affinity);
+  }
+  return InlineCaretPositionResolution();
 }
 
-bool NeedsBidiAdjustment(const CaretPosition& caret_position) {
-  if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
+bool NeedsBidiAdjustment(const InlineCaretPosition& caret_position) {
+  if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled()) {
     return false;
-  if (caret_position.IsNull())
+  }
+  if (caret_position.IsNull()) {
     return false;
-  if (caret_position.position_type != CaretPositionType::kAtTextOffset) {
+  }
+  if (caret_position.position_type != InlineCaretPositionType::kAtTextOffset) {
     return true;
   }
   DCHECK(caret_position.text_offset.has_value());
@@ -226,33 +244,36 @@ bool NeedsBidiAdjustment(const CaretPosition& caret_position) {
          *caret_position.text_offset == end_offset;
 }
 
-CaretPosition AdjustCaretPositionForBidiText(
-    const CaretPosition& caret_position) {
-  if (!NeedsBidiAdjustment(caret_position))
+InlineCaretPosition AdjustInlineCaretPositionForBidiText(
+    const InlineCaretPosition& caret_position) {
+  if (!NeedsBidiAdjustment(caret_position)) {
     return caret_position;
-  return BidiAdjustment::AdjustForCaretPositionResolution(caret_position);
+  }
+  return BidiAdjustment::AdjustForInlineCaretPositionResolution(caret_position);
 }
 
-bool IsUpstreamAfterLineBreak(const CaretPosition& caret_position) {
-  if (caret_position.position_type != CaretPositionType::kAtTextOffset) {
+bool IsUpstreamAfterLineBreak(const InlineCaretPosition& caret_position) {
+  if (caret_position.position_type != InlineCaretPositionType::kAtTextOffset) {
     return false;
   }
 
   DCHECK(caret_position.cursor.IsNotNull());
   DCHECK(caret_position.text_offset.has_value());
 
-  if (!caret_position.cursor.Current().IsLineBreak())
+  if (!caret_position.cursor.Current().IsLineBreak()) {
     return false;
+  }
   return *caret_position.text_offset ==
          caret_position.cursor.Current().TextEndOffset();
 }
 
-CaretPosition BetterCandidateBetween(const CaretPosition& current,
-                                     const CaretPosition& other,
-                                     unsigned offset) {
+InlineCaretPosition BetterCandidateBetween(const InlineCaretPosition& current,
+                                           const InlineCaretPosition& other,
+                                           unsigned offset) {
   DCHECK(!other.IsNull());
-  if (current.IsNull())
+  if (current.IsNull()) {
     return other;
+  }
 
   // There shouldn't be too many cases where we have multiple candidates.
   // Make sure all of them are captured and handled here.
@@ -269,7 +290,7 @@ CaretPosition BetterCandidateBetween(const CaretPosition& current,
   return current;
 }
 
-CaretPosition ComputeCaretPositionAfterInline(
+InlineCaretPosition ComputeInlineCaretPositionAfterInline(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
   const LayoutInline& layout_inline =
@@ -279,38 +300,40 @@ CaretPosition ComputeCaretPositionAfterInline(
   cursor.MoveToIncludingCulledInline(layout_inline);
   // This DCHECK can fail with the <area> element.
   // DCHECK(cursor);
-  if (!cursor)
-    return CaretPosition();
+  if (!cursor) {
+    return InlineCaretPosition();
+  }
   InlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
 
-  if (IsLtr(line.Current().BaseDirection()))
+  if (IsLtr(line.Current().BaseDirection())) {
     cursor.MoveToVisualLastForSameLayoutObject();
-  else
+  } else {
     cursor.MoveToVisualFirstForSameLayoutObject();
+  }
 
   if (cursor.Current().IsText()) {
     const unsigned offset =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
             ? cursor.Current()->EndOffset()
             : cursor.Current()->StartOffset();
-    return AdjustCaretPositionForBidiText(
-        {cursor, CaretPositionType::kAtTextOffset, offset});
+    return AdjustInlineCaretPositionForBidiText(
+        {cursor, InlineCaretPositionType::kAtTextOffset, offset});
   }
 
   if (cursor.Current().IsAtomicInline()) {
-    const CaretPositionType type =
+    const InlineCaretPositionType type =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
-            ? CaretPositionType::kAfterBox
-            : CaretPositionType::kBeforeBox;
-    return AdjustCaretPositionForBidiText({cursor, type, absl::nullopt});
+            ? InlineCaretPositionType::kAfterBox
+            : InlineCaretPositionType::kBeforeBox;
+    return AdjustInlineCaretPositionForBidiText({cursor, type, absl::nullopt});
   }
 
-  return AdjustCaretPositionForBidiText(
-      {cursor, CaretPositionType::kAfterBox, absl::nullopt});
+  return AdjustInlineCaretPositionForBidiText(
+      {cursor, InlineCaretPositionType::kAfterBox, absl::nullopt});
 }
-CaretPosition ComputeCaretPositionBeforeInline(
+InlineCaretPosition ComputeInlineCaretPositionBeforeInline(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
   const LayoutInline& layout_inline =
@@ -320,57 +343,61 @@ CaretPosition ComputeCaretPositionBeforeInline(
   cursor.MoveToIncludingCulledInline(layout_inline);
   // This DCHECK can fail with the <area> element.
   // DCHECK(cursor);
-  if (!cursor)
-    return CaretPosition();
+  if (!cursor) {
+    return InlineCaretPosition();
+  }
   InlineCursor line = cursor;
   line.MoveToContainingLine();
   DCHECK(line);
 
-  if (IsLtr(line.Current().BaseDirection()))
+  if (IsLtr(line.Current().BaseDirection())) {
     cursor.MoveToVisualFirstForSameLayoutObject();
-  else
+  } else {
     cursor.MoveToVisualLastForSameLayoutObject();
+  }
 
   if (cursor.Current().IsText()) {
     const unsigned offset =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
             ? cursor.Current()->StartOffset()
             : cursor.Current()->EndOffset();
-    return AdjustCaretPositionForBidiText(
-        {cursor, CaretPositionType::kAtTextOffset, offset});
+    return AdjustInlineCaretPositionForBidiText(
+        {cursor, InlineCaretPositionType::kAtTextOffset, offset});
   }
 
   if (cursor.Current().IsAtomicInline()) {
-    const CaretPositionType type =
+    const InlineCaretPositionType type =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
-            ? CaretPositionType::kBeforeBox
-            : CaretPositionType::kAfterBox;
-    return AdjustCaretPositionForBidiText({cursor, type, absl::nullopt});
+            ? InlineCaretPositionType::kBeforeBox
+            : InlineCaretPositionType::kAfterBox;
+    return AdjustInlineCaretPositionForBidiText({cursor, type, absl::nullopt});
   }
 
-  return AdjustCaretPositionForBidiText(
-      {cursor, CaretPositionType::kBeforeBox, absl::nullopt});
+  return AdjustInlineCaretPositionForBidiText(
+      {cursor, InlineCaretPositionType::kBeforeBox, absl::nullopt});
 }
 
 }  // namespace
 
-// The main function for compute an CaretPosition. See the comments at the top
-// of this file for details.
-CaretPosition ComputeCaretPosition(const LayoutBlockFlow& context,
-                                   unsigned offset,
-                                   TextAffinity affinity,
-                                   const LayoutText* layout_text) {
+// The main function for compute an InlineCaretPosition. See the comments at the
+// top of this file for details.
+InlineCaretPosition ComputeInlineCaretPosition(const LayoutBlockFlow& context,
+                                               unsigned offset,
+                                               TextAffinity affinity,
+                                               const LayoutText* layout_text) {
   InlineCursor cursor(context);
 
-  CaretPosition candidate;
-  if (layout_text && layout_text->HasInlineFragments())
+  InlineCaretPosition candidate;
+  if (layout_text && layout_text->HasInlineFragments()) {
     cursor.MoveTo(*layout_text);
+  }
   for (; cursor; cursor.MoveToNextIncludingFragmentainer()) {
-    const CaretPositionResolution resolution =
-        TryResolveCaretPositionWithFragment(cursor, offset, affinity);
+    const InlineCaretPositionResolution resolution =
+        TryResolveInlineCaretPositionWithFragment(cursor, offset, affinity);
 
-    if (resolution.type == ResolutionType::kFailed)
+    if (resolution.type == ResolutionType::kFailed) {
       continue;
+    }
 
     // TODO(xiaochengh): Handle caret poisition in empty container (e.g. empty
     // line box).
@@ -378,8 +405,9 @@ CaretPosition ComputeCaretPosition(const LayoutBlockFlow& context,
     if (resolution.type == ResolutionType::kResolved) {
       candidate = resolution.caret_position;
       if (!layout_text ||
-          candidate.cursor.Current().GetLayoutObject() == layout_text)
-        return AdjustCaretPositionForBidiText(resolution.caret_position);
+          candidate.cursor.Current().GetLayoutObject() == layout_text) {
+        return AdjustInlineCaretPositionForBidiText(resolution.caret_position);
+      }
       continue;
     }
 
@@ -388,35 +416,39 @@ CaretPosition ComputeCaretPosition(const LayoutBlockFlow& context,
         BetterCandidateBetween(candidate, resolution.caret_position, offset);
   }
 
-  return AdjustCaretPositionForBidiText(candidate);
+  return AdjustInlineCaretPositionForBidiText(candidate);
 }
 
-CaretPosition ComputeCaretPosition(
+InlineCaretPosition ComputeInlineCaretPosition(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
 
-  if (position.IsNull())
-    return CaretPosition();
+  if (position.IsNull()) {
+    return InlineCaretPosition();
+  }
 
   const LayoutObject* layout_object = position.AnchorNode()->GetLayoutObject();
-  if (!layout_object || !layout_object->IsInLayoutNGInlineFormattingContext())
-    return CaretPosition();
+  if (!layout_object || !layout_object->IsInLayoutNGInlineFormattingContext()) {
+    return InlineCaretPosition();
+  }
 
   if (layout_object->IsLayoutInline()) {
-    if (position.IsBeforeAnchor())
-      return ComputeCaretPositionBeforeInline(position_with_affinity);
-    if (position.IsAfterAnchor())
-      return ComputeCaretPositionAfterInline(position_with_affinity);
+    if (position.IsBeforeAnchor()) {
+      return ComputeInlineCaretPositionBeforeInline(position_with_affinity);
+    }
+    if (position.IsAfterAnchor()) {
+      return ComputeInlineCaretPositionAfterInline(position_with_affinity);
+    }
     NOTREACHED() << "Caller should not pass a position inside inline: "
                  << position;
-    return CaretPosition();
+    return InlineCaretPosition();
   }
 
   LayoutBlockFlow* const context = NGInlineFormattingContextOf(position);
   if (!context) {
     // We reach here for empty <div>[1].
     // [1] third_party/blink/web_tests/editing/caret/caret-in-inline-block.html
-    return CaretPosition();
+    return InlineCaretPosition();
   }
 
   const OffsetMapping* const mapping = InlineNode::GetOffsetMapping(context);
@@ -424,7 +456,7 @@ CaretPosition ComputeCaretPosition(
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481
     NOTREACHED() << context;
-    return CaretPosition();
+    return InlineCaretPosition();
   }
   const absl::optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
@@ -435,7 +467,7 @@ CaretPosition ComputeCaretPosition(
     } else {
       // TODO(xiaochengh): Investigate if we reach here.
       NOTREACHED();
-      return CaretPosition();
+      return InlineCaretPosition();
     }
   }
 
@@ -456,30 +488,33 @@ CaretPosition ComputeCaretPosition(
               mapping->GetText()[offset - 1] == kZeroWidthSpaceCharacter
           ? offset - 1
           : offset;
-  return ComputeCaretPosition(*context, adjusted_offset, affinity, layout_text);
+  return ComputeInlineCaretPosition(*context, adjusted_offset, affinity,
+                                    layout_text);
 }
 
-Position CaretPosition::ToPositionInDOMTree() const {
+Position InlineCaretPosition::ToPositionInDOMTree() const {
   return ToPositionInDOMTreeWithAffinity().GetPosition();
 }
 
-PositionWithAffinity CaretPosition::ToPositionInDOMTreeWithAffinity() const {
-  if (IsNull())
+PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
+    const {
+  if (IsNull()) {
     return PositionWithAffinity();
+  }
   switch (position_type) {
-    case CaretPositionType::kBeforeBox:
+    case InlineCaretPositionType::kBeforeBox:
       if (const Node* node = cursor.Current().GetNode()) {
         return PositionWithAffinity(Position::BeforeNode(*node),
                                     TextAffinity::kDownstream);
       }
       return PositionWithAffinity();
-    case CaretPositionType::kAfterBox:
+    case InlineCaretPositionType::kAfterBox:
       if (const Node* node = cursor.Current().GetNode()) {
         return PositionWithAffinity(Position::AfterNode(*node),
                                     TextAffinity::kUpstreamIfPossible);
       }
       return PositionWithAffinity();
-    case CaretPositionType::kAtTextOffset:
+    case InlineCaretPositionType::kAtTextOffset:
       // In case of ::first-letter, |cursor.Current().GetNode()| is null.
       DCHECK(text_offset.has_value());
       const OffsetMapping* mapping =
@@ -498,8 +533,9 @@ PositionWithAffinity CaretPosition::ToPositionInDOMTreeWithAffinity() const {
       const Position position = affinity == TextAffinity::kDownstream
                                     ? mapping->GetLastPosition(*text_offset)
                                     : mapping->GetFirstPosition(*text_offset);
-      if (position.IsNull())
+      if (position.IsNull()) {
         return PositionWithAffinity();
+      }
       return PositionWithAffinity(position, affinity);
   }
   NOTREACHED();

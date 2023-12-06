@@ -7,8 +7,8 @@
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/caret_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
@@ -19,9 +19,9 @@ const LayoutBlockFlow* NGInlineFormattingContextOf(
   return NGInlineFormattingContextOf(ToPositionInDOMTree(position));
 }
 
-CaretPosition ComputeCaretPosition(
+InlineCaretPosition ComputeInlineCaretPosition(
     const PositionInFlatTreeWithAffinity& position) {
-  return ComputeCaretPosition(ToPositionInDOMTreeWithAffinity(position));
+  return ComputeInlineCaretPosition(ToPositionInDOMTreeWithAffinity(position));
 }
 
 bool InSameNGLineBox(const PositionInFlatTreeWithAffinity& position1,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_CARET_POSITION_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_CARET_POSITION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CARET_POSITION_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CARET_POSITION_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -15,7 +15,7 @@ namespace blink {
 
 class LayoutBlockFlow;
 
-// An CaretPosition indicates a caret position relative to an inline
+// An InlineCaretPosition indicates a caret position relative to an inline
 // NGPaintFragment:
 // - When |fragment| is box, |position_type| is either |kBeforeBox| or
 // |kAfterBox|, indicating either of the two caret positions by the box sides;
@@ -25,8 +25,8 @@ class LayoutBlockFlow;
 //
 // TODO(xiaochengh): Support "in empty container" caret type
 
-enum class CaretPositionType { kBeforeBox, kAfterBox, kAtTextOffset };
-struct CaretPosition {
+enum class InlineCaretPositionType { kBeforeBox, kAfterBox, kAtTextOffset };
+struct InlineCaretPosition {
   STACK_ALLOCATED();
 
  public:
@@ -39,26 +39,27 @@ struct CaretPosition {
   PositionWithAffinity ToPositionInDOMTreeWithAffinity() const;
 
   InlineCursor cursor;
-  CaretPositionType position_type;
+  InlineCaretPositionType position_type;
   absl::optional<unsigned> text_offset;
 };
 
 // Given an inline formatting context, a text offset in the context and a text
-// affinity, returns the corresponding CaretPosition, or null if not found.
-// Note that in many cases, null result indicates that we have reached an
+// affinity, returns the corresponding InlineCaretPosition, or null if not
+// found. Note that in many cases, null result indicates that we have reached an
 // unexpected case that is not properly handled.
 // When |layout_text| isn't |nullptr|, this functions returns position for
 // |layout_text| in multiple candidates.
-CORE_EXPORT CaretPosition
-ComputeCaretPosition(const LayoutBlockFlow& context,
-                     unsigned offset,
-                     TextAffinity affinity,
-                     const LayoutText* layout_text = nullptr);
+CORE_EXPORT InlineCaretPosition
+ComputeInlineCaretPosition(const LayoutBlockFlow& context,
+                           unsigned offset,
+                           TextAffinity affinity,
+                           const LayoutText* layout_text = nullptr);
 
 // Shorthand of the above when the input is a position instead of a
 // (context, offset) pair.
-CORE_EXPORT CaretPosition ComputeCaretPosition(const PositionWithAffinity&);
+CORE_EXPORT InlineCaretPosition
+ComputeInlineCaretPosition(const PositionWithAffinity&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_CARET_POSITION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_CARET_POSITION_H_
