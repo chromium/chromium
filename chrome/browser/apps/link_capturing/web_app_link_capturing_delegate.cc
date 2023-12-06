@@ -16,10 +16,10 @@
 
 namespace web_app {
 namespace {
-void LaunchApp(base::WeakPtr<Profile> profile,
-               const webapps::AppId& app_id,
-               const GURL& url,
-               base::OnceClosure callback) {
+void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
+                                 const webapps::AppId& app_id,
+                                 const GURL& url,
+                                 base::OnceClosure callback) {
   if (!profile) {
     std::move(callback).Run();
     return;
@@ -27,9 +27,27 @@ void LaunchApp(base::WeakPtr<Profile> profile,
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile.get());
   provider->scheduler().LaunchUrlInApp(
       app_id, url,
-      base::IgnoreArgs<base::WeakPtr<Browser>,
-                       base::WeakPtr<content::WebContents>,
-                       apps::LaunchContainer>(std::move(callback)));
+      base::BindOnce(
+          [](const webapps::AppId& app_id, base::WeakPtr<Profile> profile,
+             base::OnceClosure callback, base::WeakPtr<Browser> browser,
+             base::WeakPtr<content::WebContents> web_contents,
+             apps::LaunchContainer container) {
+            if (!profile) {
+              std::move(callback).Run();
+              return;
+            }
+
+            if (web_contents) {
+              WebAppProvider* provider =
+                  WebAppProvider::GetForWebApps(profile.get());
+              provider->ui_manager()
+                  .MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+                      web_contents.get(), profile.get(), app_id);
+            }
+
+            std::move(callback).Run();
+          },
+          app_id, profile, std::move(callback)));
 }
 }  // namespace
 
@@ -86,7 +104,8 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   // Note: The launch can occur after this object is destroyed, so bind to a
   // static function.
   // TODO(b/297256243): Investigate possible reparenting instead of relaunching.
-  return base::BindOnce(&LaunchApp, profile->GetWeakPtr(), app_id, url);
+  return base::BindOnce(&LaunchAppAndMaybeTriggerIPH, profile->GetWeakPtr(),
+                        app_id, url);
 }
 
 }  // namespace web_app

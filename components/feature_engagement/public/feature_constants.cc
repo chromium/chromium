@@ -707,9 +707,12 @@ BASE_FEATURE(kIPHScalableIphGamingFeature,
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// This can be enabled by default, as the DesktopPWAsLinkCapturing flag is
+// needed for the IPH linked to this feature to work, and use-cases to show
+// the IPH are guarded by that flag.
 BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch,
              "IPH_DesktopPWAsLinkCapturingLaunch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

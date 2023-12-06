@@ -5,9 +5,12 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/view_visible_in_active_widget_notifier.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -104,6 +107,17 @@ void ViewVisibleInActiveWidgetNotifier::RunCallback(bool conditions_met) {
     std::move(callback_).Run(conditions_met);
     delete this;
   }
+}
+
+void PostCallbackOnBrowserActivation(
+    const Browser* browser,
+    ui::ElementIdentifier id,
+    base::OnceCallback<void(bool)> view_and_element_activated_callback) {
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser)->GetWidget();
+  base::WeakPtr<ViewVisibleInActiveWidgetNotifier> notifier =
+      ViewVisibleInActiveWidgetNotifier::Create(
+          widget, id, std::move(view_and_element_activated_callback));
 }
 
 }  // namespace web_app

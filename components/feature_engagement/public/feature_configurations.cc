@@ -58,11 +58,10 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->trigger = EventConfig("desktop_pwa_launch_link_capturing",
-                                  Comparator(ANY, 0), 360, 360);
+                                  Comparator(ANY, 0), 0, 0);
     config->used = EventConfig("desktop_pwa_launch_link_capturing_used",
-                               Comparator(ANY, 0), 360, 360);
+                               Comparator(ANY, 0), 0, 0);
     return config;
   }
 
