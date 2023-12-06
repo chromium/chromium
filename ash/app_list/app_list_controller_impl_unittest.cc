@@ -1231,7 +1231,7 @@ TEST_P(AppListControllerWithAssistantTest,
   ToggleAssistantUiWithAccelerator();
   auto* app_list_controller = Shell::Get()->app_list_controller();
   EXPECT_TRUE(app_list_controller->IsVisible());
-  EXPECT_TRUE(AssistantUiController::Get()->HasShownOnboarding());
+  EXPECT_FALSE(AssistantUiController::Get()->HasShownOnboarding());
   EXPECT_EQ(AssistantVisibility::kVisible, GetAssistantVisibility());
 
   assistant_test_api_->input_text_field()->SetText(u"xyz");
