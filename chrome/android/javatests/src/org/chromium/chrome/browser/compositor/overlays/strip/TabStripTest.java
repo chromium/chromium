@@ -43,6 +43,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
@@ -425,7 +426,10 @@ public class TabStripTest {
     /** Tests that the tab menu is dismissed when the orientation changes and no tabs are closed. */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction({
+        UiRestriction.RESTRICTION_TYPE_TABLET,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     @Feature({"TabStrip"})
     public void testTabMenuDismissedOnOrientationChange() {
         // 1. Set orientation to portrait
