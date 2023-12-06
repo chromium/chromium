@@ -7953,40 +7953,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PLT.PT_RequestToStart" units="ms" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    This time is based on the NavigationTiming spec and is a more accurate
-    version of PLT.RequestToStart. Start: requestStart. Request:
-    navigationStart.
-  </summary>
-</histogram>
-
-<histogram name="PLT.PT_StartToCommit" units="ms" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    This time is based on the NavigationTiming spec and is a more accurate
-    version of PLT.StartToCommit. Start: requestStart. Commit: responseStart.
-  </summary>
-</histogram>
-
-<histogram name="PLT.PT_StartToFinish" units="ms" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    This time is based on the NavigationTiming spec and is a more accurate
-    version of PLT.StartToFinish. Start: requestStart. Finish: loadEventEnd.
-  </summary>
-</histogram>
-
-<histogram name="PLT.RequestToStart" units="ms" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Time from &quot;request&quot; to &quot;start.&quot; &quot;Request&quot;==
-    time when user requested document. &quot;Start&quot;== time when renderer
-    requested load of document, after any unload of last document.
-  </summary>
-</histogram>
-
 <histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
     expires_after="2024-06-11">
   <owner>dpad@google.com</owner>

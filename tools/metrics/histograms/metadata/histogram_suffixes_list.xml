@@ -1592,15 +1592,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="FirstUserAction.BackgroundTimeNewTask"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FromGWS" separator="_">
-  <suffix name="FromGWS"
-      label="Only page loads that are a result of a navigation from a web
-             search are considered."/>
-  <affected-histogram name="PLT.PT_RequestToStart"/>
-  <affected-histogram name="PLT.PT_StartToCommit"/>
-  <affected-histogram name="PLT.PT_StartToFinish"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GetAuthTokenType" separator=".">
   <suffix name="RemoteConsentApproved"
       label="The remote consent has been approved for the getAuthToken()
@@ -1641,92 +1632,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Android.GridTabSwitcher.Animation.TotalDuration"/>
   <affected-histogram name="GridTabSwitcher.FramePerSecond"/>
   <affected-histogram name="GridTabSwitcher.MaxFrameInterval"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="GWSChromeJointExperiment" separator="_">
-  <suffix name="Experiment1"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment2"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment3"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment4"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment5"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment6"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment7"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment8"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment9"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment10"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment11"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment12"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment13"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment14"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment15"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment16"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment17"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment18"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment19"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <suffix name="Experiment20"
-      label="Only page loads that are a result of a navigation from a web
-             search under a specific web search/Chrome joint experiment.
-             Unused at this moment."/>
-  <affected-histogram name="PLT.PT_RequestToStart_FromGWS"/>
-  <affected-histogram name="PLT.PT_StartToCommit_FromGWS"/>
-  <affected-histogram name="PLT.PT_StartToFinish_FromGWS"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="HardwareVerifierSupportCategory" separator=".">
