@@ -1482,6 +1482,8 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
   sources +=
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
+  sources += rebase_path(blink_core_tests_url, "", "url")
+  sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
 
   configs += [
     ":blink_core_pch",

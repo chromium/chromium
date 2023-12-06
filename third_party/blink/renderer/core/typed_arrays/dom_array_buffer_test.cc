@@ -8,11 +8,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 TEST(DOMArrayBufferTest, TransferredArrayBufferIsDetached) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   ArrayBufferContents src(10, 4, ArrayBufferContents::kNotShared,
                           ArrayBufferContents::kZeroInitialize);
@@ -25,6 +27,7 @@ TEST(DOMArrayBufferTest, TransferredArrayBufferIsDetached) {
 }
 
 TEST(DOMArrayBufferTest, TransferredEmptyArrayBufferIsDetached) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   ArrayBufferContents src;
   auto* buffer = DOMArrayBuffer::Create(src);
