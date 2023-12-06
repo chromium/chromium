@@ -68,8 +68,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void GetExtensionAppPermissionMessages(
       const std::string& app_id,
       GetExtensionAppPermissionMessagesCallback callback) override;
-  void SetPinned(const std::string& app_id,
-                 app_management::mojom::OptionalBool pinned) override;
+  void SetPinned(const std::string& app_id, bool pinned) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;

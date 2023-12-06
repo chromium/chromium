@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementPwaDetailViewElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {AppType, InstallReason, OptionalBool, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallReason, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -32,8 +32,8 @@ suite('<app-management-managed-apps>', () => {
         PermissionType.kCamera, TriState.kBlock, /*isManaged*/ true);
     const policyAppOptions = {
       type: AppType.kWeb,
-      isPinned: OptionalBool.kTrue,
-      isPolicyPinned: OptionalBool.kTrue,
+      isPinned: true,
+      isPolicyPinned: true,
       installReason: InstallReason.kPolicy,
       permissions: FakePageHandler.createWebPermissions(permissionOptions),
     };

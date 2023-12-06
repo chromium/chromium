@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AppManagementStore} from 'chrome://os-settings/os_settings.js';
-import {App, AppType, ExtensionAppPermissionMessage, OptionalBool, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, AppType, ExtensionAppPermissionMessage, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -80,8 +80,8 @@ export class FakePageHandler implements PageHandlerInterface {
       description: '',
       version: '5.1',
       size: '9.0MB',
-      isPinned: OptionalBool.kFalse,
-      isPolicyPinned: OptionalBool.kFalse,
+      isPinned: false,
+      isPolicyPinned: false,
       installReason: InstallReason.kUser,
       permissions: {},
       hideMoreSettings: false,
@@ -181,7 +181,7 @@ export class FakePageHandler implements PageHandlerInterface {
     this.apps_ = appList;
   }
 
-  setPinned(appId: string, isPinned: OptionalBool): void {
+  setPinned(appId: string, isPinned: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
     assert(app);
     const newApp = {...app, isPinned};

@@ -81,8 +81,6 @@
 #include "base/win/default_apps_util.h"
 #endif
 
-using app_management::mojom::OptionalBool;
-
 namespace {
 
 const char* kAppIdsWithHiddenMoreSettings[] = {
@@ -327,7 +325,7 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
     return;
   }
 
-  app->is_pinned = pinned ? OptionalBool::kTrue : OptionalBool::kFalse;
+  app->is_pinned = pinned;
 
   page_->OnAppChanged(std::move(app));
 }
@@ -422,7 +420,7 @@ void AppManagementPageHandler::GetExtensionAppPermissionMessages(
 }
 
 void AppManagementPageHandler::SetPinned(const std::string& app_id,
-                                         OptionalBool pinned) {
+                                         bool pinned) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   shelf_delegate_.SetPinned(app_id, pinned);
 #else
@@ -625,15 +623,11 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
   app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
-  // On other OS's, is_pinned defaults to OptionalBool::kUnknown, which is
-  // used to represent the fact that there is no concept of being pinned.
+  // On other OS's, is_pinned defaults to absl::nullopt, which is used to
+  // represent the fact that there is no concept of being pinned.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  app->is_pinned = shelf_delegate_.IsPinned(update.AppId())
-                       ? OptionalBool::kTrue
-                       : OptionalBool::kFalse;
-  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId())
-                              ? OptionalBool::kTrue
-                              : OptionalBool::kFalse;
+  app->is_pinned = shelf_delegate_.IsPinned(update.AppId());
+  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId());
   app->resize_locked = update.ResizeLocked().value_or(false);
   app->hide_resize_locked = !update.ResizeLocked().has_value();
 
