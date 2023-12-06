@@ -512,26 +512,6 @@ std::string_view ActionPersistenceToString(
   }
 }
 
-bool IsAutofillManuallyTriggered(AutofillSuggestionTriggerSource source) {
-  switch (source) {
-    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
-    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
-      return true;
-    case AutofillSuggestionTriggerSource::kUnspecified:
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kAndroidWebView:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
-      return false;
-  }
-}
-
 // Returns true if autocomplete=unrecognized (address) fields should receive
 // suggestions. On desktop, suggestion can only be triggered for them through
 // manual fallbacks. On mobile, it depends on

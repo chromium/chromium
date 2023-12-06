@@ -315,4 +315,13 @@ FormData CreateTestIbanFormData(std::string_view value) {
   return form;
 }
 
+FormData CreateTestUnclassifiedFormData() {
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+  form.fields = {
+      CreateTestFormField("unclassifiable label", "unclassifiable name",
+                          "unclassifiable value", FormControlType::kInputText)};
+  return form;
+}
+
 }  // namespace autofill::test

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -79,6 +80,21 @@ mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
 
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
+
+// Checks if the user triggered Autofill on a field manually through the Chrome
+// context menu.
+bool IsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered address Autofill on a field manually through the
+// Chrome context menu.
+bool IsAddressAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Checks if the user triggered payments Autofill on a field manually through
+// the Chrome context menu.
+bool IsPaymentsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source);
 
 }  // namespace autofill
 

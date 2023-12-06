@@ -106,9 +106,22 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
 
 // Returns the `PopupType` that would be shown if `field` inside `form` is
 // clicked.
-PopupType GetPopupTypeForField(BrowserAutofillManager& manager,
+PopupType GetPopupTypeForQuery(BrowserAutofillManager& manager,
                                const FormData& form,
-                               const FormFieldData& field) {
+                               const FormFieldData& field,
+                               AutofillSuggestionTriggerSource trigger_source) {
+  if (IsAddressAutofillManuallyTriggered(trigger_source)) {
+    return PopupType::kAddresses;
+  }
+  if (IsPaymentsAutofillManuallyTriggered(trigger_source)) {
+    return PopupType::kCreditCards;
+  }
+  // Users can trigger autofill by left clicking on the form field or through
+  // the Chrome context menu by right clicking the form field. The type of the
+  // popup is determined by the field type in the first case and by the user's
+  // action in the second case. That's why we must make sure that the Autofill
+  // was not triggered manually before starting looking at the field type.
+  CHECK(!IsAutofillManuallyTriggered(trigger_source));
   const AutofillField* const autofill_field =
       manager.GetAutofillField(form, field);
   if (!autofill_field) {
@@ -223,7 +236,8 @@ void AutofillExternalDelegate::OnQuery(
   trigger_source_ = trigger_source;
   should_show_scan_credit_card_ =
       manager_->ShouldShowScanCreditCard(query_form_, query_field_);
-  popup_type_ = GetPopupTypeForField(*manager_, query_form_, query_field_);
+  popup_type_ = GetPopupTypeForQuery(*manager_, query_form_, query_field_,
+                                     trigger_source);
   should_show_cards_from_account_option_ =
       manager_->ShouldShowCardsFromAccountOption(query_form_, query_field_);
 }

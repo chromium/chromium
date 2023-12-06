@@ -197,4 +197,22 @@ GURL StripAuthAndParams(const GURL& gurl) {
   return gurl.ReplaceComponents(rep);
 }
 
+bool IsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source) {
+  return IsAddressAutofillManuallyTriggered(trigger_source) ||
+         IsPaymentsAutofillManuallyTriggered(trigger_source);
+}
+
+bool IsAddressAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source) {
+  return trigger_source ==
+         AutofillSuggestionTriggerSource::kManualFallbackAddress;
+}
+
+bool IsPaymentsAutofillManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source) {
+  return trigger_source ==
+         AutofillSuggestionTriggerSource::kManualFallbackPayments;
+}
+
 }  // namespace autofill
