@@ -378836,7 +378836,7 @@
       []
      ],
      "permissions-policy-screen-wakelock.html": [
-      "b1866322518c5fba1de01a8e7509a2e0b9d49dd7",
+      "5c2562946b774f24c5c64279efb69d2106c87083",
       []
      ],
      "permissions-policy-serial-worker.html": [
@@ -393861,11 +393861,11 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "1c71129cd65b5a48b26cc4d89aea5c677c219689",
+     "58df4c9b596d20f09d845e3b74073547d61df21a",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "60d6a5bee217f04c5ff1bb964d2937f7eaa29c73",
+     "11172828b7e65ebe01b61f77a87494b174939f8d",
      []
     ],
     "leaky_relu.https.any.worker-expected.txt": [
@@ -393873,11 +393873,11 @@
      []
     ],
     "linear.https.any-expected.txt": [
-     "ddaabfc91606509e2305fc19e75a8b8b55c2f340",
+     "275c8a36a7971f2b5f7bdd3d83d99b8225f01616",
      []
     ],
     "linear.https.any.worker-expected.txt": [
-     "3ecd5bd0de86377a6934287f3598c450c2b9d9cc",
+     "ddcdaf8b8af74d2f44ccb4b8fe7ba63c56e27fab",
      []
     ],
     "matmul.https.any-expected.txt": [
@@ -523010,7 +523010,7 @@
         ]
        ],
        "navigate-to-unparseable-url.html": [
-        "f4e4e36f3725ceb6843113ed10d7a26605c24f22",
+        "d20a440d039a4ff9c08de1e796439ae09bfa3a5b",
         [
          null,
          {}
@@ -613576,10 +613576,12 @@
      ]
     ],
     "wakelock-disabled-by-permissions-policy.https.html": [
-     "fe4147b46cdd3949b25ce0f328a082979e635203",
+     "354b0a5e15469b497b2e8d4d8e93991f0305ca4a",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "wakelock-document-hidden.https.html": [
@@ -613592,17 +613594,21 @@
      ]
     ],
     "wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.html": [
-     "acfce43f96247949d7e4963970d0502d9c0b5d5d",
+     "8898a571e8fb699a01f35ba2fc28d089b56b0fb9",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "wakelock-enabled-by-permissions-policy-attribute.https.html": [
-     "c2be3a45080a36bd7d90244aa73aca0ee2190368",
+     "ea3ebf2449be56b2a042967e17a1a7ac74a0c8d5",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "wakelock-enabled-by-permissions-policy.https.html": [
@@ -613649,7 +613655,7 @@
      ]
     ],
     "wakelock-onrelease.https.html": [
-     "fb071b3763d6e1060e7b616da5102c3d463de163",
+     "896748411be22c8937421361b7dac95a36448f7a",
      [
       null,
       {
