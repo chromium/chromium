@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources>
     <dimen name="touch_to_fill_favicon_size">24dp</dimen>
     <dimen name="touch_to_fill_favicon_size_modern">32dp</dimen>
+    <dimen name="touch_to_fill_avatar">80dp</dimen>
     <dimen name="touch_to_fill_sheet_margin">16dp</dimen>
     <dimen name="touch_to_fill_sheet_bottom_padding_button">22dp</dimen>
     <dimen name="touch_to_fill_list_item_margin">24dp</dimen>

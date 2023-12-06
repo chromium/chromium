@@ -12,8 +12,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
@@ -26,6 +28,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.AVATAR;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
@@ -37,8 +40,11 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.Px;
+
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,6 +57,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
@@ -67,8 +74,11 @@ import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.ListModel;
@@ -123,6 +133,8 @@ public class TouchToFillControllerTest {
     private static final WebAuthnCredential DINO =
             new WebAuthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
+    private Bitmap mBitmapFromImageFetcher =
+            Bitmap.createBitmap(/* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888);
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -133,8 +145,9 @@ public class TouchToFillControllerTest {
     // Can't be local, as it has to be initialized by initMocks.
     @Captor private ArgumentCaptor<LargeIconBridge.LargeIconCallback> mCallbackArgumentCaptor;
 
+    private TestImageFetcher mImageFetcher = spy(new TestImageFetcher());
     private final Context mContext = ContextUtils.getApplicationContext();
-    private final TouchToFillMediator mMediator = new TouchToFillMediator();
+    private final TouchToFillMediator mMediator = new TouchToFillMediator(mImageFetcher);
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
 
@@ -401,6 +414,21 @@ public class TouchToFillControllerTest {
                                                 .touch_to_fill_sheet_shared_passwords_one_password_subtitle),
                                 "<b>Sender Name</b>",
                                 TEST_URL_FORMATTED)));
+        mImageFetcher.answerWithBitmap();
+
+        // This value is chosen randomly for the test
+        final int avatarImgeSizePx = 80;
+        Bitmap expectedBitmap =
+                ((BitmapDrawable)
+                                AvatarGenerator.makeRoundAvatar(
+                                        mContext.getResources(),
+                                        mBitmapFromImageFetcher,
+                                        avatarImgeSizePx))
+                        .getBitmap();
+
+        assertTrue(
+                expectedBitmap.sameAs(
+                        ((BitmapDrawable) itemList.get(0).model.get(AVATAR)).getBitmap()));
     }
 
     @Test
@@ -808,5 +836,38 @@ public class TouchToFillControllerTest {
                         .map((item) -> item.type)
                         .collect(Collectors.toList()),
                 not(hasItem(ItemType.FILL_BUTTON)));
+    }
+
+    class TestImageFetcher extends ImageFetcher.ImageFetcherForTesting {
+        private Callback<Bitmap> mCallback;
+
+        private void answerWithBitmap() {
+            mCallback.onResult(mBitmapFromImageFetcher);
+            mCallback = null;
+        }
+
+        private void answerWithNull() {
+            mCallback.onResult(null);
+            mCallback = null;
+        }
+
+        @Override
+        public void fetchImage(final ImageFetcher.Params params, Callback<Bitmap> callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public void fetchGif(final ImageFetcher.Params params, Callback<BaseGifImage> callback) {}
+
+        @Override
+        public void clear() {}
+
+        @Override
+        public @ImageFetcherConfig int getConfig() {
+            return ImageFetcherConfig.IN_MEMORY_ONLY;
+        }
+
+        @Override
+        public void destroy() {}
     }
 }

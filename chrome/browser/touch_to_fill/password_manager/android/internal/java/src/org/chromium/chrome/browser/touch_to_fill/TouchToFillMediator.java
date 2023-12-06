@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.AVATAR;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
@@ -27,9 +28,12 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
@@ -45,9 +49,11 @@ import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.ListModel;
@@ -77,6 +83,12 @@ class TouchToFillMediator {
     private List<Credential> mCredentials;
     private boolean mManagePasskeysHidesPasswords;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
+    private final ImageFetcher mImageFetcher;
+    private CallbackController mCallbackController;
+
+    public TouchToFillMediator(ImageFetcher imageFetcher) {
+        mImageFetcher = imageFetcher;
+    }
 
     void initialize(
             Context context,
@@ -110,26 +122,26 @@ class TouchToFillMediator {
         ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
-        sheetItems.add(
-                new ListItem(
-                        TouchToFillProperties.ItemType.HEADER,
-                        new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                .with(TITLE, getTitle(webAuthnCredentials, credentials))
-                                .with(
-                                        SUBTITLE,
-                                        getSubtitle(
-                                                url,
-                                                isOriginSecure,
-                                                triggerSubmission,
-                                                credentials))
-                                // TODO(crbug.com/1471888): Use the TTF resource provider instead
-                                // and use a
-                                // 32dp icon.
-                                .with(
-                                        IMAGE_DRAWABLE_ID,
-                                        PasswordManagerResourceProviderFactory.create()
-                                                .getPasswordManagerIcon())
-                                .build()));
+        final PropertyModel headerModel =
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(TITLE, getTitle(webAuthnCredentials, credentials))
+                        .with(
+                                SUBTITLE,
+                                getSubtitle(url, isOriginSecure, triggerSubmission, credentials))
+                        // TODO(crbug.com/1471888): Use the TTF resource provider instead
+                        // and use a 32dp icon.
+                        .with(
+                                IMAGE_DRAWABLE_ID,
+                                PasswordManagerResourceProviderFactory.create()
+                                        .getPasswordManagerIcon())
+                        .build();
+        sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER, headerModel));
+
+        if (getSharedPasswordsThatRequireNotification(credentials).size() > 0) {
+            // TODO(http://crbug.com/1504098): support the case when multiple senders have shared
+            // passwords.
+            requestSenderProfileImage(credentials.get(0).getSenderProfileImageUrl(), headerModel);
+        }
 
         int fillableItemsTotal = credentials.size() + webAuthnCredentials.size();
         int fillableItemPosition = 0;
@@ -323,6 +335,28 @@ class TouchToFillMediator {
                     setIcon.onLargeIconAvailable(icon, fallbackColor, hasDefaultColor, type);
                 };
         mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
+    }
+
+    private void requestSenderProfileImage(GURL url, PropertyModel headerModel) {
+        mCallbackController = new CallbackController();
+        final Callback<Bitmap> senderAvatarCallback =
+                mCallbackController.makeCancelable(
+                        (image) -> {
+                            if (image != null) {
+                                headerModel.set(
+                                        AVATAR,
+                                        AvatarGenerator.makeRoundAvatar(
+                                                mContext.getResources(),
+                                                image,
+                                                mContext.getResources()
+                                                        .getDimensionPixelSize(
+                                                                R.dimen.touch_to_fill_avatar)));
+                            }
+                        });
+
+        mImageFetcher.fetchImage(
+                ImageFetcher.Params.create(url, ImageFetcher.PASSWORD_BOTTOM_SHEET_CLIENT_NAME),
+                senderAvatarCallback);
     }
 
     private String getIconOrigin(String credentialOrigin, GURL siteUrl) {

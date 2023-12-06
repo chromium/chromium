@@ -21,6 +21,14 @@ found in the LICENSE file.
       android:layout_marginBottom="8dp"
       android:importantForAccessibility="no" />
 
+  <ImageView
+      android:id="@+id/touch_to_fill_sheet_header_avatar"
+      android:layout_width="@dimen/touch_to_fill_avatar"
+      android:layout_height="@dimen/touch_to_fill_avatar"
+      android:layout_gravity="center_horizontal"
+      android:visibility="gone"
+      android:importantForAccessibility="no" />
+
   <androidx.appcompat.widget.DialogTitle
       android:id="@+id/touch_to_fill_sheet_title"
       android:layout_width="wrap_content"

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -137,8 +138,10 @@ class TouchToFillProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("title");
         static final PropertyModel.ReadableObjectPropertyKey<String> SUBTITLE =
                 new PropertyModel.ReadableObjectPropertyKey<>("subtitle");
+        static final PropertyModel.WritableObjectPropertyKey<Drawable> AVATAR =
+                new PropertyModel.WritableObjectPropertyKey<>("avatar");
 
-        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE, SUBTITLE};
+        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE, SUBTITLE, AVATAR};
 
         private HeaderProperties() {}
     }

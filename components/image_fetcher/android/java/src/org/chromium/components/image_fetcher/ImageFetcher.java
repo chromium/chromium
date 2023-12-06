@@ -29,6 +29,7 @@ public abstract class ImageFetcher {
     public static final String OMNIBOX_UMA_CLIENT_NAME = "Omnibox";
     public static final String FEED_UMA_CLIENT_NAME = "Feed";
     public static final String NTP_ANIMATED_LOGO_UMA_CLIENT_NAME = "NewTabPageAnimatedLogo";
+    public static final String PASSWORD_BOTTOM_SHEET_CLIENT_NAME = "PasswordBottomSheet";
     public static final String PRICE_DROP_NOTIFICATION = "PriceDropNotification";
     public static final String POWER_BOOKMARKS_CLIENT_NAME = "PowerBookmarks";
     public static final String QUERY_TILE_UMA_CLIENT_NAME = "QueryTiles";

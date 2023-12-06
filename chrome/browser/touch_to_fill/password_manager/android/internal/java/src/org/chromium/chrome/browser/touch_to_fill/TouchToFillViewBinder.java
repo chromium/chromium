@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Fo
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.AVATAR;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
@@ -343,6 +344,14 @@ class TouchToFillViewBinder {
             sheetHeaderImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
+        } else if (key == AVATAR) {
+            ImageView sheetHeaderAvatar = view.findViewById(R.id.touch_to_fill_sheet_header_avatar);
+            if (model.get(AVATAR) == null) {
+                sheetHeaderAvatar.setVisibility(View.GONE);
+            } else {
+                sheetHeaderAvatar.setVisibility(View.VISIBLE);
+                sheetHeaderAvatar.setImageDrawable(model.get(AVATAR));
+            }
         } else {
             assert false : "Unhandled update to property:" + key;
         }

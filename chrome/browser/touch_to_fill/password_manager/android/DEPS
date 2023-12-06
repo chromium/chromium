@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcher.java",
+  "+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcherFactory.java",
+]
