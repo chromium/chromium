@@ -28,7 +28,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -180,7 +179,6 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
 #endif
   }
 
-  test::TaskEnvironment task_environment_;
   media::AudioParameters params_;
   MockProcessedCaptureCallback mock_capture_callback_;
 };
@@ -483,7 +481,6 @@ INSTANTIATE_TEST_SUITE_P(MediaStreamAudioProcessorMultichannelAffectedTests,
 // soon as 10 ms of audio has been received.
 TEST(MediaStreamAudioProcessorCallbackTest,
      ProcessedAudioIsDeliveredAsSoonAsPossibleWithShortBuffers) {
-  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
@@ -542,7 +539,6 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 // should trigger a comparable number of processing callbacks.
 TEST(MediaStreamAudioProcessorCallbackTest,
      ProcessedAudioIsDeliveredAsSoonAsPossibleWithLongBuffers) {
-  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
@@ -590,7 +586,6 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 // forwarded directly instead of collecting chunks of 10 ms.
 TEST(MediaStreamAudioProcessorCallbackTest,
      UnprocessedAudioIsDeliveredImmediatelyWithShortBuffers) {
-  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
@@ -636,7 +631,6 @@ TEST(MediaStreamAudioProcessorCallbackTest,
 // greater than 10 ms are delivered in chunks of 10 ms.
 TEST(MediaStreamAudioProcessorCallbackTest,
      UnprocessedAudioIsDeliveredImmediatelyWithLongBuffers) {
-  test::TaskEnvironment task_environment_;
   MockProcessedCaptureCallback mock_capture_callback;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
@@ -700,7 +694,6 @@ scoped_refptr<MediaStreamAudioProcessor> CreateAudioProcessorWithProperties(
 }  // namespace
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest, TrueByDefault) {
-  test::TaskEnvironment task_environment;
   blink::AudioProcessingProperties properties;
   EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
 
@@ -711,7 +704,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest, TrueByDefault) {
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenEverythingIsDisabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   EXPECT_FALSE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
@@ -723,7 +715,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenOnlyHardwareEffectsAreUsed) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.echo_cancellation_type =
@@ -748,7 +739,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 #endif  // BUILDFLAG(IS_IOS)
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenSoftwareEchoCancellationIsEnabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.echo_cancellation_type =
@@ -776,7 +766,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 #endif  // BUILDFLAG(IS_IOS)
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenStereoMirroringIsEnabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_audio_mirroring = true;
@@ -801,7 +790,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 #endif  // BUILDFLAG(IS_IOS)
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenGainControlIsEnabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_auto_gain_control = true;
@@ -833,7 +821,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 // test documents *current* behavior, not *desired* behavior.
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      MAYBE_TrueWhenExperimentalEchoCancellationIsEnabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_experimental_echo_cancellation = true;
@@ -856,7 +843,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenNoiseSuppressionIsEnabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_noise_suppression = true;
@@ -869,7 +855,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenExperimentalNoiseSuppression) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_experimental_noise_suppression = true;
@@ -882,7 +867,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenHighpassFilterIsEnabled) {
-  test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.goog_highpass_filter = true;

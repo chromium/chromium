@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -56,7 +55,6 @@ struct FilterTestParams {
 using FilterTest = TestWithParam<FilterTestParams>;
 
 TEST_P(FilterTest, CreatesFilterOperationsFromObject) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<ScriptValue> filters = {
       CHECK_DEREF(ParseFilter(scope, GetParam().filter)).GetAsObject()};
@@ -136,7 +134,6 @@ INSTANTIATE_TEST_SUITE_P(
 using FilterArrayTest = TestWithParam<FilterTestParams>;
 
 TEST_P(FilterArrayTest, CreatesFilterOperationsFromObjectArray) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   CHECK_DEREF(scope.GetExecutionContext());
   HeapVector<ScriptValue> filters =
@@ -221,7 +218,6 @@ INSTANTIATE_TEST_SUITE_P(
 using CSSFilterTest = TestWithParam<FilterTestParams>;
 
 TEST_P(CSSFilterTest, CreatesFilterOperationsFromCSSFilter) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
@@ -258,7 +254,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(CSSResolutionTest,
      CreatesFilterOperationsFromCSSFilterWithStyleResolution) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HTMLCanvasElement* canvas =
       MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
@@ -283,7 +278,6 @@ TEST(CSSResolutionTest,
 
 TEST(CSSResolutionTest,
      CreatesFilterOperationsFromCSSFilterWithNoStyleResolution) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
@@ -305,7 +299,6 @@ using FilterApiTest = TestWithParam<
     std::tuple<std::string, std::string, std::string, ExceptionCode>>;
 
 TEST_P(FilterApiTest, RaisesExceptionForInvalidType) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   const auto& [filter_name, param_key, param_value, expected_error] =
       GetParam();

@@ -11,14 +11,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 // The MediaTrackConstraintsTest group tests the types declared in
 // third_party/blink/renderer/platform/mediastream/media_constraints.h
 TEST(MediaTrackConstraintsTest, LongConstraint) {
-  test::TaskEnvironment task_environment;
   LongConstraint range_constraint(nullptr);
   range_constraint.SetMin(5);
   range_constraint.SetMax(6);
@@ -34,7 +32,6 @@ TEST(MediaTrackConstraintsTest, LongConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, DoubleConstraint) {
-  test::TaskEnvironment task_environment;
   DoubleConstraint range_constraint(nullptr);
   EXPECT_TRUE(range_constraint.IsUnconstrained());
   range_constraint.SetMin(5.0);
@@ -58,7 +55,6 @@ TEST(MediaTrackConstraintsTest, DoubleConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, BooleanConstraint) {
-  test::TaskEnvironment task_environment;
   BooleanConstraint bool_constraint(nullptr);
   EXPECT_TRUE(bool_constraint.IsUnconstrained());
   EXPECT_TRUE(bool_constraint.Matches(false));
@@ -73,7 +69,6 @@ TEST(MediaTrackConstraintsTest, BooleanConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintSetEmpty) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraintSetPlatform the_set;
   EXPECT_TRUE(the_set.IsUnconstrained());
   the_set.echo_cancellation.SetExact(false);
@@ -81,14 +76,12 @@ TEST(MediaTrackConstraintsTest, ConstraintSetEmpty) {
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintName) {
-  test::TaskEnvironment task_environment;
   const char* the_name = "name";
   BooleanConstraint bool_constraint(the_name);
   EXPECT_EQ(the_name, bool_constraint.GetName());
 }
 
 TEST(MediaTrackConstraintsTest, MandatoryChecks) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraintSetPlatform the_set;
   String found_name;
   EXPECT_FALSE(the_set.HasMandatory());
@@ -106,7 +99,6 @@ TEST(MediaTrackConstraintsTest, MandatoryChecks) {
 }
 
 TEST(MediaTrackConstraintsTest, SetToString) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraintSetPlatform the_set;
   EXPECT_EQ("", the_set.ToString());
   the_set.width.SetMax(240);
@@ -117,7 +109,6 @@ TEST(MediaTrackConstraintsTest, SetToString) {
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintsToString) {
-  test::TaskEnvironment task_environment;
   MediaConstraints the_constraints;
   MediaTrackConstraintSetPlatform basic;
   Vector<MediaTrackConstraintSetPlatform> advanced(static_cast<size_t>(1));
@@ -159,14 +150,12 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebConstraintsBasic) {
-  test::TaskEnvironment task_environment;
   MediaConstraints input;
   [[maybe_unused]] MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {
-  test::TaskEnvironment task_environment;
   MediaConstraints input;
 
   MediaTrackConstraintSetPlatform basic;
@@ -182,7 +171,6 @@ TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
-  test::TaskEnvironment task_environment;
   MediaConstraints input;
 
   Vector<String> buffer(static_cast<size_t>(2u));
@@ -204,7 +192,6 @@ TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   MediaConstraints output;
   auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>("foo");
@@ -219,7 +206,6 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   MediaConstraints output;
   ConstrainDOMStringParameters* subparameter =
@@ -245,7 +231,6 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>("foo");
   input->setFacingMode(parameter);
@@ -271,7 +256,6 @@ TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
 }
 
 TEST(MediaTrackConstraintsTest, AdvancedParameterFails) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   String str(
       std::string(media_constraints_impl::kMaxConstraintStringLength + 1, 'a')
@@ -291,7 +275,6 @@ TEST(MediaTrackConstraintsTest, AdvancedParameterFails) {
 }
 
 TEST(MediaTrackConstraintsTest, IdealAndExactConvertToNaked) {
-  test::TaskEnvironment task_environment;
   MediaConstraints input;
   Vector<String> buffer(static_cast<size_t>(1u));
 
@@ -336,7 +319,6 @@ TEST(MediaTrackConstraintsTest, IdealAndExactConvertToNaked) {
 }
 
 TEST(MediaTrackConstraintsTest, MaxLengthStringConstraintPasses) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   String str(
       std::string(media_constraints_impl::kMaxConstraintStringLength, 'a')
@@ -352,7 +334,6 @@ TEST(MediaTrackConstraintsTest, MaxLengthStringConstraintPasses) {
 }
 
 TEST(MediaTrackConstraintsTest, TooLongStringConstraintFails) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   String str(
       std::string(media_constraints_impl::kMaxConstraintStringLength + 1, 'a')
@@ -368,7 +349,6 @@ TEST(MediaTrackConstraintsTest, TooLongStringConstraintFails) {
 }
 
 TEST(MediaTrackConstraintsTest, MaxLengthStringSequenceConstraintPasses) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   Vector<String> sequence;
   sequence.Fill("a", media_constraints_impl::kMaxConstraintStringSeqLength);
@@ -384,7 +364,6 @@ TEST(MediaTrackConstraintsTest, MaxLengthStringSequenceConstraintPasses) {
 }
 
 TEST(MediaTrackConstraintsTest, TooLongStringSequenceConstraintFails) {
-  test::TaskEnvironment task_environment;
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
   Vector<String> sequence;
   sequence.Fill("a", media_constraints_impl::kMaxConstraintStringSeqLength + 1);

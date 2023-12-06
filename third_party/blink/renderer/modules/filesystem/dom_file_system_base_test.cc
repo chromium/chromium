@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -25,7 +24,6 @@ class DOMFileSystemBaseTest : public testing::Test {
   ~DOMFileSystemBaseTest() override { context_->NotifyContextDestroyed(); }
 
  protected:
-  test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> context_ =
       MakeGarbageCollected<NullExecutionContext>();
   String file_path_;

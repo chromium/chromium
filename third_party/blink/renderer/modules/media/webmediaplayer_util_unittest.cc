@@ -5,14 +5,12 @@
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 namespace blink {
 
 TEST(GetMediaURLScheme, MissingUnknown) {
-  test::TaskEnvironment task_environment;
   EXPECT_EQ(media::mojom::MediaURLScheme::kMissing,
             GetMediaURLScheme(WebURL()));
   EXPECT_EQ(media::mojom::MediaURLScheme::kUnknown,
@@ -20,7 +18,6 @@ TEST(GetMediaURLScheme, MissingUnknown) {
 }
 
 TEST(GetMediaURLScheme, WebCommon) {
-  test::TaskEnvironment task_environment;
   EXPECT_EQ(media::mojom::MediaURLScheme::kFtp,
             GetMediaURLScheme(KURL("ftp://abc.test")));
   EXPECT_EQ(media::mojom::MediaURLScheme::kHttp,
@@ -36,7 +33,6 @@ TEST(GetMediaURLScheme, WebCommon) {
 }
 
 TEST(GetMediaURLScheme, Files) {
-  test::TaskEnvironment task_environment;
   EXPECT_EQ(media::mojom::MediaURLScheme::kFile,
             GetMediaURLScheme(KURL("file://abc.test")));
   EXPECT_EQ(media::mojom::MediaURLScheme::kFileSystem,
@@ -44,7 +40,6 @@ TEST(GetMediaURLScheme, Files) {
 }
 
 TEST(GetMediaURLScheme, Android) {
-  test::TaskEnvironment task_environment;
   EXPECT_EQ(media::mojom::MediaURLScheme::kContent,
             GetMediaURLScheme(KURL("content://abc.123")));
   EXPECT_EQ(media::mojom::MediaURLScheme::kContentId,
@@ -52,7 +47,6 @@ TEST(GetMediaURLScheme, Android) {
 }
 
 TEST(GetMediaURLScheme, Chrome) {
-  test::TaskEnvironment task_environment;
   SchemeRegistry::RegisterURLSchemeAsWebUIForTest("chrome");
   CommonSchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
   EXPECT_EQ(media::mojom::MediaURLScheme::kChrome,

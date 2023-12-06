@@ -58,7 +58,6 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   };
 
   PageTestBase();
-  PageTestBase(base::test::TaskEnvironment::TimeSource time_source);
   ~PageTestBase() override;
 
   void EnableCompositing();
@@ -129,30 +128,18 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // the source file).
   virtual const base::TickClock* GetTickClock();
 
-  TestingPlatformSupport* platform() {
-    if (platform_with_scheduler_) {
-      return platform_with_scheduler_->GetTestingPlatformSupport();
-    }
-    DCHECK(platform_);
-    return platform_->GetTestingPlatformSupport();
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>&
+  platform() {
+    return *platform_;
   }
 
-  void FastForwardBy(base::TimeDelta);
-  void FastForwardUntilNoTasksRemain();
-  void AdvanceClock(base::TimeDelta);
-
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   // The order is important: |platform_| must be destroyed after
   // |dummy_page_holder_| is destroyed.
-  std::unique_ptr<ScopedTestingPlatformSupport<TestingPlatformSupport>>
-      platform_;
-  // TODO(crbug.com/1315595): Remove once TaskEnvironment becomes the default in
-  // blink_unittests_v2
   std::unique_ptr<
       ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>>
-      platform_with_scheduler_;
+      platform_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   bool enable_compositing_ = false;
 

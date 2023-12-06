@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -85,7 +84,6 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_;
   Persistent<MediaStreamComponent> component_;
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_ =
       MakeGarbageCollected<MockPeerConnectionDependencyFactory>();

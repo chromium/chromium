@@ -609,9 +609,6 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
 }
 
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
-  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
-    return;
-  }
   EXPECT_FALSE(dispatcher_host().listener());
 
   // Subscribe to the devicechange event.
@@ -671,9 +668,6 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
 }
 
 TEST_F(MediaDevicesTest, RemoveDeviceFiresDeviceChange) {
-  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
-    return;
-  }
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);
@@ -684,9 +678,6 @@ TEST_F(MediaDevicesTest, RemoveDeviceFiresDeviceChange) {
 }
 
 TEST_F(MediaDevicesTest, RenameDeviceIDFiresDeviceChange) {
-  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
-    return;
-  }
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);
@@ -697,9 +688,6 @@ TEST_F(MediaDevicesTest, RenameDeviceIDFiresDeviceChange) {
 }
 
 TEST_F(MediaDevicesTest, RenameLabelFiresDeviceChange) {
-  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
-    return;
-  }
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);

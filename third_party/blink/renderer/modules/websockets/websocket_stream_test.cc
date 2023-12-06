@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -103,7 +102,6 @@ class WebSocketStreamTest : public ::testing::Test {
   }
 
  private:
-  test::TaskEnvironment task_environment_;
   Persistent<MockWebSocketChannel> channel_;
 };
 

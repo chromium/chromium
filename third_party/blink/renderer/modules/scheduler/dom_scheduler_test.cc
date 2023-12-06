@@ -22,8 +22,6 @@ namespace blink {
 
 class DOMSchedulerTest : public PageTestBase {
  public:
-  DOMSchedulerTest()
-      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     EnablePlatform();
     PageTestBase::SetUp();

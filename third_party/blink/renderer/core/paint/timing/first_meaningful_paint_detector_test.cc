@@ -16,8 +16,9 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
  protected:
   void SetUp() override {
     EnablePlatform();
-    AdvanceClock(base::Seconds(1));
-    const base::TickClock* test_clock = platform()->GetTickClock();
+    platform()->AdvanceClock(base::Seconds(1));
+    const base::TickClock* test_clock =
+        platform()->test_task_runner()->GetMockTickClock();
     FirstMeaningfulPaintDetector::SetTickClockForTesting(test_clock);
     PageTestBase::SetUp();
     GetPaintTiming().SetTickClockForTesting(test_clock);
@@ -30,10 +31,10 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
     FirstMeaningfulPaintDetector::SetTickClockForTesting(clock);
   }
 
-  base::TimeTicks Now() { return platform()->NowTicks(); }
+  base::TimeTicks Now() { return platform()->test_task_runner()->NowTicks(); }
 
   base::TimeTicks AdvanceClockAndGetTime() {
-    AdvanceClock(base::Seconds(1));
+    platform()->AdvanceClock(base::Seconds(1));
     return Now();
   }
 
@@ -43,7 +44,7 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
   }
 
   void SimulateLayoutAndPaint(int new_elements) {
-    AdvanceClock(base::Milliseconds(1));
+    platform()->AdvanceClock(base::Milliseconds(1));
     StringBuilder builder;
     for (int i = 0; i < new_elements; i++)
       builder.Append("<span>a</span>");
@@ -60,18 +61,18 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
   void SimulateUserInput() { Detector().NotifyInputEvent(); }
 
   void ClearFirstPaintPresentationPromise() {
-    AdvanceClock(base::Milliseconds(1));
+    platform()->AdvanceClock(base::Milliseconds(1));
     GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint, Now());
   }
 
   void ClearFirstContentfulPaintPresentationPromise() {
-    AdvanceClock(base::Milliseconds(1));
+    platform()->AdvanceClock(base::Milliseconds(1));
     GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
                                             Now());
   }
 
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise() {
-    AdvanceClock(base::Milliseconds(1));
+    platform()->AdvanceClock(base::Milliseconds(1));
     ClearProvisionalFirstMeaningfulPaintPresentationPromise(Now());
   }
 
@@ -208,7 +209,7 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   SimulateLayoutAndPaint(10);
   EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
   ClearProvisionalFirstMeaningfulPaintPresentationPromise();
-  AdvanceClock(base::Milliseconds(1));
+  platform()->AdvanceClock(base::Milliseconds(1));
   MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateNetworkStable();
   EXPECT_GE(GetPaintTiming().FirstMeaningfulPaint(),
@@ -252,7 +253,7 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(1);
   EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
-  AdvanceClock(base::Milliseconds(1));
+  platform()->AdvanceClock(base::Milliseconds(1));
   SimulateLayoutAndPaint(10);
   EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 2U);
   // Having outstanding presentation promises should defer setting FMP.
@@ -276,7 +277,7 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   SimulateLayoutAndPaint(10);
   EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
   ClearProvisionalFirstMeaningfulPaintPresentationPromise();
-  AdvanceClock(base::Milliseconds(1));
+  platform()->AdvanceClock(base::Milliseconds(1));
   GetPaintTiming().MarkFirstContentfulPaint();
   // FCP > FMP candidate, but still waiting for FCP presentation.
   SimulateNetworkStable();
@@ -297,13 +298,13 @@ TEST_F(
 
   // Simulate network stable so provisional FMP will be set on next layout.
   base::TimeTicks pre_stable_timestamp = AdvanceClockAndGetTime();
-  AdvanceClock(base::Milliseconds(1));
+  platform()->AdvanceClock(base::Milliseconds(1));
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 
   // Force another FMP candidate while there is a pending presentation promise
   // and the FMP non-presentation timestamp is set.
-  AdvanceClock(base::Milliseconds(1));
+  platform()->AdvanceClock(base::Milliseconds(1));
   SimulateLayoutAndPaint(10);
   EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
 

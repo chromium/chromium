@@ -13,8 +13,6 @@
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -124,10 +122,7 @@ std::ostream& operator<<(std::ostream& out, DetailsTestCase test_case) {
 }
 
 class PaymentRequestDetailsTest
-    : public testing::TestWithParam<DetailsTestCase> {
- protected:
-  test::TaskEnvironment task_environment_;
-};
+    : public testing::TestWithParam<DetailsTestCase> {};
 
 TEST_P(PaymentRequestDetailsTest, ValidatesDetails) {
   PaymentRequestV8TestingScope scope;

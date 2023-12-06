@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 constexpr char kPresentationUrl[] = "https://example.com";
@@ -45,7 +44,6 @@ static PresentationRequest* MakeRequest(V8TestingScope* scope) {
 }  // namespace
 
 TEST(PresentationConnectionCallbacksTest, HandleSuccess) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   auto* resolver =
@@ -77,7 +75,6 @@ TEST(PresentationConnectionCallbacksTest, HandleSuccess) {
 }
 
 TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PresentationInfoPtr info = PresentationInfo::New(
@@ -114,7 +111,6 @@ TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
 }
 
 TEST(PresentationConnectionCallbacksTest, HandleError) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   auto* resolver =

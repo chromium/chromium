@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -50,7 +49,6 @@ class TransferredMediaStreamTrackTest : public testing::Test {
 
   void TearDown() override { WebHeap::CollectAllGarbageForTesting(); }
 
-  test::TaskEnvironment task_environment_;
   WeakPersistent<MockMediaStreamTrack> mock_impl_;
   Persistent<TransferredMediaStreamTrack> transferred_track_;
 };

@@ -15,7 +15,8 @@ class IdlenessDetectorTest : public PageTestBase {
  protected:
   void SetUp() override {
     EnablePlatform();
-    platform_time_ = platform()->NowTicks();
+    auto task_runner = platform()->test_task_runner();
+    platform_time_ = task_runner->NowTicks();
     DCHECK(!platform_time_.is_null());
     PageTestBase::SetUp();
   }
@@ -33,14 +34,14 @@ class IdlenessDetectorTest : public PageTestBase {
 
   void WillProcessTask(base::TimeTicks start_time) {
     DCHECK(start_time >= platform_time_);
-    AdvanceClock(start_time - platform_time_);
+    platform()->AdvanceClock(start_time - platform_time_);
     platform_time_ = start_time;
     Detector()->WillProcessTask(start_time);
   }
 
   void DidProcessTask(base::TimeTicks start_time, base::TimeTicks end_time) {
     DCHECK(start_time < end_time);
-    AdvanceClock(end_time - start_time);
+    platform()->AdvanceClock(end_time - start_time);
     platform_time_ = end_time;
     Detector()->DidProcessTask(start_time, end_time);
   }
@@ -85,7 +86,7 @@ TEST_F(IdlenessDetectorTest, NetworkQuietWatchdogTimerFired) {
   WillProcessTask(SecondsToTimeTicks(1));
   DidProcessTask(SecondsToTimeTicks(1), SecondsToTimeTicks(1.01));
 
-  FastForwardBy(base::Seconds(3));
+  platform()->RunForPeriodSeconds(3);
   EXPECT_FALSE(IsNetworkQuietTimerActive());
   EXPECT_TRUE(HadNetworkQuiet());
 }

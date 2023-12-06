@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -22,7 +21,6 @@ namespace blink {
 namespace {
 
 TEST(PresentationAvailabilityTest, NoPageVisibilityChangeAfterDetach) {
-  test::TaskEnvironment task_environment;
   Page* page = nullptr;
   {
     V8TestingScope scope;

@@ -58,7 +58,6 @@ component("gpu") {
     "//media/mojo/*",
     "//remoting/codec:encoder",
     "//third_party/blink/renderer/modules:unit_tests",
-    "//third_party/blink/renderer/modules:unit_tests_v2",
     "//ui/gl:gl_unittests",
 
     # TODO(crbug.com/1184041): Remove //remoting/host:common when the usage is removed.

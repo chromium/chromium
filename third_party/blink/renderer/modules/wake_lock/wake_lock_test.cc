@@ -14,14 +14,11 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 TEST(WakeLockTest, RequestWakeLockGranted) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -49,8 +46,6 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
 }
 
 TEST(WakeLockTest, RequestWakeLockDenied) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -85,8 +80,6 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
 
 // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-full-activity
 TEST(WakeLockTest, LossOfDocumentActivity) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -131,8 +124,6 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
 
 // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
 TEST(WakeLockTest, PageVisibilityHidden) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
@@ -184,9 +175,6 @@ TEST(WakeLockTest, PageVisibilityHidden) {
 
 // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
 TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
-
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 

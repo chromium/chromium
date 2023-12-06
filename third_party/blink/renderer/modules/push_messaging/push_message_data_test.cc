@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -14,7 +13,6 @@ namespace {
 const char kPushMessageData[] = "Push Message valid data string.";
 
 TEST(PushMessageDataTest, ValidPayload) {
-  test::TaskEnvironment task_environment;
   // Create a WebString with the test message, then create a
   // PushMessageData from that.
   WebString s(blink::WebString::FromUTF8(kPushMessageData));
@@ -25,7 +23,6 @@ TEST(PushMessageDataTest, ValidPayload) {
 }
 
 TEST(PushMessageDataTest, ValidEmptyPayload) {
-  test::TaskEnvironment task_environment;
   // Create a WebString with a valid but empty test message, then create
   // a PushMessageData from that.
   WebString s("");
@@ -36,7 +33,6 @@ TEST(PushMessageDataTest, ValidEmptyPayload) {
 }
 
 TEST(PushMessageDataTest, NullPayload) {
-  test::TaskEnvironment task_environment;
   // Create a PushMessageData with a null payload.
   WebString s;
   PushMessageData* data = PushMessageData::Create(s);

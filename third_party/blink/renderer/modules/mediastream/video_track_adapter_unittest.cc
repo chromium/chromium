@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
@@ -43,7 +42,6 @@ using ::testing::NiceMock;
 // Test that cropped sizes with zero-area input frames are correctly computed.
 // Aspect ratio limits should be ignored.
 TEST(VideoTrackAdapterTest, ZeroInputArea) {
-  test::TaskEnvironment task_environment;
   const int kMaxWidth = 640;
   const int kMaxHeight = 480;
   const int kSmallDimension = 300;
@@ -99,7 +97,6 @@ TEST(VideoTrackAdapterTest, ZeroInputArea) {
 // Test that zero-size cropped areas are correctly computed. Aspect ratio
 // limits should be ignored.
 TEST(VideoTrackAdapterTest, ZeroOutputArea) {
-  test::TaskEnvironment task_environment;
   const double kMinAspectRatio = 0.1;
   const double kMaxAspectRatio = 2.0;
   const int kInputWidth = 640;
@@ -166,7 +163,6 @@ TEST(VideoTrackAdapterTest, ZeroOutputArea) {
 
 // Test that large frames are handled correctly.
 TEST(VideoTrackAdapterTest, LargeFrames) {
-  test::TaskEnvironment task_environment;
   const int kInputWidth = std::numeric_limits<int>::max();
   const int kInputHeight = std::numeric_limits<int>::max();
   const int kMaxWidth = std::numeric_limits<int>::max();
@@ -201,7 +197,6 @@ TEST(VideoTrackAdapterTest, LargeFrames) {
 // Test that regular frames are not rescaled if settings do not specify a target
 // resolution.
 TEST(VideoTrackAdapterTest, NoRescaling) {
-  test::TaskEnvironment task_environment;
   const int kInputWidth = 640;
   const int kInputHeight = 480;
 
@@ -437,7 +432,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
-  test::TaskEnvironment task_environment_;
   base::Thread testing_render_thread_;
   std::unique_ptr<NiceMock<MockMediaStreamVideoSource>> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
@@ -818,7 +812,6 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
-  test::TaskEnvironment task_environment_;
   base::Thread render_thread_;
   WebMediaStreamSource web_source_;
   raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;

@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -131,7 +130,6 @@ BlinkCloneableMessage MakeNullMessage() {
 }
 
 TEST(BroadcastChannelTest, DispatchMessageEvent) {
-  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   ExecutionContext* execution_context = holder.GetFrame().DomWindow();
   auto* tester =
@@ -147,7 +145,6 @@ TEST(BroadcastChannelTest, DispatchMessageEvent) {
 }
 
 TEST(BroadcastChannelTest, AgentClusterLockedMatch) {
-  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   ExecutionContext* execution_context = holder.GetFrame().DomWindow();
   auto* tester =
@@ -166,7 +163,6 @@ TEST(BroadcastChannelTest, AgentClusterLockedMatch) {
 }
 
 TEST(BroadcastChannelTest, AgentClusterLockedMismatch) {
-  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   ExecutionContext* execution_context = holder.GetFrame().DomWindow();
   auto* tester =
@@ -185,7 +181,6 @@ TEST(BroadcastChannelTest, AgentClusterLockedMismatch) {
 }
 
 TEST(BroadcastChannelTest, MessageCannotDeserialize) {
-  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   LocalDOMWindow* window = holder.GetFrame().DomWindow();
   auto* tester = MakeGarbageCollected<BroadcastChannelTester>(window);
@@ -210,7 +205,6 @@ TEST(BroadcastChannelTest, MessageCannotDeserialize) {
 }
 
 TEST(BroadcastChannelTest, OutgoingMessagesMarkedWithAgentClusterId) {
-  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   ExecutionContext* execution_context = holder.GetFrame().DomWindow();
   ScriptState* script_state = ToScriptStateForMainWorld(&holder.GetFrame());
@@ -243,7 +237,6 @@ TEST(BroadcastChannelTest, OutgoingMessagesMarkedWithAgentClusterId) {
 #endif
 
 TEST(BroadcastChannelTest, MAYBE_OutgoingAgentClusterLockedMessage) {
-  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   ExecutionContext* execution_context = holder.GetFrame().DomWindow();
   ScriptState* script_state = ToScriptStateForMainWorld(&holder.GetFrame());

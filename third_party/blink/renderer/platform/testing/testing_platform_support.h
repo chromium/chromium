@@ -75,10 +75,6 @@ class TestingPlatformSupport : public Platform {
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);
 
-  virtual const base::Clock* GetClock() const;
-  virtual const base::TickClock* GetTickClock() const;
-  virtual base::TimeTicks NowTicks() const;
-
   // Overrides the handling of GetInterface on the platform's associated
   // interface provider.
   class ScopedOverrideMojoInterface {

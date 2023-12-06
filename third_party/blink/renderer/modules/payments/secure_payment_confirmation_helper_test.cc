@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_helper.h"
 
 #include "base/time/time.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -18,7 +17,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
@@ -57,7 +57,6 @@ static AuthenticationExtensionsPRFInputs* CreatePrfInputs(
 // Test that parsing a valid SecurePaymentConfirmationRequest succeeds and
 // correctly copies the fields to the mojo output.
 TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -87,7 +86,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
 
 // Test that optional fields are correctly copied to the mojo output.
 TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -111,7 +109,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // credentialIds field throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIdCredentialIds) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -132,7 +129,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIdCredentialIds) {
 // Test that parsing a SecurePaymentConfirmationRequest with an empty ID inside
 // the credentialIds field throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyId) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -166,7 +162,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyId) {
 // Test that parsing a SecurePaymentConfirmationRequest with an empty challenge
 // throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyChallenge) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -192,7 +187,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyChallenge) {
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // displayName throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyDisplayName) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -212,7 +206,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyDisplayName) {
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // icon throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIcon) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -232,7 +225,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyIcon) {
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid icon URL
 // throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidIcon) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -252,7 +244,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidIcon) {
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid RP
 // domain throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidRpId) {
-  test::TaskEnvironment task_environment;
   const String invalid_cases[] = {
       "",
       "domains cannot have spaces.example",
@@ -285,7 +276,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidRpId) {
 // or payeeOrigin throws.
 TEST(SecurePaymentConfirmationHelperTest,
      Parse_MissingPayeeNameAndPayeeOrigin) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope,
@@ -308,7 +298,6 @@ TEST(SecurePaymentConfirmationHelperTest,
 // Test that parsing a SecurePaymentConfirmationRequest with an empty payeeName
 // throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyPayeeName) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -328,7 +317,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyPayeeName) {
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
 // payeeOrigin throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyPayeeOrigin) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -348,7 +336,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyPayeeOrigin) {
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid
 // payeeOrigin URL throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidPayeeOrigin) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -368,7 +355,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidPayeeOrigin) {
 // Test that parsing a SecurePaymentConfirmationRequest with a non-https
 // payeeOrigin URL throws.
 TEST(SecurePaymentConfirmationHelperTest, Parse_NotHttpsPayeeOrigin) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
@@ -388,7 +374,6 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_NotHttpsPayeeOrigin) {
 // Test that extensions are converted while parsing a
 // SecurePaymentConfirmationRequest.
 TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);

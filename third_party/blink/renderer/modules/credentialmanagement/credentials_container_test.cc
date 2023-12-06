@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -145,7 +144,6 @@ class MockPublicKeyCredential : public Credential {
 // a persistent handle to a ScriptPromiseResolver instance. Ensure that if the
 // document is destroyed while a call is pending, it can still be freed up.
 TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
-  test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   GCObjectLivenessObserver<Document> document_observer;
 
@@ -171,7 +169,6 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
 // should be left unresolved, and there should be no crashes.
 TEST(CredentialsContainerTest,
      PendingGetRequest_NoCrashOnResponseAfterDocumentShutdown) {
-  test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
@@ -189,7 +186,6 @@ TEST(CredentialsContainerTest,
 }
 
 TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
-  test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 

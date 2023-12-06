@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using ::testing::_;
@@ -102,7 +101,6 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     RunIOUntilIdle();
   }
 
-  test::TaskEnvironment task_environment_;
   scoped_refptr<MediaStreamVideoRendererSink> media_stream_video_renderer_sink_;
 
  protected:

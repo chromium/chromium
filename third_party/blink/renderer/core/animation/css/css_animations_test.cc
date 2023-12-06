@@ -34,27 +34,30 @@ namespace blink {
 
 class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
  public:
-  CSSAnimationsTest()
-      : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  CSSAnimationsTest() {
     EnablePlatform();
     platform()->SetThreadedAnimationEnabled(true);
   }
 
   void SetUp() override {
+    platform()->SetAutoAdvanceNowToPendingTasks(false);
     EnableCompositing();
     RenderingTest::SetUp();
     SetUpAnimationClockForTesting();
     // Advance timer to document time.
-    AdvanceClock(
-        base::Seconds(GetDocument().Timeline().ZeroTime().InSecondsF()));
+    platform()->AdvanceClockSeconds(
+        GetDocument().Timeline().ZeroTime().InSecondsF());
   }
 
   void TearDown() override {
+    platform()->SetAutoAdvanceNowToPendingTasks(true);
     platform()->RunUntilIdle();
     RenderingTest::TearDown();
   }
 
-  base::TimeTicks TimelineTime() { return platform()->NowTicks(); }
+  base::TimeTicks TimelineTime() {
+    return platform()->test_task_runner()->NowTicks();
+  }
 
   void StartAnimationOnCompositor(Animation* animation) {
     static_cast<CompositorAnimationDelegate*>(animation)
@@ -63,9 +66,10 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
   }
 
   void AdvanceClockSeconds(double seconds) {
-    PageTestBase::AdvanceClock(base::Seconds(seconds));
+    platform()->AdvanceClockSeconds(seconds);
     platform()->RunUntilIdle();
-    GetPage().Animator().ServiceScriptedAnimations(platform()->NowTicks());
+    GetPage().Animator().ServiceScriptedAnimations(
+        platform()->test_task_runner()->NowTicks());
   }
 
   double GetContrastFilterAmount(Element* element) {

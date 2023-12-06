@@ -89,10 +89,6 @@ void RenderingTestChromeClient::InjectScrollbarGestureScroll(
   local_frame.GetEventHandler().HandleGestureEvent(*gesture_event);
 }
 
-RenderingTest::RenderingTest(
-    base::test::TaskEnvironment::TimeSource time_source)
-    : PageTestBase(time_source) {}
-
 RenderingTestChromeClient& RenderingTest::GetChromeClient() const {
   DEFINE_STATIC_LOCAL(Persistent<RenderingTestChromeClient>, client,
                       (MakeGarbageCollected<RenderingTestChromeClient>()));

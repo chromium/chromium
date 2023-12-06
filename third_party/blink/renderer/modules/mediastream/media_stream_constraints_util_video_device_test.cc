@@ -15,7 +15,6 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -219,7 +218,6 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     };
   }
 
-  test::TaskEnvironment task_environment_;
   VideoDeviceCaptureCapabilities capabilities_;
   raw_ptr<const VideoInputDeviceCapabilities, ExperimentalRenderer>
       default_device_;

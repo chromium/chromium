@@ -6,14 +6,12 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 namespace {
 
 TEST(QuotaTrackerTest, UpdateAndGetSizeAndSpaceAvailable) {
-  test::TaskEnvironment task_environment;
   QuotaTracker& tracker = QuotaTracker::Instance();
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromString("file:///a/b/c");
@@ -32,7 +30,6 @@ TEST(QuotaTrackerTest, UpdateAndGetSizeAndSpaceAvailable) {
 }
 
 TEST(QuotaTrackerTest, LocalAccessBlocked) {
-  test::TaskEnvironment task_environment;
   QuotaTracker& tracker = QuotaTracker::Instance();
   scoped_refptr<SecurityOrigin> origin =
       SecurityOrigin::CreateFromString("file:///a/b/c");

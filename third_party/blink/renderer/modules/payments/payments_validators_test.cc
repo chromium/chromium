@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -34,8 +33,6 @@ class PaymentsCurrencyValidatorTest
     : public testing::TestWithParam<CurrencyCodeTestCase> {
  public:
   v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
-
-  test::TaskEnvironment task_environment_;
 };
 
 const char* LongString2049() {
@@ -98,7 +95,6 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
 class PaymentsAmountValidatorTest : public testing::TestWithParam<TestCase> {
  public:
   v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
-  test::TaskEnvironment task_environment_;
 };
 
 TEST_P(PaymentsAmountValidatorTest, IsValidAmountFormat) {
@@ -147,7 +143,6 @@ INSTANTIATE_TEST_SUITE_P(
 class PaymentsRegionValidatorTest : public testing::TestWithParam<TestCase> {
  public:
   v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
-  test::TaskEnvironment task_environment_;
 };
 
 TEST_P(PaymentsRegionValidatorTest, IsValidCountryCodeFormat) {
@@ -186,8 +181,6 @@ class PaymentsShippingAddressValidatorTest
     : public testing::TestWithParam<ShippingAddressTestCase> {
  public:
   v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
-
-  test::TaskEnvironment task_environment_;
 };
 
 TEST_P(PaymentsShippingAddressValidatorTest, IsValidShippingAddress) {
@@ -356,7 +349,6 @@ INSTANTIATE_TEST_SUITE_P(
 class PaymentMethodValidatorTest : public testing::Test {
  public:
   v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
-  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(PaymentMethodValidatorTest, IsValidPaymentMethod) {

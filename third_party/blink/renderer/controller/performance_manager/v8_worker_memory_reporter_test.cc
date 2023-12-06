@@ -184,8 +184,8 @@ TEST_F(V8WorkerMemoryReporterTestWithMockPlatform, GetMemoryUsageTimeout) {
   V8WorkerMemoryReporter::GetMemoryUsage(
       WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)),
       v8::MeasureMemoryExecution::kEager);
-  FastForwardBy(
-      base::Seconds(V8WorkerMemoryReporter::kTimeout.InSeconds() + 1));
+  platform()->RunForPeriodSeconds(V8WorkerMemoryReporter::kTimeout.InSeconds() +
+                                  1);
   EXPECT_TRUE(checker.IsCalled());
 }
 

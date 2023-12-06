@@ -8,7 +8,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -21,7 +20,6 @@ using blink::mojom::blink::ManifestImageResource;
 using blink::mojom::blink::ManifestImageResourcePtr;
 
 TEST(ImageResourceConverter, EmptySizesTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -35,7 +33,6 @@ TEST(ImageResourceConverter, EmptySizesTest) {
 }
 
 TEST(ImageResourceConverter, ValidSizesTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -79,7 +76,6 @@ TEST(ImageResourceConverter, ValidSizesTest) {
 }
 
 TEST(ImageResourceConverter, InvalidSizesTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -101,7 +97,6 @@ TEST(ImageResourceConverter, InvalidSizesTest) {
 }
 
 TEST(ImageResourceConverter, EmptyPurposeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -115,7 +110,6 @@ TEST(ImageResourceConverter, EmptyPurposeTest) {
 }
 
 TEST(ImageResourceConverter, ValidPurposeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -143,7 +137,6 @@ TEST(ImageResourceConverter, ValidPurposeTest) {
 }
 
 TEST(ImageResourceConverter, InvalidPurposeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -153,7 +146,6 @@ TEST(ImageResourceConverter, InvalidPurposeTest) {
 }
 
 TEST(ImageResourceConverter, EmptyTypeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -167,7 +159,6 @@ TEST(ImageResourceConverter, EmptyTypeTest) {
 }
 
 TEST(ImageResourceConverter, InvalidTypeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -177,7 +168,6 @@ TEST(ImageResourceConverter, InvalidTypeTest) {
 }
 
 TEST(ImageResourceConverter, ValidTypeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
 
@@ -187,7 +177,6 @@ TEST(ImageResourceConverter, ValidTypeTest) {
 }
 
 TEST(ImageResourceConverter, ExampleValueTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* resource =
       blink::ManifestImageResource::Create();
   resource->setSrc("http://example.com/lolcat.jpg");
@@ -205,7 +194,6 @@ TEST(ImageResourceConverter, ExampleValueTest) {
 }
 
 TEST(ImageResourceConverter, BlinkToMojoTypeTest) {
-  blink::test::TaskEnvironment task_environment;
   blink::ManifestImageResource* icon = blink::ManifestImageResource::Create();
   icon->setSrc("http://example.com/lolcat.jpg");
   icon->setPurpose("MONOCHROME");

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/handwriting/handwriting_type_converters.h"
-
 #include <string>
 
 #include "base/time/time.h"
@@ -23,7 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_segment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_stroke.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_stroke.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/modules/handwriting/handwriting_type_converters.h"
 
 namespace blink {
 
@@ -36,7 +34,6 @@ using handwriting::mojom::blink::HandwritingSegmentPtr;
 using handwriting::mojom::blink::HandwritingStrokePtr;
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojo) {
-  test::TaskEnvironment task_environment;
   auto* idl_point = blink::HandwritingPoint::Create();
 
   idl_point->setX(1.1);
@@ -52,7 +49,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojo) {
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojoWithoutT) {
-  test::TaskEnvironment task_environment;
   auto* idl_point = blink::HandwritingPoint::Create();
 
   idl_point->setX(3.1);
@@ -66,7 +62,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojoWithoutT) {
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingModelConstraintToMojo) {
-  test::TaskEnvironment task_environment;
   auto* idl_constraint = blink::HandwritingModelConstraint::Create();
   idl_constraint->setLanguages({"en", "zh"});
 
@@ -79,7 +74,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingModelConstraintToMojo) {
 }
 
 TEST(HandwritingTypeConvertersTest, IdlEmptyHandwritingModelConstraintToMojo) {
-  test::TaskEnvironment task_environment;
   auto* idl_constraint = blink::HandwritingModelConstraint::Create();
 
   auto mojo_constraint =
@@ -89,7 +83,6 @@ TEST(HandwritingTypeConvertersTest, IdlEmptyHandwritingModelConstraintToMojo) {
 }
 
 TEST(HandwritingTypeConvertersTest, IdlNullHandwritingModelConstraintToMojo) {
-  test::TaskEnvironment task_environment;
   HandwritingModelConstraint* idl_constraint = nullptr;
   auto mojo_constraint =
       mojo::ConvertTo<HandwritingModelConstraintPtr>(idl_constraint);
@@ -97,7 +90,6 @@ TEST(HandwritingTypeConvertersTest, IdlNullHandwritingModelConstraintToMojo) {
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingStrokeToMojo) {
-  test::TaskEnvironment task_environment;
   auto* idl_stroke = blink::HandwritingStroke::Create();
   auto* idl_point1 = blink::HandwritingPoint::Create();
   idl_point1->setX(0.1);
@@ -122,7 +114,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingStrokeToMojo) {
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToMojo) {
-  test::TaskEnvironment task_environment;
   auto* idl_hints = blink::HandwritingHints::Create();
   idl_hints->setRecognitionType("recognition type");
   idl_hints->setInputType("input type");
@@ -141,7 +132,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToMojo) {
 // Tests whether the default values of `HandwritingHints` can be correctly
 // converted, especially for `textContext` which is not-set by default.
 TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToDefaultValue) {
-  test::TaskEnvironment task_environment;
   auto* idl_hints = blink::HandwritingHints::Create();
 
   auto mojo_hints = mojo::ConvertTo<HandwritingHintsPtr>(idl_hints);
@@ -153,7 +143,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToDefaultValue) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_point = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point->location = gfx::PointF(0.3, 0.4);
   mojo_point->t = base::Milliseconds(123);
@@ -167,7 +156,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdl) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdlWithoutT) {
-  test::TaskEnvironment task_environment;
   auto mojo_point = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point->location = gfx::PointF(0.3, 0.4);
 
@@ -179,7 +167,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdlWithoutT) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_stroke = handwriting::mojom::blink::HandwritingStroke::New();
   auto mojo_point1 = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point1->location = gfx::PointF(2.1, 2.2);
@@ -202,7 +189,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingDrawingSegmentIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_drawing_segment =
       handwriting::mojom::blink::HandwritingDrawingSegment::New();
   mojo_drawing_segment->stroke_index = 123u;
@@ -217,7 +203,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingDrawingSegmentIdl) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingSegmentIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_drawing_segment =
       handwriting::mojom::blink::HandwritingDrawingSegment::New();
   mojo_drawing_segment->stroke_index = 321u;
@@ -240,7 +225,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingSegmentIdl) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingPredictionIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_drawing_segment =
       handwriting::mojom::blink::HandwritingDrawingSegment::New();
   mojo_drawing_segment->stroke_index = 456u;
@@ -280,7 +264,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingPredictionIdl) {
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingRecognizerQueryResultIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_query_result =
       handwriting::mojom::blink::QueryHandwritingRecognizerResult::New();
   mojo_query_result->text_alternatives = true;

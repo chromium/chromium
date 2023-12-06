@@ -16,7 +16,6 @@
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -92,7 +91,6 @@ class AudioRendererSinkCacheTest : public testing::Test {
     cache_->DropSinksForFrame(frame_token);
   }
 
-  test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   // Ensure all things run on |task_runner_| instead of the default task
   // runner initialized by blink_unittests.

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -88,7 +87,6 @@ CreatePaymentRequestEventDataForTest() {
 }
 
 TEST(PaymentEventDataConversionTest, ToCanMakePaymentEventData) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::CanMakePaymentEventDataPtr event_data =
       CreateCanMakePaymentEventDataForTest();
@@ -119,7 +117,6 @@ TEST(PaymentEventDataConversionTest, ToCanMakePaymentEventData) {
 }
 
 TEST(PaymentEventDataConversionTest, ToPaymentRequestEventData) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentRequestEventDataPtr event_data =
       CreatePaymentRequestEventDataForTest();

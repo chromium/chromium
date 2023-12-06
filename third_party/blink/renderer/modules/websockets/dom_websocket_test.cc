@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -105,7 +104,6 @@ class DOMWebSocketTestScope {
 };
 
 TEST(DOMWebSocketTest, connectToBadURL) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   websocket_scope.Socket().Connect("xxx", Vector<String>(),
@@ -119,7 +117,6 @@ TEST(DOMWebSocketTest, connectToBadURL) {
 }
 
 TEST(DOMWebSocketTest, connectToNonWsURL) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   websocket_scope.Socket().Connect("http://example.com/", Vector<String>(),
@@ -135,7 +132,6 @@ TEST(DOMWebSocketTest, connectToNonWsURL) {
 }
 
 TEST(DOMWebSocketTest, connectToURLHavingFragmentIdentifier) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   websocket_scope.Socket().Connect("ws://example.com/#fragment",
@@ -154,7 +150,6 @@ TEST(DOMWebSocketTest, connectToURLHavingFragmentIdentifier) {
 // FIXME: Add a test for Content Security Policy.
 
 TEST(DOMWebSocketTest, invalidSubprotocols) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Vector<String> subprotocols;
@@ -173,7 +168,6 @@ TEST(DOMWebSocketTest, invalidSubprotocols) {
 }
 
 TEST(DOMWebSocketTest, insecureRequestsUpgrade) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -194,7 +188,6 @@ TEST(DOMWebSocketTest, insecureRequestsUpgrade) {
 }
 
 TEST(DOMWebSocketTest, insecureRequestsUpgradePotentiallyTrustworthy) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -215,7 +208,6 @@ TEST(DOMWebSocketTest, insecureRequestsUpgradePotentiallyTrustworthy) {
 }
 
 TEST(DOMWebSocketTest, insecureRequestsDoNotUpgrade) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -236,7 +228,6 @@ TEST(DOMWebSocketTest, insecureRequestsDoNotUpgrade) {
 }
 
 TEST(DOMWebSocketTest, channelConnectSuccess) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Vector<String> subprotocols;
@@ -260,7 +251,6 @@ TEST(DOMWebSocketTest, channelConnectSuccess) {
 }
 
 TEST(DOMWebSocketTest, channelConnectFail) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Vector<String> subprotocols;
@@ -290,7 +280,6 @@ TEST(DOMWebSocketTest, channelConnectFail) {
 }
 
 TEST(DOMWebSocketTest, connectSuccess) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Vector<String> subprotocols;
@@ -316,7 +305,6 @@ TEST(DOMWebSocketTest, connectSuccess) {
 }
 
 TEST(DOMWebSocketTest, didClose) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -339,7 +327,6 @@ TEST(DOMWebSocketTest, didClose) {
 }
 
 TEST(DOMWebSocketTest, maximumReasonSize) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -366,7 +353,6 @@ TEST(DOMWebSocketTest, maximumReasonSize) {
 }
 
 TEST(DOMWebSocketTest, reasonSizeExceeding) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -396,7 +382,6 @@ TEST(DOMWebSocketTest, reasonSizeExceeding) {
 }
 
 TEST(DOMWebSocketTest, closeWhenConnecting) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -423,7 +408,6 @@ TEST(DOMWebSocketTest, closeWhenConnecting) {
 }
 
 TEST(DOMWebSocketTest, close) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -448,7 +432,6 @@ TEST(DOMWebSocketTest, close) {
 }
 
 TEST(DOMWebSocketTest, closeWithoutReason) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -473,7 +456,6 @@ TEST(DOMWebSocketTest, closeWithoutReason) {
 }
 
 TEST(DOMWebSocketTest, closeWithoutCodeAndReason) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -498,7 +480,6 @@ TEST(DOMWebSocketTest, closeWithoutCodeAndReason) {
 }
 
 TEST(DOMWebSocketTest, closeWhenClosing) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -527,7 +508,6 @@ TEST(DOMWebSocketTest, closeWhenClosing) {
 }
 
 TEST(DOMWebSocketTest, closeWhenClosed) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -560,7 +540,6 @@ TEST(DOMWebSocketTest, closeWhenClosed) {
 }
 
 TEST(DOMWebSocketTest, sendStringWhenConnecting) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -584,7 +563,6 @@ TEST(DOMWebSocketTest, sendStringWhenConnecting) {
 }
 
 TEST(DOMWebSocketTest, sendStringWhenClosing) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Checkpoint checkpoint;
@@ -610,7 +588,6 @@ TEST(DOMWebSocketTest, sendStringWhenClosing) {
 }
 
 TEST(DOMWebSocketTest, sendStringWhenClosed) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Checkpoint checkpoint;
@@ -638,7 +615,6 @@ TEST(DOMWebSocketTest, sendStringWhenClosed) {
 }
 
 TEST(DOMWebSocketTest, sendStringSuccess) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -661,7 +637,6 @@ TEST(DOMWebSocketTest, sendStringSuccess) {
 }
 
 TEST(DOMWebSocketTest, sendNonLatin1String) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -686,7 +661,6 @@ TEST(DOMWebSocketTest, sendNonLatin1String) {
 }
 
 TEST(DOMWebSocketTest, sendArrayBufferWhenConnecting) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   DOMArrayBufferView* view = DOMUint8Array::Create(8);
@@ -711,7 +685,6 @@ TEST(DOMWebSocketTest, sendArrayBufferWhenConnecting) {
 }
 
 TEST(DOMWebSocketTest, sendArrayBufferWhenClosing) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   DOMArrayBufferView* view = DOMUint8Array::Create(8);
@@ -737,7 +710,6 @@ TEST(DOMWebSocketTest, sendArrayBufferWhenClosing) {
 }
 
 TEST(DOMWebSocketTest, sendArrayBufferWhenClosed) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   Checkpoint checkpoint;
@@ -766,7 +738,6 @@ TEST(DOMWebSocketTest, sendArrayBufferWhenClosed) {
 }
 
 TEST(DOMWebSocketTest, sendArrayBufferSuccess) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   DOMArrayBufferView* view = DOMUint8Array::Create(8);
@@ -793,7 +764,6 @@ TEST(DOMWebSocketTest, sendArrayBufferSuccess) {
 // We can't create a Blob because the blob registration cannot be mocked yet.
 
 TEST(DOMWebSocketTest, bufferedAmountUpdated) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -824,7 +794,6 @@ TEST(DOMWebSocketTest, bufferedAmountUpdated) {
 }
 
 TEST(DOMWebSocketTest, bufferedAmountUpdatedBeforeOnMessage) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   {
@@ -860,7 +829,6 @@ TEST(DOMWebSocketTest, bufferedAmountUpdatedBeforeOnMessage) {
 // FIXME: We should add tests for data receiving.
 
 TEST(DOMWebSocketTest, binaryType) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
   EXPECT_EQ("blob", websocket_scope.Socket().binaryType());
@@ -876,9 +844,7 @@ TEST(DOMWebSocketTest, binaryType) {
 
 // FIXME: We should add tests for suspend / resume.
 
-class DOMWebSocketValidClosingTest : public testing::TestWithParam<uint16_t> {
-  test::TaskEnvironment task_environment_;
-};
+class DOMWebSocketValidClosingTest : public testing::TestWithParam<uint16_t> {};
 
 TEST_P(DOMWebSocketValidClosingTest, test) {
   V8TestingScope scope;
@@ -907,9 +873,7 @@ INSTANTIATE_TEST_SUITE_P(DOMWebSocketValidClosing,
                          testing::Values(1000, 3000, 3001, 4998, 4999));
 
 class DOMWebSocketInvalidClosingCodeTest
-    : public testing::TestWithParam<uint16_t> {
-  test::TaskEnvironment task_environment_;
-};
+    : public testing::TestWithParam<uint16_t> {};
 
 TEST_P(DOMWebSocketInvalidClosingCodeTest, test) {
   V8TestingScope scope;
@@ -944,7 +908,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(0, 1, 998, 999, 1001, 2999, 5000, 9999, 65535));
 
 TEST(DOMWebSocketTest, GCWhileEventsPending) {
-  test::TaskEnvironment task_environment_;
   V8TestingScope scope;
   {
     DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());

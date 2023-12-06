@@ -49,7 +49,6 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
     return scheduler_.get();
   }
   v8::Isolate* isolate() { return main_thread_isolate_->isolate(); }
-  void ResetIsolate() { main_thread_isolate_.reset(); }
 
   static bool IsSupported();
   static void SetSupported(bool is_supported);

@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -16,7 +15,6 @@ class CanvasPathTest : public testing::Test {
   ~CanvasPathTest() override { context_->NotifyContextDestroyed(); }
 
  protected:
-  test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> context_ =
       MakeGarbageCollected<NullExecutionContext>();
 };

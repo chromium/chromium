@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -58,7 +57,6 @@ class MockPaymentStateResolver final
 };
 
 TEST(PaymentResponseTest, DataCopiedOver) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();
@@ -137,7 +135,6 @@ static v8::Local<v8::ArrayBuffer> GetArrayBuffer(V8TestingScope& scope,
 }
 
 TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
-  test::TaskEnvironment task_environment;
   ScopedSecurePaymentConfirmationExtensionsForTest extensions_flag(true);
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
@@ -181,7 +178,6 @@ TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
 
 TEST(PaymentResponseTest,
      PaymentResponseDetailsWithUnexpectedJSONFormatString) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();
@@ -206,7 +202,6 @@ TEST(PaymentResponseTest,
 }
 
 TEST(PaymentResponseTest, PaymentResponseDetailsRetrunsTheSameObject) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();
@@ -222,7 +217,6 @@ TEST(PaymentResponseTest, PaymentResponseDetailsRetrunsTheSameObject) {
 }
 
 TEST(PaymentResponseTest, CompleteCalledWithSuccess) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();
@@ -243,7 +237,6 @@ TEST(PaymentResponseTest, CompleteCalledWithSuccess) {
 }
 
 TEST(PaymentResponseTest, CompleteCalledWithFailure) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();
@@ -263,7 +256,6 @@ TEST(PaymentResponseTest, CompleteCalledWithFailure) {
 }
 
 TEST(PaymentResponseTest, JSONSerializerTest) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();

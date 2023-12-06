@@ -29,11 +29,9 @@ namespace {
 
 class SMILTimeContainerTest : public PageTestBase {
  public:
-  SMILTimeContainerTest()
-      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
   void SetUp() override {
     EnablePlatform();
+    platform()->SetAutoAdvanceNowToPendingTasks(false);
     PageTestBase::SetUp();
   }
 
@@ -43,14 +41,14 @@ class SMILTimeContainerTest : public PageTestBase {
     GetFrame().Loader().CommitNavigation(std::move(params),
                                          nullptr /* extra_data */);
     GetAnimationClock().OverrideDynamicClockForTesting(
-        platform()->GetTickClock());
+        platform()->test_task_runner()->GetMockTickClock());
     GetAnimationClock().SetAllowedToDynamicallyUpdateTime(false);
     GetDocument().Timeline().ResetForTesting();
   }
 
   void StepTime(base::TimeDelta delta) {
     AnimationClock::NotifyTaskStart();
-    AdvanceClock(delta);
+    platform()->RunForPeriod(delta);
     GetAnimationClock().SetAllowedToDynamicallyUpdateTime(false);
     GetAnimationClock().UpdateTime(platform()->NowTicks());
   }
@@ -214,11 +212,9 @@ class ContentLoadedEventListener final : public NativeEventListener {
 
 class SMILTimeContainerAnimationPolicyOnceTest : public PageTestBase {
  public:
-  SMILTimeContainerAnimationPolicyOnceTest()
-      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
   void SetUp() override {
     EnablePlatform();
+    platform()->SetAutoAdvanceNowToPendingTasks(false);
     PageTestBase::SetupPageWithClients(nullptr, nullptr, &OverrideSettings);
   }
 
@@ -233,7 +229,7 @@ class SMILTimeContainerAnimationPolicyOnceTest : public PageTestBase {
   }
 
   void StepTime(base::TimeDelta delta) {
-    FastForwardBy(delta);
+    platform()->RunForPeriod(delta);
     current_time_ += delta;
     GetAnimationClock().UpdateTime(current_time_);
     SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());

@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -42,7 +41,6 @@ void TrySettingStrokeStyle(V8TestingScope& v8_testing_scope,
 }
 
 TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {
-  test::TaskEnvironment task_environment;
   V8TestingScope v8_testing_scope;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
@@ -55,7 +53,6 @@ TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {
 }
 
 TEST(PaintRenderingContext2DTest, testWidthAndHeight) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
@@ -66,7 +63,6 @@ TEST(PaintRenderingContext2DTest, testWidthAndHeight) {
 }
 
 TEST(PaintRenderingContext2DTest, testBasicState) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
@@ -99,7 +95,6 @@ TEST(PaintRenderingContext2DTest, testBasicState) {
 }
 
 TEST(PaintRenderingContext2DTest, setTransformWithDeviceScaleFactor) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   float zoom = 1.23;
@@ -136,7 +131,6 @@ TEST(PaintRenderingContext2DTest, setTransformWithDeviceScaleFactor) {
 }
 
 TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
@@ -163,7 +157,6 @@ TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
 }
 
 TEST(PaintRenderingContext2DTest, resetWithDeviceScaleFactor) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   float zoom = 1.23;
@@ -198,7 +191,6 @@ TEST(PaintRenderingContext2DTest, resetWithDeviceScaleFactor) {
 }
 
 TEST(PaintRenderingContext2DTest, resetWithDefaultDeviceScaleFactor) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
@@ -227,7 +219,6 @@ TEST(PaintRenderingContext2DTest, resetWithDefaultDeviceScaleFactor) {
 }
 
 TEST(PaintRenderingContext2DTest, overdrawOptimizationNotApplied) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
@@ -261,7 +252,6 @@ TEST(PaintRenderingContext2DTest, overdrawOptimizationNotApplied) {
 }
 
 TEST(PaintRenderingContext2DTest, overdrawOptimizationApplied) {
-  test::TaskEnvironment task_environment;
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(

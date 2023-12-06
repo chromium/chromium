@@ -111,7 +111,6 @@ class RenderingTest : public PageTestBase {
   USING_FAST_MALLOC(RenderingTest);
 
  public:
-  RenderingTest(base::test::TaskEnvironment::TimeSource time_source);
   virtual FrameSettingOverrideFunction SettingOverrider() const {
     return nullptr;
   }

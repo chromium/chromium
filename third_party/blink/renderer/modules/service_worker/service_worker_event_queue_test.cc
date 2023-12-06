@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -145,7 +144,6 @@ class ServiceWorkerEventQueueTest : public testing::Test {
   base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
 
  private:
-  test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<base::TestMockTimeTaskRunner::ScopedContext>
       task_runner_context_;

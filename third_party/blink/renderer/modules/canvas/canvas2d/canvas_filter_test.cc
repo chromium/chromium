@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -37,7 +36,6 @@ struct CanvasFilterTestParams {
 using CanvasFilterTest = TestWithParam<CanvasFilterTestParams>;
 
 TEST_P(CanvasFilterTest, CreatesFilterOperations) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_THAT(
       CanvasFilter::CreateFilterOperations(

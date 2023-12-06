@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using testing::AnyNumber;
 using testing::Return;
@@ -276,7 +275,6 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_;
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;

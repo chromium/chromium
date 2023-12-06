@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
-
 #include <string>
 
 #include "base/time/time.h"
@@ -13,14 +11,13 @@
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_item_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
 
 namespace blink {
 
 using payments::mojom::blink::BillingResponseCode;
 
 TEST(DigitalGoodsTypeConvertersTest, MojoBillingResponseToIdl) {
-  test::TaskEnvironment task_environment;
   EXPECT_EQ(mojo::ConvertTo<String>(BillingResponseCode::kOk), "ok");
   EXPECT_EQ(mojo::ConvertTo<String>(BillingResponseCode::kError), "error");
   EXPECT_EQ(mojo::ConvertTo<String>(BillingResponseCode::kItemAlreadyOwned),
@@ -36,7 +33,6 @@ TEST(DigitalGoodsTypeConvertersTest, MojoBillingResponseToIdl) {
 }
 
 TEST(DigitalGoodsTypeConvertersTest, MojoItemDetailsToIdl_WithOptionalFields) {
-  test::TaskEnvironment task_environment;
   auto mojo_item_details = payments::mojom::blink::ItemDetails::New();
   const String item_id = "shiny-sword-id";
   const String title = "Shiny Sword";
@@ -123,7 +119,6 @@ TEST(DigitalGoodsTypeConvertersTest,
 }
 
 TEST(DigitalGoodsTypeConvertersTest, NullMojoItemDetailsToIdl) {
-  test::TaskEnvironment task_environment;
   payments::mojom::blink::ItemDetailsPtr mojo_item_details;
 
   auto* idl_item_details = mojo_item_details.To<ItemDetails*>();
@@ -131,7 +126,6 @@ TEST(DigitalGoodsTypeConvertersTest, NullMojoItemDetailsToIdl) {
 }
 
 TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseReferenceToIdl) {
-  test::TaskEnvironment task_environment;
   auto mojo_purchase_reference =
       payments::mojom::blink::PurchaseReference::New();
   const String item_id = "shiny-sword-id";
@@ -146,7 +140,6 @@ TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseReferenceToIdl) {
 }
 
 TEST(DigitalGoodsTypeConvertersTest, NullMojoPurchaseReferenceToIdl) {
-  test::TaskEnvironment task_environment;
   payments::mojom::blink::PurchaseReferencePtr mojo_purchase_reference;
 
   auto* idl_purchase_details = mojo_purchase_reference.To<PurchaseDetails*>();
