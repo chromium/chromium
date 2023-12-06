@@ -26,6 +26,7 @@
 #include <stdarg.h>
 
 #include <algorithm>
+#include <sstream>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -473,6 +474,21 @@ std::string String::Latin1() const {
   }
 
   return latin1;
+}
+
+std::string String::Utf8ByStd() const {
+  unsigned length = this->length();
+  if (!length)
+    return std::string();
+
+  if (Is8Bit()) {
+    return Utf8();
+  }
+
+  std::u16string u16str(this->Characters16(), this->length());
+  std::ostringstream oss;
+  oss << u16str;
+  return oss.str();
 }
 
 String String::Make8BitFrom16BitSource(const UChar* source, wtf_size_t length) {
