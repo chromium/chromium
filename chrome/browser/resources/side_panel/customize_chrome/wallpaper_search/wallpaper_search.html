@@ -1,4 +1,4 @@
-<style include="sp-shared-style cr-hidden-style">
+<style include="sp-shared-style cr-hidden-style cr-icons">
   sp-heading {
     margin: 0 0 8px;
   }
@@ -195,6 +195,16 @@
     margin-top: 16px;
   }
 
+  #imageIcon {
+    --cr-icon-color: currentColor;
+    --cr-icon-image: url(icons/generated_image.svg);
+    --cr-icon-size: 20px;
+    height: 20px;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    width: 20px;
+  }
+
   .sp-hr {
     margin: 16px 0;
   }
@@ -368,6 +378,7 @@
           id="submitButton"
           on-click="onSearchClick_"
           class="action-button">
+        <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
         [[submitBtnText_]]
       </cr-button>
     </div>
