@@ -13483,7 +13483,7 @@
             ],
             "experiments": [
                 {
-                    "name": "BothMouseDownAndMouseHover_1106",
+                    "name": "BothMouseDownAndMouseHover_1206",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "true",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "true",
@@ -13494,7 +13494,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseHover300ms_1106",
+                    "name": "OnlyMouseHover300ms_1206",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "true",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
@@ -13505,7 +13505,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseHover200ms_1106",
+                    "name": "OnlyMouseHover200ms_1206",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "true",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
@@ -13516,7 +13516,7 @@
                     ]
                 },
                 {
-                    "name": "OnlyMouseDown_1106",
+                    "name": "OnlyMouseDown_1206",
                     "params": {
                         "prerender_new_tab_page_on_mouse_hover_trigger": "false",
                         "prerender_new_tab_page_on_mouse_pressed_trigger": "true"
