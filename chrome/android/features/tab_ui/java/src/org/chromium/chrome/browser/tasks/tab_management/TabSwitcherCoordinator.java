@@ -224,12 +224,14 @@ public class TabSwitcherCoordinator
 
             mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
+            var currentTabModelFilterSupplier =
+                    tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
                             activity,
                             mBrowserControlsStateProvider,
                             tabContentManager,
-                            tabModelSelector);
+                            currentTabModelFilterSupplier);
 
             PseudoTab.TitleProvider titleProvider =
                     (context, tab) -> {
@@ -477,7 +479,8 @@ public class TabSwitcherCoordinator
                 }
             }
 
-            mMultiThumbnailCardProvider.initWithNative();
+            mMultiThumbnailCardProvider.initWithNative(
+                    mTabModelSelector.getModel(false).getProfile());
             mMediator.initWithNative(mSnackbarManager);
             // TODO(crbug.com/1222762): Only call setUpPriceTracking in GRID TabSwitcher.
             setUpPriceTracking(mActivity, mModalDialogManager);

@@ -285,6 +285,24 @@ public class PseudoTab {
         }
     }
 
+    /**
+     * Get related tabs of a certain {@link PseudoTab}, through {@link TabModelFilter}s if
+     * available.
+     *
+     * @param context The activity context.
+     * @param member The {@link PseudoTab} related to
+     * @param tabModelFilter The {@link TabModelFilter} to query the tab relation
+     * @return Related {@link PseudoTab}s
+     */
+    public static @NonNull List<PseudoTab> getRelatedTabs(
+            Context context, PseudoTab member, @NonNull TabModelFilter filter) {
+        assert filter.isTabModelRestored() : "Trying to get related tabs for uninitialized filter.";
+        synchronized (sLock) {
+            List<Tab> relatedTabs = filter.getRelatedTabList(member.getId());
+            return getListOfPseudoTab(relatedTabs);
+        }
+    }
+
     private static @Nullable List<Tab> getRelatedTabList(
             @NonNull TabModelSelector tabModelSelector, int tabId) {
         if (!tabModelSelector.isTabStateInitialized()) {

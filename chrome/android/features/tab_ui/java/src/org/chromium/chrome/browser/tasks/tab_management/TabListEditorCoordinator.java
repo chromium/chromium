@@ -199,7 +199,8 @@ class TabListEditorCoordinator {
             assert LibraryLoader.getInstance().isInitialized();
             mTabListCoordinator.initWithNative(null);
             if (mMultiThumbnailCardProvider != null) {
-                mMultiThumbnailCardProvider.initWithNative();
+                mMultiThumbnailCardProvider.initWithNative(
+                        mTabModelSelector.getModel(false).getProfile());
             }
 
             mTabListCoordinator.registerItemType(
@@ -334,12 +335,16 @@ class TabListEditorCoordinator {
     private ThumbnailProvider initThumbnailProvider(
             boolean displayGroups, TabContentManager tabContentManager) {
         if (displayGroups) {
+            var currentTabModelFilterSupplier =
+                    mTabModelSelector
+                            .getTabModelFilterProvider()
+                            .getCurrentTabModelFilterSupplier();
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
                             mActivity,
                             mBrowserControlsStateProvider,
                             tabContentManager,
-                            mTabModelSelector);
+                            currentTabModelFilterSupplier);
             return mMultiThumbnailCardProvider;
         }
         return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {

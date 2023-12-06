@@ -18,16 +18,19 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -44,8 +47,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final TabContentManager mTabContentManager;
-    private final TabModelSelector mTabModelSelector;
-    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final Callback<TabModelFilter> mOnTabModelFilterChanged = this::onTabModelFilterChanged;
 
     private final float mRadius;
     private final float mFaviconFrameCornerRadius;
@@ -196,7 +199,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
             // Initialize Tabs.
             List<PseudoTab> relatedTabList =
-                    PseudoTab.getRelatedTabs(mContext, tab, mTabModelSelector);
+                    PseudoTab.getRelatedTabs(mContext, tab, mCurrentTabModelFilterSupplier.get());
             if (relatedTabList.size() <= 4) {
                 mThumbnailsToFetch.set(relatedTabList.size());
 
@@ -331,16 +334,16 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     }
 
     MultiThumbnailCardProvider(
-            Context context,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            TabContentManager tabContentManager,
-            TabModelSelector tabModelSelector) {
+            @NonNull Context context,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         Resources resources = context.getResources();
 
         mTabContentManager = tabContentManager;
-        mTabModelSelector = tabModelSelector;
+        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mRadius = resources.getDimension(R.dimen.tab_list_mini_card_radius);
         mFaviconFrameCornerRadius =
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
@@ -395,42 +398,36 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
                 resources.getColor(R.color.modern_grey_800_alpha_38));
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        boolean isIncognito = newModel.isIncognito();
-                        mEmptyThumbnailPaint.setColor(
-                                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
-                                        context, isIncognito, false));
-                        mTextPaint.setColor(
-                                TabUiThemeProvider.getTabGroupNumberTextColor(
-                                        context, isIncognito, false));
-                        mThumbnailFramePaint.setColor(
-                                TabUiThemeProvider.getMiniThumbnailFrameColor(
-                                        context, isIncognito));
-                        mFaviconBackgroundPaint.setColor(
-                                TabUiThemeProvider.getFaviconBackgroundColor(context, isIncognito));
-
-                        mSelectedEmptyThumbnailPaint.setColor(
-                                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
-                                        context, isIncognito, true));
-                        mSelectedTextPaint.setColor(
-                                TabUiThemeProvider.getTabGroupNumberTextColor(
-                                        context, isIncognito, true));
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
     }
 
-    public void initWithNative() {
-        mTabListFaviconProvider.initWithNative(
-                mTabModelSelector.getModel(/* isIncognito= */ false).getProfile());
+    private void onTabModelFilterChanged(TabModelFilter filter) {
+        boolean isIncognito = filter.isIncognito();
+        mEmptyThumbnailPaint.setColor(
+                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false));
+        mTextPaint.setColor(
+                TabUiThemeProvider.getTabGroupNumberTextColor(mContext, isIncognito, false));
+        mThumbnailFramePaint.setColor(
+                TabUiThemeProvider.getMiniThumbnailFrameColor(mContext, isIncognito));
+        mFaviconBackgroundPaint.setColor(
+                TabUiThemeProvider.getFaviconBackgroundColor(mContext, isIncognito));
+
+        mSelectedEmptyThumbnailPaint.setColor(
+                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(mContext, isIncognito, true));
+        mSelectedTextPaint.setColor(
+                TabUiThemeProvider.getTabGroupNumberTextColor(mContext, isIncognito, true));
+    }
+
+    /**
+     * @param regularProfile The regular profile to use for favicons.
+     */
+    public void initWithNative(Profile regularProfile) {
+        mTabListFaviconProvider.initWithNative(regularProfile);
     }
 
     /** Destroy any member that needs clean up. */
     public void destroy() {
-        mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
     }
 
     @Override
@@ -441,10 +438,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             boolean forceUpdate,
             boolean writeToCache,
             boolean isSelected) {
-        Tab tab = mTabModelSelector.getTabById(tabId);
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        Tab tab = TabModelUtils.getTabById(filter, tabId);
         PseudoTab pseudoTab = (tab != null) ? PseudoTab.fromTab(tab) : PseudoTab.fromTabId(tabId);
         if (pseudoTab == null
-                || PseudoTab.getRelatedTabs(mContext, pseudoTab, mTabModelSelector).size() == 1) {
+                || PseudoTab.getRelatedTabs(mContext, pseudoTab, filter).size() == 1) {
             mTabContentManager.getTabThumbnailWithCallback(
                     tabId, thumbnailSize, finalCallback, forceUpdate, writeToCache);
             return;
