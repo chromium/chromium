@@ -71,7 +71,10 @@ config("libaom_config") {
 
 # This config is applied to targets that depend on libaom.
 config("libaom_external_config") {
-  include_dirs = [ "source/libaom" ]
+  include_dirs = [
+    "source/libaom",
+    platform_include_dir,
+  ]
 }
 
 if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
