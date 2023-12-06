@@ -5,7 +5,6 @@ chromium/try/android-12l-x64-dbg
 chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
-chromium/try/android-arm64-siso-rel
 chromium/try/android-bfcache-rel
 chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel
@@ -24,7 +23,6 @@ chromium/try/android-x64-cast
 chromium/try/android-x86-rel
 chromium/try/android_arm64_dbg_recipe
 chromium/try/android_compile_dbg
-chromium/try/android_compile_siso_dbg
 chromium/try/android_compile_x64_dbg
 chromium/try/android_compile_x86_dbg
 chromium/try/chromeos-amd64-generic-asan-rel
@@ -103,7 +101,6 @@ chromium/try/linux-mbi-mode-per-render-process-host-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
 chromium/try/linux-rel
-chromium/try/linux-siso-rel
 chromium/try/linux-tsan-dbg
 chromium/try/linux-tsan-rel
 chromium/try/linux-ubsan-rel
@@ -158,7 +155,6 @@ chromium/try/win-clobber-rel
 chromium/try/win-dawn-rel
 chromium/try/win-official
 chromium/try/win-rel
-chromium/try/win-siso-rel
 chromium/try/win10-dbg
 chromium/try/win11-x64-fyi-rel
 chromium/try/win32-clobber-rel

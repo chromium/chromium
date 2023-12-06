@@ -599,15 +599,6 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chromium
-* [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
-  * Experiment percentage: 10.0
-
-* [android-binary-size-siso](https://ci.chromium.org/p/chromium/builders/try/android-binary-size-siso) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size-siso""))
-  * Experiment percentage: 10.0
-
-* [android_compile_siso_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_siso_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_siso_dbg""))
-  * Experiment percentage: 10.0
-
 * [chromeos-amd64-generic-siso-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-siso-rel""))
   * Experiment percentage: 10.0
 
@@ -642,9 +633,6 @@ as required builders.
 * [linux-chromeos-compile-siso-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-siso-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-siso-dbg""))
   * Experiment percentage: 10.0
 
-* [linux-siso-rel](https://ci.chromium.org/p/chromium/builders/try/linux-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-siso-rel""))
-  * Experiment percentage: 10.0
-
 * [linux_chromium_asan_siso_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_siso_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_siso_rel_ng""))
   * Experiment percentage: 10.0
 
@@ -659,9 +647,6 @@ as required builders.
 
 * [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
   * Experiment percentage: 100.0
-
-* [win-siso-rel](https://ci.chromium.org/p/chromium/builders/try/win-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-siso-rel""))
-  * Experiment percentage: 10.0
 
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
   * Experiment percentage: 10.0

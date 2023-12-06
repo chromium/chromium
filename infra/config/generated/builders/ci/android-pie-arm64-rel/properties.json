@@ -50,10 +50,6 @@
         {
           "builder": "android-arm64-rel",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-arm64-siso-rel",
-          "group": "tryserver.chromium.android"
         }
       ]
     }

@@ -337,37 +337,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "linux-siso-rel",
-    description_html = """\
-This builder shadows linux-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "linux-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    gn_args = "try/linux-rel",
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-siso-rel-compilator",
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 # TODO(crbug.com/1394755): Remove this builder after burning down failures
 # and measuring performance to see if we can roll UBSan into ASan.
 try_.builder(

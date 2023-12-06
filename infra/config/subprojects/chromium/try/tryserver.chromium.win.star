@@ -145,40 +145,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "win-siso-rel",
-    description_html = """\
-This builder shadows win-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating win-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/win-rel"),
-    compilator = "win-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 5,
-    },
-    gn_args = "try/win-rel",
-    main_list_view = "try",
-    tryjob = try_.job(
-        # Decreasing the experiment percentage while enabling tests to reduce
-        # extra workloads on the test pool.
-        experiment_percentage = 10,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "win-siso-rel-compilator",
-    # TODO(jwata): Change to 32 once bots have landed
-    cores = "16|32",
-    # TODO (crbug.com/1245171): Revert when root issue is fixed
-    grace_period = 4 * time.minute,
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 try_.builder(
     name = "win32-clobber-rel",
     mirrors = [

@@ -192,35 +192,6 @@ try_.compilator_builder(
     siso_enabled = True,
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "android-arm64-siso-rel",
-    description_html = """\
-This builder shadows android-arm64-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating android-arm64-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/android-arm64-rel"),
-    try_settings = builder_config.try_settings(
-        # TODO: b/294287964 - waiting test devices to be allocated to handle
-        # extra traffic.
-        is_compile_only = True,
-    ),
-    compilator = "android-arm64-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    gn_args = "try/android-arm64-rel",
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "android-arm64-siso-rel-compilator",
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
 # TODO(crbug.com/1367523): Reenable this builder once the reboot issue is resolved.
 # try_.builder(
 #     name = "android-asan",
@@ -292,41 +263,6 @@ try_.builder(
     },
     siso_enabled = True,
     tryjob = try_.job(),
-)
-
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.builder(
-    name = "android-binary-size-siso",
-    description_html = """\
-This builder shadows android-binary-size builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating android-binary-size from Ninja to Siso. b/277863839
-""",
-    executable = "recipe:binary_size_trybot",
-    cores = 16,
-    ssd = True,
-    contact_team_email = "chrome-build-team@google.com",
-    gn_args = "try/android-binary-size",
-    main_list_view = "try",
-    properties = {
-        "$build/binary_size": {
-            "analyze_targets": [
-                "//chrome/android:monochrome_public_minimal_apks",
-                "//chrome/android:trichrome_32_minimal_apks",
-                "//chrome/android:validate_expectations",
-                "//tools/binary_size:binary_size_trybot_py",
-            ],
-            "compile_targets": [
-                "monochrome_public_minimal_apks",
-                "monochrome_static_initializers",
-                "trichrome_32_minimal_apks",
-                "validate_expectations",
-            ],
-        },
-    },
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
 )
 
 try_.builder(
@@ -1030,30 +966,6 @@ try_.builder(
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     siso_enabled = True,
     tryjob = try_.job(),
-)
-
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.builder(
-    name = "android_compile_siso_dbg",
-    description_html = """\
-This builder shadows android_compile_dbg builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating android_compile_dbg from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/android_compile_dbg"),
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    cores = 32,
-    ssd = True,
-    contact_team_email = "chrome-build-team@google.com",
-    gn_args = "try/android_compile_dbg",
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    siso_enabled = True,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
 )
 
 try_.builder(

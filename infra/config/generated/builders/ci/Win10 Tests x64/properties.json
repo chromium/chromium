@@ -75,10 +75,6 @@
         {
           "builder": "win-rel",
           "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win-siso-rel",
-          "group": "tryserver.chromium.win"
         }
       ]
     }
