@@ -22299,7 +22299,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4655" label="V8FileSystemHandle_GetCloudIdentifiers_Method"/>
   <int value="4656" label="PrivateAggregationApiEnableDebugMode"/>
   <int value="4657" label="LineBreakPhrase"/>
-  <int value="4658" label="AttributionReportingUnderscorePrefixedFilterKey"/>
+  <int value="4658"
+      label="OBSOLETE_AttributionReportingUnderscorePrefixedFilterKey"/>
   <int value="4659" label="PercentOrCalcStickyUsedOffset"/>
   <int value="4660" label="PercentOrCalcRelativeUsedOffset"/>
   <int value="4661" label="AutoRelativeUsedOffset"/>
