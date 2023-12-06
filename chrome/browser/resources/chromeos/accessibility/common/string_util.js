@@ -86,22 +86,6 @@ export class StringUtil {
   }
 
   /**
-   * Returns a unicode-aware substring of |text|.
-   * @param {string} text
-   * @param {number} startIndex
-   * @param {number} endIndex
-   * @return {string}
-   */
-  static getUnicodeSubstring_(text, startIndex, endIndex) {
-    let result = '';
-    const textSymbolArray = [...text];
-    for (let i = startIndex; i < endIndex; ++i) {
-      result += textSymbolArray[i];
-    }
-    return result;
-  }
-
-  /**
    * Converts a camel case string to snake case.
    * @param {string} s A camel case string, e.g. 'brailleTable8'.
    * @return {string} A snake case string, e.g. 'braille_table_8'.
