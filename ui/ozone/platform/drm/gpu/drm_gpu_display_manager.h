@@ -19,6 +19,9 @@ using drmModeModeInfo = struct _drmModeModeInfo;
 
 namespace display {
 class GammaCurve;
+struct ColorCalibration;
+struct ColorTemperatureAdjustment;
+struct GammaAdjustment;
 }  // namespace display
 
 namespace gfx {
@@ -68,6 +71,13 @@ class DrmGpuDisplayManager {
   bool SetHDCPState(int64_t display_id,
                     display::HDCPState state,
                     display::ContentProtectionMethod protection_method);
+  void SetColorTemperatureAdjustment(
+      int64_t display_id,
+      const display::ColorTemperatureAdjustment& cta);
+  void SetColorCalibration(int64_t display_id,
+                           const display::ColorCalibration& calibration);
+  void SetGammaAdjustment(int64_t display_id,
+                          const display::GammaAdjustment& adjustment);
   void SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix);
   void SetBackgroundColor(int64_t display_id, const uint64_t background_color);

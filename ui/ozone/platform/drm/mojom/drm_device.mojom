@@ -82,6 +82,19 @@ interface DrmDevice {
                display.mojom.ContentProtectionMethod protection_method) =>
       (int64 display_id, bool success);
 
+  // Set the color temperature adjustment (e.g, for night light) for the
+  // specified display.
+  SetColorTemperatureAdjustment(int64 display_id,
+                                display.mojom.ColorTemperatureAdjustment cta);
+
+  // Set the color calibration for the specified display.
+  SetColorCalibration(int64 display_id,
+                      display.mojom.ColorCalibration calibration);
+
+  // Set the display profile space gamma adjustment for the specified display.
+  SetGammaAdjustment(int64 display_id,
+                     display.mojom.GammaAdjustment adjustment);
+
   // Sets a 3x3 color transform matrix on the display hardware.
   // TODO: Consider using a different type for the color matrix.
   // https://crbug.com/846975.

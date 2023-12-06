@@ -35,6 +35,9 @@ class FilePath;
 
 namespace display {
 class GammaCurve;
+struct ColorCalibration;
+struct ColorTemperatureAdjustment;
+struct GammaAdjustment;
 }  // namespace display
 
 namespace gfx {
@@ -180,6 +183,14 @@ class DrmThread : public base::Thread,
                     display::HDCPState state,
                     display::ContentProtectionMethod protection_method,
                     base::OnceCallback<void(int64_t, bool)> callback) override;
+  void SetColorTemperatureAdjustment(
+      int64_t display_id,
+      const display::ColorTemperatureAdjustment& cta) override;
+  void SetColorCalibration(
+      int64_t display_id,
+      const display::ColorCalibration& calibration) override;
+  void SetGammaAdjustment(int64_t display_id,
+                          const display::GammaAdjustment& adjustment) override;
   void SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix) override;
   void SetGammaCorrection(int64_t display_id,

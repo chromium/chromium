@@ -243,6 +243,33 @@ bool HostDrmDevice::GpuSetHDCPState(
   return true;
 }
 
+void HostDrmDevice::GpuSetColorTemperatureAdjustment(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  if (!IsConnected()) {
+    return;
+  }
+  drm_device_->SetColorTemperatureAdjustment(display_id, cta);
+}
+
+void HostDrmDevice::GpuSetColorCalibration(
+    int64_t display_id,
+    const display::ColorCalibration& calibration) {
+  if (!IsConnected()) {
+    return;
+  }
+  drm_device_->SetColorCalibration(display_id, calibration);
+}
+
+void HostDrmDevice::GpuSetGammaAdjustment(
+    int64_t display_id,
+    const display::GammaAdjustment& adjustment) {
+  if (!IsConnected()) {
+    return;
+  }
+  drm_device_->SetGammaAdjustment(display_id, adjustment);
+}
+
 bool HostDrmDevice::GpuSetColorMatrix(int64_t display_id,
                                       const std::vector<float>& color_matrix) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);

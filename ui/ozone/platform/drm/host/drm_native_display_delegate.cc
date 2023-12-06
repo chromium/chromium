@@ -85,19 +85,22 @@ void DrmNativeDisplayDelegate::SetHDCPState(
 void DrmNativeDisplayDelegate::SetColorTemperatureAdjustment(
     int64_t display_id,
     const display::ColorTemperatureAdjustment& cta) {
-  // TODO(https://crbug.com/1505062): Plumb this through to the viz process.
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetColorTemperatureAdjustment(cta);
 }
 
 void DrmNativeDisplayDelegate::SetColorCalibration(
     int64_t display_id,
     const display::ColorCalibration& calibration) {
-  // TODO(https://crbug.com/1505062): Plumb this through to the viz process.
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetColorCalibration(calibration);
 }
 
 void DrmNativeDisplayDelegate::SetGammaAdjustment(
     int64_t display_id,
-    const display::GammaAdjustment& gamma) {
-  // TODO(https://crbug.com/1505062): Plumb this through to the viz process.
+    const display::GammaAdjustment& adjustment) {
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetGammaAdjustment(adjustment);
 }
 
 bool DrmNativeDisplayDelegate::SetColorMatrix(

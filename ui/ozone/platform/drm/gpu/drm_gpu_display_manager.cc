@@ -407,6 +407,39 @@ bool DrmGpuDisplayManager::SetHDCPState(
   return display->SetHDCPState(state, protection_method);
 }
 
+void DrmGpuDisplayManager::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  DrmDisplay* display = FindDisplay(display_id);
+  if (!display) {
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
+    return;
+  }
+  // TODO(https://crbug.com/1505062): Use this parameter.
+}
+
+void DrmGpuDisplayManager::SetColorCalibration(
+    int64_t display_id,
+    const display::ColorCalibration& calibration) {
+  DrmDisplay* display = FindDisplay(display_id);
+  if (!display) {
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
+    return;
+  }
+  // TODO(https://crbug.com/1505062): Use this parameter.
+}
+
+void DrmGpuDisplayManager::SetGammaAdjustment(
+    int64_t display_id,
+    const display::GammaAdjustment& adjustment) {
+  DrmDisplay* display = FindDisplay(display_id);
+  if (!display) {
+    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
+    return;
+  }
+  // TODO(https://crbug.com/1505062): Use this parameter.
+}
+
 void DrmGpuDisplayManager::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {
