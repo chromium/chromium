@@ -153,6 +153,8 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
+    _separator.backgroundColor =
+        [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
 
     self.backgroundColor = UIColor.clearColor;
 
@@ -484,10 +486,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
 - (void)setupWithCurrentData {
   id<AutocompleteSuggestion> suggestion = self.suggestion;
-
-  self.separator.backgroundColor =
-      self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                     : [UIColor.blackColor colorWithAlphaComponent:0.12];
 
   self.textTruncatingLabel.attributedText =
       self.highlighted

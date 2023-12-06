@@ -709,8 +709,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
                                2 / tableView.window.screen.scale)];
 
   hairline.backgroundColor =
-      self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                     : [UIColor.blackColor colorWithAlphaComponent:0.12];
+      [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
   [footer addSubview:hairline];
   hairline.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 

@@ -143,6 +143,8 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
+    _separator.backgroundColor =
+        [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
 
     self.backgroundColor = UIColor.clearColor;
 
@@ -375,15 +377,10 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 - (void)setupWithCurrentData {
   id<AutocompleteSuggestion> suggestion = self.suggestion;
 
-  self.separator.backgroundColor =
-      self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                     : [UIColor.blackColor colorWithAlphaComponent:0.12];
-
   // Highlighting elements of a cell can be updated when the cell is selected or
   // highlighted. Checking both properties ensures that the cell is properly
   // highlighted until the navigation is complete upon cell selection.
   bool allowHighlight = self.selected || self.highlighted;
-
   self.textTruncatingLabel.attributedText =
       allowHighlight
           ? [self highlightedAttributedStringWithString:suggestion.text]
