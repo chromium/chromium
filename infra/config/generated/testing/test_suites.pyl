@@ -7563,6 +7563,11 @@
     },
 
     'lacros_skylab_arm64': {
+      'chromeos_integration_tests': {
+        'variants': [
+          'CROS_STRONGBAD_RELEASE_LKGM',
+        ],
+      },
       'lacros_skylab_tests': {
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',

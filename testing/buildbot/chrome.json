@@ -2163,6 +2163,15 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "chromium",
+        "cros_board": "strongbad",
+        "name": "chromeos_integration_tests STRONGBAD_RELEASE_LKGM",
+        "test": "chromeos_integration_tests",
+        "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
+        "variant_id": "STRONGBAD_RELEASE_LKGM"
+      },
+      {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",

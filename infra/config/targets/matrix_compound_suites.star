@@ -1025,6 +1025,11 @@ targets.legacy_matrix_compound_suite(
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
         ),
+        "chromeos_integration_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_STRONGBAD_RELEASE_LKGM",
+            ],
+        ),
     },
 )
 
