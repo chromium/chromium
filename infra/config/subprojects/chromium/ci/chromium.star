@@ -276,7 +276,7 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "chromeos_with_codecs",
+            "chromeos",
             "release_builder",
             "reclient",
             "use_cups",

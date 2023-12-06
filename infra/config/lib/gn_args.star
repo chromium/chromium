@@ -221,8 +221,8 @@ def _generate_gn_args(ctx):
         # "chromium" group builders build public artifacts and should not
         # include Chrome proprietary codec.
         if node.props.builder_group == "chromium":
-            if (gn_args_dict["gn_args"].get("proprietary_codecs", False) and
-                gn_args_dict["gn_args"].get("ffmpeg_branding", "") == "Chrome"):
+            if (gn_args_dict["gn_args"].get("proprietary_codecs", False) or
+                gn_args_dict["gn_args"].get("ffmpeg_branding", "Chromium") != "Chromium"):
                 fail("\"chromium\" group builder " +
                      "{} should not include Chrome proprietary codec".format(node.key.id))
 
