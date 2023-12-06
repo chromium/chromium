@@ -115,7 +115,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1524563461097350801">Agora não</translation>
 <translation id="1535268707340844072">Suas configurações atuais podem fazer com que alguns sites não funcionem corretamente. Para gerenciar os cookies de todos os sites, acesse <ph name="BEGIN_LINK" />Configurações de cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Endereço 1</translation>
-<translation id="1545749641540134597">Ler código QR</translation>
+<translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1552525382687785070">Sincronização desativada pelo administrador</translation>
 <translation id="1554477036522844996">Nova janela</translation>
 <translation id="1563071802032385236">Ative a opção "Pedir para abrir links de outros apps na navegação anônima".</translation>
@@ -226,7 +226,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2149973817440762519">Editar favoritos</translation>
 <translation id="2155145621546387786">Compartilhar o Chrome</translation>
-<translation id="2175927920773552910">Código QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="2178545675770638239">Selecionar senha</translation>
 <translation id="2195124168004379331">Parece que está tudo certo com seu navegador</translation>
 <translation id="2213327331203157297">Desative o modo de bloqueio total no Chrome para desativá-lo no seu iPhone.</translation>
@@ -374,7 +374,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2898963176829412617">Nova pasta...</translation>
 <translation id="2902684821701498619">Adicionar à Lista de leitura</translation>
 <translation id="2905479111267140204">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas reutilizadas que podem colocar sua segurança em risco.</translation>
-<translation id="291754862089661335">Posicione o código QR ou o código de barras neste quadro</translation>
+<translation id="291754862089661335">Posicione o QR code ou o código de barras neste quadro</translation>
 <translation id="2920866371965792875">Siga este site para ver as atualizações dele.</translation>
 <translation id="2921219216347069551">Não é possível compartilhar a página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
@@ -617,7 +617,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Você dispensou {COUNT} aviso}one{Você dispensou {COUNT} aviso}other{Você dispensou {COUNT} avisos}}</translation>
-<translation id="4272631900155121838">Para ler um código QR, ative a câmera nas configurações</translation>
+<translation id="4272631900155121838">Para ler um QR code, ative a câmera nas configurações</translation>
 <translation id="4277990410970811858">Navegação segura</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4286718549648564014">Endereço movido para sua conta <ph name="USER_EMAIL" /></translation>
@@ -636,7 +636,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4343046787186034850">Acesso à câmera e ao microfone permitido</translation>
 <translation id="4371526908359194219">Notificações por e-mail</translation>
 <translation id="4371591986692297148">Inativos</translation>
-<translation id="4375040482473363939">Pesquisa por código QR</translation>
+<translation id="4375040482473363939">Pesquisa por QR code</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4388983683160515185"><ph name="FULL_NAME" /> compartilhou uma senha para <ph name="WEBSITE" /> com você</translation>
 <translation id="4389019817280890563">Toque para mudar o idioma.</translation>
@@ -875,7 +875,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5669335982068190158">A conta foi desconectada como parte da redefinição do iPhone. Toque em "Continuar" abaixo para fazer login.</translation>
 <translation id="5669528293118408608">www</translation>
-<translation id="5669617676038747374">Criar um código QR</translation>
+<translation id="5669617676038747374">Criar um QR code</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5683499062697987550">Para usar e salvar senhas na sua Conta do Google, confirme sua identidade.</translation>
 <translation id="5684761169742812828">Esta senha foi exposta em um vazamento de dados na Internet. Caso você não possa mudar sua senha agora, o Google recomenda manter este aviso ativo para se lembrar de fazer isso mais tarde.</translation>
@@ -925,7 +925,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5897749768294722429">Para voltar rapidamente aos sites visitados, sincronize as guias e o histórico</translation>
 <translation id="5897956970858271241">Visitar link copiado</translation>
 <translation id="5898848375214731122">Massa</translation>
-<translation id="5899314093904173337">Para compartilhar com pessoas próximas, permita que elas leiam esse código QR com a câmera ou um app adequado</translation>
+<translation id="5899314093904173337">Para compartilhar com pessoas próximas, permita que elas leiam esse QR code com a câmera ou um app adequado</translation>
 <translation id="5911030830365207728">Google Tradutor</translation>
 <translation id="5913600720976431809">Opções para traduzir a página</translation>
 <translation id="5922999516621365983">Arraste a guia até aqui para fixar.</translation>
@@ -1096,7 +1096,7 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
 <translation id="6642362222295953972">Mudar para guia existente</translation>
 <translation id="6643016212128521049">Limpar</translation>
-<translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647480763136463714">Última execução: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Editar pasta</translation>
 <translation id="6657585470893396449">Senha</translation>
@@ -1137,7 +1137,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6851516051005285358">Solicitar site para computador</translation>
 <translation id="6852222216891664518">Fechar guia fixada</translation>
 <translation id="6858855187367714033">Lido</translation>
-<translation id="6859944681507688231">Para ler um código QR ou cartão de crédito, ative a câmera nas configurações.</translation>
+<translation id="6859944681507688231">Para ler um QR code ou cartão de crédito, ative a câmera nas configurações.</translation>
 <translation id="6867369562105931222">senha</translation>
 <translation id="686899695320434745">Endereços não são criptografados com sua senha longa. Isso permite que você os use em outros serviços do Google.</translation>
 <translation id="6869389390665537774">Você pode ver as páginas visitadas ou apagá-las do histórico</translation>

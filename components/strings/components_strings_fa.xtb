@@ -2890,7 +2890,7 @@
 <translation id="6883221904761970440">برگ اصالت‌سنجی اطلاعات کاربری پرداخت امن بسته شد</translation>
 <translation id="6884662655240309489">اندازه ۱</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
-<translation id="6888584790432772780">‏Chrome این صفحه را ساده کرده است تا خواندن آن آسان‌تر باشد Chrome صفحه اصلی را ازطریق اتصالی غیرایمن بازیابی کرد.</translation>
+<translation id="6888584790432772780">‏Chrome این صفحه را ساده کرده است تا خواندن آن آسان‌تر باشد Chrome صفحه اصلی را ازطریق یک اتصال ناامن بازیابی کرد.</translation>
 <translation id="6890443033788248019">مکان مجاز شود؟</translation>
 <translation id="6890531741535756070">قبلاً انتخاب کرده‌اید در وب‌سایت‌هایی که از <ph name="PROVIDER_ORIGIN" /> استفاده می‌کنند درستی‌سنجی با <ph name="DEVICE_LABEL" /> انجام شود. این ارائه‌دهنده ممکن است اطلاعات روش پرداختتان را ذخیره کرده باشد که می‌توانید <ph name="BEGIN_LINK" />درخواست حذف آن را بدهید<ph name="END_LINK" />.</translation>
 <translation id="6890956352250146925">گزینه‌های مرتبط با کوکی‌ها و داده‌های سایت</translation>

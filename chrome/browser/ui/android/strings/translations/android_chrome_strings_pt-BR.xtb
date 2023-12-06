@@ -218,7 +218,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="2172688499998841696">As descrições de imagens estão desativadas</translation>
 <translation id="2172905120685242547">Fechar a janela?</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
-<translation id="2175927920773552910">Código QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="218608176142494674">Compartilhamento</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2200113223741723867">Gerenciar o compartilhamento de dados de uso</translation>
@@ -575,7 +575,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="4072805772816336153">Tente novamente mais tarde</translation>
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="409109920254068737">Você pode usar o tablet para fazer login no dispositivo que está mostrando o código QR.</translation>
+<translation id="409109920254068737">Você pode usar o tablet para fazer login no dispositivo que está mostrando o QR code.</translation>
 <translation id="4092709865241032354">Para ajudar o Gerenciador de senhas do Google a salvar suas informações de login, adicione seu nome de usuário desse site</translation>
 <translation id="4095146165863963773">Excluir dados de apps?</translation>
 <translation id="4095425503313512126">A navegação e a pesquisa estão mais rápidas</translation>
@@ -646,7 +646,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="442518031075347249">Não será mais possível usar o cartão virtual com Google Pay. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>
 <translation id="4452411734226507615">Fechar guia <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado como favorito em <ph name="FOLDER_NAME" /></translation>
-<translation id="4461614516424362539">Quando você vincula outro dispositivo com um código QR, ele pode usar este smartphone como uma chave de segurança. Se ele for removido, você vai precisar ler um código QR para vincular novamente.</translation>
+<translation id="4461614516424362539">Quando você vincula outro dispositivo com um QR code, ele pode usar este smartphone como uma chave de segurança. Se ele for removido, você vai precisar ler um QR code para vincular novamente.</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para o Chrome…</translation>
 <translation id="4484496141267039529">Sem conexão. Tente novamente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de app Chrome serão excluídos permanentemente. Isso inclui todos os arquivos, configurações, contas, bancos de dados etc.</translation>
@@ -777,7 +777,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5011311129201317034"><ph name="SITE" /> deseja se conectar</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
-<translation id="5032430150487044192">Não é possível criar o código QR</translation>
+<translation id="5032430150487044192">Não é possível criar o QR code</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="504456571576643789">Considerações</translation>
@@ -1015,7 +1015,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Marcar como lida</translation>
 <translation id="6356893102071098867">Confirme se você escolheu a conta certa</translation>
-<translation id="6357653805084533597">Você pode usar o smartphone para fazer login no dispositivo que está mostrando o código QR.</translation>
+<translation id="6357653805084533597">Você pode usar o smartphone para fazer login no dispositivo que está mostrando o QR code.</translation>
 <translation id="6363990818884053551">Para iniciar a sincronização, confirme sua identidade</translation>
 <translation id="6364438453358674297">Remover sugestão do histórico?</translation>
 <translation id="6380100320871303656">Pré-carrega com mais frequência páginas que o Chrome acredita serem de seu interesse. Esta configuração pode resultar em aumento no uso de dados.</translation>
@@ -1104,7 +1104,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">Seu timer para <ph name="FQDN" /> chegou ao fim. Ele será iniciado novamente amanhã.</translation>
 <translation id="6715020873764921614">Quer fazer o download de <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) mesmo assim?</translation>
-<translation id="6719634564325948108">Conectar com código QR?</translation>
+<translation id="6719634564325948108">Conectar com QR code?</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="6738867403308150051">Fazendo o download...</translation>
 <translation id="674388916582496364">É comum que os sites que você visita se lembrem dos seus interesses para personalizar a experiência. Os sites também podem armazenar informações sobre seus interesses com o Chrome.</translation>
@@ -1189,7 +1189,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7168323970702333693">Login feito como <ph name="USER_NAME" />. Abre as configurações.</translation>
 <translation id="7173114856073700355">Configurações</translation>
 <translation id="7177466738963138057">Você poderá alterar isso mais tarde nas configurações</translation>
-<translation id="7177873915659574692">Não é possível criar o código QR. O URL tem mais de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
+<translation id="7177873915659574692">Não é possível criar o QR code. O URL tem mais de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7177959540995930968">Saiba mais sobre esses recursos nas configurações do Chrome.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7183693674623539380">Grupo de guias: <ph name="TITLE_OF_GROUP" /></translation>
@@ -1396,7 +1396,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8084114998886531721">Senha salva</translation>
 <translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
 <translation id="808747664143081553">Conectado ao dispositivo</translation>
-<translation id="8088176524274673045">Para compartilhar com pessoas próximas, permita que elas leiam esse código QR</translation>
+<translation id="8088176524274673045">Para compartilhar com pessoas próximas, permita que elas leiam esse QR code</translation>
 <translation id="8090732854597034573">Se precisar de ajuda, entre em contato com seu familiar responsável</translation>
 <translation id="8100969750121413114">Faça login para personalizar o Chrome</translation>
 <translation id="8101414242770404289">Nenhuma guia <ph name="TIME_PERIOD" /></translation>

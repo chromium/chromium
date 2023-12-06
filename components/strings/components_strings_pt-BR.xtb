@@ -485,7 +485,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
-<translation id="192095259937375524">Botão "Compartilhar esta guia". Ative para compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
+<translation id="192095259937375524">Botão "Compartilhar esta guia". Ative para compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1939059826036755332">Picture-in-picture automático</translation>
@@ -2890,7 +2890,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6883221904761970440">A página de autenticação de credenciais para pagamento seguro está fechada</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
-<translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão não segura.</translation>
+<translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão sem segurança.</translation>
 <translation id="6890443033788248019">Permitir acesso à localização?</translation>
 <translation id="6890531741535756070">Você escolheu fazer a verificação com <ph name="DEVICE_LABEL" /> em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Ele pode ter armazenado informações sobre sua forma de pagamento, mas é possível <ph name="BEGIN_LINK" />solicitar a exclusão<ph name="END_LINK" /> desses dados.</translation>
 <translation id="6890956352250146925">Opções para cookies e dados do site</translation>
@@ -3156,7 +3156,7 @@ Mais detalhes:
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7403392780200267761">Compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
+<translation id="7403392780200267761">Compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
 <translation id="7407424307057130981">&lt;p&gt;Você verá esse erro se tiver o software Superfish no seu computador Windows.&lt;/p&gt;
@@ -3984,7 +3984,7 @@ Mais detalhes:
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
-<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="9023536760430404133">Rodas e pneus de veículos</translation>
 <translation id="9025348182339809926">(inválido)</translation>
 <translation id="902590795160480390">Carregando PDF</translation>

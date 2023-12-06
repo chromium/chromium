@@ -1263,7 +1263,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 επέκταση ελέγχθηκε}other{{NUM_EXTENSIONS} επεκτάσεις ελέγχθηκαν}}</translation>
 <translation id="1959421829481337178">Εισαγάγετε τον κωδικό ενεργοποίησης που παρέχεται από την εταιρεία κινητής τηλεφωνίας.</translation>
 <translation id="1962233722219655970">Αυτή η σελίδα χρησιμοποιεί μια εφαρμογή Native Client η οποία δεν λειτουργεί στον υπολογιστή σας.</translation>
-<translation id="1963976881984600709">Βασική ασφάλεια</translation>
+<translation id="1963976881984600709">Βασική προστασία</translation>
 <translation id="1966649499058910679">Επισημάνετε κάθε λέξη καθώς εκφωνείται</translation>
 <translation id="1967970931040389207">Ενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -7468,7 +7468,7 @@
 <translation id="6898440773573063262">Είναι πλέον δυνατή η διαμόρφωση της αυτόματης εκκίνησης των εφαρμογών kiosk σε αυτήν τη συσκευή.</translation>
 <translation id="6899427698619335650">Να επιτρέπεται η ευέλικτη τοποθέτηση ορθογραφικού σημαδιού. Για παράδειγμα, μπορείτε να πληκτρολογήσετε "anh1" ή "a1nh" για να εμφανιστεί η λέξη "ánh".</translation>
 <translation id="6900284862687837908">Εφαρμογή παρασκηνίου: <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Βελτιωμένη ασφάλεια</translation>
+<translation id="6900532703269623216">Βελτιωμένη προστασία</translation>
 <translation id="6900651018461749106">Συνδεθείτε ξανά για ενημέρωση <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν τη μηχανή αναζήτησης;</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>

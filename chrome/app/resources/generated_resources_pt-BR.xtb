@@ -78,7 +78,7 @@
 <translation id="1060292118287751956">Determina a frequência com que a tela é atualizada</translation>
 <translation id="1060570945511946595">Gerenciar tíquetes</translation>
 <translation id="1061130374843955397">Este é seu <ph name="DEVICE_TYPE" /></translation>
-<translation id="1061373870045429865">Criar um código QR para este link</translation>
+<translation id="1061373870045429865">Criar um QR code para este link</translation>
 <translation id="1061904396131502319">Está quase na hora de fazer uma pausa</translation>
 <translation id="10619348099955377">Copiar nome de exibição</translation>
 <translation id="1062407476771304334">Substituir</translation>
@@ -309,7 +309,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1233497634904001272">Toque na chave de segurança novamente para concluir a solicitação.</translation>
 <translation id="1233721473400465416">Localidade</translation>
-<translation id="1234736487471201993">Criar código QR para esta imagem</translation>
+<translation id="1234736487471201993">Criar QR code para esta imagem</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="123578888592755962">Disco cheio</translation>
@@ -622,7 +622,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1485141095922496924">Versão <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">O Microsoft 365 exige que os arquivos sejam armazenados no OneDrive. Os arquivos locais serão transferidos, e os outros serão copiados. Seus arquivos estão na pasta do Microsoft OneDrive no app Arquivos.</translation>
 <translation id="1486096554574027028">Pesquisar senhas</translation>
-<translation id="1486486872607808064">Leia este código QR com uma câmera no dispositivo em que você quer criar uma chave de acesso para <ph name="APP_NAME" /></translation>
+<translation id="1486486872607808064">Leia este QR code com uma câmera no dispositivo em que você quer criar uma chave de acesso para <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Sincronização ativada - configurações personalizadas</translation>
 <translation id="1493892686965953381">Aguardando <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sites podem pedir para usar as fontes instaladas no dispositivo</translation>
@@ -690,7 +690,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1543538514740974167">Acessar esta página mais rapidamente</translation>
 <translation id="1544588554445317666">Tente usar um nome de arquivo mais curto ou salve em uma pasta diferente</translation>
 <translation id="1545177026077493356">Modo de quiosque automático</translation>
-<translation id="1545749641540134597">Ler código QR</translation>
+<translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" instalado</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{Sua janela anônima não vai ser aberta novamente.}one{# janela anônima não vai ser aberta novamente.}other{# janelas anônimas não vão ser abertas novamente.}}</translation>
 <translation id="1546280085599573572">Esta extensão alterou a página que é exibida quando você clica no botão "Página inicial".</translation>
@@ -1061,7 +1061,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
     <ph name="LINE_BREAKS2" />
     Isso não afetará apps ou conteúdo em outros dispositivos.</translation>
 <translation id="1809734401532861917">Adicionar meus favoritos, histórico, senhas e outras configurações a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Para usar as senhas salvas no smartphone, faça o download do Chrome para iOS usando o código QR e entre na sua Conta do Google.</translation>
+<translation id="1810070166657251157">Para usar as senhas salvas no smartphone, faça o download do Chrome para iOS usando o QR code e entre na sua Conta do Google.</translation>
 <translation id="1810366086647840386">Servidor da imagem</translation>
 <translation id="1811908311154949291">Frame isolado em modo de navegação anônima: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1346,7 +1346,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2020183425253392403">Mostrar configurações de endereço de rede</translation>
 <translation id="2020225359413970060">Escanear arquivo</translation>
 <translation id="2020779321517562133">Remover cópia</translation>
-<translation id="2022953316617983419">Código QR</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> não conseguiu verificar se as suas senhas aparecem em violações de dados. Tente de novo em 24 horas.</translation>
 <translation id="2023167225947895179">O PIN pode ser facilmente descoberto</translation>
 <translation id="202352106777823113">O download estava demorando muito e foi interrompido pela rede.</translation>
@@ -1544,7 +1544,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2162926944953615670">Nenhum perfil de eSIM disponível</translation>
 <translation id="2163470535490402084">Conecte-se à Internet para fazer login no seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor</translation>
-<translation id="2165102982098084499">Você vinculou estes dispositivos usando um código QR.</translation>
+<translation id="2165102982098084499">Você vinculou estes dispositivos usando um QR code.</translation>
 <translation id="2165177462441582039">Escolha por quanto tempo o destaque deve permanecer em cada item</translation>
 <translation id="2166369534954157698">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
 <translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Este dispositivo (SN: <ph name="SERIAL_NUMBER" />) foi bloqueado.<ph name="END_PARAGRAPH1" />
@@ -1554,7 +1554,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2173801458090845390">Adicionar código de requisição para este dispositivo</translation>
 <translation id="2175384018164129879">&amp;Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
 <translation id="217576141146192373">Não foi possível adicionar a impressora. Verifique a configuração da impressora e tente novamente.</translation>
-<translation id="2175927920773552910">Código QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="2177306523871626993">Fazendo o download dos arquivos de reconhecimento de texto (<ph name="PERCENT" />%)…</translation>
 <translation id="2177950615300672361">Guia anônima: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -3914,7 +3914,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Instalou extensões? <ph name="BEGIN_LINK" />Gerencie suas extensões<ph name="END_LINK" /> em um só lugar.</translation>
 <translation id="4016762287427926315">As permissões concedidas para <ph name="APP_NAME" /> também serão dadas para este app. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
-<translation id="4017225831995090447">Criar um código QR para este link</translation>
+<translation id="4017225831995090447">Criar um QR code para este link</translation>
 <translation id="4019983356493507433">Editar lista de favoritos</translation>
 <translation id="4020327272915390518">Menu Opções</translation>
 <translation id="4021279097213088397">–</translation>
@@ -3968,7 +3968,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4050534976465737778">Confirme se os dois dispositivos estão desbloqueados, perto um do outro e com o Bluetooth ativado. Se você estiver compartilhando com um Chromebook que não está nos seus contatos, ative a visibilidade do Compartilhar por proximidade na área de status. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4051177682900543628">pesquisar + seta para a direita</translation>
 <translation id="4052120076834320548">Minúscula</translation>
-<translation id="4052913941260326985">Criar código QR</translation>
+<translation id="4052913941260326985">Criar QR code</translation>
 <translation id="4054070260844648638">Visível para todos</translation>
 <translation id="4056908315660577142">Você atingiu o limite de tempo que seu familiar responsável definiu para o app <ph name="APP_NAME" /> do Chrome. Você poderá usá-lo por <ph name="TIME_LIMIT" /> amanhã.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4907,7 +4907,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4827675678516992122">Não foi possível conectar</translation>
 <translation id="4827784381479890589">Verificação ortográfica melhorada no navegador Chrome (o texto é enviado ao Google para sugestões de ortografia)</translation>
-<translation id="4827904420700932487">Criar código QR para esta imagem</translation>
+<translation id="4827904420700932487">Criar QR code para esta imagem</translation>
 <translation id="4827970183019354123">Verificador de URL</translation>
 <translation id="4828567746430452681">Não há mais suporte para a extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="482952334869563894">Dispositivos USB do fornecedor <ph name="VENDOR_ID" /></translation>
@@ -5155,7 +5155,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5029287942302939687">Sua senha foi definida</translation>
 <translation id="5029873138381728058">Falha ao verificar as VMs</translation>
 <translation id="503155457707535043">Fazendo o download dos apps</translation>
-<translation id="5032430150487044192">Não é possível criar o código QR</translation>
+<translation id="5032430150487044192">Não é possível criar o QR code</translation>
 <translation id="5033137252639132982">Bloquear o uso de sensores de movimento</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
 <translation id="5035846135112863536">Selecione "Mais detalhes" abaixo para saber mais informações sobre o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -6177,7 +6177,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5865508026715185451">O app <ph name="APP_NAME" /> será pausado em breve</translation>
 <translation id="586567932979200359">Você está executando o <ph name="PRODUCT_NAME" /> a partir de uma imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e garante que ele se manterá atualizado.</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
-<translation id="5867855474018538405">Siga as instruções no smartphone para ler o código QR. Confira se o Bluetooth e o Wi-Fi dele estão ativados.
+<translation id="5867855474018538405">Siga as instruções no smartphone para ler o QR code. Confira se o Bluetooth e o Wi-Fi dele estão ativados.
     <ph name="BR" />
     <ph name="BR" />
     Use o smartphone para adicionar as informações da sua Conta do Google e do Wi-Fi ao <ph name="DEVICE_TYPE" />.
@@ -6420,7 +6420,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6059652578941944813">Hierarquia de certificados</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6061408389284235459">Uma notificação foi enviada para o dispositivo <ph name="DEVICE_NAME" /></translation>
-<translation id="6063284707309177505">Criar código QR</translation>
+<translation id="6063284707309177505">Criar QR code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar os resultados personalizados de <ph name="SUPERVISED_USER_NAME" />. Para economizar bateria, você pode acessar as configurações do Google Assistente de <ph name="SUPERVISED_USER_NAME" /> e ativar o "Ok Google" apenas quando o dispositivo estiver conectado a uma fonte de energia.</translation>
 <translation id="6064217302520318294">Bloqueio de tela</translation>
 <translation id="606449270532897041">Gerenciar dados do site</translation>
@@ -6591,7 +6591,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6195693561221576702">Não é possível configurar este dispositivo no modo de demonstração off-line.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" assumiu o controle das suas configurações de proxy, o que significa que ela pode alterar, invadir ou escutar qualquer coisa que você fizer on-line. Se você não tiver certeza do motivo dessa alteração, provavelmente não a deseja.</translation>
-<translation id="6197128521826316819">Criar código QR para esta página</translation>
+<translation id="6197128521826316819">Criar QR code para esta página</translation>
 <translation id="6198223452299275399">Deslizar entre páginas</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6200047250927636406">Descartar arquivo</translation>
@@ -6638,7 +6638,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6233154960150021497">Usar voz em vez de teclado por padrão</translation>
 <translation id="6234108445915742946">Os Termos de Serviço do Chrome serão atualizados em 31 de março</translation>
 <translation id="6234474535228214774">Instalação pendente</translation>
-<translation id="6235208551686043831">A câmera do dispositivo foi ativada. Posicione o código QR do eSIM na frente dela.</translation>
+<translation id="6235208551686043831">A câmera do dispositivo foi ativada. Posicione o QR code do eSIM na frente dela.</translation>
 <translation id="6237297174664969437">Nas configurações do Chrome, você pode escolher a qualquer momento quais dados de navegação são sincronizados. Nas <ph name="LINK_BEGIN" />configurações do dispositivo<ph name="LINK_END" />, você pode controlar a sincronização dos apps da Web instalados no navegador Chrome. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="6237474966939441970">App de anotações com a stylus</translation>
 <translation id="623755660902014047">Modo de leitura</translation>
@@ -8033,7 +8033,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7366316827772164604">Procurando dispositivos próximos…</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
-<translation id="7367714965999718019">Gerador de código QR</translation>
+<translation id="7367714965999718019">Gerador de QR code</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
 <translation id="736877393389250337">Não foi possível abrir <ph name="URL" /> no <ph name="ALTERNATIVE_BROWSER_NAME" />. Entre em contato com o administrador do sistema.</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
@@ -8184,7 +8184,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7476989672001283112">Bloqueados automaticamente: <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="7477460499687558352">Escolha um perfil de eSIM para fazer o download</translation>
 <translation id="7477599578899108080">Uso elevado da memória: <ph name="MEMORY_USAGE" /></translation>
-<translation id="7477748600276493962">Criar código QR para esta página</translation>
+<translation id="7477748600276493962">Criar QR code para esta página</translation>
 <translation id="7477793887173910789">Controle suas músicas, seus vídeos e muito mais</translation>
 <translation id="7478069565037869084">Espaçadas</translation>
 <translation id="7478485216301680444">Não foi possível instalar o aplicativo de quiosque.</translation>
@@ -8595,7 +8595,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="778480864305029524">Para usar o tethering instantâneo, ative as notificações para o Google Play Services.</translation>
 <translation id="7785471469930192436">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável</translation>
 <translation id="77855763949601045">&amp;Abrir perfil de visitante</translation>
-<translation id="7786663536153819505">Siga as instruções no smartphone para ler o código QR. Verifique se o Bluetooth do smartphone está ativado.
+<translation id="7786663536153819505">Siga as instruções no smartphone para ler o QR code. Verifique se o Bluetooth do smartphone está ativado.
     <ph name="BR" />
     <ph name="BR" />
     Visível para dispositivos por perto, como o <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
@@ -8855,7 +8855,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7978450511781612192">Isso desconectará você das suas Contas do Google. Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados.</translation>
 <translation id="7980084013673500153">Código do recurso: <ph name="ASSET_ID" /></translation>
 <translation id="7980257515763116014">Controle o cursor e o teclado com movimentos do rosto</translation>
-<translation id="7981662863948574132">Mostre o EID do dispositivo e o pop-up do código QR</translation>
+<translation id="7981662863948574132">Mostre o EID do dispositivo e o pop-up do QR code</translation>
 <translation id="7981670705071137488">A partir de agora, as atualizações de software vão acontecer em segundo plano. Você pode revisar as preferências de atualização nas configurações.</translation>
 <translation id="7982083145464587921">Reinicie seu dispositivo para corrigir este erro.</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -9068,7 +9068,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8148760431881541277">Limitar login</translation>
 <translation id="8149564499626272569">Verificar pelo smartphone usando um cabo USB</translation>
 <translation id="8149870652370242480">Para usar as senhas salvas no smartphone, faça o download do Chrome para iOS e faça login na sua Conta do Google.</translation>
-<translation id="815114315010033526">Em vez disso, use o código QR</translation>
+<translation id="815114315010033526">Em vez disso, use o QR code</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Nenhum arquivo</translation>
 <translation id="8154912474061769055">Os recursos de vários sites podem não funcionar</translation>
@@ -9146,7 +9146,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{O download está em andamento}one{O download está em andamento}other{Os downloads estão em andamento}}</translation>
 <translation id="8212601853154459483">Este perfil é gerenciado por <ph name="PROFILE_MANAGER" />, e você precisa criar outro para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8212792694174629011">Nenhum perfil foi encontrado. Tente ler o código QR usando a câmera do dispositivo ou digite o código de ativação enviado pela operadora.</translation>
+<translation id="8212792694174629011">Nenhum perfil foi encontrado. Tente ler o QR code usando a câmera do dispositivo ou digite o código de ativação enviado pela operadora.</translation>
 <translation id="8214489666383623925">Abrir arquivo...</translation>
 <translation id="8215129063232901118">Acessar as funcionalidades do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Destacar ponteiro</translation>
@@ -9766,7 +9766,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8705331520020532516">Número de série</translation>
 <translation id="8705580154597116082">Wi-Fi disponível via smartphone</translation>
 <translation id="8705629851992224300">Não foi possível ler a chave de segurança</translation>
-<translation id="8706111173576263877">Leitura do código QR realizada.</translation>
+<translation id="8706111173576263877">Leitura do QR code realizada.</translation>
 <translation id="8707318721234217615">Espaçamento da letra</translation>
 <translation id="8708000541097332489">Limpar ao sair</translation>
 <translation id="870805141700401153">Assinatura do código individual da Microsoft</translation>
@@ -9800,7 +9800,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8727751378406387165">Enviar <ph name="BEGIN_LINK1" />metadados de preenchimento automático<ph name="END_LINK1" />.
           <ph name="LINE_BREAK" />
           Os dados de preenchimento automático não serão compartilhados</translation>
-<translation id="8729133765463465108">Usar a câmera para ler um código QR</translation>
+<translation id="8729133765463465108">Usar a câmera para ler um QR code</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731029916209785242">Permissões (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> quer <ph name="PERMISSION" /></translation>
@@ -10183,7 +10183,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9022847679183471841">Essa conta já está sendo utilizada neste computador por <ph name="AVATAR_NAME" />.</translation>
 <translation id="9022871169049522985">Sites e anunciantes podem medir a performance dos anúncios deles</translation>
 <translation id="9023015617655685412">Adicionar esta guia aos favoritos...</translation>
-<translation id="902319268551617004">Leia o código QR usando a câmera do dispositivo ou digite o código de ativação fornecido pela operadora.</translation>
+<translation id="902319268551617004">Leia o QR code usando a câmera do dispositivo ou digite o código de ativação fornecido pela operadora.</translation>
 <translation id="9023909777842748145">A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.</translation>
 <translation id="9024127637873500333">&amp;Abrir em nova guia</translation>
 <translation id="9024158959543687197">Erro ao ativar o compartilhamento. Verifique o URL de compartilhamento de arquivos e tente novamente.</translation>
@@ -10374,7 +10374,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
       <ph name="LIST_ITEM" />Execute o Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
-<translation id="9166253503936244008">Leia este código QR com o dispositivo que tem a senha de acesso que você quer usar para o app <ph name="APP_NAME" /></translation>
+<translation id="9166253503936244008">Leia este QR code com o dispositivo que tem a senha de acesso que você quer usar para o app <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Mostrar Lista de leitura</translation>
 <translation id="9167450455589251456">O perfil não é compatível</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> contas</translation>
