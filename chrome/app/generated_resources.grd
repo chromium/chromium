@@ -11817,36 +11817,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       </if>
 
-      <!-- Cookies Window -->
-      <message name="IDS_COOKIES_REMOVE_LABEL" desc="The label of the 'Remove' button in the Cookies Window">
-        Remove
-      </message>
-      <message name="IDS_COOKIES_COOKIE_NAME_LABEL" desc="The Cookie Name label" meaning="Name of an inanimate object">
-        Name
-      </message>
-      <message name="IDS_COOKIES_COOKIE_CONTENT_LABEL" desc="The Cookie Content label">
-        Content
-      </message>
-      <message name="IDS_COOKIES_COOKIE_DOMAIN_LABEL" desc="The Cookie Domain label">
-        Domain
-      </message>
-      <message name="IDS_COOKIES_COOKIE_PATH_LABEL" desc="The Cookie Path label">
-        Path
-      </message>
-      <message name="IDS_COOKIES_COOKIE_SENDFOR_LABEL" desc="The Cookie Send For label">
-        Send for
-      </message>
-      <message name="IDS_COOKIES_COOKIE_CREATED_LABEL" desc="The Cookie Created label">
-        Created
-      </message>
-      <message name="IDS_COOKIES_COOKIE_EXPIRES_LABEL" desc="The Cookie Expires label">
-        Expires
-      </message>
-
+      <!-- Cookies tree model -->
       <message name="IDS_COOKIES_COOKIE_EXPIRES_SESSION" desc="The Cookie Expires field value for a session cookie">
         When the browsing session ends
       </message>
-
       <message name="IDS_COOKIES_COOKIE_SENDFOR_ANY" desc="Send Cookie for any kind of connection">
         Any kind of connection
       </message>
@@ -11865,9 +11839,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_COOKIES_COOKIE_ACCESSIBLE_TO_SCRIPT_NO" desc="Accessible to Script">
         No (HttpOnly)
       </message>
-      <message name="IDS_COOKIES_COOKIE_NONESELECTED" desc="Field value when no cookie is selected">
-        no cookie selected
-      </message>
       <message name="IDS_COOKIES_COOKIES" desc="Label for folder under which a list of cookies appear">
         Cookies
       </message>
@@ -11882,15 +11853,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_COOKIES_INDEXED_DBS" desc="Label for Indexed Databases (name of an HTML standard)">
         Indexed databases
-      </message>
-      <message name="IDS_COOKIES_MEDIA_LICENSE" desc="The text shown when there is an Media License in the Cookies table">
-        Media license
-      </message>
-      <message name="IDS_COOKIES_MEDIA_LICENSES" desc="Label for Media Licenses">
-        Media licenses
-      </message>
-      <message name="IDS_COOKIES_FILE_SYSTEM" desc="The text shown when there is a file system (name of an HTML standard) in the Cookies table">
-        File system
       </message>
       <message name="IDS_COOKIES_FILE_SYSTEMS" desc="Label for the folder under which a list of file systems (name of an HTML standard) are displayed">
         File systems
@@ -11909,9 +11871,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_COOKIES_CACHE_STORAGE" desc="The text shown when there is Cache Storage (name of a Web standard) in the Cookies table">
         Cache Storage
-      </message>
-      <message name="IDS_CLIENT_CERT_ECDSA_SIGN" translateable="false" desc="">
-        ecdsa_sign
       </message>
 
       <!-- Strings used for non-Android builds -->
