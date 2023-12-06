@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -94,7 +95,10 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   // Set highlight path.
   views::HighlightPathGenerator::Install(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                gfx::Insets(), /*corner_radius=*/kCornerRadius));
+                gfx::Insets(), for_editing_list
+                                   ? gfx::RoundedCornersF(kCornerRadius)
+                                   : gfx::RoundedCornersF(
+                                         kCornerRadius, kCornerRadius, 0, 0)));
 }
 
 ActionEditView::~ActionEditView() = default;
