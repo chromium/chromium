@@ -468,7 +468,7 @@ source_set("quiche_tests") {
     "src/quiche/common/structured_headers_test.cc",
     "src/quiche/http2/adapter/event_forwarder_test.cc",
     "src/quiche/http2/adapter/header_validator_test.cc",
-    "src/quiche/http2/adapter/noop_header_validator_test.cc",
+    "src/quiche/http2/adapter/minimal_header_validator_test.cc",
     "src/quiche/http2/adapter/oghttp2_adapter_test.cc",
     "src/quiche/http2/adapter/oghttp2_session_test.cc",
     "src/quiche/http2/adapter/window_manager_test.cc",
