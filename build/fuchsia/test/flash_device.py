@@ -156,17 +156,8 @@ def update(system_image_dir: str,
                 flash(system_image_dir, target, serial_num)
         else:
             flash(system_image_dir, target, serial_num)
-        # Always reboot the device since the ffx may ignore the device state
-        # after the flash. See
-        # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
-        # TODO(crbug.com/1490434): May consider is_in_fuchsia and
-        # test_connection before the reboot.
-        try:
-            boot_device(target, BootMode.REGULAR, serial_num, must_boot=True)
-        except:  # pylint: disable=bare-except
-            # If unfortunately, the reboot failed, it's still worth continuing
-            # the test rather than failing here.
-            pass
+        # Always sleep after all updates.
+        time.sleep(180)
 
 
 def register_update_args(arg_parser: argparse.ArgumentParser,
