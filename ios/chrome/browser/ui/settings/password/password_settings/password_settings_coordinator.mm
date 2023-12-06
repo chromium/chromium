@@ -218,12 +218,16 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 }
 
 - (void)stop {
-  // If the parent coordinator is stopping `self` while the UI is still being
-  // presented, dismiss without animation. Dismissals due to user actions (e.g,
-  // swipe or tap on Done) are animated.
-  if (self.baseViewController.presentedViewController ==
-      _settingsNavigationController) {
-    [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  [self stopWithUIDismissal:YES];
+}
+
+#pragma mark - PasswordSettingsCoordinator
+
+- (void)stopWithUIDismissal:(BOOL)shouldDismissUI {
+  if (shouldDismissUI) {
+    [_settingsNavigationController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
   }
 
   [_passwordsInOtherAppsCoordinator stop];

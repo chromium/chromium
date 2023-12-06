@@ -112,6 +112,10 @@ using password_manager::WarningType;
 @implementation PasswordsCoordinator {
   // For recording visits after successful authentication.
   IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+
+  // Whether local authentication failed for a child coordinator and thus the
+  // whole Password Manager UI is being dismissed.
+  BOOL _authDidFailForChildCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -223,11 +227,17 @@ using password_manager::WarningType;
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
 
-  [self.passwordSettingsCoordinator stop];
+  // When the coordinator is stopped due to failed authentication, the whole
+  // Password Manager UI is dismissed via command. Not dismissing the top
+  // presented coordinator UI before everything else prevents the Password
+  // Manager UI from being visible without local authentication.
+  [self.passwordSettingsCoordinator
+      stopWithUIDismissal:!_authDidFailForChildCoordinator];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
 
-  [self.addPasswordCoordinator stop];
+  [self.addPasswordCoordinator
+      stopWithUIDismissal:!_authDidFailForChildCoordinator];
   self.addPasswordCoordinator.delegate = nil;
   self.addPasswordCoordinator = nil;
 
@@ -424,6 +434,7 @@ using password_manager::WarningType;
 #pragma mark - PasswordManagerReauthenticationDelegate
 
 - (void)dismissPasswordManagerAfterFailedReauthentication {
+  _authDidFailForChildCoordinator = YES;
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
