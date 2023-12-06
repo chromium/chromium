@@ -4943,6 +4943,16 @@ targets.legacy_basic_suite(
     },
 )
 
+# This target should usually be the same as `lacros_skylab_tests_with_gtests`. We use
+# a different target for version skew so we can easily disable all version skew
+# tests during an outage.
+targets.legacy_basic_suite(
+    name = "lacros_skylab_tests_with_gtests_version_skew",
+    tests = {
+        "chromeos_integration_tests": None,
+    },
+)
+
 targets.legacy_basic_suite(
     name = "lacros_vm_gtests",
     tests = {

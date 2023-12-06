@@ -1064,6 +1064,25 @@ targets.legacy_matrix_compound_suite(
                 "CROS_PUFF_RELEASE_LKGM",
             ],
         ),
+        "lacros_skylab_tests_with_gtests_version_skew": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_DEV",
+                "CROS_BRYA_RELEASE_BETA",
+                "CROS_BRYA_RELEASE_STABLE",
+                "CROS_DEDEDE_RELEASE_DEV",
+                "CROS_DEDEDE_RELEASE_BETA",
+                "CROS_DEDEDE_RELEASE_STABLE",
+                "CROS_FIZZ_RELEASE_DEV",
+                "CROS_FIZZ_RELEASE_BETA",
+                "CROS_FIZZ_RELEASE_STABLE",
+                "CROS_GUYBRUSH_RELEASE_DEV",
+                "CROS_GUYBRUSH_RELEASE_BETA",
+                "CROS_GUYBRUSH_RELEASE_STABLE",
+                "CROS_PUFF_RELEASE_DEV",
+                "CROS_PUFF_RELEASE_BETA",
+                "CROS_PUFF_RELEASE_STABLE",
+            ],
+        ),
         "lacros_skylab_tests_with_gtests": targets.legacy_matrix_config(
             variants = [
                 "CROS_BRYA_RELEASE_LKGM",
