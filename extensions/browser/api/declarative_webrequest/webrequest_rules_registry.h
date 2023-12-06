@@ -172,8 +172,6 @@ class WebRequestRulesRegistry : public RulesRegistry {
   std::map<ExtensionId, RulesMap> webrequest_rules_;
 
   url_matcher::URLMatcher url_matcher_;
-
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> browser_context_;
 };
 
 }  // namespace extensions

@@ -47,8 +47,7 @@ WebRequestRulesRegistry::WebRequestRulesRegistry(
     : RulesRegistry(browser_context,
                     declarative_webrequest_constants::kOnRequest,
                     cache_delegate,
-                    rules_registry_id),
-      browser_context_(browser_context) {}
+                    rules_registry_id) {}
 
 std::set<const WebRequestRule*> WebRequestRulesRegistry::GetMatches(
     const WebRequestData& request_data_without_ids) const {
@@ -152,7 +151,7 @@ std::string WebRequestRulesRegistry::AddRulesImpl(
   std::string error;
   RulesVector new_webrequest_rules;
   new_webrequest_rules.reserve(rules.size());
-  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+  const Extension* extension = ExtensionRegistry::Get(browser_context())
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
   RulesMap& registered_rules = webrequest_rules_[extension_id];
@@ -286,7 +285,8 @@ WebRequestRulesRegistry::~WebRequestRulesRegistry() = default;
 
 base::Time WebRequestRulesRegistry::GetExtensionInstallationTime(
     const std::string& extension_id) const {
-  return ExtensionPrefs::Get(browser_context_)->GetLastUpdateTime(extension_id);
+  return ExtensionPrefs::Get(browser_context())
+      ->GetLastUpdateTime(extension_id);
 }
 
 void WebRequestRulesRegistry::ClearCacheOnNavigation() {
