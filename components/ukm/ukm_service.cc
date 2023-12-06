@@ -65,7 +65,6 @@ uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service,
   // to convert it. base::StringToUint64() will treat a negative value as
   // underflow, which results in 0 (the minimum Uint64 value).
   if (client_id) {
-    UMA_HISTOGRAM_BOOLEAN("UKM.MigratedClientIdInt64ToUInt64", false);
     return client_id;
   }
 
@@ -74,7 +73,6 @@ uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service,
   client_id = pref_service->GetInt64(prefs::kUkmClientId);
   if (client_id) {
     pref_service->SetUint64(prefs::kUkmClientId, client_id);
-    UMA_HISTOGRAM_BOOLEAN("UKM.MigratedClientIdInt64ToUInt64", true);
     return client_id;
   }
 

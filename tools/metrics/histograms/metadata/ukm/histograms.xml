@@ -231,18 +231,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.MigratedClientIdInt64ToUInt64" enum="BooleanMigrated"
-    expires_after="2021-07-01">
-  <owner>jwd@chromium.org</owner>
-  <owner>rkaplow@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    The client id was migrated from an Int64 pref to a UInt64 pref. Not migrated
-    is recorded when a valid UInt64 value is loaded from prefs. Migration
-    started in M75.
-  </summary>
-</histogram>
-
 <histogram name="UKM.PersistentLogRecall.Status"
     enum="PersistedLogsLogReadStatus" expires_after="2024-05-01">
   <owner>rkaplow@chromium.org</owner>
