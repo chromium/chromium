@@ -23,7 +23,7 @@ export class FunctionSequence {
    * @param failureCallback Callback to invoke on failure.
    */
   constructor(
-      private steps_: Function[], private logger: MetadataParser,
+      private steps_: Function[], public logger: MetadataParser,
       private callback_: VoidCallback,
       private failureCallback_: (error: string) => void) {
     this.onError = this.onError_.bind(this);
