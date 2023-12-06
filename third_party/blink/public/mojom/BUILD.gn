@@ -249,7 +249,6 @@ mojom("mojom_platform") {
     ":web_feature_mojo_bindings",
     "//cc/mojom",
     "//components/payments/mojom",
-    "//components/record_replay/services/auth_token/public/mojom",
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
     "//mojo/public/mojom/base",

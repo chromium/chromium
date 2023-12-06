@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_RECORD_REPLAY_INTERFACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_RECORD_REPLAY_INTERFACE_H_
 
-#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "base/values.h"
@@ -35,24 +34,6 @@ void RecordReplayOnErrorEvent(ErrorEvent* error_event);
 // Notify record/replay about new inspectors that have been created.
 void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
                                      v8::Isolate* isolate);
-
-class RecordReplayEventListener : public NativeEventListener {
- public:
-  RecordReplayEventListener(v8::Isolate* isolate, LocalFrame* localFrame)
-      : local_frame_(localFrame) {}
-
-  void Invoke(ExecutionContext*, Event*) override;
-
-  void Trace(Visitor*) const override;
-
-  static RecordReplayEventListener* Create(v8::Isolate* isolate,
-                                      LocalFrame* localFrame) {
-    return MakeGarbageCollected<RecordReplayEventListener>(isolate, localFrame);
-  }
-
- private:
-  Member<LocalFrame> local_frame_;
-};
 
 } // namespace blink
 

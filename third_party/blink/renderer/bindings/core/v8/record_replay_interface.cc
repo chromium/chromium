@@ -5463,7 +5463,6 @@ void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Co
   );
 }
 
-
 extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
 
 static ErrorEvent* gCurrentErrorEvent;
@@ -5500,22 +5499,6 @@ static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
                   v8::Number::New(isolate, gCurrentErrorEvent->Location()->ScriptId()));
 
   args.GetReturnValue().Set(rv);
-}
-
-void RecordReplayEventListener::Invoke(ExecutionContext* context, Event* event) {
-  // TODO only register the observer if the event matches this structure:
-  // type = WebChannelMessageToChrome"
-  // detail (stringified): {
-  //   id: "record-replay-token",
-  //   message: { type: "connect" },
-  // }
-
-  local_frame_->RegisterRecordReplayAuthTokenObserver();
-}
-
-void RecordReplayEventListener::Trace(Visitor* visitor) const {
-  visitor->Trace(local_frame_);
-  EventListener::Trace(visitor);
 }
 
 }  // namespace blink

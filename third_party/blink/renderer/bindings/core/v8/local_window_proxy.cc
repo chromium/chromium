@@ -79,7 +79,6 @@ namespace blink {
 
 void LocalWindowProxy::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
-  visitor->Trace(record_replay_listener_);
   WindowProxy::Trace(visitor);
 }
 
@@ -244,7 +243,6 @@ void LocalWindowProxy::Initialize() {
     // Initialize Replay things that depend on previous Replay initialization 
     // steps.
     OnNewWindow2(GetIsolate(), GetFrame(), context);
-
   }
 
   {
@@ -258,25 +256,10 @@ void LocalWindowProxy::Initialize() {
 
   InstallConditionalFeatures();
 
-  // Add an event listener for the dispatched custom event the devtools uses to register
-  // its listener.  Do this outside the recording.
-  SetupRecordReplayEventListener();
-
   if (World().IsMainWorld()) {
     GetFrame()->Loader().DispatchDidClearWindowObjectInMainWorld();
   }
 }
-
-void LocalWindowProxy::SetupRecordReplayEventListener() {
-  LocalFrame* localFrame = GetFrame();
-
-  record_replay_listener_ = RecordReplayEventListener::Create(GetIsolate(), localFrame);
-
-  bool added = localFrame->DomWindow()->addEventListener("WebChannelMessageToChrome", record_replay_listener_.Get());
-
-  DCHECK(added);
-}
-
 
 void LocalWindowProxy::CreateContext() {
   TRACE_EVENT2("v8", "LocalWindowProxy::CreateContext", "IsMainFrame",
