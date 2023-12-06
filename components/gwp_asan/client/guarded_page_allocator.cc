@@ -274,7 +274,7 @@ void* GuardedPageAllocator::Allocate(size_t size,
   if (!align) {
     align = std::min(std::bit_floor(size), kGpaAllocAlignment);
   }
-  CHECK(base::bits::IsPowerOfTwo(align));
+  CHECK(std::has_single_bit(align));
 
   AllocatorState::SlotIdx free_slot;
   AllocatorState::MetadataIdx free_metadata;
