@@ -2818,6 +2818,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
     expires_after="2024-05-19">
   <owner>bmcquade@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     For page loads that start in the foreground, measures the duration of time
     until one of the following events occurs: the load of the main resource
