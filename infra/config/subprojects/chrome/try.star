@@ -215,6 +215,26 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "optimization_guide-linux",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-mac-arm64",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-mac-x64",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-win32",
+)
+
+chrome_internal_verifier(
+    builder = "optimization_guide-win64",
+)
+
+chrome_internal_verifier(
     builder = "test-o-emulator",
 )
 
