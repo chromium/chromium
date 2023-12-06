@@ -99,6 +99,10 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kForceRestartGpuKillSwitch);
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
+
+GPU_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
+
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseGpuSchedulerDfs);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseClientGmbInterface);
@@ -129,6 +133,8 @@ GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);
+GPU_EXPORT bool EnablePurgeGpuImageDecodeCache();
+GPU_EXPORT bool EnablePruneOldTransferCacheEntries();
 
 #if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();

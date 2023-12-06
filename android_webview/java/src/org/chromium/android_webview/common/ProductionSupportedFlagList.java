@@ -159,6 +159,9 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.AGGRESSIVE_SKIA_GPU_RESOURCE_PURGE,
                 "More aggressively purge skia GPU resources"),
         Flag.baseFeature(
+                GpuFeatures.PRUNE_OLD_TRANSFER_CACHE_ENTRIES,
+                "Prune old transfer cache entries and disable pruning from client"),
+        Flag.baseFeature(
                 VizFeatures.ALLOW_BYPASS_RENDER_PASS_QUADS,
                 "Enable bypass render pass for RenderPassDrawQuads"),
         Flag.baseFeature(

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +18,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
@@ -30,6 +32,8 @@ namespace {
 // Put an arbitrary (high) limit on number of cache entries to prevent
 // unbounded handle growth with tiny entries.
 static size_t kMaxCacheEntries = 2000;
+
+constexpr base::TimeDelta kOldEntryCutoffTimeDelta = base::Seconds(30);
 
 // Alias the image entry to its skia counterpart, taking ownership of the
 // memory and preventing double counting.
@@ -146,8 +150,11 @@ ServiceTransferCache::CacheEntryInternal&
 ServiceTransferCache::CacheEntryInternal::operator=(
     CacheEntryInternal&& other) = default;
 
-ServiceTransferCache::ServiceTransferCache(const GpuPreferences& preferences)
-    : entries_(EntryCache::NO_AUTO_EVICT),
+ServiceTransferCache::ServiceTransferCache(
+    const GpuPreferences& preferences,
+    base::RepeatingClosure flush_callback)
+    : flush_callback_(std::move(flush_callback)),
+      entries_(EntryCache::NO_AUTO_EVICT),
       cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
                             ? preferences.force_gpu_mem_discardable_limit_bytes
                             : DiscardableCacheSizeLimit()),
@@ -194,6 +201,7 @@ bool ServiceTransferCache::CreateLockedEntry(
   }
   entries_.Put(key, CacheEntryInternal(handle, std::move(entry)));
   EnforceLimits();
+  MaybePostPruneOldEntries();
   return true;
 }
 
@@ -214,6 +222,7 @@ void ServiceTransferCache::CreateLocalEntry(
 
   entries_.Put(key, CacheEntryInternal(std::nullopt, std::move(entry)));
   EnforceLimits();
+  MaybePostPruneOldEntries();
 }
 
 bool ServiceTransferCache::UnlockEntry(const EntryKey& key) {
@@ -224,6 +233,7 @@ bool ServiceTransferCache::UnlockEntry(const EntryKey& key) {
   if (!found->second.handle)
     return false;
   found->second.handle->Unlock();
+  MaybePostPruneOldEntries();
   return true;
 }
 
@@ -273,23 +283,66 @@ cc::ServiceTransferCacheEntry* ServiceTransferCache::GetEntry(
 }
 
 void ServiceTransferCache::EnforceLimits() {
+  RemoveOldEntriesUntil([&](EntryCache::reverse_iterator it) {
+    return total_size_ <= cache_size_limit_ &&
+           entries_.size() <= max_cache_entries_;
+  });
+}
+
+void ServiceTransferCache::MaybePostPruneOldEntries() {
+  if (!features::EnablePruneOldTransferCacheEntries()) {
+    return;
+  }
+  if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    // No task runner in unit tests.
+    return;
+  }
+
+  if (prune_old_entries_timer_.IsRunning()) {
+    request_post_prune_old_entries_while_pending_ = true;
+    return;
+  }
+  prune_old_entries_timer_.Start(FROM_HERE, kOldEntryCutoffTimeDelta, this,
+                                 &ServiceTransferCache::PruneOldEntries);
+}
+
+void ServiceTransferCache::PruneOldEntries() {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  int removed_count =
+      RemoveOldEntriesUntil([&](EntryCache::reverse_iterator it) {
+        return now - it->second.last_use < kOldEntryCutoffTimeDelta;
+      });
+  if (removed_count && flush_callback_) {
+    flush_callback_.Run();
+  }
+
+  if (request_post_prune_old_entries_while_pending_) {
+    request_post_prune_old_entries_while_pending_ = false;
+    MaybePostPruneOldEntries();
+  }
+}
+
+int ServiceTransferCache::RemoveOldEntriesUntil(
+    base::FunctionRef<bool(EntryCache::reverse_iterator)> should_stop) {
+  int removed_count = 0;
   for (auto it = entries_.rbegin(); it != entries_.rend();) {
-    if (total_size_ <= cache_size_limit_ &&
-        entries_.size() <= max_cache_entries_) {
-      return;
+    if (should_stop(it)) {
+      break;
     }
     if (it->second.handle && !it->second.handle->Delete()) {
       ++it;
       continue;
     }
-
     total_size_ -= it->second.entry->CachedSize();
     if (it->first.entry_type == cc::TransferCacheEntryType::kImage) {
       total_image_count_--;
       total_image_size_ -= it->second.entry->CachedSize();
     }
     it = entries_.Erase(it);
+    removed_count++;
   }
+  return removed_count;
 }
 
 void ServiceTransferCache::PurgeMemory(
@@ -342,6 +395,7 @@ bool ServiceTransferCache::CreateLockedHardwareDecodedImageEntry(
   }
   entries_.Put(key, CacheEntryInternal(handle, std::move(entry)));
   EnforceLimits();
+  MaybePostPruneOldEntries();
   return true;
 }
 

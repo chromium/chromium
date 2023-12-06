@@ -40,8 +40,6 @@ class RasterContextProvider;
 
 namespace cc {
 
-CC_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
-
 class ColorFilter;
 class RasterDarkModeFilter;
 

@@ -4659,6 +4659,9 @@ class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
   void SetUp() override {
     GpuImageDecodeCacheTest::SetUp();
 
+    feature_list_enable_purge_.InitAndDisableFeature(
+        features::kPruneOldTransferCacheEntries);
+
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     current_default_handle_ = std::make_unique<
         base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting>(
@@ -4700,6 +4703,7 @@ class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
     }
   }
 
+  base::test::ScopedFeatureList feature_list_enable_purge_;
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverrideForTesting>
       current_default_handle_ = nullptr;
   std::unique_ptr<GpuImageDecodeCache> cache_ = nullptr;

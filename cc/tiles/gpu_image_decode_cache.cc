@@ -74,18 +74,7 @@
 
 namespace cc {
 
-// A feature that will start a task on a timer to purge old cache entries.
-BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
-             "PurgeOldCacheEntriesOnTimer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
-
-constexpr base::FeatureParam<int> kPurgeInterval{&kPurgeOldCacheEntriesOnTimer,
-                                                 "seconds", 30};
-
-constexpr base::FeatureParam<int> kPurgeMaxAge{&kPurgeOldCacheEntriesOnTimer,
-                                               "seconds", 30};
 
 // The number or entries to keep in the cache, depending on the memory state of
 // the system. This limit can be breached by in-use cache items, which cannot
@@ -1633,7 +1622,7 @@ void GpuImageDecodeCache::RecordStats() {
 
 void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
                                                scoped_refptr<ImageData> data) {
-  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+  if (features::EnablePurgeGpuImageDecodeCache()) {
     DCHECK(persistent_cache_.empty() || has_pending_purge_task());
     PostPurgeOldCacheEntriesTask();
   }
@@ -1705,7 +1694,7 @@ bool GpuImageDecodeCache::TryFlushPendingWork() {
   // fully static, then no flush will come, and no entries will actually be
   // deleted. We only need a shallow flush because no glFlush() is required, we
   // merely need the deletion commands to be processed service-side.
-  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+  if (features::EnablePurgeGpuImageDecodeCache()) {
     context_->RasterInterface()->ShallowFlushCHROMIUM();
   }
   if (context_->GetLock()) {
@@ -3714,11 +3703,11 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetTaskFromMapForClientId(
 }
 
 base::TimeDelta GpuImageDecodeCache::get_purge_interval() {
-  return base::Seconds(kPurgeInterval.Get());
+  return base::Seconds(30);
 }
 
 base::TimeDelta GpuImageDecodeCache::get_max_purge_age() {
-  return base::Seconds(kPurgeMaxAge.Get());
+  return base::Seconds(30);
 }
 
 }  // namespace cc
