@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -310,7 +311,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
 // app.
 void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
     app_list::AppListSyncableService* syncable_service,
-    const std::vector<std::string>& app_ids,
+    base::span<const std::string> app_ids,
     bool is_policy_initiated) {
   // Chrome must be pinned at this point.
   syncer::StringOrdinal chrome_position =
@@ -403,7 +404,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     if (!lacros_position.IsValid()) {
       // If Lacros isn't already pinned, add it to the right of the Chrome icon.
       InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-          syncable_service, {app_constants::kLacrosAppId},
+          syncable_service, {{app_constants::kLacrosAppId}},
           /*is_policy_initiated=*/false);
     }
   }
@@ -482,7 +483,7 @@ void ChromeShelfPrefs::RemovePinPosition(const ash::ShelfID& shelf_id) {
 void ChromeShelfPrefs::SetPinPosition(
     const ash::ShelfID& shelf_id,
     const ash::ShelfID& shelf_id_before,
-    const std::vector<ash::ShelfID>& shelf_ids_after,
+    base::span<const ash::ShelfID> shelf_ids_after,
     bool pinned_by_policy) {
   const std::string app_id = GetSyncId(shelf_id.app_id);
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -75,7 +76,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // `PinnedLauncherApps` policy.
   void SetPinPosition(const ash::ShelfID& shelf_id,
                       const ash::ShelfID& shelf_id_before,
-                      const std::vector<ash::ShelfID>& shelf_ids_after,
+                      base::span<const ash::ShelfID> shelf_ids_after,
                       bool pinned_by_policy);
 
   // Makes GetPinnedAppsFromSync() return an empty list. Avoids test failures
