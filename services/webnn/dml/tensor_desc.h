@@ -66,6 +66,12 @@ class TensorDesc final {
   // the tensor rank >= minimum_rank.
   void EnsureMinimumRank(size_t minimum_rank, Alignment alignment);
 
+  // Promotes the tensor shape to a compatible higher rank given a list of
+  // target axes. e.g. given an existing shape of [2, 3], new rank of 4, and
+  // target axes of [0, 3], the new shape would be [2, 1, 1, 3].
+  void MakeBroadcastCompatible(size_t minimum_rank,
+                               base::span<const uint32_t> axes);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescB);

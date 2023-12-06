@@ -244,6 +244,213 @@ struct ClampAttributes {
 };
 
 template <typename T>
+struct BatchNormalizationTester {
+  OperandInfo<T> input;
+  OperandInfo<T> mean;
+  OperandInfo<T> variance;
+  absl::optional<OperandInfo<T>> scale;
+  absl::optional<OperandInfo<T>> bias;
+  struct BatchNormalizationAttributes {
+    absl::optional<uint64_t> scale_operand_id;
+    absl::optional<uint64_t> bias_operand_id;
+    uint32_t axis = 1;
+    float epsilon = 1e-5;
+    absl::optional<mojom::Activation::Tag> activation;
+    absl::optional<ClampAttributes> clamp_attributes;
+    absl::optional<float> elu_alpha;
+    absl::optional<float> leaky_relu_alpha;
+  };
+  BatchNormalizationAttributes attributes;
+  OperandInfo<float> output;
+
+  void Test(BuildAndComputeExpectation expectation =
+                BuildAndComputeExpectation::kSuccess) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t mean_operand_id =
+        builder.BuildInput("mean", mean.dimensions, mean.type);
+    uint64_t variance_operand_id =
+        builder.BuildInput("variance", variance.dimensions, variance.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    if (scale.has_value()) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+
+    builder.BuildBatchNormalization(input_operand_id, mean_operand_id,
+                                    variance_operand_id, output_operand_id,
+                                    std::move(attributes));
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"mean", VectorToBigBuffer(mean.values)});
+    named_inputs.insert({"variance", VectorToBigBuffer(variance.values)});
+    if (scale.has_value()) {
+      named_inputs.insert({"scale", VectorToBigBuffer(scale->values)});
+    }
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs, expectation);
+
+    if (expectation == BuildAndComputeExpectation::kSuccess) {
+      VerifyFloatDataIsEqual(
+          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+          output.values);
+    }
+  }
+};
+
+// Test building and computing a DML graph with single operator
+// batchNormalization.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
+  // DML_BATCHNORMALIZATION_OPERATOR_DESC support for 1~8 dimension counts was
+  // introduced in DML_FEATURE_LEVEL_3_1.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_1));
+
+  {
+    // Test batchNormalization with 4-D input with default axis.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-0.9999950000374997, 0, 0.9999950000374997,
+                              -0.22474078892909666, 1, 2.224740788929097}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 4-D input with activation = relu.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.activation = mojom::Activation::Tag::kRelu},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {0, 0, 0.9999950000374997, 0, 1,
+                              2.224740788929097}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 4-D input with axis = 3.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 2},
+                  .values = {-1, 2, 0, 3, 1, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.axis = 3},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 2},
+                   .values = {-0.9999950000374997, -0.22474078892909666, 0, 1,
+                              0.9999950000374997, 2.224740788929097}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 1-D input with axis = 0.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1, 1}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {-1, 1}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.axis = 0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2},
+                   .values = {0, 1}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 3-D input with axis = 2, epsilon = 1e-3.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {3},
+                 .values = {0, 3, 6}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3},
+                     .values = {1.0, 1.5, 2.0}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {3},
+                                    .values = {1.0, 1.5, 2.0}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {3},
+                                   .values = {0, 1, 2}},
+        .attributes = {.axis = 2, .epsilon = 1e-3},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 1, 3},
+                   .values =
+                       {
+                           -0.9995003746877732,
+                           -2.6730104813358024,
+                           -5.069300707549023,
+                           1.9990007493755464,
+                           1,
+                           -0.8277202830196093,
+                       }}}
+        .Test();
+  }
+}
+
+template <typename T>
 struct Conv2dTester {
   mojom::Conv2d_Type type;
   OperandInfo<T> input;

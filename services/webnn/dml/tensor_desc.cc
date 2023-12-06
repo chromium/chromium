@@ -180,4 +180,25 @@ void TensorDesc::EnsureMinimumRank(size_t minimum_rank, Alignment alignment) {
   buffer_desc_.Strides = strides_.data();
 }
 
+void TensorDesc::MakeBroadcastCompatible(size_t minimum_rank,
+                                         base::span<const uint32_t> axes) {
+  if (dimensions_.size() >= minimum_rank) {
+    return;
+  }
+
+  CHECK_LE(axes.size(), dimensions_.size());
+  std::vector<uint32_t> new_dimensions(minimum_rank, 1);
+  std::vector<uint32_t> new_strides(minimum_rank, 0);
+  for (size_t i = 0; i < axes.size(); i++) {
+    CHECK_LT(axes[i], minimum_rank);
+    new_dimensions[axes[i]] = dimensions_[i];
+    new_strides[axes[i]] = strides_[i];
+  }
+
+  dimensions_ = std::move(new_dimensions);
+  strides_ = std::move(new_strides);
+  buffer_desc_.DimensionCount = dimensions_.size();
+  buffer_desc_.Sizes = dimensions_.data();
+  buffer_desc_.Strides = strides_.data();
+}
 }  // namespace webnn::dml

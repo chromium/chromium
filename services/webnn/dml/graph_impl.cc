@@ -470,6 +470,139 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
   }
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::BatchNormalizationPtr& batch_normalization,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, batch_normalization->input_operand_id);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  const auto input_rank = input_tensor_desc.GetDimensions().size();
+
+  const NodeOutput* mean = GetNodeOutputForOperand(
+      id_to_node_output_map, batch_normalization->mean_operand_id);
+  auto mean_tensor_desc = mean->GetTensorDesc();
+  auto mean_rank = mean_tensor_desc.GetDimensions().size();
+  CHECK_EQ(mean_rank, 1U);
+
+  auto axis = batch_normalization->axis;
+  uint32_t axes[1] = {axis};
+
+  // In WebNN spec, mean operand is specified as a 1-D tensor and its size equal
+  // to the size of the input dimension denoted by axis. But for DML,
+  // InputTensor and MeanTensor must have the same DimensionCount -
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc.
+  mean_tensor_desc.MakeBroadcastCompatible(input_rank, axes);
+
+  const NodeOutput* variance = GetNodeOutputForOperand(
+      id_to_node_output_map, batch_normalization->variance_operand_id);
+  auto variance_tensor_desc = variance->GetTensorDesc();
+  auto variance_rank = variance_tensor_desc.GetDimensions().size();
+  CHECK_EQ(variance_rank, 1U);
+
+  // In WebNN spec, variance operand is specified as a 1-D tensor and its size
+  // equal to the size of the input dimension denoted by axis. But for DML,
+  // InputTensor and VarianceTensor must have the same DimensionCount -
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc.
+  variance_tensor_desc.MakeBroadcastCompatible(input_rank, axes);
+
+  auto& scale_operand_id = batch_normalization->scale_operand_id;
+  if (!scale_operand_id) {
+    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
+                                        "scale can't be nullptr."));
+  }
+
+  const auto scale_node_output_iterator =
+      id_to_node_output_map.find(scale_operand_id.value());
+  CHECK(scale_node_output_iterator != id_to_node_output_map.end());
+  const NodeOutput* scale = scale_node_output_iterator->second;
+  CHECK(scale);
+  auto scale_tensor_desc = scale->GetTensorDesc();
+  auto scale_rank = scale_tensor_desc.GetDimensions().size();
+  CHECK_EQ(scale_rank, 1U);
+
+  // In WebNN spec, scale operand is specified as a 1-D tensor and its size
+  // equal to the size of the input dimension denoted by axis. But for DML,
+  // InputTensor and ScaleTensor must have the same DimensionCount -
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc.
+  scale_tensor_desc.MakeBroadcastCompatible(input_rank, axes);
+
+  auto& bias_operand_id = batch_normalization->bias_operand_id;
+  if (!bias_operand_id) {
+    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
+                                        "bias can't be nullptr."));
+  }
+
+  const auto bias_node_output_iterator =
+      id_to_node_output_map.find(bias_operand_id.value());
+  CHECK(bias_node_output_iterator != id_to_node_output_map.end());
+  const NodeOutput* bias = bias_node_output_iterator->second;
+  CHECK(bias);
+  auto bias_tensor_desc = bias->GetTensorDesc();
+  auto bias_rank = bias_tensor_desc.GetDimensions().size();
+  CHECK_EQ(bias_rank, 1U);
+
+  // In WebNN spec, bias operand is specified as a 1-D tensor and its size
+  // equal to the size of the input dimension denoted by axis. But for DML,
+  // InputTensor and BiasTensor must have the same DimensionCount -
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc.
+  bias_tensor_desc.MakeBroadcastCompatible(input_rank, axes);
+
+  std::array<const NodeOutput*, 5> inputs = {input, mean, variance, scale,
+                                             bias};
+
+  absl::optional<ActivationOperatorDesc> activation_operator_desc;
+  absl::optional<DML_OPERATOR_DESC> activation_dml_desc;
+  if (batch_normalization->activation) {
+    auto create_activation_result =
+        CreateActivationOperatorDesc(batch_normalization->activation);
+    if (!create_activation_result.has_value()) {
+      return base::unexpected(std::move(create_activation_result.error()));
+    }
+
+    activation_operator_desc = std::move(create_activation_result.value());
+    activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
+  }
+
+  uint64_t output_id = batch_normalization->output_operand_id;
+  const TensorDesc& output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_BATCH_NORMALIZATION_OPERATOR_DESC batch_normalization_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .MeanTensor = &mean_tensor_desc.GetDMLTensorDesc(),
+      .VarianceTensor = &variance_tensor_desc.GetDMLTensorDesc(),
+      .ScaleTensor = &scale_tensor_desc.GetDMLTensorDesc(),
+      .BiasTensor = &bias_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      // Spatial is used to specify whether locations are spatial.
+      // This parameter was deprecated in DML_FEATURE_LEVEL_4_0, and has no
+      // effect.
+      .Spatial = true,
+      .Epsilon = batch_normalization->epsilon,
+      .FusedActivation =
+          activation_dml_desc ? &activation_dml_desc.value() : nullptr,
+  };
+
+  const OperatorNode* batch_normalization_node =
+      graph_builder.CreateOperatorNode(DML_OPERATOR_BATCH_NORMALIZATION,
+                                       &batch_normalization_operator_desc,
+                                       inputs);
+  if (!batch_normalization_node) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create batch normalization operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      batch_normalization_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     const IdToOperandMap& id_to_operand_map,
     const mojom::Conv2dPtr& conv2d,
@@ -2264,6 +2397,12 @@ void GraphImpl::CreateAndBuild(
     // message.
     base::expected<void, mojom::ErrorPtr> create_operator_result;
     switch (operation->which()) {
+      case mojom::Operation::Tag::kBatchNormalization: {
+        create_operator_result = CreateOperatorNodeForBatchNormalization(
+            id_to_operand_map, operation->get_batch_normalization(),
+            graph_builder, id_to_node_output_map);
+        break;
+      }
       case Operation::Tag::kClamp: {
         create_operator_result = CreateOperatorNodeForClamp(
             id_to_operand_map, operation->get_clamp(), graph_builder,

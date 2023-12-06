@@ -183,4 +183,51 @@ TEST_F(WebNNTensorDescTest, EnsureMinimumRank) {
             (std::vector<uint32_t>{24, 12, 4, 1, 0, 0, 0, 0}));
 }
 
+TEST_F(WebNNTensorDescTest, Make1DBroadcastCompatibleTo4D) {
+  // Test creating a TensorDesc with dimensions = {2}, axes = {1} and
+  // minimum_rank = 4.
+  std::vector<uint32_t> dimensions = {2};
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, std::move(dimensions));
+  uint32_t axes[1] = {1};
+  tensor_desc.MakeBroadcastCompatible(4, axes);
+  EXPECT_EQ(tensor_desc.GetDimensions(), (std::vector<uint32_t>{1, 2, 1, 1}));
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{0, 1, 0, 0}));
+}
+
+TEST_F(WebNNTensorDescTest, Make2DBroadcastCompatibleTo4D) {
+  // Test creating a TensorDesc with dimensions = {2, 3}, axes = {1, 3} and
+  // minimum_rank = 4.
+  std::vector<uint32_t> dimensions = {2, 3};
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, std::move(dimensions));
+  uint32_t axes[2] = {1, 3};
+  tensor_desc.MakeBroadcastCompatible(4, axes);
+  EXPECT_EQ(tensor_desc.GetDimensions(), (std::vector<uint32_t>{1, 2, 1, 3}));
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{0, 3, 0, 1}));
+}
+
+TEST_F(WebNNTensorDescTest, Make2DBroadcastCompatibleTo4DWithNoDefaultStrides) {
+  // Test creating a TensorDesc with dimensions = {3, 2}, strides = {1, 3} axes
+  // = {1, 3} and minimum_rank = 4.
+  std::vector<uint32_t> dimensions = {3, 2};
+  std::vector<uint32_t> strides = {1, 3};
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, std::move(dimensions),
+                         std::move(strides));
+  uint32_t axes[2] = {1, 3};
+  tensor_desc.MakeBroadcastCompatible(4, axes);
+  EXPECT_EQ(tensor_desc.GetDimensions(), (std::vector<uint32_t>{1, 3, 1, 2}));
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{0, 1, 0, 3}));
+}
+
+TEST_F(WebNNTensorDescTest, Make0DBroadcastCompatibleTo4D) {
+  // Test creating a scale TensorDesc, axes = {} and
+  // minimum_rank = 4.
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, {});
+  tensor_desc.MakeBroadcastCompatible(4, {});
+  EXPECT_EQ(tensor_desc.GetDimensions(), (std::vector<uint32_t>{1, 1, 1, 1}));
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{0, 0, 0, 0}));
+}
 }  // namespace webnn::dml
