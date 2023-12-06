@@ -7,12 +7,8 @@ import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webu
 import {MetadataCacheItem} from './metadata_cache_item.js';
 import {MetadataItem} from './metadata_item.js';
 
-/**
- * @type {!MetadataItem}
- */
 const metadataA = new MetadataItem();
 metadataA.contentMimeType = 'value';
-
 
 export function testMetadataCacheItemBasic() {
   const item = new MetadataCacheItem();
