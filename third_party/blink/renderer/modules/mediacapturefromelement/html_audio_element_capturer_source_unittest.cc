@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -99,6 +100,7 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
         source()->ConnectToInitializedTrack(media_stream_component_.Get()));
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
 

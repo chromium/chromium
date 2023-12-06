@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_response.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -25,6 +26,7 @@ namespace {
 // If the merchant requests shipping information, but the browser does not
 // provide the shipping option, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectMissingShippingOption) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -49,6 +51,7 @@ TEST(OnPaymentResponseTest, RejectMissingShippingOption) {
 // If the merchant requests shipping information, but the browser does not
 // provide a shipping address, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectMissingAddress) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -72,6 +75,7 @@ TEST(OnPaymentResponseTest, RejectMissingAddress) {
 // If the merchant requests a payer name, but the browser does not provide it,
 // reject the show() promise.
 TEST(OnPaymentResponseTest, RejectMissingName) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -94,6 +98,7 @@ TEST(OnPaymentResponseTest, RejectMissingName) {
 // If the merchant requests an email address, but the browser does not provide
 // it, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectMissingEmail) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -116,6 +121,7 @@ TEST(OnPaymentResponseTest, RejectMissingEmail) {
 // If the merchant requests a phone number, but the browser does not provide it,
 // reject the show() promise.
 TEST(OnPaymentResponseTest, RejectMissingPhone) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -138,6 +144,7 @@ TEST(OnPaymentResponseTest, RejectMissingPhone) {
 // If the merchant requests shipping information, but the browser provides an
 // empty string for shipping option, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectEmptyShippingOption) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -163,6 +170,7 @@ TEST(OnPaymentResponseTest, RejectEmptyShippingOption) {
 // If the merchant requests shipping information, but the browser provides an
 // empty shipping address, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectEmptyAddress) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -187,6 +195,7 @@ TEST(OnPaymentResponseTest, RejectEmptyAddress) {
 // If the merchant requests a payer name, but the browser provides an empty
 // string for name, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectEmptyName) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -210,6 +219,7 @@ TEST(OnPaymentResponseTest, RejectEmptyName) {
 // If the merchant requests an email, but the browser provides an empty string
 // for email, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectEmptyEmail) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -233,6 +243,7 @@ TEST(OnPaymentResponseTest, RejectEmptyEmail) {
 // If the merchant requests a phone number, but the browser provides an empty
 // string for the phone number, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectEmptyPhone) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -256,6 +267,7 @@ TEST(OnPaymentResponseTest, RejectEmptyPhone) {
 // If the merchant does not request shipping information, but the browser
 // provides a shipping address, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectNotRequestedAddress) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -280,6 +292,7 @@ TEST(OnPaymentResponseTest, RejectNotRequestedAddress) {
 // If the merchant does not request shipping information, but the browser
 // provides a shipping option, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectNotRequestedShippingOption) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -303,6 +316,7 @@ TEST(OnPaymentResponseTest, RejectNotRequestedShippingOption) {
 // If the merchant does not request a payer name, but the browser provides it,
 // reject the show() promise.
 TEST(OnPaymentResponseTest, RejectNotRequestedName) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -326,6 +340,7 @@ TEST(OnPaymentResponseTest, RejectNotRequestedName) {
 // If the merchant does not request an email, but the browser provides it,
 // reject the show() promise.
 TEST(OnPaymentResponseTest, RejectNotRequestedEmail) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -349,6 +364,7 @@ TEST(OnPaymentResponseTest, RejectNotRequestedEmail) {
 // If the merchant does not request a phone number, but the browser provides it,
 // reject the show() promise.
 TEST(OnPaymentResponseTest, RejectNotRequestedPhone) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -372,6 +388,7 @@ TEST(OnPaymentResponseTest, RejectNotRequestedPhone) {
 // If the merchant requests shipping information, but the browser provides an
 // invalid shipping address, reject the show() promise.
 TEST(OnPaymentResponseTest, RejectInvalidAddress) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -413,6 +430,7 @@ class PaymentResponseFunction : public ScriptFunction::Callable {
 // If the merchant requests shipping information, the resolved show() promise
 // should contain a shipping option and an address.
 TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -448,6 +466,7 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
 // If the merchant requests a payer name, the resolved show() promise should
 // contain a payer name.
 TEST(OnPaymentResponseTest, CanRequestName) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -482,6 +501,7 @@ TEST(OnPaymentResponseTest, CanRequestName) {
 // If the merchant requests an email address, the resolved show() promise should
 // contain an email address.
 TEST(OnPaymentResponseTest, CanRequestEmail) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -515,6 +535,7 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
 // If the merchant requests a phone number, the resolved show() promise should
 // contain a phone number.
 TEST(OnPaymentResponseTest, CanRequestPhone) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -548,6 +569,7 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
 // If the merchant does not request shipping information, the resolved show()
 // promise should contain null shipping option and address.
 TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -579,6 +601,7 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
 // If the merchant does not request a phone number, the resolved show() promise
 // should contain null phone number.
 TEST(OnPaymentResponseTest, PhoneNotRequired) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -612,6 +635,7 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
 // If the merchant does not request a payer name, the resolved show() promise
 // should contain null payer name.
 TEST(OnPaymentResponseTest, NameNotRequired) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -645,6 +669,7 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
 // If the merchant does not request an email address, the resolved show()
 // promise should contain null email address.
 TEST(OnPaymentResponseTest, EmailNotRequired) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();

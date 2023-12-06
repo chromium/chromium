@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -191,6 +192,7 @@ BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,
 }
 
 TEST(BaseRenderingContextLayerTests, ContextLost) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -205,6 +207,7 @@ TEST(BaseRenderingContextLayerTests, ContextLost) {
 }
 
 TEST(BaseRenderingContextLayerTests, ResetsAndRestoresShadowStates) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -237,6 +240,7 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresShadowStates) {
 }
 
 TEST(BaseRenderingContextLayerTests, ResetsAndRestoresCompositeStates) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -261,6 +265,7 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresCompositeStates) {
 }
 
 TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -286,6 +291,7 @@ TEST(BaseRenderingContextLayerTests, ResetsAndRestoresFilterStates) {
 }
 
 TEST(BaseRenderingContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -302,6 +308,7 @@ TEST(BaseRenderingContextLayerTests, BeginLayerThrowsOnInvalidFilterParam) {
 }
 
 TEST(BaseRenderingContextLayerTests, putImageDataThrowsInLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -322,6 +329,7 @@ TEST(BaseRenderingContextLayerTests, putImageDataThrowsInLayer) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, DefaultRenderingStates) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -336,6 +344,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, DefaultRenderingStates) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlpha) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -352,6 +361,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlpha) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, BlendingOperation) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -371,6 +381,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BlendingOperation) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, CompositeOperation) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -390,6 +401,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CompositeOperation) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, Shadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -411,6 +423,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, Shadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndBlending) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -432,6 +445,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndBlending) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndComposite) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -453,6 +467,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndComposite) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -477,6 +492,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaBlendingAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -503,6 +519,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaBlendingAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaCompositeAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -529,6 +546,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaCompositeAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, BlendingAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -553,6 +571,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BlendingAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, CompositeAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -577,6 +596,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CompositeAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, Filter) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -597,6 +617,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, Filter) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndGlobalAlpha) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -619,6 +640,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndGlobalAlpha) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndBlending) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -641,6 +663,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndBlending) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndComposite) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -667,6 +690,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndComposite) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -696,6 +720,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndBlending) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -720,6 +745,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndBlending) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndComposite) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -748,6 +774,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndComposite) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -780,6 +807,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterGlobalAlphaAndShadow) {
 
 TEST(BaseRenderingContextLayerGlobalStateTests,
      FilterGlobalAlphaBlendingAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -814,6 +842,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
 
 TEST(BaseRenderingContextLayerGlobalStateTests,
      FilterGlobalAlphaCompositeAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -847,6 +876,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterBlendingAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -878,6 +908,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterBlendingAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -909,6 +940,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, BeginLayerIgnoresGlobalFilter) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -931,6 +963,7 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BeginLayerIgnoresGlobalFilter) {
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
@@ -962,6 +995,7 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
@@ -1004,6 +1038,7 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresTransforms) {
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
@@ -1101,6 +1136,7 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresClip) {
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresLayers) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1147,6 +1183,7 @@ TEST(BaseRenderingContextRestoreStackTests, RestoresLayers) {
 }
 
 TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1177,6 +1214,7 @@ TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, LoneBeginLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1188,6 +1226,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, LoneBeginLayer) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, LoneRestore) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   context->restore(scope.GetExceptionState());
@@ -1197,6 +1236,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, LoneRestore) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, LoneEndLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1208,6 +1248,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, LoneEndLayer) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, SaveRestore) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   context->save();
@@ -1218,6 +1259,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveRestore) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, SaveResetRestore) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   context->save();
@@ -1229,6 +1271,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveResetRestore) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerEndLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1242,6 +1285,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerEndLayer) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerResetEndLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1257,6 +1301,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerResetEndLayer) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1269,6 +1314,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayer) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, SaveEndLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1281,6 +1327,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveEndLayer) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSave) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1294,6 +1341,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSave) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerRestore) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1308,6 +1356,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerRestore) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayerRestore) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1323,6 +1372,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, SaveBeginLayerRestore) {
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1339,6 +1389,7 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
 
 TEST(BaseRenderingContextLayersCSSTests,
      FilterOperationsWithStyleResolutionHost) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
@@ -1360,6 +1411,7 @@ TEST(BaseRenderingContextLayersCSSTests,
 
 TEST(BaseRenderingContextLayersCSSTests,
      FilterOperationsWithNoStyleResolutionHost) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);

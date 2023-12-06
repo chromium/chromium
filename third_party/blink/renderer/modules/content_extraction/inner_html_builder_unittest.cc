@@ -7,12 +7,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 namespace blink {
 namespace {
 
 TEST(InnerHtmlBuilderTest, Basic) {
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   helper.Initialize();
   ASSERT_TRUE(helper.LocalMainFrame());

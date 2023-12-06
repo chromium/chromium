@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
 
 TEST(PaymentAddressTest, ValuesAreCopiedOver) {
+  test::TaskEnvironment task_environment;
   payments::mojom::blink::PaymentAddressPtr input =
       payments::mojom::blink::PaymentAddress::New();
   input->country = "US";

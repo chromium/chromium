@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -690,6 +691,7 @@ class ImageCaptureTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   Persistent<MockMediaStreamComponent> component_;
   Persistent<MockMediaStreamTrack> track_;
   Persistent<ImageCapture> image_capture_;

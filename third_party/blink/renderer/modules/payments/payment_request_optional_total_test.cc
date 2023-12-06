@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/payments/payment_request.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -70,6 +70,7 @@ class PaymentRequestOptionalTotalTest : public testing::Test {
     payment_provider_ = std::make_unique<MockPaymentProvider>();
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPaymentProvider> payment_provider_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -256,6 +257,8 @@ class RTCDataChannelTest : public ::testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   Persistent<NullExecutionContext> execution_context_ =
       MakeGarbageCollected<NullExecutionContext>();
 

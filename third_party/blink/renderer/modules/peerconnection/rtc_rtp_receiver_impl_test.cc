@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
 
@@ -105,6 +106,7 @@ class RTCRtpReceiverImplTest : public ::testing::Test {
     run_loop->Quit();
   }
 
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   Persistent<blink::MockPeerConnectionDependencyFactory> dependency_factory_;

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/mediastream/low_latency_video_renderer_algorithm.h"
+
 #include <queue>
 
 #include "base/time/time.h"
 #include "media/base/video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/modules/mediastream/low_latency_video_renderer_algorithm.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -108,6 +110,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   media::VideoFramePool frame_pool_;
   LowLatencyVideoRendererAlgorithm algorithm_;
   base::TimeTicks current_render_time_;

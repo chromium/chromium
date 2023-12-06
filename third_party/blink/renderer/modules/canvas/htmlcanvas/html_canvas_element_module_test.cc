@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 using ::testing::_;
@@ -82,6 +83,7 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
         exception_state);
   }
 
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<HTMLCanvasElement> canvas_element_;
   Persistent<CanvasRenderingContext> context_;

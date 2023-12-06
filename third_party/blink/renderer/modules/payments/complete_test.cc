@@ -12,11 +12,13 @@
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
 
 TEST(CompleteTest, CannotCallCompleteTwice) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -39,6 +41,7 @@ TEST(CompleteTest, CannotCallCompleteTwice) {
 }
 
 TEST(CompleteTest, ResolveCompletePromiseOnUnknownError) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -62,6 +65,7 @@ TEST(CompleteTest, ResolveCompletePromiseOnUnknownError) {
 }
 
 TEST(CompleteTest, ResolveCompletePromiseOnUserClosingUI) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -88,6 +92,7 @@ TEST(CompleteTest, ResolveCompletePromiseOnUserClosingUI) {
 // If user cancels the transaction during processing, the complete() promise
 // should be rejected.
 TEST(CompleteTest, RejectCompletePromiseAfterError) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
@@ -110,6 +115,7 @@ TEST(CompleteTest, RejectCompletePromiseAfterError) {
 }
 
 TEST(CompleteTest, ResolvePromiseOnComplete) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -133,6 +139,7 @@ TEST(CompleteTest, ResolvePromiseOnComplete) {
 }
 
 TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -160,6 +167,7 @@ TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
 }
 
 TEST(CompleteTest, RejectCompletePromiseAfterTimeout) {
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(

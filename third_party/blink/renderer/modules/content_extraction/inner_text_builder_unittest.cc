@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -28,6 +29,7 @@ namespace blink {
 namespace {
 
 TEST(InnerTextBuilderTest, Basic) {
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   helper.Initialize();
   // ScopedNullExecutionContext execution_context;
@@ -59,6 +61,7 @@ TEST(InnerTextBuilderTest, Basic) {
 }
 
 TEST(InnerTextBuilderTest, MultiFrames) {
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   std::string base_url("http://internal.test/");
   url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),
@@ -138,6 +141,7 @@ TEST(InnerTextBuilderTest, MultiFrames) {
 }
 
 TEST(InnerTextBuilderTest, DifferentOrigin) {
+  test::TaskEnvironment task_environment;
   frame_test_helpers::WebViewHelper helper;
   std::string base_url("http://internal.test/");
   url_test_helpers::RegisterMockedURLLoadFromBase(WebString::FromUTF8(base_url),

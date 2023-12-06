@@ -12,12 +12,14 @@
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_definition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 TEST(DocumentPaintDefinitionTest, NativeInvalidationProperties) {
+  test::TaskEnvironment task_environment;
   Vector<CSSPropertyID> native_invalidation_properties = {
       CSSPropertyID::kColor,
       CSSPropertyID::kZoom,
@@ -37,6 +39,7 @@ TEST(DocumentPaintDefinitionTest, NativeInvalidationProperties) {
 }
 
 TEST(DocumentPaintDefinitionTest, CustomInvalidationProperties) {
+  test::TaskEnvironment task_environment;
   Vector<CSSPropertyID> native_invalidation_properties;
   Vector<AtomicString> custom_invalidation_properties = {
       AtomicString("--my-property"),
@@ -55,6 +58,7 @@ TEST(DocumentPaintDefinitionTest, CustomInvalidationProperties) {
 }
 
 TEST(DocumentPaintDefinitionTest, Alpha) {
+  test::TaskEnvironment task_environment;
   Vector<CSSPropertyID> native_invalidation_properties;
   Vector<AtomicString> custom_invalidation_properties;
   Vector<CSSSyntaxDefinition> input_argument_types;
@@ -71,6 +75,7 @@ TEST(DocumentPaintDefinitionTest, Alpha) {
 }
 
 TEST(DocumentPaintDefinitionTest, InputArgumentTypes) {
+  test::TaskEnvironment task_environment;
   Vector<CSSPropertyID> native_invalidation_properties;
   Vector<AtomicString> custom_invalidation_properties;
   Vector<CSSSyntaxDefinition> input_argument_types = {

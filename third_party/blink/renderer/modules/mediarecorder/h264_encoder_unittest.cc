@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -136,6 +137,7 @@ class H264EncoderFixture : public ::testing::Test {
       base::TimeTicks capture_timestamp,
       bool is_key_frame) {}
 
+  test::TaskEnvironment task_environment_;
   const absl::optional<media::VideoCodecProfile> profile_;
   const absl::optional<uint8_t> level_;
   const uint32_t bitrate_;

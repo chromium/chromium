@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/media/base/fake_media_engine.h"
 
@@ -296,6 +297,7 @@ class WebRtcSetDescriptionObserverHandlerTest
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   rtc::scoped_refptr<MockPeerConnectionInterface> pc_;
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;

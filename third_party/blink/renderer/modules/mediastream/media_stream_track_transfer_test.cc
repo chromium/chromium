@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
-
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -12,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -161,6 +161,7 @@ mojom::blink::StreamDevices DevicesTabCaptureVideo(
 }
 
 TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
@@ -206,6 +207,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
 // version
 
 TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // The TransferredValues here match the expectations in

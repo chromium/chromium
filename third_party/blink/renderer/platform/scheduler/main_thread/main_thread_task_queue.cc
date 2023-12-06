@@ -268,6 +268,9 @@ AgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
 }
 
 FrameSchedulerImpl* MainThreadTaskQueue::GetFrameScheduler() const {
+  if (!task_queue_) {
+    return frame_scheduler_;
+  }
   DCHECK(task_queue_->task_runner()->BelongsToCurrentThread());
   return frame_scheduler_;
 }

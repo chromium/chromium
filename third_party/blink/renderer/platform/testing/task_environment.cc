@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink::test {
@@ -43,6 +44,8 @@ TaskEnvironmentImpl::TaskEnvironmentImpl(
 
   if (scheduler_) {
     main_thread_overrider_.emplace(scheduler_->CreateMainThread());
+    ThreadScheduler::Current()->InitializeTaskAttributionTracker(
+        std::make_unique<scheduler::TaskAttributionTrackerImpl>());
   } else {
     // When |real_main_thread_scheduler| == false, this simply relies on
     // the test suite providing a DummyWebMainThreadScheduler. We only

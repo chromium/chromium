@@ -158,6 +158,8 @@ enum DownloadActionMetrics {
 class MediaControlsImplTest : public PageTestBase,
                               private ScopedMediaCastOverlayButtonForTest {
  public:
+  MediaControlsImplTest(base::test::TaskEnvironment::TimeSource time_source)
+      : PageTestBase(time_source), ScopedMediaCastOverlayButtonForTest(true) {}
   MediaControlsImplTest() : ScopedMediaCastOverlayButtonForTest(true) {}
 
  protected:
@@ -863,20 +865,21 @@ namespace {
 
 class MediaControlsImplTestWithMockScheduler : public MediaControlsImplTest {
  public:
-  MediaControlsImplTestWithMockScheduler() { EnablePlatform(); }
+  MediaControlsImplTestWithMockScheduler()
+      : MediaControlsImplTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    EnablePlatform();
+  }
 
  protected:
   void SetUp() override {
     // DocumentParserTiming has DCHECKS to make sure time > 0.0.
-    platform()->AdvanceClockSeconds(1);
-    platform()->SetAutoAdvanceNowToPendingTasks(false);
+    AdvanceClock(base::Seconds(1));
 
     MediaControlsImplTest::SetUp();
   }
 
-  void TearDown() override {
-    platform()->SetAutoAdvanceNowToPendingTasks(true);
-  }
+  void TearDown() override { PageTestBase::TearDown(); }
 
   void ToggleOverflowMenu() {
     MediaControls().ToggleOverflowMenu();
@@ -945,26 +948,26 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Tabbing between controls prevents controls from hiding.
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   MuteButtonElement()->DispatchEvent(
       *Event::CreateBubble(event_type_names::kFocusin));
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Seeking on the timeline or volume bar prevents controls from hiding.
   TimelineElement()->DispatchEvent(
       *Event::CreateBubble(event_type_names::kInput));
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Pressing a key prevents controls from hiding.
   MuteButtonElement()->DispatchEvent(
       *Event::CreateBubble(event_type_names::kKeypress));
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Once user interaction stops, controls can hide.
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   SimulateTransitionEnd(*panel);
   EXPECT_FALSE(IsElementVisible(*panel));
 }
@@ -979,7 +982,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Controls start out visible
   EXPECT_TRUE(IsElementVisible(*panel));
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
 
   // Mouse move while focused
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
@@ -989,11 +992,11 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
       *CreatePointerEvent(event_type_names::kPointermove));
 
   // Controls should remain visible
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Controls should hide after being inactive for 4 seconds.
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(IsElementVisible(*panel));
 }
 
@@ -1007,7 +1010,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Controls start out visible
   EXPECT_TRUE(IsElementVisible(*panel));
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
 
   // Mouse move out while focused, controls should hide
   MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
@@ -1032,7 +1035,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
   EXPECT_FALSE(IsCursorHidden());
 
   // Once the controls hide, the cursor is hidden.
-  platform()->RunForPeriodSeconds(4);
+  FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsCursorHidden());
 
   // If the mouse moves, the controls are shown and the cursor is no longer
@@ -1042,7 +1045,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
   EXPECT_FALSE(IsCursorHidden());
 
   // Once the controls hide again, the cursor is hidden again.
-  platform()->RunForPeriodSeconds(4);
+  FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsCursorHidden());
 }
 
@@ -1054,19 +1057,19 @@ TEST_F(MediaControlsImplTestWithMockScheduler, AccessibleFocusShowsControls) {
   MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsElementVisible(*panel));
 
   MediaControls().OnAccessibleFocus();
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsElementVisible(*panel));
 
-  platform()->RunForPeriodSeconds(2);
+  FastForwardBy(base::Seconds(4));
   SimulateHideMediaControlsTimerFired();
   EXPECT_TRUE(IsElementVisible(*panel));
 
   MediaControls().OnAccessibleBlur();
-  platform()->RunForPeriodSeconds(4);
+  FastForwardBy(base::Seconds(4));
   SimulateHideMediaControlsTimerFired();
   EXPECT_FALSE(IsElementVisible(*panel));
 }
@@ -1190,7 +1193,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   EnsureSizing();
   MediaControls().MediaElement().SetSrc(
       AtomicString("https://example.com/foo.mp4"));
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
   SetHasAudio(true);
   SimulateLoadedMetadata();
 
@@ -1213,10 +1216,10 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Hover on mute button and stay
   MouseMoveTo(mute_btn_center);
-  platform()->RunForPeriodSeconds(kTimeToShowVolumeSlider - 0.001);
+  FastForwardBy(base::Seconds(kTimeToShowVolumeSlider - 0.001));
   EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
-  platform()->RunForPeriodSeconds(0.002);
+  FastForwardBy(base::Seconds(0.002));
   EXPECT_FALSE(volume_slider->classList().contains(AtomicString("closed")));
 
   MouseMoveTo(edge);
@@ -1224,7 +1227,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Hover on mute button and move away before timer fired
   MouseMoveTo(mute_btn_center);
-  platform()->RunForPeriodSeconds(kTimeToShowVolumeSlider - 0.001);
+  FastForwardBy(base::Seconds(kTimeToShowVolumeSlider - 0.001));
   EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
   MouseMoveTo(edge);
@@ -1235,7 +1238,8 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
        VolumeSliderBehaviorWhenFocused) {
   MediaControls().MediaElement().SetSrc(
       AtomicString("https://example.com/foo.mp4"));
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
+
   SetHasAudio(true);
 
   ScopedWebTestMode web_test_mode(false);
@@ -1261,7 +1265,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
        VolumeSliderDoesNotOpenWithoutAudio) {
   MediaControls().MediaElement().SetSrc(
       AtomicString("https://example.com/foo.mp4"));
-  platform()->RunForPeriodSeconds(1);
+  FastForwardBy(base::Seconds(1));
   SetHasAudio(false);
 
   ScopedWebTestMode web_test_mode(false);

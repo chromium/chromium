@@ -20,6 +20,7 @@
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -143,6 +144,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
     return nullptr;
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<AudioRendererMixerManager> manager_;
   scoped_refptr<media::MockAudioRendererSink> mock_sink_;
 
