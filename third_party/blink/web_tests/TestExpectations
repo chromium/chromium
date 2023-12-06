@@ -1542,7 +1542,6 @@ crbug.com/1488371 virtual/deprecate-unload/http/tests/history/history-replace-up
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-subframe-unload-handler.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-unload-handler.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/navigating-across-documents/navigate-to-unparseable-url.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/001.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/004.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/005.html [ Failure Skip Timeout ]

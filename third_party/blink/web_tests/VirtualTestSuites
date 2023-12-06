@@ -2693,7 +2693,6 @@
       "external/wpt/fetch/api/redirect/redirect-keepalive.any.js",
       "external/wpt/fetch/metadata/unload.https.sub.html",
       "external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html",
-      "external/wpt/html/browsers/browsing-the-web/navigating-across-documents/navigate-to-unparseable-url.html",
       "external/wpt/html/browsers/browsing-the-web/unloading-documents/001.html",
       "external/wpt/html/browsers/browsing-the-web/unloading-documents/002.html",
       "external/wpt/html/browsers/browsing-the-web/unloading-documents/003.html",
