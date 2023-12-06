@@ -3067,10 +3067,12 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  // TODO(accessibility) Address this more proactively and cleanly
-  // pruning the a11y tree for layout changes.
-  DUMP_WILL_BE_CHECK(!IsMissingParent())
-      << "Missing parent: " << ToString(true, true);
+  if (IsMissingParent()) {
+    // TODO(accessibility) Address this more proactively and cleanly
+    // pruning the a11y tree for layout changes.
+    DUMP_WILL_BE_CHECK(!IsMissingParent())
+        << "Missing parent: " << ToString(true, true);
+  }
 
   // Mock objects are created by, owned and dependent on their parents.
   // If the mock object's values change, recompute the parent's as well.
