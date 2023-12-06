@@ -1829,19 +1829,6 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
   if (!layout_object)
     return;
 
-  if (IsA<LayoutView>(layout_object)) {
-    // A document is being destroyed.
-    // This code is only reached when it is a popup being destroyed.
-    // TODO(accessibility) Can we remove this case since Blink calls
-    // RemovePopup(document) for us?
-    DCHECK(!popup_document_ ||
-           popup_document_ == &layout_object->GetDocument());
-    // Popup has been destroyed.
-    if (popup_document_) {
-      RemovePopup(popup_document_);
-    }
-  }
-
   // If a DOM node is present, it will have been used to back the AXObject, in
   // which case we need to call Remove(node) instead.
   if (Node* node = layout_object->GetNode()) {
