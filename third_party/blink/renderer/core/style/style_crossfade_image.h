@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_CROSSFADE_IMAGE_H_
 
 #include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -21,7 +20,8 @@ class CSSCrossfadeValue;
 class StyleCrossfadeImage final : public StyleImage {
  public:
   StyleCrossfadeImage(cssvalue::CSSCrossfadeValue&,
-                      HeapVector<Member<StyleImage>> images);
+                      StyleImage* from_image,
+                      StyleImage* to_image);
   ~StyleCrossfadeImage() override;
 
   CSSValue* CssValue() const override;
@@ -59,16 +59,9 @@ class StyleCrossfadeImage final : public StyleImage {
  private:
   bool IsEqual(const StyleImage&) const override;
 
-  // Can only return true for -webkit-cross-fade, not cross-fade.
-  bool AnyImageIsNone() const;
-
-  // Converts from 0..100 to 0..1, and fills in missing percentages.
-  // If for_sizing is true, skips all <color> StyleImages, since they
-  // do not participate in the sizing algorithms.
-  std::vector<float> ComputeWeights(bool for_sizing) const;
-
   Member<cssvalue::CSSCrossfadeValue> original_value_;
-  HeapVector<Member<StyleImage>> images_;
+  Member<StyleImage> from_image_;
+  Member<StyleImage> to_image_;
 };
 
 template <>

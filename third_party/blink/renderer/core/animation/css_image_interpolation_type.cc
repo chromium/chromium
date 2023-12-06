@@ -59,13 +59,10 @@ class CSSImageNonInterpolableValue final : public NonInterpolableValue {
       return start_;
     if (progress >= 1)
       return end_;
-    // https://drafts.csswg.org/css-images-4/#interpolating-images
-    auto* progress_value = CSSNumericLiteralValue::Create(
-        100.0 - progress * 100.0, CSSPrimitiveValue::UnitType::kPercentage);
     return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
-        /*is_prefixed_variant=*/false,
-        HeapVector<std::pair<CSSValue*, CSSPrimitiveValue*>>{
-            {start_, progress_value}, {end_, nullptr}});
+        start_, end_,
+        CSSNumericLiteralValue::Create(progress,
+                                       CSSPrimitiveValue::UnitType::kNumber));
   }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();

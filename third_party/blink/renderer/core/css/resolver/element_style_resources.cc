@@ -112,13 +112,10 @@ StyleImage* StyleImageLoader::Load(
   }
 
   if (auto* crossfade_value = DynamicTo<cssvalue::CSSCrossfadeValue>(value)) {
-    HeapVector<Member<StyleImage>> style_images;
-    for (const auto& [image, percentage] :
-         crossfade_value->GetImagesAndPercentages()) {
-      style_images.push_back(CrossfadeArgument(*image, cross_origin));
-    }
-    return MakeGarbageCollected<StyleCrossfadeImage>(*crossfade_value,
-                                                     std::move(style_images));
+    return MakeGarbageCollected<StyleCrossfadeImage>(
+        *crossfade_value,
+        CrossfadeArgument(crossfade_value->From(), cross_origin),
+        CrossfadeArgument(crossfade_value->To(), cross_origin));
   }
 
   if (auto* image_gradient_value =

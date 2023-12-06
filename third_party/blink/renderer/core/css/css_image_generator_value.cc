@@ -34,7 +34,6 @@
 namespace blink {
 
 using cssvalue::CSSConicGradientValue;
-using cssvalue::CSSConstantGradientValue;
 using cssvalue::CSSLinearGradientValue;
 using cssvalue::CSSRadialGradientValue;
 
@@ -160,9 +159,6 @@ scoped_refptr<Image> CSSImageGeneratorValue::GetImage(
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->GetImage(
           client, document, style, container_sizes, target_size);
-    case kConstantGradientClass:
-      return To<CSSConstantGradientValue>(this)->GetImage(
-          client, document, style, container_sizes, target_size);
     default:
       NOTREACHED();
   }
@@ -187,8 +183,6 @@ bool CSSImageGeneratorValue::IsUsingCurrentColor() const {
       return To<CSSRadialGradientValue>(this)->IsUsingCurrentColor();
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->IsUsingCurrentColor();
-    case kConstantGradientClass:
-      return To<CSSConstantGradientValue>(this)->IsUsingCurrentColor();
     default:
       return false;
   }
@@ -218,9 +212,6 @@ bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
       return To<CSSRadialGradientValue>(this)->KnownToBeOpaque(document, style);
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->KnownToBeOpaque(document, style);
-    case kConstantGradientClass:
-      return To<CSSConstantGradientValue>(this)->KnownToBeOpaque(document,
-                                                                 style);
     default:
       NOTREACHED();
   }

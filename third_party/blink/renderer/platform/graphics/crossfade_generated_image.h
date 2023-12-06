@@ -36,15 +36,13 @@ namespace blink {
 
 class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
  public:
-  struct WeightedImage {
-    scoped_refptr<Image> image;
-    float weight;  // Typically [0..1].
-  };
-
   static scoped_refptr<CrossfadeGeneratedImage> Create(
-      Vector<WeightedImage> images,
+      scoped_refptr<Image> from_image,
+      scoped_refptr<Image> to_image,
+      float percentage,
       const gfx::SizeF& size) {
-    return base::AdoptRef(new CrossfadeGeneratedImage(std::move(images), size));
+    return base::AdoptRef(new CrossfadeGeneratedImage(
+        std::move(from_image), std::move(to_image), percentage, size));
   }
 
   bool HasIntrinsicSize() const override { return true; }
@@ -63,14 +61,20 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
                 const gfx::RectF&,
                 const ImageDrawOptions&) final;
 
-  CrossfadeGeneratedImage(Vector<WeightedImage> images, const gfx::SizeF&);
+  CrossfadeGeneratedImage(scoped_refptr<Image> from_image,
+                          scoped_refptr<Image> to_image,
+                          float percentage,
+                          const gfx::SizeF&);
 
  private:
   void DrawCrossfade(cc::PaintCanvas*,
                      const cc::PaintFlags&,
                      const ImageDrawOptions&);
 
-  Vector<WeightedImage> images_;
+  scoped_refptr<Image> from_image_;
+  scoped_refptr<Image> to_image_;
+
+  float percentage_;
 };
 
 }  // namespace blink
