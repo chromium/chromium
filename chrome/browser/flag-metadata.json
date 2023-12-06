@@ -1042,12 +1042,12 @@
   {
     "name": "cast-streaming-hardware-h264",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 135
   },
   {
     "name": "cast-streaming-hardware-vp8",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 135
   },
   {
     "name": "cast-streaming-performance-overlay",
@@ -2191,17 +2191,17 @@
   {
     "name": "enable-cast-streaming-av1",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 135
   },
   {
     "name": "enable-cast-streaming-vp9",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 135
   },
   {
     "name": "enable-cast-streaming-with-hidpi",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 135
   },
   {
     "name": "enable-cct-text-fragment-lookup-api",
