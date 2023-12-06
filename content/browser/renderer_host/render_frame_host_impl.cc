@@ -210,6 +210,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "mojo/public/cpp/bindings/urgent_message_scope.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/schemeful_site.h"
 #include "net/net_buildflags.h"
@@ -10319,11 +10320,14 @@ void RenderFrameHostImpl::CommitNavigation(
     DCHECK(GetSameDocumentNavigationRequest(navigation_token));
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
-    GetMojomFrameInRenderer()->CommitSameDocumentNavigation(
-        std::move(common_params), std::move(commit_params),
-        base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,
-                       base::Unretained(this), navigation_token,
-                       should_replace_current_entry));
+    {
+      auto scope = MakeUrgentMessageScopeIfNeeded();
+      GetMojomFrameInRenderer()->CommitSameDocumentNavigation(
+          std::move(common_params), std::move(commit_params),
+          base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,
+                         base::Unretained(this), navigation_token,
+                         should_replace_current_entry));
+    }
   } else {
     // Pass the controller service worker info if we have one.
     blink::mojom::ControllerServiceWorkerInfoPtr controller;
@@ -13646,20 +13650,24 @@ void RenderFrameHostImpl::SendCommitNavigation(
   }
 
   commit_params->commit_sent = base::TimeTicks::Now();
-  navigation_client->CommitNavigation(
-      std::move(common_params), std::move(commit_params),
-      std::move(response_head), std::move(response_body),
-      std::move(url_loader_client_endpoints),
-      std::move(subresource_loader_factories), std::move(subresource_overrides),
-      std::move(controller), std::move(container_info),
-      std::move(subresource_proxying_loader_factory),
-      std::move(keep_alive_loader_factory),
-      std::move(fetch_later_loader_factory), document_token,
-      devtools_navigation_token, permissions_policy,
-      std::move(policy_container), std::move(code_cache_host),
-      std::move(resource_cache_remote), std::move(cookie_manager_info),
-      std::move(storage_info),
-      BuildCommitNavigationCallback(navigation_request));
+  {
+    auto scope = MakeUrgentMessageScopeIfNeeded();
+    navigation_client->CommitNavigation(
+        std::move(common_params), std::move(commit_params),
+        std::move(response_head), std::move(response_body),
+        std::move(url_loader_client_endpoints),
+        std::move(subresource_loader_factories),
+        std::move(subresource_overrides), std::move(controller),
+        std::move(container_info),
+        std::move(subresource_proxying_loader_factory),
+        std::move(keep_alive_loader_factory),
+        std::move(fetch_later_loader_factory), document_token,
+        devtools_navigation_token, permissions_policy,
+        std::move(policy_container), std::move(code_cache_host),
+        std::move(resource_cache_remote), std::move(cookie_manager_info),
+        std::move(storage_info),
+        BuildCommitNavigationCallback(navigation_request));
+  }
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
                     IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
@@ -13699,15 +13707,19 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
             GetSiteInstance()->coop_related_group_token());
   }
 
-  navigation_client->CommitFailedNavigation(
-      std::move(common_params), std::move(commit_params),
-      has_stale_copy_in_cache, error_code, extended_error_code,
-      navigation_request->GetResolveErrorInfo(), error_page_content,
-      std::move(subresource_loader_factories), document_token,
-      std::move(policy_container),
-      GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
-          navigation_request->GetURL(), this, GetBrowserContext(), error_code),
-      BuildCommitFailedNavigationCallback(navigation_request));
+  {
+    auto scope = MakeUrgentMessageScopeIfNeeded();
+    navigation_client->CommitFailedNavigation(
+        std::move(common_params), std::move(commit_params),
+        has_stale_copy_in_cache, error_code, extended_error_code,
+        navigation_request->GetResolveErrorInfo(), error_page_content,
+        std::move(subresource_loader_factories), document_token,
+        std::move(policy_container),
+        GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
+            navigation_request->GetURL(), this, GetBrowserContext(),
+            error_code),
+        BuildCommitFailedNavigationCallback(navigation_request));
+  }
 }
 
 // Called when the renderer navigates. For every frame loaded, we'll get this
@@ -13904,11 +13916,13 @@ void RenderFrameHostImpl::SendBeforeUnload(
     return;
   }
   // Experiment to run beforeunload handlers at a higher priority in the
-  // renderer. See crubug.com/1042118.
+  // renderer.
+  // TODO(crubug.com/1042118): Remove this.
   if (base::FeatureList::IsEnabled(features::kHighPriorityBeforeUnload)) {
     rfh->GetHighPriorityLocalFrame()->DispatchBeforeUnload(
         is_reload, std::move(before_unload_closure));
   } else {
+    auto scope = MakeUrgentMessageScopeIfNeeded();
     rfh->GetAssociatedLocalFrame()->BeforeUnload(
         is_reload, std::move(before_unload_closure));
   }
@@ -15896,6 +15910,31 @@ bool RenderFrameHostImpl::ShouldReuseCompositing(
 
   CHECK_EQ(GetProcess(), speculative_site_instance.GetProcess());
   return true;
+}
+
+absl::optional<mojo::UrgentMessageScope>
+RenderFrameHostImpl::MakeUrgentMessageScopeIfNeeded() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBlinkSchedulerPrioritizeNavigationIPCs)) {
+    return absl::nullopt;
+  }
+
+  // Don't prioritize navigations in RFHs that are prerendering, since that
+  // isn't visible to the user.
+  if (lifecycle_state_ == LifecycleStateImpl::kPrerendering) {
+    return absl::nullopt;
+  }
+
+  // The visibility for speculative RFHs isn't updated until late in the
+  // navigation process, so always use the RFH being replaced to determine
+  // visibility, since that is what's actually shown to the user.
+  RenderFrameHostImpl* rfh = frame_tree_node_->current_frame_host();
+  if (!rfh->IsOutermostMainFrame() ||
+      rfh->GetVisibilityState() != PageVisibilityState::kVisible) {
+    return absl::nullopt;
+  }
+
+  return mojo::UrgentMessageScope();
 }
 
 }  // namespace content

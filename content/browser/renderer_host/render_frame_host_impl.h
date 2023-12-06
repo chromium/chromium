@@ -219,6 +219,7 @@ class Range;
 
 namespace mojo {
 class MessageFilter;
+class UrgentMessageScope;
 }
 
 namespace network {
@@ -4072,6 +4073,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Notifies when the renderer side Widget instance has been created and mojo
   // interfaces to it can be bound.
   void RendererWidgetCreated();
+
+  // Returns an `UrgentMessageScope` if the feature to prioritize navigation
+  // IPCs is enabled and this is a main frame on a visible page.
+  absl::optional<mojo::UrgentMessageScope> MakeUrgentMessageScopeIfNeeded();
 
 #if BUILDFLAG(IS_ANDROID)
   // These functions are called after a WebAuthn relying party check has

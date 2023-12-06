@@ -1611,6 +1611,9 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   new_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
+  new_policy.should_prioritize_ipc_tasks() =
+      num_pending_urgent_ipc_messages_.load(std::memory_order_relaxed) > 0;
+
   new_policy.should_freeze_compositor_task_queue() = AllPagesFrozen();
 
   // Tracing is done before the early out check, because it's quite possible we
@@ -2449,6 +2452,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(queue.get(),
                                                         *task_timing);
+  MaybeUpdateIPCTaskQueuePriorityOnTaskCompleted();
 
   find_in_page_budget_pool_controller_->OnTaskCompleted(queue.get(),
                                                         task_timing);
@@ -2548,6 +2552,12 @@ TaskPriority MainThreadSchedulerImpl::ComputePriority(
     return frame_scheduler->ComputePriority(task_queue);
   }
 
+  if (task_queue->queue_type() == MainThreadTaskQueue::QueueType::kDefault) {
+    return main_thread_only().current_policy.should_prioritize_ipc_tasks()
+               ? TaskPriority::kVeryHighPriority
+               : TaskPriority::kNormalPriority;
+  }
+
   switch (task_queue->GetPrioritisationType()) {
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor:
       return main_thread_only().compositor_priority;
@@ -2604,7 +2614,9 @@ bool MainThreadSchedulerImpl::ShouldUpdateTaskQueuePriorities(
   return old_policy.use_case() !=
              main_thread_only().current_policy.use_case() ||
          old_policy.find_in_page_priority() !=
-             main_thread_only().current_policy.find_in_page_priority();
+             main_thread_only().current_policy.find_in_page_priority() ||
+         old_policy.should_prioritize_ipc_tasks() !=
+             main_thread_only().current_policy.should_prioritize_ipc_tasks();
 }
 
 UseCase MainThreadSchedulerImpl::current_use_case() const {
@@ -2745,6 +2757,15 @@ void MainThreadSchedulerImpl::
 
   if (old_state != main_thread_only().main_frame_prioritization_state) {
     UpdateCompositorTaskQueuePriority();
+  }
+}
+
+void MainThreadSchedulerImpl::MaybeUpdateIPCTaskQueuePriorityOnTaskCompleted() {
+  bool should_prioritize_ipc_tasks =
+      num_pending_urgent_ipc_messages_.load(std::memory_order_relaxed) > 0;
+  if (should_prioritize_ipc_tasks !=
+      main_thread_only().current_policy.should_prioritize_ipc_tasks()) {
+    UpdatePolicy();
   }
 }
 
@@ -2901,6 +2922,21 @@ const char* MainThreadSchedulerImpl::TimeDomainTypeToString(
 WTF::Vector<base::OnceClosure>&
 MainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
   return main_thread_only().on_task_completion_callbacks;
+}
+
+void MainThreadSchedulerImpl::OnUrgentMessageReceived() {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kBlinkSchedulerPrioritizeNavigationIPCs));
+  std::atomic_fetch_add_explicit(&num_pending_urgent_ipc_messages_, 1u,
+                                 std::memory_order_relaxed);
+}
+
+void MainThreadSchedulerImpl::OnUrgentMessageProcessed() {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kBlinkSchedulerPrioritizeNavigationIPCs));
+  uint64_t prev_urgent_message_count = std::atomic_fetch_sub_explicit(
+      &num_pending_urgent_ipc_messages_, 1u, std::memory_order_relaxed);
+  CHECK_GT(prev_urgent_message_count, 0u);
 }
 
 }  // namespace scheduler

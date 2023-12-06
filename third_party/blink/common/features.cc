@@ -2030,6 +2030,10 @@ BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
              "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBlinkSchedulerPrioritizeNavigationIPCs,
+             "BlinkSchedulerPrioritizeNavigationIPCs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableFileBackedBlobFactory,
              "EnableFileBackedBlobFactory",
              base::FEATURE_ENABLED_BY_DEFAULT);

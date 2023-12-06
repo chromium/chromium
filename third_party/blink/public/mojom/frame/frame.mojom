@@ -879,6 +879,13 @@ interface LocalFrame {
   // the beforeunload event is handled. |proceed| matches the return value
   // of the frame's beforeunload handler: true if the user decided to proceed
   // with leaving the page.
+  //
+  // The [SupportsUrgent] attribute enables marking this message as urgent by
+  // calling the method in an UrgentMessageScope. Urgent messages cause the
+  // renderer to prioritize the IPC task queue while there are urgent messages
+  // pending, which increases their priority while maintaining ordering
+  // guarantees. See also mojo/public/tools/bindings/README.md.
+  [SupportsUrgent]
   BeforeUnload(bool is_reload)
       => (bool proceed, mojo_base.mojom.TimeTicks before_unload_start_time,
           mojo_base.mojom.TimeTicks before_unload_end_time);

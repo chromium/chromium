@@ -398,6 +398,13 @@ interface Frame {
   // could proceed as expected or not. In particular, it might be necessary to
   // restart the navigation if it is no-longer same-document, which can happen
   // if the renderer committed another navigation in the meantime.
+  //
+  // The [SupportsUrgent] attribute enables marking this message as urgent by
+  // calling the method in an UrgentMessageScope. Urgent messages cause the
+  // renderer to prioritize the IPC task queue while there are urgent messages
+  // pending, which increases their priority while maintaining ordering
+  // guarantees. See also mojo/public/tools/bindings/README.md.
+  [SupportsUrgent]
   CommitSameDocumentNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params)

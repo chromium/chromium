@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_SCHEDULER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_SCHEDULER_IMPL_H_
 
+#include <atomic>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <stack>
@@ -172,6 +174,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void ResumeTimersForAndroidWebView() override;
 #endif
   void SetRendererProcessType(WebRendererProcessType type) override;
+  void OnUrgentMessageReceived() override;
+  void OnUrgentMessageProcessed() override;
 
   // WebThreadScheduler and ThreadScheduler implementation:
   void Shutdown() override;
@@ -491,6 +495,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       return find_in_page_priority_;
     }
 
+    bool& should_prioritize_ipc_tasks() { return should_prioritize_ipc_tasks_; }
+    bool should_prioritize_ipc_tasks() const {
+      return should_prioritize_ipc_tasks_;
+    }
+
     UseCase& use_case() { return use_case_; }
     UseCase use_case() const { return use_case_; }
 
@@ -504,6 +513,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
              should_pause_task_queues_for_android_webview_ ==
                  other.should_pause_task_queues_for_android_webview_ &&
              find_in_page_priority_ == other.find_in_page_priority_ &&
+             should_prioritize_ipc_tasks_ ==
+                 other.should_prioritize_ipc_tasks_ &&
              use_case_ == other.use_case_;
     }
 
@@ -518,6 +529,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool should_defer_task_queues_{false};
     bool should_pause_task_queues_{false};
     bool should_pause_task_queues_for_android_webview_{false};
+    bool should_prioritize_ipc_tasks_{false};
 
     TaskPriority find_in_page_priority_{
         FindInPageBudgetPoolController::kFindInPageBudgetNotExhaustedPriority};
@@ -671,6 +683,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Computes the compositor task queue priority for the next main frame based
   // on the current `RenderingPrioritizationState`.
   absl::optional<TaskPriority> ComputeCompositorPriorityForMainFrame() const;
+
+  void MaybeUpdateIPCTaskQueuePriorityOnTaskCompleted();
 
   static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
 
@@ -929,6 +943,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   PollableThreadSafeFlag policy_may_need_update_;
   WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler_;
+
+  // This is accessed from both the main and IO (IPC) threads. It's incremented
+  // when an urgent IPC task is posted and decremented when that IPC task runs
+  // (or doesn't, e.g. if the interface is closed). This gets checked at the end
+  // of every task to determine if the policy should be updated.
+  std::atomic<uint64_t> num_pending_urgent_ipc_messages_{0};
 
   base::WeakPtrFactory<MainThreadSchedulerImpl> weak_factory_{this};
 };

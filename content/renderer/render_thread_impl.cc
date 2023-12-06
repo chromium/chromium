@@ -517,6 +517,11 @@ RenderThreadImpl::RenderThreadImpl(
               .ConnectToBrowser(true)
               .IPCTaskRunner(scheduler->DeprecatedDefaultTaskRunner())
               .ExposesInterfacesToBrowser()
+              .SetUrgentMessageObserver(
+                  base::FeatureList::IsEnabled(
+                      blink::features::kBlinkSchedulerPrioritizeNavigationIPCs)
+                      ? scheduler.get()
+                      : nullptr)
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(GetClientIdFromCommandLine()) {

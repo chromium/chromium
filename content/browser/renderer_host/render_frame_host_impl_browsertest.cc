@@ -108,6 +108,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
@@ -8109,5 +8110,74 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplDeathTest,
   EXPECT_TRUE(rfh_a->IsPendingDeletion() || rfh_a->IsInBackForwardCache());
   EXPECT_CHECK_DEATH(rfh_a->Reload());
 }
+
+class RenderFrameHostImplUrgentNavigationIPCBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplUrgentNavigationIPCBrowserTest() {
+    if (RenderDocumentEnabled()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::kBlinkSchedulerPrioritizeNavigationIPCs, {}},
+           {features::kRenderDocument, {{"level", "all-frames"}}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {blink::features::kBlinkSchedulerPrioritizeNavigationIPCs},
+          /*disabled_features=*/{features::kRenderDocument});
+    }
+  }
+
+  ~RenderFrameHostImplUrgentNavigationIPCBrowserTest() override = default;
+
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Override RenderFrameHostImplBrowserTest command line switches, which
+    // aren't needed for this test.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "SchedulerYield");
+  }
+
+  bool RenderDocumentEnabled() { return GetParam(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplUrgentNavigationIPCBrowserTest,
+                       UrgentMessageNavigationIPCs) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script =
+      "function spin(howLong) {"
+      "  const start = performance.now();"
+      "  while (performance.now() - start < howLong);"
+      "}"
+      "window.onbeforeunload = () => spin(5);"
+      "async function runTest() {"
+      "  while (true) {"
+      "    spin(5);"
+      "    await scheduler.yield()"
+      "  }"
+      "}"
+      "runTest()";
+  EXPECT_TRUE(
+      ExecJs(web_contents(), script, EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Disable the hang monitor to ensure the beforeunload task is prioritized.
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->DisableBeforeUnloadHangMonitorForTesting();
+
+  // Reload. The loop shouldn't cause WaitForLoadStop to hang.
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplUrgentNavigationIPCBrowserTest,
+                         /*RenderDocumentEnabled()*/ testing::Bool());
 
 }  // namespace content

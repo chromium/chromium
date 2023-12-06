@@ -517,6 +517,13 @@ ChildThreadImpl::Options::Builder::ExposesInterfacesToBrowser() {
   return *this;
 }
 
+ChildThreadImpl::Options::Builder&
+ChildThreadImpl::Options::Builder::SetUrgentMessageObserver(
+    IPC::UrgentMessageObserver* observer) {
+  options_.urgent_message_observer = observer;
+  return *this;
+}
+
 ChildThreadImpl::Options ChildThreadImpl::Options::Builder::Build() {
   return options_;
 }
@@ -602,6 +609,9 @@ void ChildThreadImpl::Init(const Options& options) {
         ipc_task_runner_ ? ipc_task_runner_
                          : base::SingleThreadTaskRunner::GetCurrentDefault(),
         ChildProcess::current()->GetShutDownEvent());
+    if (options.urgent_message_observer) {
+      channel_->SetUrgentMessageObserver(options.urgent_message_observer);
+    }
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
     if (!IsInBrowserProcess())
       IPC::Logging::GetInstance()->SetIPCSender(this);
