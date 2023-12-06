@@ -4205,8 +4205,8 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_ganesh_telemetry_tests',
+          'gtest_tests': 'gpu_desktop_passthrough_gtests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
         },
       },
       'Mac Release (Intel)': {
@@ -4216,8 +4216,8 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_ganesh_telemetry_tests',
+          'gtest_tests': 'gpu_desktop_passthrough_gtests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
         },
       },
       'Mac Retina Debug (AMD)': {
@@ -4228,7 +4228,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_ganesh_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
         },
       },
       'Mac Retina Release (AMD)': {
@@ -4239,7 +4239,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_ganesh_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
         },
       },
       'Win10 x64 Debug (NVIDIA)': {

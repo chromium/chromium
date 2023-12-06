@@ -4156,6 +4156,54 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
+    tests = {
+        "webcodecs_gl_passthrough_ganesh_tests": targets.legacy_test_config(
+            telemetry_test_name = "webcodecs",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
+    tests = {
+        "webcodecs_metal_passthrough_ganesh_tests": targets.legacy_test_config(
+            telemetry_test_name = "webcodecs",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webcodecs_metal_passthrough_graphite_telemetry_test",
+    tests = {
+        "webcodecs_metal_passthrough_graphite_tests": targets.legacy_test_config(
+            telemetry_test_name = "webcodecs",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_webcodecs_validating_telemetry_test",
     tests = {
         "webcodecs_tests": targets.legacy_test_config(
@@ -4199,6 +4247,43 @@ targets.legacy_basic_suite(
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
                 "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+            swarming = targets.swarming(
+                # These tests currently take about an hour and fifteen minutes
+                # to run. Split them into roughly 5-minute shards.
+                shards = 20,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
+    tests = {
+        "webgl2_conformance_gl_passthrough_ganesh_tests": targets.legacy_test_config(
+            telemetry_test_name = "webgl2_conformance",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--webgl-conformance-version=2.0.1",
+                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                # On dual-GPU devices we want the high-performance GPU to be active
+                "--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+            android_args = [
+                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+            ],
+            chromeos_args = [
+                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+            ],
+            lacros_args = [
+                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
             ],
             swarming = targets.swarming(
                 # These tests currently take about an hour and fifteen minutes
@@ -4277,9 +4362,9 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webgl2_conformance_metal_passthrough_telemetry_tests",
+    name = "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
     tests = {
-        "webgl2_conformance_metal_passthrough_tests": targets.legacy_test_config(
+        "webgl2_conformance_metal_passthrough_graphite_tests": targets.legacy_test_config(
             telemetry_test_name = "webgl2_conformance",
             mixins = [
                 "has_native_resultdb_integration",
@@ -4288,7 +4373,7 @@ targets.legacy_basic_suite(
                 "--webgl-conformance-version=2.0.1",
                 "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
                 # On dual-GPU devices we want the high-performance GPU to be active
-                "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
+                "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
                 "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
                 "--enable-metal-debug-layers",
             ],
@@ -4379,6 +4464,40 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
+    tests = {
+        "webgl_conformance_gl_passthrough_ganesh_tests": targets.legacy_test_config(
+            telemetry_test_name = "webgl1_conformance",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                # On dual-GPU devices we want the high-performance GPU to be active
+                "--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+            ],
+            android_args = [
+                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+            ],
+            chromeos_args = [
+                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+            ],
+            lacros_args = [
+                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
     tests = {
         "webgl_conformance_gl_passthrough_tests": targets.legacy_test_config(
@@ -4447,16 +4566,35 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_metal_passthrough_telemetry_tests",
+    name = "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
     tests = {
-        "webgl_conformance_metal_passthrough_tests": targets.legacy_test_config(
+        "webgl_conformance_metal_passthrough_ganesh_tests": targets.legacy_test_config(
             telemetry_test_name = "webgl1_conformance",
             mixins = [
                 "has_native_resultdb_integration",
             ],
             args = [
                 # On dual-GPU devices we want the high-performance GPU to be active
-                "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
+                "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite",
+                "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
+                "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+                "--enable-metal-debug-layers",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
+    tests = {
+        "webgl_conformance_metal_passthrough_graphite_tests": targets.legacy_test_config(
+            telemetry_test_name = "webgl1_conformance",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                # On dual-GPU devices we want the high-performance GPU to be active
+                "--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
                 "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
                 "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
                 "--enable-metal-debug-layers",

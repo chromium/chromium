@@ -4587,7 +4587,13 @@
       },
     },
   },
-  'webcodecs_tests': {
+  'webcodecs_metal_passthrough_ganesh_tests': {
+    'remove_from': [
+      # crbug.com/1458020 for Mac Retina ASAN removal
+      'Mac FYI Retina ASAN (AMD)',
+    ],
+  },
+  'webcodecs_metal_passthrough_graphite_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
@@ -4613,13 +4619,17 @@
       'Win V8 FYI Release (NVIDIA)',
     ],
   },
+  'webgl2_conformance_gl_passthrough_ganesh_tests': {
+    'remove_from': [
+      'Mac V8 FYI Release (Intel)',
+    ],
+  },
   'webgl2_conformance_gl_passthrough_tests': {
     'remove_from': [
       # Removed from V8 builders since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Linux V8 FYI Release (NVIDIA)',
       'Linux V8 FYI Release - pointer compression (NVIDIA)',
-      'Mac V8 FYI Release (Intel)',
     ],
   },
   'webgl2_conformance_gles_passthrough_tests': {
@@ -4660,7 +4670,7 @@
       },
     },
   },
-  'webgl2_conformance_metal_passthrough_tests': {
+  'webgl2_conformance_metal_passthrough_graphite_tests': {
     'remove_from': [
       # crbug.com/1270755
       'Mac FYI ASAN (Intel)',
@@ -4716,7 +4726,7 @@
       },
     },
   },
-  'webgl_conformance_gl_passthrough_tests 1002:67ef': {
+  'webgl_conformance_gl_passthrough_ganesh_tests 1002:67ef': {
     'modifications': {
       'mac_optional_gpu_tests_rel': {
         'args': [
@@ -4742,7 +4752,14 @@
       },
     },
   },
-  'webgl_conformance_metal_passthrough_tests': {
+  'webgl_conformance_metal_passthrough_ganesh_tests': {
+    'remove_from': [
+      # crbug.com/1270755
+      'Mac FYI ASAN (Intel)',
+      'Mac FYI Retina ASAN (AMD)',
+    ],
+  },
+  'webgl_conformance_metal_passthrough_graphite_tests': {
     'remove_from': [
       # crbug.com/1270755
       'Mac FYI ASAN (Intel)',

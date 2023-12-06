@@ -1234,26 +1234,44 @@ targets.legacy_matrix_compound_suite(
                 "MAC_RETINA_AMD_GPU_STABLE",
             ],
         ),
-        "gpu_metal_passthrough_graphite_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_metal_passthrough_ganesh_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
             ],
         ),
-        "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
+        "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test": targets.legacy_matrix_config(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
                 "MAC_RETINA_NVIDIA_GPU_STABLE",
             ],
         ),
-        "gpu_webgl2_conformance_metal_passthrough_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test": targets.legacy_matrix_config(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
             ],
         ),
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests": targets.legacy_matrix_config(
+        "gpu_webcodecs_metal_passthrough_graphite_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests": targets.legacy_matrix_config(
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests": targets.legacy_matrix_config(
+            variants = [
+                "MAC_MINI_INTEL_GPU_STABLE",
+                "MAC_RETINA_AMD_GPU_STABLE",
+            ],
+        ),
+        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",

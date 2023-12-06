@@ -3536,6 +3536,45 @@
       },
     },
 
+    'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test': {
+      'webcodecs_gl_passthrough_ganesh_tests': {
+        'telemetry_test_name': 'webcodecs',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+      },
+    },
+
+    'gpu_webcodecs_metal_passthrough_ganesh_telemetry_test': {
+      'webcodecs_metal_passthrough_ganesh_tests': {
+        'telemetry_test_name': 'webcodecs',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+      },
+    },
+
+    'gpu_webcodecs_metal_passthrough_graphite_telemetry_test': {
+      'webcodecs_metal_passthrough_graphite_tests': {
+        'telemetry_test_name': 'webcodecs',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+      },
+    },
+
     'gpu_webcodecs_telemetry_test': {
       'webcodecs_tests': {
         'telemetry_test_name': 'webcodecs',
@@ -3605,6 +3644,37 @@
       },
     },
 
+    'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests': {
+      'webgl2_conformance_gl_passthrough_ganesh_tests': {
+        'telemetry_test_name': 'webgl2_conformance',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--webgl-conformance-version=2.0.1',
+          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+          '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+        'android_args': [
+          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+      },
+    },
+
     'gpu_webgl2_conformance_gl_passthrough_telemetry_tests': {
       'webgl2_conformance_gl_passthrough_tests': {
         'telemetry_test_name': 'webgl2_conformance',
@@ -3660,8 +3730,8 @@
       },
     },
 
-    'gpu_webgl2_conformance_metal_passthrough_telemetry_tests': {
-      'webgl2_conformance_metal_passthrough_tests': {
+    'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests': {
+      'webgl2_conformance_metal_passthrough_graphite_tests': {
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
@@ -3669,7 +3739,7 @@
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL',
+          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
           '--enable-metal-debug-layers',
         ],
@@ -3744,6 +3814,36 @@
       },
     },
 
+    'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests': {
+      'webgl_conformance_gl_passthrough_ganesh_tests': {
+        'telemetry_test_name': 'webgl1_conformance',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
+        'android_args': [
+          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+
     'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
       'webgl_conformance_gl_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
@@ -3804,14 +3904,29 @@
       },
     },
 
-    'gpu_webgl_conformance_metal_passthrough_telemetry_tests': {
-      'webgl_conformance_metal_passthrough_tests': {
+    'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests': {
+      'webgl_conformance_metal_passthrough_ganesh_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
         ],
         'args': [
-          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL',
+          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite',
+          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+          '--enable-metal-debug-layers',
+        ],
+      },
+    },
+
+    'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests': {
+      'webgl_conformance_metal_passthrough_graphite_tests': {
+        'telemetry_test_name': 'webgl1_conformance',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
           '--enable-metal-debug-layers',
@@ -6202,10 +6317,11 @@
 
     'gpu_angle_mac_telemetry_tests': [
       'gpu_info_collection_telemetry_tests',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
     ],
 
@@ -6230,7 +6346,7 @@
     'gpu_common_gl_passthrough_ganesh_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
     ],
 
     'gpu_common_linux_telemetry_tests': [
@@ -6239,10 +6355,10 @@
       'gpu_webgl_conformance_telemetry_tests',
     ],
 
-    'gpu_common_metal_passthrough_ganesh_telemetry_tests': [
+    'gpu_common_metal_passthrough_graphite_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_metal_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
+      'gpu_metal_passthrough_graphite_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
     ],
 
     'gpu_common_win_telemetry_tests': [
@@ -6313,12 +6429,6 @@
 
     'gpu_dawn_tsan_gtests': [
       'gpu_dawn_gtests',
-    ],
-
-    'gpu_desktop_mac_gtests': [
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_desktop_specific_gtests',
     ],
 
     'gpu_desktop_passthrough_gtests': [
@@ -6422,17 +6532,17 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_gl_passthrough_ganesh_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test',
+      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
     ],
 
     'gpu_fyi_mac_pro_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
     ],
 
     'gpu_fyi_mac_release_gtests': [
@@ -6447,11 +6557,14 @@
     'gpu_fyi_mac_release_telemetry_tests': [
       'gpu_gl_passthrough_ganesh_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'gpu_metal_passthrough_ganesh_telemetry_tests',
+      'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test',
+      'gpu_webcodecs_metal_passthrough_ganesh_telemetry_test',
+      'gpu_webcodecs_metal_passthrough_graphite_telemetry_test',
+      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
     ],
 
@@ -6461,11 +6574,14 @@
       'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_metal_passthrough_ganesh_telemetry_tests',
       'gpu_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
+      'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test',
+      'gpu_webcodecs_metal_passthrough_ganesh_telemetry_test',
+      'gpu_webcodecs_metal_passthrough_graphite_telemetry_test',
+      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
+      'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
     ],
 
@@ -7760,26 +7876,44 @@
           'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
-      'gpu_metal_passthrough_graphite_telemetry_tests': {
+      'gpu_metal_passthrough_ganesh_telemetry_tests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
         ],
       },
-      'gpu_webcodecs_telemetry_test': {
+      'gpu_webcodecs_gl_passthrough_ganesh_telemetry_test': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
           'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
-      'gpu_webgl2_conformance_metal_passthrough_telemetry_tests': {
+      'gpu_webcodecs_metal_passthrough_ganesh_telemetry_test': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
         ],
       },
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
+      'gpu_webcodecs_metal_passthrough_graphite_telemetry_test': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests': {
+        'variants': [
+          'MAC_MINI_INTEL_GPU_STABLE',
+          'MAC_RETINA_AMD_GPU_STABLE',
+        ],
+      },
+      'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
