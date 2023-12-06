@@ -28,6 +28,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -206,8 +207,7 @@ bool SkiaVkOzoneImageRepresentation::BeginAccess(
         device, SemaphoreHandle(std::move(fence)));
 
     begin_access_semaphores_.emplace_back(vk_semaphore);
-    begin_semaphores->emplace_back();
-    begin_semaphores->back().initVulkan(vk_semaphore);
+    begin_semaphores->emplace_back(GrBackendSemaphores::MakeVk(vk_semaphore));
   }
 
   if (end_semaphores && need_end_fence_) {
@@ -222,8 +222,8 @@ bool SkiaVkOzoneImageRepresentation::BeginAccess(
       return false;
     }
 
-    end_semaphores->emplace_back();
-    end_semaphores->back().initVulkan(end_access_semaphore_);
+    end_semaphores->emplace_back(
+        GrBackendSemaphores::MakeVk(end_access_semaphore_));
   }
 
   mode_ = readonly ? RepresentationAccessMode::kRead

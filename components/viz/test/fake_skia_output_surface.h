@@ -70,7 +70,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  const gfx::Size& surface_size,
                                  SharedImageFormat format,
                                  RenderPassAlphaType alpha_type,
-                                 bool mipmap,
+                                 skgpu::Mipmapped mipmap,
                                  bool scanout_dcomp_surface,
                                  sk_sp<SkColorSpace> color_space,
                                  bool is_overlay,

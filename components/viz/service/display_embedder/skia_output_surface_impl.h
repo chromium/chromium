@@ -128,7 +128,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  const gfx::Size& surface_size,
                                  SharedImageFormat format,
                                  RenderPassAlphaType alpha_type,
-                                 bool mipmap,
+                                 skgpu::Mipmapped mipmap,
                                  bool scanout_dcomp_surface,
                                  sk_sp<SkColorSpace> color_space,
                                  bool is_overlay,
@@ -210,7 +210,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::Size& surface_size,
       SkColorType color_type,
       SkAlphaType alpha_type,
-      bool mipmap,
+      skgpu::Mipmapped mipmap,
       sk_sp<SkColorSpace> color_space,
       bool is_overlay,
       bool scanout_dcomp_surface) const;
@@ -218,7 +218,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::Size& surface_size,
       SkColorType color_type,
       SkAlphaType alpha_type,
-      bool mipmap,
+      skgpu::Mipmapped mipmap,
       sk_sp<SkColorSpace> color_space) const;
   void DidSwapBuffersComplete(gpu::SwapBuffersCompleteParams params,
                               const gfx::Size& pixel_size,

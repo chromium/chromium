@@ -103,6 +103,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
 #endif
@@ -2346,7 +2347,7 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     if (release_fence.is_null()) {
       LOG(ERROR) << "Unable to create a release fence for Vulkan.";
     } else {
-      semaphores.emplace_back(item.first.vkSemaphore());
+      semaphores.emplace_back(GrBackendSemaphores::GetVkSemaphore(item.first));
     }
     std::move(item.second).Run(std::move(release_fence));
     pending_release_fence_cbs_.pop_front();
@@ -2622,7 +2623,7 @@ gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForVulkan(
     const GrBackendSemaphore& semaphore) {
   DCHECK(is_using_vulkan());
 
-  if (semaphore.vkSemaphore() == VK_NULL_HANDLE) {
+  if (GrBackendSemaphores::GetVkSemaphore(semaphore) == VK_NULL_HANDLE) {
     return {};
   }
 
@@ -2630,10 +2631,10 @@ gfx::GpuFenceHandle SkiaOutputSurfaceImplOnGpu::CreateReleaseFenceForVulkan(
   VkDevice device =
       vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
 
-  auto handle =
-      implementation->GetSemaphoreHandle(device, semaphore.vkSemaphore());
+  auto handle = implementation->GetSemaphoreHandle(
+      device, GrBackendSemaphores::GetVkSemaphore(semaphore));
   if (!handle.is_valid()) {
-    vkDestroySemaphore(device, semaphore.vkSemaphore(),
+    vkDestroySemaphore(device, GrBackendSemaphores::GetVkSemaphore(semaphore),
                        /*pAllocator=*/nullptr);
     LOG(ERROR) << "Failed to create a release fence for Vulkan.";
     return {};
@@ -2656,8 +2657,7 @@ bool SkiaOutputSurfaceImplOnGpu::CreateAndStoreExternalSemaphoreVulkan(
     return false;
   }
 
-  end_semaphores.emplace_back();
-  end_semaphores.back().initVulkan(semaphore);
+  end_semaphores.emplace_back(GrBackendSemaphores::MakeVk(semaphore));
   return true;
 }
 #endif

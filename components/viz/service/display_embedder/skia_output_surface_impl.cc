@@ -382,7 +382,8 @@ void SkiaOutputSurfaceImpl::RecreateRootDDLRecorder() {
   }
   GrSurfaceCharacterization characterization =
       CreateGrSurfaceCharacterizationCurrentFrame(
-          size_, color_type_, alpha_type_, /*mipmap=*/false, sk_color_space_);
+          size_, color_type_, alpha_type_, skgpu::Mipmapped::kNo,
+          sk_color_space_);
   CHECK(characterization.isValid());
   root_ddl_recorder_.emplace(characterization);
   // This will trigger the lazy initialization of the recorder
@@ -854,7 +855,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const gfx::Size& surface_size,
     SharedImageFormat format,
     RenderPassAlphaType alpha_type,
-    bool mipmap,
+    skgpu::Mipmapped mipmap,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
     bool is_overlay,
@@ -872,7 +873,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
                           static_cast<SkAlphaType>(alpha_type), color_space);
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
         gr_context_type_, format, /*plane_index=*/0,
-        /*is_yuv_plane=*/false, mipmap, scanout_dcomp_surface);
+        /*is_yuv_plane=*/false, mipmap == skgpu::Mipmapped::kYes,
+        scanout_dcomp_surface);
     if (!texture_info.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;
@@ -920,7 +922,7 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
 
   GrSurfaceCharacterization characterization =
       CreateGrSurfaceCharacterizationRenderPass(
-          size_, color_type_with_alpha, alpha_type_, /*mipmap=*/false,
+          size_, color_type_with_alpha, alpha_type_, skgpu::Mipmapped::kNo,
           sk_color_space_, /*is_overlay=*/false,
           /*scanout_dcomp_surface=*/false);
   if (characterization.isValid()) {
@@ -1206,7 +1208,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
     const gfx::Size& surface_size,
     SkColorType color_type,
     SkAlphaType alpha_type,
-    bool mipmap,
+    skgpu::Mipmapped mipmap,
     sk_sp<SkColorSpace> color_space,
     bool is_overlay,
     bool scanout_dcomp_surface) const {
@@ -1247,7 +1249,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
       cache_max_resource_bytes, image_info, backend_format, sample_count,
       kTopLeft_GrSurfaceOrigin, surface_props, mipmap,
       /*willUseGLFBO0=*/scanout_dcomp_surface,
-      /*isTextureable=*/!scanout_dcomp_surface, GrProtected::kNo);
+      /*isTextureable=*/!scanout_dcomp_surface, skgpu::Protected::kNo);
   DCHECK(characterization.isValid());
   return characterization;
 }
@@ -1257,7 +1259,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
     const gfx::Size& surface_size,
     SkColorType color_type,
     SkAlphaType alpha_type,
-    bool mipmap,
+    skgpu::Mipmapped mipmap,
     sk_sp<SkColorSpace> color_space) const {
   if (!gr_context_thread_safe_) {
     DLOG(ERROR) << "gr_context_thread_safe_ is null.";
@@ -1301,7 +1303,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
       cache_max_resource_bytes, image_info, backend_format, sample_count,
       surface_origin, surface_props, mipmap,
       capabilities_.uses_default_gl_framebuffer, is_textureable,
-      GrProtected::kNo, /*vkRTSupportsInputAttachment=*/false,
+      skgpu::Protected::kNo, /*vkRTSupportsInputAttachment=*/false,
       capabilities_.root_is_vulkan_secondary_command_buffer);
 #if BUILDFLAG(ENABLE_VULKAN)
   VkFormat vk_format = VK_FORMAT_UNDEFINED;

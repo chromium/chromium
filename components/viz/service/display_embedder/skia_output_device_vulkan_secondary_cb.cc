@@ -10,6 +10,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "third_party/skia/include/private/chromium/GrSurfaceCharacterization.h"
@@ -110,7 +111,8 @@ GrSemaphoresSubmitted SkiaOutputDeviceVulkanSecondaryCB::Flush(
 
   std::vector<VkSemaphore> vk_end_semaphores;
   for (const GrBackendSemaphore& gr_semaphore : end_semaphores) {
-    vk_end_semaphores.push_back(gr_semaphore.vkSemaphore());
+    vk_end_semaphores.push_back(
+        GrBackendSemaphores::GetVkSemaphore(gr_semaphore));
   }
   vulkan_context_provider->EnqueueSecondaryCBSemaphores(
       std::move(vk_end_semaphores));

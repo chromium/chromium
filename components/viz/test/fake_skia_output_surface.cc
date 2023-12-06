@@ -174,7 +174,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     const gfx::Size& surface_size,
     SharedImageFormat format,
     RenderPassAlphaType alpha_type,
-    bool mipmap,
+    skgpu::Mipmapped,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
     bool is_overlay,

@@ -19,6 +19,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -207,8 +208,7 @@ ExternalVkImageSkiaImageRepresentation::BeginAccess(
     VkSemaphore semaphore = external_semaphore.GetVkSemaphore();
     DCHECK(semaphore != VK_NULL_HANDLE);
     // The ownership of semaphore is passed to caller.
-    begin_semaphores->emplace_back();
-    begin_semaphores->back().initVulkan(semaphore);
+    begin_semaphores->emplace_back(GrBackendSemaphores::MakeVk(semaphore));
   }
 
   if (backing_impl()->need_synchronization()) {
@@ -218,8 +218,8 @@ ExternalVkImageSkiaImageRepresentation::BeginAccess(
         backing_impl()->external_semaphore_pool()->GetOrCreateSemaphore();
     if (!end_access_semaphore_)
       return {};
-    end_semaphores->emplace_back();
-    end_semaphores->back().initVulkan(end_access_semaphore_.GetVkSemaphore());
+    end_semaphores->emplace_back(
+        GrBackendSemaphores::MakeVk(end_access_semaphore_.GetVkSemaphore()));
   }
 
   return backing_impl()->GetPromiseTextures();

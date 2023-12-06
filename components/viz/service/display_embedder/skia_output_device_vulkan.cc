@@ -29,6 +29,7 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -233,8 +234,7 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
 
   VkSemaphore vk_semaphore = scoped_write.begin_semaphore();
   DCHECK(vk_semaphore != VK_NULL_HANDLE);
-  GrBackendSemaphore semaphore;
-  semaphore.initVulkan(vk_semaphore);
+  GrBackendSemaphore semaphore = GrBackendSemaphores::MakeVk(vk_semaphore);
   auto result =
       sk_surface->wait(1, &semaphore, /*deleteSemaphoresAfterWait=*/false);
   if (UNLIKELY(!result)) {
@@ -242,8 +242,8 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
   }
 
   DCHECK(scoped_write.end_semaphore() != VK_NULL_HANDLE);
-  GrBackendSemaphore end_semaphore;
-  end_semaphore.initVulkan(scoped_write.end_semaphore());
+  GrBackendSemaphore end_semaphore =
+      GrBackendSemaphores::MakeVk(scoped_write.end_semaphore());
   end_semaphores->push_back(std::move(end_semaphore));
 
   scoped_write_ = std::move(scoped_write);
