@@ -7500,9 +7500,6 @@ class VendorSpecificTest(ChromeDriverBaseTestWithWebServer):
 class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
   def setUp(self):
-    global _VENDOR_ID
-    self._vendor_id = _VENDOR_ID
-
     port = self._https_server._server.server_port
     self._url_prefix = (self._https_server.GetUrl("localhost") +
         "/chromedriver/fedcm")
@@ -7694,8 +7691,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
     self._accounts = self._default_accounts
 
-    self._driver.ClickFedCmDialogButton(self._vendor_id,
-                                        "ConfirmIdpLoginContinue")
+    self._driver.ClickFedCmDialogButton("ConfirmIdpLoginContinue")
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     accounts = self._driver.GetAccounts()
@@ -7734,7 +7730,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     self.assertEqual("Error", self._driver.GetDialogType())
-    self._driver.ClickFedCmDialogButton(self._vendor_id, "ErrorGotIt")
+    self._driver.ClickFedCmDialogButton("ErrorGotIt")
 
     error = self._driver.ExecuteScript("return getResult()")
     self.assertEqual("IdentityCredentialError: Error retrieving a token. "
@@ -7768,7 +7764,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     self.assertEqual("Error", self._driver.GetDialogType())
-    self._driver.ClickFedCmDialogButton(self._vendor_id, "ErrorMoreDetails")
+    self._driver.ClickFedCmDialogButton("ErrorMoreDetails")
 
     error = self._driver.ExecuteScript("return getResult()")
     self.assertTrue(self.WaitForCondition(self.FedCmPopupWindowCondition))
