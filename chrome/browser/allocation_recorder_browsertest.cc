@@ -63,7 +63,7 @@ void AllocationRecorderBrowserTest::CrashRendererProcess() {
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 
 IN_PROC_BROWSER_TEST_F(AllocationRecorderBrowserTest,
-                       VerifyCrashreportIncludesRecorder) {
+                       DISABLED_VerifyCrashreportIncludesRecorder) {
   base::FilePath crashpad_database_path;
 
   ASSERT_TRUE(
@@ -83,8 +83,9 @@ IN_PROC_BROWSER_TEST_F(AllocationRecorderBrowserTest,
 
 #else
 
+// Flakiness bug: https://crbug.com/1503724
 IN_PROC_BROWSER_TEST_F(AllocationRecorderBrowserTest,
-                       VerifyCrashreportIncludesNoRecorder) {
+                       DISABLED_VerifyCrashreportIncludesNoRecorder) {
   base::FilePath crashpad_database_path;
 
   ASSERT_TRUE(
