@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -234,6 +235,12 @@ using feed::FeedUserActionType;
       self.previousTimeInFeedForGoodVisitSession =
           std::max(self.discoverPreviousTimeInFeedGV,
                    self.followingPreviousTimeInFeedGV);
+    }
+
+    if (self.previousTimeInFeedForGoodVisitSession < 0 ||
+        self.discoverPreviousTimeInFeedGV < 0 ||
+        self.followingPreviousTimeInFeedGV < 0) {
+      base::debug::DumpWithoutCrashing();
     }
 
     // Checks if there is a timestamp in PrefService for when a user clicked
@@ -1264,9 +1271,22 @@ using feed::FeedUserActionType;
   // Add the time spent since last recording.
   base::Time now = base::Time::Now();
   base::TimeDelta additionalTimeInFeed = now - self.feedBecameVisibleTime;
+
+  if (self.feedBecameVisibleTime.is_null()) {
+    base::debug::DumpWithoutCrashing();
+  }
+  if (additionalTimeInFeed.is_negative()) {
+    base::debug::DumpWithoutCrashing();
+  }
+  if (self.previousTimeInFeedForGoodVisitSession < 0) {
+    base::debug::DumpWithoutCrashing();
+  }
   self.previousTimeInFeedForGoodVisitSession =
       self.previousTimeInFeedForGoodVisitSession +
       additionalTimeInFeed.InSecondsF();
+  if (self.previousTimeInFeedForGoodVisitSession < 0) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   // Calculate for specific feed.
   switch (currentFeed) {
