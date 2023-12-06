@@ -5,11 +5,13 @@
 #ifndef UI_BASE_METADATA_PROPERTY_METADATA_H_
 #define UI_BASE_METADATA_PROPERTY_METADATA_H_
 
+#include <concepts>
 #include <string>
 #include <type_traits>
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/notreached.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_cache.h"
@@ -19,23 +21,11 @@ namespace ui {
 namespace metadata {
 namespace internal {
 
-template <typename TSource, typename TTarget, typename = void>
-struct DeRefHelper {
-  static TTarget Get(TSource value) { return value; }
-};
-
-template <typename TSource, typename TTarget>
-struct DeRefHelper<
-    TSource,
-    TTarget,
-    typename std::enable_if<!std::is_same<TSource, TTarget>::value>::type> {
-  static TTarget Get(TSource value) { return *value; }
-};
-
 template <typename TKey, typename TValue>
 struct ClassPropertyMetaDataTypeHelper;
 
 template <typename TKValue_, typename TValue_>
+  requires(std::same_as<TKValue_, TValue_> || std::same_as<TKValue_, TValue_*>)
 struct ClassPropertyMetaDataTypeHelper<const ui::ClassProperty<TKValue_>* const,
                                        TValue_> {
   using TKValue = TKValue_;
@@ -46,7 +36,13 @@ struct ClassPropertyMetaDataTypeHelper<const ui::ClassProperty<TKValue_>* const,
   // This is useful for owned propertyies like ui::ClassProperty<gfx::Insets*>
   // where we want to inspect the actual value, rather than the pointer.
   static TValue DeRef(TKValue value) {
-    return DeRefHelper<TKValue, TValue>::Get(value);
+    if constexpr (std::same_as<TKValue, TValue*>) {
+      return *value;
+    }
+    if constexpr (std::same_as<TKValue, TValue>) {
+      return value;
+    }
+    NOTREACHED_NORETURN();
   }
 };
 
