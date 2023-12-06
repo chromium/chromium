@@ -58,49 +58,44 @@ void SetLockedState(bool locked) {
   Shell::Get()->session_controller()->SetSessionInfo(info);
 }
 
+AnchoredNudgeManagerImpl* GetAnchoredNudgeManager() {
+  return Shell::Get()->anchored_nudge_manager();
+}
+
+// Creates an `AnchoredNudgeData` object with only the required elements.
+AnchoredNudgeData CreateBaseNudgeData(
+    const std::string& id,
+    views::View* anchor_view,
+    const std::u16string& body_text = std::u16string()) {
+  return AnchoredNudgeData(id, kTestCatalogName, body_text, anchor_view);
+}
+
+void CancelNudge(const std::string& id) {
+  GetAnchoredNudgeManager()->Cancel(id);
+}
+
+AnchoredNudge* GetShownNudge(const std::string& id) {
+  return GetAnchoredNudgeManager()->GetShownNudgeForTest(id);
+}
+
+const std::u16string& GetNudgeBodyText(const std::string& id) {
+  return GetAnchoredNudgeManager()->GetNudgeBodyTextForTest(id);
+}
+
+views::LabelButton* GetNudgePrimaryButton(const std::string& id) {
+  return GetAnchoredNudgeManager()->GetNudgePrimaryButtonForTest(id);
+}
+
+views::LabelButton* GetNudgeSecondaryButton(const std::string& id) {
+  return GetAnchoredNudgeManager()->GetNudgeSecondaryButtonForTest(id);
+}
+
 }  // namespace
 
 class AnchoredNudgeManagerImplTest : public AshTestBase {
  public:
   AnchoredNudgeManagerImplTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kSystemNudgeV2);
-  }
-
-  AnchoredNudgeManagerImpl* anchored_nudge_manager() {
-    return Shell::Get()->anchored_nudge_manager();
-  }
-
-  // Creates an `AnchoredNudgeData` object with only the required elements.
-  AnchoredNudgeData CreateBaseNudgeData(
-      const std::string& id,
-      views::View* anchor_view,
-      const std::u16string& body_text = std::u16string()) {
-    return AnchoredNudgeData(id, kTestCatalogName, body_text, anchor_view);
-  }
-
-  void CancelNudge(const std::string& id) {
-    anchored_nudge_manager()->Cancel(id);
-  }
-
-  std::map<std::string, raw_ptr<AnchoredNudge>> GetShownNudges() {
-    return anchored_nudge_manager()->shown_nudges_;
-  }
-
-  const std::u16string& GetNudgeBodyText(const std::string& id) {
-    return anchored_nudge_manager()->GetNudgeBodyTextForTest(id);
-  }
-
-  views::LabelButton* GetNudgePrimaryButton(const std::string& id) {
-    return anchored_nudge_manager()->GetNudgePrimaryButtonForTest(id);
-  }
-
-  views::LabelButton* GetNudgeSecondaryButton(const std::string& id) {
-    return anchored_nudge_manager()->GetNudgeSecondaryButtonForTest(id);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 // Tests that a nudge can be shown and its contents are properly sent.
@@ -114,10 +109,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view, body_text);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // Ensure the nudge is visible and has set the provided contents.
-  AnchoredNudge* nudge = GetShownNudges()[id];
+  AnchoredNudge* nudge = GetShownNudge(id);
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
@@ -127,7 +122,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
 
   // Cancel the nudge, expect it to be removed from the shown nudges map.
   CancelNudge(id);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that two nudges can be shown on screen at the same time.
@@ -148,24 +143,24 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_TwoNudges) {
   auto nudge_data_2 = CreateBaseNudgeData(id_2, anchor_view_2);
 
   // Show the first nudge, expect the first nudge shown.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
-  EXPECT_FALSE(GetShownNudges()[id_2]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
+  EXPECT_FALSE(GetShownNudge(id_2));
 
   // Show the second nudge, expect both nudges shown.
-  anchored_nudge_manager()->Show(nudge_data_2);
-  EXPECT_TRUE(GetShownNudges()[id]);
-  EXPECT_TRUE(GetShownNudges()[id_2]);
+  GetAnchoredNudgeManager()->Show(nudge_data_2);
+  EXPECT_TRUE(GetShownNudge(id));
+  EXPECT_TRUE(GetShownNudge(id_2));
 
   // Cancel the second nudge, expect the first nudge shown.
   CancelNudge(id_2);
-  EXPECT_TRUE(GetShownNudges()[id]);
-  EXPECT_FALSE(GetShownNudges()[id_2]);
+  EXPECT_TRUE(GetShownNudge(id));
+  EXPECT_FALSE(GetShownNudge(id_2));
 
   // Cancel the first nudge, expect no nudges shown.
   CancelNudge(id);
-  EXPECT_FALSE(GetShownNudges()[id]);
-  EXPECT_FALSE(GetShownNudges()[id_2]);
+  EXPECT_FALSE(GetShownNudge(id));
+  EXPECT_FALSE(GetShownNudge(id_2));
 }
 
 // Tests that a nudge with buttons can be shown, execute callbacks and dismiss
@@ -185,8 +180,8 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   nudge_data.primary_button_text = primary_button_text;
 
   // Show the nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  AnchoredNudge* nudge = GetShownNudges()[id];
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  AnchoredNudge* nudge = GetShownNudge(id);
 
   // Ensure the nudge is visible and has set the provided contents.
   ASSERT_TRUE(nudge);
@@ -195,7 +190,7 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
 
   // Press the primary button, the nudge should have dismissed.
   LeftClickOn(GetNudgePrimaryButton(id));
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
   histogram_tester.ExpectBucketCount(kPrimaryButtonPressed, kTestCatalogName,
                                      1);
 
@@ -205,14 +200,14 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
       [&primary_button_callback_ran] { primary_button_callback_ran = true; });
 
   // Show the nudge again.
-  anchored_nudge_manager()->Show(nudge_data);
-  nudge = GetShownNudges()[id];
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  nudge = GetShownNudge(id);
 
   // Press the primary button, `primary_button_callback` should have executed,
   // and the nudge should have dismissed.
   LeftClickOn(GetNudgePrimaryButton(id));
   EXPECT_TRUE(primary_button_callback_ran);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
   histogram_tester.ExpectBucketCount(kPrimaryButtonPressed, kTestCatalogName,
                                      2);
 
@@ -220,15 +215,15 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   nudge_data.secondary_button_text = secondary_button_text;
 
   // Show the nudge again, now with a secondary button.
-  anchored_nudge_manager()->Show(nudge_data);
-  nudge = GetShownNudges()[id];
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  nudge = GetShownNudge(id);
 
   // Ensure the nudge has a secondary button.
   ASSERT_TRUE(GetNudgeSecondaryButton(id));
 
   // Press the secondary button, the nudge should have dismissed.
   LeftClickOn(GetNudgeSecondaryButton(id));
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
   histogram_tester.ExpectBucketCount(kSecondaryButtonPressed, kTestCatalogName,
                                      1);
 
@@ -240,14 +235,14 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
       });
 
   // Show the nudge again.
-  anchored_nudge_manager()->Show(nudge_data);
-  nudge = GetShownNudges()[id];
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  nudge = GetShownNudge(id);
 
   // Press the secondary button, `secondary_button_callback` should have
   // executed, and the nudge should have dismissed.
   LeftClickOn(GetNudgeSecondaryButton(id));
   EXPECT_TRUE(secondary_button_callback_ran);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
   histogram_tester.ExpectBucketCount(kSecondaryButtonPressed, kTestCatalogName,
                                      2);
 }
@@ -263,22 +258,22 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation) {
   // Show nudge on its default location by not providing an anchor view.
   const std::string id = "id";
   auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // The nudge should be shown on the leading bottom corner of the work area,
   // which for LTR languages is the bottom-left.
   shelf->SetAlignment(ShelfAlignment::kBottom);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   shelf->SetAlignment(ShelfAlignment::kLeft);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x() + shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
   shelf->SetAlignment(ShelfAlignment::kRight);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 }
@@ -299,22 +294,22 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithRTL) {
   // Show nudge on its default location by not providing an anchor view.
   const std::string id = "id";
   auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // The nudge should be shown on the leading bottom corner of the work area,
   // which for RTL languages is the bottom-right.
   shelf->SetAlignment(ShelfAlignment::kBottom);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   shelf->SetAlignment(ShelfAlignment::kLeft);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
   shelf->SetAlignment(ShelfAlignment::kRight);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.right(), display_bounds.right() - shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
@@ -339,16 +334,16 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
   // Show nudge on its default location by not providing an anchor view.
   const std::string id = "id";
   auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // The nudge should be shown on the leading bottom corner of the work area.
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   // Test that the nudge updates its baseline when the hotseat is shown.
   tablet_mode_controller->SetEnabledForTest(true);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
   EXPECT_EQ(nudge_bounds.bottom(),
             hotseat->CalculateHotseatYInScreen(hotseat->state()));
@@ -365,10 +360,10 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
   // Show nudge on its default location by not providing an anchor view.
   const std::string id = "id";
   auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // The nudge should be shown on the leading bottom corner of the work area.
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(),
             display_bounds.bottom() - ShelfConfig::Get()->shelf_size());
@@ -377,7 +372,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithAutoHideShelf) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect()));
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
   EXPECT_EQ(nudge_bounds.bottom(),
             display_bounds.bottom() -
@@ -393,7 +388,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_Zoom) {
   // Show nudge on its default location by not providing an anchor view.
   const std::string id = "id";
   auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // Since no zoom factor has been set on the display, it should be 1.
   const display::ManagedDisplayInfo& display =
@@ -403,7 +398,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_Zoom) {
       1.f);
 
   // The nudge should be shown on the bottom-left of the work area.
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   display_bounds = GetPrimaryDisplay().bounds();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
@@ -416,7 +411,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_Zoom) {
       zoom_factor);
 
   // Nudge bounds should update accordingly.
-  nudge_bounds = GetShownNudges()[id]->GetWidget()->GetWindowBoundsInScreen();
+  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   display_bounds = GetPrimaryDisplay().bounds();
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
@@ -443,19 +438,19 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
   auto nudge_data_2 = CreateBaseNudgeData(id, anchor_view_2, text_2);
 
   // Show a nudge with some initial contents.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // First nudge contents should be set.
-  AnchoredNudge* nudge = GetShownNudges()[id];
+  AnchoredNudge* nudge = GetShownNudge(id);
   ASSERT_TRUE(nudge);
   EXPECT_EQ(text, GetNudgeBodyText(id));
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 
   // Attempt to show a nudge with different contents but with the same id.
-  anchored_nudge_manager()->Show(nudge_data_2);
+  GetAnchoredNudgeManager()->Show(nudge_data_2);
 
   // The previous nudge should be cancelled and replaced with the new nudge.
-  nudge = GetShownNudges()[id];
+  nudge = GetShownNudge(id);
   ASSERT_TRUE(nudge);
   EXPECT_EQ(text_2, GetNudgeBodyText(id));
   EXPECT_EQ(anchor_view_2, nudge->GetAnchorView());
@@ -474,10 +469,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_InvisibleAnchorView) {
   anchor_view->SetVisible(false);
 
   // Attempt to show nudge.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // Anchor view is not visible, the nudge should not be created.
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge is not created if its anchor view doesn't have a widget.
@@ -490,10 +485,10 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_AnchorViewWithoutWidget) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Attempt to show nudge.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // Anchor view does not have a widget, the nudge should not be created.
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge is not created if its anchor view was deleted.
@@ -510,13 +505,13 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_DeletedAnchorView) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Anchor view exists, the nudge should be created.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Delete the anchor view, the nudge should not be created.
   contents_view->RemoveAllChildViews();
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge will not be shown if a `ScopedNudgePause` exists, and even
@@ -532,17 +527,17 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_ScopedNudgePause) {
 
   // Set up a `ScopedNudgePause`.
   auto scoped_anchored_nudge_pause =
-      anchored_nudge_manager()->CreateScopedPause();
+      GetAnchoredNudgeManager()->CreateScopedPause();
 
   // Attempt to show nudge.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
 
   // A `ScopedNudgePause` exists, the nudge should not be shown.
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Destroy the `ScopedNudgePause`, the nudge doesn't exist either.
   scoped_anchored_nudge_pause.reset();
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that if a `ScopedNudgePause` creates when a nudge is showing, the nudge
@@ -556,13 +551,13 @@ TEST_F(AnchoredNudgeManagerImplTest, CancelNudge_ScopedNudgePause) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // The nudge will be shown.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // After a `ScopedNudgePause` is created, the nudge will be closed
   // immediately.
-  anchored_nudge_manager()->CreateScopedPause();
-  EXPECT_FALSE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->CreateScopedPause();
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge sets the appropriate arrow when it's set to be anchored to
@@ -585,23 +580,23 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelf) {
   shelf->SetAlignment(ShelfAlignment::kLeft);
 
   // Show a nudge, expect its arrow to be aligned with left shelf.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
   EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_CENTER,
-            GetShownNudges()[id]->arrow());
+            GetShownNudge(id)->arrow());
 
   // Cancel the nudge, and show a new nudge with bottom shelf alignment.
-  anchored_nudge_manager()->Cancel(id);
+  GetAnchoredNudgeManager()->Cancel(id);
   shelf->SetAlignment(ShelfAlignment::kBottom);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   EXPECT_EQ(views::BubbleBorder::Arrow::BOTTOM_CENTER,
-            GetShownNudges()[id]->arrow());
+            GetShownNudge(id)->arrow());
 
   // Change the shelf alignment to the right while the nudge is still open,
   // nudge arrow should be updated.
   shelf->SetAlignment(ShelfAlignment::kRight);
   EXPECT_EQ(views::BubbleBorder::Arrow::RIGHT_CENTER,
-            GetShownNudges()[id]->arrow());
+            GetShownNudge(id)->arrow());
 }
 
 // Tests that a nudge that is anchored to the shelf is not affected by shelf
@@ -626,17 +621,17 @@ TEST_F(AnchoredNudgeManagerImplTest,
   shelf->SetAlignment(ShelfAlignment::kLeft);
 
   // Show a nudge, expect its arrow to be aligned with left shelf.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
   EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_CENTER,
-            GetShownNudges()[id]->arrow());
+            GetShownNudge(id)->arrow());
 
   // Test that changing the shelf alignment on the secondary display does not
   // affect the nudge's arrow, since the nudge lives in the primary display.
   secondary_root_window_controller->shelf()->SetAlignment(
       ShelfAlignment::kBottom);
   EXPECT_EQ(views::BubbleBorder::Arrow::LEFT_CENTER,
-            GetShownNudges()[id]->arrow());
+            GetShownNudge(id)->arrow());
 }
 
 // Tests that a nudge that is anchored to the shelf maintains the shelf visible
@@ -661,11 +656,11 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelf_ShelfDoesNotHide) {
   EXPECT_FALSE(shelf->IsVisible());
 
   // Show the nudge, `shelf` should be made visible while nudge is showing.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   EXPECT_TRUE(shelf->IsVisible());
 
   // Cancel the nudge, `shelf` should be hidden again.
-  anchored_nudge_manager()->Cancel(id);
+  GetAnchoredNudgeManager()->Cancel(id);
   EXPECT_FALSE(shelf->IsVisible());
 }
 
@@ -679,16 +674,16 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsHiding) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Set the anchor view visibility to false, the nudge should have closed.
   anchor_view->SetVisible(false);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Set the anchor view visibility to true, the nudge should not reappear.
   anchor_view->SetVisible(true);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge closes if its anchor view is deleted.
@@ -705,12 +700,12 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsDeleting) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Delete the anchor view, the nudge should have closed.
   contents_view->RemoveAllChildViews();
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge whose anchor view is a part of a secondary display closes
@@ -731,14 +726,14 @@ TEST_F(AnchoredNudgeManagerImplTest,
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show the nudge in the secondary display.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Remove the secondary display, which deletes the anchor view.
   UpdateDisplay("800x700");
 
   // The anchor view was deleted, the nudge should have closed.
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that a nudge is properly destroyed on shutdown.
@@ -751,8 +746,8 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Nudge is left open, no crash.
 }
@@ -767,41 +762,41 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge with default duration.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // The nudge should expire after `kNudgeDefaultDuration` has passed.
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Test that a nudge with medium duration lasts longer than
   // `kNudgeDefaultDuration` but expires after `kNudgeMediumDuration`.
   nudge_data.duration = NudgeDuration::kMediumDuration;
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
 
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeMediumDuration);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Test that a nudge with long duration lasts longer than
   // `kNudgeMediumDuration` but expires after `kNudgeLongDuration`.
   nudge_data.duration = NudgeDuration::kLongDuration;
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeMediumDuration + base::Seconds(1));
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
 
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeLongDuration);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that nudge's default duration is updated to medium duration if the
@@ -818,57 +813,57 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeDefaultDurationIsUpdated) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge with default duration.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // The nudge should expire after `kNudgeDefaultDuration`.
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Add a long body text and show the nudge again.
   ASSERT_GE(static_cast<int>(long_body_text.length()),
             AnchoredNudgeManagerImpl::kLongBodyTextLength);
   nudge_data.body_text = long_body_text;
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // The nudge should not expire after `kNudgeDefaultDuration` has passed, but
   // will expire after `kNudgeMediumDuration` since it has a long body text.
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeMediumDuration);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Clear body text, add a button and show the nudge again.
   nudge_data.body_text = std::u16string();
   nudge_data.primary_button_text = primary_button_text;
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // The nudge should not expire after `kNudgeDefaultDuration` has passed, but
   // will expire after `kNudgeMediumDuration` since it has a button.
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration + base::Seconds(1));
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeMediumDuration);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Set the duration to long and show the nudge again.
   nudge_data.duration = NudgeDuration::kLongDuration;
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Ensure the duration doesn't update back to medium if it was set to long.
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeMediumDuration + base::Seconds(1));
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeLongDuration);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that nudges are destroyed on session state changes.
@@ -881,20 +876,20 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Lock screen, nudge should have closed.
   SetLockedState(true);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Show a nudge in the locked state.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Unlock screen, nudge should have closed.
   SetLockedState(false);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that the nudge widget closes after its hide animation is completed.
@@ -912,21 +907,21 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnHideAnimationComplete) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Cancel will trigger the hide animation, the nudge should still exist.
-  anchored_nudge_manager()->Cancel(id);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Attempt cancelling the nudge while hide animation is in progress, these
   // calls should be ignored.
-  anchored_nudge_manager()->Cancel(id);
-  anchored_nudge_manager()->Cancel(id);
+  GetAnchoredNudgeManager()->Cancel(id);
+  GetAnchoredNudgeManager()->Cancel(id);
 
   // Fast forward to complete hide animation, the nudge should have closed.
   task_environment()->FastForwardBy(kAnimationSettleDownDuration);
-  ASSERT_FALSE(GetShownNudges()[id]);
+  ASSERT_FALSE(GetShownNudge(id));
 }
 
 TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterrupted_OnShutdown) {
@@ -942,12 +937,12 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterrupted_OnShutdown) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Cancel will trigger the hide animation, the nudge should still exist.
-  anchored_nudge_manager()->Cancel(id);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Nudge animation is interrupted on shutdown, no crash.
 }
@@ -966,18 +961,18 @@ TEST_F(AnchoredNudgeManagerImplTest,
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Cancel will trigger the hide animation, the nudge should still exist.
-  anchored_nudge_manager()->Cancel(id);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Attempt showing the same nudge again immediately. The hide animation should
   // be interrupted, and the nudge will be replaced.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   task_environment()->FastForwardBy(kAnimationSettleDownDuration);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
 }
 
 TEST_F(AnchoredNudgeManagerImplTest,
@@ -994,17 +989,17 @@ TEST_F(AnchoredNudgeManagerImplTest,
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Cancel will trigger the hide animation, the nudge should still exist.
-  anchored_nudge_manager()->Cancel(id);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Create a scoped nudge pause right after, which will close the nudge
   // immediately interrupting its hide animation.
-  anchored_nudge_manager()->CreateScopedPause();
-  EXPECT_FALSE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->CreateScopedPause();
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that the dismiss timer is paused on hover so the nudge won't close.
@@ -1017,8 +1012,8 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  AnchoredNudge* nudge = GetShownNudges()[id];
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  AnchoredNudge* nudge = GetShownNudge(id);
   EXPECT_TRUE(nudge);
 
   // Wait for half of the nudge's duration.
@@ -1027,7 +1022,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
 
   // Hover on the nudge and wait for its full duration. It should persist.
   GetEventGenerator()->MoveMouseTo(
-      GetShownNudges()[id]->GetBoundsInScreen().CenterPoint());
+      GetShownNudge(id)->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(nudge->IsMouseHovered());
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration);
@@ -1038,7 +1033,7 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgePersistsOnHover) {
   EXPECT_FALSE(nudge->IsMouseHovered());
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeDefaultDuration / 2 + base::Seconds(1));
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 // Tests that attempting to cancel a nudge with an invalid `id` should not
@@ -1053,21 +1048,21 @@ TEST_F(AnchoredNudgeManagerImplTest, CancelNudgeWhichDoesNotExist) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Show a nudge.
-  anchored_nudge_manager()->Show(nudge_data);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Attempt to cancel nudge with an `id` that does not exist. Should not have
   // any effect.
   CancelNudge(id_2);
-  EXPECT_TRUE(GetShownNudges()[id]);
+  EXPECT_TRUE(GetShownNudge(id));
 
   // Cancel the shown nudge with its valid `id`.
   CancelNudge(id);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 
   // Attempt to cancel the same nudge again. Should not have any effect.
   CancelNudge(id);
-  EXPECT_FALSE(GetShownNudges()[id]);
+  EXPECT_FALSE(GetShownNudge(id));
 }
 
 TEST_F(AnchoredNudgeManagerImplTest, ShownCountMetric) {
@@ -1082,17 +1077,17 @@ TEST_F(AnchoredNudgeManagerImplTest, ShownCountMetric) {
 
   histogram_tester.ExpectBucketCount(kNudgeShownCount, kTestCatalogName, 0);
 
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   histogram_tester.ExpectBucketCount(kNudgeShownCount, kTestCatalogName, 1);
 
-  anchored_nudge_manager()->Show(nudge_data);
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   histogram_tester.ExpectBucketCount(kNudgeShownCount, kTestCatalogName, 3);
 }
 
 TEST_F(AnchoredNudgeManagerImplTest, TimeToActionMetric) {
   base::HistogramTester histogram_tester;
-  anchored_nudge_manager()->ResetNudgeRegistryForTesting();
+  GetAnchoredNudgeManager()->ResetNudgeRegistryForTesting();
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
 
   // Set up nudge data contents.
@@ -1101,48 +1096,48 @@ TEST_F(AnchoredNudgeManagerImplTest, TimeToActionMetric) {
   auto nudge_data = CreateBaseNudgeData(id, anchor_view);
 
   // Metric is not recorded if the nudge has not been shown.
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
                                      kTestCatalogName, 0);
 
   // Metric is recorded if the action is performed after the nudge was shown.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   task_environment()->FastForwardBy(base::Seconds(1));
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
                                      kTestCatalogName, 1);
 
   // Metric is not recorded if the nudge action is performed again without
   // another nudge being shown.
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
                                      kTestCatalogName, 1);
 
   // Metric is recorded with the appropriate time range after showing nudge
   // again and waiting enough time to fall into the "Within1h" time bucket.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   task_environment()->FastForwardBy(base::Minutes(2));
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1h,
                                      kTestCatalogName, 1);
 
   // Metric is not recorded if the nudge action is performed again without
   // another nudge being shown.
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1h,
                                      kTestCatalogName, 1);
 
   // Metric is recorded with the appropriate time range after showing nudge
   // again and waiting enough time to fall into the "WithinSession" time bucket.
-  anchored_nudge_manager()->Show(nudge_data);
+  GetAnchoredNudgeManager()->Show(nudge_data);
   task_environment()->FastForwardBy(base::Hours(2));
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithinSession,
                                      kTestCatalogName, 1);
 
   // Metric is not recorded if the nudge action is performed again without
   // another nudge being shown.
-  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  GetAnchoredNudgeManager()->MaybeRecordNudgeAction(kTestCatalogName);
   histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithinSession,
                                      kTestCatalogName, 1);
 }

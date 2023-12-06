@@ -7160,10 +7160,6 @@ const char kSystemJapanesePhysicalTypingDescription[] =
     "typing in Japanese. This also replaces the Japanese extension settings "
     "page with one built into the UI and migrates the data to a new location.";
 
-const char kSystemNudgeV2Name[] = "New System Nudges";
-const char kSystemNudgeV2Description[] =
-    "Enables the use of the new System Nudges";
-
 const char kSupportF11AndF12ShortcutsName[] = "F11/F12 Shortcuts";
 const char kSupportF11AndF12ShortcutsDescription[] =
     "Enables settings that "

@@ -7636,14 +7636,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "system-nudge-v2",
-    "owners": [
-      "kradtke@chromium.org",
-      "cros-status-area-eng@google.com"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "system-voice-isolation-option",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130

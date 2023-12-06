@@ -10821,12 +10821,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"system-nudge-v2", flag_descriptions::kSystemNudgeV2Name,
-     flag_descriptions::kSystemNudgeV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSystemNudgeV2)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cros-labs-window-splitting", flag_descriptions::kWindowSplittingName,
      flag_descriptions::kWindowSplittingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWindowSplitting)},

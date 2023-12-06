@@ -4111,9 +4111,6 @@ extern const char kSpectreVariant2MitigationDescription[];
 extern const char kSystemJapanesePhysicalTypingName[];
 extern const char kSystemJapanesePhysicalTypingDescription[];
 
-extern const char kSystemNudgeV2Name[];
-extern const char kSystemNudgeV2Description[];
-
 extern const char kSupportF11AndF12ShortcutsName[];
 extern const char kSupportF11AndF12ShortcutsDescription[];
 

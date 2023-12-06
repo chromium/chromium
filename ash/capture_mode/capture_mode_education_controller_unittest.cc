@@ -54,12 +54,9 @@ class CaptureModeEducationControllerTest : public AshTestBase {
  public:
   CaptureModeEducationControllerTest(const std::string& arm_name = "")
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // `kSystemNudgeV2` must be initialized before the test starts as otherwise
-    // `AnchoredNudgeManagerImpl` will not be created by the shell.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kSystemNudgeV2, {}},
-         {features::kCaptureModeEducation,
+        {{features::kCaptureModeEducation,
           {{"CaptureModeEducationParam", arm_name}}}},
         /*disabled_features=*/{});
   }
@@ -551,12 +548,9 @@ class CaptureModeEducationControllerBypassLimitsFlagTest
     : public CaptureModeEducationControllerTest {
  public:
   CaptureModeEducationControllerBypassLimitsFlagTest() {
-    // `kSystemNudgeV2` must be initialized before the test starts as otherwise
-    // `AnchoredNudgeManagerImpl` will not be created by the shell.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kSystemNudgeV2, {}},
-         {features::kCaptureModeEducation,
+        {{features::kCaptureModeEducation,
           {{"CaptureModeEducationParam", "ShortcutNudge"}}},
          {features::kCaptureModeEducationBypassLimits, {}}},
         /*disabled_features=*/{});

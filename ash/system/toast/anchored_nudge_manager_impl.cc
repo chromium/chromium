@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/scoped_nudge_pause.h"
@@ -292,7 +291,6 @@ class AnchoredNudgeManagerImpl::NudgeWidgetObserver
 };
 
 AnchoredNudgeManagerImpl::AnchoredNudgeManagerImpl() {
-  DCHECK(features::IsSystemNudgeV2Enabled());
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -509,8 +507,7 @@ views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondaryButtonForTest(
 
 AnchoredNudge* AnchoredNudgeManagerImpl::GetShownNudgeForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
-  return shown_nudges_[id];
+  return base::Contains(shown_nudges_, id) ? shown_nudges_[id] : nullptr;
 }
 
 AnchoredNudge* AnchoredNudgeManagerImpl::GetNudgeIfShown(

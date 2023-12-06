@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -19,7 +18,6 @@
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -82,8 +80,6 @@ void SetupViewCornerRadius(views::View* view, int corner_radius) {
 }  // namespace
 
 SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
-  DCHECK(features::IsSystemNudgeV2Enabled());
-
   SetupViewCornerRadius(this, kNudgeCornerRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);

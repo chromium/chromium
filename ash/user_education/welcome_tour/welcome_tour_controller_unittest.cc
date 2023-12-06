@@ -805,11 +805,7 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 // Tour in order to assert expectations before, during, and/or after run time.
 class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
  public:
-  WelcomeTourControllerRunTest() {
-    // Enable the `AnchoredNudgeManager` as it has an easier to use syntax than
-    // the `SystemNudgeController` which is on its way out the door.
-    scoped_feature_list_.InitAndEnableFeature(features::kSystemNudgeV2);
-  }
+  WelcomeTourControllerRunTest() = default;
 
   // Runs the Welcome Tour, invoking the specified `in_progress_callback` just
   // after the Welcome Tour has started. Note that this method will not return
@@ -878,10 +874,6 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     EXPECT_TRUE(ended_future.Wait());
     Mock::VerifyAndClearExpectations(user_education_delegate());
   }
-
- private:
-  // Used to enable the `AnchoredNudgeManager`.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests -----------------------------------------------------------------------

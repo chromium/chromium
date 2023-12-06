@@ -1873,9 +1873,6 @@ BASE_FEATURE(kSysUiDownloadsIntegrationV2,
              "SysUiDownloadsIntegrationV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the use of the new System Nudges. (go/cros-educationalnudge-spec)
-BASE_FEATURE(kSystemNudgeV2, "SystemNudgeV2", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, "NightLight", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3847,13 +3844,6 @@ bool IsSysUiDownloadsIntegrationV2Enabled() {
   return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);
 }
 
-bool IsSystemNudgeV2Enabled() {
-  return base::FeatureList::IsEnabled(kSystemNudgeV2) ||
-         IsScalableIphEnabled() ||
-         IsVideoConferenceEnabled();  // System Nudge V2 is launching
-                                      // together with the VC project.
-}
-
 bool IsNotificationExpansionAnimationEnabled() {
   return base::FeatureList::IsEnabled(kNotificationExpansionAnimation);
 }
@@ -4016,8 +4006,7 @@ bool IsPhoneHubMonochromeNotificationIconsEnabled() {
 }
 
 bool IsPhoneHubOnboardingNotifierRevampEnabled() {
-  return base::FeatureList::IsEnabled(kPhoneHubOnboardingNotifierRevamp) &&
-         base::FeatureList::IsEnabled(kSystemNudgeV2);
+  return base::FeatureList::IsEnabled(kPhoneHubOnboardingNotifierRevamp);
 }
 
 bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {

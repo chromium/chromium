@@ -4,13 +4,11 @@
 
 #include "ash/system/toast/system_nudge_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/style/keyboard_shortcut_view.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/button/image_button.h"
@@ -74,15 +72,7 @@ views::LabelButton* GetSecondaryButton(views::View* nudge_view) {
 
 }  // namespace
 
-class SystemNudgeViewTest : public AshTestBase {
- public:
-  SystemNudgeViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSystemNudgeV2);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SystemNudgeViewTest = AshTestBase;
 
 TEST_F(SystemNudgeViewTest, TextOnly) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();

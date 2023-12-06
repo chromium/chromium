@@ -1251,9 +1251,7 @@ void Shell::Init(
   accessibility_delegate_.reset(shell_delegate_->CreateAccessibilityDelegate());
   accessibility_controller_ = std::make_unique<AccessibilityControllerImpl>();
   toast_manager_ = std::make_unique<ToastManagerImpl>();
-  if (features::IsSystemNudgeV2Enabled()) {
-    anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
-  }
+  anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
   system_nudge_pause_manager_ = std::make_unique<SystemNudgePauseManagerImpl>();
 
   peripheral_battery_listener_ = std::make_unique<PeripheralBatteryListener>();

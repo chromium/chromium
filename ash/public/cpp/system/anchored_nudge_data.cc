@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,7 +23,6 @@ AnchoredNudgeData::AnchoredNudgeData(const std::string& id,
       catalog_name(catalog_name),
       body_text(body_text),
       anchor_view_tracker_(std::make_unique<views::ViewTracker>()) {
-  DCHECK(features::IsSystemNudgeV2Enabled());
   SetAnchorView(anchor_view);
 }
 
