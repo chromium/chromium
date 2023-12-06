@@ -364,7 +364,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
     // Relevant sections for address fields.
     std::map<Section, std::vector<const AutofillField*>> section_fields;
     for (const auto& field : form) {
-      if (IsAddressType(field->Type())) {
+      if (IsAddressType(field->Type().GetStorableType())) {
         section_fields[field->section].push_back(field.get());
       }
     }

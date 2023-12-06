@@ -114,7 +114,7 @@ absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
       }
     }
     const ServerFieldType type = TypeNameToFieldType(key);
-    if (type == UNKNOWN_TYPE || !IsAddressType(AutofillType(type))) {
+    if (type == UNKNOWN_TYPE || !IsAddressType(type)) {
       LOG(ERROR) << "Unknown or non-address type " << key << ".";
       return absl::nullopt;
     }

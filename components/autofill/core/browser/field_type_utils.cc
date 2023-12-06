@@ -83,8 +83,8 @@ bool IsStreetNameOrHouseNumberType(const ServerFieldType type) {
   return type == ADDRESS_HOME_STREET_NAME || type == ADDRESS_HOME_HOUSE_NUMBER;
 }
 
-bool IsAddressType(const AutofillType& type) {
-  switch (type.group()) {
+bool IsAddressType(ServerFieldType type) {
+  switch (GroupTypeOfServerFieldType(type)) {
     case FieldTypeGroup::kName:
     case FieldTypeGroup::kEmail:
     case FieldTypeGroup::kCompany:

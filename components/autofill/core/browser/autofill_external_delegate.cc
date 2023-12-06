@@ -948,7 +948,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   // credit card field).
   // So the metric needs to be recorded only if the field is classified as an
   // address.
-  if (IsAddressType(AutofillType(autofill_trigger_field->server_type()))) {
+  if (IsAddressType(autofill_trigger_field->server_type())) {
     autofill_metrics::LogFillingMethodUsed(
         autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
   }

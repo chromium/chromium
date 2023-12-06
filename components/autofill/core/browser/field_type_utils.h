@@ -48,7 +48,7 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field);
 bool IsStreetNameOrHouseNumberType(const ServerFieldType type);
 
 // Returns true if `type` is address-related.
-bool IsAddressType(const AutofillType& type);
+bool IsAddressType(ServerFieldType type);
 
 // Returns 0-based index of an address line type, which is X-1 for
 // ADDRESS_HOME_LINEX. Expects only ADDRESS_HOME_LINE(1|2|3) types.
