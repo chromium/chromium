@@ -116,7 +116,7 @@ ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
   probe::EvaluateScriptBlock probe_scope(ExecutionContext::From(script_state),
                                          BaseUrl(),
-                                         /*module=*/true);
+                                         /*module=*/true, /*sanitize=*/false);
 
   DCHECK_EQ(execute_script_policy,
             ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);

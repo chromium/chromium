@@ -215,11 +215,10 @@ ScriptEvaluationResult ClassicScript::RunScriptOnScriptStateAndReturnValue(
     ScriptState* script_state,
     ExecuteScriptPolicy policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
-  probe::EvaluateScriptBlock probe_scope(
-      ExecutionContext::From(script_state),
-      GetSanitizeScriptErrors() == SanitizeScriptErrors::kSanitize ? SourceUrl()
-                                                                   : BaseUrl(),
-      /*module=*/false);
+  bool sanitize = GetSanitizeScriptErrors() == SanitizeScriptErrors::kSanitize;
+  probe::EvaluateScriptBlock probe_scope(ExecutionContext::From(script_state),
+                                         sanitize ? SourceUrl() : BaseUrl(),
+                                         /*module=*/false, sanitize);
 
   return V8ScriptRunner::CompileAndRunScript(script_state, this, policy,
                                              std::move(rethrow_errors));

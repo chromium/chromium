@@ -462,6 +462,10 @@ void AnimationFrameTimingMonitor::Will(
                                    : ScriptTimingInfo::Type::kClassicScript,
       .start_time = probe_data.CaptureStartTime(),
       .source_location = {.url = url}};
+  if (probe_data.sanitize) {
+    pending_script_info_->execution_start_time =
+        pending_script_info_->start_time;
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
