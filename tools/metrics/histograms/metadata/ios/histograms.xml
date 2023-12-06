@@ -3113,7 +3113,7 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded each time an intent is donated.</summary>
 </histogram>
 
-<histogram name="IOS.Spotlight.LaunchIntentType"
+<histogram name="IOS.Spotlight.LaunchedIntentType"
     enum="IOSSpotlightDonatedIntentType" expires_after="2024-06-01">
   <owner>stkhapugin@chromium.org</owner>
   <owner>ameurhosni@chromium.org</owner>
