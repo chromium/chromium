@@ -83,7 +83,7 @@ constexpr int kBackToTabImageSize = 16;
 constexpr int kContentSettingIconSize = 16;
 
 // The height of the controls bar at the top of the window.
-constexpr int kTopControlsHeight = 30;
+constexpr int kTopControlsHeight = 34;
 
 #if BUILDFLAG(IS_LINUX)
 // Frame border when window shadow is not drawn.
