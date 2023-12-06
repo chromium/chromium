@@ -2711,7 +2711,7 @@
   {
     "name": "enable-federated-service",
     "owners": [ "alanlxl@chromium.org", "amoylan@chromium.org"],
-    "expiry_milestone": 122
+    "expiry_milestone": 128
   },
   {
     "name": "enable-feed-ablation",
