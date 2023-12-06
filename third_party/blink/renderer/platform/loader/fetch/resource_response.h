@@ -88,7 +88,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   // When serving resources from a WebBundle, we might have resources whose
   // source isn't a URL (like urn:uuid), but we still need to create and
   // populate ResourceTiming entries for them, so we need to check that either
-  // response has a proper request URL or a WebBundleURL.
+  // response has a proper request URL or whether the response is an inner
+  // response of a WebBundle.
   bool ShouldPopulateResourceTiming() const;
 
   // The current request URL for this resource (the URL after redirects).
@@ -209,9 +210,6 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   const absl::optional<net::SSLInfo>& GetSSLInfo() const { return ssl_info_; }
   void SetSSLInfo(const net::SSLInfo& ssl_info);
-
-  const KURL& WebBundleURL() const { return web_bundle_url_; }
-  void SetWebBundleURL(const KURL& url) { web_bundle_url_ = url; }
 
   bool EmittedExtraInfo() const { return emitted_extra_info_; }
   void SetEmittedExtraInfo(bool emitted_extra_info) {
@@ -425,6 +423,10 @@ class PLATFORM_EXPORT ResourceResponse final {
     is_signed_exchange_inner_response_ = is_signed_exchange_inner_response;
   }
 
+  void SetIsWebBundleInnerResponse(bool is_web_bundle_inner_response) {
+    is_web_bundle_inner_response_ = is_web_bundle_inner_response;
+  }
+
   bool WasInPrefetchCache() const { return was_in_prefetch_cache_; }
 
   void SetWasInPrefetchCache(bool was_in_prefetch_cache) {
@@ -548,6 +550,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // True if this resource is from an inner response of a signed exchange.
   // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html
   bool is_signed_exchange_inner_response_ : 1;
+
+  // True if this resource is an inner response of a WebBundle.
+  bool is_web_bundle_inner_response_ : 1;
 
   // True if this resource is served from the prefetch cache.
   bool was_in_prefetch_cache_ : 1;
@@ -678,10 +683,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   // Includes all known aliases, e.g. from A, AAAA, or HTTPS, not just from the
   // address used for the connection, in no particular order.
   Vector<String> dns_aliases_;
-
-  // The URL of WebBundle this response was loaded from. This value is only
-  // populated for resources loaded from a WebBundle.
-  KURL web_bundle_url_;
 
   absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
 

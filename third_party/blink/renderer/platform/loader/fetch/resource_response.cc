@@ -77,6 +77,7 @@ ResourceResponse::ResourceResponse()
       did_use_shared_dictionary_(false),
       async_revalidation_requested_(false),
       is_signed_exchange_inner_response_(false),
+      is_web_bundle_inner_response_(false),
       was_in_prefetch_cache_(false),
       was_cookie_in_request_(false),
       network_accessed_(false),
@@ -104,7 +105,7 @@ bool ResourceResponse::IsHTTP() const {
 }
 
 bool ResourceResponse::ShouldPopulateResourceTiming() const {
-  return IsHTTP() || WebBundleURL().IsValid();
+  return IsHTTP() || is_web_bundle_inner_response_;
 }
 
 const KURL& ResourceResponse::CurrentRequestUrl() const {

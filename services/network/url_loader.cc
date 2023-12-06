@@ -1355,8 +1355,6 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
     url_request_->GetLoadTimingInfo(&response->load_timing);
 
   if (url_request_->ssl_info().cert.get()) {
-    response->ct_policy_compliance =
-        url_request_->ssl_info().ct_policy_compliance;
     response->cert_status = url_request_->ssl_info().cert_status;
     if ((options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
         (net::IsCertStatusError(url_request_->ssl_info().cert_status) &&

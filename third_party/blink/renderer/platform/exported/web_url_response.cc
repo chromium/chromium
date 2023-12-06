@@ -205,10 +205,10 @@ WebURLResponse WebURLResponse::Create(
   response.SetRequestId(request_id);
   response.SetIsSignedExchangeInnerResponse(
       head.is_signed_exchange_inner_response);
+  response.SetIsWebBundleInnerResponse(head.is_web_bundle_inner_response);
   response.SetWasInPrefetchCache(head.was_in_prefetch_cache);
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
-  response.SetWebBundleURL(KURL(head.web_bundle_url));
   response.SetTriggerVerifications(head.trigger_verifications);
 
   SetSecurityStyleAndDetails(GURL(KURL(url)), head, &response,
@@ -639,6 +639,11 @@ void WebURLResponse::SetIsSignedExchangeInnerResponse(
       is_signed_exchange_inner_response);
 }
 
+void WebURLResponse::SetIsWebBundleInnerResponse(
+    bool is_web_bundle_inner_response) {
+  resource_response_->SetIsWebBundleInnerResponse(is_web_bundle_inner_response);
+}
+
 void WebURLResponse::SetWasInPrefetchCache(bool was_in_prefetch_cache) {
   resource_response_->SetWasInPrefetchCache(was_in_prefetch_cache);
 }
@@ -718,14 +723,6 @@ void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
   base::ranges::transform(aliases, dns_aliases.begin(),
                           &WebString::operator WTF::String);
   resource_response_->SetDnsAliases(std::move(dns_aliases));
-}
-
-WebURL WebURLResponse::WebBundleURL() const {
-  return resource_response_->WebBundleURL();
-}
-
-void WebURLResponse::SetWebBundleURL(const WebURL& url) {
-  resource_response_->SetWebBundleURL(url);
 }
 
 void WebURLResponse::SetAuthChallengeInfo(
