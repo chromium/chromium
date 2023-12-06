@@ -66,9 +66,6 @@ crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_r
 crbug.com/1483398 external/wpt/accelerometer/Accelerometer-enabled-on-self-origin-by-feature-policy.https.html [ Failure Pass ]
 crbug.com/1483398 external/wpt/accelerometer/Accelerometer-enabled-by-feature-policy.https.html [ Failure Pass ]
 
-# Gardening 2023-12-04
-crbug.com/346473 external/wpt/uievents/mouse/mousemove_prevent_default_action.tentative.html [ Failure ]
-
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
