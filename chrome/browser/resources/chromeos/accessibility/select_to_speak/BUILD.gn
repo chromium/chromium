@@ -15,6 +15,8 @@ assert(is_chromeos_ash)
 
 select_to_speak_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/select_to_speak"
+tsc_out_dir = "$target_gen_dir/tsc"
+common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 group("build") {
   deps = [
@@ -23,25 +25,24 @@ group("build") {
   ]
 }
 
-tsc_out_dir = "$target_gen_dir/tsc"
-select_to_speak_tsc_out_dir = "$tsc_out_dir/select_to_speak"
-
 # Add typescript files to compile here.
 ts_modules = [
-  "select_to_speak/select_to_speak_main.ts",
-  "select_to_speak/metrics_utils.ts",
-  "select_to_speak/select_to_speak_constants.ts",
-  "select_to_speak/tts_manager.ts",
-  "select_to_speak/input_handler.ts",
+  "select_to_speak_main.ts",
+  "metrics_utils.ts",
+  "select_to_speak_constants.ts",
+  "tts_manager.ts",
+  "input_handler.ts",
 ]
 
+# Add TS files needed from ../common/ here.
+common_ts_modules = [ "instance_checker.ts" ]
+
 # JS files required for ts build.
-js_files = [ "select_to_speak/select_to_speak.js" ]
+js_deps = [ "select_to_speak.js" ]
 
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
   root_dir = "../"
-  in_files = js_files + ts_modules
   out_dir = tsc_out_dir
 
   definitions = [
@@ -58,10 +59,16 @@ ts_library("ts_build") {
     "//tools/typescript/definitions/windows.d.ts",
   ]
 
+  in_files = []
+  foreach(_js_file, js_deps) {
+    in_files += [ "select_to_speak/" + _js_file ]
+  }
+  foreach(_ts_file, ts_modules) {
+    in_files += [ "select_to_speak/" + _ts_file ]
+  }
+
   tsconfig_base = "../tsconfig.base.json"
 }
-
-tsc_common_out_dir = "$target_gen_dir/../common/tsc"
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
@@ -73,12 +80,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "../common:ts_build",
   ]
   sources = [
-    "$select_to_speak_tsc_out_dir/input_handler.js",
-    "$select_to_speak_tsc_out_dir/metrics_utils.js",
-    "$select_to_speak_tsc_out_dir/select_to_speak_constants.js",
-    "$select_to_speak_tsc_out_dir/select_to_speak_main.js",
-    "$select_to_speak_tsc_out_dir/tts_manager.js",
-    "$tsc_common_out_dir/instance_checker.js",
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
@@ -91,8 +92,20 @@ run_jsbundler("select_to_speak_copied_files") {
     "ui_manager.js",
     "unchecked.png",
   ]
+
+  foreach(_ts_file, ts_modules) {
+    sources +=
+        [ "$tsc_out_dir/select_to_speak/" + get_path_info(_ts_file, "dir") +
+          "/" + get_path_info(_ts_file, "name") + ".js" ]
+  }
+  foreach(_ts_file, common_ts_modules) {
+    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+
   rewrite_rules = [
-    rebase_path(select_to_speak_tsc_out_dir, root_build_dir) + ":",
+    rebase_path("$tsc_out_dir/select_to_speak", root_build_dir) + ":",
+    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
