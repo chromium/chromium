@@ -29,6 +29,8 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   on_device_tail_model_service_ =
       std::make_unique<FakeOnDeviceTailModelService>();
+  scoring_model_service_ =
+      std::make_unique<FakeAutocompleteScoringModelService>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
@@ -101,7 +103,7 @@ FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
   return on_device_tail_model_service_.get();
 }
 
-AutocompleteScoringModelService*
+FakeAutocompleteScoringModelService*
 FakeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
   return scoring_model_service_.get();
 }

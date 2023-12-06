@@ -22,8 +22,6 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -931,9 +929,6 @@ void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed,
     bool score_urls) {
-  // Cancel the scoring model when updating `internal_result_`.
-  CancelUrlScoringModel();
-
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.AutocompletionTime.UpdateResult");
 
@@ -1059,23 +1054,19 @@ void AutocompleteController::UpdateResult(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // Use a WeakPtr since the model is not owned and `this` may no longer be
     // alive. `SortCullAndAnnotateResult()` is called when the model is done.
-    RunBatchUrlScoringModel(base::BindOnce(
-        &AutocompleteController::SortCullAndAnnotateResult,
-        weak_ptr_factory_.GetWeakPtr(), last_default_match,
-        last_default_associated_keyword, force_notify_default_match_changed,
-        default_match_to_preserve));
+    RunBatchUrlScoringModel();
 #else
     NOTREACHED();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  } else {
-    // The final call to `SortAndCull()` happens inside
-    // `SortCullAndAnnotateResult()`. Here, the result is sorted, trimmed to a
-    // small number of "best" matches, and annotated with relevant information
-    // before notifying listeners that the result is ready.
-    SortCullAndAnnotateResult(
-        last_default_match, last_default_associated_keyword,
-        force_notify_default_match_changed, default_match_to_preserve);
   }
+
+  // The final call to `SortAndCull()` happens inside
+  // `SortCullAndAnnotateResult()`. Here, the result is sorted, trimmed to
+  // a small number of "best" matches, and annotated with relevant
+  // information before notifying listeners that the result is ready.
+  SortCullAndAnnotateResult(last_default_match, last_default_associated_keyword,
+                            force_notify_default_match_changed,
+                            default_match_to_preserve);
 }
 
 absl::optional<AutocompleteMatch>
@@ -1601,7 +1592,6 @@ void AutocompleteController::StopHelper(bool clear_result,
   // Cancel any pending requests that may update the results. Otherwise, e.g.,
   // the user's suggestion selection may be reset.
   CancelDelayedNotifyChanged();
-  CancelUrlScoringModel();
 
   if (clear_result && !internal_result_.empty()) {
     internal_result_.Reset();
@@ -1738,19 +1728,15 @@ bool AutocompleteController::ShouldRunProvider(
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void AutocompleteController::RunBatchUrlScoringModel(
-    base::OnceClosure completion_callback) {
+void AutocompleteController::RunBatchUrlScoringModel() {
   TRACE_EVENT0("omnibox", "AutocompleteController::RunBatchUrlScoringModel");
 
   size_t eligible_matches_count = base::ranges::count_if(
       internal_result_.matches_,
       [](const auto& match) { return match.IsUrlScoringEligible(); });
 
-  // If `eligible_matches_count` is 0, call `completion_callback` immediately.
-  if (eligible_matches_count == 0) {
-    std::move(completion_callback).Run();
+  if (eligible_matches_count == 0)
     return;
-  }
 
   // Run the model for the eligible matches.
   std::vector<const ScoringSignals*> batch_scoring_signals;
@@ -1765,28 +1751,13 @@ void AutocompleteController::RunBatchUrlScoringModel(
     stripped_destination_urls.push_back(match.stripped_destination_url.spec());
   }
 
-  auto timer = base::ElapsedTimer();
-  // Synchronous ML model execution.
-  const auto batch_results =
-      provider_client_->GetAutocompleteScoringModelService()
-          ->BatchScoreAutocompleteUrlMatchesSync(
-              std::move(batch_scoring_signals),
-              std::move(stripped_destination_urls));
-  OnUrlScoringModelDone(std::move(timer), std::move(completion_callback),
-                        batch_results);
-}
-
-void AutocompleteController::OnUrlScoringModelDone(
-    const base::ElapsedTimer elapsed_timer,
-    base::OnceClosure completion_callback,
-    std::vector<AutocompleteScoringModelService::Result> results) {
-  TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
-
-  // If the model has no predictions, call `completion_callback` immediately.
-  if (results.empty()) {
-    std::move(completion_callback).Run();
+  auto elapsed_timer = base::ElapsedTimer();
+  const auto results = provider_client_->GetAutocompleteScoringModelService()
+                           ->BatchScoreAutocompleteUrlMatchesSync(
+                               std::move(batch_scoring_signals),
+                               std::move(stripped_destination_urls));
+  if (results.empty())
     return;
-  }
 
   // Group the eligible matches by `stripped_destination_url`.
   // TODO(crbug.com/1446688): `stripped_destination_url` is not necessarily
@@ -1883,16 +1854,8 @@ void AutocompleteController::OnUrlScoringModelDone(
 
   for (Observer& obs : observers_)
     obs.OnMlScored(this, internal_result_);
-
-  std::move(completion_callback).Run();
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-void AutocompleteController::CancelUrlScoringModel() {
-  // Try to cancel any pending requests to the scoring model and invalidate the
-  // WeakPtr to prevent its callbacks from being called.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-}
 
 void AutocompleteController::MaybeRemoveCompanyEntityImages(
     AutocompleteResult* result) {

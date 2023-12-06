@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -397,27 +396,9 @@ class AutocompleteController : public AutocompleteProviderListener,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Runs the batch scoring for all the eligible matches in
-  // `results_.matches_`. If `is_sync` is true, runs sync ML scoring on the
-  // current thread. Otherwise, runs async ML scoring. Passes
-  // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
-  // once the model is done for all the eligible matches, whether successfully
-  // or not.
-  void RunBatchUrlScoringModel(base::OnceClosure completion_callback);
-
-  // Called when the async scoring model is done running for all the eligible
-  // matches in `results_.matches_`. Redistributes the existing relevance scores
-  // to the matches based on the model prediction scores (i.e. highest relevance
-  // score is given to the match with the highest prediction score, and vice
-  // versa), and calls `completion_callback`.
-  void OnUrlScoringModelDone(
-      const base::ElapsedTimer elapsed_timer,
-      base::OnceClosure completion_callback,
-      std::vector<AutocompleteScoringModelService::Result> results);
+  // `results_.matches_`.
+  void RunBatchUrlScoringModel();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  // Tries to cancel any pending requests to the scoring model and prevents
-  // `OnUrlScoringModelDone()` and its completion callback from being called.
-  void CancelUrlScoringModel();
 
   // Constructs a destination URL from supplied search terms args.
   // TODO(1418077): look for a way to dissolve this function into direct
@@ -565,12 +546,6 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // The preferred steady state (unfocused) omnibox position.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
-
-  // Combined, used to cancel model execution requests sent to
-  // `AutocompleteScoringModelService` and to prevent its callbacks from being
-  // called `base::CancelableTaskTracker` alone is insufficient because it
-  // cannot cancel tasks that have already started to run.
-  base::WeakPtrFactory<AutocompleteController> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_
