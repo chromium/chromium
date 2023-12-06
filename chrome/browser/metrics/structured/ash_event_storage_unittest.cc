@@ -104,6 +104,13 @@ TEST_F(AshEventStorageTest, StoreAndProvideEvents) {
 TEST_F(AshEventStorageTest, PreRecordedEventsProcessedCorrectly) {
   std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
   storage->AddEvent(BuildTestEvent());
+  // Wait for the device storage to be ready so this functions in the correct
+  // order. If this isn't here there is a chance that the OnProfileAdded
+  // finishes, calling AshEventStorage::OnProfileReady, before device storage
+  // can loaded. This isn't an issue on device because there is likely to be a
+  // long enough delay between the storage being created and the user
+  // logging-in.
+  Wait();
 
   // Add Profile and wait for the storage to be ready.
   storage->OnProfileAdded(GetUserDirectory());
