@@ -31,15 +31,21 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
 constexpr CGFloat kButtonCornerRadius = 8.0;
 constexpr CGFloat kButtonTitleHorizontalContentInset = 42.0;
 constexpr CGFloat kButtonTitleVerticalContentInset = 9.0;
+// Buttons stack view spacing.
+constexpr CGFloat kButtonStackViewSubViewSpacing = 8.0;
+// Main button text size.
+constexpr CGFloat kButtonTextFontSize = 17.0;
 }  // namespace
 
 @interface NotificationsPromoView ()
 
 @property(nonatomic, strong) UILabel* textLabel;
 @property(nonatomic, strong) UIButton* primaryButton;
+@property(nonatomic, strong) UIButton* secondaryButton;
 @property(nonatomic, strong) UIButton* closeButton;
 
 // Stack View containing all internal views on the promo.
+@property(nonatomic, strong) UIStackView* buttonStackView;
 @property(nonatomic, strong) UIStackView* promoStackView;
 
 @end
@@ -51,9 +57,22 @@ constexpr CGFloat kButtonTitleVerticalContentInset = 9.0;
   self = [super initWithFrame:frame];
   if (self) {
     _textLabel = [self createTextLabel];
-    _primaryButton = [self createPrimaryButton];
+    _primaryButton = [self
+        createButtonOfType:NotificationsPromoButtonTypePrimary
+                  withText:
+                      l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON)];
+    _secondaryButton = [self
+        createButtonOfType:NotificationsPromoButtonTypeSecondary
+                  withText:
+                      l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_SECONDARY_BUTTON)];
+    _buttonStackView =
+        [self createStackViewFromViewArray:@[ _primaryButton, _secondaryButton ]
+                               withSpacing:kButtonStackViewSubViewSpacing];
     _promoStackView =
-        [self createPromoStackWithViewsArray:@[ _textLabel, _primaryButton ]];
+        [self createStackViewFromViewArray:@[ _textLabel, _buttonStackView ]
+                               withSpacing:kStackViewSubViewSpacing];
     _closeButton = [self createCloseButton];
     [self addSubview:_promoStackView];
     [self addSubview:_closeButton];
@@ -91,46 +110,67 @@ constexpr CGFloat kButtonTitleVerticalContentInset = 9.0;
   ]];
 }
 
-- (UIStackView*)createPromoStackWithViewsArray:(NSArray*)views {
+- (UIStackView*)createStackViewFromViewArray:(NSArray*)views
+                                 withSpacing:(CGFloat)spacing {
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:views];
   stackView.alignment = UIStackViewAlignmentCenter;
   stackView.axis = UILayoutConstraintAxisVertical;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
-  stackView.spacing = kStackViewSubViewSpacing;
+  stackView.spacing = spacing;
   return stackView;
 }
 
-- (UIButton*)createPrimaryButton {
+- (UIButton*)createButtonOfType:(NotificationsPromoButtonType)type
+                       withText:(NSString*)text {
   UIButton* button = [[UIButton alloc] init];
+  UIFont* font;
+  button.pointerInteractionEnabled = YES;
+  button.translatesAutoresizingMaskIntoConstraints = NO;
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  button.accessibilityIdentifier = kNotificationsPromoPrimaryButtonId;
-  [button addTarget:self
-                action:@selector(onPrimaryButtonAction:)
-      forControlEvents:UIControlEventTouchUpInside];
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
-  button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
-  // promo after experiment.
-  if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
-    button.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  switch (type) {
+    case NotificationsPromoButtonTypePrimary: {
+      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+      button.accessibilityIdentifier = kNotificationsPromoPrimaryButtonId;
+      [button addTarget:self
+                    action:@selector(onPrimaryButtonAction:)
+          forControlEvents:UIControlEventTouchUpInside];
+      button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
+
+      button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
+      // promo after experiment.
+      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
+        button.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+      }
+      // Button layout and constraints.
+      button.layer.cornerRadius = kButtonCornerRadius;
+      button.clipsToBounds = YES;
+      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+      // Button text.
+      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+          fontWithSize:kButtonTextFontSize];
+      break;
+    }
+    case NotificationsPromoButtonTypeSecondary: {
+      [button setTitleColor:[UIColor colorNamed:kBlueColor]
+                   forState:UIControlStateNormal];
+      button.accessibilityIdentifier = kNotificationsPromoSecondaryButtonId;
+      [button addTarget:self
+                    action:@selector(onSecondaryButtonAction:)
+          forControlEvents:UIControlEventTouchUpInside];
+      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+          fontWithSize:kButtonTextFontSize];
+      break;
+    }
   }
-  // Button layout and constraints.
-  button.layer.cornerRadius = kButtonCornerRadius;
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-      kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-  // Button text.
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
-      initWithString:l10n_util::GetNSString(
-                         IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON)
-          attributes:@{NSFontAttributeName : font}];
+  NSAttributedString* attributedTitle =
+      [[NSAttributedString alloc] initWithString:text
+                                      attributes:@{NSFontAttributeName : font}];
   buttonConfiguration.attributedTitle = attributedTitle;
   button.configuration = buttonConfiguration;
   return button;
@@ -172,6 +212,11 @@ constexpr CGFloat kButtonTitleVerticalContentInset = 9.0;
 // Handles the primary button action.
 - (void)onPrimaryButtonAction:(id)unused {
 }
+
+// Handles the secondary button action.
+- (void)onSecondaryButtonAction:(id)unused {
+}
+
 // Handles close button action.
 - (void)onCloseButtonAction:(id)unused {
 }

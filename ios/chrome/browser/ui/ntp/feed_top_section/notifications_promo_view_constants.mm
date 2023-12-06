@@ -8,3 +8,5 @@ NSString* const kNotificationsPromoCloseButtonId =
     @"NotificationsPromoCloseButtonId";
 NSString* const kNotificationsPromoPrimaryButtonId =
     @"NotificationsPromoPrimaryButtonId";
+NSString* const kNotificationsPromoSecondaryButtonId =
+    @"NotificationsPromoSecondaryButtonId";

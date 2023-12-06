@@ -13,7 +13,13 @@ typedef NS_ENUM(NSInteger, NotificationsExperimentType) {
   NotificationsExperimentTypeSetUpListsEnabled = 2,
 };
 
+typedef NS_ENUM(NSInteger, NotificationsPromoButtonType) {
+  NotificationsPromoButtonTypePrimary = 0,
+  NotificationsPromoButtonTypeSecondary = 1,
+};
+
 extern NSString* const kNotificationsPromoCloseButtonId;
 extern NSString* const kNotificationsPromoPrimaryButtonId;
+extern NSString* const kNotificationsPromoSecondaryButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_NOTIFICATIONS_PROMO_VIEW_CONSTANTS_H_
