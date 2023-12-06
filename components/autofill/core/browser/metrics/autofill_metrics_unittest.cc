@@ -8225,27 +8225,11 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
   test_clock.SetNowTicks(now);
 
   RecreateProfile();
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
-  FormFieldData field;
-  field.label = u"State";
-  field.name = u"state";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Street";
-  field.name = u"";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Number";
-  field.name = u"";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData({.fields = {
+                                         {.label = u"State", .name = u"state"},
+                                         {.label = u"Street"},
+                                         {.label = u"Number"},
+                                     }});
 
   std::vector<ServerFieldType> field_types = {ADDRESS_HOME_STATE,
                                               NO_SERVER_DATA, NO_SERVER_DATA};
@@ -8314,27 +8298,11 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
   test_clock.SetNowTicks(now);
 
   RecreateProfile();
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
-  FormFieldData field;
-  field.label = u"State";
-  field.name = u"state";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Street";
-  field.name = u"";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Number";
-  field.name = u"";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData({.fields = {
+                                         {.label = u"State", .name = u"state"},
+                                         {.label = u"Street"},
+                                         {.label = u"Number"},
+                                     }});
 
   std::vector<ServerFieldType> field_types = {
       ADDRESS_HOME_STATE, ADDRESS_HOME_STREET_ADDRESS, NO_SERVER_DATA};
@@ -8514,53 +8482,28 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
-  // Heuristic value will match with Autocomplete attribute.
-  FormFieldData field;
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  field.autocomplete_attribute = "family-name";
-  field.parsed_autocomplete = ParseAutocompleteAttribute("family-name");
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Heuristic value will NOT match with Autocomplete attribute.
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  field.autocomplete_attribute = "additional-name";
-  field.parsed_autocomplete = ParseAutocompleteAttribute("additional-name");
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // No autocomplete attribute.
-  field.label = u"Address";
-  field.name = u"address";
-  field.form_control_type = FormControlType::kInputText;
-  field.autocomplete_attribute = "off";
-  field.parsed_autocomplete = ParseAutocompleteAttribute("off");
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Heuristic value will be unknown.
-  field.label = u"Garbage label";
-  field.name = u"garbage";
-  field.form_control_type = FormControlType::kInputText;
-  field.autocomplete_attribute = "postal-code";
-  field.parsed_autocomplete = ParseAutocompleteAttribute("postal-code");
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Email";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  field.autocomplete_attribute = "garbage";
-  field.parsed_autocomplete = ParseAutocompleteAttribute("garbage");
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           // Heuristic value will match with Autocomplete attribute.
+           {.label = u"Last Name",
+            .name = u"lastname",
+            .autocomplete_attribute = "family-name"},
+           // Heuristic value will NOT match with Autocomplete attribute.
+           {.label = u"First Name",
+            .name = u"firstname",
+            .autocomplete_attribute = "additional-name"},
+           // No autocomplete attribute.
+           {.label = u"Address",
+            .name = u"address",
+            .autocomplete_attribute = "off"},
+           // Heuristic value will be unknown.
+           {.label = u"Garbage label",
+            .name = u"garbage",
+            .autocomplete_attribute = "postal-code"},
+           {.label = u"Email",
+            .name = u"email",
+            .autocomplete_attribute = "garbage"},
+       }});
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
@@ -8779,13 +8722,9 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   test_clock.SetNowTicks(now);
 
   test::FormDescription form_description = {
-      .description_for_logging = "NumberOfAutofilledFields",
-      .fields = {{.role = NAME_FULL, .value = u"", .is_autofilled = false},
-                 {.role = EMAIL_ADDRESS, .value = u"", .is_autofilled = false},
-                 {.role = PHONE_HOME_CITY_AND_NUMBER, .is_autofilled = true}},
-      .unique_renderer_id = test::MakeFormRendererId(),
-      .main_frame_origin =
-          url::Origin::Create(autofill_client_->form_origin())};
+      .fields = {{.role = NAME_FULL},
+                 {.role = EMAIL_ADDRESS},
+                 {.role = PHONE_HOME_CITY_AND_NUMBER}}};
 
   FormData form = GetAndAddSeenForm(form_description);
 
@@ -8962,24 +8901,16 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 // recorded in FieldInfo metrics. We do this to reduce bandwidth.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsNotRecordOnAllCheckBox) {
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
   // Two checkable checkboxes.
-  FormFieldData field;
-  field.label = u"Option 1";
-  field.name = u"Option 1";
-  field.form_control_type = FormControlType::kInputCheckbox;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Option 2";
-  field.name = u"Option 2";
-  field.form_control_type = FormControlType::kInputCheckbox;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.label = u"Option 1",
+            .name = u"Option 1",
+            .form_control_type = FormControlType::kInputCheckbox},
+           {.label = u"Option 2",
+            .name = u"Option 2",
+            .form_control_type = FormControlType::kInputCheckbox},
+       }});
 
   SeeForm(form);
   SubmitForm(form);
@@ -9000,39 +8931,22 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 TEST_F(
     AutofillMetricsFromLogEventsTest,
     AutofillFieldInfoMetricsNotRecordOnCheckBoxWithTextFieldWithUnknownType) {
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
-  // Start with a username field.
-  FormFieldData field;
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Two checkable radio buttons.
-  field.label = u"female";
-  field.name = u"female";
-  field.form_control_type = FormControlType::kInputRadio;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"male";
-  field.name = u"male";
-  field.form_control_type = FormControlType::kInputRadio;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // One checkable checkbox.
-  field.label = u"save";
-  field.name = u"save";
-  field.form_control_type = FormControlType::kInputCheckbox;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           // Start with a username field.
+           {.label = u"username", .name = u"username"},
+           // Two checkable radio buttons.
+           {.label = u"female",
+            .name = u"female",
+            .form_control_type = FormControlType::kInputRadio},
+           {.label = u"male",
+            .name = u"male",
+            .form_control_type = FormControlType::kInputRadio},
+           // One checkable checkbox.
+           {.label = u"save",
+            .name = u"save",
+            .form_control_type = FormControlType::kInputCheckbox},
+       }});
 
   SeeForm(form);
   SubmitForm(form);
@@ -9056,37 +8970,19 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
-  // Start with two input text fields.
-  FormFieldData field;
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Two checkable radio buttons.
-  field.label = u"female";
-  field.name = u"female";
-  field.form_control_type = FormControlType::kInputRadio;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"male";
-  field.name = u"male";
-  field.form_control_type = FormControlType::kInputRadio;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           // Start with two input text fields.
+           {.label = u"First Name", .name = u"firstname"},
+           {.label = u"Last Name", .name = u"lastname"},
+           // Two checkable radio buttons.
+           {.label = u"female",
+            .name = u"female",
+            .form_control_type = FormControlType::kInputRadio},
+           {.label = u"male",
+            .name = u"male",
+            .form_control_type = FormControlType::kInputRadio},
+       }});
 
   // The two text fields have predicted types.
   std::vector<ServerFieldType> field_types = {NAME_FIRST, NAME_LAST,
@@ -9187,29 +9083,16 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
-
-  // Start with two input text fields.
-  FormFieldData field;
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // Selectlist.
-  field.label = u"Country";
-  field.name = u"country";
-  field.form_control_type = FormControlType::kSelectList;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields = {
+           // Start with two input text fields.
+           {.label = u"First Name", .name = u"firstname"},
+           {.label = u"Last Name", .name = u"lastname"},
+           // A Selectlist.
+           {.label = u"Country",
+            .name = u"country",
+            .form_control_type = FormControlType::kSelectList},
+       }});
 
   std::vector<ServerFieldType> field_types = {NAME_FIRST, NAME_LAST,
                                               ADDRESS_HOME_COUNTRY};
@@ -9246,32 +9129,17 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  FormData form;
-  form.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
-  form.url = GURL("http://www.foo.com/");
-
   // The form has three input text fields, the second field is in a sub frame.
-  FormFieldData field;
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = FormControlType::kInputText;
-  field.host_frame = form.host_frame;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = FormControlType::kInputText;
-  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(true));
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Email";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  field.host_frame = form.host_frame;
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData(
+      {.fields =
+           {
+               {.label = u"First Name", .name = u"firstname"},
+               {.host_frame = test::MakeFormGlobalId().frame_token,
+                .label = u"Last Name",
+                .name = u"lastname"},
+               {.label = u"Email", .name = u"email"},
+           },
+       .host_frame = test::MakeFormGlobalId().frame_token});
 
   std::vector<ServerFieldType> field_types = {NAME_FIRST, NAME_LAST,
                                               EMAIL_ADDRESS};
