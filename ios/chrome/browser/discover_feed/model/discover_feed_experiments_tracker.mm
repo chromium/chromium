@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/discover_feed/discover_feed_experiments_tracker.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_experiments_tracker.h"
 
 #import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"

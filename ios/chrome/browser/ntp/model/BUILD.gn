@@ -17,7 +17,7 @@ source_set("model") {
     "//components/prefs",
     "//components/strings",
     "//components/url_formatter",
-    "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url",

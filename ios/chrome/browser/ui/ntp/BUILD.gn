@@ -39,7 +39,7 @@ source_set("constants") {
     "new_tab_page_header_constants.h",
     "new_tab_page_header_constants.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/discover_feed:constants" ]
+  public_deps = [ "//ios/chrome/browser/discover_feed/model:constants" ]
 }
 
 source_set("component_factory_protocol") {
@@ -57,8 +57,8 @@ source_set("component_factory") {
     "//components/prefs",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
@@ -99,9 +99,9 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:constants",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/follow/model:browser_agent",
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:service",
@@ -209,9 +209,9 @@ source_set("ntp_internal") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:constants",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
@@ -323,7 +323,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations/service",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",

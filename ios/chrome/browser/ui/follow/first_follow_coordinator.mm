@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 
-#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"

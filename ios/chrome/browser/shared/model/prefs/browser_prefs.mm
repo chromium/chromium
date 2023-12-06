@@ -529,8 +529,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterInt64Pref(prefs::kNtpShownBookmarksFolder, 3);
 
   // The Following feed sort type comes from
-  // ios/chrome/browser/discover_feed/feed_constants.h Defaults to 2, which is
-  // sort by latest.
+  // ios/chrome/browser/discover_feed/model/feed_constants.h Defaults to 2,
+  // which is sort by latest.
   registry->RegisterIntegerPref(prefs::kNTPFollowingFeedSortType, 2);
 
   // Register pref to determine if the user changed the Following sort type.

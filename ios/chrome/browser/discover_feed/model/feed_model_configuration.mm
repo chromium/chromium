@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/discover_feed/feed_model_configuration.h"
+#import "ios/chrome/browser/discover_feed/model/feed_model_configuration.h"
 
 #import "base/check_op.h"
 

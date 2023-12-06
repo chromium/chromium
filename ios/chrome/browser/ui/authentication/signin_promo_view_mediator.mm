@@ -17,7 +17,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"

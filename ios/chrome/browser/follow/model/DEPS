@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/discover_feed",
+  "+ios/chrome/browser/discover_feed/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",

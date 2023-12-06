@@ -26,7 +26,7 @@ source_set("feed_top_section") {
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

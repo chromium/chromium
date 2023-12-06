@@ -9,7 +9,7 @@
 
 #import "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_refresh_state_tracker.h"
 

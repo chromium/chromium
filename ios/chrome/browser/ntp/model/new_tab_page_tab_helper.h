@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/timer/timer.h"
-#include "ios/chrome/browser/discover_feed/feed_constants.h"
+#include "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 

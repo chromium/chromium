@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_OBSERVER_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_observer.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/model/discover_feed_observer.h"
+#include "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 
 // Implement this protocol and pass your implementation into an
 // DiscoveFeedObserverBridge object to receive DiscoverFeed observer
@@ -39,4 +39,4 @@ class DiscoverFeedObserverBridge : public DiscoverFeedObserver {
       scoped_observation_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_OBSERVER_BRIDGE_H_

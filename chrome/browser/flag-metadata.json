@@ -4192,7 +4192,7 @@
   },
   {
     "name": "feed-background-refresh-ios",
-    "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "adamta@google.com"],
+    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "adamta@google.com"],
     "expiry_milestone": 130
   },
   {
@@ -4202,7 +4202,7 @@
   },
   {
     "name": "feed-disable-hot-start-refresh-ios",
-    "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "edchin@google.com"],
+    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "edchin@google.com"],
     "expiry_milestone": 117
   },
   {
@@ -4217,7 +4217,7 @@
   },
   {
     "name": "feed-experiment-tagging-ios",
-    "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "edchin@google.com"],
+    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "edchin@google.com"],
     "expiry_milestone": 115
   },
   {
@@ -4227,7 +4227,7 @@
   },
   {
     "name": "feed-header-settings",
-    "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "adamta@google.com"],
+    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "adamta@google.com"],
     "expiry_milestone": 130
   },
   {
@@ -4237,7 +4237,7 @@
   },
   {
     "name": "feed-invisible-foreground-refresh-ios",
-    "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "edchin@google.com"],
+    "owners": ["//ios/chrome/browser/discover_feed/model/OWNERS", "edchin@google.com"],
     "expiry_milestone": 125
   },
   {

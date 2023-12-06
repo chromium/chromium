@@ -20,8 +20,8 @@ source_set("follow_iph") {
     "follow_iph_coordinator.mm",
   ]
   deps = [
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -38,8 +38,8 @@ source_set("first_follow") {
   deps = [
     ":first_follow_ui",
     ":follow",
-    "//ios/chrome/browser/discover_feed",
-    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:service",

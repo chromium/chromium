@@ -12,7 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_refresher.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"

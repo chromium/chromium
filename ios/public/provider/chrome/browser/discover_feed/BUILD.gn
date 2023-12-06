@@ -4,5 +4,5 @@
 
 source_set("discover_feed_api") {
   sources = [ "discover_feed_api.h" ]
-  public_deps = [ "//ios/chrome/browser/discover_feed" ]
+  public_deps = [ "//ios/chrome/browser/discover_feed/model" ]
 }
