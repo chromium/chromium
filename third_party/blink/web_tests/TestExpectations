@@ -2788,7 +2788,6 @@ crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefe
 crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?28-last [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single.https.html?15-15 [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/referrer-policy-from-rules.https.html?6-6 [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/schemeful-same-site/external/wpt/cookies/prefix/__secure.header.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-clear.tentative.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-delete.tentative.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-origin-referrer.tentative.html [ Timeout ]
@@ -3902,12 +3901,6 @@ crbug.com/843945 external/wpt/cookies/samesite/form-post-blank-reload.https.html
 crbug.com/990439 http/tests/cookies/same-site/popup-cross-site-post.https.html [ Failure ]
 
 # Flaky Windows-only content_shell crash
-
-# The virtual tests run with Schemeful Same-Site disabled. These should fail to ensure the disabled feature code paths work.
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-subresource.tentative.html [ Failure ]
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-navigation.tentative.html [ Failure ]
 
 # These tests fail with Schemeful Same-Site due to their cross-schemeness. Skip them until there's a more permanent solution.
 
