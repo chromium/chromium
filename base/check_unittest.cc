@@ -276,13 +276,7 @@ class ScopedDcheckSeverity {
 };
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-// https://crbug.com/709067 tracks test flakiness on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_Dcheck DISABLED_Dcheck
-#else
-#define MAYBE_Dcheck Dcheck
-#endif
-TEST(CheckDeathTest, MAYBE_Dcheck) {
+TEST(CheckDeathTest, Dcheck) {
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // DCHECKs are enabled, and LOGGING_DCHECK is mutable, but defaults to
   // non-fatal. Set it to LOGGING_FATAL to get the expected behavior from the
