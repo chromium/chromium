@@ -4,6 +4,10 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_TOP;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
@@ -85,7 +89,11 @@ public class ViewStructureBuilder {
             int unclippedLeft,
             int unclippedTop,
             int unclippedWidth,
-            int unclippedHeight) {
+            int unclippedHeight,
+            int pageAbsoluteLeft,
+            int pageAbsoluteTop,
+            int pageAbsoluteWidth,
+            int pageAbsoluteHeight) {
         Rect boundsInParent =
                 new Rect(
                         parentRelativeLeft,
@@ -99,12 +107,16 @@ public class ViewStructureBuilder {
 
         node.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);
 
-        // Add unclipped bounds in the Bundle extras for services interested in these values.
+        // Add other bound types to the Bundle extras for services interested in these values.
         Bundle extras = node.getExtras();
         extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, unclippedLeft);
         extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, unclippedTop);
         extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, unclippedWidth);
         extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, unclippedHeight);
+        extras.putInt(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT, pageAbsoluteLeft);
+        extras.putInt(EXTRAS_KEY_PAGE_ABSOLUTE_TOP, pageAbsoluteTop);
+        extras.putInt(EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH, pageAbsoluteWidth);
+        extras.putInt(EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT, pageAbsoluteHeight);
     }
 
     @CalledByNative

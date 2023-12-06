@@ -232,8 +232,12 @@ struct WalkAXTreeConfig {
   bool should_select_leaf;
 };
 
+// |parent_absolute_clipped_rect| is the parent of the current subtree, and its
+// coordinates are relative to the top of the page.
 void WalkAXTreeDepthFirst(const AXNode* node,
-                          const gfx::Rect& rect,
+                          const gfx::Rect& parent_absolute_clipped_rect,
+                          const gfx::Rect& parent_absolute_unclipped_rect,
+                          const int root_scroll_y,
                           const AXTreeUpdate& update,
                           const AXTree* tree,
                           WalkAXTreeConfig* config,
@@ -265,23 +269,31 @@ void WalkAXTreeDepthFirst(const AXNode* node,
     result->underline = node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
   }
 
-  const gfx::Rect& absolute_rect =
+  const gfx::Rect& absolute_clipped_rect =
       gfx::ToEnclosingRect(tree->GetTreeBounds(node));
-  const gfx::Rect& unclipped_rect = gfx::ToEnclosingRect(
+  const gfx::Rect& absolute_unclipped_rect = gfx::ToEnclosingRect(
       tree->GetTreeBounds(node, nullptr, /* clip_bounds = */ false));
 
-  gfx::Rect parent_relative_rect = absolute_rect;
-  gfx::Rect parent_relative_unclipped_rect = unclipped_rect;
+  // Calculate the parent relative bounds. For the root node, these bounds are
+  // the same as the absolute bounds above.
+  gfx::Rect parent_relative_clipped_rect = absolute_clipped_rect;
+  gfx::Rect parent_relative_unclipped_rect = absolute_unclipped_rect;
   bool is_root = !node->GetUnignoredParent();
   if (!is_root) {
-    parent_relative_rect.Offset(-rect.OffsetFromOrigin());
-    parent_relative_unclipped_rect.Offset(-rect.OffsetFromOrigin());
+    parent_relative_clipped_rect.Offset(
+        -parent_absolute_clipped_rect.OffsetFromOrigin());
+    parent_relative_unclipped_rect.Offset(
+        -parent_absolute_unclipped_rect.OffsetFromOrigin());
   }
-  result->rect = gfx::Rect(parent_relative_rect.x(), parent_relative_rect.y(),
-                           absolute_rect.width(), absolute_rect.height());
-  result->unclipped_rect = gfx::Rect(
-      parent_relative_unclipped_rect.x(), parent_relative_unclipped_rect.y(),
-      unclipped_rect.width(), unclipped_rect.height());
+
+  result->rect = parent_relative_clipped_rect;
+  result->unclipped_rect = parent_relative_unclipped_rect;
+
+  // Create a Rect for the absolute unclipped bounds with the scrolling of the
+  // root container removed.
+  gfx::Rect absolute_unclipped_rect_unscrolled = absolute_unclipped_rect;
+  absolute_unclipped_rect_unscrolled.Offset(0, root_scroll_y);
+  result->page_absolute_rect = absolute_unclipped_rect_unscrolled;
 
   // Selection state comes from the tree data rather than
   // GetUnignoredSelection() which uses AXPosition, as AXPosition requires a
@@ -315,6 +327,10 @@ void WalkAXTreeDepthFirst(const AXNode* node,
       node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
   result->html_attributes = node->GetHtmlAttributes();
 
+  // Always add root scroll values for debugging scrolling.
+  result->html_attributes.emplace_back("root_scroll_y",
+                                       base::NumberToString(root_scroll_y));
+
   std::string class_name =
       node->GetStringAttribute(ax::mojom::StringAttribute::kClassName);
   if (!class_name.empty())
@@ -324,8 +340,9 @@ void WalkAXTreeDepthFirst(const AXNode* node,
        iter != node->UnignoredChildrenEnd(); ++iter) {
     auto* n = AddChild(assistant_tree);
     result->children_indices.push_back(assistant_tree->nodes.size() - 1);
-    WalkAXTreeDepthFirst(iter.get(), absolute_rect, update, tree, config,
-                         assistant_tree, n);
+    WalkAXTreeDepthFirst(iter.get(), absolute_clipped_rect,
+                         absolute_unclipped_rect, root_scroll_y, update, tree,
+                         config, assistant_tree, n);
   }
 }
 
@@ -352,8 +369,13 @@ std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update) {
   WalkAXTreeConfig config{
       false,         // should_select_leaf
   };
-  WalkAXTreeDepthFirst(tree->root(), gfx::Rect(), update, tree.get(), &config,
-                       assistant_tree.get(), root);
+
+  int root_scroll_y = 0;
+  tree->root()->GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
+                                &root_scroll_y);
+
+  WalkAXTreeDepthFirst(tree->root(), gfx::Rect(), gfx::Rect(), root_scroll_y,
+                       update, tree.get(), &config, assistant_tree.get(), root);
   return assistant_tree;
 }
 

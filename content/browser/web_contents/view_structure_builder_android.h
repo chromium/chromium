@@ -42,7 +42,11 @@ void ViewStructureBuilder_setViewStructureNodeBounds(
     JniIntWrapper unclipped_left,
     JniIntWrapper unclipped_top,
     JniIntWrapper unclipped_width,
-    JniIntWrapper unclipped_height);
+    JniIntWrapper unclipped_height,
+    JniIntWrapper page_absolute_left,
+    JniIntWrapper page_absolute_top,
+    JniIntWrapper page_absolute_width,
+    JniIntWrapper page_absolute_height);
 
 void ViewStructureBuilder_setViewStructureNodeHtmlInfo(
     JNIEnv* env,

@@ -44,11 +44,16 @@ void ViewStructureBuilder_setViewStructureNodeBounds(
     JniIntWrapper unclipped_left,
     JniIntWrapper unclipped_top,
     JniIntWrapper unclipped_width,
-    JniIntWrapper unclipped_height) {
+    JniIntWrapper unclipped_height,
+    JniIntWrapper page_absolute_left,
+    JniIntWrapper page_absolute_top,
+    JniIntWrapper page_absolute_width,
+    JniIntWrapper page_absolute_height) {
   Java_ViewStructureBuilder_setViewStructureNodeBounds(
       env, obj, node, is_root_node, parent_relative_left, parent_relative_top,
       width, height, unclipped_left, unclipped_top, unclipped_width,
-      unclipped_height);
+      unclipped_height, page_absolute_left, page_absolute_top,
+      page_absolute_width, page_absolute_height);
 }
 
 void ViewStructureBuilder_setViewStructureNodeHtmlInfo(
