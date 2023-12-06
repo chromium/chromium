@@ -19016,4 +19016,62 @@ TEST_F(LayerTreeHostImplTest,
                    CurrentScrollOffset(OuterViewportScrollLayer()));
 }
 
+TEST_F(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
+  gfx::Size viewport_size(100, 100);
+  gfx::Size content_size(100, 5000);
+
+  gfx::RectF snap_area_1(0, 0, 50, 1000);
+  gfx::RectF snap_area_2(0, 1200, 50, 1000);
+
+  SetupViewportLayersInnerScrolls(viewport_size, viewport_size);
+  LayerImpl* snapping_layer = AddScrollableLayer(OuterViewportScrollLayer(),
+                                                 viewport_size, content_size);
+
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 4900));
+  ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_2, false, ElementId(20)));
+  GetScrollNode(snapping_layer)->snap_container_data.emplace(container);
+  DrawFrame();
+
+  auto& handler = GetInputHandler();
+  gfx::PointF initial_offset, target_offset;
+  gfx::Point position(50, 50);
+  ui::ScrollInputType type = ui::ScrollInputType::kTouchscreen;
+
+  // Scroll to the bottom of snap_area_1.
+  handler.ScrollBegin(BeginState(position, gfx::Vector2dF(0, 950), type).get(),
+                      type);
+  handler.ScrollUpdate(
+      UpdateState(position, gfx::Vector2dF(0, 950), type).get());
+
+  // Fling phase.
+  gfx::Vector2dF fling_displacement = gfx::Vector2dF(0, 400);
+  handler.GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      gfx::Vector2dF(0, 100), fling_displacement, &initial_offset,
+      &target_offset);
+  EXPECT_EQ(handler.snap_strategy_for_testing()->current_position(),
+            initial_offset);
+  // Expect to snap to snap_area_2.
+  EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
+            target_offset);
+
+  // Do an inertial phase scroll update.
+  auto scroll_update_state =
+      UpdateState(position, gfx::Vector2dF(0, 100), type);
+  scroll_update_state->set_is_in_inertial_phase(true);
+  handler.ScrollUpdate(scroll_update_state.get());
+
+  // Still be aware that the snap strategy should be based on the final snap
+  // position, despite the scroll update's delta being only 100px.
+  EXPECT_EQ(handler.snap_strategy_for_testing()->current_position(),
+            initial_offset);
+  EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
+            target_offset);
+}
+
 }  // namespace cc
