@@ -60,53 +60,31 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
   return task_state ? task_state->GetTask() : running_task_.Get();
 }
 
-template <typename F>
-absl::optional<TaskAttributionId>
-TaskAttributionTrackerImpl::IsAncestorInternal(
-    ScriptState* script_state,
-    F is_ancestor,
-    const TaskAttributionInfo* task) {
-  DCHECK(script_state);
-  if (!script_state->World().IsMainWorld()) {
-    // As RunningTask will not return a TaskAttributionInfo for
-    // non-main-world tasks, there's no point in testing their ancestry.
-    return absl::nullopt;
-  }
+bool TaskAttributionTrackerImpl::IsAncestor(const TaskAttributionInfo& task,
+                                            TaskAttributionId ancestor_id) {
+  const TaskAttributionInfo* ancestor_task = nullptr;
+  ForEachAncestor(task, [&](const TaskAttributionInfo& ancestor) {
+    if (ancestor.Id() == ancestor_id) {
+      ancestor_task = &ancestor;
+      return IterationStatus::kStop;
+    }
+    return IterationStatus::kContinue;
+  });
+  return !!ancestor_task;
+}
 
-  const TaskAttributionInfo* current_task =
-      task ? task : RunningTask(script_state);
-
+void TaskAttributionTrackerImpl::ForEachAncestor(
+    const TaskAttributionInfo& task,
+    base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
+        visitor) {
+  const TaskAttributionInfo* current_task = &task;
   while (current_task) {
     const TaskAttributionInfo* parent_task = current_task->Parent();
-    if (is_ancestor(current_task->Id())) {
-      return current_task->Id();
+    if (visitor(*current_task) == IterationStatus::kStop) {
+      return;
     }
     current_task = parent_task;
   }
-  return absl::nullopt;
-}
-
-TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
-    ScriptState* script_state,
-    TaskAttributionId ancestor_id) {
-  absl::optional<TaskAttributionId> task_id = IsAncestorInternal(
-      script_state,
-      [&](const TaskAttributionId& task_id) { return task_id == ancestor_id; },
-      /*task=*/nullptr);
-  return !task_id ? AncestorStatus::kNotAncestor : AncestorStatus::kAncestor;
-}
-
-absl::optional<TaskAttributionId>
-TaskAttributionTrackerImpl::GetAncestorFromSet(
-    ScriptState* script_state,
-    const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
-    const TaskAttributionInfo& task) {
-  return IsAncestorInternal(
-      script_state,
-      [&](const TaskAttributionId& task_id) {
-        return set.Contains(task_id.value());
-      },
-      &task);
 }
 
 std::unique_ptr<TaskAttributionTracker::TaskScope>

@@ -41,11 +41,12 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   TaskAttributionInfo* RunningTask(ScriptState*) const override;
 
-  AncestorStatus IsAncestor(ScriptState*, TaskAttributionId parent_id) override;
-  absl::optional<TaskAttributionId> GetAncestorFromSet(
-      ScriptState*,
-      const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
-      const TaskAttributionInfo& task) override;
+  bool IsAncestor(const TaskAttributionInfo& task,
+                  TaskAttributionId ancestor_id) override;
+  void ForEachAncestor(
+      const TaskAttributionInfo& task,
+      base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
+          visitor) override;
 
   std::unique_ptr<TaskScope> CreateTaskScope(ScriptState* script_state,
                                              TaskAttributionInfo* parent_task,
@@ -107,10 +108,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     absl::optional<TaskAttributionId> parent;
     absl::optional<TaskAttributionId> current;
   };
-
-  template <typename F>
-  absl::optional<TaskAttributionId>
-  IsAncestorInternal(ScriptState*, F callback, const TaskAttributionInfo* task);
 
   // The TaskScope class maintains information about a task. The task's lifetime
   // match those of TaskScope, and the task is considered terminated when

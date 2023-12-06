@@ -185,9 +185,7 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
 
 AtomicString DOMScheduler::isAncestor(
     ScriptState* script_state,
-    scheduler::TaskAttributionIdType parentId) {
-  scheduler::TaskAttributionTracker::AncestorStatus status =
-      scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor;
+    scheduler::TaskAttributionIdType parent_id) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
   auto* tracker = scheduler->GetTaskAttributionTracker();
@@ -195,18 +193,13 @@ AtomicString DOMScheduler::isAncestor(
     // Can happen when a feature flag disables TaskAttribution.
     return AtomicString("unknown");
   }
-  status =
-      tracker->IsAncestor(script_state, scheduler::TaskAttributionId(parentId));
-  switch (status) {
-    case scheduler::TaskAttributionTracker::AncestorStatus::kAncestor:
-      return AtomicString("ancestor");
-    case scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor:
-      return AtomicString("not ancestor");
-    case scheduler::TaskAttributionTracker::AncestorStatus::kUnknown:
-      return AtomicString("unknown");
-  }
-  NOTREACHED();
-  return AtomicString("not reached");
+  const scheduler::TaskAttributionInfo* current_task =
+      tracker->RunningTask(script_state);
+  return current_task &&
+                 tracker->IsAncestor(*current_task,
+                                     scheduler::TaskAttributionId(parent_id))
+             ? AtomicString("ancestor")
+             : AtomicString("not ancestor");
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(

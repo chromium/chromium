@@ -187,6 +187,8 @@ void SoftNavigationHeuristics::UserInitiatedInteraction(
 absl::optional<scheduler::TaskAttributionId>
 SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
     ScriptState* script_state) {
+  using IterationStatus = scheduler::TaskAttributionTracker::IterationStatus;
+
   if (potential_soft_navigation_task_ids_.empty()) {
     return absl::nullopt;
   }
@@ -203,8 +205,18 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny(
     if (cached_result != soft_navigation_descendant_cache_.end()) {
       return cached_result->value;
     }
-    auto ancestor_task_id = tracker->GetAncestorFromSet(
-        script_state, potential_soft_navigation_task_ids_, *task);
+    absl::optional<scheduler::TaskAttributionId> ancestor_task_id;
+    // Check if any of `potential_soft_navigation_task_ids_` is an ancestor of
+    // `task`.
+    tracker->ForEachAncestor(
+        *task, [&](const scheduler::TaskAttributionInfo& ancestor) {
+          if (potential_soft_navigation_task_ids_.Contains(
+                  ancestor.Id().value())) {
+            ancestor_task_id = ancestor.Id();
+            return IterationStatus::kStop;
+          }
+          return IterationStatus::kContinue;
+        });
     soft_navigation_descendant_cache_.insert(task->Id().value(),
                                              ancestor_task_id);
     return ancestor_task_id;
