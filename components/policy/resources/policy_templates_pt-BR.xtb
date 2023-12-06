@@ -91,6 +91,44 @@ Se esta política for desativada, o recurso de correção automática no teclado
       Se a política não tiver definição, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="1043965859599437362">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjunto primário.
+
+Cada item na lista do navegador precisa atender aos requisitos de um conjunto primário.
+O conjunto precisa conter um site primário e um ou mais sites membros.
+Um conjunto também pode conter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
+Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como conjuntos primários são usados pelo <ph name="PRODUCT_NAME" />.
+
+Todos os sites em um conjunto primário precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um conjunto primário também precisa ser único,
+o que significa que um site não pode ser listado mais de uma vez em um mesmo conjunto primário.
+
+Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos primários.
+
+No caso de todos os sites em um conjunto primário da lista de <ph name="REPLACEMENTS" />, se o site também estiver presente
+em um conjunto primário na lista do navegador, ele será removido desse último conjunto.
+Em seguida, o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
+
+No caso de todos os sites em um conjunto primário da lista de <ph name="ADDITIONS" />, se um site também estiver presente
+em um conjunto primário na lista do navegador, esse último será atualizado para que o
+novo conjunto primário possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
+o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
+
+A lista de conjuntos primários do navegador exige que nenhum dos sites na lista esteja em
+mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
+e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar tanto na lista de
+<ph name="REPLACEMENTS" /> quanto na de <ph name="ADDITIONS" />.
+
+Caracteres curinga (*) não podem ser usados como valor da política nem dentro de conjuntos primários nessas listas.
+
+Todos os conjuntos fornecidos pela política precisam ser um conjunto primário válido. Se não forem, ocorrerá
+um erro na saída.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Qualquer uma dessas políticas pode ser usada, mas esta será descontinuada em breve. Portanto, a <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> é a opção mais recomendada.
+Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="1046484220783400299">Ativar por um tempo limitado recursos da plataforma Web cujo uso esteja suspenso</translation>
 <translation id="1047128214168693844">Não permitir que nenhum site rastreie a localização física dos usuários</translation>
 <translation id="1049138910114524876">Configura a localidade que é aplicada na tela de login do <ph name="PRODUCT_OS_NAME" />.
@@ -248,6 +286,7 @@ Quando esta política é desativada, a proteção contra phishing do lado do cli
 <translation id="1209096923317019235">Atribui apps como gerenciadores padrão para as extensões de arquivo especificadas</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
 <translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
+<translation id="1214639335214075459">Ativar decodificação de vídeo por hardware da GPU</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Usar a configuração padrão para o sandbox de áudio</translation>
 <translation id="1221359380862872747">Carrega os urls especificados no login de demonstração</translation>
@@ -465,6 +504,14 @@ Se ela for desativada, a página com o cabeçalho <ph name="CACHE_CONTROL_NO_STO
 <translation id="1426170570389588560">Define a duração, em dias, do armazenamento de metadados de trabalhos de impressão</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1427655258943162134">Endereço ou URL do servidor proxy</translation>
+<translation id="1432834104376790711">Esta política ativa ou desativa a configuração do modo de Economia de bateria.
+      No Chrome, essa configuração limita o frame rate para reduzir o consumo de energia. Se a política for deixada sem definição, o usuário final poderá controlar essa configuração em chrome://settings/performance.
+      No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de Economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
+      Os diferentes níveis são:
+      <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): o modo de economia de bateria será desativado.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo Economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): esse valor foi descontinuado na versão M121. Na versão M121 e mais recentes, os valores serão tratados como EnabledBelowThreshold.
+      </translation>
 <translation id="1434300053894025056">Desativar verificação ortográfica</translation>
 <translation id="1434743866147056474">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem exibir imagens.
 
@@ -2092,6 +2139,7 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2707733461906745082">Separação de perfis</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
+<translation id="2713913573196284609">Esse valor foi descontinuado na versão M121. Na versão M121 e em versões mais recentes, os valores serão tratados como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Sempre enviar métricas ao Google</translation>
 <translation id="2714359695399346815">Se a política for definida como "Ativada" ou deixada sem definição, o uso de servidores STUN será permitido, isso faz com que clientes remotos possam descobrir e se conectar a esta máquina, mesmo quando separados por um firewall.
 
@@ -2695,7 +2743,7 @@ Se ela não for definida, o JavaScript será executado, mas os usuários poderã
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="3207821022126246451">O WebRTC usará o TCP na interface pública e usará o UDP apenas se ele for compatível com um proxy configurado.</translation>
 <translation id="3207873329349672535">Esta política controla se haverá uma opção disponível ao usuário no menu do <ph name="PRODUCT_NAME" />, que permita a transmissão em dispositivos que não são exibidos no menu do <ph name="PRODUCT_NAME" />, usando o código de acesso ou QR exibido na tela desses aparelhos.
-      Por padrão, um usuário precisa inserir o código de acesso ou fazer a leitura do código QR novamente para iniciar a próxima sessão de transmissão, mas se a política <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> for definida com um valor diferente de zero (que é o padrão), o dispositivo de transmissão permanecerá na lista de aparelhos disponíveis até que o período especificado tenha expirado.
+      Por padrão, um usuário precisa inserir o código de acesso ou fazer a leitura do QR code novamente para iniciar a próxima sessão de transmissão, mas se a política <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> for definida com um valor diferente de zero (que é o padrão), o dispositivo de transmissão permanecerá na lista de aparelhos disponíveis até que o período especificado tenha expirado.
       Quando esta política for definida como "Ativada", os usuários terão a opção de selecionar dispositivos de transmissão usando um código de acesso ou QR.
       Se esta política for definida como "Desativada" ou deixada sem definição, os usuários não terão essa opção.</translation>
 <translation id="3208615748170745525">Dias a partir da descoberta da atualização.</translation>
@@ -2955,7 +3003,7 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3442589735857147823">Permitir que os usuários usem máquinas virtuais necessárias para os apps Linux</translation>
 <translation id="3450649825886735618">Não usar serviços da Web do Google para ajudar a solucionar erros de ortografia</translation>
 <translation id="3451422488938880786"> Permite ativar/desativar o remapeamento de atalhos de teclados internacionais</translation>
-<translation id="3451901387456196887">O usuário terá a opção de selecionar dispositivos de transmissão usando um código de acesso ou fazendo a leitura de um código QR no menu do <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3451901387456196887">O usuário terá a opção de selecionar dispositivos de transmissão usando um código de acesso ou fazendo a leitura de um QR code no menu do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3456292544936505775">Essa política controla os períodos durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não tem permissão para procurar atualizações automaticamente.
       Isto é o que acontece quando ela é definida como uma lista não vazia de intervalos de tempo:
       Os dispositivos não podem procurar atualizações automaticamente durante os intervalos especificados. Os dispositivos que precisam de uma reversão empresarial ou que são mais antigos que a versão mínima do <ph name="PRODUCT_OS_NAME" /> não são afetados por esta política para evitar possíveis problemas de segurança. Além disso, a política não bloqueia verificações de atualização solicitadas por usuários ou administradores.
@@ -3621,7 +3669,7 @@ Essa política é temporária e será removida.</translation>
 <translation id="3956573780915784996">Permite que os usuários coletem o rastreamento de desempenho do sistema.</translation>
 <translation id="3956686688560604829">Usar a política SiteList do Internet Explorer para o Suporte a navegadores legados.</translation>
 <translation id="3958586912393694012">Permitir que o Smart Lock seja usado</translation>
-<translation id="3960728283243442805">O usuário não terá a opção de selecionar dispositivos de transmissão usando um código de acesso ou fazendo a leitura de um código QR no menu do <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3960728283243442805">O usuário não terá a opção de selecionar dispositivos de transmissão usando um código de acesso ou fazendo a leitura de um QR code no menu do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3962445567482559878">Usa o modo EDU da experiência de integração do Assistente</translation>
 <translation id="396261881101930204">Ocultar do usuário as recomendações de mídia</translation>
 <translation id="3964298692570794635">Permitir conteúdo não seguro nesses sites</translation>
@@ -3694,6 +3742,17 @@ Essa política é temporária e será removida.</translation>
       Se ela estiver ativada, o "Respostas rápidas" poderá acessar conteúdos selecionados.
       Se estiver desativada, o "Respostas rápidas" não poderá acessar conteúdos selecionados.
       Se a política não for definida, os usuários poderão decidir se concedem ou não permissão para o "Respostas rápidas" acessar conteúdos selecionados.</translation>
+<translation id="4016523784669365747">Esta política é fornecida como uma forma de desativar o recurso de conjuntos primários.
+
+Quando ela é deixada sem definição ou é ativada, os conjuntos primários ficam ativados.
+
+Quando ela é desativada, eles também ficam desativados.
+
+Essa política controla se o Chrome oferece suporte a integrações relacionadas a conjuntos primários.
+
+Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Qualquer uma dessas políticas pode ser usada, mas esta será descontinuada em breve. Portanto, a <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> é a opção mais recomendada.
+Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="4016700865356669962">Se a política for ativada, os usuários poderão usar modelos de layout do espaço de trabalho.  Se ela for desativada ou deixada sem definição, esses modelos não ficarão disponíveis.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
@@ -3948,6 +4007,24 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
 
       Se a política for deixada sem definição, a resolução de DNS poderá ser executada no serviço de rede, fora dele ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="4239720644496144453">O cache não é usado para apps Android. Se vários usuários instalarem o mesmo app Android, o download dele será feito novamente para cada usuário.</translation>
+<translation id="4242583077375244471">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
+verifica os certificados do servidor usando o verificador de certificados integrado,
+com a Chrome Root Store como fonte de verdade pública.
+
+Se a política for desativada, o <ph name="PRODUCT_NAME" />
+vai usar o verificador de certificados e os certificados raiz do sistema.
+
+Quando ela for deixada sem definição, a Chrome Root Store ou as raízes fornecidas pelo sistema
+poderão ser usadas.
+
+Esta política foi removida na versão 113 do <ph name="PRODUCT_NAME" />
+para <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />,
+na versão 120 do <ph name="PRODUCT_OS_NAME" />,
+na versão 120 do <ph name="PRODUCT_NAME" /> para
+<ph name="LINUX_OS_NAME" /> e
+na versão 121 do <ph name="PRODUCT_NAME" /> para
+<ph name="ANDROID_NAME" />, quando o suporte ao uso das
+raízes e do verificador de certificados disponibilizados pela plataforma foi removido.</translation>
 <translation id="424318624725112807">Ativar o destaque do cursor de texto na tela de login</translation>
 <translation id="4245159233848584683">Ativar a política ou deixá-la sem definição faz com que o <ph name="PRODUCT_OS_NAME" /> mostre uma solicitação de configuração da rede quando um dispositivo ficar off-line, se uma conta local do dispositivo estiver definida para login automático sem atraso.
 
@@ -4586,8 +4663,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="4765085790777474543">Quando esta política está ativada ou deixada sem definição, a proteção de downloads será controlada pela política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> para o <ph name="PRODUCT_NAME" />. Se a política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> estiver definida como <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> ou <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, a proteção de downloads vai verificar se um arquivo ou o mecanismo de distribuição dele não é seguro enviando uma solicitação do <ph name="PRODUCT_NAME" /> ao Google para veredito.
-Quando a política está desativada, a proteção de downloads não envia dados ao Google para vereditos. Esta política não afeta a verificação de URL com base em hash para downloads e não substitui as configurações do conector existentes que têm precedência.</translation>
 <translation id="4767059955897420757">Quando a política é ativada ou deixada sem definição, a promoção da extensão do provedor de credenciais pode ser mostrada ao usuário.
 Quando ela é desativada, a promoção da extensão do provedor de credenciais não é mostrada ao usuário.</translation>
 <translation id="4768446404233019970">Ativar pacotes de criptografia 3DES em TLS</translation>
@@ -4718,6 +4793,11 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4918261735182294270">Permitir que os usuários escolham quando ativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Ativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Ativar tratamento mais rigoroso para conteúdo misto</translation>
+<translation id="4921553515199936667">Se a política for deixada sem definição ou for definida como verdadeira, a decodificação de vídeo será acelerada por hardware, quando disponível.
+
+Se ela for definida como falsa, a decodificação de vídeo nunca será acelerada por hardware.
+
+Não é recomendável desativar a decodificação de vídeo acelerada por hardware. Isso resulta em uma carga de CPU maior, o que afeta negativamente o desempenho do dispositivo e o consumo da bateria.</translation>
 <translation id="4922136799178503494">Bloquear o compartilhamento de arquivos pela rede</translation>
 <translation id="4923806312383904642">Permitir que o WebDriver modifique políticas incompatíveis</translation>
 <translation id="4924377847308623325">Evitar mais tipos de consulta DNS</translation>
@@ -6441,6 +6521,7 @@ resolução de localização baseada no <ph name="IP" />.</translation>
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="6353890097388312479">Se a política for definida como "Todos (0)" ou não for definida, os usuários poderão editar as configurações de confiança para todos os certificados de CA, remover certificados importados e importar outros usando o Gerenciador de certificados. Se a política for definida como "Somente usuário (1)", os usuários poderão gerenciar os certificados importados, mas não poderão mudar as configurações de confiança dos certificados integrados. Se ela for definida como "Nenhum (2)", os usuários poderão ver os certificados de CA, mas não gerenciá-los.</translation>
 <translation id="6358320368815225772">Desativar atestado remoto para o dispositivo</translation>
+<translation id="6362589180545896213">Desativar decodificação de vídeo por hardware da GPU</translation>
 <translation id="6362856770865555544">Se a política for definida como "Ativada" ou não for definida, a otimização da descoberta automática de proxies da Web (WPAD, na sigla em inglês) será ativada no <ph name="PRODUCT_NAME" />.
 
       Se a política for definida como "Desativada", a otimização da WPAD será desativada e o <ph name="PRODUCT_NAME" /> precisará esperar mais por servidores de WPAD baseados em DNS.
@@ -6786,10 +6867,10 @@ Mudanças na política são aplicadas apenas enquanto o ARC não está em execu�
 <translation id="6594372503585248865">Ativar IUs relacionadas à conexão no computador do host remoto quando uma conexão estiver ativa</translation>
 <translation id="65947892191748867">Desativar o consentimento de indicadores do dispositivo para usuários gerenciados em dispositivos não gerenciados</translation>
 <translation id="6596675965208703569">Esta política especifica por quanto tempo (em segundos) um dispositivo de transmissão que foi selecionado anteriormente por um código de acesso ou QR pode ser exibido no menu de aparelhos desse tipo no <ph name="PRODUCT_NAME" />.
-      O ciclo de vida de uma entrada começa na primeira vez que o código de acesso é inserido ou quando o código QR é lido pela primeira vez.
+      O ciclo de vida de uma entrada começa na primeira vez que o código de acesso é inserido ou quando o QR code é lido pela primeira vez.
       Durante esse período, o dispositivo de transmissão será exibido na lista do menu do <ph name="PRODUCT_NAME" />.
-      Após esse período, para usar o dispositivo de transmissão novamente, será necessário inserir o código de acesso ou ler o código QR de novo.
-      Por padrão, o período é de zero segundo, ou seja, os dispositivos de transmissão não serão exibidos no menu do <ph name="PRODUCT_NAME" />. Portanto, será necessário inserir o código de acesso ou ler o código QR novamente para iniciar uma nova sessão de transmissão.
+      Após esse período, para usar o dispositivo de transmissão novamente, será necessário inserir o código de acesso ou ler o QR code de novo.
+      Por padrão, o período é de zero segundo, ou seja, os dispositivos de transmissão não serão exibidos no menu do <ph name="PRODUCT_NAME" />. Portanto, será necessário inserir o código de acesso ou ler o QR code novamente para iniciar uma nova sessão de transmissão.
       Observe que esta política afeta apenas por quanto tempo um dispositivo de transmissão é exibido no menu do <ph name="PRODUCT_NAME" /> e não tem efeito nas sessões de transmissão em andamento que continuarão mesmo se o período expirar.
       Esta política não tem efeito a menos que a política <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> esteja ativada.</translation>
 <translation id="6598235178374410284">Imagem do avatar do usuário</translation>
@@ -7430,7 +7511,6 @@ Se definida, a lista de valores padrão será estendida com os valores recém-co
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, as informações sobre o ventilador do dispositivo serão enviadas.</translation>
 <translation id="7096708978256135543">Perguntar toda vez que um site quiser a permissão de MIDI</translation>
-<translation id="7098400392308393199">A proteção de downloads em tempo real é controlada pela política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="710003290625031750">Descrição estendida do esquema:</translation>
 <translation id="7101550508196914704">Não mostrar o atalho de apps na barra de favoritos</translation>
 <translation id="7105084505972468353">Se a política for definida, ela vai controlar o tipo de lupa ativada.
@@ -9371,7 +9451,6 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
 <translation id="8714556680280715750">Um URL que os usuários podem acessar para saber mais. Se essa propriedade não for configurada, não
 haverá um URL do tipo "saiba mais" no instalador. Se estiver presente, ela precisará usar
 o esquema https.</translation>
-<translation id="8715181294371649277">Permitir a proteção de downloads em tempo real da Navegação segura</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
 <translation id="8726080977639508431">Esta política controla como o <ph name="PRODUCT_NAME" /> interpreta políticas de lista de sites/lista cinza no recurso Suporte a navegadores legados. Ela afeta as políticas <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
@@ -9419,7 +9498,6 @@ o esquema https.</translation>
 
       Todos os hosts de mensagens nativas têm permissão por padrão. No entanto, se todos os hosts de mensagens nativas forem bloqueados pela política, um administrador poderá usar a lista de permissões para mudar essa política.</translation>
 <translation id="877101880914876353">Intervalo de exibição de imagens do protetor da tela de login do dispositivo.</translation>
-<translation id="8772900888819482215">Desativar a proteção de downloads em tempo real da Navegação segura</translation>
 <translation id="877557628527387598">Login com senha</translation>
 <translation id="8777369558049831576">Exibir uma caixa de seleção "Sempre aberto" na caixa de diálogo do protocolo externo.</translation>
 <translation id="8778320022586618010">Ativar relatórios sobre o status dos gráficos do dispositivo</translation>

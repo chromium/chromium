@@ -659,6 +659,7 @@ Koppel jou toestel aan krag.</translation>
 <translation id="36813544980941320">Wi-Fi-netwerke sal tussen jou foon en <ph name="DEVICE_NAME" /> gedeel word</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> dan <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Webwerwe</translation>
+<translation id="3697991387880191195">Druk die skermskootkortpad</translation>
 <translation id="3702809606464356667">Vensters van die huidige lessenaar word tans gewys; druk die oppylsleutel om vensters van alle lessenaars te wys</translation>
 <translation id="3702846122927433391">Bevolking in Nigerië</translation>
 <translation id="3705722231355495246">–</translation>
@@ -835,6 +836,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4389184120735010762">Jy het die sleutelbordkortpad vir die gedokte vergrootglas gedruk. Wil jy dit aanskakel?</translation>
 <translation id="439598569299422042">Onderbreek, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Kan nie skermopname stoor nie</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> is gekoppel en gereed om te gebruik. Jy kan jou muis in Instellings pasmaak.</translation>
 <translation id="4405151984121254935">Die gekoppelde randtoesteltipe word nie gesteun nie</translation>
 <translation id="4406883609789734330">Intydse Onderskrifte</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
@@ -1294,6 +1296,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="6199775032047436064">Herlaai huidige bladsy</translation>
 <translation id="6200515304866777730">Nie deur app gesteun nie</translation>
 <translation id="6210042900243040400">Koppel <ph name="NAME" /> wat vroeër in <ph name="EMAIL" /> gestoor is</translation>
+<translation id="6212097153736801627">Pasmaak jou <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Neem gedeeltelike skermskoot of skermopname</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
@@ -1535,6 +1538,7 @@ Nuwe installasie</translation>
 <translation id="726276584504105859">Sleep hierheen om verdeelde skerm te gebruik</translation>
 <translation id="7262906531272962081">Skep herinnering</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Gebruik die skermskootnutsding in Kitsinstellings om skermskote te neem</translation>
 <translation id="7302889331339392448">Intydse onderskrifte is af.</translation>
 <translation id="7303365578352795231">Antwoord tans op 'n ander toestel.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1922,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="888982883502837004">Fermwareopdaterings is vir jou toestel beskikbaar. Klik om na te gaan en op te dateer.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sal permanent uitgevee word</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% batterykrag oor (ongeveer <ph name="TIME_LEFT" />). Koppel jou toestel aan krag.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> is gekoppel en gereed om te gebruik. Jy kan jou grafikatablet in Instellings pasmaak.</translation>
 <translation id="88986195241502842">Bladsy af</translation>
 <translation id="8905919797434099235">(Titelloos)</translation>
 <translation id="890616557918890486">Verander bron</translation>

@@ -659,6 +659,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="36813544980941320">WiFi mreže će se deliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, pa <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Veb-sajtovi</translation>
+<translation id="3697991387880191195">Pritisnite prečicu za snimak ekrana</translation>
 <translation id="3702809606464356667">Prikazuju se prozori sa aktuelne radne površine. Pritisnite taster sa strelicom nagore da bi se prikazivali prozori sa svih radnih površina.</translation>
 <translation id="3702846122927433391">Populacija Nigerije</translation>
 <translation id="3705722231355495246">-</translation>
@@ -835,6 +836,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4389184120735010762">Pritisnuli ste tastersku prečicu za montiranu lupu ekrana. Želite li da je uključite?</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Čuvanje video snimka ekrana nije uspelo</translation>
+<translation id="4403371424034411727">Uređaj <ph name="PERIPHERAL_NAME" /> je povezan i spreman za korišćenje. Miš možete da prilagodite u Podešavanjima.</translation>
 <translation id="4405151984121254935">Tip povezanog perifernog uređaja nije podržan</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
@@ -1294,6 +1296,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="6199775032047436064">Ponovno učitavanje trenutne stranice</translation>
 <translation id="6200515304866777730">Aplikacija ne podržava</translation>
 <translation id="6210042900243040400">Povežite uređaj <ph name="NAME" /> prethodno sačuvan na <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Prilagodite uređaj <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Napravite snimak dela ekrana ili snimite video dela ekrana</translation>
 <translation id="6220928844947387476">Sada istovremeno možete da snimate sebe i ekran</translation>
 <translation id="622484624075952240">Nadole</translation>
@@ -1536,6 +1539,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="726276584504105859">Prevucite ovde da biste koristili podeljeni ekran</translation>
 <translation id="7262906531272962081">Napravi podsetnik</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Koristite alatku za snimanje ekrana u brzim podešavanjima da biste pravili snimke ekrana</translation>
 <translation id="7302889331339392448">Titl uživo je isključen.</translation>
 <translation id="7303365578352795231">Odgovor se daje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1919,6 +1923,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="888982883502837004">Dostupna su ažuriranja firmvera za uređaj. Kliknite da biste ih pregledali i ažurirali.</translation>
 <translation id="8896630965521842259">Šablon <ph name="DESK_TEMPLATE_NAME" /> će biti trajno izbrisan</translation>
 <translation id="889790758758811533">Preostalo je još <ph name="PERCENTAGE" />% baterije (oko <ph name="TIME_LEFT" />). Povežite uređaj na napajanje.</translation>
+<translation id="8897940060812808966">Uređaj <ph name="PERIPHERAL_NAME" /> je povezan i spreman za korišćenje. Grafički tablet možete da prilagodite u Podešavanjima.</translation>
 <translation id="88986195241502842">Stranica nadole</translation>
 <translation id="8905919797434099235">(Bez naziva)</translation>
 <translation id="890616557918890486">Promeni izvor</translation>

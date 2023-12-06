@@ -61,6 +61,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1279024913354609713">Nie zezwalaj</translation>
 <translation id="1281818060020671000">Zarządzaj danymi</translation>
 <translation id="1282311502488501110">Nie loguj się</translation>
+<translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
 <translation id="1283524564873030414">Ostatnie 24 godziny</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1291506870746876680">Gdy opuścisz tę stronę, uprawnienia witryny <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> zostaną wyłączone.</translation>
@@ -174,6 +175,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1883255238294161206">Zwiń listę</translation>
 <translation id="1889872080060107187">Zalogujesz się w witrynie <ph name="URL" /></translation>
 <translation id="1890237935065108104">To ustawienie jest niedostępne.</translation>
+<translation id="1891199774460536658">Automatycznie śledź wszystkie wykryte przesyłki</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="189531189292803889">Twój iPad został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
 <translation id="1910975740091000991">Chrome na iOS</translation>
@@ -653,6 +655,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4493604894403585654">W tej chwili korzystasz z konta <ph name="USER_EMAIL" />. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="4502566650163919158">Sprawdź teraz</translation>
 <translation id="4508750114462689118">Zamknij okno zachęcające do logowania</translation>
+<translation id="4509449376545878717">Nigdy nie wykrywaj automatycznie przesyłek</translation>
 <translation id="4514889972748124117">Zaproponuj silne hasło...</translation>
 <translation id="4520798012560649652">Więcej informacji o trybie incognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} zakładka}few{{count} zakładki}many{{count} zakładek}other{{count} zakładki}}</translation>
@@ -835,6 +838,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5457226814769348910">Otwórz wersję offline</translation>
 <translation id="5475069061743940393">Śledzenie przesyłki</translation>
 <translation id="5478327362747197944">Wydarzenia w Kalendarzu możesz tworzyć bezpośrednio, klikając datę na stronie internetowej.</translation>
+<translation id="5482922178977937393">Czy chcesz otrzymywać powiadomienia o wiadomościach, wydarzeniach sportowych i inne na podstawie Twoich zainteresowań?</translation>
 <translation id="5489208564673669003">Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="5497202150450073388">Podjęto próbę doręczenia. Kurier spróbuje ponownie.</translation>
@@ -925,6 +929,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5955891643922670672">Wyświetlam wersję offline</translation>
 <translation id="5957613098218939406">Więcej opcji</translation>
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Kliknij, by zwinąć</translation>
 <translation id="5963939892571022323">Nie udało się utworzyć linku do podświetlenia.</translation>
 <translation id="5965679971710331625">Jesteś zalogowany</translation>
 <translation id="5971872012779224351">{count,plural, =1{Usunięto 1 zakładkę}few{Usunięto {count} zakładki}many{Usunięto {count} zakładek}other{Usunięto {count} zakładki}}</translation>
@@ -1107,7 +1112,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6753469262000681876">Tryb blokady</translation>
 <translation id="6760509555861141183">Powrót na ostatnio wyświetlaną kartę</translation>
 <translation id="6762812039470893796">Odznacz wszystko</translation>
-<translation id="6771287014037609247">Zawsze śledź wykryte przesyłki</translation>
 <translation id="6780034285637185932">Kod pocztowy</translation>
 <translation id="6781260999953472352">Włączyć synchronizację?</translation>
 <translation id="6781405765516175232">Aby uzyskać informacje o trasie, kliknij „Wyznacz trasę”.</translation>
@@ -1212,6 +1216,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7402602673739047753">{count,plural, =1{1 zakładka została zapisana tylko na tym urządzeniu. Aby używać jej na innych urządzeniach, zapisz ją na swoim koncie Google {email}.}few{{count} zakładki zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} zakładek zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} zakładki zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
 <translation id="7409985198648820906">Nieprzeczytane artykuły: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Dalej</translation>
+<translation id="741204030948306876">Tak</translation>
 <translation id="7425346204213733349">Zmiany w zakładkach, historii, hasłach i innych ustawieniach nie będą już synchronizowane z kontem Google. Twoje obecne dane będą jednak nadal na nim przechowywane.</translation>
 <translation id="7431991332293347422">Zarządzaj personalizacją wyszukiwarki i innych funkcji na podstawie historii przeglądania</translation>
 <translation id="7435356471928173109">Wyłączył administrator</translation>
@@ -1336,6 +1341,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8023878949384262191">Rozwija sekcję.</translation>
 <translation id="8027581147000338959">Otwórz w nowym oknie</translation>
 <translation id="8032569120109842252">Obserwujesz</translation>
+<translation id="8040207962129315716">Pytaj za każdym razem</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historia wyszukiwania<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="804427445359061970">Znajdziesz tu swoje karty z innych urządzeń</translation>
 <translation id="8044568254381073661">Zapisz bez szyfrowania</translation>

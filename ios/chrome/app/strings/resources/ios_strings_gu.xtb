@@ -61,6 +61,7 @@
 <translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="1281818060020671000">ડેટા મેનેજ કરો</translation>
 <translation id="1282311502488501110">સાઇન ઇન કરશો નહીં</translation>
+<translation id="1283039547216852943">વિસ્તૃત કરવા માટે ટૅપ કરો</translation>
 <translation id="1283524564873030414">છેલ્લા 24 કલાક</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="1291506870746876680">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે.</translation>
@@ -174,6 +175,7 @@
 <translation id="1883255238294161206">સૂચિ સંકુચિત કરો</translation>
 <translation id="1889872080060107187">તમે <ph name="URL" />માં સાઇન ઇન કરશો</translation>
 <translation id="1890237935065108104">આ સેટિંગ અનુપલબ્ધ છે.</translation>
+<translation id="1891199774460536658">ભાળ મેળવેલા બધા પૅકેજ ઑટોમૅટિક રીતે ટ્રૅક કરો</translation>
 <translation id="1894023287452300670">અહીં કિંમત ટ્રૅક કરો</translation>
 <translation id="189531189292803889">તમારું iPad તાજેતરમાં જ રિસ્ટોર કરવામાં આવ્યું હતું, જેના લીધે કદાચ તમારું ડિફૉલ્ટ બ્રાઉઝર બદલાઈ ગયું હોઈ શકે.</translation>
 <translation id="1910975740091000991">iOS માટે Chrome</translation>
@@ -653,6 +655,7 @@
 <translation id="4493604894403585654">તમે <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કર્યું છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ રોકી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="4502566650163919158">હમણાં ચેક કરો</translation>
 <translation id="4508750114462689118">સાઇન-ઇન પ્રોમો બંધ કરો</translation>
+<translation id="4509449376545878717">પૅકેજની ક્યારેય ઑટોમૅટિક રીતે ભાળ મેળવશો નહીં</translation>
 <translation id="4514889972748124117">સશક્ત પાસવર્ડ સૂચવો...</translation>
 <translation id="4520798012560649652">છૂપા મોડ વિશે વધુ જાણો</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} બુકમાર્ક}one{{count} બુકમાર્ક}other{{count} બુકમાર્ક}}</translation>
@@ -925,6 +928,7 @@
 <translation id="5955891643922670672">ઑફલાઇન વર્ઝન જોઈ રહ્યા છે</translation>
 <translation id="5957613098218939406">વધુ વિકલ્પો</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
+<translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
 <translation id="5963939892571022323">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકાતી નથી.</translation>
 <translation id="5965679971710331625">તમે સાઇન ઇન છો</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{count} બુકમાર્ક ડિલીટ કર્યું}other{{count} બુકમાર્ક ડિલીટ કર્યા}}</translation>
@@ -1107,7 +1111,6 @@
 <translation id="6753469262000681876">લૉકડાઉન મોડ</translation>
 <translation id="6760509555861141183">તાજેતરના ટૅબ પર પાછા ફરો</translation>
 <translation id="6762812039470893796">બધાને નાપસંદ કરો</translation>
-<translation id="6771287014037609247">ભાળ મેળવેલા પૅકેજને કાયમ ટ્રૅક કરો</translation>
 <translation id="6780034285637185932">પિન કોડ</translation>
 <translation id="6781260999953472352">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="6781405765516175232">રસ્તાના વિકલ્પો માટે, “દિશાનિર્દેશો મેળવો” પર ટૅપ કરો.</translation>
@@ -1212,6 +1215,7 @@
 <translation id="7402602673739047753">{count,plural, =1{1 બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યું. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ {email}માં સાચવો.}one{{count} બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યું. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ {email}માં સાચવો.}other{{count} બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ {email}માં સાચવો.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> વાંચ્યા વગરના લેખ.</translation>
 <translation id="7412027924265291969">ચાલુ રાખો</translation>
+<translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7425346204213733349">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગમાં ફેરફારને હવે તમારા Google એકાઉન્ટ પર સિંક કરવામાં આવશે નહીં. જોકે, તમારો હાલનો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
@@ -1336,6 +1340,7 @@
 <translation id="8023878949384262191">વિભાગને વિસ્તૃત કરે છે.</translation>
 <translation id="8027581147000338959">નવી વિંડોમાં ખોલો</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
+<translation id="8040207962129315716">દર વખતે મને પૂછો</translation>
 <translation id="804225253087497565">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />શોધ ઇતિહાસ<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="804427445359061970">તમને અન્ય ડિવાઇસમાંની તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8044568254381073661">એન્ક્રિપ્શન વિના સાચવો</translation>

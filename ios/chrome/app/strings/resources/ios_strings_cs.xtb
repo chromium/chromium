@@ -61,6 +61,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1279024913354609713">Nepovolovat</translation>
 <translation id="1281818060020671000">Správa dat</translation>
 <translation id="1282311502488501110">Nepřihlašovat se</translation>
+<translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1283524564873030414">Posledních 24 hodin</translation>
 <translation id="1285320974508926690">Tento web nikdy nepřekládat</translation>
 <translation id="1291506870746876680">Až web <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> opustíte, jeho oprávnění se resetují.</translation>
@@ -925,6 +926,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5955891643922670672">Zobrazuje se offline verze</translation>
 <translation id="5957613098218939406">Další možnosti</translation>
 <translation id="595769230373966252">Vyhledat pomocí <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5963939892571022323">Odkaz na zvýraznění nelze vytvořit.</translation>
 <translation id="5965679971710331625">Jste přihlášeni</translation>
 <translation id="5971872012779224351">{count,plural, =1{Byla smazána 1 záložka}few{Byly smazány {count} záložky}many{Bylo smazáno {count} záložky}other{Bylo smazáno {count} záložek}}</translation>
@@ -1107,7 +1109,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6753469262000681876">Režim blokování</translation>
 <translation id="6760509555861141183">Zpět na kartu Nedávné</translation>
 <translation id="6762812039470893796">Zrušit výběr všech</translation>
-<translation id="6771287014037609247">Vždy sledovat zjištěné zásilky</translation>
 <translation id="6780034285637185932">PSČ</translation>
 <translation id="6781260999953472352">Zapnout synchronizaci?</translation>
 <translation id="6781405765516175232">Pokud chcete zobrazit možné trasy, klepněte na Vyhledat trasu.</translation>
@@ -1212,6 +1213,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7402602673739047753">{count,plural, =1{1 záložka je uložena pouze v tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google {email}.}few{{count} položky jsou uloženy pouze v tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}many{{count} položky je uloženo pouze v tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}other{{count} položek je uloženo pouze v tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}}</translation>
 <translation id="7409985198648820906">Nepřečtené články: <ph name="UNREAD_COUNT" />.</translation>
 <translation id="7412027924265291969">Pokračovat</translation>
+<translation id="741204030948306876">Ano</translation>
 <translation id="7425346204213733349">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do vašeho účtu Google. Vaše existující data však v účtu Google uložena zůstanou.</translation>
 <translation id="7431991332293347422">Nastavte, jak se má vaše historie prohlížení používat k personalizaci Vyhledávání a dalších služeb</translation>
 <translation id="7435356471928173109">Vypnuto administrátorem</translation>

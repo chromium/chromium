@@ -631,6 +631,7 @@
 <translation id="574392208103952083">Medio</translation>
 <translation id="5757187557809630523">pista seguinte</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
+<translation id="5763838252932650682">Reiniciando e actualizando <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumentar brillo da pantalla</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
@@ -839,6 +840,7 @@
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>
 <translation id="7297226631177386107">Non se puido establecer conexión con sitios web HTTPS a través do firewall</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
+<translation id="7301262279595293068">Espera mentres se actualiza esta aplicación</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pregúntalles ás persoas expertas do foro de axuda de Chromebook</translation>

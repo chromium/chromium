@@ -61,6 +61,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="1279024913354609713">Mos lejo</translation>
 <translation id="1281818060020671000">Menaxho të dhënat</translation>
 <translation id="1282311502488501110">Mos u identifiko</translation>
+<translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1283524564873030414">24 orët e fundit</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
 <translation id="1291506870746876680">Lejet e <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> do të rivendosen në joaktive kur të largohesh nga ky sajt.</translation>
@@ -925,6 +926,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5955891643922670672">Po shikon versionin offline</translation>
 <translation id="5957613098218939406">Opsione të tjera</translation>
 <translation id="595769230373966252">Kërko me <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5963939892571022323">Nuk mund të krijohet një lidhje për te teksti i theksuar.</translation>
 <translation id="5965679971710331625">Je i identifikuar</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 faqeshënues u fshi}other{{count} faqeshënues u fshinë}}</translation>
@@ -1107,7 +1109,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6753469262000681876">Modaliteti i bllokimit</translation>
 <translation id="6760509555861141183">Kthehu te skeda "Të fundit"</translation>
 <translation id="6762812039470893796">Anulo zgjedhjen për të gjitha</translation>
-<translation id="6771287014037609247">Gjurmo gjithmonë paketat e zbuluara</translation>
 <translation id="6780034285637185932">Kodi postar</translation>
 <translation id="6781260999953472352">Të aktivizohet sinkronizimi?</translation>
 <translation id="6781405765516175232">Për opsionet e itinerarit, trokit te "Merr udhëzime".</translation>
@@ -1212,6 +1213,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7402602673739047753">{count,plural, =1{1 faqeshënues është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", {email}.}other{{count} faqeshënues janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artikuj të palexuar.</translation>
 <translation id="7412027924265291969">Vazhdo</translation>
+<translation id="741204030948306876">Po, jam dakord</translation>
 <translation id="7425346204213733349">Ndryshimet te faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera nuk do të sinkronizohen më te llogaria jote e Google. Sidoqoftë, të dhënat e tua ekzistuese do të qëndrojnë të ruajtura te llogaria jote e Google.</translation>
 <translation id="7431991332293347422">Kontrollo se si përdoret historiku i shfletimit për të personalizuar "Kërkimin" dhe shumë të tjera</translation>
 <translation id="7435356471928173109">Çaktivizuar nga administratori yt</translation>

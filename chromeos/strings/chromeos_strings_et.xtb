@@ -631,6 +631,7 @@
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5757187557809630523">järgmine lugu</translation>
 <translation id="5760715441271661976">Portaali olek</translation>
+<translation id="5763838252932650682">Rakenduse <ph name="APP_NAME" /> taaskäivitamine ja värskendamine</translation>
 <translation id="576835345334454681">Ekraanikuva ereduse suurendamine</translation>
 <translation id="57838592816432529">Vaigista</translation>
 <translation id="5784136236926853061">Pikk HTTP latentsusaeg</translation>
@@ -839,6 +840,7 @@
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
 <translation id="7297226631177386107">Ei saa HTTPS-veebisaitidega läbi tulemüüri ühendust luua</translation>
 <translation id="7297726121602187087">Tumeroheline</translation>
+<translation id="7301262279595293068">Oodake, kuni rakendust värskendatakse</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Küsige Chromebooki abifoorumis asjatundjatelt nõu</translation>

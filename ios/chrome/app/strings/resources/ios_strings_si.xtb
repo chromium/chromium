@@ -61,6 +61,7 @@
 <translation id="1279024913354609713">අවසර නොදෙන්න</translation>
 <translation id="1281818060020671000">දත්ත කළමනාකරණය කරන්න</translation>
 <translation id="1282311502488501110">පුරන්න එපා</translation>
+<translation id="1283039547216852943">දිග හැරීමට තට්ටු කරන්න</translation>
 <translation id="1283524564873030414">පසුගිය පැය 24</translation>
 <translation id="1285320974508926690">මෙම අඩවිය කිසිවිට පරිවර්තනය නොකරන්න</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ඔබ මෙම අඩවියෙන් ඉවත් වූ විට අවසර ක්‍රියාවිරහිත වෙත යළි සකසනු ඇත.</translation>
@@ -925,6 +926,7 @@
 <translation id="5955891643922670672">නොබැඳි අනුවාදය බලමින්</translation>
 <translation id="5957613098218939406">තවත් විකල්ප</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> සමග සොයන්න</translation>
+<translation id="5962718611393537961">හැකිළවීමට තට්ටු කරන්න</translation>
 <translation id="5963939892571022323">උද්දීපනයට සබැඳියක් තැනිය නොහැකිය.</translation>
 <translation id="5965679971710331625">ඔබ පුරා ඇත</translation>
 <translation id="5971872012779224351">{count,plural, =1{පිටුසන් 1ක් මකන ලදි}one{පිටුසන් {count}ක් මකන ලදි}other{පිටුසන් {count}ක් මකන ලදි}}</translation>
@@ -1107,7 +1109,6 @@
 <translation id="6753469262000681876">අගුළු දැමීමේ ප්‍රකාරය</translation>
 <translation id="6760509555861141183">මෑත ටැබය වෙත ආපසු යන්න</translation>
 <translation id="6762812039470893796">සියල්ල තේරීම ඉවත් කරන්න</translation>
-<translation id="6771287014037609247">සෑම විට ම හඳුනාගත් පැකේජ නිරීක්ෂණය කරන්න</translation>
 <translation id="6780034285637185932">ZIP කේතය</translation>
 <translation id="6781260999953472352">සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්නද?</translation>
 <translation id="6781405765516175232">ගමන් මාර්ග විකල්ප සඳහා, “දිශා ලබා ගන්න” වෙත තට්ටු කරන්න.</translation>
@@ -1212,6 +1213,7 @@
 <translation id="7402602673739047753">{count,plural, =1{1 පිටුසනක් මෙම උපාංගයට පමණක් සුරැකේ. එය ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, එය ඔබේ Google ගිණුමේ, {email} සුරකින්න.}one{පිටුසන් {count}ක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිත කිරීමට, ඒවා ඔබේ Google ගිණුමේ, {email} සුරකින්න}other{පිටුසන් {count}ක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිත කිරීමට, ඒවා ඔබේ Google ගිණුමේ, {email} සුරකින්න}}</translation>
 <translation id="7409985198648820906">නොකියවූ ලිපි <ph name="UNREAD_COUNT" /> ක්.</translation>
 <translation id="7412027924265291969">ඉදිරියට යන්න</translation>
+<translation id="741204030948306876">ඔව්, මම කැමතියි</translation>
 <translation id="7425346204213733349">ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම්වලට සිදු කරන වෙනස් කිරීම් ඔබගේ Google ගිණුම වෙත තව දුරටත් සමමුහුර්ත වන්නේ නැත. කෙසේ වෙතත්, ඔබගේ පවතින දත්ත ඔබගේ Google ගිණුමේ ගබඩා කර තිබෙනු ඇත.</translation>
 <translation id="7431991332293347422">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය සෙවීම, සහ තවත් දේ පුද්ගලායන කිරීමට භාවිත කරන ආකාරය පාලන කිරීම</translation>
 <translation id="7435356471928173109">ඔබේ පරිපාලක විසින් ක්‍රියාවිරහිත කරන ලදි</translation>

@@ -919,6 +919,7 @@
 <translation id="1697150536837697295">Мистецтво</translation>
 <translation id="1697686431566694143">Редагувати файл</translation>
 <translation id="1698796500103229697">Способи оплати</translation>
+<translation id="1699807488537653303">Виправити помилку пароля</translation>
 <translation id="1700201317341192482">Вилучити віртуальну картку</translation>
 <translation id="1700517974991662022">Натиснуто</translation>
 <translation id="1703331064825191675">Не хвилюйтеся про свої паролі</translation>
@@ -6193,7 +6194,6 @@
 <translation id="5869522115854928033">Збережені паролі</translation>
 <translation id="5870086504539785141">Закрити меню доступності</translation>
 <translation id="5870155679953074650">Тривалі затримки</translation>
-<translation id="5872318519182427835">Впливає на перераховані сайти і їхні субдомени. Наприклад, якщо додати сайт google.com, сторонні файли cookie також буде ввімкнено для сторінки mail.google.com, оскільки вона є частиною домену google.com.</translation>
 <translation id="5875534259258494936">Показ екрана завершено</translation>
 <translation id="5876576639916258720">Виконується…</translation>
 <translation id="5876851302954717356">Нова вкладка праворуч</translation>

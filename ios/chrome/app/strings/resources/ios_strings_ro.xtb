@@ -61,6 +61,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1279024913354609713">Nu permite</translation>
 <translation id="1281818060020671000">Gestionează datele</translation>
 <translation id="1282311502488501110">Nu mă conectez</translation>
+<translation id="1283039547216852943">Atinge pentru a extinde</translation>
 <translation id="1283524564873030414">Ultimele 24 de ore</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
 <translation id="1291506870746876680">Permisiunile pentru <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vor fi resetate la starea dezactivat când părăsești site-ul.</translation>
@@ -174,6 +175,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1883255238294161206">Restrângeți lista</translation>
 <translation id="1889872080060107187">Te vei conecta la <ph name="URL" /></translation>
 <translation id="1890237935065108104">Setarea nu este disponibilă.</translation>
+<translation id="1891199774460536658">Urmărește automat toate coletele detectate</translation>
 <translation id="1894023287452300670">Urmărește prețul aici</translation>
 <translation id="189531189292803889">Dispozitivul iPad a fost restabilit recent, acțiune care ar fi putut schimba browserul prestabilit.</translation>
 <translation id="1910975740091000991">Chrome pentru iOS</translation>
@@ -653,6 +655,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4493604894403585654">Te-ai conectat ca <ph name="USER_EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4502566650163919158">Verifică acum</translation>
 <translation id="4508750114462689118">Închide mesajul promoțional de conectare</translation>
+<translation id="4509449376545878717">Nu detecta niciodată automat coletele</translation>
 <translation id="4514889972748124117">Sugerează o parolă puternică</translation>
 <translation id="4520798012560649652">Află mai multe despre modul incognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcaj}few{{count} marcaje}other{{count} de marcaje}}</translation>
@@ -925,6 +928,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5955891643922670672">Se afișează versiunea offline</translation>
 <translation id="5957613098218939406">Mai multe opțiuni</translation>
 <translation id="595769230373966252">Caută cu <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Atinge pentru a restrânge</translation>
 <translation id="5963939892571022323">Nu se poate crea un link spre evidențiere.</translation>
 <translation id="5965679971710331625">Te-ai conectat</translation>
 <translation id="5971872012779224351">{count,plural, =1{Un marcaj șters}few{{count} marcaje șterse}other{{count} de marcaje șterse}}</translation>
@@ -1107,7 +1111,6 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="6753469262000681876">Modul de blocare strictă</translation>
 <translation id="6760509555861141183">Revino la fila Recente</translation>
 <translation id="6762812039470893796">Debifează tot</translation>
-<translation id="6771287014037609247">Urmărește întotdeauna pachetele detectate</translation>
 <translation id="6780034285637185932">Codul poștal</translation>
 <translation id="6781260999953472352">Activezi sincronizarea?</translation>
 <translation id="6781405765516175232">Pentru opțiunile de traseu, atinge Obține indicații de orientare.</translation>
@@ -1212,6 +1215,7 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="7402602673739047753">{count,plural, =1{Un marcaj se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google {email}.}few{{count} marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}other{{count} de marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articole necitite.</translation>
 <translation id="7412027924265291969">Continuă</translation>
+<translation id="741204030948306876">Da, accept</translation>
 <translation id="7425346204213733349">Modificările marcajelor, istoricului, parolelor sau ale altor setări nu vor mai fi sincronizate cu Contul Google. Totuși, datele existente vor rămâne stocate în Contul Google.</translation>
 <translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
@@ -1336,6 +1340,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8023878949384262191">Extinde secțiunea.</translation>
 <translation id="8027581147000338959">Deschideți într-o fereastră nouă</translation>
 <translation id="8032569120109842252">Urmărești</translation>
+<translation id="8040207962129315716">Întreabă de fiecare dată</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Istoricul căutărilor<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />alte tipuri de activități<ph name="END_LINK" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="804427445359061970">Aici vei vedea filele tale de pe alte dispozitive</translation>
 <translation id="8044568254381073661">Salvează fără criptare</translation>

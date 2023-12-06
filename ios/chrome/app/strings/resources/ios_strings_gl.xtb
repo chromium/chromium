@@ -61,6 +61,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1279024913354609713">Non permitir</translation>
 <translation id="1281818060020671000">Xestionar datos</translation>
 <translation id="1282311502488501110">Non iniciar sesión</translation>
+<translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Os permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> volverán desactivarse cando saias deste sitio.</translation>
@@ -174,6 +175,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1889872080060107187">Iniciarás sesión en <ph name="URL" /></translation>
 <translation id="1890237935065108104">Esta opción de configuración non está dispoñible.</translation>
+<translation id="1891199774460536658">Facer automaticamente o seguimento de todos os paquetes detectados</translation>
 <translation id="1894023287452300670">Fai un seguimento do prezo aquí</translation>
 <translation id="189531189292803889">O teu iPad restaurouse recentemente. Pode que por iso se cambiase o teu navegador predeterminado.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
@@ -653,6 +655,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4493604894403585654">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4502566650163919158">Comprobar agora</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
+<translation id="4509449376545878717">Non detectar nunca paquetes automaticamente</translation>
 <translation id="4514889972748124117">Suxerir contrasinal seguro…</translation>
 <translation id="4520798012560649652">Máis información sobre o modo de incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
@@ -925,6 +928,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5955891643922670672">Visualizando a versión sen conexión</translation>
 <translation id="5957613098218939406">Máis opcións</translation>
 <translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Toca para contraer</translation>
 <translation id="5963939892571022323">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="5965679971710331625">Iniciaches sesión</translation>
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
@@ -1107,7 +1111,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6753469262000681876">Modo de bloqueo</translation>
 <translation id="6760509555861141183">Volver á pestana recente</translation>
 <translation id="6762812039470893796">Anular toda a selección</translation>
-<translation id="6771287014037609247">Facer sempre un seguimento dos paquetes detectados</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6781260999953472352">Queres activar a sincronización?</translation>
 <translation id="6781405765516175232">Para consultar as opcións de ruta, toca Obter indicacións.</translation>
@@ -1212,6 +1215,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7402602673739047753">{count,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google ({email}).}other{Hai {count} marcadores gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google ({email}).}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos non lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
+<translation id="741204030948306876">Si, acepto</translation>
 <translation id="7425346204213733349">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google.</translation>
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
@@ -1336,6 +1340,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8023878949384262191">Amplía a sección.</translation>
 <translation id="8027581147000338959">Abrir nunha ventá nova</translation>
 <translation id="8032569120109842252">Seguindo</translation>
+<translation id="8040207962129315716">Preguntarme sempre</translation>
 <translation id="804225253087497565">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK" />historial de busca<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.</translation>
 <translation id="804427445359061970">Aquí atoparás as túas pestanas doutros dispositivos</translation>
 <translation id="8044568254381073661">Gardar sen encriptación</translation>

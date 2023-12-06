@@ -61,6 +61,7 @@
 <translation id="1279024913354609713">مجاز نیست</translation>
 <translation id="1281818060020671000">مدیریت داده‌ها</translation>
 <translation id="1282311502488501110">وارد سیستم نشود</translation>
+<translation id="1283039547216852943">برای بزرگ کردن ضربه بزنید</translation>
 <translation id="1283524564873030414">۲۴ ساعت گذشته</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
 <translation id="1291506870746876680">هرگاه این سایت را ترک کنید، اجازه‌های <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> به حالت خاموش برمی‌گردد.</translation>
@@ -174,6 +175,7 @@
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
 <translation id="1889872080060107187">به سیستم <ph name="URL" /> وارد خواهید شد</translation>
 <translation id="1890237935065108104">این تنظیم دردسترس نیست.</translation>
+<translation id="1891199774460536658">پیگیری خودکار همه بسته‌های شناسایی‌شده</translation>
 <translation id="1894023287452300670">قیمت را در اینجا پیگیری کنید</translation>
 <translation id="189531189292803889">‏iPad اخیراً بازیابی شده است و ممکن است مرورگر پیش‌فرضتان را تغییر داده باشد.</translation>
 <translation id="1910975740091000991">‏Chrome ویژه iOS</translation>
@@ -653,6 +655,7 @@
 <translation id="4493604894403585654">‏با <ph name="USER_EMAIL" /> به سیستم وارد شده‌اید. هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="4502566650163919158">اکنون بررسی شود</translation>
 <translation id="4508750114462689118">بستن تبلیغ ورود به سیستم</translation>
+<translation id="4509449376545878717">بسته‌ها هرگز به‌طور خودکار پیگیری نشود</translation>
 <translation id="4514889972748124117">پیشنهاد گذرواژه‌ای قوی…</translation>
 <translation id="4520798012560649652">درباره «حالت ناشناس» بیشتر بدانید</translation>
 <translation id="452503091941773389">{count,plural, =1{‫{count} نشانک}one{‫{count} نشانک}other{‫{count} نشانک}}</translation>
@@ -925,6 +928,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5955891643922670672">درحال مشاهده نسخه آفلاین</translation>
 <translation id="5957613098218939406">گزینه‌های بیشتر</translation>
 <translation id="595769230373966252">جستجو با <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">برای کوچک کردن ضربه بزنید</translation>
 <translation id="5963939892571022323">نمی‌توان پیوندی به مورد برجسته ایجاد کرد.</translation>
 <translation id="5965679971710331625">در سیستم هستید</translation>
 <translation id="5971872012779224351">{count,plural, =1{یک نشانک حذف شد}one{{count} نشانک حذف شد}other{{count} نشانک حذف شد}}</translation>
@@ -1107,7 +1111,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6753469262000681876">حالت قفل همه</translation>
 <translation id="6760509555861141183">برگشتن به «برگه اخیر»</translation>
 <translation id="6762812039470893796">لغو انتخاب همه</translation>
-<translation id="6771287014037609247">بسته‌های شناسایی‌شده همیشه پیگیری شود</translation>
 <translation id="6780034285637185932">کد پستی</translation>
 <translation id="6781260999953472352">«همگام‌سازی» روشن شود؟</translation>
 <translation id="6781405765516175232">برای گزینه‌های مسیر، روی «دریافت مسیر» ضربه بزنید.</translation>
@@ -1212,6 +1215,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7402602673739047753">{count,plural, =1{‏۱ نشانک فقط در این دستگاه ذخیره شده است. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}one{‏{count} نشانک فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}other{‏{count} نشانک فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> مقاله خوانده‌نشده.</translation>
 <translation id="7412027924265291969">ادامه</translation>
+<translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7425346204213733349">‏تغییرات در نشانک‌ها، سابقه، گذرواژه و سایر تنظیمات دیگر با حساب Google شما همگام‌سازی نخواهند شد. با این حال، داده‌های موجودتان در حساب Google شما باقی خواهند ماند.</translation>
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
@@ -1336,6 +1340,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8023878949384262191">بخش را بزرگ می‌کند.</translation>
 <translation id="8027581147000338959">باز کردن در پنجرهٔ جدید</translation>
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
+<translation id="8040207962129315716">هر بار از من پرسیده شود</translation>
 <translation id="804225253087497565">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK" />سابقه جستجو<ph name="END_LINK" /> و <ph name="BEGIN_LINK" />انواع دیگر فعالیت<ph name="END_LINK" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="804427445359061970">برگه‌های مربوط به دستگاه‌های دیگر را اینجا خواهید دید</translation>
 <translation id="8044568254381073661">ذخیره بدون رمزگذاری</translation>

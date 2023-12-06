@@ -59,6 +59,7 @@
 <translation id="1279024913354609713">不允许</translation>
 <translation id="1281818060020671000">管理数据</translation>
 <translation id="1282311502488501110">不登录</translation>
+<translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
@@ -172,6 +173,7 @@
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1889872080060107187">您将登录 <ph name="URL" /></translation>
 <translation id="1890237935065108104">无法使用此设置。</translation>
+<translation id="1891199774460536658">自动跟踪检测到的所有包裹</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
 <translation id="189531189292803889">您最近恢复过您的 iPad，这可能更改了您的默认浏览器设置。</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
@@ -651,6 +653,7 @@
 <translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="4502566650163919158">立即检查</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
+<translation id="4509449376545878717">一律不自动检测包裹</translation>
 <translation id="4514889972748124117">建议一个安全系数高的密码…</translation>
 <translation id="4520798012560649652">详细了解无痕模式</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
@@ -923,6 +926,7 @@
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
+<translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
 <translation id="5965679971710331625">您已登录</translation>
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
@@ -1103,7 +1107,6 @@
 <translation id="6753469262000681876">“锁定”模式</translation>
 <translation id="6760509555861141183">返回到最近用过的标签页</translation>
 <translation id="6762812039470893796">取消全选</translation>
-<translation id="6771287014037609247">始终跟踪检测的包裹</translation>
 <translation id="6780034285637185932">邮编</translation>
 <translation id="6781260999953472352">开启同步功能？</translation>
 <translation id="6781405765516175232">如果您想查看路线选项，请点按“查询路线”。</translation>
@@ -1208,6 +1211,7 @@
 <translation id="7402602673739047753">{count,plural, =1{有 1 个书签会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个书签会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="7409985198648820906">有 <ph name="UNREAD_COUNT" /> 篇未读文章。</translation>
 <translation id="7412027924265291969">继续</translation>
+<translation id="741204030948306876">立即开启</translation>
 <translation id="7425346204213733349">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但现有数据将继续存储在您的 Google 账号中。</translation>
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
@@ -1332,6 +1336,7 @@
 <translation id="8023878949384262191">展开此部分。</translation>
 <translation id="8027581147000338959">在新窗口中打开</translation>
 <translation id="8032569120109842252">已关注</translation>
+<translation id="8040207962129315716">每次都询问我</translation>
 <translation id="804225253087497565">当您登录后，系统可能会将<ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="8044568254381073661">直接保存，不加密</translation>

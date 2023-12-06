@@ -61,6 +61,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1279024913354609713">Ekki leyfa</translation>
 <translation id="1281818060020671000">Stjórna gögnum</translation>
 <translation id="1282311502488501110">Ekki skrá inn</translation>
+<translation id="1283039547216852943">Ýttu til að stækka</translation>
 <translation id="1283524564873030414">Síðastliðinn sólarhring</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
 <translation id="1291506870746876680">Heimildir <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> verða endurstilltar á „slökkt“ þegar þú yfirgefur vefsvæðið.</translation>
@@ -174,6 +175,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1883255238294161206">Fella saman lista</translation>
 <translation id="1889872080060107187">Þú skráir þig inn á <ph name="URL" /></translation>
 <translation id="1890237935065108104">Þessi stilling er ekki í boði.</translation>
+<translation id="1891199774460536658">Rekja alla pakka sem greinast sjálfkrafa</translation>
 <translation id="1894023287452300670">Vakta verð hér</translation>
 <translation id="189531189292803889">iPad var endurheimtur nýlega sem gæti hafa breytt sjálfgefnum vafra.</translation>
 <translation id="1910975740091000991">Chrome fyrir iOS</translation>
@@ -653,6 +655,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4493604894403585654">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4502566650163919158">Athuga núna</translation>
 <translation id="4508750114462689118">Loka innskráningarkynningu</translation>
+<translation id="4509449376545878717">Aldrei greina pakka sjálfkrafa</translation>
 <translation id="4514889972748124117">Leggja til traust aðgangsorð…</translation>
 <translation id="4520798012560649652">Nánar um huliðsstillingu</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bókamerki}one{{count} bókamerki}other{{count} bókamerki}}</translation>
@@ -835,6 +838,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5457226814769348910">Opna útgáfu án nettengingar</translation>
 <translation id="5475069061743940393">Pakkarakning</translation>
 <translation id="5478327362747197944">Búðu til dagatalsviðburði með því að smella á dagsetningu á vefsíðu.</translation>
+<translation id="5482922178977937393">Viltu fá tilkynningar fyrir fréttir, íþróttir og fleira byggt á áhugamálum þínum?</translation>
 <translation id="5489208564673669003">Fyrir upplýsingar um stjórnun fótspora fyrir öll vefsvæði, sjá <ph name="BEGIN_LINK" />Fótsporastillingar<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="5497202150450073388">Afhending reynd. Reynt verður aftur</translation>
@@ -925,6 +929,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5955891643922670672">Skoðar útgáfu án nettengingar</translation>
 <translation id="5957613098218939406">Fleiri valkostir</translation>
 <translation id="595769230373966252">Leita með <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5963939892571022323">Ekki er hægt að búa til tengil í merkta textann.</translation>
 <translation id="5965679971710331625">Þú ert skráð(ur) inn</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
@@ -1107,7 +1112,6 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="6753469262000681876">Læst stilling</translation>
 <translation id="6760509555861141183">Fara aftur á nýlegan flipa</translation>
 <translation id="6762812039470893796">Ekki velja neitt</translation>
-<translation id="6771287014037609247">Alltaf rekja pakka sem greinast</translation>
 <translation id="6780034285637185932">Póstnúmer</translation>
 <translation id="6781260999953472352">Kveikja á samstillingu?</translation>
 <translation id="6781405765516175232">Ýttu á „Fá leiðarlýsingu“ til að fá upplýsingar um leið.</translation>
@@ -1212,6 +1216,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="7402602673739047753">{count,plural, =1{1 bókamerki er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum, {email}.}one{{count} bókamerki er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}other{{count} bókamerki eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> ólesnar greinar.</translation>
 <translation id="7412027924265291969">Halda áfram</translation>
+<translation id="741204030948306876">Hljómar vel</translation>
 <translation id="7425346204213733349">Breytingar á bókamerkjunum þínum, ferlinum, aðgangsorðunum og öðrum stillingum verða ekki lengur samstilltar við Google reikninginn þinn. Þau gögn sem fyrir eru verða þó áfram vistuð á Google reikningnum þínum.</translation>
 <translation id="7431991332293347422">Stjórnaðu því hvernig vefskoðunarferillinn þinn er notaður til að sérsníða leit og fleira</translation>
 <translation id="7435356471928173109">Kerfisstjórinn slökkti á þessu</translation>
@@ -1336,6 +1341,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8023878949384262191">Stækkar hlutann.</translation>
 <translation id="8027581147000338959">Opna í nýjum glugga</translation>
 <translation id="8032569120109842252">Fylgist með</translation>
+<translation id="8040207962129315716">Spyrja mig í hvert skipti</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Leitarferill<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />aðrar aðgerðir<ph name="END_LINK" /> kunna að vera vistaðar á Google reikningnum þínum ef þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
 <translation id="804427445359061970">Þú finnur flipana þína úr öðrum tækjum hér</translation>
 <translation id="8044568254381073661">Vista án dulkóðunar</translation>

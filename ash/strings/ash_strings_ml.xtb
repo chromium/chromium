@@ -659,6 +659,7 @@
 <translation id="36813544980941320">നിങ്ങളുടെ ഫോണിനും <ph name="DEVICE_NAME" /> എന്നതിനുമിടയിൽ വെെഫെെ നെറ്റ്‌വർക്കുകൾ പങ്കിടും</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, തുടർന്ന് <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">വെബ്‌സൈറ്റുകൾ</translation>
+<translation id="3697991387880191195">സ്ക്രീൻഷോട്ട് കുറുക്കുവഴി അമർത്തുക</translation>
 <translation id="3702809606464356667">നിലവിലെ ഡെസ്ക്കിൽ നിന്നുള്ള വിൻഡോകൾ കാണിക്കുന്നു, എല്ലാ ഡെസ്‌ക്കിലും നിന്നുള്ള വിൻഡോകൾ കാണിക്കാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="3702846122927433391">നൈജീരിയയിലെ ജനസംഖ്യ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">നിങ്ങൾ ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയറിനായി കീബോഡ് കുറുക്കുവഴി അമർത്തി. അത് ഓണാക്കണോ?</translation>
 <translation id="439598569299422042">താൽക്കാലികമായി നിർത്തി, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">സ്ക്രീൻ‍കാസ്റ്റ് സംരക്ഷിക്കാനാകുന്നില്ല</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> കണക്റ്റ് ചെയ്തു, അത് ഇനി ഉപയോഗിക്കാം. നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ മൗസ് ഇഷ്ടാനുസൃതമാക്കാം.</translation>
 <translation id="4405151984121254935">കണക്റ്റ് ചെയ്തിരിക്കുന്ന പെരിഫറൽ തരം പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="4406883609789734330">തത്സമയ ക്യാപ്ഷൻ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ഓഫാണ്.</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">നിലവിലെ പേജ് വീണ്ടും ലോഡുചെയ്യുക</translation>
 <translation id="6200515304866777730">ആപ്പ് പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> എന്നതിലേക്ക് മുമ്പ് സംരക്ഷിച്ച <ph name="NAME" /> കണക്റ്റ് ചെയ്യുക</translation>
+<translation id="6212097153736801627">നിങ്ങളുടെ <ph name="PERIPHERAL_NAME" /> ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="6213808132343683860">ഭാഗിക സ്ക്രീൻഷോട്ടോ സ്ക്രീൻ റെക്കോർഡിംഗോ എടുക്കുക</translation>
 <translation id="6220928844947387476">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെയും ഒപ്പം സ്ക്രീനും ഒരേസമയം റെക്കോർഡ് ചെയ്യാം</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
@@ -1535,6 +1538,7 @@
 <translation id="726276584504105859">സ്പ്ലിറ്റ് സ്ക്രീൻ ഉപയോഗിക്കുന്നതിന് ഇവിടെ വലിച്ചിടുക</translation>
 <translation id="7262906531272962081">റിമൈൻഡർ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">സ്ക്രീൻഷോട്ടുകൾ എടുക്കാൻ ദ്രുത ക്രമീകരണത്തിൽ സ്ക്രീൻ ക്യാപ്ചർ ചെയ്യൽ ടൂൾ ഉപയോഗിക്കുക</translation>
 <translation id="7302889331339392448">തത്സമയ ക്യാപ്ഷൻ ഓഫാണ്.</translation>
 <translation id="7303365578352795231">മറ്റൊരു ഉപകരണത്തിൽ മറുപടി നൽകുന്നു.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1922,7 @@
 <translation id="888982883502837004">നിങ്ങളുടെ ഉപകരണത്തിന് ഫേം‌വെയർ അപ്ഡേറ്റുകൾ ലഭ്യമാണ്. അവലോകനം ചെയ്ത് അപ്ഡേറ്റ് ചെയ്യാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ശാശ്വതമായി ഇല്ലാതാക്കും</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു (ഏകദേശം <ph name="TIME_LEFT" />). നിങ്ങളുടെ ഉപകരണം പവറിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> കണക്റ്റ് ചെയ്തു, അത് ഇനി ഉപയോഗിക്കാം. നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ ഗ്രാഫിക്‌സ് ഇഷ്ടാനുസൃതമാക്കാം.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(പേരില്ല)</translation>
 <translation id="890616557918890486">ഉറവിടം മാറ്റുക</translation>

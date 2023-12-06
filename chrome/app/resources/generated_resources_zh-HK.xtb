@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">決定螢幕更新的頻率</translation>
 <translation id="1060570945511946595">管理票證</translation>
 <translation id="1061130374843955397">歡迎使用 <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">一律禁止 <ph name="HOST" /> 控制及重設 MIDI 裝置。</translation>
 <translation id="1061373870045429865">為此連結建立 QR 碼</translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="10619348099955377">複製顯示名稱</translation>
@@ -277,6 +278,7 @@
 <translation id="1203559206734265703">「Protected Audience 偵錯功能」已啟用。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共用工作程式：<ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">安全碼在付款卡背面</translation>
 <translation id="1210678701920254279">查看或新增打印機，並查看進行中的列印工作</translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。擁有者可選擇是否將此裝置的診斷和使用情況資料傳送給 Google。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
@@ -300,6 +302,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> 需要取得授權</translation>
 <translation id="1223853788495130632">管理員為這項設定推薦特定的值。</translation>
 <translation id="1225177025209879837">正在處理要求…</translation>
+<translation id="1227107020813934021">尋找文件掃瞄器</translation>
 <translation id="1227660082540388410">編輯密鑰</translation>
 <translation id="1227993798763400520">無法投放，請再試一次。</translation>
 <translation id="1230417814058465809">已開啟「標準保護功能」。如要進一步提升安全性，請使用「強化保護功能」。</translation>
@@ -449,6 +452,7 @@
 <translation id="1347625331607114917">驗證 Android 手機上的 QR 碼</translation>
 <translation id="1347975661240122359">在電量達到 <ph name="BATTERY_LEVEL" />% 後便會開始更新。</translation>
 <translation id="1348966090521113558">滑鼠無障礙設定</translation>
+<translation id="1350962700620017446">「<ph name="EXTENSION_NAME" />」要求尋找並存取文件掃瞄器。</translation>
 <translation id="1352834119074414157">此套件可能已損毀或被盜用。請關閉此視窗並重新下載</translation>
 <translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監控設定，就必須讓子女使用由家長管理的 Google 帳戶。如果子女需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="135389172849514421">可離線使用</translation>
@@ -624,6 +628,7 @@
 <translation id="1485015260175968628">現在可以：</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> 版本</translation>
 <translation id="1485197926103629489">Microsoft 365 要求將檔案儲存在 OneDrive 中。系統會移動本機檔案，並複製其他位置的檔案。你可在「檔案」應用程式的 Microsoft OneDrive 資料夾中找到檔案。</translation>
+<translation id="1486012259353794050">當你提問時，「Google 助理」會根據你的畫面提供更貼近需要的回覆</translation>
 <translation id="1486096554574027028">搜尋密碼</translation>
 <translation id="1486486872607808064">使用裝置相機掃瞄此 QR 碼，即可在該裝置上建立 <ph name="APP_NAME" /> 的密鑰</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
@@ -690,6 +695,7 @@
 <translation id="1541346352678737112">找不到網絡</translation>
 <translation id="154198613844929213">{0,plural, =0{立即刪除。}=1{刪除時間：1 秒後}other{刪除時間：# 秒後}}</translation>
 <translation id="1542137295869176367">無法更新您的登入資料</translation>
+<translation id="1542524755306892917">這可讓「Google 助理」在<ph name="SUPERVISED_USER_NAME" />提問時提供更貼近需要的回覆。</translation>
 <translation id="1543284117603151572">從 EDGE 匯入</translation>
 <translation id="1543538514740974167">輕輕一按，即時到位</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或者儲存至其他資料夾</translation>
@@ -916,6 +922,7 @@
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698796500103229697">付款方法(&amp;P)</translation>
+<translation id="1699807488537653303">修正密碼錯誤</translation>
 <translation id="1700201317341192482">移除虛擬卡</translation>
 <translation id="1700517974991662022">己經去過</translation>
 <translation id="1703331064825191675">不用再擔心密碼問題</translation>
@@ -1913,6 +1920,7 @@
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">載入緊 <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
+<translation id="2440632898584211188">繼續允許此網站控制 MIDI 裝置及將其重新編程。</translation>
 <translation id="2440823041667407902">位置資料存取權</translation>
 <translation id="2441719842399509963">重設為預設設定</translation>
 <translation id="244231003699905658">地址無效。請檢查地址，然後再試一次。</translation>
@@ -2153,6 +2161,7 @@
 <translation id="262154978979441594">訓練「Google 助理」語音模型</translation>
 <translation id="26224892172169984">不允許任何網站處理通訊協定</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">已允許控制及重設 MIDI 裝置</translation>
 <translation id="2624142942574147739">這個網頁正在存取您的相機和麥克風。</translation>
 <translation id="2626799779920242286">請稍後再試。</translation>
 <translation id="2627424346328942291">無法分享</translation>
@@ -2366,6 +2375,7 @@
 <translation id="2777251078198759550">刪除此容器</translation>
 <translation id="2777525873368474674">貼上圖片連結</translation>
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
+<translation id="2779728796406650689">這可讓「Google 助理」在你提問時提供更貼近需要的回覆。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">系統已允許此網站上的擴充程式</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
@@ -2443,6 +2453,7 @@
 <translation id="2836269494620652131">當機</translation>
 <translation id="283669119850230892">如要使用 <ph name="NETWORK_ID" /> 網絡，請先在下方連線至互聯網。</translation>
 <translation id="2838379631617906747">正在安裝</translation>
+<translation id="2838474726369447181">此網站可控制及重設 MIDI 裝置的程式 (SysEx)。</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2841013758207633010">時間</translation>
 <translation id="2841837950101800123">供應商</translation>
@@ -2466,6 +2477,7 @@
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
+<translation id="2861030231482411439">繼續禁止此網站控制 MIDI 裝置及將其重新編程。</translation>
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861402191395139055">Passpoint 訂閱</translation>
 <translation id="2861941300086904918">Native Client 安全性管理員</translation>
@@ -4883,6 +4895,7 @@
 <translation id="4811212958317149293">「按鈕控制」鍵盤自動掃瞄</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
 <translation id="4813512666221746211">網絡錯誤</translation>
+<translation id="4813872509679988157">繼續允許此網站使用 MIDI 裝置。</translation>
 <translation id="4814114628197290459">刪除 IBAN</translation>
 <translation id="4814327014588285482">略過並稍後提醒我</translation>
 <translation id="4814378367953456825">請輸入此指紋的名稱</translation>
@@ -5195,6 +5208,7 @@
 <translation id="5063480226653192405">使用狀況</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
+<translation id="5066891009360243320">已禁止此網站使用 MIDI 裝置。</translation>
 <translation id="5067399438976153555">保持開啟</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>
@@ -5910,6 +5924,7 @@
 <translation id="5641608986289282154">開始使用 <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">螢幕截圖編輯器</translation>
 <translation id="5642508497713047">CRL 簽署者</translation>
+<translation id="5643191124441701136">安全碼在付款卡正面</translation>
 <translation id="5643321261065707929">按用量收費的網絡</translation>
 <translation id="5646376287012673985">位置</translation>
 <translation id="5646558797914161501">商人</translation>
@@ -6186,7 +6201,7 @@
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5870086504539785141">關閉協助工具選單</translation>
 <translation id="5870155679953074650">嚴重錯誤</translation>
-<translation id="5872318519182427835">影響範圍包括這裡列出的網站及其子網域。例如，如果新增「google.com」，mail.google.com 亦可使用第三方 Cookie，因為該網域屬於 google.com。</translation>
+<translation id="5870901441418842049">已禁止此網站控制及重設你 MIDI 裝置的程式 (SysEx)。</translation>
 <translation id="5875534259258494936">已終止分享螢幕畫面</translation>
 <translation id="5876576639916258720">正在執行…</translation>
 <translation id="5876851302954717356">在右側新增分頁</translation>
@@ -6565,6 +6580,7 @@
 <translation id="6171779718418683144">每次瀏覽時都詢問</translation>
 <translation id="617213288191670920">沒有新增任何語言</translation>
 <translation id="6173623053897475761">重新輸入 PIN</translation>
+<translation id="6174116123142608180">繼續禁止此網站使用 MIDI 裝置。</translation>
 <translation id="6175314957787328458">Microsoft 網域 GUID</translation>
 <translation id="6175910054050815932">取得連結</translation>
 <translation id="6176701216248282552">背景說明已開啟。這些功能可能會將開啟的網頁傳送給 Google。</translation>
@@ -7080,6 +7096,7 @@
 <translation id="6597324406048772521">不允許在此網站上執行擴充程式</translation>
 <translation id="6597331566371766302">管理員已封鎖以下擴充程式：</translation>
 <translation id="659894938503552850">由新到舊</translation>
+<translation id="6599934330666882772">此網站正在使用 MIDI 裝置。</translation>
 <translation id="6601262427770154296">管理用戶字典</translation>
 <translation id="6601612474695404578">有些網站會使用第三方 Cookie 載入頁面。如果網站無法正常運作，您可嘗試允許 Cookie。</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
@@ -7644,6 +7661,7 @@
 <translation id="7036706669646341689">Linux 需要 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置內的檔案。</translation>
 <translation id="7037509989619051237">要預覽的文字</translation>
 <translation id="7038632520572155338">按鈕控制</translation>
+<translation id="7038636380708661517">一律禁止 <ph name="HOST" /> 使用 MIDI 裝置。</translation>
 <translation id="7038710352229712897">為<ph name="USER_NAME" />新增另一個 Google 帳戶</translation>
 <translation id="7039326228527141150">存取來自 <ph name="VENDOR_NAME" /> 的 USB 裝置</translation>
 <translation id="7039912931802252762">Microsoft 智能卡登入</translation>
@@ -7798,6 +7816,7 @@
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
 <translation id="7182063559013288142">即時熱點</translation>
+<translation id="718240920439497409">已禁止 MIDI 裝置</translation>
 <translation id="7182791023900310535">遷移密碼</translation>
 <translation id="718427252411067142">如要防止其他人使用你的密碼，請開啟應用程式變更密碼</translation>
 <translation id="7186088072322679094">保留在工具列上</translation>
@@ -7887,6 +7906,7 @@
 <translation id="7255002516883565667">目前您有 1 張卡只可在此裝置上使用</translation>
 <translation id="7255935316994522020">套用</translation>
 <translation id="7256069762010468647">網站正在使用您的相機</translation>
+<translation id="7256265230922801769">一律允許 <ph name="HOST" /> 控制 MIDI 裝置及將其重新編程。</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7256710573727326513">在分頁中開啟</translation>
 <translation id="7257173066616499747">Wi-Fi 網絡</translation>
@@ -8917,6 +8937,7 @@
 <translation id="8041267120753677077">串流播放手機應用程式內容</translation>
 <translation id="8042142357103597104">文字透明度</translation>
 <translation id="8042331986490021244">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具</translation>
+<translation id="8044090981104134791">已允許使用 MIDI 裝置</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> 沒有回應。</translation>
 <translation id="8044899503464538266">慢</translation>
 <translation id="8045253504249021590">已透過「Google 資訊主頁」停用同步功能。</translation>
@@ -9110,6 +9131,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">強度</translation>
 <translation id="8195854162863398249">停用「<ph name="FEATURE_NAME" />」</translation>
+<translation id="8197151971904389091">一律允許 <ph name="HOST" /> 使用 MIDI 裝置。</translation>
 <translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8198457270656084773">要查看系統的裝置記錄頁面嗎？請前往 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
@@ -9393,6 +9415,7 @@
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">附註</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
+<translation id="8417065541337558100">攝錄機畫面預覽</translation>
 <translation id="8417548266957501132">家長密碼</translation>
 <translation id="8418445294933751433">顯示為分頁(&amp;S)</translation>
 <translation id="8418675848396538775">加入<ph name="LANGUAGE_NAME" /></translation>
@@ -9887,6 +9910,7 @@
 <translation id="8811862054141704416">Crostini 的麥克風存取權</translation>
 <translation id="8811923271770626905">此擴充程式可能會在背景中執行</translation>
 <translation id="8812593354822910461">一併清除瀏覽資料 (<ph name="URL" />) 會將您登出 <ph name="DOMAIN" />。<ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">要求家長核准安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="8813937837706331325">節省中量記憶體</translation>

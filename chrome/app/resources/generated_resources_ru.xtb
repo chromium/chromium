@@ -915,6 +915,7 @@
 <translation id="1697150536837697295">Искусство</translation>
 <translation id="1697686431566694143">Разрешить</translation>
 <translation id="1698796500103229697">Способы оплаты</translation>
+<translation id="1699807488537653303">Устраните проблему с паролем</translation>
 <translation id="1700201317341192482">Удаление виртуальной карты</translation>
 <translation id="1700517974991662022">Посещено</translation>
 <translation id="1703331064825191675">Можно больше не беспокоиться о паролях</translation>
@@ -6178,7 +6179,6 @@
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
 <translation id="5870086504539785141">Закрыть меню специальных возможностей</translation>
 <translation id="5870155679953074650">Ошибки отсутствия страницы в памяти</translation>
-<translation id="5872318519182427835">Настройки распространяются на перечисленные ниже сайты и их субдомены. Например, если вы добавите "google.com", сторонние файлы cookie будут также разрешены для сайта mail.google.com, так как он относится к домену google.com.</translation>
 <translation id="5875534259258494936">Демонстрация экрана завершена</translation>
 <translation id="5876576639916258720">Выполняется проверка…</translation>
 <translation id="5876851302954717356">Новая вкладка справа</translation>

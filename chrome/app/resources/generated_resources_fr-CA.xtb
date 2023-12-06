@@ -914,6 +914,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Modifier le fichier</translation>
 <translation id="1698796500103229697">Méthodes de paiement</translation>
+<translation id="1699807488537653303">Corriger l'erreur de mot de passe</translation>
 <translation id="1700201317341192482">Retirer votre carte virtuelle</translation>
 <translation id="1700517974991662022">Visité</translation>
 <translation id="1703331064825191675">Ne vous inquiétez jamais au sujet de vos mots de passe</translation>
@@ -6179,7 +6180,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5870086504539785141">Fermer le menu d'accessibilité</translation>
 <translation id="5870155679953074650">Défaillances matérielles</translation>
-<translation id="5872318519182427835">Cette option a une incidence sur les sites répertoriés ici et leurs sous-domaines. Par exemple, en ajoutant « google.com », les témoins tiers peuvent également être actifs pour mail.google.com, car cela fait partie de google.com.</translation>
 <translation id="5875534259258494936">Le partage d'écran est terminé</translation>
 <translation id="5876576639916258720">En cours d'exécution…</translation>
 <translation id="5876851302954717356">Nouvel onglet à droite</translation>

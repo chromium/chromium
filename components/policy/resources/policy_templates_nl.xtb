@@ -91,6 +91,35 @@ Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke 
       Als je het beleid niet instelt, is <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="1043965859599437362">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor first-party sets-functies.
+
+Elke set in de lijst met first-party sets van de browser moet voldoen aan de vereisten van een first-party set.
+Een first-party set moet een primaire site en een of meer lidsites bevatten.
+Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
+Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> first-party sets gebruikt.
+
+Alle sites in een first-party set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een first-party set moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer kan worden vermeld in een first-party set.
+
+Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met first-party sets.
+
+Voor alle sites in een first-party set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, die site wordt verwijderd uit de first-party set van de browser.
+Daarna wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
+
+Voor alle sites in een first-party set uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, de first-party set van de browser wordt geüpdatet zodat de nieuwe first-party set kan worden toegevoegd aan de lijst van de browser. Nadat de lijst van de browser is geüpdatet, wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
+
+De lijst met first-party sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan één set is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
+
+Jokertekens (*) worden zowel in first-party sets als in deze lijsten niet ondersteund als beleidswaarde.
+
+Alle sets die in dit beleid worden vermeld, moeten geldige first-party sets zijn. Zo niet, dan krijg je de relevante foutmelding.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Beide beleidsregels kunnen worden gebruikt, maar dit beleid wordt binnenkort beëindigd. Daarom heeft het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> de voorkeur.
+Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="1046484220783400299">Verouderde webplatformfuncties tijdelijk aanzetten</translation>
 <translation id="1047128214168693844">Niet toestaan dat sites de fysieke locatie van gebruikers bijhouden</translation>
 <translation id="1049138910114524876">Hiermee wordt de taal geconfigureerd die wordt afgedwongen op het <ph name="PRODUCT_OS_NAME" />-inlogscherm.
@@ -466,6 +495,14 @@ Als je het beleid niet toepast, wordt de pagina met de koptekst <ph name="CACHE_
 <translation id="1426170570389588560">De periode in dagen instellen voor het opslaan van metadata van afdruktaken</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1427655258943162134">Adres of URL van proxyserver</translation>
+<translation id="1432834104376790711">Met dit beleid kun je de instelling Batterijbesparing aan- of uitzetten.
+      In Chrome wordt met deze instelling de framesnelheid beperkt voor een lager stroomverbruik. Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.
+      In ChromeOS zorgt deze instelling ervoor dat de framesnelheid en CPU-frequentie worden beperkt, achtergrondverlichting wordt gedimd en Android in de modus Batterijbesparing wordt gezet. Op apparaten met meerdere CPU's worden sommige CPU's uitgezet.
+De verschillende niveaus zijn:
+<ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): De modus Batterijbesparing wordt uitgezet.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): De modus Batterijbesparing wordt aangezet als het apparaat op de batterij werkt en het batterijniveau laag is.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): Deze waarde is beëindigd vanaf M121. Vanaf M121 worden waarden behandeld als EnabledBelowThreshold.
+      </translation>
 <translation id="1434300053894025056">Spellingcontrole uitzetten</translation>
 <translation id="1434743866147056474">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van sites die geen afbeeldingen mogen bekijken.
 
@@ -2042,6 +2079,7 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
 <translation id="2707733461906745082">Profielscheiding</translation>
 <translation id="2707873794476722903">Safe Browsing is actief in de standaardmodus.</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
+<translation id="2713913573196284609">Deze waarde is beëindigd vanaf M121. In M121 en daarna worden waarden behandeld als EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Altijd statistieken naar Google sturen</translation>
 <translation id="2714359695399346815">Als je dit beleid toepast of niet instelt, kun je STUN-servers gebruiken, zodat externe clients dit apparaat kunnen zien en er verbinding mee kunnen maken, zelfs door een firewall.
 
@@ -3607,6 +3645,17 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid hebt toegepast, heeft 'Snelle antwoorden' toegang tot geselecteerde content.
       Als je het beleid niet hebt toegepast, heeft 'Snelle antwoorden' geen toegang tot geselecteerde content.
       Als je het beleid niet instelt, kunnen gebruikers bepalen of 'Snelle antwoorden' toegang tot geselecteerde content heeft.</translation>
+<translation id="4016523784669365747">Dit beleid wordt aangeboden als een manier om je af te melden voor de functie First-party sets.
+
+Als je dit beleid toepast of niet instelt, staat de functie First-party sets aan.
+
+Als je dit beleid niet toepast, staat de functie First-party sets uit.
+
+Het beleid bepaalt of Chrome aan first-party sets gerelateerde integraties ondersteunt.
+
+Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+Beide beleidsregels kunnen worden gebruikt, maar dit beleid wordt binnenkort beëindigd. Daarom heeft het beleid <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" /> de voorkeur.
+Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="4016700865356669962">Als je het beleid toepast, kunnen gebruikers templates voor bureaubladindelingen gebruiken.  Als je het beleid niet toepast of niet instelt, zijn deze templates niet beschikbaar.</translation>
 <translation id="4020682745012723568">Cookies die worden overgedragen naar het profiel van de gebruiker, zijn niet toegankelijk voor Android-apps.</translation>
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
@@ -4442,8 +4491,6 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie voor monogeluid in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
-<translation id="4765085790777474543">Als je dit beleid toepast of niet instelt, wordt de downloadbeveiliging beheerd door <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> voor <ph name="PRODUCT_NAME" />. Als <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> is ingesteld op <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> of <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, checkt de downloadbeveiliging of een bestand of het distributiemechanisme ervan onveilig is door een beoordelingsverzoek van <ph name="PRODUCT_NAME" /> naar Google te sturen.
-Als je dit beleid niet toepast, stuurt de downloadbeveiliging geen gegevens naar Google voor een beoordeling. Dit beleid geldt niet voor op hash gebaseerde URL-controle op downloads en overschrijft geen bestaande connectorinstellingen die voorrang hebben.</translation>
 <translation id="4767059955897420757">Als je het beleid toepast of niet instelt, kan de promotie voor de extensie voor inloggegevensproviders aan de gebruiker worden getoond.
 Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggegevensproviders niet getoond aan de gebruiker.</translation>
 <translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
@@ -7174,7 +7221,6 @@ Als je dit beleid instelt, wordt de standaardwaardelijst uitgebreid met de nieuw
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de ventilatorgegevens van het apparaat gerapporteerd.</translation>
 <translation id="7096708978256135543">Altijd toestemming vragen als een site MIDI-rechten wil hebben</translation>
-<translation id="7098400392308393199">Realtime downloadbeveiliging wordt beheerd door het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="710003290625031750">Uitgebreide schemabeschrijving:</translation>
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
 <translation id="7105084505972468353">Als je dit beleid instelt, bepaalt dit het type vergrootglas dat wordt aangezet.
@@ -9075,7 +9121,6 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 <translation id="8707790573162457301">Automatische schijfopruiming uitvoeren tijdens inloggen</translation>
 <translation id="8713535263782304771">Safe Browsing uitzetten</translation>
 <translation id="8714556680280715750">Een URL die gebruikers kunnen bezoeken voor meer informatie. Als je dit beleid niet instelt, bevat het installatieprogramma geen URL met meer informatie. Indien aanwezig moet dit het https-schema gebruiken.</translation>
-<translation id="8715181294371649277">Realtime downloadbeveiliging van Safe Browsing toestaan</translation>
 <translation id="8715885991031124968">JavaScript-dialoogvensters toestaan als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="8720547069538712402">Toestaan dat gebruikers de spellingcontrole aan- of uitzetten</translation>
 <translation id="8726080977639508431">Met dit beleid bepaal je hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
@@ -9123,7 +9168,6 @@ Als je het beleid niet instelt, worden er geen opgeslagen wachtwoorden geïmport
 
       Alle hosts voor systeemeigen berichten zijn standaard toegestaan. Maar als alle hosts voor systeemeigen berichten door een beleidsregel worden geweigerd, kan de beheerder de toelatingslijst gebruiken om die beleidsregel te wijzigen.</translation>
 <translation id="877101880914876353">Weergave-interval van de screensaver voor het inlogscherm.</translation>
-<translation id="8772900888819482215">Realtime downloadbeveiliging van Safe Browsing uitzetten</translation>
 <translation id="877557628527387598">Inloggen met wachtwoord</translation>
 <translation id="8777369558049831576">Het selectievakje 'Altijd openen' tonen in dialoogvensters voor externe protocollen.</translation>
 <translation id="8778320022586618010">Rapportage voor grafische status van apparaat aanzetten</translation>

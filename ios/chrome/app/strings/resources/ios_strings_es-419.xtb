@@ -61,6 +61,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1279024913354609713">No permitir</translation>
 <translation id="1281818060020671000">Administrar datos</translation>
 <translation id="1282311502488501110">No acceder</translation>
+<translation id="1283039547216852943">Presiona para expandir</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> se desactivarán cuando abandones este sitio.</translation>
@@ -925,6 +926,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5955891643922670672">Vista de la versión sin conexión</translation>
 <translation id="5957613098218939406">Más opciones</translation>
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Presiona para contraer</translation>
 <translation id="5963939892571022323">No se puede crear un vínculo al texto destacado.</translation>
 <translation id="5965679971710331625">Accediste</translation>
 <translation id="5971872012779224351">{count,plural, =1{Se borró 1 favorito}other{Se borraron {count} favoritos}}</translation>
@@ -1107,7 +1109,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6753469262000681876">Modo de bloqueo</translation>
 <translation id="6760509555861141183">Regresa a la pestaña reciente</translation>
 <translation id="6762812039470893796">Desmarcar todo</translation>
-<translation id="6771287014037609247">Siempre realizar un seguimiento de los paquetes detectados</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6781260999953472352">¿Deseas activar la sincronización?</translation>
 <translation id="6781405765516175232">Para ver las opciones de ruta, presiona "Obtener instrucciones sobre cómo llegar".</translation>
@@ -1212,6 +1213,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7402602673739047753">{count,plural, =1{1 favorito se guarda solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu Cuenta de Google, {email}.}other{{count} favoritos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google, {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artículos sin leer.</translation>
 <translation id="7412027924265291969">Continuar</translation>
+<translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7425346204213733349">Los cambios de tus favoritos, historial, contraseñas y otras opciones de configuración ya no se sincronizarán con tu cuenta de Google. Sin embargo, los datos existentes permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="7431991332293347422">Controla cómo se usa tu historial de navegación para personalizar la Búsqueda y mucho más</translation>
 <translation id="7435356471928173109">El administrador desactivó la función</translation>

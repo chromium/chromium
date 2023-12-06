@@ -61,6 +61,7 @@
 <translation id="1279024913354609713">اجازت نہ دیں</translation>
 <translation id="1281818060020671000">ڈیٹا کا نظم کریں</translation>
 <translation id="1282311502488501110">سائن ان نہ کریں</translation>
+<translation id="1283039547216852943">پھیلانے کیلئے تھپتھپائیں</translation>
 <translation id="1283524564873030414">گزشتہ 24 گھنٹے</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
@@ -174,6 +175,7 @@
 <translation id="1883255238294161206">فہرست سکیڑیں</translation>
 <translation id="1889872080060107187">آپ <ph name="URL" /> میں سائن ان ہو جائیں گے</translation>
 <translation id="1890237935065108104">یہ ترتیب دستیاب نہیں ہے۔</translation>
+<translation id="1891199774460536658">تمام پتہ لگائے ہوئے پیکیجز کو خودکار طور پر ٹریک کریں</translation>
 <translation id="1894023287452300670">قیمت کو یہاں ٹریک کریں</translation>
 <translation id="189531189292803889">‏آپ کے iPad کو حال ہی میں بحال کیا گیا تھا، ممکن ہے کہ اس کی وجہ سے آپ کا ڈیفالٹ براؤزر تبدیل ہو گیا ہو۔</translation>
 <translation id="1910975740091000991">‏Chrome برائے iOS</translation>
@@ -653,6 +655,7 @@
 <translation id="4493604894403585654">‏آپ <ph name="USER_EMAIL" /> کے طور پر سائن ان ہیں۔ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="4502566650163919158">ابھی چیک کریں</translation>
 <translation id="4508750114462689118">سائن ان پرومو بند کریں</translation>
+<translation id="4509449376545878717">پیکیجز کا کبھی خودکار طور پر پتہ نہ لگائیں</translation>
 <translation id="4514889972748124117">مضبوط پاس ورڈ تجویز کریں...</translation>
 <translation id="4520798012560649652">پوشیدگی وضع کے بارے میں مزید جانیں</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} بُک مارک}other{{count} بُک مارکس}}</translation>
@@ -925,6 +928,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5955891643922670672">آف لائن ورژن دیکھنا</translation>
 <translation id="5957613098218939406">مزید اختیارات</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> کے ساتھ تلاش کریں</translation>
+<translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
 <translation id="5963939892571022323">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا۔</translation>
 <translation id="5965679971710331625">آپ سائن ان ہیں</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 بُک مارک حذف کیا گیا}other{{count} بُک مارکس حذف کئے گئے}}</translation>
@@ -1107,7 +1111,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6753469262000681876">لاک ڈاؤن وضع</translation>
 <translation id="6760509555861141183">حالیہ ٹیب میں واپس جائیں</translation>
 <translation id="6762812039470893796">سبھی غیر منتخب کریں</translation>
-<translation id="6771287014037609247">ہمیشہ دریافت شدہ پیکیجز کو ٹریک کریں</translation>
 <translation id="6780034285637185932">زپ کوڈ</translation>
 <translation id="6781260999953472352">مطابقت پذیری آن کریں؟</translation>
 <translation id="6781405765516175232">راستے کے اختیارات کے لیے، "ڈائریکشنز حاصل کریں" پر تھپتھپائیں۔</translation>
@@ -1212,6 +1215,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7402602673739047753">{count,plural, =1{‏1 بُک مارک صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} بُک مارکس صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> نہ پڑھے ہوئے مضامین۔</translation>
 <translation id="7412027924265291969">جاری رکھیں</translation>
+<translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7425346204213733349">‏آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی تبدیلیوں کی مزید آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔ البتہ آپ کا موجودہ ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
 <translation id="7431991332293347422">تلاش کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="7435356471928173109">آپ کے منتظم کے ذریعے آف کر دیا گیا</translation>
@@ -1336,6 +1340,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8023878949384262191">سیکشن کو پھیلاتا ہے۔</translation>
 <translation id="8027581147000338959">نئی ونڈو میں کھولیں</translation>
 <translation id="8032569120109842252">پیروی ہو رہی ہے</translation>
+<translation id="8040207962129315716">ہر بار مجھ سے پوچھیں</translation>
 <translation id="804225253087497565">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK" />تلاش کی سرگزشت<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />سرگرمی کی دیگر اقسام<ph name="END_LINK" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="804427445359061970">آپ کو دوسرے آلات سے اپنے ٹیبز یہاں ملیں گے</translation>
 <translation id="8044568254381073661">مرموز کاری کے بغیر محفوظ کریں</translation>

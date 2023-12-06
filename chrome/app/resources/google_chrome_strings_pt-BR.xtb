@@ -214,7 +214,7 @@
 <translation id="4335235004908507846">O Chrome pode ajudar na proteção contra violações de dados, extensões maliciosas e muito mais</translation>
 <translation id="4343195214584226067">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chrome</translation>
 <translation id="4384570495110188418">O Chrome não pode verificar suas senhas porque sua conta não está conectada</translation>
-<translation id="4389991535395284064">Quando você está no modo de navegação anônima, o Chrome avisa antes de carregar um site usando uma conexão não segura</translation>
+<translation id="4389991535395284064">Quando você está no modo de navegação anônima, o Chrome avisa antes de carregar um site usando uma conexão sem segurança</translation>
 <translation id="4393248995085527349">Para receber as próximas atualizações do Google Chrome, você vai precisar do macOS 10.15 ou versão mais recente. Este computador está usando o macOS 10.13.</translation>
 <translation id="4427306783828095590">A Proteção reforçada é mais eficiente no combate a golpes de phishing e malware</translation>
 <translation id="4450664632294415862">Chrome - Login na rede - <ph name="PAGE_TITLE" /></translation>
@@ -383,7 +383,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7426611252293106642">É possível que o Google Chrome não funcione corretamente, porque esta distribuição do Linux não tem mais suporte a ele</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{A organização vai fechar o Chrome automaticamente se ele não for usado por 1 minuto.}one{A organização vai fechar o Chrome automaticamente se ele não for usado por # minuto.}other{A organização vai fechar o Chrome automaticamente se ele não for usado por # minutos.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chrome não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chrome não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chrome não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
-<translation id="7477130805345743099">O Chrome vai enviar um aviso antes de carregar qualquer site usando uma conexão não segura</translation>
+<translation id="7477130805345743099">O Chrome vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="7481213027396403996">Use o nível mais alto de segurança do Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
@@ -475,7 +475,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> ao seu smartphone Android, faça login no Chrome nos dois dispositivos.</translation>
 <translation id="8986207147630327271">Você está adicionando um perfil de trabalho a este navegador. O administrador poderá controlar apenas o perfil de trabalho.</translation>
 <translation id="8989968390305463310">Seu histórico de navegação afeta os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chrome exclui automaticamente seus interesses mais antigos do que um mês. Os interesses podem ser atualizados, a menos que você os remova.</translation>
-<translation id="8999117580775242387">Quando HTTPS não está disponível, o Chrome usa uma conexão não segura sem nenhum aviso</translation>
+<translation id="8999117580775242387">Quando HTTPS não está disponível, o Chrome usa uma conexão sem segurança sem nenhum aviso</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uma atualização do Chrome está disponível}=1{Uma atualização do Chrome está disponível}one{Uma atualização do Chrome está disponível há # dia}other{Uma atualização do Chrome está disponível há # dias}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9054037008353851982">Reinicializar para atualizar (as guias serão reabertas)</translation>

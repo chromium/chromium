@@ -253,7 +253,6 @@
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> ကို ထပ်မံ ဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="2453860139492968684">ပြီးပြီ</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
-<translation id="2472163211318554013">Chrome ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="247737702124049222">ပုံအကြောင်းအရာများကို ဖွင့်ထားသည်</translation>
 <translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
@@ -644,7 +643,6 @@
 သင့် Google အကောင့်တွင် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ၌ ရှာဖွေမှုများနှင့် အခြား Google ဝန်ဆောင်မှုများမှ လုပ်ဆောင်ချက်များကဲ့သို့ အင်တာနက်အသုံးပြုမှု မှတ်တမ်း အခြားပုံစံများ ရှိနိုင်ပါသည်။</translation>
 <translation id="4523326818319942067">နောက်ဆုံးတစ်နာရီ</translation>
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
-<translation id="4528638190900283934">ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4532845899244822526">ဖိုင်တွဲရွေးရန်</translation>
 <translation id="4543131175509360848">လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
@@ -1377,7 +1375,6 @@
 <translation id="808747664143081553">စက်ပစ္စည်းနှင့် ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="8088176524274673045">အနီးရှိလူများနှင့် မျှဝေရန် ၎င်းတို့အား ဤ QR ကုဒ်ကို စကင်ဖတ်ခိုင်းပါ</translation>
 <translation id="8090732854597034573">အကူအညီလိုပါက သင့်မိဘကိုတောင်းပါ</translation>
-<translation id="8100969750121413114">Chrome ကို သင့်ကိုယ်ပိုင်ဖြစ်စေရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> မှ တဘ်များ မရှိပါ</translation>
 <translation id="8103578431304235997">ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="8105613260829665809">ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> ကို သဘောတူရာ ရောက်သည်။\nအက်ပ်ပိုကောင်းမွန်စေရန် Chrome သည်အသုံးပြုမှုနှင့် ရပ်တန့်မှုဒေတာများကို Google သို့ပို့ပါသည်။ <ph name="BEGIN_UMA_LINK" />စီမံရန်<ph name="END_UMA_LINK" /></translation>

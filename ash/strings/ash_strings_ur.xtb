@@ -659,6 +659,7 @@
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پھر <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ویب سائٹس</translation>
+<translation id="3697991387880191195">اسکرین شاٹ لینے کا شارٹ کٹ دبائیں</translation>
 <translation id="3702809606464356667">موجودہ ڈیسک سے ونڈوز دکھائی جا رہی ہیں تمام ڈیسکس سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="3702846122927433391">نائیجیریا میں آبادی</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">آپ نے ڈاک کردہ مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="439598569299422042">موقوف ہو گیا، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">اسکرین کاسٹ کو محفوظ نہیں کیا جا سکتا</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> منسلک ہے اور استعمال کیلئے تیار ہے۔ آپ ترتیبات میں اپنے ماؤس کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="4405151984121254935">منسلک پیریفرل کی قسم تعاون یافتہ نہیں ہے</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">موجودہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="6200515304866777730">ایپ کے ذریعہ تعاون یافتہ نہیں ہے</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> میں پہلے سے محفوظ کردہ <ph name="NAME" /> سے منسلک ہوں</translation>
+<translation id="6212097153736801627">اپنے <ph name="PERIPHERAL_NAME" /> کو حسب ضرورت بنائیں</translation>
 <translation id="6213808132343683860">جزوی اسکرین شاٹ لیں یا سکرین ریکارڈنگ کریں</translation>
 <translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
@@ -1533,6 +1536,7 @@
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7262906531272962081">یاد دہانی تخلیق کریں</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">اسکرین شاٹس لینے کیلئے فوری ترتیبات میں اسکرین کیپچر ٹول استعمال کریں</translation>
 <translation id="7302889331339392448">لائیو کیپشن آف ہے۔</translation>
 <translation id="7303365578352795231">ایک دوسرے آلہ پر جواب دیا جا رہا ہے۔</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1916,6 +1920,7 @@
 <translation id="888982883502837004">آپ کے آلے کے لیے فرم ویئر اپ ڈیٹس دستیاب ہیں۔ جائزہ لینے اور اپ ڈیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> کو مستقل طور پر حذف کر دیا جائے گا</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% بیٹری باقی ہے (تقریباََ <ph name="TIME_LEFT" />)۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> منسلک ہے اور استعمال کیلئے تیار ہے۔ آپ ترتیبات میں اپنے گرافکس ٹیبلیٹ کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="88986195241502842">صفحہ نیچے</translation>
 <translation id="8905919797434099235">(کوئی عنوان نہیں)</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>

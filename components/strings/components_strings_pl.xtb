@@ -116,6 +116,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1206967143813997005">Nieprawidłowy podpis wstępny</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
 <translation id="121201262018556460">Próbujesz wejść na <ph name="DOMAIN" />, ale serwer przedstawił certyfikat ze słabym kluczem. Intruz mógł uzyskać klucz prywatny, a serwer może nie być tym, którego oczekujesz (możliwe, że komunikujesz się z intruzem).</translation>
+<translation id="1212527389003717329">Rozpoczęto pobieranie. Aby wyświetlić pobrane pliki, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Zabezpieczenia systemu</translation>
 <translation id="1222060260947439312">Taca prawa</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1521655867290435174">Arkusze Google</translation>
 <translation id="1524669537550112617">Umeblowane nieruchomości na wynajem</translation>
 <translation id="1527263332363067270">Czekam na połączenie…</translation>
+<translation id="1528311629279578926">Połączenie zostało zablokowane, ponieważ nawiązała je strona publiczna na potrzeby komunikacji z urządzeniami lub serwerami w Twojej sieci prywatnej. Aby umożliwić połączenie, odśwież stronę.</translation>
 <translation id="1529789484829130889">Taca 8</translation>
 <translation id="1530707389502320859">Próbujesz otworzyć stronę, która wygląda na fałszywą. Złośliwe strony czasami podszywają się pod inne, wprowadzając małe i trudne do zauważenia zmiany w adresie URL.</translation>
 <translation id="1532118530259321453">Komunikat z bieżącej strony</translation>
@@ -375,6 +377,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />W jaki sposób możesz zarządzać swoimi danymi:<ph name="END_BOLD" /> Chrome automatycznie usuwa tematy, które mają ponad 4 tygodnie. Jeśli będziesz nadal przeglądać strony, powiązane z nimi tematy mogą ponownie pojawić się na liście. W dowolnej chwili w ustawieniach Chrome możesz też zablokować tematy, których nie chcesz udostępniać stronom odwiedzanym w Chrome, oraz wyłączyć tematy reklam.</translation>
 <translation id="1697532407822776718">Wszystko gotowe.</translation>
 <translation id="1699651774646344471">Teraz możesz używać adresów ze swojego konta Google</translation>
+<translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" /> umożliwia wyszukiwanie w internecie.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Poziomy powiększenia</translation>
@@ -1159,6 +1162,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3325027355611702542">Przyczepy kempingowe i kampery</translation>
 <translation id="3329013043687509092">Nasycenie</translation>
 <translation id="3333762389743153920">Nie spełnia wymagań dotyczących karty wirtualnej</translation>
+<translation id="3336044043987989409">Kliknij przycisk odświeżenia strony, aby zezwolić na połączenie z urządzeniami lub serwerami w sieci prywatnej.</translation>
 <translation id="3338095232262050444">Bezpieczna</translation>
 <translation id="333839153442689579">Bardzo intensywny trening interwałowy</translation>
 <translation id="3339440062908617027">Bieganie i chodzenie</translation>

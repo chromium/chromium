@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">بسامد به‌روزرسانی‌های صفحه‌نمایش را مشخص می‌کند</translation>
 <translation id="1060570945511946595">مدیریت بلیت‌ها</translation>
 <translation id="1061130374843955397">به <ph name="DEVICE_TYPE" /> خودتان خوش آمدید</translation>
+<translation id="1061309251982613260">‏همیشه <ph name="HOST" /> مسدود شود تا نتواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند.</translation>
 <translation id="1061373870045429865">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
 <translation id="1061904396131502319">تقریباً زمان استراحت است</translation>
 <translation id="10619348099955377">کپی کردن نام نمایشی</translation>
@@ -278,6 +279,7 @@
 <translation id="1203559206734265703">«اشکال‌زدایی مخاطبین محافظت‌شده» فعال است.</translation>
 <translation id="120368089816228251">نت موسیقی</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">کد امنیتی شما پشت کارت درج شده است</translation>
 <translation id="1210678701920254279">مشاهده یا افزودن چاپگرها و دیدن کارهای فعال چاپ</translation>
 <translation id="1211769675100312947">میان‌برها توسط شما گزینش می‌شوند</translation>
 <translation id="1213254615020057352">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه به Google به بهبود تجربه Android خود کمک کنید. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. این تنظیم را مالک اعمال می‌کند. ممکن است مالک انتخاب کند داده‌های استفاده و عیب‌یابی این دستگاه به Google ارسال شود. اگر تنظیم «فعالیت‌ها در وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود.</translation>
@@ -301,6 +303,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> به پروانه نیاز دارد</translation>
 <translation id="1223853788495130632">سرپرست شما توصیه می‌کند که مقدار خاصی را برای این گزینه وارد کنید.</translation>
 <translation id="1225177025209879837">پردازش درخواست...</translation>
+<translation id="1227107020813934021">پیدا کردن اسکنرهای سند</translation>
 <translation id="1227660082540388410">ویرایش گذرکلید</translation>
 <translation id="1227993798763400520">محتوا پخش نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="1230417814058465809">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از محافظت پیشرفته استفاده کنید.</translation>
@@ -450,6 +453,7 @@
 <translation id="1347625331607114917">‏کد را در تلفن Android خود تأیید کنید</translation>
 <translation id="1347975661240122359">وقتی شارژ باتری به <ph name="BATTERY_LEVEL" />% رسید، به‌روزرسانی شروع خواهد شد.</translation>
 <translation id="1348966090521113558">تنظیمات دسترس‌پذیری موشواره</translation>
+<translation id="1350962700620017446">«<ph name="EXTENSION_NAME" />» می‌خواهد اسکنرهای سند را پیدا کند و به آن‌ها دسترسی داشته باشد.</translation>
 <translation id="1352834119074414157">این بسته ممکن است خراب یا درمعرض خطر باشد. لطفاً این پنجره را ببندید و آن را دوباره بارگیری کنید</translation>
 <translation id="1353275871123211385">‏برای استفاده از کنترل‌های والدین (مثل تأییدیه برنامه و محدودیت‌های مدت تماشای صفحه)، کودک باید یک «حساب Google» تحت مدیریت ولی داشته باشد. می‌توان بعداً حساب محل تحصیلی را برای ابزارهایی مثل Google Classroom اضافه کرد.</translation>
 <translation id="135389172849514421">به‌صورت آفلاین کار می‌کند</translation>
@@ -625,6 +629,7 @@
 <translation id="1485015260175968628">هم‌اکنون این می‌تواند:</translation>
 <translation id="1485141095922496924">نسخه <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">‏Microsoft 365 ملزم می‌داند فایل‌ها در OneDrive ذخیره شود. فایل‌های محلی منتقل خواهند شد و فایل‌هایی که از مکان‌های دیگر هستند کپی خواهند شد. فایل‌ها را می‌توانید در پوشه Microsoft OneDrive در برنامه Files پیدا کنید.</translation>
+<translation id="1486012259353794050">‏وقتی سؤال می‌پرسید، «دستیار Google» براساس اطلاعات صفحه‌نمایش شما، پاسخ‌های سفارشی‌سازی‌شده ارائه می‌دهد</translation>
 <translation id="1486096554574027028">جستجوی گذرواژه‌ها</translation>
 <translation id="1486486872607808064">با دوربین دستگاهی که می‌خواهید ازطریق آن گذرکلیدی برای <ph name="APP_NAME" /> ایجاد کنید، این رمزینه پاسخ‌سریع را اسکن کنید</translation>
 <translation id="1487335504823219454">روشن - تنظیمات سفارشی</translation>
@@ -688,6 +693,7 @@
 <translation id="1541346352678737112">شبکه‌ای پیدا نشد</translation>
 <translation id="154198613844929213">{0,plural, =0{اکنون حذف می‌شود.}=1{یک ثانیه دیگر حذف می‌شود}one{# ثانیه دیگر حذف می‌شود}other{# ثانیه دیگر حذف می‌شود}}</translation>
 <translation id="1542137295869176367">داده‌های ورود به سیستم به‌روزرسانی نشد</translation>
+<translation id="1542524755306892917">‏با این کار، وقتی <ph name="SUPERVISED_USER_NAME" /> سؤال می‌پرسد، «دستیار Google» می‌تواند پاسخ‌های سفارشی‌سازی‌شده ارائه دهد.</translation>
 <translation id="1543284117603151572">‏وارد شده از Edge</translation>
 <translation id="1543538514740974167">دسترسی سریع‌تر به‌اینجا</translation>
 <translation id="1544588554445317666">از نام فایل کوتاه‌تری استفاده کنید یا فایل را در پوشه دیگری ذخیره کنید</translation>
@@ -914,6 +920,7 @@
 <translation id="1697150536837697295">هنری</translation>
 <translation id="1697686431566694143">ویرایش فایل</translation>
 <translation id="1698796500103229697">&amp;روش‌های پرداخت</translation>
+<translation id="1699807488537653303">رفع خطای گذرواژه</translation>
 <translation id="1700201317341192482">حذف کارت مجازی</translation>
 <translation id="1700517974991662022">بازدیدشده</translation>
 <translation id="1703331064825191675">هرگز نگران گذرواژه‌هایتان نباشید</translation>
@@ -1910,6 +1917,7 @@
 <translation id="2439152382014731627">بازنشانی گذرواژه <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">درحال بار کردن <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">مشاهده م&amp;نبع</translation>
+<translation id="2440632898584211188">‏به این سایت همچنان اجازه داده شود دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند.</translation>
 <translation id="2440823041667407902">دسترسی به موقعیت مکانی</translation>
 <translation id="2441719842399509963">بازنشانی به موارد پیش‌فرض</translation>
 <translation id="244231003699905658">نشانی نامعتبر است. لطفاً نشانی را بررسی و دوباره امتحان کنید.</translation>
@@ -2150,6 +2158,7 @@
 <translation id="262154978979441594">‏آموزش مدل صوتی «دستیار Google»</translation>
 <translation id="26224892172169984">به هیچ سایتی برای کنترل پروتکل ها اجازه داده نشود</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">‏کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI مجاز است</translation>
 <translation id="2624142942574147739">این صفحه به دوربین و میکروفون شما دسترسی دارد.</translation>
 <translation id="2626799779920242286">لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="2627424346328942291">هم‌رسانی نشد</translation>
@@ -2363,6 +2372,7 @@
 <translation id="2777251078198759550">حذف این محتوی</translation>
 <translation id="2777525873368474674">جای‌گذاری پیوند تصویر</translation>
 <translation id="2778471504622896352">‏افزودن برنامه‌های کنترل ازراه‌دور به راه‌انداز ChromeOS</translation>
+<translation id="2779728796406650689">‏با این کار، وقتی سؤال می‌پرسید، «دستیار Google» می‌تواند پاسخ‌های سفارشی‌سازی‌شده ارائه دهد.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">افزونه‌های این سایت مجاز است</translation>
 <translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
@@ -2440,6 +2450,7 @@
 <translation id="2836269494620652131">خرابی</translation>
 <translation id="283669119850230892">برای استفاده از شبکه <ph name="NETWORK_ID" />، ابتدا اتصال به اینترنت را در زیر تکمیل کنید.</translation>
 <translation id="2838379631617906747">درحال نصب</translation>
+<translation id="2838474726369447181">‏این سایت می‌تواند دستگاه‌های MIDI؜ شما را کنترل و مجدداً برنامه‌ریزی کند (مختص سیستم).</translation>
 <translation id="2839032553903800133">اعلان‌ها مسدود شدند</translation>
 <translation id="2841013758207633010">زمان</translation>
 <translation id="2841837950101800123">ارائه‌دهنده</translation>
@@ -2463,6 +2474,7 @@
 <translation id="2856776373509145513">ایجاد محتوی جدید</translation>
 <translation id="2856907950922663165">رمزگذاری نشانی وب خاموش شود؟</translation>
 <translation id="2859741939921354763">وارد کردن گذرواژه‌ها به <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">‏این سایت همچنان مسدود شود تا نتواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند.</translation>
 <translation id="2861301611394761800">به‌روزرسانی سیستم کامل شد. لطفاً سیستم را راه‌اندازی مجدد کنید.</translation>
 <translation id="2861402191395139055">‏اشتراک‌های Passpoint</translation>
 <translation id="2861941300086904918">‏مدیر امنیت Native Client</translation>
@@ -4884,6 +4896,7 @@
 <translation id="4811212958317149293">اسکن خودکار صفحه‌کلید دسترسی کلیدی</translation>
 <translation id="4811503964269049987">گروه‌بندی برگه انتخابی</translation>
 <translation id="4813512666221746211">خطای شبکه</translation>
+<translation id="4813872509679988157">‏به این سایت همچنان اجازه داده شود از دستگاه‌های MIDI شما استفاده کند.</translation>
 <translation id="4814114628197290459">‏حذف IBAN</translation>
 <translation id="4814327014588285482">رد شود و بعداً به من یادآوری شود</translation>
 <translation id="4814378367953456825">نامی برای این اثرانگشت وارد کنید</translation>
@@ -5196,6 +5209,7 @@
 <translation id="5063480226653192405">کاربر </translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏مدیریت ساناد امن در تنظیمات ChromeOS</translation>
+<translation id="5066891009360243320">‏این سایت مسدود شده است تا نتواند از دستگاه‌های MIDI شما استفاده کند.</translation>
 <translation id="5067399438976153555">همیشه روشن</translation>
 <translation id="5067867186035333991">اگر <ph name="HOST" /> می‌خواهد به میکروفن شما دسترسی داشته باشد از من سوال شود</translation>
 <translation id="5068553687099139861">نمایش گذرواژه‌ها</translation>
@@ -5913,6 +5927,7 @@
 <translation id="5641608986289282154">آغاز استفاده از <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">ویرایشگر تصویر نماگرفت</translation>
 <translation id="5642508497713047">‏امضاکننده CRL</translation>
+<translation id="5643191124441701136">کد امنیتی شما روی کارت درج شده است</translation>
 <translation id="5643321261065707929">شبکه محدود</translation>
 <translation id="5646376287012673985">مکان</translation>
 <translation id="5646558797914161501">تاجر</translation>
@@ -6189,7 +6204,7 @@
 <translation id="5869522115854928033">گذرواژه‌های ذخیره‌شده</translation>
 <translation id="5870086504539785141">منوی دسترس‌پذیری نزدیک</translation>
 <translation id="5870155679953074650">خطاهای سخت‌افزاری</translation>
-<translation id="5872318519182427835">‏بر سایت‌های فهرست‌شده در اینجا و زیردامنه‌هایشان تأثیر می‌گذارد. برای مثال، افزودن «google.com» بدین معنی است که کوکی‌های شخص ثالث می‌توانند برای mail.google.com هم فعال باشند، چون این زیردامنه بخشی از google.com است.</translation>
+<translation id="5870901441418842049">‏این سایت مسدود شده است تا نتواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند (مختص سیستم).</translation>
 <translation id="5875534259258494936">هم‌رسانی صفحه به‌پایان رسید</translation>
 <translation id="5876576639916258720">درحال اجرا…</translation>
 <translation id="5876851302954717356">برگه جدید در سمت راست</translation>
@@ -6568,6 +6583,7 @@
 <translation id="6171779718418683144">در هر بازدید پرسیده شود</translation>
 <translation id="617213288191670920">زبانی اضافه نشده است</translation>
 <translation id="6173623053897475761">پین خود را دوباره تایپ کنید</translation>
+<translation id="6174116123142608180">‏این سایت همچنان مسدود شود تا نتواند از دستگاه‌های MIDI شما استفاده کند.</translation>
 <translation id="6175314957787328458">‏GUID دامنه Microsoft</translation>
 <translation id="6175910054050815932">دریافت پیوند</translation>
 <translation id="6176701216248282552">‏راهنمای زمینه‌ای روشن است. این ویژگی‌ها می‌توانند صفحه‌های باز را به Google ارسال کنند.</translation>
@@ -7085,6 +7101,7 @@
 <translation id="6597324406048772521">افزونه‌ها در این سایت مجاز نیست</translation>
 <translation id="6597331566371766302">سرپرستتان افزونه‌های زیر را مسدود کرده است:</translation>
 <translation id="659894938503552850">جدیدترین</translation>
+<translation id="6599934330666882772">‏این سایت از دستگاه‌های MIDI شما استفاده می‌کند.</translation>
 <translation id="6601262427770154296">مدیریت فرهنگ‌های لغت کاربر</translation>
 <translation id="6601612474695404578">برخی سایت‌ها برای بارگیری صفحاتشان از کوکی‌های شخص ثالث استفاده می‌کنند. اگر سایتی کار نمی‌کند، می‌توانید کوکی‌ها را مجاز کنید.</translation>
 <translation id="6602173570135186741">تکمیل خودکار و گذرواژه‌ها</translation>
@@ -7649,6 +7666,7 @@
 <translation id="7036706669646341689">‏توصیه می‌شود <ph name="DISK_SIZE" /> فضا برای Linux داشته باشید برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="7037509989619051237">نوشتار برای پیش‌نمایش</translation>
 <translation id="7038632520572155338">دسترسی کلیدی</translation>
+<translation id="7038636380708661517">‏همیشه <ph name="HOST" /> مسدود شود تا نتواند از دستگاه‌های MIDI شما استفاده کند.</translation>
 <translation id="7038710352229712897">‏افزود «حساب Google» دیگری برای <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">‏دسترسی به دستگاه‌های USB از <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7803,6 +7821,7 @@
 <translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7181117767881540376">&amp;پنهان کردن نوار نشانک‌ها</translation>
 <translation id="7182063559013288142">نقطه اتصال فوری</translation>
+<translation id="718240920439497409">‏دستگاه‌های MIDI مسدود شده است</translation>
 <translation id="7182791023900310535">انتقال گذرواژه</translation>
 <translation id="718427252411067142">برای اینکه دیگران از گذرواژه‌تان استفاده نکنند، برنامه را باز کنید و گذرواژه‌تان را تغییر دهید</translation>
 <translation id="7186088072322679094">نگه داشتن در نوار ابزار</translation>
@@ -7892,6 +7911,7 @@
 <translation id="7255002516883565667">درحال‌حاضر، یک کارت دارید که فقط در این دستگاه قابل استفاده است</translation>
 <translation id="7255935316994522020">اعمال</translation>
 <translation id="7256069762010468647">سایت درحال استفاده از دوربین شما است</translation>
+<translation id="7256265230922801769">‏همیشه به <ph name="HOST" /> اجازه داده شود دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند.</translation>
 <translation id="7256634071279256947">میکروفون پشت</translation>
 <translation id="7256710573727326513">باز کردن در برگه</translation>
 <translation id="7257173066616499747">‏شبکه‌های Wi-Fi</translation>
@@ -8922,6 +8942,7 @@
 <translation id="8041267120753677077">جاری‌سازی برنامه‌های تلفن شما</translation>
 <translation id="8042142357103597104">ماتی نوشتار</translation>
 <translation id="8042331986490021244">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شوند</translation>
+<translation id="8044090981104134791">‏دستگاه‌های MIDI مجاز است</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> پاسخ نمی‌دهد</translation>
 <translation id="8044899503464538266">آهسته</translation>
 <translation id="8045253504249021590">‏همگام‌سازی از طریق «داشبورد Google» متوقف شده است.</translation>
@@ -9115,6 +9136,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">شدت</translation>
 <translation id="8195854162863398249">غیر فعال کردن <ph name="FEATURE_NAME" /></translation>
+<translation id="8197151971904389091">‏همیشه به <ph name="HOST" /> اجازه داده شود از دستگاه‌های MIDI شما استفاده کند.</translation>
 <translation id="8197673340773315084">نام یا برچسبی مثل «کاری» یا «شخصی» اضافه کنید</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8198457270656084773">به‌دنبال صفحه گزارش دستگاه سیستم هستید؟ به <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> بروید.</translation>
@@ -9398,6 +9420,7 @@
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">نکته‌ها</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />٪ (قاب)</translation>
+<translation id="8417065541337558100">پیش‌نمای دوربین</translation>
 <translation id="8417548266957501132">گذرواژه ولی</translation>
 <translation id="8418445294933751433">&amp;نمایش به‌صورت برگه</translation>
 <translation id="8418675848396538775">افزودن <ph name="LANGUAGE_NAME" /></translation>
@@ -9893,6 +9916,7 @@
 <translation id="8811862054141704416">‏دسترسی به میکروفون Crostini</translation>
 <translation id="8811923271770626905">این افزونه ممکن است در پس‌زمینه اجرا شود</translation>
 <translation id="8812593354822910461">داده‌های محصول مرور (<ph name="URL" />) را نیز پاک می‌کند که این کار شما را از سیستم <ph name="DOMAIN" /> خارج خواهد کرد. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">‏کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI مسدود شده است</translation>
 <translation id="8813698869395535039">ورود به سیستم <ph name="USERNAME" /> امکان‌پذیر نیست</translation>
 <translation id="8813872945700551674">از یکی از والدین بخواهید «<ph name="EXTENSION_NAME" />» را تأیید کند</translation>
 <translation id="8813937837706331325">صرفه‌جویی‌های متوسط</translation>

@@ -253,7 +253,6 @@
 <translation id="2450083983707403292">Дали сакате да започнете со преземање на <ph name="FILE_NAME" /> одново?</translation>
 <translation id="2453860139492968684">Заврши</translation>
 <translation id="2461822463642141190">Моментално</translation>
-<translation id="2472163211318554013">Најавете се за да извадите максимум од Chrome</translation>
 <translation id="247737702124049222">Описите за слики се вклучени.</translation>
 <translation id="2479148705183875116">Отворете „Поставки“</translation>
 <translation id="2482878487686419369">Известувања</translation>
@@ -644,7 +643,6 @@
 Вашата сметка на Google можеби има други форми на историја на прелистување, како на пр., пребарувања и активност од други услуги на Google на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4523326818319942067">минатиот час</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
-<translation id="4528638190900283934">Најавете се за дополнителни функции</translation>
 <translation id="4532845899244822526">Избери папка</translation>
 <translation id="4543131175509360848">Нема лист со криптографски клучеви</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
@@ -1378,7 +1376,6 @@
 <translation id="808747664143081553">Поврзано со уредот</translation>
 <translation id="8088176524274673045">За да споделувате со луѓе во близина, дозволете им да го скенираат QR-кодов</translation>
 <translation id="8090732854597034573">Ако ти треба помош, прашај го родителот</translation>
-<translation id="8100969750121413114">Најавете се да го приспособите Chrome за вас</translation>
 <translation id="8101414242770404289">Нема картички од <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Инкогнито-картичка</translation>
 <translation id="8105613260829665809">Ако продолжите, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење<ph name="END_TOS_LINK" />.\nЗа да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_UMA_LINK" />Управувајте<ph name="END_UMA_LINK" /></translation>

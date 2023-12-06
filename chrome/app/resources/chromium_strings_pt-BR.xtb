@@ -38,7 +38,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="1733725117201708356">O Chromium vai excluir os dados de navegação em breve</translation>
 <translation id="1736443181683099871">O Chromium vai tentar fazer upgrade das navegações para HTTPS</translation>
 <translation id="1745121272106313518">O Chromium será reiniciado em <ph name="REMAINING_TIME" /></translation>
-<translation id="1749104137266986751">Quando HTTPS não está disponível, o Chromium usa uma conexão não segura sem nenhum aviso</translation>
+<translation id="1749104137266986751">Quando HTTPS não está disponível, o Chromium usa uma conexão sem segurança sem nenhum aviso</translation>
 <translation id="1774152462503052664">Permitir que o Chromium seja executado em segundo plano</translation>
 <translation id="1779356040007214683">Para tornar o Chromium mais seguro, desativamos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e podem ser sido adicionadas sem seu conhecimento.</translation>
 <translation id="1808667845054772817">Reinstalar o Chromium</translation>
@@ -124,7 +124,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar executando os aplicativos em segundo plano quando o Chromium for fechado</translation>
-<translation id="3313189106987092621">O Chromium vai enviar um aviso antes de carregar qualquer site usando uma conexão não segura</translation>
+<translation id="3313189106987092621">O Chromium vai enviar um aviso antes de carregar qualquer site usando uma conexão sem segurança</translation>
 <translation id="3350761136195634146">Já existe um perfil do Chromium para essa conta</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para perfil existente do Chromium?</translation>
@@ -222,7 +222,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5252179775517634216">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chromium. Isso criará um novo perfil do Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>
-<translation id="5294316920224716406">Quando você está no modo de navegação anônima, o Chromium avisa antes de carregar um site usando uma conexão não segura</translation>
+<translation id="5294316920224716406">Quando você está no modo de navegação anônima, o Chromium avisa antes de carregar um site usando uma conexão sem segurança</translation>
 <translation id="5296845517486664001">Quando os testes estão ativados e se o Chromium colocou você aleatoriamente em um teste ativo, seu histórico de navegação vai afetar os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chromium exclui seus interesses mais antigos do que um mês.</translation>
 <translation id="5352264705793813212">O Chromium encontrou algumas recomendações de segurança para sua avaliação</translation>
 <translation id="5358375970380395591">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Chromium. Seus dados do Chromium, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. <ph name="LEARN_MORE" /></translation>

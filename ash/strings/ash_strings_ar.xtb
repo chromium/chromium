@@ -660,6 +660,7 @@
 <translation id="36813544980941320">‏ستتم مشاركة شبكات Wi-Fi بين هاتفك وجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="3682279812299376603">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ثم <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">المواقع الإلكترونية</translation>
+<translation id="3697991387880191195">الضغط على اختصار أخذ لقطة الشاشة</translation>
 <translation id="3702809606464356667">يتم الآن عرض النوافذ المفتوحة في سطح المكتب الحالي، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في جميع أسطح المكتب.</translation>
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
@@ -836,6 +837,7 @@
 <translation id="4389184120735010762">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر الذي تم إرساؤه. هل ترغب في تفعيله؟</translation>
 <translation id="439598569299422042">التنزيل متوقّف مؤقتًا، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">يتعذّر حفظ التسجيل الرقمي للشاشة</translation>
+<translation id="4403371424034411727">جهاز <ph name="PERIPHERAL_NAME" /> متصل وجاهز للاستخدام. يمكنك تخصيص الماوس في "الإعدادات".</translation>
 <translation id="4405151984121254935">نوع الجهاز الملحق المتصل غير متوافق.</translation>
 <translation id="4406883609789734330">النسخ النصي التلقائي</translation>
 <translation id="4412944820643904175">ميزة <ph name="FEATURE_NAME" /> غير مُفعَّلة.</translation>
@@ -1295,6 +1297,7 @@
 <translation id="6199775032047436064">لإعادة تحميل الصفحة الحالية</translation>
 <translation id="6200515304866777730">غير متاح من خلال التطبيق</translation>
 <translation id="6210042900243040400">ربط <ph name="NAME" /> الذي تم حفظه في السابق على الحساب <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">تخصيص جهاز <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">أخذ لقطة أو تسجيل لجزء من الشاشة</translation>
 <translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1537,6 +1540,7 @@
 <translation id="726276584504105859">السحب هنا لاستخدام وضع تقسيم الشاشة</translation>
 <translation id="7262906531272962081">إنشاء تذكير</translation>
 <translation id="7278787617901301220">‏‫<ph name="LAUNCHER_KEY_NAME" /> + مفتاح backspace</translation>
+<translation id="7285232777292757180">استخدِم أداة تصوير الشاشة في الإعدادات السريعة لأخذ لقطات شاشة.</translation>
 <translation id="7302889331339392448">ميزة "النسخ النصي التلقائي" غير مفعَّلة.</translation>
 <translation id="7303365578352795231">جارٍ الرد على جهاز آخر.</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
@@ -1920,6 +1924,7 @@
 <translation id="888982883502837004">تتوفّر تحديثات للبرامج الثابتة على جهازك. انقر للمراجعة والتحديث.</translation>
 <translation id="8896630965521842259">سيتم حذف النموذج <ph name="DESK_TEMPLATE_NAME" /> نهائيًا.</translation>
 <translation id="889790758758811533">‏يتبقّى ‎<ph name="PERCENTAGE" />% من شحن البطارية (حوالي <ph name="TIME_LEFT" />). يُرجى توصيل جهازك بمصدر طاقة.</translation>
+<translation id="8897940060812808966">جهاز <ph name="PERIPHERAL_NAME" /> متصل وجاهز للاستخدام. يمكنك تخصيص الجهاز اللوحي الخاص بالرسم في "الإعدادات".</translation>
 <translation id="88986195241502842">صفحة لأسفل</translation>
 <translation id="8905919797434099235">(بلا عنوان)</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>

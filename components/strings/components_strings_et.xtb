@@ -375,6 +375,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Chrome kustutab automaatselt teemad, mis on vanemad kui 4 nädalat. Sirvimise jätkamisel võib mõni teema loendisse tagasi ilmuda. Samuti saate Chrome'i seadetes igal ajal blokeerida teemad, mille puhul te ei soovi, et Chrome neid saitidega jagaks, ning reklaamiteemad välja lülitada.</translation>
 <translation id="1697532407822776718">Kõik on valmis!</translation>
 <translation id="1699651774646344471">Nüüd saate kasutada aadresse oma Google’i kontolt</translation>
+<translation id="1700542542921501212">Otsingumootoriga <ph name="SEARCH_ENGINE_NAME" /> saate teha veebiotsinguid.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Suumitasemed</translation>
@@ -662,7 +663,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2262243747453050782">HTTP viga</translation>
 <translation id="226481340855943334">Päritolu ja genealoogia</translation>
 <translation id="2265192657948645752">Jaemüügi töökohad</translation>
-<translation id="2265356434276802347">Sellel reeglil ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje.</translation>
+<translation id="2265356434276802347">Sellel reeglil ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> esiletõstetud kirje.</translation>
 <translation id="2267047181501709434">Teie isiku kinnitamine …</translation>
 <translation id="2268743667444073169">Teleseebiooperid</translation>
 <translation id="2270484714375784793">Telefoninumber</translation>

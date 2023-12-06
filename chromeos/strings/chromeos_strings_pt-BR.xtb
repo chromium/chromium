@@ -262,7 +262,7 @@
 <translation id="2875812231449496375">Ative essa opção para ter resultados melhores com esse plano de fundo. É possível desativar essa configuração a qualquer momento.</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2880569433548999039">Protetor de tela Fluxo das nuvens</translation>
-<translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o código QR</translation>
+<translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o QR code</translation>
 <translation id="2940811910881150316">Não foi possível testar o dispositivo. Abra a tampa novamente para testar.</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
@@ -631,6 +631,7 @@
 <translation id="574392208103952083">Médio</translation>
 <translation id="5757187557809630523">próxima faixa</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
+<translation id="5763838252932650682">Reiniciando e atualizando o app <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumentar o brilho da tela</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">A latência do HTTP está alta</translation>
@@ -839,6 +840,7 @@
 <translation id="7287310195820267359">Coleções de plano de fundo</translation>
 <translation id="7297226631177386107">O firewall impediu a conexão a sites HTTPS</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
+<translation id="7301262279595293068">Aguarde enquanto este aplicativo é atualizado</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pergunte aos especialistas no Fórum de Ajuda do Chromebook</translation>

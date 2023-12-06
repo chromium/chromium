@@ -253,7 +253,6 @@
 <translation id="2450083983707403292">გსურთ, ხელახლა ჩამოიტვირთოს <ph name="FILE_NAME" />?</translation>
 <translation id="2453860139492968684">დასრულება</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
-<translation id="2472163211318554013">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით სისტემაში</translation>
 <translation id="247737702124049222">სურათების აღწერილობები ჩართულია</translation>
 <translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
@@ -644,7 +643,6 @@
 თქვენს Google ანგარიშში შეიძლება შენახული იყოს სხვა ტიპის დათვალიერების ისტორია (მაგალითად, ძიებები და აქტივობა Google-ის სხვა სერვისებზე), რომელიც ხელმისაწვდომია მისამართზე: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4523326818319942067">ბოლო საათში</translation>
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
-<translation id="4528638190900283934">შედით სისტემაში, დამატებითი ფუნქციებით რომ ისარგებლოთ</translation>
 <translation id="4532845899244822526">აირჩიეთ საქაღალდე</translation>
 <translation id="4543131175509360848">წვდომის გასაღებების არარსებობის ფურცელი</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი, <ph name="TAB_COUNT_INCOGNITO" /> ინკოგნიტო}}</translation>
@@ -1378,7 +1376,6 @@
 <translation id="808747664143081553">დაკავშირდა მოწყობილობასთან</translation>
 <translation id="8088176524274673045">ახლოს მყოფ ადამიანებთან გასაზიარებლად სთხოვეთ მათ ამ QR კოდის სკანირება</translation>
 <translation id="8090732854597034573">საჭიროებისამებრ, დაიხმარეთ მშობელი</translation>
-<translation id="8100969750121413114">მოირგეთ Chrome — შედით სისტემაში</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> ჩანართები არ ფიქსირდება</translation>
 <translation id="8103578431304235997">ინკოგნიტო ჩანართი</translation>
 <translation id="8105613260829665809">გაგრძელებით თქვენ ეთანხმებით <ph name="BEGIN_TOS_LINK" />მომსახურების პირობებს<ph name="END_TOS_LINK" />.\nამ აპის გაუმჯობესების მიზნით, Chrome უგზავნის მოხმარებისა და ავარიულად გათიშვის მონაცემებს Google-ს. <ph name="BEGIN_UMA_LINK" />მართვა<ph name="END_UMA_LINK" /></translation>

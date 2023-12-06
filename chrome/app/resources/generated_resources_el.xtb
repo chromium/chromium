@@ -916,6 +916,7 @@
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Επεξεργασία αρχείου</translation>
 <translation id="1698796500103229697">&amp;Τρόποι πληρωμής</translation>
+<translation id="1699807488537653303">Διόρθωση σφάλματος κωδικού πρόσβασης</translation>
 <translation id="1700201317341192482">Καταργήστε την εικονική σας κάρτα</translation>
 <translation id="1700517974991662022">Σύνδεσμος που έχετε επισκεφτεί</translation>
 <translation id="1703331064825191675">Δεν χρειάζεται να ανησυχείτε πλέον για τους κωδικούς πρόσβασής σας</translation>
@@ -1268,7 +1269,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 επέκταση ελέγχθηκε}other{{NUM_EXTENSIONS} επεκτάσεις ελέγχθηκαν}}</translation>
 <translation id="1959421829481337178">Εισαγάγετε τον κωδικό ενεργοποίησης που παρέχεται από την εταιρεία κινητής τηλεφωνίας.</translation>
 <translation id="1962233722219655970">Αυτή η σελίδα χρησιμοποιεί μια εφαρμογή Native Client η οποία δεν λειτουργεί στον υπολογιστή σας.</translation>
-<translation id="1963976881984600709">Βασική ασφάλεια</translation>
+<translation id="1963976881984600709">Βασική προστασία</translation>
 <translation id="1966649499058910679">Επισημάνετε κάθε λέξη καθώς εκφωνείται</translation>
 <translation id="1967970931040389207">Ενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -6193,7 +6194,6 @@
 <translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
 <translation id="5870086504539785141">Κλείστε το μενού της προσβασιμότητας</translation>
 <translation id="5870155679953074650">Σοβαρά σφάλματα</translation>
-<translation id="5872318519182427835">Επηρεάζει τους ιστοτόπους που αναφέρονται εδώ και τους υποτομείς τους. Για παράδειγμα, η προσθήκη του "google.com" σημαίνει ότι τα cookie τρίτου μέρους μπορούν να είναι ενεργά και για το mail.google.com, επειδή αποτελούν μέρος του google.com.</translation>
 <translation id="5875534259258494936">Η κοινή χρήση οθόνης έληξε</translation>
 <translation id="5876576639916258720">Εκτελείται…</translation>
 <translation id="5876851302954717356">Νέα καρτέλα στα δεξιά</translation>
@@ -7469,7 +7469,7 @@
 <translation id="6898440773573063262">Είναι πλέον δυνατή η διαμόρφωση της αυτόματης εκκίνησης των εφαρμογών kiosk σε αυτήν τη συσκευή.</translation>
 <translation id="6899427698619335650">Να επιτρέπεται η ευέλικτη τοποθέτηση ορθογραφικού σημαδιού. Για παράδειγμα, μπορείτε να πληκτρολογήσετε "anh1" ή "a1nh" για να εμφανιστεί η λέξη "ánh".</translation>
 <translation id="6900284862687837908">Εφαρμογή παρασκηνίου: <ph name="BACKGROUND_APP_URL" /></translation>
-<translation id="6900532703269623216">Βελτιωμένη ασφάλεια</translation>
+<translation id="6900532703269623216">Βελτιωμένη προστασία</translation>
 <translation id="6900651018461749106">Συνδεθείτε ξανά για ενημέρωση <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν τη μηχανή αναζήτησης;</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>

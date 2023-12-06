@@ -659,6 +659,7 @@
 <translation id="36813544980941320">तपाईंको फोन र <ph name="DEVICE_NAME" /> का बिचमा Wi-Fi नेटवर्कहरू सेयर गरिने छन्</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> थिच्नुहोस् अनि <ph name="KEY_TWO" /> थिच्नुहोस्</translation>
 <translation id="3694122362646626770">वेबसाइटहरू</translation>
+<translation id="3697991387880191195">"स्क्रिनसट सर्टकट" मा थिच्नुहोस्</translation>
 <translation id="3702809606464356667">हालको डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, सबै डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">तपाईंले डक गरिएको म्याग्निफायरको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
 <translation id="439598569299422042">पज गरिएको छ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">स्क्रिनकास्ट सेभ गर्न सकिएन</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> कनेक्ट गरिएको छ र अब प्रयोग गर्न मिल्छ। तपाईं सेटिङमा गई आफ्नो माउस कस्टमाइज गर्न सक्नुहुन्छ।</translation>
 <translation id="4405151984121254935">कनेक्ट गरिएको यो सहायक डिभाइस प्रयोग गर्न मिल्दैन</translation>
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> अफ छ।</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">हालको पृष्ठ फेरि लोड गर्नुहोस्</translation>
 <translation id="6200515304866777730">यो एपमा काम गर्दैन</translation>
 <translation id="6210042900243040400">यसअघि <ph name="EMAIL" /> मा सेभ गरिएको <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
+<translation id="6212097153736801627">आफ्नो <ph name="PERIPHERAL_NAME" /> कस्टमाइज गर्नुहोस्</translation>
 <translation id="6213808132343683860">आंशिक स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
 <translation id="622484624075952240">तल</translation>
@@ -1534,6 +1537,7 @@
 <translation id="726276584504105859">विभाजित स्क्रिनको प्रयोग गर्न यहाँ ड्र्याग गर्नुहोस्</translation>
 <translation id="7262906531272962081">रिमाइन्डर सिर्जना गर्नुहोस्</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + ब्याकस्पेस</translation>
+<translation id="7285232777292757180">स्क्रिनसट खिच्न द्रुत सेटिङमा गई स्क्रिन क्याप्चर गर्ने टुल प्रयोग गर्नुहोस्</translation>
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1921,7 @@
 <translation id="888982883502837004">तपाईंको डिभाइसका हकमा फर्मवेयरसम्बन्धी अपडेटहरू उपलब्ध छन्। तपाईं समीक्षा हेर्न र अपडेट प्राप्त गर्न चाहनुहुन्छ भने क्लिक गर्नुहोस्।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> सदाका लागि मेटाइने छ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> कनेक्ट गरिएको छ र अब प्रयोग गर्न मिल्छ। तपाईं सेटिङमा गई आफ्नो ग्राफिक्स ट्याब्लेट कस्टमाइज गर्न सक्नुहुन्छ।</translation>
 <translation id="88986195241502842">पृष्ठ तल</translation>
 <translation id="8905919797434099235">(शीर्षक छैन)</translation>
 <translation id="890616557918890486">स्रोत परिवर्तन गर्नुहोस्</translation>

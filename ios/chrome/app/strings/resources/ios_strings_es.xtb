@@ -61,6 +61,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1279024913354609713">No permitir</translation>
 <translation id="1281818060020671000">Gestionar datos</translation>
 <translation id="1282311502488501110">No iniciar sesión</translation>
+<translation id="1283039547216852943">Toca para ampliar</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> se desactivarán cuando salgas de este sitio.</translation>
@@ -925,6 +926,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5955891643922670672">Viendo versión sin conexión</translation>
 <translation id="5957613098218939406">Más opciones</translation>
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5963939892571022323">No se puede crear un enlace al texto destacado.</translation>
 <translation id="5965679971710331625">Has iniciado sesión</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
@@ -1107,7 +1109,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6753469262000681876">Modo Bloqueo de seguridad</translation>
 <translation id="6760509555861141183">Volver a la pestaña reciente</translation>
 <translation id="6762812039470893796">Desmarcar todo</translation>
-<translation id="6771287014037609247">Hacer siempre un seguimiento de los paquetes detectados</translation>
 <translation id="6780034285637185932">Código postal</translation>
 <translation id="6781260999953472352">¿Activar la sincronización?</translation>
 <translation id="6781405765516175232">Para ver las opciones de ruta, toca Cómo llegar.</translation>
@@ -1212,6 +1213,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7402602673739047753">{count,plural, =1{1 marcador está guardado solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google: {email}.}other{{count} marcadores están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artículos no leídos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
+<translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7425346204213733349">Los cambios que hagas en los marcadores, el historial, las contraseñas y otras opciones no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos actuales seguirán almacenados en tu cuenta.</translation>
 <translation id="7431991332293347422">Controla cómo se usa el historial de navegación para personalizar la Búsqueda y más</translation>
 <translation id="7435356471928173109">Desactivada por tu administrador</translation>

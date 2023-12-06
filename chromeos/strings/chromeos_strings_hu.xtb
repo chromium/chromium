@@ -631,6 +631,7 @@
 <translation id="574392208103952083">Közepes</translation>
 <translation id="5757187557809630523">következő szám</translation>
 <translation id="5760715441271661976">Portál állapota</translation>
+<translation id="5763838252932650682">A(z) <ph name="APP_NAME" /> újraindítása és frissítése…</translation>
 <translation id="576835345334454681">Kijelző fényerejének növelése</translation>
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5784136236926853061">Hosszú HTTP várakozási idő</translation>
@@ -839,6 +840,7 @@
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
 <translation id="7297226631177386107">Nem lehet a tűzfalon keresztül HTTPS-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="7297726121602187087">Sötétzöld</translation>
+<translation id="7301262279595293068">Várjon, amíg az alkalmazás frissül</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Kérdezze a Chromebook súgófórumának szakértőit</translation>

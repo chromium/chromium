@@ -116,6 +116,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1206967143813997005">Neispravan potpis inicijalima</translation>
 <translation id="1209206284964581585">Sakrij za sada</translation>
 <translation id="121201262018556460">Pokušali ste otvoriti domenu <ph name="DOMAIN" />, ali je server prikazao potvrdu koja sadrži slab ključ. Možda je napadač otkrio privatni ključ, a server nije onaj kojeg očekujete (možda komunicirate s napadačem).</translation>
+<translation id="1212527389003717329">Preuzimanje je pokrenuto. Da ga vidite, pritisnite i zadržite |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Sigurnost sistema</translation>
 <translation id="1222060260947439312">Desna ladica</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1521655867290435174">Google Tabele</translation>
 <translation id="1524669537550112617">Iznajmljivanje namještenih stanova</translation>
 <translation id="1527263332363067270">Čekanje na uspostavu veze…</translation>
+<translation id="1528311629279578926">Povezivanje je blokirano jer ga je pokrenula javna stranica radi povezivanja s uređajima ili serverima na vašoj privatnoj mreži. Ponovo učitajte stranicu da dozvolite povezivanje.</translation>
 <translation id="1529789484829130889">Ladica 8</translation>
 <translation id="1530707389502320859">Izgleda da je web lokacija koju ste upravo htjeli posjetiti lažna. Napadači ponekad oponašaju web lokacije tako što naprave male, teško primjetne izmjene URL-a.</translation>
 <translation id="1532118530259321453">Na ovoj stranici piše</translation>
@@ -375,6 +377,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete upravljati podacima:<ph name="END_BOLD" /> Chrome automatski briše teme starije od 4 sedmice. Kako nastavljate pregledati, tema se može ponovo pojaviti na listi. Također možete blokirati teme koje ne želite da Chrome dijeli s web lokacijama i isključiti teme oglasa u bilo kojem trenutku u postavkama Chromea.</translation>
 <translation id="1697532407822776718">Sve je spremno!</translation>
 <translation id="1699651774646344471">Sada možete koristiti adrese s Google računa</translation>
+<translation id="1700542542921501212">Za pretraživanje weba možete upotrebljavati <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Nivoi zumiranja</translation>
@@ -1159,6 +1162,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3325027355611702542">Kamp prikolice i vozila</translation>
 <translation id="3329013043687509092">Zasićenje</translation>
 <translation id="3333762389743153920">Ne ispunjava uslove za virtuelnu karticu</translation>
+<translation id="3336044043987989409">Pritisnite dugme za ponovno učitavanje da dozvolite povezivanje s uređajima ili serverima na svojoj privatnoj mreži.</translation>
 <translation id="3338095232262050444">Sigurno</translation>
 <translation id="333839153442689579">Intervalni trening visokog intenziteta</translation>
 <translation id="3339440062908617027">Trčanje i brzo hodanje</translation>

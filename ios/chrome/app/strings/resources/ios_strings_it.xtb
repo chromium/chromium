@@ -61,6 +61,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1279024913354609713">Non consentire</translation>
 <translation id="1281818060020671000">Gestisci i dati</translation>
 <translation id="1282311502488501110">Non accedere</translation>
+<translation id="1283039547216852943">Tocca per espandere</translation>
 <translation id="1283524564873030414">Ultime 24 ore</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1291506870746876680">Le autorizzazioni del sito <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> verranno disattivate quando uscirai dal sito.</translation>
@@ -174,6 +175,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1883255238294161206">Comprimi elenco</translation>
 <translation id="1889872080060107187">Accederai al sito <ph name="URL" /></translation>
 <translation id="1890237935065108104">Questa impostazione non è disponibile.</translation>
+<translation id="1891199774460536658">Monitoraggio automatico di tutti i pacchetti rilevati</translation>
 <translation id="1894023287452300670">Monitora qui il prezzo</translation>
 <translation id="189531189292803889">Il tuo iPad è stato ripristinato di recente e questo potrebbe aver modificato il tuo browser predefinito.</translation>
 <translation id="1910975740091000991">Chrome per iOS</translation>
@@ -653,6 +655,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4493604894403585654">Hai eseguito l'accesso come <ph name="USER_EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4502566650163919158">Controlla ora</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
+<translation id="4509449376545878717">Non rilevare mai automaticamente i pacchetti</translation>
 <translation id="4514889972748124117">Suggerisci password efficace…</translation>
 <translation id="4520798012560649652">Scopri di più sulla modalità di navigazione in incognito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} preferito}other{{count} preferiti}}</translation>
@@ -925,6 +928,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5955891643922670672">È visualizzata la versione offline</translation>
 <translation id="5957613098218939406">Altre opzioni</translation>
 <translation id="595769230373966252">Cerca con <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5962718611393537961">Tocca per comprimere</translation>
 <translation id="5963939892571022323">Non è possibile creare un link al testo evidenziato.</translation>
 <translation id="5965679971710331625">Hai eseguito l'accesso</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 preferito eliminato}other{{count} preferiti eliminati}}</translation>
@@ -1107,7 +1111,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6753469262000681876">Modalità di blocco</translation>
 <translation id="6760509555861141183">Torna alla scheda recente</translation>
 <translation id="6762812039470893796">Deseleziona tutto</translation>
-<translation id="6771287014037609247">Traccia sempre i pacchi rilevati</translation>
 <translation id="6780034285637185932">Codice postale</translation>
 <translation id="6781260999953472352">Vuoi attivare la sincronizzazione?</translation>
 <translation id="6781405765516175232">Per conoscere le opzioni per il percorso, tocca "Indicazioni stradali".</translation>
@@ -1212,6 +1215,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7402602673739047753">{count,plural, =1{1 preferito viene salvato soltanto su questo dispositivo. Per usarlo sugli altri tuoi dispositivi, salvalo nel tuo Account Google {email}.}other{{count} preferiti vengono salvati soltanto su questo dispositivo. Per usarli sugli altri tuoi dispositivi, salvali nel tuo Account Google {email}.}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articoli da leggere.</translation>
 <translation id="7412027924265291969">Continua</translation>
+<translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7425346204213733349">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. Tuttavia, i dati esistenti rimarranno memorizzati.</translation>
 <translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
@@ -1336,6 +1340,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8023878949384262191">Viene espansa la sezione.</translation>
 <translation id="8027581147000338959">Apri in un'altra finestra</translation>
 <translation id="8032569120109842252">Stai seguendo</translation>
+<translation id="8040207962129315716">Chiedi conferma ogni volta</translation>
 <translation id="804225253087497565">La <ph name="BEGIN_LINK" />cronologia delle ricerche<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="804427445359061970">Qui troverai le tue schede aperte su altri dispositivi</translation>
 <translation id="8044568254381073661">Salva senza crittografia</translation>

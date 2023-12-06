@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Bestimmt, wie oft das sichtbare Bild auf dem Bildschirm neu aufgebaut wird</translation>
 <translation id="1060570945511946595">Tickets verwalten</translation>
 <translation id="1061130374843955397">Willkommen bei deinem <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260"><ph name="HOST" /> darf meine MIDI-Geräte nie steuern und neu programmieren.</translation>
 <translation id="1061373870045429865">QR-Code für diesen Link erstellen</translation>
 <translation id="1061904396131502319">Bald ist es Zeit für eine Pause</translation>
 <translation id="10619348099955377">Anzeigename kopieren</translation>
@@ -275,6 +276,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1203559206734265703">Die Fehlerbehebung für geschützte Zielgruppen ist aktiviert.</translation>
 <translation id="120368089816228251">Musiknote</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Der Sicherheitscode befindet sich auf der Rückseite deiner Karte</translation>
 <translation id="1210678701920254279">Drucker ansehen oder hinzufügen und aktive Druckaufträge abrufen</translation>
 <translation id="1211769675100312947">Du kannst die Verknüpfungen personalisieren</translation>
 <translation id="1213254615020057352">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese Einstellung wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
@@ -298,6 +300,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1223484782328004593"><ph name="APP_NAME" /> benötigt eine Lizenz</translation>
 <translation id="1223853788495130632">Dein Administrator empfiehlt einen bestimmten Wert für diese Einstellung.</translation>
 <translation id="1225177025209879837">Deine Anfrage wird verarbeitet...</translation>
+<translation id="1227107020813934021">Dokumentenscanner suchen</translation>
 <translation id="1227660082540388410">Passkey bearbeiten</translation>
 <translation id="1227993798763400520">Streamen fehlgeschlagen. Bitte versuche es noch einmal.</translation>
 <translation id="1230417814058465809">Standardschutz ist aktiviert. Der erweiterte Schutz bietet noch mehr Sicherheit.</translation>
@@ -447,6 +450,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1347625331607114917">Code auf deinem Android-Smartphone bestätigen</translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1348966090521113558">Einstellungen für Bedienungshilfen (Maus)</translation>
+<translation id="1350962700620017446">„<ph name="EXTENSION_NAME" />“ möchte Dokumentenscanner suchen und auf sie zugreifen.</translation>
 <translation id="1352834119074414157">Dieses Paket ist möglicherweise beschädigt oder manipuliert. Schließe dieses Fenster und lade das Paket noch einmal herunter.</translation>
 <translation id="1353275871123211385">Wenn du Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Bildschirmzeit verwenden möchtest, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Du kannst später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
 <translation id="135389172849514421">Funktioniert im Offlinemodus</translation>
@@ -621,6 +625,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1485015260175968628">Aktualisierte Berechtigungen:</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Für Microsoft 365 müssen Dateien in OneDrive gespeichert sein. Lokale Dateien werden verschoben und Dateien von anderen Speicherorten werden kopiert. Du findest deine Dateien im Microsoft OneDrive-Ordner in der App „Dateien“.</translation>
+<translation id="1486012259353794050">Wenn du Fragen stellst, gibt dir Google Assistant Antworten, die für den aktuellen Bildschirminhalt relevant sind</translation>
 <translation id="1486096554574027028">Passwörter suchen</translation>
 <translation id="1486486872607808064">Scanne diesen QR-Code mit der Kamera des Geräts, auf dem du einen Passkey für <ph name="APP_NAME" /> erstellen möchtest</translation>
 <translation id="1487335504823219454">An – benutzerdefinierte Einstellungen</translation>
@@ -684,6 +689,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1541346352678737112">Kein Netzwerk gefunden</translation>
 <translation id="154198613844929213">{0,plural, =0{Daten werden jetzt gelöscht.}=1{Daten werden gelöscht in: 1 Sekunde}other{Daten werden gelöscht in: # Sekunden}}</translation>
 <translation id="1542137295869176367">Deine Anmeldedaten konnten nicht aktualisiert werden</translation>
+<translation id="1542524755306892917">Durch diese Option kann Google Assistant relevantere Antworten geben, wenn <ph name="SUPERVISED_USER_NAME" /> Fragen stellt.</translation>
 <translation id="1543284117603151572">Aus Edge importiert</translation>
 <translation id="1543538514740974167">Schneller hierherkommen</translation>
 <translation id="1544588554445317666">Versuch, einen kürzeren Dateinamen oder einen anderen Ordner zu verwenden</translation>
@@ -910,6 +916,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Datei bearbeiten</translation>
 <translation id="1698796500103229697">&amp;Zahlungsmethoden</translation>
+<translation id="1699807488537653303">Passwortfehler beheben</translation>
 <translation id="1700201317341192482">Virtuelle Karte entfernen</translation>
 <translation id="1700517974991662022">Besucht</translation>
 <translation id="1703331064825191675">Du musst dir keine Sorgen mehr um deine Passwörter machen</translation>
@@ -1895,6 +1902,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-Passwort zurücksetzen</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> wird geladen</translation>
 <translation id="2440604414813129000">Quelltext an&amp;zeigen</translation>
+<translation id="2440632898584211188">Diese Website darf meine MIDI-Geräte weiterhin steuern und neu programmieren.</translation>
 <translation id="2440823041667407902">Standortzugriff</translation>
 <translation id="2441719842399509963">Auf Standardeinstellungen zurücksetzen</translation>
 <translation id="244231003699905658">Ungültige Adresse. Prüfe die Adresse und versuche es noch einmal.</translation>
@@ -2135,6 +2143,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="262154978979441594">Sprachmodell von Google Assistant trainieren</translation>
 <translation id="26224892172169984">Verarbeitung von Protokollen für keine Website zulassen</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">MIDI-Geräte dürfen gesteuert und neu programmiert werden</translation>
 <translation id="2624142942574147739">Diese Seite greift auf Kamera und Mikrofon zu.</translation>
 <translation id="2626799779920242286">Versuche es später erneut.</translation>
 <translation id="2627424346328942291">Teilen nicht möglich</translation>
@@ -2348,6 +2357,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2777251078198759550">Diesen Container löschen</translation>
 <translation id="2777525873368474674">Bildlink einfügen</translation>
 <translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
+<translation id="2779728796406650689">Durch diese Option kann Google Assistant relevantere Antworten auf deine Fragen geben.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Erweiterungen sind auf dieser Website erlaubt</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
@@ -2425,6 +2435,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2836269494620652131">Absturz</translation>
 <translation id="283669119850230892">Zur Verwendung des Netzwerks "<ph name="NETWORK_ID" />" musst du zuerst unten deine Internetverbindung herstellen.</translation>
 <translation id="2838379631617906747">Installation läuft...</translation>
+<translation id="2838474726369447181">Diese Website darf deine MIDI-Geräte steuern und neu programmieren (SysEx).</translation>
 <translation id="2839032553903800133">Benachrichtigungen blockiert</translation>
 <translation id="2841013758207633010">Zeit</translation>
 <translation id="2841837950101800123">Anbieter</translation>
@@ -2448,6 +2459,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2856776373509145513">Neuen Container erstellen</translation>
 <translation id="2856907950922663165">URL-Verschlüsselung deaktivieren?</translation>
 <translation id="2859741939921354763">Passwörter in <ph name="BRAND" /> importieren</translation>
+<translation id="2861030231482411439">Diese Website darf meine MIDI-Geräte weiterhin nicht steuern und neu programmieren.</translation>
 <translation id="2861301611394761800">Systemupdate abgeschlossen. Starte das System jetzt neu.</translation>
 <translation id="2861402191395139055">Passpoint-Abos</translation>
 <translation id="2861941300086904918">Sicherheitsmanager für native Clients</translation>
@@ -4868,6 +4880,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4811212958317149293">Automatischer Scan der Tastatur bei Schalterzugriff</translation>
 <translation id="4811503964269049987">Ausgewählten Tab zu neuer Gruppe hinzufügen</translation>
 <translation id="4813512666221746211">Netzwerkfehler</translation>
+<translation id="4813872509679988157">Diese Website darf meine MIDI-Geräte weiterhin verwenden.</translation>
 <translation id="4814114628197290459">IBAN löschen</translation>
 <translation id="4814327014588285482">Überspringen und später erinnern</translation>
 <translation id="4814378367953456825">Gib einen Namen für diesen Fingerabdruck ein</translation>
@@ -5180,6 +5193,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Sicheres DNS in den Chrome OS-Einstellungen verwalten</translation>
+<translation id="5066891009360243320">Diese Website darf deine MIDI-Geräte nicht mehr verwenden.</translation>
 <translation id="5067399438976153555">Immer aktiviert</translation>
 <translation id="5067867186035333991">Nachfragen, wenn <ph name="HOST" /> auf dein Mikrofon zugreifen möchte</translation>
 <translation id="5068553687099139861">Passwörter anzeigen</translation>
@@ -5895,6 +5909,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5641608986289282154">Verwendung von <ph name="DEVICE_OS" /> starten</translation>
 <translation id="5641648607875312660">Screenshot-Bildeditor</translation>
 <translation id="5642508497713047">CRL-Signaturgeber</translation>
+<translation id="5643191124441701136">Der Sicherheitscode befindet sich auf der Vorderseite deiner Karte</translation>
 <translation id="5643321261065707929">Kostenpflichtiges Netzwerk</translation>
 <translation id="5646376287012673985">Standort</translation>
 <translation id="5646558797914161501">Geschäftsmann</translation>
@@ -6171,7 +6186,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5870086504539785141">Bedienungshilfemenü schließen</translation>
 <translation id="5870155679953074650">Harte Fehler</translation>
-<translation id="5872318519182427835">Wirkt sich auf die hier aufgeführten Websites und deren Subdomains aus. Wenn du beispielsweise „google.com“ hinzufügst, können Drittanbieter-Cookies auch für „mail.google.com“ aktiv sein, da die Subdomain zu „google.com“ gehört.</translation>
+<translation id="5870901441418842049">Diese Website darf deine MIDI-Geräte weder steuern noch neu programmieren (SysEx).</translation>
 <translation id="5875534259258494936">Bildschirmfreigabe beendet</translation>
 <translation id="5876576639916258720">Wird ausgeführt…</translation>
 <translation id="5876851302954717356">Neuer Tab rechts</translation>
@@ -6549,6 +6564,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6171779718418683144">Bei jedem Besuch fragen</translation>
 <translation id="617213288191670920">Keine Sprachen hinzugefügt</translation>
 <translation id="6173623053897475761">PIN noch einmal eingeben</translation>
+<translation id="6174116123142608180">Diese Website darf meine MIDI-Geräte weiterhin nicht verwenden.</translation>
 <translation id="6175314957787328458">Microsoft-Domain-GUID</translation>
 <translation id="6175910054050815932">Link abrufen</translation>
 <translation id="6176701216248282552">Die kontextbezogene Hilfe ist aktiviert. Über diese Funktionen können geöffnete Seiten an Google gesendet werden.</translation>
@@ -7064,6 +7080,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6597324406048772521">Auf dieser Website nicht zulässige Erweiterungen</translation>
 <translation id="6597331566371766302">Die folgenden Erweiterungen wurden von deinem Administrator blockiert:</translation>
 <translation id="659894938503552850">neuestem</translation>
+<translation id="6599934330666882772">Diese Website verwendet deine MIDI-Geräte.</translation>
 <translation id="6601262427770154296">Meine Wörterbücher verwalten</translation>
 <translation id="6601612474695404578">Manche Websites verwenden Drittanbieter-Cookies, um ihre Seiten zu laden. Wenn eine Website nicht richtig funktioniert, kannst du versuchen, Cookies zuzulassen.</translation>
 <translation id="6602173570135186741">Autofill und Passwörter</translation>
@@ -7628,6 +7645,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7036706669646341689">Für Linux sind mindestens <ph name="DISK_SIZE" /> freier Speicherplatz erforderlich. Lösche Dateien von deinem Gerät, um Speicherplatz freizugeben.</translation>
 <translation id="7037509989619051237">Text zum Anhören</translation>
 <translation id="7038632520572155338">Schalterzugriff</translation>
+<translation id="7038636380708661517"><ph name="HOST" /> darf meine MIDI-Geräte nie verwenden.</translation>
 <translation id="7038710352229712897">Für <ph name="USER_NAME" /> ein weiteres Google-Konto hinzufügen</translation>
 <translation id="7039326228527141150">Auf USB-Geräte von <ph name="VENDOR_NAME" /> zugreifen</translation>
 <translation id="7039912931802252762">Microsoft-Smartcard-Anmeldung</translation>
@@ -7782,6 +7800,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7181117767881540376">&amp;Lesezeichenleiste ausblenden</translation>
 <translation id="7182063559013288142">Instant-Hotspot</translation>
+<translation id="718240920439497409">MIDI-Geräte dürfen nicht verwendet werden</translation>
 <translation id="7182791023900310535">Passwort verschieben</translation>
 <translation id="718427252411067142">Wenn du verhindern möchtest, dass andere Personen dein Passwort verwenden, öffne die App und ändere es</translation>
 <translation id="7186088072322679094">In Symbolleiste behalten</translation>
@@ -7871,6 +7890,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7255002516883565667">Derzeit kann eine deiner Karten nur auf diesem Gerät verwendet werden</translation>
 <translation id="7255935316994522020">Übernehmen</translation>
 <translation id="7256069762010468647">Die Website verwendet deine Kamera</translation>
+<translation id="7256265230922801769"><ph name="HOST" /> darf meine MIDI-Geräte immer steuern und neu programmieren.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
 <translation id="7256710573727326513">In Tab öffnen</translation>
 <translation id="7257173066616499747">WLANs</translation>
@@ -8902,6 +8922,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8041267120753677077">Smartphone-Apps streamen</translation>
 <translation id="8042142357103597104">Texttransparenz</translation>
 <translation id="8042331986490021244">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden</translation>
+<translation id="8044090981104134791">MIDI-Geräte dürfen verwendet werden</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> reagiert nicht.</translation>
 <translation id="8044899503464538266">Langsam</translation>
 <translation id="8045253504249021590">Die Synchronisierung wurde über das Google Dashboard gestoppt.</translation>
@@ -9095,6 +9116,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Intensität</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> deaktivieren</translation>
+<translation id="8197151971904389091"><ph name="HOST" /> darf meine MIDI-Geräte immer verwenden.</translation>
 <translation id="8197673340773315084">Name oder Label wie „Arbeit“ oder „Privat“ hinzufügen</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
 <translation id="8198457270656084773">Suchst du die Seite mit dem Geräteprotokoll des Systems? Gehe zu <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9378,6 +9400,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8414396119627470038">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> in <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8414685983518053656">Notizen</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (Case)</translation>
+<translation id="8417065541337558100">Vorschau deiner Kamera</translation>
 <translation id="8417548266957501132">Elternpasswort</translation>
 <translation id="8418445294933751433">Al&amp;s Tab anzeigen</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> hinzufügen</translation>
@@ -9872,6 +9895,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8811862054141704416">Crostini-Mikrofonzugriff</translation>
 <translation id="8811923271770626905">Diese Erweiterung kann im Hintergrund ausgeführt werden</translation>
 <translation id="8812593354822910461">Auch Browserdaten (<ph name="URL" />) löschen, wodurch du von <ph name="DOMAIN" /> abgemeldet wirst. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI-Geräte dürfen nicht gesteuert und neu programmiert werden</translation>
 <translation id="8813698869395535039">Anmeldung unter <ph name="USERNAME" /> nicht möglich</translation>
 <translation id="8813872945700551674">Eltern um Genehmigung von „<ph name="EXTENSION_NAME" />“ bitten</translation>
 <translation id="8813937837706331325">Mittlere Einsparungen</translation>

@@ -61,6 +61,7 @@
 <translation id="1279024913354609713">Бүү зөвшөөр</translation>
 <translation id="1281818060020671000">Өгөгдөл удирдах</translation>
 <translation id="1282311502488501110">Бүү нэвтэр</translation>
+<translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
 <translation id="1283524564873030414">Сүүлийн 24 цаг</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
 <translation id="1291506870746876680">Таныг энэ сайтаас гарах үед <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />-н зөвшөөрлийг унтраасан болгож шинэчилнэ.</translation>
@@ -174,6 +175,7 @@
 <translation id="1883255238294161206">Нуух жагсаалт</translation>
 <translation id="1889872080060107187">Та <ph name="URL" />-д нэвтэрнэ</translation>
 <translation id="1890237935065108104">Энэ тохиргоо боломжгүй байна.</translation>
+<translation id="1891199774460536658">Бүх илэрсэн илгээмжийг автоматаар хянах</translation>
 <translation id="1894023287452300670">Эндээс үнэ хянаарай</translation>
 <translation id="189531189292803889">Таны iPad-г саяхан сэргээсэн бөгөөд энэ нь таны өгөгдмөл хөтчийг өөрчилсөн байж магадгүй.</translation>
 <translation id="1910975740091000991">iOS-т зориулсан Chrome</translation>
@@ -653,6 +655,7 @@
 <translation id="4493604894403585654">Та <ph name="USER_EMAIL" />-р нэвтэрсэн байна. Та тохиргоонд хүссэн үедээ синк хийхийг зогсоох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="4502566650163919158">Одоо шалгах</translation>
 <translation id="4508750114462689118">Нэвтрэх сурталчилгааг хаах</translation>
+<translation id="4509449376545878717">Илгээмжүүдийг хэзээ ч бүү автоматаар илрүүл</translation>
 <translation id="4514889972748124117">Хүчтэй нууц үг санал болгох...</translation>
 <translation id="4520798012560649652">Нууцлалын горимын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} хавчуурга}other{{count} хавчуурга}}</translation>
@@ -925,6 +928,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5955891643922670672">Офлайн хувилбарыг харж байна</translation>
 <translation id="5957613098218939406">Бусад сонголт</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />-р хайх</translation>
+<translation id="5962718611393537961">Буулгахын тулд товших</translation>
 <translation id="5963939892571022323">Тодруулсан текстийн холбоосыг үүсгэх боломжгүй.</translation>
 <translation id="5965679971710331625">Та нэвтэрсэн байна</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 хавчуургыг устгасан}other{{count} хавчуургыг устгасан}}</translation>
@@ -1107,7 +1111,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6753469262000681876">Түгжих горим</translation>
 <translation id="6760509555861141183">Сүүлийн таб руу буцах</translation>
 <translation id="6762812039470893796">Бүх сонголтыг цуцлах</translation>
-<translation id="6771287014037609247">Илэрсэн илгээмжүүдийг үргэлж хянах</translation>
 <translation id="6780034285637185932">Зип код</translation>
 <translation id="6781260999953472352">Синк хийхийг асаах уу?</translation>
 <translation id="6781405765516175232">Маршрутын сонголтыг харах бол “Чиглэл авах”-ыг товшино уу.</translation>
@@ -1212,6 +1215,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7402602673739047753">{count,plural, =1{1 хавчуургыг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}other{{count} хавчуургыг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="7409985198648820906">Уншаагүй <ph name="UNREAD_COUNT" /> нийтлэл.</translation>
 <translation id="7412027924265291969">Үргэлжлүүлэх</translation>
+<translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
 <translation id="7425346204213733349">Таны хавчуурга, түүх, нууц үг, бусад тохиргоонд хийсэн өөрчлөлтийг цаашид таны Google Бүртгэлд синк хийхгүй. Харин таны одоо байгаа өгөгдлийг Google бүртгэлд хадгалах болно.</translation>
 <translation id="7431991332293347422">Таны хайлтын түүх Хайлт болон бусад зүйлийг хувийн болгоход хэрхэн ашигладгийг хянах</translation>
 <translation id="7435356471928173109">Танай администратор идэвхгүй болгосон</translation>
@@ -1336,6 +1340,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8023878949384262191">Хэсгийг өргөтгөдөг.</translation>
 <translation id="8027581147000338959">Шинэ цонхонд нээх</translation>
 <translation id="8032569120109842252">Дагаж буй</translation>
+<translation id="8040207962129315716">Надаас тухай бүрд асуух</translation>
 <translation id="804225253087497565">Таныг нэвтэрсэн үед <ph name="BEGIN_LINK" />хайлтын түүх<ph name="END_LINK" /> болон <ph name="BEGIN_LINK" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.</translation>
 <translation id="804427445359061970">Та бусад төхөөрөмжийн табаа эндээс олох болно</translation>
 <translation id="8044568254381073661">Шифрлэлтгүйгээр хадгалах</translation>

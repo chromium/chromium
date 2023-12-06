@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Определя честотата на актуализиране на екрана</translation>
 <translation id="1060570945511946595">Управление на пропуските</translation>
 <translation id="1061130374843955397">Добре дошли във вашия <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">Контролирането и препрограмирането на MIDI устройствата ви да са забранени винаги за <ph name="HOST" />.</translation>
 <translation id="1061373870045429865">Създаване на QR код за тази връзка</translation>
 <translation id="1061904396131502319">Скоро ще е време за почивка</translation>
 <translation id="10619348099955377">Копиране на екранното име</translation>
@@ -277,6 +278,7 @@
 <translation id="1203559206734265703">Отстраняването на грешки за Protected Audience API е активирано.</translation>
 <translation id="120368089816228251">Нота</translation>
 <translation id="1203942045716040624">Споделен изпълнител: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Кодът за сигурност се намира на гърба на картата ви</translation>
 <translation id="1210678701920254279">Преглед или добавяне на принтери и проверка на активните задания за отпечатване</translation>
 <translation id="1211769675100312947">Преките пътища са подбрани от вас</translation>
 <translation id="1213254615020057352">Изпращане на данни за употребата и диагностиката. Помогнете за подобряването на работата на детето ви с Android, като автоматично изпращате до Google диагностична информация и данни за употребата на устройството и приложенията. Тази информация няма да се използва за идентифициране на детето ви, а ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Тази настройка е наложена от собственика. Той може да избере до Google да се изпращат диагностична информация и данни за употребата на това устройство. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за детето ви, тези данни може да се запазват в профила му в Google.</translation>
@@ -300,6 +302,7 @@
 <translation id="1223484782328004593">Изисква се лиценз за <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Администраторът ви препоръчва конкретна стойност за тази настройка.</translation>
 <translation id="1225177025209879837">Заявката се обработва...</translation>
+<translation id="1227107020813934021">Намиране на скенери за документи</translation>
 <translation id="1227660082540388410">Редактиране на кода за достъп</translation>
 <translation id="1227993798763400520">Предаването не бе успешно. Моля, опитайте отново.</translation>
 <translation id="1230417814058465809">Режимът за стандартна защита е включен. За още по-голяма сигурност използвайте подобрената защита.</translation>
@@ -449,6 +452,7 @@
 <translation id="1347625331607114917">Потвърдете кода на телефона си с Android</translation>
 <translation id="1347975661240122359">Актуализацията ще започне, когато нивото на батерията достигне <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Настройки за достъпност за мишката</translation>
+<translation id="1350962700620017446"><ph name="EXTENSION_NAME" /> иска да намери и осъществи достъп до скенери на документи.</translation>
 <translation id="1352834119074414157">Този пакет може да е повреден или компрометиран. Моля, затворете този прозорец и го изтеглете отново</translation>
 <translation id="1353275871123211385">За да използвате родителските контроли, като например одобрението на приложения и ограниченията за време на ползване, детето ви трябва да има профил в Google, който се управлява от родител. По-късно може да бъде добавен училищен профил за достъп до инструменти като Google Classroom.</translation>
 <translation id="135389172849514421">Работи офлайн</translation>
@@ -624,6 +628,7 @@
 <translation id="1485015260175968628">То вече има възможност за:</translation>
 <translation id="1485141095922496924">Версия <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 изисква файловете да се съхраняват в OneDrive. Локалните файлове ще бъдат преместени, а файловете от други местоположения – копирани. Можете да намерите файловете си в папката на Microsoft OneDrive в приложението „Файлове“.</translation>
+<translation id="1486012259353794050">Когато задавате въпроси, Google Асистент ви предоставя персонализирани отговори въз основа на съдържанието на екрана</translation>
 <translation id="1486096554574027028">Търсене в паролите</translation>
 <translation id="1486486872607808064">Сканирайте този QR код с камерата на устройството, на което искате да създадете ключ за достъп за <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Включено – персонализирани настройки</translation>
@@ -687,6 +692,7 @@
 <translation id="1541346352678737112">Няма намерена мрежа</translation>
 <translation id="154198613844929213">{0,plural, =0{Изтрива се сега.}=1{Изтрива се след 1 секунда}other{Изтрива се след # секунди}}</translation>
 <translation id="1542137295869176367">Данните ви за вход не бяха актуализирани</translation>
+<translation id="1542524755306892917">Това дава възможност на Google Асистент да предоставя персонализирани отговори, когато <ph name="SUPERVISED_USER_NAME" /> задава въпроси.</translation>
 <translation id="1543284117603151572">Импортирани от Edge</translation>
 <translation id="1543538514740974167">Стигайте дотук по-бързо</translation>
 <translation id="1544588554445317666">Запазете файла с по-кратко име или в друга папка</translation>
@@ -913,6 +919,7 @@
 <translation id="1697150536837697295">Изкуство</translation>
 <translation id="1697686431566694143">Редактиране на файла</translation>
 <translation id="1698796500103229697">&amp;Начини на плащане</translation>
+<translation id="1699807488537653303">Отстраняване на грешка с паролата</translation>
 <translation id="1700201317341192482">Премахване на виртуалната ви карта</translation>
 <translation id="1700517974991662022">Посетено</translation>
 <translation id="1703331064825191675">Никога повече не се тревожете за паролите си</translation>
@@ -1909,6 +1916,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2439152382014731627">Задаване на нова парола за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Зарежда се <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">&amp;Преглед на изходния код</translation>
+<translation id="2440632898584211188">Контролирането и препрограмирането на MIDI устройствата ви да продължат да са разрешени за този сайт.</translation>
 <translation id="2440823041667407902">Достъп до местоположението</translation>
 <translation id="2441719842399509963">Да, нека се възстановят</translation>
 <translation id="244231003699905658">Невалиден адрес. Моля, проверете адреса и опитайте отново.</translation>
@@ -2149,6 +2157,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="262154978979441594">Обучаване на гласовия модел на Google Асистент</translation>
 <translation id="26224892172169984">Забраняване на сайтовете да обработват протоколи</translation>
 <translation id="262373406453641243">Коулмак</translation>
+<translation id="2624045385113367716">Контролирането и препрограмирането на MIDI устройствата са разрешени</translation>
 <translation id="2624142942574147739">Тази страница осъществява достъп до камерата и микрофона ви.</translation>
 <translation id="2626799779920242286">Моля, опитайте отново по-късно.</translation>
 <translation id="2627424346328942291">Споделянето не е възможно</translation>
@@ -2362,6 +2371,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2777251078198759550">Изтриване на този контейнер</translation>
 <translation id="2777525873368474674">Поставете връзка към изображение</translation>
 <translation id="2778471504622896352">Добавяйте отдалечени приложения към стартовия панел на ChromeOS</translation>
+<translation id="2779728796406650689">Това дава възможност на Google Асистент да ви предоставя персонализирани отговори, когато задавате въпроси.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Разширенията са разрешени на този сайт</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
@@ -2439,6 +2449,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2836269494620652131">Срив</translation>
 <translation id="283669119850230892">За да използвате мрежата <ph name="NETWORK_ID" />, първо завършете свързването си с интернет по-долу.</translation>
 <translation id="2838379631617906747">Инсталира се</translation>
+<translation id="2838474726369447181">Този сайт може да контролира и препрограмира MIDI устройствата ви (SysEx).</translation>
 <translation id="2839032553903800133">Известията са блокирани</translation>
 <translation id="2841013758207633010">Време</translation>
 <translation id="2841837950101800123">Доставчик</translation>
@@ -2462,6 +2473,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
 <translation id="2856907950922663165">Да се изключи ли шифроването на URL адресите?</translation>
 <translation id="2859741939921354763">Импортиране на пароли в <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">Управлението и препрограмирането на MIDI устройствата ви да продължат да са забранени за този сайт.</translation>
 <translation id="2861301611394761800">Системната актуализация е завършена. Моля, рестартирайте системата.</translation>
 <translation id="2861402191395139055">Абонаменти за Passpoint</translation>
 <translation id="2861941300086904918">Диспечер на сигурността за клиенти с директно изпълнение</translation>
@@ -4884,6 +4896,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4811212958317149293">Автоматично сканиране на клавиатурата при достъп с превключване</translation>
 <translation id="4811503964269049987">Добавяне на избрания раздел към група</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
+<translation id="4813872509679988157">Използването на MIDI устройствата ви да продължи да е разрешено за този сайт.</translation>
 <translation id="4814114628197290459">Изтриване на IBAN</translation>
 <translation id="4814327014588285482">Пропускане и напомняне по-късно</translation>
 <translation id="4814378367953456825">Въведете име за този отпечатък</translation>
@@ -5196,6 +5209,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5063480226653192405">Употреба</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управление на опциите за сигурен DNS в настройките на Chrome OS</translation>
+<translation id="5066891009360243320">Използването на MIDI устройствата ви е забранено за този сайт.</translation>
 <translation id="5067399438976153555">Винаги включено</translation>
 <translation id="5067867186035333991">Да се получава запитване, ако <ph name="HOST" /> иска достъп до микрофона ви</translation>
 <translation id="5068553687099139861">показване на паролите</translation>
@@ -5914,6 +5928,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5641608986289282154">Първи стъпки с <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Редактор на екранни снимки</translation>
 <translation id="5642508497713047">Подписващ CRL</translation>
+<translation id="5643191124441701136">Кодът за сигурност се намира на лицевата страна на картата ви</translation>
 <translation id="5643321261065707929">Мрежа с отчитане</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
@@ -6190,7 +6205,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5869522115854928033">Запазени пароли</translation>
 <translation id="5870086504539785141">Затваряне на менюто за достъпност</translation>
 <translation id="5870155679953074650">Съществени грешки</translation>
-<translation id="5872318519182427835">Засяга посочените тук сайтове и поддомейните им. Например добавянето на google.com означава, че „бисквитките“ на трети страни могат да са активни и за mail.google.com, тъй като е част от google.com.</translation>
+<translation id="5870901441418842049">Контролирането и препрограмирането на MIDI устройствата ви (SysEx) са забранени за този сайт.</translation>
 <translation id="5875534259258494936">Споделянето на екрана приключи</translation>
 <translation id="5876576639916258720">Изпълнява се...</translation>
 <translation id="5876851302954717356">Нов раздел отдясно</translation>
@@ -6569,6 +6584,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6171779718418683144">Извеждане на запитване при всяко посещение</translation>
 <translation id="617213288191670920">Няма добавени езици</translation>
 <translation id="6173623053897475761">Въведете отново ПИН кода си</translation>
+<translation id="6174116123142608180">Използването на MIDI устройствата да продължи да е забранено за този сайт.</translation>
 <translation id="6175314957787328458">GUID на домейн от Microsoft</translation>
 <translation id="6175910054050815932">Получаване на връзка</translation>
 <translation id="6176701216248282552">Контекстуалната помощ е включена. Съответните функции могат да изпращат отворени страници до Google.</translation>
@@ -7084,6 +7100,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6597324406048772521">Разширенията не са разрешени в този сайт</translation>
 <translation id="6597331566371766302">Разширенията по-долу са блокирани от администратора ви:</translation>
 <translation id="659894938503552850">най-нови</translation>
+<translation id="6599934330666882772">Този сайт използва MIDI устройствата ви.</translation>
 <translation id="6601262427770154296">Управление на потребителските речници</translation>
 <translation id="6601612474695404578">Някои сайтове използват „бисквитки“ на трети страни, за да зареждат страниците си. Ако даден сайт не работи, можете да опитате да разрешите „бисквитките“.</translation>
 <translation id="6602173570135186741">Автоматично попълване и пароли</translation>
@@ -7648,6 +7665,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7036706669646341689">За Linux е препоръчително да разполагате с поне <ph name="DISK_SIZE" /> свободно място. За да увеличите свободното място, изтрийте файлове от устройството.</translation>
 <translation id="7037509989619051237">Текст за прослушване</translation>
 <translation id="7038632520572155338">Достъп с превключване</translation>
+<translation id="7038636380708661517">Използването на MIDI устройствата ви да е забранено винаги за <ph name="HOST" />.</translation>
 <translation id="7038710352229712897">Добавяне на друг профил в Google за <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Достъп до USB устройства от <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Влизане със смарт карта от Microsoft</translation>
@@ -7802,6 +7820,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7180865173735832675">Персонализиране</translation>
 <translation id="7181117767881540376">&amp;Скриване на лентата на отметките</translation>
 <translation id="7182063559013288142">Мигновена точка за достъп</translation>
+<translation id="718240920439497409">Достъпът до MIDI устройствата е забранен</translation>
 <translation id="7182791023900310535">Преместване на паролата ви</translation>
 <translation id="718427252411067142">За да не използват други хора паролата ви, отворете приложението, за да я промените</translation>
 <translation id="7186088072322679094">Запазване в лентата с инструменти</translation>
@@ -7891,6 +7910,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7255002516883565667">В момента имате една карта, която може да се използва само на това устройство</translation>
 <translation id="7255935316994522020">Прилагане</translation>
 <translation id="7256069762010468647">Сайтът използва камерата ви</translation>
+<translation id="7256265230922801769">Разрешаване на <ph name="HOST" /> винаги да контролира и препрограмира MIDI устройствата ви.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7256710573727326513">Отваряне в раздел</translation>
 <translation id="7257173066616499747">Wi-Fi мрежи</translation>
@@ -8922,6 +8942,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8041267120753677077">Предавайте поточно приложенията на телефона си</translation>
 <translation id="8042142357103597104">Плътност на текста</translation>
 <translation id="8042331986490021244">Паролите ви се шифроват на устройството ви, преди да бъдат запазени в мениджъра на паролите в Google</translation>
+<translation id="8044090981104134791">Достъпът до MIDI устройствата е разрешен</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагира.</translation>
 <translation id="8044899503464538266">Бавно</translation>
 <translation id="8045253504249021590">Синхронизирането е спряно чрез Google Табло за управление.</translation>
@@ -9115,6 +9136,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Наситеност</translation>
 <translation id="8195854162863398249">Деактивиране на „<ph name="FEATURE_NAME" />“</translation>
+<translation id="8197151971904389091">Разрешаване на <ph name="HOST" /> винаги да използва MIDI устройствата ви.</translation>
 <translation id="8197673340773315084">Добавете име или етикет, като например „Служебен“ или „Личен“</translation>
 <translation id="8198456017687137612">Разделът се предава</translation>
 <translation id="8198457270656084773">Търсите страницата със системния регистрационен файл на устройството? Посетете <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9398,6 +9420,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8414396119627470038">Вход в(ъв) <ph name="SITE_ETLD_PLUS_ONE" /> с(ъс) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Бележки</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
+<translation id="8417065541337558100">Визуализация на камерата ви</translation>
 <translation id="8417548266957501132">Парола на родител</translation>
 <translation id="8418445294933751433">&amp;Показване като раздел</translation>
 <translation id="8418675848396538775">Добавяне на <ph name="LANGUAGE_NAME" /></translation>
@@ -9892,6 +9915,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8811862054141704416">Достъп на Crostini до микрофона</translation>
 <translation id="8811923271770626905">Това разширение може да се изпълнява на заден план</translation>
 <translation id="8812593354822910461">Също така изчистване на данните за сърфирането (<ph name="URL" />), при което ще бъде прекратена сесията ви в(ъв) <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">Контролирането и препрограмирането на MIDI устройствата са забранени</translation>
 <translation id="8813698869395535039">Не мога да вляза в профила <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Помолете някой от родителите си да одобри „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="8813937837706331325">Средна икономия</translation>

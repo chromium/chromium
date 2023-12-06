@@ -659,6 +659,7 @@
 <translation id="36813544980941320">‏تلفنتان و <ph name="DEVICE_NAME" /> باهم از شبکه‌های Wi-Fi استفاده خواهند کرد</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> سپس <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">وب‌سایت‌ها</translation>
+<translation id="3697991387880191195">میان‌بر نماگرفت را فشار دهید</translation>
 <translation id="3702809606464356667">درحال نمایش پنجره‌های میزکار کنونی، برای نمایش پنجره‌های همه میزکارها، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="3702846122927433391">‏Population in Nigeria (جمعیت نیجریه)</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ضبط ویدیویی از صفحه ذخیره نشد</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> متصل و آماده استفاده است. می‌توانید موشواره‌تان را در «تنظیمات» سفارشی‌سازی کنید.</translation>
 <translation id="4405151984121254935">دستگاه جانبی متصل پشتیبانی نمی‌شود</translation>
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">بارگیری مجدد صفحه فعلی</translation>
 <translation id="6200515304866777730">در این برنامه پشتیبانی نمی‌شود</translation>
 <translation id="6210042900243040400">به <ph name="NAME" /> که قبلاً در <ph name="EMAIL" /> ذخیره شده متصل شوید</translation>
+<translation id="6212097153736801627">سفارشی‌سازی <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">ثبت نماگرفت یا ضبط بخشی از صفحه</translation>
 <translation id="6220928844947387476">اکنون می‌توانید هم‌زمان هم از خودتان و هم از صفحه‌نمایش فیلم‌برداری کنید</translation>
 <translation id="622484624075952240">پیکان پایین</translation>
@@ -1534,6 +1537,7 @@
 <translation id="726276584504105859">برای استفاده از تقسیم صفحه، به اینجا بکشید</translation>
 <translation id="7262906531272962081">ایجاد یادآوری</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + پس‌بر</translation>
+<translation id="7285232777292757180">برای ثبت نماگرفت، از ابزار ضبط صفحه‌نمایش در تنظیمات فوری استفاده کنید</translation>
 <translation id="7302889331339392448">«زیرنویس ناشنوایان زنده» خاموش است.</translation>
 <translation id="7303365578352795231">درحال پاسخ دادن در دستگاه دیگر.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1916,6 +1920,7 @@
 <translation id="888982883502837004">به‌روزرسانی‌های سفت‌افزار برای دستگاهتان دردسترس است. برای مرور و به‌روزرسانی، کلیک کنید.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> برای همیشه حذف می‌شود</translation>
 <translation id="889790758758811533">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />). دستگاه را به برق وصل کنید.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> متصل و آماده استفاده است. می‌توانید رایانه لوحی ویژه طراحی‌تان را در «تنظیمات» سفارشی‌سازی کنید.</translation>
 <translation id="88986195241502842">صفحه پایین</translation>
 <translation id="8905919797434099235">(بدون عنوان)</translation>
 <translation id="890616557918890486">تغییر منبع</translation>

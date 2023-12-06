@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Дэлгэцийг шинэчлэх давтамжийг тодорхойлно</translation>
 <translation id="1060570945511946595">Тасалбаруудыг удирдах</translation>
 <translation id="1061130374843955397">Өөрийн <ph name="DEVICE_TYPE" />-д тавтай морилно уу</translation>
+<translation id="1061309251982613260"><ph name="HOST" />-г таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг үргэлж блоклоно уу.</translation>
 <translation id="1061373870045429865">Энэ холбоосонд QR код үүсгэх</translation>
 <translation id="1061904396131502319">Завсарлах цаг ойртож байна</translation>
 <translation id="10619348099955377">Дэлгэцийн нэрийг хуулах</translation>
@@ -277,6 +278,7 @@
 <translation id="1203559206734265703">Үзэгчдийн хамгаалагдсан дебагийг идэвхжүүлсэн.</translation>
 <translation id="120368089816228251">Хөгжмийн нот</translation>
 <translation id="1203942045716040624">Дундын ажилтан: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Таны аюулгүй байдлын код картын тань ард байна</translation>
 <translation id="1210678701920254279">Хэвлэгчдийг харах эсвэл нэмэх болон хэвлэлийн идэвхтэй ажлуудыг харах</translation>
 <translation id="1211769675100312947">Товчлолыг та сонгосон болно</translation>
 <translation id="1213254615020057352">Ашиглалт болон оношилгооны өгөгдлийг илгээнэ үү. Оношилгоо, төхөөрөмж болон аппын ашиглалтын өгөгдлийг Google-д автоматаар илгээж, хүүхдийнхээ Android-н хэрэглээг сайжруулахад тусална уу. Үүнийг таны хүүхдийг тодорхойлоход ашиглахгүй бөгөөд энэ нь систем, аппын тогтвортой байдал болон бусад зүйлийг сайжруулахад тусална. Хуримтлуулсан зарим өгөгдөл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд мөн тусална. Энэ тохиргоог эзэмшигчийн зүгээс хэрэгжүүлнэ. Энэ төхөөрөмжийн оношилгоо болон ашиглалтын өгөгдлийг Google-д илгээх эсэхийг эзэмшигч өөрөө сонгож болно. Хэрэв таны хүүхдийн Веб, аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг түүний Google Бүртгэлд хадгалж болзошгүй.</translation>
@@ -300,6 +302,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> лиценз шаарддаг</translation>
 <translation id="1223853788495130632">Таны администратор-аас энэ тохиргоо хийх тодорхой утгыг санал болгож байна.</translation>
 <translation id="1225177025209879837">Хүсэлтийг боловсруулж байна...</translation>
+<translation id="1227107020813934021">Баримт бичгийн сканнеруудыг олох</translation>
 <translation id="1227660082540388410">Passkey-г засах</translation>
 <translation id="1227993798763400520">Дамжуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="1230417814058465809">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
@@ -449,6 +452,7 @@
 <translation id="1347625331607114917">Кодыг Android утсаараа баталгаажуулна уу</translation>
 <translation id="1347975661240122359">Батерейны түвшин <ph name="BATTERY_LEVEL" />% болох үед шинэчлэлтийг эхлүүлнэ.</translation>
 <translation id="1348966090521113558">Хулганын хандалтын тохиргоо</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" баримт бичгийн сканнеруудыг олж, үүнд хандахыг хүсэж байна.</translation>
 <translation id="1352834119074414157">Энэ багц гэмтсэн эсвэл алдагдсан байж магадгүй. Энэ цонхыг хаагаад, үүнийг дахин татна уу</translation>
 <translation id="1353275871123211385">Аппын зөвшөөрөл болон дэлгэцийн цагийн хязгаар зэрэг эцэг эхийн хяналтыг ашиглахын тулд хүүхэд эцэг эхийн удирддаг Google Бүртгэлтэй байх ёстой. Google Анги зэрэг хэрэгсэлд зориулж сургуулийн бүртгэлийг дараа нь нэмэх боломжтой.</translation>
 <translation id="135389172849514421">Офлайн үед ажиллана</translation>
@@ -624,6 +628,7 @@
 <translation id="1485015260175968628">Энэ одоо болно:</translation>
 <translation id="1485141095922496924"><ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> хувилбар</translation>
 <translation id="1485197926103629489">Microsoft 365 нь файлуудыг OneDrive-т хадгалахыг шаарддаг. Дотоод файлуудыг зөөх бөгөөд бусад байршлын файлуудыг хуулна. Таны файлуудыг Файлс аппын Microsoft OneDrive-н фолдероос олох боломжтой.</translation>
+<translation id="1486012259353794050">Таныг асуултууд асуух үед Google Туслах дэлгэцэд тань тулгуурлан тохируулсан хариултаар хангадаг</translation>
 <translation id="1486096554574027028">Нууц үгийг хайх</translation>
 <translation id="1486486872607808064">Та <ph name="APP_NAME" />-д passkey үүсгэхийг хүсэж буй төхөөрөмжийнхөө камераар энэ QR кодыг скан хийнэ үү</translation>
 <translation id="1487335504823219454">Асаалттай - өөрчлөх тохиргоо</translation>
@@ -687,6 +692,7 @@
 <translation id="1541346352678737112">Сүлжээ олдсонгүй</translation>
 <translation id="154198613844929213">{0,plural, =0{Одоо устгаж байна.}=1{Дараах хугацааны дараа устгана: 1 секунд}other{Дараах хугацааны дараа устгана: # секунд}}</translation>
 <translation id="1542137295869176367">Таны нэвтрэх өгөгдлийг шинэчилж чадсангүй</translation>
+<translation id="1542524755306892917">Энэ нь Google Туслахад <ph name="SUPERVISED_USER_NAME" />-г асуултууд асуух үед тохирсон хариултаар хангах боломжийг олгодог.</translation>
 <translation id="1543284117603151572">Edge-с импортлосон</translation>
 <translation id="1543538514740974167">Энд хурдан очих</translation>
 <translation id="1544588554445317666">Файлын богино нэр ашиглах эсвэл өөр фолдерт хадгалж үзнэ үү</translation>
@@ -912,6 +918,7 @@
 <translation id="1697150536837697295">Урлаг</translation>
 <translation id="1697686431566694143">Файлыг засах</translation>
 <translation id="1698796500103229697">&amp;Төлбөрийн хэрэгслүүд</translation>
+<translation id="1699807488537653303">Нууц үгний алдааг засах</translation>
 <translation id="1700201317341192482">Виртуал картаа хасах</translation>
 <translation id="1700517974991662022">Зочилсон</translation>
 <translation id="1703331064825191675">Нууц үгэндээ хэзээ ч бүү санаа зов</translation>
@@ -1909,6 +1916,7 @@
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-н нууц үгийг шинэчлэх</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />-г ачаалж байна</translation>
 <translation id="2440604414813129000">Эх үүсвэрийг харуул</translation>
+<translation id="2440632898584211188">Энэ сайтыг таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг үргэлжлүүлэн зөвшөөрнө үү.</translation>
 <translation id="2440823041667407902">Байршилд нэвтрэх</translation>
 <translation id="2441719842399509963">Өгөгдмөл рүү шинэчлэх</translation>
 <translation id="244231003699905658">Хаяг буруу байна. Хаягийг шалгаад дахин оролдоно уу.</translation>
@@ -2149,6 +2157,7 @@
 <translation id="262154978979441594">Google Туслахын дуу хоолойн загварыг сургах</translation>
 <translation id="26224892172169984">Ямар ч сайтад мэдээлэл дамжуулахыг бүү зөвшөөр</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг зөвшөөрсөн</translation>
 <translation id="2624142942574147739">Энэ хуудас нь таны камер болон микрофон руу нэвтэрч байна.</translation>
 <translation id="2626799779920242286">Та дараа дахин оролдоно уу.</translation>
 <translation id="2627424346328942291">Хуваалцах боломжгүй</translation>
@@ -2362,6 +2371,7 @@
 <translation id="2777251078198759550">Энэ контейнерыг устгах</translation>
 <translation id="2777525873368474674">Зургийн холбоосыг буулгах</translation>
 <translation id="2778471504622896352">ChromeOS эхлүүлэгч рүү алсын удирдлагын аппуудыг нэмнэ үү</translation>
+<translation id="2779728796406650689">Энэ нь Google Туслахад таныг асуулт асуух үед тохирсон хариултаар хангах боломжийг олгодог.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Энэ сайтад өргөтгөлүүдийг зөвшөөрсөн</translation>
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
@@ -2439,6 +2449,7 @@
 <translation id="2836269494620652131">Эвдрэл</translation>
 <translation id="283669119850230892">Сүлжээг ашиглахын тулд <ph name="NETWORK_ID" /> эхлээд доорх Интернэтийн холболтыг дуусгана уу.</translation>
 <translation id="2838379631617906747">Суулгаж байна</translation>
+<translation id="2838474726369447181">Энэ сайт таны MIDI төхөөрөмжүүдийг (SysEx) хянаж, дахин программчлах боломжтой.</translation>
 <translation id="2839032553903800133">Мэдэгдлийг хориглосон</translation>
 <translation id="2841013758207633010">Цаг</translation>
 <translation id="2841837950101800123">Үйлчилгээ олгогч</translation>
@@ -2462,6 +2473,7 @@
 <translation id="2856776373509145513">Шинэ контейнер үүсгэх</translation>
 <translation id="2856907950922663165">URL-н шифрлэлтийг унтраах уу?</translation>
 <translation id="2859741939921354763">Нууц үгнүүдийг <ph name="BRAND" /> руу импорт хийх</translation>
+<translation id="2861030231482411439">Энэ сайтыг таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг үргэлжлүүлэн блоклоно уу.</translation>
 <translation id="2861301611394761800">Системийн шинэчлэлт дууслаа. Системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2861402191395139055">Passpoint-н захиалга</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
@@ -4882,6 +4894,7 @@
 <translation id="4811212958317149293">Сэлгүүрийн гарын автомат скан</translation>
 <translation id="4811503964269049987">Сонгосон табыг бүлэгт нэмэх</translation>
 <translation id="4813512666221746211">Сүлжээний алдаа</translation>
+<translation id="4813872509679988157">Энэ сайтад MIDI төхөөрөмжүүдийг ашиглахыг үргэлжлүүлэн зөвшөөрнө үү.</translation>
 <translation id="4814114628197290459">Олон улсын банк акаунтны дугаарыг устгах</translation>
 <translation id="4814327014588285482">Алгасаад, надад дараа сануул</translation>
 <translation id="4814378367953456825">Энэ хурууны хээний нэрийг оруулна уу</translation>
@@ -5194,6 +5207,7 @@
 <translation id="5063480226653192405">Ашиглалт</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS-н тохиргоо хэсэгт Аюулгүй DNS-г удирдана уу</translation>
+<translation id="5066891009360243320">Энэ сайтыг таны MIDI төхөөрөмжүүдийг ашиглахыг блоклосон.</translation>
 <translation id="5067399438976153555">Үргэлж асаалттай</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> таны микрофонд хандахыг хүсвэл асуу</translation>
 <translation id="5068553687099139861">нууц үг харуулах</translation>
@@ -5912,6 +5926,7 @@
 <translation id="5641608986289282154"><ph name="DEVICE_OS" />-г ашиглаж эхлэх</translation>
 <translation id="5641648607875312660">Дэлгэцийн агшин зургийг засварлагч</translation>
 <translation id="5642508497713047">CRL гарын үсэг зурагч</translation>
+<translation id="5643191124441701136">Таны аюулгүй байдлын код картын тань урд талд байна</translation>
 <translation id="5643321261065707929">Хязгаартай сүлжээ</translation>
 <translation id="5646376287012673985">Байршил</translation>
 <translation id="5646558797914161501">Ажил хэрэгч хүн</translation>
@@ -6188,7 +6203,7 @@
 <translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
 <translation id="5870086504539785141">Нэвтрэх боломжтой цэсийг хаах</translation>
 <translation id="5870155679953074650">Hard Faults</translation>
-<translation id="5872318519182427835">Энд жагсаасан сайтууд болон тэдгээрийн дэд домэйнд нөлөөлнө. Жишээлбэл, “google.com”-г нэмэх нь мөн гуравдагч талын күүкинүүдийг mail.google.com-д идэвхжүүлэх боломжтой гэсэн үг юм. Учир нь энэ нь google.com-н нэг хэсэг юм.</translation>
+<translation id="5870901441418842049">Энэ сайтыг таны MIDI төхөөрөмжүүдийг (SysEx) хянаж, дахин программчлахыг блоклосон.</translation>
 <translation id="5875534259258494936">Дэлгэц хуваалцахыг зогсоосон</translation>
 <translation id="5876576639916258720">Ажиллуулж байна...</translation>
 <translation id="5876851302954717356">Шинэ табыг баруун тийш нь</translation>
@@ -6566,6 +6581,7 @@
 <translation id="6171779718418683144">Зочлох бүрд асуух</translation>
 <translation id="617213288191670920">Нэмсэн хэл байхгүй</translation>
 <translation id="6173623053897475761">ПИН-ээ дахин бичих</translation>
+<translation id="6174116123142608180">Энэ сайтыг таны MIDI төхөөрөмжүүдийг ашиглахыг үргэлжлүүлэн блоклоно уу.</translation>
 <translation id="6175314957787328458">Microsoft Домэйн GUID</translation>
 <translation id="6175910054050815932">Холбоос авах</translation>
 <translation id="6176701216248282552">Хам сэдэвт тусламж асаалттай байна. Эдгээр онцлог нээлттэй хуудаснуудыг Google-д илгээх боломжтой.</translation>
@@ -7081,6 +7097,7 @@
 <translation id="6597324406048772521">Энэ сайтад өргөтгөлүүдийг зөвшөөрсөн</translation>
 <translation id="6597331566371766302">Дараах өргөтгөлүүдийг танай администратор блоклосон байна:</translation>
 <translation id="659894938503552850">хамгийн шинэ</translation>
+<translation id="6599934330666882772">Энэ сайт таны MIDI төхөөрөмжүүдийг ашиглаж байна.</translation>
 <translation id="6601262427770154296">Хэрэглэгчийн толийг удирдах</translation>
 <translation id="6601612474695404578">Зарим сайт нь хуудсаа ачаалахын тулд гуравдагч талын күүки ашигладаг. Хэрэв сайт ажиллахгүй байвал та күүкиг зөвшөөрч үзэж болно.</translation>
 <translation id="6602173570135186741">Автоматаар бөглөх хэсэг болон нууц үгнүүд</translation>
@@ -7644,6 +7661,7 @@
 <translation id="7036706669646341689">Linux-д <ph name="DISK_SIZE" />-н зайтай байхыг зөвлөж байна. Сул зайг нэмэгдүүлэхийн тулд төхөөрөмжөөсөө файлуудыг устгана уу.</translation>
 <translation id="7037509989619051237">Урьдчилан үзэх текст</translation>
 <translation id="7038632520572155338">Сэлгүүр</translation>
+<translation id="7038636380708661517"><ph name="HOST" />-г таны MIDI төхөөрөмжүүдийг ашиглахыг үргэлж блоклоно уу.</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" />-д өөр Google Бүртгэл нэмнэ үү</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" />-с USB төхөөрөмжинд хандах</translation>
 <translation id="7039912931802252762">Microsoft-Smart Card Logon</translation>
@@ -7798,6 +7816,7 @@
 <translation id="7180865173735832675">Хүссэнээр өөрчлөх</translation>
 <translation id="7181117767881540376">&amp;Хавчуургын хэсгийг нуух</translation>
 <translation id="7182063559013288142">Шуурхай сүлжээний цэг</translation>
+<translation id="718240920439497409">MIDI төхөөрөмжүүдийг блоклосон</translation>
 <translation id="7182791023900310535">Нууц үгээ зөөх</translation>
 <translation id="718427252411067142">Бусад хүнийг таны нууц үгийг ашиглахыг зогсоохын тулд аппыг нээгээд нууц үгээ өөрчилнө үү</translation>
 <translation id="7186088072322679094">Хэрэгслийн мөрд хадгалaх</translation>
@@ -7887,6 +7906,7 @@
 <translation id="7255002516883565667">Танд одоогоор зөвхөн энэ төхөөрөмж дээр ашиглах боломжтой нэг карт байна</translation>
 <translation id="7255935316994522020">Хэрэглэх</translation>
 <translation id="7256069762010468647">Сайт таны камерыг ашиглаж байна</translation>
+<translation id="7256265230922801769"><ph name="HOST" />-д таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг үргэлж зөвшөөрнө үү.</translation>
 <translation id="7256634071279256947">Арын микрофон</translation>
 <translation id="7256710573727326513">Шинэ цонхонд нээх</translation>
 <translation id="7257173066616499747">Wi-Fi сүлжээ</translation>
@@ -8915,6 +8935,7 @@
 <translation id="8041267120753677077">Утасныхаа аппуудыг дамжуулаарай</translation>
 <translation id="8042142357103597104">Текстийн бүдэгрэл</translation>
 <translation id="8042331986490021244">Таны нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг</translation>
+<translation id="8044090981104134791">MIDI төхөөрөмжүүдийг зөвшөөрсөн</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> хариу өгөхгүй байна.</translation>
 <translation id="8044899503464538266">Удаан</translation>
 <translation id="8045253504249021590">Google Хяналтын самбар синкийг зогсоосон байна.</translation>
@@ -9108,6 +9129,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Өнгө ялгалт</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" />-г идэвхгүй болгох</translation>
+<translation id="8197151971904389091"><ph name="HOST" />-д таны MIDI төхөөрөмжүүдийг ашиглахыг үргэлж зөвшөөрнө үү.</translation>
 <translation id="8197673340773315084">Ажил эсвэл Хувийн зэрэг нэр эсвэл шошго нэмнэ үү</translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
 <translation id="8198457270656084773">Системийн төхөөрөмжийн логийн хуудсыг хайж байна уу? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />-д зочилно уу.</translation>
@@ -9391,6 +9413,7 @@
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" />-д <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р нэвтэрнэ үү</translation>
 <translation id="8414685983518053656">Тэмдэглэл</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Гэр)</translation>
+<translation id="8417065541337558100">Таны камерын урьдчилан үзэлт</translation>
 <translation id="8417548266957501132">Эцэг эхийн нууц үг</translation>
 <translation id="8418445294933751433">&amp; Цонх болгож харуул</translation>
 <translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> нэмэх</translation>
@@ -9883,6 +9906,7 @@
 <translation id="8811862054141704416">Crostini-н микрофоны хандалт</translation>
 <translation id="8811923271770626905">Энэ өргөтгөл дэвсгэрт ажиллаж магадгүй</translation>
 <translation id="8812593354822910461">Мөн хайлтын өгөгдлийг (<ph name="URL" />) устгах. Ингэснээр та <ph name="DOMAIN" />-с гарах болно. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг блоклосон</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />-д нэвтрэх боломжгүй байна</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />"-г эцэг эхээрээ зөвшөөрүүлнэ үү</translation>
 <translation id="8813937837706331325">Дунд зэргийн хэмнэлт</translation>

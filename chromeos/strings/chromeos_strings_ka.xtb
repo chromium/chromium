@@ -631,6 +631,7 @@
 <translation id="574392208103952083">საშუალო</translation>
 <translation id="5757187557809630523">შემდეგი ჩანაწერი</translation>
 <translation id="5760715441271661976">პორტალის მდგომარეობა</translation>
+<translation id="5763838252932650682">მიმდინარეობს <ph name="APP_NAME" />-ის გადატვირთვა და განახლება</translation>
 <translation id="576835345334454681">ეკრანის სიკაშკაშის მომატება</translation>
 <translation id="57838592816432529">დადუმება</translation>
 <translation id="5784136236926853061">HTTP რეაგირების დრო დიდია</translation>
@@ -839,6 +840,7 @@
 <translation id="7287310195820267359">ფონების კოლექციები</translation>
 <translation id="7297226631177386107">ქსელის დაცვიდან HTTPS ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="7297726121602187087">მუქი მწვანე</translation>
+<translation id="7301262279595293068">მოითმინეთ, სანამ ამ აპლიკაციის განახლება მიმდინარეობს</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">დაუსვით შეკითხვები ექსპერტებს Chromebook-ის დახმარების ფორუმში</translation>

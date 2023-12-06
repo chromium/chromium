@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">กำหนดความถี่ในการอัปเดตหน้าจอ</translation>
 <translation id="1060570945511946595">จัดการตั๋ว</translation>
 <translation id="1061130374843955397">ยินดีต้อนรับสู่ <ph name="DEVICE_TYPE" /></translation>
+<translation id="1061309251982613260">บล็อก <ph name="HOST" /> ไม่ให้ควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI เสมอ</translation>
 <translation id="1061373870045429865">สร้างคิวอาร์โค้ดสำหรับลิงก์นี้</translation>
 <translation id="1061904396131502319">เกือบถึงเวลาพักแล้ว</translation>
 <translation id="10619348099955377">คัดลอกชื่อที่แสดง</translation>
@@ -91,6 +92,7 @@
 <translation id="106855837688344862">การโต้ตอบแบบสัมผัส</translation>
 <translation id="1069104208554708737">พาสคีย์นี้จะบันทึกในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="1069355737714877171">ลบโปรไฟล์ eSIM ที่มีชื่อว่า <ph name="PROFILE_NAME" /></translation>
+<translation id="1069778954840159202">รับบัญชีจากโทรศัพท์ Android โดยอัตโนมัติ</translation>
 <translation id="1069814191880976658">เลือกหน้าจออื่น</translation>
 <translation id="1070377999570795893">โปรแกรมอื่นบนคอมพิวเตอร์ได้เพิ่มส่วนขยายที่อาจเปลี่ยนลักษณะการทำงานของ Chrome
 
@@ -275,6 +277,7 @@
 <translation id="1203559206734265703">เปิดใช้การแก้ไขข้อบกพร่องของกลุ่มเป้าหมายที่มีการป้องกันแล้ว</translation>
 <translation id="120368089816228251">โน้ตดนตรี</translation>
 <translation id="1203942045716040624">ผู้ปฏิบัติงานที่แชร์: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">รหัสความปลอดภัยอยู่ที่ด้านหลังบัตร</translation>
 <translation id="1210678701920254279">ดูหรือเพิ่มเครื่องพิมพ์และดูงานพิมพ์ที่ดําเนินอยู่</translation>
 <translation id="1211769675100312947">ทางลัดที่คุณเป็นผู้คัดสรร</translation>
 <translation id="1213254615020057352">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุชื่อบุตรหลานของคุณ และจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android เจ้าของเป็นผู้บังคับใช้การตั้งค่านี้ เจ้าของอาจเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานสำหรับอุปกรณ์นี้ไปยัง Google หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน</translation>
@@ -298,6 +301,7 @@
 <translation id="1223484782328004593"><ph name="APP_NAME" /> ต้องมีใบอนุญาต</translation>
 <translation id="1223853788495130632">ผู้ดูแลระบบของคุณแนะนำให้ใช้ค่าเฉพาะสำหรับการตั้งค่านี้</translation>
 <translation id="1225177025209879837">กำลังดำเนินการตามคำขอ...</translation>
+<translation id="1227107020813934021">ค้นหาเครื่องสแกนเอกสาร</translation>
 <translation id="1227660082540388410">แก้ไขพาสคีย์</translation>
 <translation id="1227993798763400520">แคสต์ไม่สำเร็จ โปรดลองอีกครั้ง</translation>
 <translation id="1230417814058465809">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ปรับปรุงแล้วเพื่อความปลอดภัยมากขึ้น</translation>
@@ -447,6 +451,7 @@
 <translation id="1347625331607114917">ยืนยันรหัสในโทรศัพท์ Android</translation>
 <translation id="1347975661240122359">อัปเดตจะเริ่มขึ้นเมื่อแบตเตอรี่ถึง <ph name="BATTERY_LEVEL" />%</translation>
 <translation id="1348966090521113558">การตั้งค่าการช่วยเหลือพิเศษสำหรับเมาส์</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" ต้องการค้นหาและเข้าถึงเครื่องสแกนเอกสาร</translation>
 <translation id="1352834119074414157">แพ็กเกจนี้อาจเสียหายหรือถูกบุกรุก โปรดปิดหน้าต่างนี้แล้วดาวน์โหลดอีกครั้ง</translation>
 <translation id="1353275871123211385">หากต้องการใช้การควบคุมโดยผู้ปกครอง เช่น การอนุมัติแอปและขีดจํากัดเวลาอยู่หน้าจอ บุตรหลานต้องมีบัญชี Google ที่จัดการโดยผู้ปกครอง บัญชีโรงเรียนสามารถเพิ่มเครื่องมืออย่างเช่น Google Classroom ในภายหลังได้</translation>
 <translation id="135389172849514421">ใช้งานได้ขณะออฟไลน์</translation>
@@ -621,6 +626,7 @@
 <translation id="1485015260175968628">ส่วนขยายตอนนี้สามารถ:</translation>
 <translation id="1485141095922496924">เวอร์ชัน <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 กําหนดให้จัดเก็บไฟล์ไว้ใน OneDrive ระบบจะย้ายไฟล์ในเครื่องและคัดลอกไฟล์จากตําแหน่งอื่น ไฟล์จะอยู่ในโฟลเดอร์ Microsoft OneDrive ในแอป Files</translation>
+<translation id="1486012259353794050">เมื่อคุณถามคำถาม Google Assistant จะแสดงคำตอบที่เหมาะกับคุณบนหน้าจอ</translation>
 <translation id="1486096554574027028">ค้นหารหัสผ่าน</translation>
 <translation id="1486486872607808064">สแกนคิวอาร์โค้ดนี้ด้วยกล้องในอุปกรณ์ที่คุณต้องการสร้างพาสคีย์สำหรับ <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">เปิด - การตั้งค่าที่กำหนดเอง</translation>
@@ -687,6 +693,7 @@
 <translation id="1541346352678737112">ไม่พบเครือข่าย</translation>
 <translation id="154198613844929213">{0,plural, =0{กำลังจะลบตอนนี้}=1{กำลังจะลบในอีก 1 วินาที}other{กำลังจะลบในอีก # วินาที}}</translation>
 <translation id="1542137295869176367">อัปเดตข้อมูลการลงชื่อเข้าใช้ไม่ได้</translation>
+<translation id="1542524755306892917">วิธีนี้ช่วยให้ Google Assistant แสดงคำตอบที่ปรับเปลี่ยนให้เหมาะกับบุตรหลานได้เมื่อ <ph name="SUPERVISED_USER_NAME" /> ถามคำถาม</translation>
 <translation id="1543284117603151572">นำเข้าจาก Edge</translation>
 <translation id="1543538514740974167">มาที่นี่ได้เร็วขึ้น</translation>
 <translation id="1544588554445317666">ลองใช้ชื่อไฟล์ที่สั้นลงหรือบันทึกลงในโฟลเดอร์อื่น</translation>
@@ -913,6 +920,7 @@
 <translation id="1697150536837697295">ศิลปะ</translation>
 <translation id="1697686431566694143">แก้ไขไฟล์</translation>
 <translation id="1698796500103229697">วิธีการชำระเงิน</translation>
+<translation id="1699807488537653303">แก้ไขข้อผิดพลาดเกี่ยวกับรหัสผ่าน</translation>
 <translation id="1700201317341192482">นำบัตรเสมือนออก</translation>
 <translation id="1700517974991662022">เคยเข้าชม</translation>
 <translation id="1703331064825191675">ไม่ต้องกังวลเกี่ยวกับรหัสผ่านอีกต่อไป</translation>
@@ -1898,6 +1906,7 @@
 <translation id="2439152382014731627">รีเซ็ตรหัสผ่าน <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">กำลังโหลด <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">ดูโ&amp;ค้ดต้นฉบับ</translation>
+<translation id="2440632898584211188">อนุญาตให้เว็บไซต์นี้ควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI ต่อไป</translation>
 <translation id="2440823041667407902">การเข้าถึงตำแหน่ง</translation>
 <translation id="2441719842399509963">ตั้งค่าเริ่มต้นใหม่</translation>
 <translation id="244231003699905658">ที่อยู่ไม่ถูกต้อง โปรดตรวจสอบที่อยู่แล้วลองอีกครั้ง</translation>
@@ -2138,6 +2147,7 @@
 <translation id="262154978979441594">ฝึกรูปแบบเสียงของ Google Assistant</translation>
 <translation id="26224892172169984">ไม่อนุญาตให้ไซต์ใดๆ จัดการโปรโตคอล</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">อนุญาตให้ควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI</translation>
 <translation id="2624142942574147739">หน้าเว็บนี้กำลังเข้าถึงกล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="2626799779920242286">โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="2627424346328942291">แชร์ไม่สำเร็จ</translation>
@@ -2232,7 +2242,7 @@
 <translation id="2701330563083355633">แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">ลงชื่อเข้าใช้ <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">ที่อยู่ MAC ของเครือข่าย</translation>
-<translation id="2702801445560668637">รายการที่จะอ่าน</translation>
+<translation id="2702801445560668637">เรื่องรออ่าน</translation>
 <translation id="270414148003105978">เครือข่ายมือถือ</translation>
 <translation id="2704184184447774363">การเซ็นชื่อในเอกสารของ Microsoft</translation>
 <translation id="2704606927547763573">คัดลอกแล้ว</translation>
@@ -2351,6 +2361,7 @@
 <translation id="2777251078198759550">ลบคอนเทนเนอร์นี้</translation>
 <translation id="2777525873368474674">วางลิงก์รูปภาพ</translation>
 <translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
+<translation id="2779728796406650689">วิธีนี้ช่วยให้ Google Assistant แสดงคำตอบที่ปรับเปลี่ยนให้เหมาะกับคุณได้เมื่อคุณถามคำถาม</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ส่วนขยายใช้ได้ในเว็บไซต์นี้</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
@@ -2428,6 +2439,7 @@
 <translation id="2836269494620652131">ขัดข้อง</translation>
 <translation id="283669119850230892">หากต้องการใช้เครือข่าย <ph name="NETWORK_ID" /> ก่อนอื่น ให้เชื่อมต่ออินเทอร์เน็ตตามด้านล่างนี้</translation>
 <translation id="2838379631617906747">การติดตั้ง</translation>
+<translation id="2838474726369447181">เว็บไซต์นี้สามารถควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI (SysEx) ได้</translation>
 <translation id="2839032553903800133">การแจ้งเตือนถูกบล็อก</translation>
 <translation id="2841013758207633010">เวลา</translation>
 <translation id="2841837950101800123">ผู้ให้บริการ</translation>
@@ -2451,6 +2463,7 @@
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
 <translation id="2856907950922663165">ปิดการเข้ารหัส URL ใช่ไหม</translation>
 <translation id="2859741939921354763">นำเข้ารหัสผ่านไปยัง<ph name="BRAND" /></translation>
+<translation id="2861030231482411439">บล็อกเว็บไซต์นี้ไม่ให้ควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI ต่อไป</translation>
 <translation id="2861301611394761800">การอัปเดตระบบเสร็จสมบูรณ์ โปรดรีสตาร์ทระบบ</translation>
 <translation id="2861402191395139055">การสมัครใช้บริการ Passpoint</translation>
 <translation id="2861941300086904918">ตัวจัดการความปลอดภัยไคลเอ็นต์ในระบบ</translation>
@@ -2993,6 +3006,10 @@
 <translation id="3305389145870741612">กระบวนการฟอร์แมตอาจใช้เวลาสองสามวินาที โปรดรอสักครู่</translation>
 <translation id="3305661444342691068">เปิด PDF ในหน้าตัวอย่าง</translation>
 <translation id="3307176291962384345">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME" /></translation>
+<translation id="3307283429759317478">คุณจะเห็นแท็บจากอุปกรณ์อื่นๆ ซึ่งจะช่วยให้กลับไปยังกิจกรรมล่าสุดได้โดยง่าย
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="3308134619352333507">ซ่อนปุ่ม</translation>
 <translation id="3308852433423051161">กำลังโหลด Google Assistant...</translation>
 <translation id="3309330461362844500">รหัสโปรไฟล์ใบรับรอง</translation>
@@ -3221,6 +3238,7 @@
 <translation id="3497560059572256875">แชร์ Doodle</translation>
 <translation id="3497915391670770295">ส่งไปยังอุปกรณ์ของคุณ</translation>
 <translation id="3500417806337761827">เกิดข้อผิดพลาดในการต่อเชื่อมการแชร์ มีการต่อเชื่อม SMB เป็นจำนวนมากอยู่แล้ว</translation>
+<translation id="350397915809787283">หากคุณไม่มีบัญชี ให้เลือกตัวเลือกแรกเพื่อสร้างบัญชี</translation>
 <translation id="3503995387997205657">คุณสามารถคืนค่าแอปก่อนหน้าได้</translation>
 <translation id="3505100368357440862">คำแนะนำการเลือกซื้อ</translation>
 <translation id="3505602163050943406">เมื่อคุณใช้ฟีเจอร์บางอย่าง ฟีเจอร์เหล่านั้นจะส่งบางส่วนของหน้าที่เปิดอยู่ หน้าล่าสุดที่เกี่ยวข้อง และ URL ให้ Google ได้</translation>
@@ -4871,6 +4889,7 @@
 <translation id="4811212958317149293">การสแกนอัตโนมัติของแป้นพิมพ์การเข้าถึงด้วยสวิตช์</translation>
 <translation id="4811503964269049987">จัดกลุ่มแท็บที่เลือก</translation>
 <translation id="4813512666221746211">ข้อผิดพลาดของเครือข่าย</translation>
+<translation id="4813872509679988157">อนุญาตให้เว็บไซต์นี้ใช้อุปกรณ์ MIDI ต่อไป</translation>
 <translation id="4814114628197290459">ลบ IBAN</translation>
 <translation id="4814327014588285482">ข้ามและเตือนฉันในภายหลัง</translation>
 <translation id="4814378367953456825">ป้อนชื่อให้ลายนิ้วมือนี้</translation>
@@ -5183,6 +5202,7 @@
 <translation id="5063480226653192405">การใช้</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">จัดการ DNS ที่ปลอดภัยในการตั้งค่า Chrome OS</translation>
+<translation id="5066891009360243320">เว็บไซต์นี้ถูกบล็อกไม่ให้ใช้อุปกรณ์ MIDI</translation>
 <translation id="5067399438976153555">เปิดเสมอ</translation>
 <translation id="5067867186035333991">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงไมโครโฟนของคุณไหม</translation>
 <translation id="5068553687099139861">แสดงรหัสผ่าน</translation>
@@ -5898,6 +5918,7 @@
 <translation id="5641608986289282154">เริ่มใช้ <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">เครื่องมือแก้ไขภาพหน้าจอ</translation>
 <translation id="5642508497713047">ผู้เซ็นชื่อ CRL</translation>
+<translation id="5643191124441701136">รหัสความปลอดภัยอยู่ที่ด้านหน้าบัตร</translation>
 <translation id="5643321261065707929">เครือข่ายมีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="5646376287012673985">ตำแหน่ง</translation>
 <translation id="5646558797914161501">นักธุรกิจ</translation>
@@ -6174,7 +6195,7 @@
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="5870086504539785141">ปิดเมนูการเข้าถึง</translation>
 <translation id="5870155679953074650">ฮาร์ดฟอลต์</translation>
-<translation id="5872318519182427835">ส่งผลต่อเว็บไซต์ที่ระบุไว้ที่นี่และโดเมนย่อย เช่น การเพิ่ม "google.com" หมายความว่าคุกกี้ของบุคคลที่สามจะใช้กับ mail.google.com ได้ด้วย เพราะเป็นส่วนหนึ่งของ google.com</translation>
+<translation id="5870901441418842049">เว็บไซต์นี้ถูกบล็อกไม่ให้ควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI (SysEx)</translation>
 <translation id="5875534259258494936">การแชร์หน้าจอสิ้นสุดแล้ว</translation>
 <translation id="5876576639916258720">กำลังทำงาน...</translation>
 <translation id="5876851302954717356">แท็บใหม่อยู่ด้านขวา</translation>
@@ -6459,6 +6480,7 @@
 <translation id="6103681770816982672">คำเตือน: คุณกำลังเปลี่ยนเป็นเวอร์ชันที่กำลังพัฒนา</translation>
 <translation id="6104068876731806426">บัญชี Google</translation>
 <translation id="6104311680260824317">นำอุปกรณ์เข้าร่วมโดเมนไม่ได้ เซิร์ฟเวอร์ไม่รองรับประเภทการเข้ารหัส Kerberos ที่ระบุ ดูการตั้งค่าการเข้ารหัสได้จาก "ตัวเลือกเพิ่มเติม"</translation>
+<translation id="6104667115274478616">จัดการการตั้งค่าเสียงของ ChromeOS</translation>
 <translation id="6104796831253957966">คิวเครื่องพิมพ์เต็ม</translation>
 <translation id="610487644502954950">เลิกปักหมุดแผงด้านข้างแล้ว</translation>
 <translation id="6104929924898022309">ใช้แป้นค้นหาเพื่อเปลี่ยนลักษณะการทำงานของแป้นฟังก์ชัน</translation>
@@ -6552,6 +6574,7 @@
 <translation id="6171779718418683144">ถามทุกครั้งที่ไปยังเว็บไซต์</translation>
 <translation id="617213288191670920">ไม่ได้เพิ่มภาษา</translation>
 <translation id="6173623053897475761">พิมพ์ PIN อีกครั้ง</translation>
+<translation id="6174116123142608180">บล็อกเว็บไซต์นี้ไม่ให้ใช้อุปกรณ์ MIDI ต่อไป</translation>
 <translation id="6175314957787328458">โดเมน GUID ของ Microsoft</translation>
 <translation id="6175910054050815932">รับลิงก์</translation>
 <translation id="6176701216248282552">ความช่วยเหลือตามบริบทเปิดอยู่ ฟีเจอร์เหล่านี้จะส่งหน้าที่เปิดอยู่ไปยัง Google ได้</translation>
@@ -7067,6 +7090,7 @@
 <translation id="6597324406048772521">ไม่อนุญาตให้ใช้ส่วนขยายบนเว็บไซต์นี้</translation>
 <translation id="6597331566371766302">ผู้ดูแลระบบได้บล็อกส่วนขยายต่อไปนี้</translation>
 <translation id="659894938503552850">ใหม่ที่สุด</translation>
+<translation id="6599934330666882772">เว็บไซต์นี้ใช้อุปกรณ์ MIDI ของคุณ</translation>
 <translation id="6601262427770154296">จัดการพจนานุกรมของผู้ใช้</translation>
 <translation id="6601612474695404578">บางเว็บไซต์ใช้คุกกี้ของบุคคลที่สามเพื่อโหลดหน้าเว็บ หากเว็บไซต์ใดไม่ทำงาน ให้คุณลองอนุญาตคุกกี้</translation>
 <translation id="6602173570135186741">การป้อนข้อความอัตโนมัติและรหัสผ่าน</translation>
@@ -7115,7 +7139,7 @@
 <translation id="6644513150317163574">รูปแบบ URL ไม่ถูกต้อง ต้องระบุเซิร์ฟเวอร์เป็นชื่อโฮสต์เมื่อมีการใช้การตรวจสอบสิทธิ์ SSO</translation>
 <translation id="6644846457769259194">กำลังอัปเดตอุปกรณ์ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">ปิดฟีเจอร์จับคู่ด่วน</translation>
-<translation id="6646696210740573446">นำเฉพาะบางส่วนของ URL มาสร้างความสับสนแล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ปิดบังที่อยู่ IP ของคุณ หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google ด้วย</translation>
+<translation id="6646696210740573446">นำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ปิดบังที่อยู่ IP ของคุณ หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google ด้วย</translation>
 <translation id="6647228709620733774">URL การเพิกถอนผู้ออกใบรับรองของ Netscape</translation>
 <translation id="6647690760956378579">ตัวอย่างเสียงที่เป็นธรรมชาติ</translation>
 <translation id="6648911618876616409">มีการอัปเดตสำคัญพร้อมให้ติดตั้ง ลงชื่อเข้าใช้เพื่อเริ่มติดตั้ง</translation>
@@ -7631,6 +7655,7 @@
 <translation id="7036706669646341689">ขอแนะนำให้เตรียมพื้นที่ว่าง <ph name="DISK_SIZE" /> สำหรับ Linux หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากอุปกรณ์</translation>
 <translation id="7037509989619051237">ข้อความที่จะแสดงตัวอย่าง</translation>
 <translation id="7038632520572155338">การเข้าถึงด้วยสวิตช์</translation>
+<translation id="7038636380708661517">บล็อก <ph name="HOST" /> ไม่ให้ใช้อุปกรณ์ MIDI เสมอ</translation>
 <translation id="7038710352229712897">เพิ่มบัญชี Google อีกบัญชีหนึ่งสำหรับ <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">เข้าถึงอุปกรณ์ USB จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">การเข้าสู่ระบบด้วยสมาร์ทการ์ดของ Microsoft</translation>
@@ -7785,6 +7810,7 @@
 <translation id="7180865173735832675">กำหนดค่า</translation>
 <translation id="7181117767881540376">ซ่อนแถบบุ๊กมาร์ก</translation>
 <translation id="7182063559013288142">ฮอตสปอตด่วน</translation>
+<translation id="718240920439497409">บล็อกอุปกรณ์ MIDI แล้ว</translation>
 <translation id="7182791023900310535">ย้ายรหัสผ่าน</translation>
 <translation id="718427252411067142">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้เปิดแอปเพื่อเปลี่ยนรหัสผ่าน</translation>
 <translation id="7186088072322679094">เก็บในแถบเครื่องมือ</translation>
@@ -7874,6 +7900,7 @@
 <translation id="7255002516883565667">ขณะนี้คุณมีบัตรใบเดียวที่ใช้ได้ในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="7255935316994522020">นำไปใช้</translation>
 <translation id="7256069762010468647">เว็บไซต์กำลังใช้กล้องของคุณ</translation>
+<translation id="7256265230922801769">อนุญาตให้ <ph name="HOST" /> ควบคุมและตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI เสมอ</translation>
 <translation id="7256634071279256947">ไมโครโฟนด้านหลัง</translation>
 <translation id="7256710573727326513">เปิดในแท็บ</translation>
 <translation id="7257173066616499747">เครือข่าย Wi-Fi</translation>
@@ -7973,6 +8000,7 @@
 <translation id="7340650977506865820">เว็บไซต์กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="7340757554212515731">ส่งรายงานข้อขัดข้อง รวมถึงข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="734088800888587319">เมตริกเครือข่าย</translation>
+<translation id="7341612916770129581">เชื่อมต่อไมโครโฟน</translation>
 <translation id="7341834142292923918">ต้องการเข้าถึงเว็บไซต์นี้</translation>
 <translation id="7343372807593926528">โปรดอธิบายปัญหาก่อนส่งความคิดเห็น</translation>
 <translation id="7344585835349671209">จัดการใบรับรอง HTTPS/SSL ในอุปกรณ์</translation>
@@ -8121,7 +8149,7 @@
 <translation id="7448430327655618736">ติดตั้งแอปโดยอัตโนมัติ</translation>
 <translation id="7448664748118305024">ลบเว็บไซต์ข้อมูลที่บันทึกไว้ในอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="7450761244949417357">เปิดอยู่ใน <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
-<translation id="7450926666485653189">นำเฉพาะบางส่วนของ URL มาสร้างความสับสนแล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ</translation>
+<translation id="7450926666485653189">นำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ</translation>
 <translation id="7453008956351770337">ในการเลือกเครื่องพิมพ์นี้ แสดงว่าคุณให้สิทธิ์การเข้าถึงเครื่องพิมพ์แก่ส่วนขยายต่อไปนี้:</translation>
 <translation id="7453467225369441013">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะไม่ออกจากระบบบัญชี Google</translation>
 <translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{ส่วนขยายนี้อาจไม่ปลอดภัย Chrome ขอแนะนำให้คุณนำออก}other{ส่วนขยายเหล่านี้อาจไม่ปลอดภัย Chrome ขอแนะนําให้คุณนําออก}}</translation>
@@ -8239,6 +8267,7 @@
 <translation id="7541773865713908457"><ph name="ACTION_NAME" />ด้วยแอป <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">ซิงค์กับอุปกรณ์อื่นในบัญชีของคุณแล้ว <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">ข้อมูลการตรวจสอบสิทธิ์เครือข่าย EAP</translation>
+<translation id="7542619176101025604"><ph name="ACTION_NAME" /> - ปักหมุดอยู่</translation>
 <translation id="7543104066686362383">เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องบนอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> นี้</translation>
 <translation id="7544227555407951270">ลงทะเบียนอุปกรณ์</translation>
 <translation id="7544977292347272434">ขอให้ผู้ปกครองอนุญาตการใช้ส่วนขยาย</translation>
@@ -8876,6 +8905,7 @@
 <translation id="8017679124341497925">แก้ไขทางลัดแล้ว</translation>
 <translation id="8018298733481692628">ลบโปรไฟล์นี้ใช่ไหม</translation>
 <translation id="8018313076035239964">ควบคุมว่าจะให้เว็บไซต์ใช้ข้อมูลใดได้บ้าง และสามารถแสดงเนื้อหาใดให้กับคุณ</translation>
+<translation id="8022466874160067884">ป้อนบัญชี Google และรหัสผ่าน</translation>
 <translation id="8023133589013344428">จัดการภาษาในการตั้งค่า Chrome OS Flex</translation>
 <translation id="8023801379949507775">อัปเดตส่วนขยายทันที</translation>
 <translation id="8025151549289123443">หน้าจอล็อกและการลงชื่อเข้าใช้</translation>
@@ -8904,6 +8934,7 @@
 <translation id="8041267120753677077">สตรีมแอปของโทรศัพท์</translation>
 <translation id="8042142357103597104">ความทึบแสงของข้อความ</translation>
 <translation id="8042331986490021244">ระบบจะเข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="8044090981104134791">อนุญาตให้ใช้อุปกรณ์ MIDI</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง</translation>
 <translation id="8044899503464538266">ช้า</translation>
 <translation id="8045253504249021590">หยุดการซิงค์ผ่าน Google แดชบอร์ดแล้ว</translation>
@@ -9097,6 +9128,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />อุปกรณ์ของคุณ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">ความเข้ม</translation>
 <translation id="8195854162863398249">ปิดใช้<ph name="FEATURE_NAME" /></translation>
+<translation id="8197151971904389091">อนุญาตให้ <ph name="HOST" /> ใช้อุปกรณ์ MIDI เสมอ</translation>
 <translation id="8197673340773315084">เพิ่มชื่อหรือป้ายกํากับ เช่น "งาน" หรือ "ส่วนตัว"</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>
 <translation id="8198457270656084773">หากต้องการดูหน้าบันทึกอุปกรณ์ของระบบ โปรดไปที่<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /></translation>
@@ -9374,12 +9406,13 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">เต็มหน้าจอ</translation>
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
-<translation id="8413795581997394485">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย เมื่อคุณเข้าชมเว็บไซต์ Chrome จะนำเฉพาะบางส่วนของ URL มาสร้างความสับสนแล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ หากเว็บไซต์ทำสิ่งที่น่าสงสัย ระบบจะส่ง URL แบบเต็มและเนื้อหาของหน้าเว็บบางส่วนด้วย</translation>
+<translation id="8413795581997394485">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย เมื่อคุณเข้าชมเว็บไซต์ Chrome จะนำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ หากเว็บไซต์ทำสิ่งที่น่าสงสัย ระบบจะส่ง URL แบบเต็มและเนื้อหาของหน้าเว็บบางส่วนด้วย</translation>
 <translation id="8413956290606243087">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม</translation>
 <translation id="8414249071344507766">ซ่อนความทรงจำเป็นเวลา 2 วัน</translation>
 <translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">หมายเหตุ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
+<translation id="8417065541337558100">ตัวอย่างจากกล้องของคุณ</translation>
 <translation id="8417548266957501132">รหัสผ่านสำหรับผู้ปกครอง</translation>
 <translation id="8418445294933751433">แ&amp;สดงเป็นแถบ</translation>
 <translation id="8418675848396538775">เพิ่มภาษา<ph name="LANGUAGE_NAME" /></translation>
@@ -9806,6 +9839,7 @@
 <translation id="8749863574775030885">เข้าถึงอุปกรณ์ USB จากผู้ขายที่ไม่รู้จัก</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ต้องการเชื่อมต่อกับพอร์ตอนุกรม</translation>
 <translation id="8750346984209549530">APN เครือข่ายมือถือ</translation>
+<translation id="8750786237117206586">จัดการการตั้งค่าเสียงของ ChromeOS Flex</translation>
 <translation id="8752451679755290210">เลื่อนไปยังรายการต่างๆ โดยอัตโนมัติ</translation>
 <translation id="8753948258138515839">แอป Files มอบการเข้าถึงไฟล์ที่คุณบันทึกไว้ใน Google ไดรฟ์ ที่จัดเก็บข้อมูลภายนอก หรืออุปกรณ์ Chrome OS Flex อย่างรวดเร็ว</translation>
 <translation id="8754200782896249056">&lt;p&gt;เมื่อเรียกใช้ <ph name="PRODUCT_NAME" /> ภายใต้สภาพแวดล้อมของเดสก์ท็อปที่สนับสนุน จะมีการใช้การตั้งค่าพร็อกซีของระบบ  อย่างไรก็ตาม ระบบของคุณอาจไม่ได้รับการสนับสนุนหรือมีปัญหาในการเปิดการกำหนดค่าระบบ&lt;/p&gt;
@@ -9874,6 +9908,7 @@
 <translation id="8811862054141704416">การเข้าถึงไมโครโฟนใน Crostini</translation>
 <translation id="8811923271770626905">ส่วนขยายนี้อาจทํางานอยู่เบื้องหลัง</translation>
 <translation id="8812593354822910461">รวมถึงล้างข้อมูลการท่องเว็บ (<ph name="URL" />) ซึ่งจะนำคุณออกจากระบบของ <ph name="DOMAIN" /> <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">บล็อกการควบคุมและการตั้งโปรแกรมใหม่ในอุปกรณ์ MIDI แล้ว</translation>
 <translation id="8813698869395535039">ไม่สามารถลงชื่อเข้าใช้ <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">ต้องขอให้ผู้ปกครองอนุมัติ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813937837706331325">ประหยัดหน่วยความจำได้ปานกลาง</translation>

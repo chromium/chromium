@@ -922,6 +922,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1697150536837697295">Art</translation>
 <translation id="1697686431566694143">Edit file</translation>
 <translation id="1698796500103229697">Payment methods</translation>
+<translation id="1699807488537653303">Fix password error</translation>
 <translation id="1700201317341192482">Remove your virtual card</translation>
 <translation id="1700517974991662022">Visited</translation>
 <translation id="1703331064825191675">Never worry about your passwords</translation>
@@ -6207,7 +6208,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5870086504539785141">Close accessibility menu</translation>
 <translation id="5870155679953074650">Hard faults</translation>
 <translation id="5870901441418842049">This site has been blocked from controlling and reprogramming your MIDI devices (SysEx).</translation>
-<translation id="5872318519182427835">Affects the sites listed here and their subdomains. For example, adding 'google.com' means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.</translation>
 <translation id="5875534259258494936">Screen sharing has ended</translation>
 <translation id="5876576639916258720">Running…</translation>
 <translation id="5876851302954717356">New Tab to the Right</translation>

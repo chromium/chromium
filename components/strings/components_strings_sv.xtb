@@ -116,6 +116,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1206967143813997005">Felaktig första signatur</translation>
 <translation id="1209206284964581585">Dölj för tillfället</translation>
 <translation id="121201262018556460">Du försökte öppna <ph name="DOMAIN" />, men servern visade ett certifikat som signerats med en svag nyckel. Det innebär att den privata nyckeln som servern visar kan vara en förfalskning och att servern kanske inte är den server du tror (du kanske kommunicerar med en skadlig server).</translation>
+<translation id="1212527389003717329">Nedladdning har påbörjats. Visa den genom att trycka länge på |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Systemsäkerhet</translation>
 <translation id="1222060260947439312">Höger fack</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -286,6 +287,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1521655867290435174">Google Kalkylark</translation>
 <translation id="1524669537550112617">Möblerade hyreslägenheter</translation>
 <translation id="1527263332363067270">Väntar på anslutning …</translation>
+<translation id="1528311629279578926">Anslutningen blockeras eftersom den initierades av en offentlig sida för att ansluta till enheter eller servrar i ditt privata nätverk. Läs in sidan igen för att tillåta anslutningen.</translation>
 <translation id="1529789484829130889">Fack 8</translation>
 <translation id="1530707389502320859">Webbplatsen du försöker öppna ser inte ut att vara äkta. Ibland försöker hackare efterlikna webbplatser genom att göra små, svårupptäckta ändringar i webbadressen.</translation>
 <translation id="1532118530259321453">På den här sidan står det</translation>
@@ -1159,6 +1161,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3325027355611702542">Husbilar och husvagnar</translation>
 <translation id="3329013043687509092">Mättnad</translation>
 <translation id="3333762389743153920">Uppfyller inte kraven för virtuella kort</translation>
+<translation id="3336044043987989409">Tryck på knappen Läs in igen om du vill tillåta anslutning till enheter eller servrar i ditt privata nätverk.</translation>
 <translation id="3338095232262050444">Säker</translation>
 <translation id="333839153442689579">Högintensiv intervallträning</translation>
 <translation id="3339440062908617027">Löpning och gång</translation>
