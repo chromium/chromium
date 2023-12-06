@@ -1524,10 +1524,25 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
       accelerator_config_output[mojom::AcceleratorSource::kAsh];
 
   for (const auto& layout_info : kAcceleratorLayouts) {
-    if (layout_info.source != mojom::AcceleratorSource::kAsh ||
-        ShouldExcludeItem(layout_info)) {
+    if (layout_info.source != mojom::AcceleratorSource::kAsh) {
       // Only ash accelerators can have dynamically modified properties.
       // Note that ambient accelerators cannot be in kAsh.
+      continue;
+    }
+
+    // Remove layouts were initially added but should now be removed if they
+    // are in the block list.
+    if (ShouldExcludeItem(layout_info)) {
+      const std::string uuid =
+          GetUuid(layout_info.source, layout_info.action_id);
+      if (accelerator_layout_lookup_.contains(uuid)) {
+        accelerator_layout_lookup_.erase(uuid);
+        std::erase_if(layout_infos_,
+                      [&](const mojom::AcceleratorLayoutInfoPtr& info) {
+                        return info->source == layout_info.source &&
+                               info->action == layout_info.action_id;
+                      });
+      }
       continue;
     }
 
