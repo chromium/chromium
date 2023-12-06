@@ -1024,6 +1024,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                              title:nil
                            message:nil
                      barButtonItem:buttonAnchor];
+
+    // IOS 17 Bug: The alert arrow direction presentation is broken.
+    // Workaround: Specifically set the popover arrow direction. (crbug/1490535)
+    if (@available(iOS 17, *)) {
+      self.actionSheetCoordinator.popoverArrowDirection =
+          UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
+    }
   } else {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseIncognitoTabsConfirmationPresented"));
