@@ -393,8 +393,14 @@ class AdHeuristicTPCDBrowserTestSkipHeuristicsGrant
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1508725): Investigate flakiness on Lacros/ChromeOS flakiness.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CookieBlocked DISABLED_CookieBlockedProfile
+#else
+#define MAYBE_CookieBlocked CookieBlocked
+#endif
 IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipHeuristicsGrant,
-                       CookieBlocked) {
+                       MAYBE_CookieBlocked) {
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           https_server(), "/empty.html?isad=1");
