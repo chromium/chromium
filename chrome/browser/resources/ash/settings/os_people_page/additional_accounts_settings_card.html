@@ -4,6 +4,10 @@
     --account-item-padding-size: 8px;
   }
 
+  .settings-box-text {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
   #addAccountButtonContainer {
     padding-top: 8px;
     padding-bottom: 8px;
@@ -127,7 +131,7 @@
 
 <settings-card header-text="[[getAccountListHeader_(isChildUser_)]]">
   <!-- Secondary Accounts list header -->
-  <div class="settings-box first secondary">
+  <div class="settings-box-text first secondary">
     [[getAccountListDescription_(isChildUser_)]]
   </div>
 
