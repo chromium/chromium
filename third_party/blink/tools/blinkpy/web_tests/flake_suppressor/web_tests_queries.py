@@ -122,12 +122,10 @@ WITH
      WHERE key = "builder") as builder,
      DATE(partition_time) AS date
   FROM
-    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
-    sheriff_rotations_ci_builds srcb
+    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
     status != "PASS" AND status != "SKIP" AND
     exported.realm = "chromium:ci" AND
-    builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY)
   GROUP BY id, name, status, test_suite, builder, date, typ_expectations_string, typ_tags_string
@@ -141,12 +139,10 @@ WITH
     (SELECT value FROM tr.variant
      WHERE key = "builder") as builder
   FROM
-    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
-    sheriff_rotations_ci_builds srcb
+    `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
     status = "PASS" AND
     exported.realm = "chromium:ci" AND
-    builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                    INTERVAL @sample_period DAY)
   GROUP BY id, name, builder, test_suite
@@ -170,6 +166,7 @@ WITH
     (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
     ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
     pt.name IS NULL AND
+    ft.builder IN (SELECT builder FROM sheriff_rotations_ci_builds) AND
     REGEXP_CONTAINS(ft.test_suite, 'blink_w(pt|eb)_tests')
     AND NOT REGEXP_CONTAINS(ft.test_suite, '^webgpu'))
 SELECT
