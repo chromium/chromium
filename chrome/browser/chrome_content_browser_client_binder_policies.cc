@@ -15,6 +15,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #endif
 
@@ -47,6 +48,11 @@ void RegisterPoliciesForChannelAssociatedInterfaces(
   // notifying CSS selector updates. These APIs are used by Chrome Extensions
   // under proper permission managements beyond the page boundaries.
   policy_map.SetAssociatedPolicy<extensions::mojom::LocalFrameHost>(
+      content::MojoBinderAssociatedPolicy::kGrant);
+
+  // Grants Prerendering to use EventRouter, and sensitive behaviors are
+  // prohibited by permission request boundary.
+  policy_map.SetAssociatedPolicy<extensions::mojom::EventRouter>(
       content::MojoBinderAssociatedPolicy::kGrant);
 #endif
 }
