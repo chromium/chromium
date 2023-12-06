@@ -85,12 +85,6 @@ struct TypeErasedAbslHash {
   }
 };
 
-template <typename FuncType>
-inline FuncType* ODRUseFunction(FuncType* ptr) {
-  volatile FuncType* dummy = ptr;
-  return dummy;
-}
-
 absl::Cord FlatCord(size_t size) {
   absl::Cord result(std::string(size, 'a'));
   result.Flatten();
@@ -166,7 +160,7 @@ absl::flat_hash_set<T> FlatHashSet(size_t count) {
     return hash<decltype(__VA_ARGS__)>{}(arg);                   \
   }                                                              \
   bool absl_hash_test_odr_use##hash##name =                      \
-      ODRUseFunction(&Codegen##hash##name);
+      (benchmark::DoNotOptimize(&Codegen##hash##name), false);
 
 MAKE_BENCHMARK(AbslHash, Int32, int32_t{});
 MAKE_BENCHMARK(AbslHash, Int64, int64_t{});

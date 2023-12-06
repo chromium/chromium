@@ -157,6 +157,7 @@ absl_cc_library(
     absl::log_internal_conditions
     absl::log_internal_message
     absl::log_internal_strip
+    absl::absl_vlog_is_on
 )
 
 absl_cc_library(
@@ -481,6 +482,7 @@ absl_cc_library(
     absl::flags
     absl::flags_marshalling
     absl::strings
+    absl::vlog_config_internal
   PUBLIC
 )
 
@@ -536,6 +538,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::log_internal_log_impl
+    absl::vlog_is_on
   PUBLIC
 )
 
@@ -673,19 +676,91 @@ absl_cc_library(
 )
 
 absl_cc_library(
-    NAME
-      log_internal_fnmatch
-    SRCS
-      "internal/fnmatch.cc"
-    HDRS
-      "internal/fnmatch.h"
-    COPTS
-      ${ABSL_DEFAULT_COPTS}
-    LINKOPTS
-      ${ABSL_DEFAULT_LINKOPTS}
-    DEPS
-      absl::config
-      absl::strings
+  NAME
+    vlog_config_internal
+  SRCS
+    "internal/vlog_config.cc"
+  HDRS
+    "internal/vlog_config.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::base
+    absl::config
+    absl::core_headers
+    absl::log_internal_fnmatch
+    absl::memory
+    absl::no_destructor
+    absl::strings
+    absl::synchronization
+    absl::optional
+)
+
+absl_cc_library(
+  NAME
+    absl_vlog_is_on
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  HDRS
+    "absl_vlog_is_on.h"
+  DEPS
+    absl::vlog_config_internal
+    absl::config
+    absl::core_headers
+    absl::strings
+)
+
+absl_cc_library(
+  NAME
+    vlog_is_on
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  HDRS
+    "vlog_is_on.h"
+  DEPS
+    absl::absl_vlog_is_on
+)
+
+absl_cc_test(
+  NAME
+    vlog_is_on_test
+  SRCS
+    "vlog_is_on_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::log_flags
+    absl::log
+    absl::scoped_mock_log
+    absl::vlog_is_on
+    absl::log_severity
+    absl::flags
+    absl::optional
+    GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
+    log_internal_fnmatch
+  SRCS
+    "internal/fnmatch.cc"
+  HDRS
+    "internal/fnmatch.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::config
+    absl::strings
 )
 
 # Test targets
@@ -1021,6 +1096,7 @@ absl_cc_test(
     absl::log
     absl::log_internal_test_helpers
     absl::log_severity
+    absl::status
     absl::strerror
     absl::strings
     absl::str_format

@@ -72,14 +72,20 @@
 #ifndef ABSL_STRINGS_STR_FORMAT_H_
 #define ABSL_STRINGS_STR_FORMAT_H_
 
+#include <cstdint>
 #include <cstdio>
 #include <string>
+#include <type_traits>
 
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/strings/internal/str_format/arg.h"  // IWYU pragma: export
 #include "absl/strings/internal/str_format/bind.h"  // IWYU pragma: export
 #include "absl/strings/internal/str_format/checker.h"  // IWYU pragma: export
 #include "absl/strings/internal/str_format/extension.h"  // IWYU pragma: export
 #include "absl/strings/internal/str_format/parser.h"  // IWYU pragma: export
+#include "absl/strings/string_view.h"
+#include "absl/types/span.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -256,7 +262,7 @@ class FormatCountCapture {
 //
 // The `FormatSpec` intrinsically supports all of these fundamental C++ types:
 //
-// *   Characters: `char`, `signed char`, `unsigned char`
+// *   Characters: `char`, `signed char`, `unsigned char`, `wchar_t`
 // *   Integers: `int`, `short`, `unsigned short`, `unsigned`, `long`,
 //         `unsigned long`, `long long`, `unsigned long long`
 // *   Enums: printed as their underlying integral value
@@ -264,9 +270,9 @@ class FormatCountCapture {
 //
 // However, in the `str_format` library, a format conversion specifies a broader
 // C++ conceptual category instead of an exact type. For example, `%s` binds to
-// any string-like argument, so `std::string`, `absl::string_view`, and
-// `const char*` are all accepted. Likewise, `%d` accepts any integer-like
-// argument, etc.
+// any string-like argument, so `std::string`, `std::wstring`,
+// `absl::string_view`, `const char*`, and `const wchar_t*` are all accepted.
+// Likewise, `%d` accepts any integer-like argument, etc.
 
 template <typename... Args>
 using FormatSpec = str_format_internal::FormatSpecTemplate<

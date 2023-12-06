@@ -37,7 +37,7 @@
 #define ABSL_LOGGING_INTERNAL_LOG_DFATAL \
   ::absl::log_internal::NullStreamMaybeFatal(::absl::kLogDebugFatal)
 #define ABSL_LOGGING_INTERNAL_LOG_LEVEL(severity) \
-  ::absl::log_internal::NullStreamMaybeFatal(log_internal_severity)
+  ::absl::log_internal::NullStreamMaybeFatal(absl_log_internal_severity)
 #define ABSL_LOG_INTERNAL_CHECK(failure_message) ABSL_LOGGING_INTERNAL_LOG_FATAL
 #define ABSL_LOG_INTERNAL_QCHECK(failure_message) \
   ABSL_LOGGING_INTERNAL_LOG_QFATAL
@@ -57,8 +57,9 @@
   ::absl::log_internal::LogMessageQuietlyFatal(__FILE__, __LINE__)
 #define ABSL_LOGGING_INTERNAL_LOG_DFATAL \
   ::absl::log_internal::LogMessage(__FILE__, __LINE__, ::absl::kLogDebugFatal)
-#define ABSL_LOGGING_INTERNAL_LOG_LEVEL(severity) \
-  ::absl::log_internal::LogMessage(__FILE__, __LINE__, log_internal_severity)
+#define ABSL_LOGGING_INTERNAL_LOG_LEVEL(severity)      \
+  ::absl::log_internal::LogMessage(__FILE__, __LINE__, \
+                                   absl_log_internal_severity)
 // These special cases dispatch to special-case constructors that allow us to
 // avoid an extra function call and shrink non-LTO binaries by a percent or so.
 #define ABSL_LOG_INTERNAL_CHECK(failure_message) \
