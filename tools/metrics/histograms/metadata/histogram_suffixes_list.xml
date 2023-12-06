@@ -1034,9 +1034,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="AlsaLoopback" label="ALSA loopback Device."/>
   <suffix name="Bluetooth" label="Bluetooth device."/>
   <suffix name="BluetoothNarrowBandMic" label="Bluetooth with NarrowBand Mic."/>
-  <suffix name="BluetoothWideBandMic" label="Bluetooth with WideBand Mic."/>
   <suffix name="BluetoothSuperWideBandMic"
       label="Bluetooth with SuperWideBand Mic."/>
+  <suffix name="BluetoothWideBandMic" label="Bluetooth with WideBand Mic."/>
   <suffix name="FrontMic" label="Front mic."/>
   <suffix name="Haptic" label="Haptic device."/>
   <suffix name="HDMI" label="HDMI device."/>
