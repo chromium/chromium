@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Creating an WFS should not make it ineligible for the BFCache.
+  BFCache not supported.
+[PRECONDITION_FAILED] Creating a WFS on an active page evicts an inactive page on contention.
+  BFCache not supported.
+Harness: the test ran to completion.
