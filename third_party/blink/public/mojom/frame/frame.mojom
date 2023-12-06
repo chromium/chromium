@@ -896,11 +896,19 @@ interface LocalFrame {
 
   // Tells the renderer to perform the given action on the media player location
   // at the given point in the view coordinate space.
-  MediaPlayerActionAt(gfx.mojom.Point location, blink.mojom.MediaPlayerAction action);
+  MediaPlayerActionAt(gfx.mojom.Point location,
+                      blink.mojom.MediaPlayerAction action);
 
-  // Requests the current video frame (as `image`) from the media player at the
-  // given `location`.
-  RequestVideoFrameAt(gfx.mojom.Point location) => (gfx.mojom.ImageSkia image);
+  // Requests the current video frame of the media player at `location`, scaled
+  // if needed to be bounded by `max_size` with aspect ratio preserved, unless
+  // the original area is already less than `max_area`, where `max_size` and
+  // `max_area` are both in device-independent pixels. This is to avoid scaling
+  // images with very large/small aspect ratio to avoid losing information. If
+  // any of the dimensions is non-positive, no scaling will be performed.
+  RequestVideoFrameAt(gfx.mojom.Point location,
+                      gfx.mojom.Size max_size,
+                      int32 max_area)
+      => (gfx.mojom.ImageSkia image);
 
   // Tells the renderer to perform the given action on the plugin location at
   // the given point in the view coordinate space.

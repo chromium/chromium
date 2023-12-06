@@ -4240,6 +4240,9 @@ void RenderViewContextMenu::ExecSearchForVideoFrame() {
 
   frame_host->RequestVideoFrameAt(
       gfx::Point(params_.x, params_.y),
+      gfx::Size(lens::features::GetMaxPixelsForImageSearch(),
+                lens::features::GetMaxPixelsForImageSearch()),
+      lens::features::GetMaxAreaForImageSearch(),
       base::BindOnce(&RenderViewContextMenu::SearchForVideoFrame,
                      weak_pointer_factory_.GetWeakPtr()));
 }

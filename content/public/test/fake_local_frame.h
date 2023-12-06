@@ -71,6 +71,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
   void RequestVideoFrameAt(const gfx::Point& window_point,
+                           const gfx::Size& max_size,
+                           int max_area,
                            RequestVideoFrameAtCallback callback) override;
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType action) override;

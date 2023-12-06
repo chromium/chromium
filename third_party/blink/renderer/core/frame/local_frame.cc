@@ -3413,6 +3413,8 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
 
 void LocalFrame::RequestVideoFrameAt(
     const gfx::Point& viewport_position,
+    const gfx::Size& max_size,
+    int max_area,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_position);
   Node* node = result.InnerNode();
@@ -3423,7 +3425,23 @@ void LocalFrame::RequestVideoFrameAt(
     return;
   }
 
-  auto image = video->CreateStaticBitmapImage();
+  // Scale to match the max dimensions if needed, to reduce data sent over IPC.
+  // This is to match the algorithm in gfx::ResizedImageForMaxDimensions().
+  // TODO(crbug.com/1508722): Revisit to see whether we need both `max_size` and
+  // `max_area`, which seems redundant.
+  auto size = video->BitmapSourceSize();
+  if ((size.width() > max_size.width() || size.height() > max_size.height()) &&
+      size.GetArea() > max_area) {
+    double scale =
+        std::min(static_cast<double>(max_size.width()) / size.width(),
+                 static_cast<double>(max_size.height()) / size.height());
+    int width = std::clamp<int>(scale * size.width(), 1, max_size.width());
+    int height = std::clamp<int>(scale * size.height(), 1, max_size.height());
+    size = gfx::Size(width, height);
+  }
+
+  auto image =
+      video->CreateStaticBitmapImage(/*allow_accelerated_images=*/true, size);
   if (!image) {
     std::move(callback).Run(gfx::ImageSkia());
     return;

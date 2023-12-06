@@ -89,6 +89,8 @@ void FakeLocalFrame::MediaPlayerActionAt(
     blink::mojom::MediaPlayerActionPtr action) {}
 
 void FakeLocalFrame::RequestVideoFrameAt(const gfx::Point& window_point,
+                                         const gfx::Size& max_size,
+                                         int max_area,
                                          RequestVideoFrameAtCallback callback) {
 }
 

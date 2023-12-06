@@ -867,8 +867,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const gfx::Point& location,
       const blink::mojom::MediaPlayerAction& action) = 0;
 
+  // Requests the current video frame of the media player at `location`, scaled
+  // if needed to be bounded by `max_size` with aspect ratio preserved, unless
+  // the original area is already less than `max_area`, where `max_size` and
+  // `max_area` are both in device-independent pixels. This is to avoid scaling
+  // images with very large/small aspect ratio to avoid losing information. If
+  // any of the dimensions is non-positive, no scaling will be performed.
   virtual void RequestVideoFrameAt(
       const gfx::Point& location,
+      const gfx::Size& max_size,
+      int max_area,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) = 0;
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|.

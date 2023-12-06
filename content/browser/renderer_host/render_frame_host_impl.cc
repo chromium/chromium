@@ -2463,11 +2463,14 @@ void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
 
 void RenderFrameHostImpl::RequestVideoFrameAt(
     const gfx::Point& location,
+    const gfx::Size& max_size,
+    int max_area,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
   gfx::PointF point_in_view = GetView()->TransformRootPointToViewCoordSpace(
       gfx::PointF(location.x(), location.y()));
   GetAssociatedLocalFrame()->RequestVideoFrameAt(
-      gfx::Point(point_in_view.x(), point_in_view.y()), std::move(callback));
+      gfx::Point(point_in_view.x(), point_in_view.y()), max_size, max_area,
+      std::move(callback));
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(

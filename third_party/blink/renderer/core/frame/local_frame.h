@@ -738,6 +738,8 @@ class CORE_EXPORT LocalFrame final
       bool enable);
   void RequestVideoFrameAt(
       const gfx::Point& viewport_position,
+      const gfx::Size& max_size,
+      int max_area,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback);
 
   // Handle the request as a download. If the request is for a blob: URL,

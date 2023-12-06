@@ -724,10 +724,13 @@ void LocalFrameMojoHandler::MediaPlayerActionAt(
 
 void LocalFrameMojoHandler::RequestVideoFrameAt(
     const gfx::Point& window_point,
+    const gfx::Size& max_size,
+    int max_area,
     RequestVideoFrameAtCallback callback) {
   gfx::Point viewport_position =
       frame_->GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  frame_->RequestVideoFrameAt(viewport_position, std::move(callback));
+  frame_->RequestVideoFrameAt(viewport_position, max_size, max_area,
+                              std::move(callback));
 }
 
 void LocalFrameMojoHandler::AdvanceFocusInFrame(

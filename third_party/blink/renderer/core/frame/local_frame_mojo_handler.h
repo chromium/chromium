@@ -127,6 +127,8 @@ class LocalFrameMojoHandler
   void MediaPlayerActionAt(const gfx::Point& window_point,
                            mojom::blink::MediaPlayerActionPtr action) final;
   void RequestVideoFrameAt(const gfx::Point& window_point,
+                           const gfx::Size& max_size,
+                           int max_area,
                            RequestVideoFrameAtCallback callback) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
