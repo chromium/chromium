@@ -626,7 +626,6 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
       DlpRulesManager::RuleMetadata(kRuleName3, kRuleId3));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -666,7 +665,6 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
 
   chromeos::DlpClient::Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
   // Disable feature
@@ -1114,8 +1112,6 @@ TEST_F(DlpRulesManagerImplTest, TestOrderSameLevelPrinting) {
       kExampleUrl, DlpRulesManager::RuleMetadata(kRuleName2, kRuleId2));
 }
 
-// TODO(b/269610458): Enable the test on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests creation and deletion of DataTransferDlpController.
 TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
   // There should be no instance given no rule is set yet.
@@ -1170,6 +1166,5 @@ TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
 
   chromeos::DlpClient::Shutdown();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

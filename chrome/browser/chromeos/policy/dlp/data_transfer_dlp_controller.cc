@@ -320,9 +320,9 @@ void DataTransferDlpController::PasteIfAllowed(
       files_controller->CheckIfPasteOrDropIsAllowed(
           pasted_files, data_dst.as_ptr(), std::move(paste_cb));
     }
-#endif
-    // TODO(b/269610458): Check dropped files in Lacros.
     return;
+#endif
+    // TODO(b/269610458): Check pasted files in Lacros.
   }
 
   if (absl::holds_alternative<size_t>(pasted_content)) {
