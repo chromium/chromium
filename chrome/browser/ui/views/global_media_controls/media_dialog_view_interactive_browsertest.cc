@@ -38,6 +38,7 @@
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/soda/constants.h"
 #include "content/public/browser/presentation_observer.h"
@@ -485,19 +486,29 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void ClickEnableLiveCaptionOnDialog() {
-    base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(browser()->profile()->GetPrefs());
+    change_observer.Add(prefs::kLiveCaptionEnabled, run_loop.QuitClosure());
+
     ASSERT_TRUE(MediaDialogView::IsShowing());
     views::Button* live_caption_button = static_cast<views::Button*>(
         MediaDialogView::GetDialogViewForTesting()->live_caption_button_);
     ui_test_utils::ClickOnView(live_caption_button);
+    run_loop.Run();
   }
 
   void ClickEnableLiveTranslateOnDialog() {
-    base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(browser()->profile()->GetPrefs());
+    change_observer.Add(prefs::kLiveTranslateEnabled, run_loop.QuitClosure());
+
     ASSERT_TRUE(MediaDialogView::IsShowing());
     views::Button* live_translate_button = static_cast<views::Button*>(
         MediaDialogView::GetDialogViewForTesting()->live_translate_button_);
     ui_test_utils::ClickOnView(live_translate_button);
+    run_loop.Run();
   }
 
   void ClickItemByTitle(const std::u16string& title) {
@@ -909,13 +920,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-// TODO(crbug.com/1225531, crbug.com/1222873, crbug.com/1271131): Flaky.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_LiveCaption DISABLED_LiveCaption
-#else
-#define MAYBE_LiveCaption LiveCaption
-#endif
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaption) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
