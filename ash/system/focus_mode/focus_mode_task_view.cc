@@ -279,7 +279,12 @@ void FocusModeTaskView::OnClearTask() {
   textfield_->SetText(std::u16string());
   auto* controller = FocusModeController::Get();
   controller->SetSelectedTask(nullptr);
-  chip_carousel_->SetTasks(controller->tasks_provider().GetTaskList());
+  // Only update `chip_carousel_` when it's invisible to avoid the crash when
+  // moving focus to it by tapping from an empty text of `textfield_` to the
+  // `chip_carousel_`.
+  if (!chip_carousel_->GetVisible()) {
+    chip_carousel_->SetTasks(controller->tasks_provider().GetTaskList());
+  }
   UpdateStyle(/*show_selected_state=*/false);
 }
 
