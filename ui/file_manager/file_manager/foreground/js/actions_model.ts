@@ -490,7 +490,7 @@ export class ActionsModel extends EventTarget {
                   (customActions: chrome.fileManagerPrivate
                        .FileSystemProviderAction[]) => {
                     if (chrome.runtime.lastError) {
-                      console.error(
+                      console.warn(
                           'Failed to fetch custom actions because of: ' +
                           chrome.runtime.lastError.message);
                     } else {
