@@ -81,7 +81,6 @@ void InstallablePaymentAppCrawler::Start(
   } else {
     // Crawl to refetch missing icons of already installed apps.
     crawling_mode_ = CrawlingMode::kMissingIconRefetch;
-    UMA_HISTOGRAM_BOOLEAN("PaymentRequest.RefetchIconForInstalledApp", true);
     method_manifest_urls_for_icon_refetch_ =
         std::move(method_manifest_urls_for_icon_refetch);
     for (const auto& method : method_manifest_urls_for_icon_refetch_) {
