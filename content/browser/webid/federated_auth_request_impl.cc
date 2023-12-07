@@ -1250,11 +1250,15 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
 void FederatedAuthRequestImpl::CompleteDisconnectRequest(
     DisconnectCallback callback,
     blink::mojom::DisconnectStatus status) {
-  if (!disconnect_request_) {
-    NOTREACHED() << "The completed disconnect request is nowhere to be found";
+  // `disconnect_request_` may be null here if the completion is invoked from
+  // the FederatedAuthRequestImpl destructor, which destroys
+  // `disconnect_request_`. The FederatedAuthDisconnectRequest destructor would
+  // trigger the callback.
+  if (!disconnect_request_ &&
+      status == blink::mojom::DisconnectStatus::kSuccess) {
+    NOTREACHED() << "The successful disconnect request is nowhere to be found";
     return;
   }
-
   std::move(callback).Run(status);
   disconnect_request_.reset();
 }
@@ -2416,13 +2420,20 @@ void FederatedAuthRequestImpl::CompleteUserInfoRequest(
       [request](const std::unique_ptr<FederatedAuthUserInfoRequest>& ptr) {
         return ptr.get() == request;
       });
-  if (it == user_info_requests_.end()) {
-    NOTREACHED() << "The completed user info request is nowhere to be found";
+  // The request may not be found if the completion is invoked from
+  // FederatedAuthRequestImpl destructor. The destructor clears
+  // `user_info_requests_`, which destroys the FederatedAuthUserInfoRequests it
+  // contains. The FederatedAuthUserInfoRequest destructor invokes this
+  // callback.
+  if (it == user_info_requests_.end() &&
+      status == blink::mojom::RequestUserInfoStatus::kSuccess) {
+    NOTREACHED() << "The successful user info request is nowhere to be found";
     return;
   }
-
   std::move(callback).Run(status, std::move(user_info));
-  user_info_requests_.erase(it);
+  if (it != user_info_requests_.end()) {
+    user_info_requests_.erase(it);
+  }
 }
 
 std::unique_ptr<IdpNetworkRequestManager>

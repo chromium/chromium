@@ -65,6 +65,8 @@ crbug.com/1499775 external/wpt/webxr/xrSession_requestAnimationFrame_getViewerPo
 crbug.com/1499775 external/wpt/cookies/attributes/attributes-ctl.sub.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-auto-selected-flag.https.html [ Crash Pass Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-returning-account-auto-reauthn.https.html [ Crash Pass Timeout ]
+crbug.com/1499775 external/wpt/credential-management/fedcm-pending-disconnect.https.html [ Crash Pass Timeout ]
+crbug.com/1499775 external/wpt/credential-management/fedcm-pending-userinfo.https.html [ Crash Pass Timeout ]
 crbug.com/1499775 wpt_internal/credential-management/fedcm-mismatch-dialog.tentative.https.html [ Crash Pass Timeout ]
 crbug.com/1499775 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-4.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/css/css-images/object-view-box-fit-fill-video.html [ Failure Pass ]
