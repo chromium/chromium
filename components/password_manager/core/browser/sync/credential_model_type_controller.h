@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/model_type_controller.h"
@@ -24,11 +25,17 @@ class SyncService;
 
 namespace password_manager {
 
+namespace prefs {
+enum class UseUpmLocalAndSeparateStoresState;
+}
+
 // A class that manages the startup and shutdown of password & passkey sync.
 class CredentialModelTypeController : public syncer::ModelTypeController,
                                       public syncer::SyncServiceObserver,
                                       public signin::IdentityManager::Observer {
  public:
+  // Note: Android might always be configured in transport mode if
+  // UnifiedPasswordManagerLocalPasswordsAndroid* flags are in place.
   CredentialModelTypeController(
       syncer::ModelType model_type,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -50,6 +57,7 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
                   const ModelLoadCallback& model_load_callback) override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
   bool ShouldRunInTransportOnlyMode() const override;
+  PreconditionState GetPreconditionState() const override;
 
   // SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -61,7 +69,17 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
   void OnAccountsCookieDeletedByUserAction() override;
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  prefs::UseUpmLocalAndSeparateStoresState GetLocalUpmPrefValue() const;
+
+  void OnLocalUpmPrefChanged();
+#endif
+
   const raw_ptr<PrefService> pref_service_;
+#if BUILDFLAG(IS_ANDROID)
+  // Only set for PASSWORDS.
+  const std::unique_ptr<IntegerPrefMember> local_upm_pref_;
+#endif
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;
 

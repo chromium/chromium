@@ -82,7 +82,7 @@ extern const char kCurrentMigrationVersionToGoogleMobileServices[];
 // last time migrated, in microseconds since Windows epoch.
 extern const char kTimeOfLastMigrationAttempt[];
 
-// Boolean value indicating whether the client is ready to use UPM for local
+// Integer pref indicating whether the client is ready to use UPM for local
 // passwords and settings and split password stores for syncing users.
 // The preconditions for the pref to be set to true:
 // - M2: For users syncing passwords, the profile store contents have been
@@ -91,6 +91,13 @@ extern const char kTimeOfLastMigrationAttempt[];
 // - M3: For the users who are not syncing passwords, the passwords have been
 // successfully copied to GMS Core. The settings will be migrated as well, but
 // their migration doesn't impact this pref.
+//
+// Do not renumber UseUpmLocalAndSeparateStoresState, values are persisted.
+enum class UseUpmLocalAndSeparateStoresState {
+  kOff = 0,
+  kOffAndMigrationPending = 1,
+  kOn = 2,
+};
 extern const char kPasswordsUseUPMLocalAndSeparateStores[];
 
 // Boolean value that indicated the need of data migration between the two
