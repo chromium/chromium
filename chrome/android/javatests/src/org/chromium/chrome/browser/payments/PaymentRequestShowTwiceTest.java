@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -19,7 +18,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.payments.NotShownReason;
 
 import java.util.concurrent.TimeoutException;
 
@@ -47,13 +45,6 @@ public class PaymentRequestShowTwiceTest {
                 "\"Second request: AbortError: Another PaymentRequest UI is already showing in a"
                         + " different tab or window.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("showSecond()"));
-
-        // The second UI was never shown due to another web payments UI already showing.
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.CheckoutFunnel.NoShow",
-                        NotShownReason.CONCURRENT_REQUESTS));
 
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());

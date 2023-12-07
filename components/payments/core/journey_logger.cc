@@ -293,8 +293,6 @@ void JourneyLogger::SetAborted(AbortReason reason) {
 void JourneyLogger::SetNotShown(NotShownReason reason) {
   DCHECK(!WasPaymentRequestTriggered());
   RecordJourneyStatsHistograms(COMPLETION_STATUS_COULD_NOT_SHOW);
-  base::UmaHistogramEnumeration("PaymentRequest.CheckoutFunnel.NoShow", reason,
-                                NOT_SHOWN_REASON_MAX);
 }
 
 void JourneyLogger::SetNoMatchingCredentialsShown() {

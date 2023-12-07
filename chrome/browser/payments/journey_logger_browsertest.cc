@@ -108,12 +108,6 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
   EXPECT_THAT(eval_js_result.ExtractString(),
               testing::StartsWith("NotSupportedError"));
 
-  // Make sure that it was logged as a reason why the Payment Request was not
-  // shown.
-  histogram_tester.ExpectBucketCount(
-      "PaymentRequest.CheckoutFunnel.NoShow",
-      JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD, 1);
-
   // Make sure the events were logged correctly.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
