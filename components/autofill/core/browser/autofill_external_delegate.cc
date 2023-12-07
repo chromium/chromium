@@ -176,7 +176,8 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
   switch (item_id) {
     case PopupItemId::kAddressEntry:
     case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kFillFullEmail:
@@ -445,7 +446,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           mojom::TextReplacement::kReplaceAll, query_form_, query_field_,
           suggestion.main_text.value, suggestion.popup_item_id);
       break;
-    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
       PreviewFieldByFieldFillingSuggestion(suggestion);
       break;
     case PopupItemId::kVirtualCreditCardEntry:
@@ -524,7 +526,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->driver().RendererShouldAcceptDataListSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
       break;
-    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
       FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source_);
       break;
     case PopupItemId::kIbanEntry:
@@ -886,7 +889,9 @@ void AutofillExternalDelegate::OnCreditCardScanned(
 
 void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
     const Suggestion& suggestion) {
-  CHECK_EQ(suggestion.popup_item_id, PopupItemId::kFieldByFieldFilling);
+  CHECK(suggestion.popup_item_id == PopupItemId::kAddressFieldByFieldFilling ||
+        suggestion.popup_item_id ==
+            PopupItemId::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
   const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
   if (const AutofillProfile* profile =
@@ -902,7 +907,9 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position,
     AutofillSuggestionTriggerSource trigger_source) {
-  CHECK_EQ(suggestion.popup_item_id, PopupItemId::kFieldByFieldFilling);
+  CHECK(suggestion.popup_item_id == PopupItemId::kAddressFieldByFieldFilling ||
+        suggestion.popup_item_id ==
+            PopupItemId::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
   const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
   if (const AutofillProfile* profile =
@@ -969,8 +976,8 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     autofill_metrics::LogFieldByFieldFillingFieldUsed(
         *(suggestion.field_by_field_filling_type_used));
   }
-  // We target only the triggering field type in the
-  // PopupItemId::kFieldByFieldFilling case.
+  // We target only the triggering field type in the field-by-field filling
+  // case.
   last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
                                                          ->section] = {
       autofill_trigger_field->Type().GetStorableType()};

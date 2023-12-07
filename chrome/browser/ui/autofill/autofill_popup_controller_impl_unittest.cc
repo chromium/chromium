@@ -960,8 +960,9 @@ TEST_F(AutofillPopupControllerImplTest,
        GetRemovalConfirmationText_UnrelatedPopupItemId) {
   std::u16string title;
   std::u16string body;
-  ShowSuggestions(manager(),
-                  {Suggestion(u"Entry", PopupItemId::kFieldByFieldFilling)});
+  ShowSuggestions(
+      manager(),
+      {Suggestion(u"Entry", PopupItemId::kAddressFieldByFieldFilling)});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));
@@ -972,8 +973,8 @@ TEST_F(AutofillPopupControllerImplTest,
   std::u16string title;
   std::u16string body;
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
-                                 PopupItemId::kFieldByFieldFilling, u"Entry",
-                                 Suggestion::Guid("1111"))});
+                                 PopupItemId::kAddressFieldByFieldFilling,
+                                 u"Entry", Suggestion::Guid("1111"))});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));

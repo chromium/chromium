@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -89,15 +90,17 @@ constexpr auto kDefaultTriggerSource =
 constexpr std::string_view kPlusAddressSuggestionMetric =
     "Autofill.PlusAddresses.Suggestion.Events";
 
-// Creates a `PopupItemId::kFieldByFieldFilling` suggestion.
+// Creates a field by field filling suggestion.
 // `guid` is used to set `Suggestion::payload` as
 // `Suggestion::Guid(guid)`. This method also sets the
 // `Suggestion::field_by_field_filling_type_used` to `fbf_type_used`.
 Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
                                                ServerFieldType fbf_type_used) {
-  Suggestion suggestion =
-      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling,
-                                     u"field by field", Suggestion::Guid(guid));
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      GroupTypeOfServerFieldType(fbf_type_used) == FieldTypeGroup::kCreditCard
+          ? PopupItemId::kCreditCardFieldByFieldFilling
+          : PopupItemId::kAddressFieldByFieldFilling,
+      u"field by field", Suggestion::Guid(guid));
   suggestion.field_by_field_filling_type_used = std::optional(fbf_type_used);
   return suggestion;
 }
@@ -1198,7 +1201,7 @@ const FillingMethodMetricsTestParams kFillingMethodMetricsTestCases[] = {
     {.popup_item_id = PopupItemId::kFillEverythingFromAddressProfile,
      .target_metric = autofill_metrics::AutofillFillingMethodMetric::kFullForm,
      .test_name = "fillEverythingFromAddressProfile"},
-    {.popup_item_id = PopupItemId::kFieldByFieldFilling,
+    {.popup_item_id = PopupItemId::kAddressFieldByFieldFilling,
      .target_metric =
          autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling,
      .test_name = "fieldByFieldFilling"},
@@ -1224,7 +1227,7 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   const Suggestion suggestion =
-      params.popup_item_id == PopupItemId::kFieldByFieldFilling
+      params.popup_item_id == PopupItemId::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
   manager().OnFormsSeen({queried_form_}, {});
@@ -1293,7 +1296,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   const Suggestion suggestion =
-      params.popup_item_id == PopupItemId::kFieldByFieldFilling
+      params.popup_item_id == PopupItemId::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id, u"baz foo",
                                            Suggestion::Guid(profile.guid()));
@@ -1437,7 +1440,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
 }
 
 // Tests that when the suggestion is of type
-// `PopupItemId::kFieldByFieldFilling`, we emit the expected metric
+// `PopupItemId::kAddressFieldByFieldFilling`, we emit the expected metric
 // corresponding to which field type was used.
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_SubPopup_EmitsTypeMetric) {
@@ -1489,7 +1492,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  suggestion.main_text.value,
-                                 PopupItemId::kFieldByFieldFilling));
+                                 PopupItemId::kCreditCardFieldByFieldFilling));
 
   external_delegate().DidSelectSuggestion(suggestion);
 }
@@ -1507,7 +1510,7 @@ TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
                                  mojom::TextReplacement::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
                                  suggestion.main_text.value,
-                                 PopupItemId::kFieldByFieldFilling));
+                                 PopupItemId::kCreditCardFieldByFieldFilling));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
@@ -1537,14 +1540,14 @@ const GetLastServerTypesToFillForSectionTestParams
         {.expected_last_field_types_to_fill_for_section = kAllServerFieldTypes,
          .popup_item_id = PopupItemId::kAddressEntry,
          .test_name = "_AllServerFields"},
-        // Tests that when `PopupItemId::kFieldByFieldFilling`
+        // Tests that when `PopupItemId::kAddressFieldByFieldFilling`
         // is accepted and therefore the user wanted to fill a single field.
         // The last targeted fields is stored as the triggering field type
         // only, this way the next time the user interacts
         // with the form, they are kept at the same filling granularity.
         {.expected_last_field_types_to_fill_for_section =
              absl::optional<ServerFieldTypeSet>({NAME_FIRST}),
-         .popup_item_id = PopupItemId::kFieldByFieldFilling,
+         .popup_item_id = PopupItemId::kAddressFieldByFieldFilling,
          .test_name = "_SingleField"},
         // Tests that when `GetLastFieldTypesToFillForSection` is called for
         // a section for which no information was stored, `absl::nullopt` is
@@ -1577,7 +1580,7 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   manager().OnFormsSeen({queried_form_}, {});
   ON_CALL(pdm(), IsAutofillProfileEnabled).WillByDefault(Return(true));
   const Suggestion suggestion =
-      params.popup_item_id == PopupItemId::kFieldByFieldFilling
+      params.popup_item_id == PopupItemId::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
 
@@ -1987,7 +1990,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
           mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(),
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
-          PopupItemId::kFieldByFieldFilling));
+          PopupItemId::kAddressFieldByFieldFilling));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

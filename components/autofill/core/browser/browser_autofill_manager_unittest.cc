@@ -3041,7 +3041,7 @@ TEST_F(BrowserAutofillManagerTest, UndoSavesFieldByFieldFillingData) {
   browser_autofill_manager_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
       form, form.fields.front(), u"Test Value",
-      PopupItemId::kFieldByFieldFilling);
+      PopupItemId::kAddressFieldByFieldFilling);
 
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data

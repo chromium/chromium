@@ -223,7 +223,8 @@ struct Suggestion {
   // suggestion.
   std::optional<std::u16string> acceptance_a11y_announcement;
 
-  // When `popup_item_id` is `PopupItemId::kFieldByFieldFilling`, specifies the
+  // When `popup_item_id` is
+  // `PopupItemId::k(Address|CreditCard)FieldByFieldFilling`, specifies the
   // `ServerFieldType` used to build the suggestion's `main_text`.
   std::optional<ServerFieldType> field_by_field_filling_type_used;
 

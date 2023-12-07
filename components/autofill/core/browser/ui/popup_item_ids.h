@@ -37,9 +37,11 @@ enum class PopupItemId : int {
   // Same as above, when triggered from an email address field this suggestion
   // will fill every email field.
   kFillFullEmail,
+  kAddressFieldByFieldFilling,
   kTitle,
   kEditAddressProfile,
   kDeleteAddressProfile,
+  kAddressEntryNotSelectable,
   kAutofillOptions,
 
   // Compose suggestions.
@@ -66,7 +68,9 @@ enum class PopupItemId : int {
   kInsecureContextPaymentDisabledMessage,
   kScanCreditCard,
   kVirtualCreditCardEntry,
+  kCreditCardFieldByFieldFilling,
   kIbanEntry,
+  kPaymentsEntryNotSelectable,
 
   // Plus address suggestions.
   kCreateNewPlusAddress,
@@ -81,9 +85,6 @@ enum class PopupItemId : int {
   kWebauthnSignInWithAnotherDevice,
 
   // Other suggestions.
-  kFieldByFieldFilling,
-  kAddressEntryNotSelectable,
-  kPaymentsEntryNotSelectable,
   kSeparator,
   kClearForm,
   kMixedFormMessage,

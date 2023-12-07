@@ -215,10 +215,11 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
 // provided `profile`. Returns true if any suggestion was added.
 // Note that adding a new field-by-field filling `ServerFieldType` should be
 // reflected in `AutofillFieldByFieldFillingTypes`.
-bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
-                                const AutofillProfile& profile,
-                                const std::string& app_locale,
-                                std::vector<Suggestion>& suggestions) {
+bool AddAddressFieldByFieldSuggestions(
+    const std::vector<ServerFieldType>& field_types,
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    std::vector<Suggestion>& suggestions) {
   bool any_suggestion_added = false;
   for (auto field_type : field_types) {
     // Field-by-field suggestions are never generated for
@@ -233,7 +234,8 @@ bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
       main_text = GetProfileSuggestionMainText(profile, app_locale, field_type);
     }
     if (!main_text.empty()) {
-      suggestions.emplace_back(main_text, PopupItemId::kFieldByFieldFilling);
+      suggestions.emplace_back(main_text,
+                               PopupItemId::kAddressFieldByFieldFilling);
       suggestions.back().field_by_field_filling_type_used =
           std::optional(field_type);
       suggestions.back().payload = Suggestion::Guid(profile.guid());
@@ -273,8 +275,9 @@ void AddNameChildSuggestions(FieldTypeGroup trigger_field_type_group,
     suggestion.children.push_back(
         GetFillFullNameSuggestion(Suggestion::Guid(profile.guid())));
   }
-  if (AddFieldByFieldSuggestions({NAME_FIRST, NAME_MIDDLE, NAME_LAST}, profile,
-                                 app_locale, suggestion.children)) {
+  if (AddAddressFieldByFieldSuggestions({NAME_FIRST, NAME_MIDDLE, NAME_LAST},
+                                        profile, app_locale,
+                                        suggestion.children)) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   };
@@ -291,14 +294,16 @@ bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
   auto add_address_line = [&](ServerFieldType type) -> bool {
     CHECK(type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2);
 
-    if (!AddFieldByFieldSuggestions({type}, profile, app_locale, suggestions)) {
+    if (!AddAddressFieldByFieldSuggestions({type}, profile, app_locale,
+                                           suggestions)) {
       return false;
     }
 
     if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_HOUSE_NUMBER, profile,
                                    app_locale) &&
-        AddFieldByFieldSuggestions({ADDRESS_HOME_HOUSE_NUMBER}, profile,
-                                   app_locale, suggestions.back().children)) {
+        AddAddressFieldByFieldSuggestions({ADDRESS_HOME_HOUSE_NUMBER}, profile,
+                                          app_locale,
+                                          suggestions.back().children)) {
       Suggestion& address_line_suggestion = suggestions.back().children.back();
       address_line_suggestion.labels = {
           {Suggestion::Text(l10n_util::GetStringUTF16(
@@ -309,8 +314,9 @@ bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
     }
     if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_STREET_NAME, profile,
                                    app_locale) &&
-        AddFieldByFieldSuggestions({ADDRESS_HOME_STREET_NAME}, profile,
-                                   app_locale, suggestions.back().children)) {
+        AddAddressFieldByFieldSuggestions({ADDRESS_HOME_STREET_NAME}, profile,
+                                          app_locale,
+                                          suggestions.back().children)) {
       Suggestion& address_line_suggestion = suggestions.back().children.back();
       address_line_suggestion.labels = {
           {Suggestion::Text(l10n_util::GetStringUTF16(
@@ -344,8 +350,8 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 
   bool added_any_address_line =
       AddAddressLineChildSuggestions(profile, app_locale, suggestion.children);
-  bool added_zip = AddFieldByFieldSuggestions({ADDRESS_HOME_ZIP}, profile,
-                                              app_locale, suggestion.children);
+  bool added_zip = AddAddressFieldByFieldSuggestions(
+      {ADDRESS_HOME_ZIP}, profile, app_locale, suggestion.children);
   if (added_any_address_line || added_zip) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
@@ -357,7 +363,7 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 // field clicked by the user and affects whether international or local phone
 // number will be shown to the user in the suggestion. The field type group of
 // the `trigger_field_type` is used to define whether the phone number and email
-// suggestions will behave as `PopupItemId::kFieldByFieldFilling` or as
+// suggestions will behave as `PopupItemId::kAddressFieldByFieldFilling` or as
 // `PopupItemId::kFillFullPhoneNumber`/`PopupItemId::kFillFullEmail`
 // respectively. When the triggering field group matches the type of the field
 // we are adding, the suggestion will be of group filling type, other than field
@@ -382,13 +388,13 @@ void AddContactChildSuggestions(ServerFieldType trigger_field_type,
           GetFormattedPhoneNumberForGranularFillingSuggestion(
               profile, app_locale, use_national_format_phone_number),
           PopupItemId::kFillFullPhoneNumber);
-      // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
-      // therefore only set the backend id in the group filling case.
+      // `PopupItemId::kAddressFieldByFieldFilling` suggestions do not use
+      // profile, therefore only set the backend id in the group filling case.
       phone_number_suggestion.payload = Suggestion::Guid(profile.guid());
       suggestion.children.push_back(std::move(phone_number_suggestion));
       phone_number_suggestion_added = true;
     } else {
-      phone_number_suggestion_added = AddFieldByFieldSuggestions(
+      phone_number_suggestion_added = AddAddressFieldByFieldSuggestions(
           {PHONE_HOME_WHOLE_NUMBER}, profile, app_locale, suggestion.children);
     }
   }
@@ -401,13 +407,13 @@ void AddContactChildSuggestions(ServerFieldType trigger_field_type,
       Suggestion email_address_suggestion(
           profile.GetInfo(EMAIL_ADDRESS, app_locale),
           PopupItemId::kFillFullEmail);
-      // `PopupItemId::kFieldByFieldFilling` suggestions do not use profile,
-      // therefore only set the backend id in the group filling case.
+      // `PopupItemId::kAddressFieldByFieldFilling` suggestions do not use
+      // profile, therefore only set the backend id in the group filling case.
       email_address_suggestion.payload = Suggestion::Guid(profile.guid());
       suggestion.children.push_back(std::move(email_address_suggestion));
       email_address_suggestion_added = true;
     } else {
-      email_address_suggestion_added = AddFieldByFieldSuggestions(
+      email_address_suggestion_added = AddAddressFieldByFieldSuggestions(
           {EMAIL_ADDRESS}, profile, app_locale, suggestion.children);
     }
   }
@@ -446,7 +452,7 @@ bool AddCreditCardNameChildSuggestion(const CreditCard& credit_card,
     return false;
   }
   Suggestion cc_name(credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale),
-                     PopupItemId::kFieldByFieldFilling);
+                     PopupItemId::kCreditCardFieldByFieldFilling);
   // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
   cc_name.payload = Suggestion::Guid(credit_card.guid());
   cc_name.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
@@ -465,7 +471,7 @@ bool AddCreditCardNumberChildSuggestion(const CreditCard& credit_card,
   static constexpr int kFieldByFieldObfuscationLength = 12;
   Suggestion cc_number(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
                            kFieldByFieldObfuscationLength),
-                       PopupItemId::kFieldByFieldFilling);
+                       PopupItemId::kCreditCardFieldByFieldFilling);
   // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
   cc_number.payload = Suggestion::Guid(credit_card.guid());
   cc_number.field_by_field_filling_type_used = CREDIT_CARD_NUMBER;
@@ -483,7 +489,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
                                             Suggestion& suggestion) {
   Suggestion cc_expiration(
       credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale),
-      PopupItemId::kFieldByFieldFilling);
+      PopupItemId::kCreditCardFieldByFieldFilling);
   // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
   cc_expiration.payload = Suggestion::Guid(credit_card.guid());
   cc_expiration.field_by_field_filling_type_used =
@@ -493,7 +499,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 
   Suggestion cc_expiration_year(
       credit_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale),
-      PopupItemId::kFieldByFieldFilling);
+      PopupItemId::kCreditCardFieldByFieldFilling);
   // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
   cc_expiration_year.payload = Suggestion::Guid(credit_card.guid());
   cc_expiration_year.field_by_field_filling_type_used =
@@ -503,7 +509,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 
   Suggestion cc_expiration_month(
       credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale),
-      PopupItemId::kFieldByFieldFilling);
+      PopupItemId::kCreditCardFieldByFieldFilling);
   // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
   cc_expiration_month.payload = Suggestion::Guid(credit_card.guid());
   cc_expiration_month.field_by_field_filling_type_used = CREDIT_CARD_EXP_MONTH;
@@ -556,7 +562,7 @@ PopupItemId GetProfileSuggestionPopupItemId(
     case AutofillFillingMethod::kFullForm:
       return PopupItemId::kAddressEntry;
     case AutofillFillingMethod::kFieldByFieldFilling:
-      return PopupItemId::kFieldByFieldFilling;
+      return PopupItemId::kAddressFieldByFieldFilling;
     case AutofillFillingMethod::kNone:
       NOTREACHED_NORETURN();
   }
@@ -1106,7 +1112,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         last_targeted_fields, trigger_field_type_group);
     suggestions.back().hidden_prior_to_address_rewriter_usage =
         previously_hidden_profiles_guid.contains(profile->guid());
-    if (suggestions.back().popup_item_id == PopupItemId::kFieldByFieldFilling) {
+    if (suggestions.back().popup_item_id ==
+        PopupItemId::kAddressFieldByFieldFilling) {
       suggestions.back().field_by_field_filling_type_used =
           std::optional(trigger_field_type);
     }

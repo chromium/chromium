@@ -173,13 +173,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
                             const AutofillTriggerDetails& trigger_details);
 
   // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
-  // previewed and previews the corresponding
-  // `PopupItemId::kFieldByFieldFilling` suggestion.
+  // previewed and previews the corresponding field-by-field filling suggestion.
   void PreviewFieldByFieldFillingSuggestion(const Suggestion& suggestion);
 
   // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
-  // filled and fills the corresponding `PopupItemId::kFieldByFieldFilling`
-  // suggestion.
+  // filled and fills the corresponding field-by-field filling suggestion.
   void FillFieldByFieldFillingSuggestion(
       const Suggestion& suggestion,
       const SuggestionPosition& position,

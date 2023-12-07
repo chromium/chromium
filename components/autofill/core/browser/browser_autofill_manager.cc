@@ -272,7 +272,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kPaymentsEntryNotSelectable:
     case PopupItemId::kFillEverythingFromAddressProfile:
@@ -1352,7 +1353,8 @@ void BrowserAutofillManager::FillOrPreviewField(
     PopupItemId popup_item_id) {
   if (AutofillField* autofill_field = GetAutofillField(form, field);
       autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
-      popup_item_id == PopupItemId::kFieldByFieldFilling) {
+      (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
+       popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
     // TODO(crbug.com/1345089): Only use AutofillField.
     const FormFieldData* const filled_field = &field;
     form_autofill_history_.AddFormFillEntry(

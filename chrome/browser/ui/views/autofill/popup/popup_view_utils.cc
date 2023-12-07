@@ -541,6 +541,7 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
+    case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kAutofillOptions:
@@ -548,12 +549,12 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kCompose:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullEmail:
@@ -602,14 +603,15 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
+    case PopupItemId::kAddressFieldByFieldFilling:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kCompose:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kPaymentsEntryNotSelectable:
     case PopupItemId::kFillExistingPlusAddress:
@@ -636,12 +638,13 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
 bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kAddressEntry:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kPaymentsEntryNotSelectable:
       return true;
