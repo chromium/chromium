@@ -31,7 +31,6 @@ export interface TabOrganizationPageElement {
     inProgress: HTMLElement,
     results: HTMLElement,
     failure: HTMLElement,
-    footer: HTMLElement,
   };
 }
 
