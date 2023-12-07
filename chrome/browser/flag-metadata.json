@@ -4971,11 +4971,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "ios-password-checkup",
-    "owners": ["noemies@chromium.org", "eic@chromium.org", "bling-integrations-team@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "ios-payments-bottom-sheet",
     "owners": ["veronguyen@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
     "expiry_milestone": 120
