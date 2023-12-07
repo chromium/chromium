@@ -48,6 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -202,7 +203,7 @@ class ChromeHidTestHelper {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpUserManager(TestingProfile* profile) {
+  const user_manager::User* SetUpUserManager() {
     // On ChromeOS a user account is needed in order to check whether the user
     // account is affiliated with the device owner for the purposes of applying
     // enterprise policy.
@@ -214,10 +215,11 @@ class ChromeHidTestHelper {
 
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    fake_user_manager_ptr->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
-        profile);
+    const user_manager::User* user = fake_user_manager_ptr->AddUser(account_id);
+
     fake_user_manager_ptr->LoginUser(account_id);
+
+    return user;
   }
 
   void TearDownUserManager() { scoped_user_manager_.reset(); }
@@ -858,6 +860,14 @@ class ChromeHidDelegateRenderFrameTestBase
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    const user_manager::User* user = SetUpUserManager();
+    TestingProfile::Builder builder;
+    testing_profile_ = builder.Build();
+    profile_ = testing_profile_.get();
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, profile_.get());
+#else
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -874,14 +884,12 @@ class ChromeHidDelegateRenderFrameTestBase
     // As a result, here create a profile then call SetTestingFactory to inject
     // MockHidConnectionTracker.
     profile_ = profile_manager_->CreateTestingProfile(kTestUserEmail);
+#endif
     HidConnectionTrackerFactory::GetInstance()->SetTestingFactory(
         profile_, GetHidConnectionTrackerTestingFactory());
 
     ASSERT_TRUE(profile_);
     SetUpHidConnectionTracker();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetUpUserManager(profile_.get());
-#endif
     // Create a new web contents for `profile_`.
     SetContents(
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr));
@@ -893,10 +901,12 @@ class ChromeHidDelegateRenderFrameTestBase
   void TearDown() override {
     DeleteContents();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    testing_profile_.reset();
     TearDownUserManager();
-#endif
+#else
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
+#endif
     profile_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
     hid_connection_tracker_ = nullptr;
@@ -964,7 +974,11 @@ class ChromeHidDelegateRenderFrameTestBase
   }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<TestingProfile> testing_profile_;
+#else
   std::unique_ptr<TestingProfileManager> profile_manager_;
+#endif
 };
 
 class ChromeHidDelegateRenderFrameTest
@@ -980,7 +994,7 @@ class ChromeHidDelegateServiceWorkerTestBase
   void SetUp() override {
     content::EmbeddedWorkerInstanceTestHarness::SetUp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetUpUserManager(profile_.get());
+    SetUpUserManager();
 #endif
     SetUpHidConnectionTracker();
     BindHidManager();
