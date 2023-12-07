@@ -405,22 +405,35 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
           std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
     }
 
+    const bool nudge_should_be_shown = NudgeShouldBeShown();
+
+    // The user should be directed to the tray during drag operations iff the
+    // nudge will be shown or drop-to-pin is disabled. This is because we want
+    // to direct users to drag to the holding space when drop-to-pin is
+    // disabled, but encourage dropping on the desktop when it's enabled.
+    const bool should_direct_users_to_tray =
+        nudge_should_be_shown ||
+        !features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled();
+
     // Ensure that holding space is visible in the shelf on all displays while
-    // the observed drag-and-drop sequence is in progress.
-    if (!force_holding_space_show_in_shelf_for_drag_) {
+    // the observed drag-and-drop sequence is in progress when we're trying to
+    // encourage users to drag files there.
+    if (!force_holding_space_show_in_shelf_for_drag_ &&
+        should_direct_users_to_tray) {
       force_holding_space_show_in_shelf_for_drag_ =
           std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
     }
 
-    if (!NudgeShouldBeShown() || help_bubble_anchor_) {
-      return;
-    }
-
     // Ensure the shelf is visible on the active display while the observed
-    // drag-and-drop sequence is in progress.
-    if (!disable_shelf_auto_hide_) {
+    // drag-and-drop sequence is in progress when we're trying to encourage
+    // users to drag files there.
+    if (!disable_shelf_auto_hide_ && should_direct_users_to_tray) {
       disable_shelf_auto_hide_ =
           std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
+    }
+
+    if (!nudge_should_be_shown || help_bubble_anchor_) {
+      return;
     }
 
     // Cache the `holding_space_tray` nearest the `location_in_screen` so that

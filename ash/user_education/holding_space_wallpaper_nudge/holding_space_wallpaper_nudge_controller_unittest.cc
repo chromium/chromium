@@ -887,6 +887,9 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
   EXPECT_FALSE(shelf->IsVisible());
   EXPECT_FALSE(tray->GetVisible());
 
+  const bool drop_to_pin_behavior_expected =
+      drop_to_pin_enabled().value_or(false);
+
   for (size_t day = 0; day < 3; ++day) {
     // Ensure a non-zero animation duration so there is sufficient time to
     // detect pings before they are automatically destroyed on animation
@@ -908,8 +911,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
     EXPECT_TRUE(tray->GetVisible());
 
     // The wallpaper highlight should also show if drop-to-pin is enabled.
-    EXPECT_EQ(HasWallpaperHighlight(display_id),
-              drop_to_pin_enabled().value_or(false));
+    EXPECT_EQ(HasWallpaperHighlight(display_id), drop_to_pin_behavior_expected);
 
     // Reset the UI state, using zero-scaled animations to save time.
     SetAnimationDurationMultiplier(
@@ -931,16 +933,16 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
     EXPECT_FALSE(HasHelpBubble(tray));
     EXPECT_FALSE(HasPing(tray));
 
-    // The shelf should be hidden if the nudge is not showing, but the tray
-    // should always be visible so users can use the holding space after
-    // learning about it.
-    EXPECT_FALSE(shelf->IsVisible());
-    EXPECT_TRUE(tray->GetVisible());
+    // The shelf and tray should be visible if the user is dragging and
+    // drop-to-pin is disabled to allow them to drop onto holding space. They
+    // both should be hidden if drop-to-pin is enabled because we want to
+    // encourage that behavior instead.
+    EXPECT_NE(shelf->IsVisible(), drop_to_pin_behavior_expected);
+    EXPECT_NE(tray->GetVisible(), drop_to_pin_behavior_expected);
 
     // Even if not showing the nudge, the wallpaper highlight should be shown if
     // drop-to-pin is enabled.
-    EXPECT_EQ(HasWallpaperHighlight(display_id),
-              drop_to_pin_enabled().value_or(false));
+    EXPECT_EQ(HasWallpaperHighlight(display_id), drop_to_pin_behavior_expected);
 
     // Reset the UI state, using zero-scaled animations to save time.
     SetAnimationDurationMultiplier(
@@ -962,8 +964,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
 
   EXPECT_FALSE(HasHelpBubble(tray));
   EXPECT_FALSE(HasPing(tray));
-  EXPECT_FALSE(shelf->IsVisible());
-  EXPECT_TRUE(tray->GetVisible());
+  EXPECT_NE(shelf->IsVisible(), drop_to_pin_behavior_expected);
+  EXPECT_NE(tray->GetVisible(), drop_to_pin_behavior_expected);
   EXPECT_EQ(HasWallpaperHighlight(display_id),
             drop_to_pin_enabled().value_or(false));
 
