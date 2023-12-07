@@ -2272,6 +2272,10 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   // states not allowing tree mutations.
   CHECK(Lifecycle().StateAllowsTreeMutations());
 
+  // No SVG resources should be scheduled for invalidation outside of
+  // style-recalc and layout tree detach (Node::DetachLayoutTree).
+  DCHECK(svg_resources_needing_invalidation_.empty());
+
   TRACE_EVENT_BEGIN1("blink,devtools.timeline", "UpdateLayoutTree", "beginData",
                      [&](perfetto::TracedValue context) {
                        inspector_recalculate_styles_event::Data(
@@ -2295,6 +2299,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
   GetStyleResolver().ClearResizedForViewportUnits();
+  InvalidatePendingSVGResources();
 
   rendering_had_begun_for_last_style_update_ = RenderingHasBegun();
 
@@ -2862,6 +2867,19 @@ void Document::UpdateUseShadowTreesIfNeeded() {
     for (SVGUseElement* element : elements)
       element->BuildPendingResource();
   }
+}
+
+void Document::ScheduleSVGResourceInvalidation(LocalSVGResource& resource) {
+  svg_resources_needing_invalidation_.insert(&resource);
+}
+
+void Document::InvalidatePendingSVGResources() {
+  HeapHashSet<Member<LocalSVGResource>> pending_resources;
+  svg_resources_needing_invalidation_.swap(pending_resources);
+  for (LocalSVGResource* resource : pending_resources) {
+    resource->NotifyContentChanged();
+  }
+  DCHECK(svg_resources_needing_invalidation_.empty());
 }
 
 StyleResolver& Document::GetStyleResolver() const {
@@ -8865,6 +8883,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(element_data_cache_clear_timer_);
   visitor->Trace(element_data_cache_);
   visitor->Trace(use_elements_needing_update_);
+  visitor->Trace(svg_resources_needing_invalidation_);
   visitor->Trace(node_move_scope_items_);
   visitor->Trace(template_document_);
   visitor->Trace(template_document_host_);

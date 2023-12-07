@@ -140,7 +140,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
    public:
     explicit DetachLayoutTreeScope(StyleEngine& engine)
         : engine_(engine), in_detach_scope_(&engine.in_detach_scope_, true) {}
-    ~DetachLayoutTreeScope() { engine_.MarkForLayoutTreeChangesAfterDetach(); }
+    ~DetachLayoutTreeScope() {
+      engine_.MarkForLayoutTreeChangesAfterDetach();
+      engine_.InvalidateSVGResourcesAfterDetach();
+    }
 
    private:
     StyleEngine& engine_;
@@ -841,6 +844,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // We may need to update whitespaces in the layout tree after a flat tree
   // removal which caused a layout subtree to be detached.
   void MarkForLayoutTreeChangesAfterDetach();
+
+  // SVG resource may have had their layout object detached and need to notify
+  // any clients about this.
+  void InvalidateSVGResourcesAfterDetach();
 
   void RebuildLayoutTreeForTraversalRootAncestors(Element* parent,
                                                   Element* container_parent);

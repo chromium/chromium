@@ -203,6 +203,7 @@ class LiveNodeListBase;
 class LocalDOMWindow;
 class LocalFrame;
 class LocalFrameView;
+class LocalSVGResource;
 class Locale;
 class Location;
 class MediaQueryListListener;
@@ -633,6 +634,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ScheduleUseShadowTreeUpdate(SVGUseElement&);
   void UnscheduleUseShadowTreeUpdate(SVGUseElement&);
+
+  void ScheduleSVGResourceInvalidation(LocalSVGResource&);
+  void InvalidatePendingSVGResources();
 
   void EvaluateMediaQueryList();
 
@@ -2598,6 +2602,11 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<Document> template_document_host_;
 
   HeapHashSet<Member<SVGUseElement>> use_elements_needing_update_;
+  // SVG resources ("resource elements") for which NotifyContentChanged() needs
+  // to be called to notify any clients about a change in layout attachment
+  // state. Should be populated during layout detach or style recalc, and be
+  // empty before and after those operations.
+  HeapHashSet<Member<LocalSVGResource>> svg_resources_needing_invalidation_;
 
   ParserSynchronizationPolicy parser_sync_policy_;
 

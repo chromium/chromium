@@ -162,12 +162,10 @@ void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   // If this is the 'active' resource (the first element with the specified 'id'
   // in tree order), notify any clients that they need to reevaluate the
   // resource's contents.
-  const LocalSVGResource* resource = ResourceForContainer(*this);
+  LocalSVGResource* resource = ResourceForContainer(*this);
   if (!resource || resource->Target() != GetElement())
     return;
-  // Pass all available flags. This may be performing unnecessary invalidations
-  // in some cases.
-  MarkAllClientsForInvalidation(kInvalidateAll);
+  GetDocument().ScheduleSVGResourceInvalidation(*resource);
 }
 
 void LayoutSVGResourceContainer::WillBeDestroyed() {

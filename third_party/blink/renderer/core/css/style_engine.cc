@@ -4253,6 +4253,10 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
   parent_for_detached_subtree_ = nullptr;
 }
 
+void StyleEngine::InvalidateSVGResourcesAfterDetach() {
+  GetDocument().InvalidatePendingSVGResources();
+}
+
 bool StyleEngine::AllowSkipStyleRecalcForScope() const {
   if (InContainerQueryStyleRecalc()) {
     return true;
