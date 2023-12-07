@@ -349,34 +349,32 @@ void CorpHostStarter::OnNetworkError(int response_code) {
 
 void CorpHostStarter::HandleHttpStatusError(const ProtobufHttpStatus& status) {
   ProtobufHttpStatus::Code error_code = status.error_code();
+  std::string error_message = status.error_message();
   LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
-             << ", message: " << status.error_message();
+             << ", message: " << error_message;
 
   if (!status.response_body().empty()) {
-    // TODO(joedow): Parse this output in //remoting/internal and return a
-    // concise error message and accurate error code to increase debugability.
     size_t pos = status.response_body().rfind("Caused by: ");
     if (pos != std::string::npos) {
-      LOG(ERROR) << "\n  Extended error information: \n"
-                 << status.response_body().substr(pos);
+      error_message = status.response_body().substr(pos);
+      LOG(ERROR) << "\n  Extended error information: \n" << error_message;
       VLOG(1) << "\n  Full error information: \n" << status.response_body();
     } else {
+      error_message = status.response_body();
       LOG(ERROR) << "\n  Failed to find extended error information, showing "
                  << "full output:\n"
-                 << status.response_body();
+                 << error_message;
     }
   }
 
-  switch (error_code) {
-    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
-      std::move(on_done_).Run(PERMISSION_DENIED);
-      return;
-    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
-      std::move(on_done_).Run(OAUTH_ERROR);
-      return;
-    default:
-      std::move(on_done_).Run(NETWORK_ERROR);
+  auto result = NETWORK_ERROR;
+  if (error_code == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
+    result = PERMISSION_DENIED;
+  } else if (error_code == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
+    result = OAUTH_ERROR;
   }
+
+  ReportProvisioningError(error_message, result);
 }
 
 void CorpHostStarter::ReportProvisioningError(const std::string& message,
