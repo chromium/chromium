@@ -47,12 +47,16 @@ import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -100,7 +104,36 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     protected Verifier mVerifier;
+    protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
+
+    protected @interface PictureInPictureMode {
+        int NONE = 0;
+        int MINIMIZED_CUSTOM_TAB = 1;
+    }
+
+    protected @PictureInPictureMode int mLastPipMode;
+
+    protected FullscreenManager.Observer mFullscreenObserver =
+            new Observer() {
+                @Override
+                public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                    // We're certain here that the Custom Tab isn't minimized, so we can let PiP
+                    // be handled for any other case, i.e. fullscreen video.
+                    mLastPipMode = PictureInPictureMode.NONE;
+                }
+            };
+
+    protected CustomTabMinimizeDelegate.Observer mMinimizationObserver =
+            minimized -> {
+                // We only handle the `minimized == true` case to update the last PiP mode to MCT.
+                // This is because the order between this callback and the code in
+                // Activity#onPictureInPictureModeChanged isn't guaranteed, so we might end up
+                // resetting the last PiP mode prematurely.
+                if (minimized) {
+                    mLastPipMode = PictureInPictureMode.MINIMIZED_CUSTOM_TAB;
+                }
+            };
 
     // This is to give the right package name while using the client's resources during an
     // overridePendingTransition call.
@@ -368,7 +401,30 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             setTitle(webappExtras.shortName);
         }
 
+        mFullscreenManager = getFullscreenManager();
+
         mMinimizationManagerHolder.maybeCreateMinimizationManager(mTabModelProfileSupplier);
+        var minimizationManager = mMinimizationManagerHolder.getMinimizationManager();
+        if (minimizationManager != null) {
+            getFullscreenManager().addObserver(mFullscreenObserver);
+            minimizationManager.addObserver(mMinimizationObserver);
+        }
+    }
+
+    @Override
+    protected void onDestroyInternal() {
+        if (mFullscreenManager != null) {
+            mFullscreenManager.removeObserver(mFullscreenObserver);
+            mFullscreenManager = null;
+        }
+        if (mMinimizationManagerHolder != null) {
+            var minimizationManager = mMinimizationManagerHolder.getMinimizationManager();
+            if (minimizationManager != null) {
+                minimizationManager.removeObserver(mMinimizationObserver);
+            }
+        }
+
+        super.onDestroyInternal();
     }
 
     private int getColorScheme() {
@@ -725,5 +781,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         // CustomTabActivityTabController#finalizeCreatingTab.
         return didFinishNativeInitialization()
                 || mTabProvider.getInitialTabCreationMode() != TabCreationMode.HIDDEN;
+    }
+
+    @Override
+    protected boolean wasInPictureInPictureForMinimizedCustomTabs() {
+        return mLastPipMode == PictureInPictureMode.MINIMIZED_CUSTOM_TAB;
     }
 }

@@ -27,6 +27,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle.State;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -71,6 +72,7 @@ public class CustomTabMinimizationManager
     private final MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
     private final BrowserServicesIntentDataProvider mIntentData;
     private final Runnable mCloseTabRunnable;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
     private long mMinimizationSystemTime;
     private boolean mMinimized;
 
@@ -89,7 +91,6 @@ public class CustomTabMinimizationManager
             Runnable closeTabRunnable,
             BrowserServicesIntentDataProvider intentData) {
         mActivity = activity;
-        mActivity.addOnPictureInPictureModeChangedListener(this);
         mTabProvider = tabProvider;
         mFeatureEngagementDelegate = featureEngagementDelegate;
         mCloseTabRunnable = closeTabRunnable;
@@ -110,6 +111,10 @@ public class CustomTabMinimizationManager
             builder.setSeamlessResizeEnabled(false);
         }
         mMinimized = mActivity.enterPictureInPictureMode(builder.build());
+        if (!mMinimized) return;
+
+        mActivity.addOnPictureInPictureModeChangedListener(this);
+        notifyObservers(true);
         mMinimizationSystemTime = SystemClock.elapsedRealtime();
     }
 
@@ -124,7 +129,19 @@ public class CustomTabMinimizationManager
     }
 
     @Override
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    @Override
     public void accept(PictureInPictureModeChangedInfo pictureInPictureModeChangedInfo) {
+        if (!mMinimized) return;
+
         Tab tab = mTabProvider.get();
         assert tab != null;
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
@@ -136,6 +153,8 @@ public class CustomTabMinimizationManager
                     MinimizationEvents.COUNT);
         } else {
             mMinimized = false;
+            mActivity.removeOnPictureInPictureModeChangedListener(this);
+            notifyObservers(false);
             // We receive an update here when PiP is dismissed and the Activity is being stopped
             // before destruction. In that case, the state will be CREATED.
             var state = mActivity.getLifecycle().getCurrentState();
@@ -212,5 +231,11 @@ public class CustomTabMinimizationManager
                                 .getSupportFragmentManager()
                                 .findFragmentByTag(MinimizedCardDialogFragment.TAG);
         fragment.dismissNow();
+    }
+
+    private void notifyObservers(boolean minimized) {
+        for (var obs : mObservers) {
+            obs.onMinimizationChanged(minimized);
+        }
     }
 }

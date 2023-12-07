@@ -86,6 +86,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private CustomTabsConnection mConnection;
     @Mock private Runnable mCloseTabRunnable;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private CustomTabMinimizeDelegate.Observer mMinimizationObserver;
 
     private CustomTabMinimizationManager mManager;
 
@@ -109,6 +110,7 @@ public class CustomTabMinimizationManagerUnitTest {
                         mFeatureEngagementDelegate,
                         mCloseTabRunnable,
                         mIntentData);
+        mManager.addObserver(mMinimizationObserver);
     }
 
     @Test
@@ -120,6 +122,7 @@ public class CustomTabMinimizationManagerUnitTest {
         mManager.minimize();
         verify(mActivity).enterPictureInPictureMode(any(PictureInPictureParams.class));
         verify(mFeatureEngagementDelegate).notifyUserEngaged();
+        verify(mMinimizationObserver).onMinimizationChanged(true);
 
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
@@ -155,6 +158,7 @@ public class CustomTabMinimizationManagerUnitTest {
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
         verify(mConnection).onUnminimized(any());
+        verify(mMinimizationObserver).onMinimizationChanged(false);
         minimizationEventsWatcher.assertExpected(
                 "CustomTabs.MinimizedEvents.MAXIMIZE should be recorded once");
         timeElapsedWatcher.assertExpected(

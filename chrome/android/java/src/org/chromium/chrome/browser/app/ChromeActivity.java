@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerH
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
@@ -1340,6 +1341,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onPictureInPictureModeChanged(boolean inPicture, Configuration newConfig) {
         super.onPictureInPictureModeChanged(inPicture, newConfig);
+        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(this)
+                && wasInPictureInPictureForMinimizedCustomTabs()) return;
         if (inPicture) {
             ensureFullscreenVideoPictureInPictureController();
             mFullscreenVideoPictureInPictureController.onEnteredPictureInPictureMode();
@@ -1348,6 +1351,18 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mLastPictureInPictureModeForTesting = false;
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
+    }
+
+    /**
+     * Returns whether the {@link #onPictureInPictureModeChanged} call with `inPicture=true` was
+     * received because the Activity was put in picture-in-picture by the Minimized Custom Tabs
+     * feature. The other reason the Activity may be in PiP is because a fullscreen video was
+     * playing. The return value of this method is used to separate the handling of these cases.
+     * TODO(https://crbug.com/1507985): We should refactor how we handle PiP across different
+     * features.
+     */
+    protected boolean wasInPictureInPictureForMinimizedCustomTabs() {
+        return false;
     }
 
     /**
