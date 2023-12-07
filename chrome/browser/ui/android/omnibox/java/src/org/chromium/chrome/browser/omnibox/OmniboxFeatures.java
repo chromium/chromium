@@ -173,10 +173,6 @@ public class OmniboxFeatures {
         return ChromeFeatureList.sOmniboxNoopEditUrlSuggestionClicks.isEnabled();
     }
 
-    public static boolean shouldAvoidRelayoutDuringFocusAnimation() {
-        return ChromeFeatureList.sAvoidRelayoutDuringFocusAnimation.isEnabled();
-    }
-
     /**
      * Whether the omnibox unfocus animation should be short-circuited when navigating to a
      * suggestion in order to speed up navigation.

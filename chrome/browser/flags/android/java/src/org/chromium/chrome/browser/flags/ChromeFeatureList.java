@@ -420,7 +420,6 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SAFE_BROWSING_SKIP_SUBRESOURCES = "SafeBrowsingSkipSubResources";
     public static final String SCREENSHOTS_FOR_ANDROID_V2 = "ScreenshotsForAndroidV2";
-    public static final String SCROLL_TO_TLD_OPTIMIZATION = "ScrollToTLDOptimization";
     public static final String SEARCH_ENGINES_PROMO_V3 = "SearchEnginesPromoV3";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT =
@@ -748,8 +747,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, true);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
-    public static final MutableFlagWithSafeDefault sAvoidRelayoutDuringFocusAnimation =
-            newMutableFlagWithSafeDefault(AVOID_RELAYOUT_DURING_FOCUS_ANIMATION, true);
     public static final MutableFlagWithSafeDefault sCctRealTimeEngagementSignals =
             newMutableFlagWithSafeDefault(CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
     public static final MutableFlagWithSafeDefault sCctTextFragmentLookupApiEnabled =
@@ -785,8 +782,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
-    public static final MutableFlagWithSafeDefault sScrollToTLDOptimizations =
-            newMutableFlagWithSafeDefault(SCROLL_TO_TLD_OPTIMIZATION, false);
     public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
     public static final MutableFlagWithSafeDefault sShortCircuitUnfocusAnimation =

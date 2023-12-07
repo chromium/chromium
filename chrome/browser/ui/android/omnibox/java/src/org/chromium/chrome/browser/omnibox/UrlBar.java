@@ -46,7 +46,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -649,8 +648,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             return false;
         }
 
-        if (mVisibleTextPrefixHint != null
-                && ChromeFeatureList.sScrollToTLDOptimizations.isEnabled()) {
+        if (mVisibleTextPrefixHint != null) {
             return TextUtils.indexOf(text, mVisibleTextPrefixHint) == 0;
         }
 
@@ -768,23 +766,11 @@ public abstract class UrlBar extends AutocompleteEditText {
 
             Layout textLayout = getLayout();
 
-            int finalVisibleCharIndex;
-            if (ChromeFeatureList.sScrollToTLDOptimizations.isEnabled()) {
-                // getOffsetForHorizontal is very slow. getOffsetForAdvance is much faster.
-                finalVisibleCharIndex =
-                        textLayout
-                                .getPaint()
-                                .getOffsetForAdvance(
-                                        url,
-                                        0,
-                                        urlTextLength,
-                                        0,
-                                        urlTextLength,
-                                        false,
-                                        measuredWidth);
-            } else {
-                finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
-            }
+            int finalVisibleCharIndex =
+                    textLayout
+                            .getPaint()
+                            .getOffsetForAdvance(
+                                    url, 0, urlTextLength, 0, urlTextLength, false, measuredWidth);
 
             RecordHistogram.recordCount1000Histogram(
                     "Omnibox.NumberOfVisibleCharacters", finalVisibleCharIndex);

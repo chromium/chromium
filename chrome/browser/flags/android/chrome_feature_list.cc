@@ -265,7 +265,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kOmahaMinSdkVersionAndroid,
-    &kAvoidRelayoutDuringFocusAnimation,
     &kShortCircuitUnfocusAnimation,
     &kOmniboxCacheSuggestionResources,
     &kOmniboxNoopEditUrlSuggestionClicks,
@@ -304,7 +303,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShowScrollableMVTOnNtpPhoneAndroid,
     &kFeedPositionAndroid,
     &kSearchResumptionModuleAndroid,
-    &kScrollToTLDOptimization,
     &kShareSheetMigrationAndroid,
     &kShareSheetCustomActionsPolish,
     &kSpecialLocaleWrapper,
@@ -858,10 +856,6 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
              "OmahaMinSdkVersionAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAvoidRelayoutDuringFocusAnimation,
-             "AvoidRelayoutDuringFocusAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShortCircuitUnfocusAnimation,
              "ShortCircuitUnfocusAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -989,10 +983,6 @@ BASE_FEATURE(kRequestDesktopSiteDefaultsLogging,
 
 BASE_FEATURE(kRestoreTabsOnFRE,
              "RestoreTabsOnFRE",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kScrollToTLDOptimization,
-             "ScrollToTLDOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowNtpAtStartupAndroid,

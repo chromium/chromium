@@ -11941,22 +11941,6 @@
             ]
         }
     ],
-    "OmniboxTextAndAnimationOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230811",
-                    "enable_features": [
-                        "AvoidRelayoutDuringFocusAnimation",
-                        "ScrollToTLDOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxZeroSuggestPrefetchingAndroid": [
         {
             "platforms": [
