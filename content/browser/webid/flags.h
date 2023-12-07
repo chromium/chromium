@@ -56,6 +56,8 @@ bool IsFedCmAddAccountEnabled();
 // Whether the ExemptIdpWithThirdPartyCookies feature is enabled.
 bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled();
 
+// Whether the ButtonMode feature is enabled.
+bool IsFedCmButtonModeEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

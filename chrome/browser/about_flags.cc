@@ -9115,6 +9115,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAutoSelectedFlagDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutoSelectedFlag)},
 
+    {"fedcm-button-mode", flag_descriptions::kFedCmButtonModeName,
+     flag_descriptions::kFedCmButtonModeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmButtonMode)},
+
     {"fedcm-disconnect", flag_descriptions::kFedCmDisconnectName,
      flag_descriptions::kFedCmDisconnectDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmDisconnect)},

@@ -1698,6 +1698,11 @@ const char kFedCmAutoSelectedFlagDescription[] =
     "auto-selected with developers post user permission to continue with the "
     "IdP.";
 
+const char kFedCmButtonModeName[] = "FedCmButtonMode";
+const char kFedCmButtonModeDescription[] =
+    "Enables RPs specify whether they want to trigger the FedCM widget flow or "
+    "the button flow.";
+
 const char kFedCmDisconnectName[] = "FedCmDisconnect";
 const char kFedCmDisconnectDescription[] =
     "Enables the IdentityCredential.disconnect() API which allows "

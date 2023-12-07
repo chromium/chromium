@@ -4133,6 +4133,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "fedcm-button-mode",
+    "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 128
+  },
+  {
     "name": "fedcm-disconnect",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125

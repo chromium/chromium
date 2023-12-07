@@ -1547,7 +1547,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
 
     mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
-    if (options->identity()->hasMode()) {
+    if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled()) {
       // TODO(crbug.com/1429083): add use counters for rp mode.
       rp_mode =
           mojo::ConvertTo<mojom::blink::RpMode>(options->identity()->mode());

@@ -940,9 +940,12 @@ void FederatedAuthRequestImpl::RequestToken(
           return;
         } else if (idp_get_params_ptr->mode == blink::mojom::RpMode::kButton) {
           // Only a compromised renderer can set mode = button without the
-          // AuthZ flag enabled (which controls the JS WebIDL), so we crash
+          // ButtonMode enabled (which controls the JS WebIDL), so we crash
           // here if we ever get to this situation.
-          CHECK(IsFedCmAuthzEnabled());
+          if (!IsFedCmButtonModeEnabled()) {
+            mojo::ReportBadMessage("FedCM button mode is not enabled.");
+            return;
+          }
           if (!render_frame_host().HasTransientUserActivation()) {
             // The button flow requires user activation and a valid login_url.
             // TODO(crbug.com/1487270): use a more specific error.
@@ -1206,7 +1209,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       // to sign-in to the IdP and return early.
       // TODO(https://crbug.com/1490611): handle the "unknown" status and button
       // flows.
-      if (IsFedCmAuthzEnabled() &&
+      if (IsFedCmButtonModeEnabled() &&
           idp_info->rp_mode == blink::mojom::RpMode::kButton &&
           idp_info->metadata.idp_login_url.is_valid()) {
         // We fail sooner before, but just to double check, we assert that

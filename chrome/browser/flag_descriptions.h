@@ -954,6 +954,9 @@ extern const char kFedCmAuthzDescription[];
 extern const char kFedCmAutoSelectedFlagName[];
 extern const char kFedCmAutoSelectedFlagDescription[];
 
+extern const char kFedCmButtonModeName[];
+extern const char kFedCmButtonModeDescription[];
+
 extern const char kFedCmDisconnectName[];
 extern const char kFedCmDisconnectDescription[];
 
