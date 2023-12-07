@@ -672,8 +672,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
   pcf_deps.decode_metronome =
       StaticDeps().metronome_source().CreateWebRtcMetronome();
-  pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
-      pcf_deps.task_queue_factory.get());
+  pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
   pcf_deps.adm = audio_device_.get();
   pcf_deps.audio_encoder_factory = blink::CreateWebrtcAudioEncoderFactory();
   pcf_deps.audio_decoder_factory = blink::CreateWebrtcAudioDecoderFactory();

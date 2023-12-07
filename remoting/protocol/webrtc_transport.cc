@@ -281,8 +281,7 @@ class WebrtcTransport::PeerConnectionWrapper
     pcf_deps.worker_thread = worker_thread;
     pcf_deps.signaling_thread = rtc::Thread::Current();
     pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
-    pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
-        pcf_deps.task_queue_factory.get());
+    pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
     pcf_deps.adm = audio_module_;
     pcf_deps.audio_encoder_factory =
         webrtc::CreateAudioEncoderFactory<webrtc::AudioEncoderOpus>();
