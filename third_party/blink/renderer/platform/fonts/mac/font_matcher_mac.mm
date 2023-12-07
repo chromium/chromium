@@ -28,6 +28,7 @@
  */
 
 #import "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
@@ -358,6 +359,10 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
 
   if (!font)
     return nil;
+
+  if (RuntimeEnabledFeatures::MacFontsDeprecateFontTraitsWorkaroundEnabled()) {
+    return font;
+  }
 
   NSFontTraitMask actual_traits = 0;
   if (desired_traits & NSFontItalicTrait)

@@ -2276,6 +2276,10 @@
       name: "LongTaskFromLongAnimationFrame"
     },
     {
+      name: "MacFontsDeprecateFontTraitsWorkaround",
+      status: "stable",
+    },
+    {
       name: "MachineLearningCommon",
       implied_by: ["MachineLearningModelLoader", "MachineLearningNeuralNetwork"],
       status: "experimental",
