@@ -25,8 +25,7 @@ constexpr char kSafetyHubOriginKey[] = "origin";
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta
 // interval returned by GetRepeatedUpdateInterval().
-class SafetyHubService : public KeyedService,
-                         public base::SupportsWeakPtr<SafetyHubService> {
+class SafetyHubService : public KeyedService {
  public:
   // Base class for results returned after the periodic execution of the Safety
   // Hub service. Each service should implement a derived class that captures

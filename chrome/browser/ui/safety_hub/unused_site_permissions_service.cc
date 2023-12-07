@@ -102,7 +102,7 @@ UnusedSitePermissionsService::TabHelper::TabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<TabHelper>(*web_contents),
       unused_site_permission_service_(
-          base::AsWeakPtr(unused_site_permission_service)) {}
+          unused_site_permission_service->AsWeakPtr()) {}
 
 UnusedSitePermissionsService::TabHelper::~TabHelper() = default;
 

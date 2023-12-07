@@ -48,8 +48,8 @@ class Page;
 
 // This class keeps track of unused permissions, updates their last_visit date
 // on navigations and clears them periodically.
-class UnusedSitePermissionsService : public SafetyHubService,
-                                     public content_settings::Observer {
+class UnusedSitePermissionsService final : public SafetyHubService,
+                                           public content_settings::Observer {
  public:
   struct RevokedPermission {
    public:
@@ -209,6 +209,11 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // SafetyHubService implementation
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
+
+  // TabHelper needs a weak pointer to the implementation type.
+  base::WeakPtr<UnusedSitePermissionsService> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);
