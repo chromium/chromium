@@ -228,9 +228,17 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         // MigrateGlobalDataTypePrefsToAccount().
         type_enabled = base::FeatureList::IsEnabled(switches::kUnoDesktop);
 #endif
+      } else if (type == UserSelectableType::kBookmarks ||
+                 type == UserSelectableType::kReadingList) {
+        type_enabled = true;
+#if !BUILDFLAG(IS_IOS)
+        if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+          // Consider kBookmarks and kReadingList off by default.
+          type_enabled = false;
+        }
+#endif
       } else {
-        // All types except for History, Tabs and Password are always enabled by
-        // default.
+        // All other types are always enabled by default.
         type_enabled = true;
       }
 
