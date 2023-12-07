@@ -1105,6 +1105,11 @@ const base::FeatureParam<bool>
     kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements{
         &kLCPCriticalPathPredictor, "lcpp_enable_perf_improvements", false};
 
+const base::FeatureParam<bool>
+    kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement{
+        &kLCPCriticalPathPredictor,
+        "lcpp_enable_image_load_priority_for_htmlimageelement", false};
+
 BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -43,8 +43,16 @@ struct ResourcePriority final {
   ResourcePriority(VisibilityStatus status, int intra_value)
       : visibility(status), intra_priority_value(intra_value) {}
 
+  // Element visibility and predicted LCP states are distinct, i.e.
+  // ResourcePriority can indicate a visible non-LCP element, an invisible
+  // LCP element or a visible LCP element resource.
+
+  // Indicates when the resource is used for a visible element (`kVisible`)
   VisibilityStatus visibility;
   int intra_priority_value;
+
+  // Is true when the resource is used for a predicted LCP element.
+  bool is_lcp_resource = false;
 
   // For tracking priority information from ImageLoader
   // https://crbug.com/1369823.

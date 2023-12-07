@@ -201,6 +201,12 @@ static void PriorityFromObserver(
     ResourcePriority& priority,
     ResourcePriority& priority_excluding_image_loader) {
   ResourcePriority next_priority = observer->ComputeResourcePriority();
+  if (next_priority.is_lcp_resource) {
+    // Mark the resource as predicted LCP despite its visibility.
+    priority.is_lcp_resource = true;
+    priority_excluding_image_loader.is_lcp_resource = true;
+  }
+
   if (next_priority.visibility == ResourcePriority::kNotVisible)
     return;
 

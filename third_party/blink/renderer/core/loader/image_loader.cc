@@ -27,6 +27,7 @@
 
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -888,6 +889,14 @@ ResourcePriority ImageLoader::ComputeResourcePriority() const {
 
   ResourcePriority priority = image_resource->ComputeResourcePriority();
   priority.source = ResourcePriority::Source::kImageLoader;
+  if (features::
+          kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
+              .Get()) {
+    auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get());
+    if (html_image_element) {
+      priority.is_lcp_resource = html_image_element->IsPredictedLcpElement();
+    }
+  }
   return priority;
 }
 

@@ -117,7 +117,8 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_ad_related_(false),
       is_lcp_element_(false),
       is_changed_shortly_after_mouseover_(false),
-      is_auto_sized_(false) {
+      is_auto_sized_(false),
+      is_predicted_lcp_element_(false) {
   if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
     if (LocalFrame* frame = document.GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {

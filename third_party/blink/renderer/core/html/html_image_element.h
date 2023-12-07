@@ -184,8 +184,12 @@ class CORE_EXPORT HTMLImageElement final
   bool IsAdRelated() const override { return is_ad_related_; }
 
   // Keeps track whether this image is an LCP element.
+  // If the element is reused for loading another image, this flag might be
+  // retained so use with caution.
   void SetIsLCPElement() { is_lcp_element_ = true; }
   bool IsLCPElement() const { return is_lcp_element_; }
+  void SetPredictedLcpElement() { is_predicted_lcp_element_ = true; }
+  bool IsPredictedLcpElement() const { return is_predicted_lcp_element_; }
 
   bool IsChangedShortlyAfterMouseover() const {
     return is_changed_shortly_after_mouseover_;
@@ -297,6 +301,7 @@ class CORE_EXPORT HTMLImageElement final
   bool is_lcp_element_ : 1;
   bool is_changed_shortly_after_mouseover_ : 1;
   bool is_auto_sized_ : 1;
+  bool is_predicted_lcp_element_ : 1;
 
   HashSet<String> creator_scripts_;
 

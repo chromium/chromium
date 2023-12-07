@@ -2362,14 +2362,24 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
     ResourcePriority resource_priority = priorities.first;
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
         ResourceType::kImage, resource->GetResourceRequest(),
-        resource_priority.visibility);
+        resource_priority.visibility, FetchParameters::DeferOption::kNoDefer,
+        FetchParameters::SpeculativePreloadType::kNotSpeculative,
+        RenderBlockingBehavior::kNonBlocking,
+        mojom::blink::ScriptType::kClassic, false, absl::nullopt, absl::nullopt,
+        resource_priority.is_lcp_resource);
 
     ResourcePriority resource_priority_excluding_image_loader =
         priorities.second;
     ResourceLoadPriority computed_load_priority_excluding_image_loader =
         ComputeLoadPriority(
             ResourceType::kImage, resource->GetResourceRequest(),
-            resource_priority_excluding_image_loader.visibility);
+            resource_priority_excluding_image_loader.visibility,
+            FetchParameters::DeferOption::kNoDefer,
+            FetchParameters::SpeculativePreloadType::kNotSpeculative,
+            RenderBlockingBehavior::kNonBlocking,
+            mojom::blink::ScriptType::kClassic, false, absl::nullopt,
+            absl::nullopt,
+            resource_priority_excluding_image_loader.is_lcp_resource);
 
     // When enabled, `priority` is used, which considers the resource priority
     // via ImageLoader, i.e. ImageResourceContent
