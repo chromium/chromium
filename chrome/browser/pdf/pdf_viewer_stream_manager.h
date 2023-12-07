@@ -153,6 +153,10 @@ class PdfViewerStreamManager
   // no existing stream.
   StreamInfo* GetClaimedStreamInfo(content::RenderFrameHost* embedder_host);
 
+  // Returns the stream info for a PDF content navigation.
+  StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
+      content::NavigationHandle* navigation_handle);
+
   // Returns whether there's an unclaimed stream info with the default embedder
   // host info.
   bool ContainsUnclaimedStreamInfo(int frame_tree_node_id) const;

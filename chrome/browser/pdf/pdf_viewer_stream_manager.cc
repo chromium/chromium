@@ -288,6 +288,22 @@ PdfViewerStreamManager::GetClaimedStreamInfo(
   return iter->second.get();
 }
 
+PdfViewerStreamManager::StreamInfo*
+PdfViewerStreamManager::GetClaimedStreamInfoFromPdfContentNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsPdf()) {
+    return nullptr;
+  }
+
+  // `navigation_handle` is for a PDF content frame, as checked by
+  // `NavigationHandle::IsPdf()`.
+  content::RenderFrameHost* embedder_host =
+      GetEmbedderHostFromPdfContentNavigation(navigation_handle);
+  CHECK(embedder_host);
+
+  return GetClaimedStreamInfo(embedder_host);
+}
+
 bool PdfViewerStreamManager::ContainsUnclaimedStreamInfo(
     int frame_tree_node_id) const {
   return base::Contains(stream_infos_,
@@ -334,17 +350,8 @@ bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
   // Only register the subresource override if `navigation_handle` is for the
   // PDF content frame. Ignore all other navigations in different frames, such
   // as navigations in the embedder frame or PDF extension frame.
-  if (!navigation_handle->IsPdf()) {
-    return false;
-  }
-
-  // `navigation_handle` is for a PDF content frame, as checked by
-  // `NavigationHandle::IsPdf()`.
-  content::RenderFrameHost* embedder_host =
-      GetEmbedderHostFromPdfContentNavigation(navigation_handle);
-  CHECK(embedder_host);
-
-  auto* claimed_stream_info = GetClaimedStreamInfo(embedder_host);
+  auto* claimed_stream_info =
+      GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
   if (!claimed_stream_info) {
     return false;
   }
@@ -361,7 +368,9 @@ bool PdfViewerStreamManager::MaybeSetUpPostMessage(
     content::NavigationHandle* navigation_handle) {
   // Only set up postMessage if `navigation_handle` is for the PDF content
   // frame.
-  if (!navigation_handle->IsPdf()) {
+  auto* claimed_stream_info =
+      GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
+  if (!claimed_stream_info) {
     return false;
   }
 
@@ -370,11 +379,6 @@ bool PdfViewerStreamManager::MaybeSetUpPostMessage(
   content::RenderFrameHost* embedder_host =
       GetEmbedderHostFromPdfContentNavigation(navigation_handle);
   CHECK(embedder_host);
-
-  auto* claimed_stream_info = GetClaimedStreamInfo(embedder_host);
-  if (!claimed_stream_info) {
-    return false;
-  }
 
   // If `owner_type` is kEmbed or kObject, then the PDF is embedded onto another
   // HTML page. `container_host` should be the PDF embedder host's parent.
