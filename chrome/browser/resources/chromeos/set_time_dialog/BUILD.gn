@@ -38,7 +38,7 @@ build_webui("build") {
   static_files = [ "set_time.html" ]
   web_component_files = [ "set_time_dialog.js" ]
   non_web_component_files = [
-    "set_time.js",
+    "set_time.ts",
     "set_time_browser_proxy.js",
   ]
 
