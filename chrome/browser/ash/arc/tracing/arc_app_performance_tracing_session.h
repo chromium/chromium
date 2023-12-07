@@ -83,14 +83,19 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // current |window_|.
   void Start();
 
-  // Stops tracing for the current |window_|. This cleans up trace fields but
-  // does not invoke callbacks or analyze results.
-  void Stop();
+  // Stops tracing for the current |window_|. This cleans up trace fields and
+  // invokes on_done_ with the given results, which may be an error.
+  void Stop(const std::optional<PerfTraceResult>& result);
 
   // Stops current tracing, analyzes captured tracing results and schedules the
   // next tracing for the current |window_|. |tracing_period| indicates the time
   // spent for tracing.
   void Analyze(base::TimeDelta tracing_period);
+
+  // Returns true if idle detection is enabled and the last activity exceeds the
+  // allowed time between commits. Otherwise, returns false and marks the
+  // current time as the last commit.
+  bool DetectIdle();
 
   // Unowned pointers.
   const raw_ptr<aura::Window, ExperimentalAsh> window_;
@@ -110,11 +115,12 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // Set to true in case automatic idle detection is required.
   bool detect_idles_ = false;
 
-  // Timestamp of last commit event.
-  base::TimeTicks last_commit_timestamp_;
+  // Last time trace was started or a commit occurred, for purposes of idle
+  // detection.
+  base::TimeTicks last_active_time_;
 
-  // Accumulator for commit deltas.
-  std::vector<base::TimeDelta> frame_deltas_;
+  // Times at which frames were recorded.
+  std::vector<base::TimeTicks> frame_times_;
 
   // Indicates that tracing is in active state.
   bool tracing_active_ = false;

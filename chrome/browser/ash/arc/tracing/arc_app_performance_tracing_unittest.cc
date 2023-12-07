@@ -254,30 +254,61 @@ TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledForNonFocusApp) {
   arc_widget->Close();
 }
 
+constexpr base::TimeDelta kNormalInterval = base::Seconds(1) / 60;
+
 TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdle) {
   views::Widget* const arc_widget = PrepareArcFocusAppTracing();
   tracing_helper().GetTracingSession()->FireTimerForTesting();
 
-  const base::TimeDelta normal_interval = base::Seconds(1) / 60;
   shell_root_surface_->Commit();
 
   // Expected updates;
-  tracing_helper().AdvanceTickCount(normal_interval);
+  tracing_helper().AdvanceTickCount(kNormalInterval);
   shell_root_surface_->Commit();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
 
-  tracing_helper().AdvanceTickCount(normal_interval * 5);
+  tracing_helper().AdvanceTickCount(kNormalInterval * 5);
   shell_root_surface_->Commit();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
 
-  // Too long update.
-  tracing_helper().AdvanceTickCount(normal_interval * 10);
+  // Ten or more missed frames is considered a timeout.
+  tracing_helper().AdvanceTickCount(kNormalInterval * 10);
   shell_root_surface_->Commit();
   // Tracing is rescheduled and no longer active.
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  arc_widget->Close();
+}
+
+TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdleBeforeFirstFrame) {
+  views::Widget* const arc_widget = PrepareArcFocusAppTracing();
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+
+  // Ten or more missed frames is considered a timeout.
+  tracing_helper().AdvanceTickCount(kNormalInterval * 10);
+  shell_root_surface_->Commit();
+
+  // Tracing is rescheduled and no longer active.
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+
+  // Later commits (at normal intervals) will be ignored and not cause problems.
+  // We do more than one commit just to be reasonably sure we have given a buggy
+  // implementation enough chances to mess up.
+  for (int i = 0; i < 3; i++) {
+    tracing_helper().AdvanceTickCount(kNormalInterval);
+    shell_root_surface_->Commit();
+  }
+
+  // Tracing still not active.
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+
   arc_widget->Close();
 }
 
