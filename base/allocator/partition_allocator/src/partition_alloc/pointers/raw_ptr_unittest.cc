@@ -1885,6 +1885,34 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
   allocator_.root()->Free(ptr2);
 }
 
+TEST_F(BackupRefPtrTest, IndexOperator) {
+  // This requires some internal PartitionAlloc knowledge, but for the test to
+  // work well the allocation + extras have to fill out the entire slot. That's
+  // because PartitionAlloc doesn't know exact allocation size and bases the
+  // guards on the slot size.
+  //
+  // A power of two is a safe choice for a slot size, then adjust it for extras.
+  size_t slot_size = 512;
+  size_t requested_size =
+      allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
+  // Verify that we're indeed filling up the slot.
+  ASSERT_EQ(
+      requested_size,
+      allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
+  char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size));
+  {
+    raw_ptr<char, AllowPtrArithmetic> array = ptr;
+    std::ignore = array[0];
+    std::ignore = array[requested_size - 1];
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = array[-1], "");
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = array[requested_size + 1], "");
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+    EXPECT_DEATH_IF_SUPPORTED(std::ignore = array[requested_size], "");
+#endif
+  }
+  allocator_.root()->Free(ptr);
+}
+
 bool IsQuarantineEmpty(partition_alloc::PartitionAllocator& allocator) {
   return allocator.root()->total_size_of_brp_quarantined_bytes.load(
              std::memory_order_relaxed) == 0;

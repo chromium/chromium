@@ -659,7 +659,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   template <typename Z,
             typename U = T,
-            RawPtrTraits CopyTraits = Traits,
             typename Unused = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
@@ -667,7 +666,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
-    return wrapped_ptr_[delta_elems];
+    return *Impl::Advance(wrapped_ptr_, delta_elems);
   }
 
   // Do not disable operator+() and operator-().
