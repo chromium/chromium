@@ -102,7 +102,7 @@ class ClearBrowsingDataJobTest : public ::testing::Test {
 
 #if BUILDFLAG(ENABLE_NACL)
     // Clearing Cache will clear PNACL cache, which needs this delegate set.
-    nacl::NaClBrowser::ClearAndDeleteDelegateForTest();
+    nacl::NaClBrowser::ClearAndDeleteDelegate();
 #endif
 
     ::testing::Test::TearDown();

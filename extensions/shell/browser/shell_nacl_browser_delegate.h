@@ -45,8 +45,7 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
 
  private:
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged>
-      browser_context_;  // Not owned.
+  raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 };
 
 }  // namespace extensions

@@ -266,6 +266,10 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   // Close apps before shutting down browser context and extensions system.
   desktop_controller_->CloseAppWindows();
 
+#if BUILDFLAG(ENABLE_NACL)
+  nacl::NaClBrowser::ClearAndDeleteDelegate();
+#endif
+
   // NOTE: Please destroy objects in the reverse order of their creation.
   browser_main_delegate_->Shutdown();
   content::ShellDevToolsManagerDelegate::StopHttpHandler();
