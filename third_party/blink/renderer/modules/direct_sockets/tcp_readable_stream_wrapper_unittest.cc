@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -32,7 +33,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   ~StreamCreator() = default;
 
   // The default value of |capacity| means some sensible value selected by mojo.
-  TCPReadableStreamWrapper* Create(const V8TestingScope& scope,
+  TCPReadableStreamWrapper* Create(V8TestingScope& scope,
                                    uint32_t capacity = 0) {
     MojoCreateDataPipeOptions options;
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
@@ -52,6 +53,10 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
         script_state,
         WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
         std::move(data_pipe_consumer));
+
+    scope.PerformMicrotaskCheckpoint();
+    test::RunPendingTasks();
+
     return stream_wrapper_.Get();
   }
 
@@ -150,6 +155,7 @@ class ScopedStreamCreator {
 };
 
 TEST(TCPReadableStreamWrapperTest, Create) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
@@ -159,6 +165,7 @@ TEST(TCPReadableStreamWrapperTest, Create) {
 }
 
 TEST(TCPReadableStreamWrapperTest, ReadArrayBuffer) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
@@ -176,6 +183,7 @@ TEST(TCPReadableStreamWrapperTest, ReadArrayBuffer) {
 }
 
 TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
@@ -187,8 +195,6 @@ TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
           script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
-
-  test::RunPendingTasks();
 
   stream_creator->WriteToPipe({'A'});
 
@@ -209,6 +215,7 @@ INSTANTIATE_TEST_SUITE_P(/**/,
                          testing::Bool());
 
 TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
@@ -221,7 +228,6 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
-  test::RunPendingTasks();
   stream_creator->WriteToPipe({'A'});
 
   bool graceful = GetParam();
@@ -243,6 +249,7 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
 }
 
 TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
@@ -255,7 +262,6 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
-  test::RunPendingTasks();
   stream_creator->WriteToPipe({'A'});
 
   bool graceful = GetParam();
@@ -278,6 +284,7 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
 }
 
 TEST_P(TCPReadableStreamWrapperCloseTest, ErrorCancelReset) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());
@@ -308,6 +315,7 @@ TEST_P(TCPReadableStreamWrapperCloseTest, ErrorCancelReset) {
 }
 
 TEST_P(TCPReadableStreamWrapperCloseTest, ResetCancelError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   ScopedStreamCreator stream_creator(MakeGarbageCollected<StreamCreator>());

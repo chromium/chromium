@@ -1019,6 +1019,15 @@ source_set("unit_tests_v2") {
     "//v8",
   ]
 
+  # This uses target_os rather than current_os (which is what is_android is set
+  # from) for the case of generating the v8 context snapshot for android. When
+  # generating the snapshot for android, blink is compiled with
+  # current_os="linux" and target_os="android". Using target_os is necessary as
+  # we need to compile in the same way as would happen when current_os="android".
+  if (target_os != "android") {
+    deps += [ "//third_party/blink/renderer/modules/direct_sockets:unit_tests" ]
+  }
+
   data_deps = [
     ":accessibility_unittests_data",
     ":mediastream_unittests_data",
