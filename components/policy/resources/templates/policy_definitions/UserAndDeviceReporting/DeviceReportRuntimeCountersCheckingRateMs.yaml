@@ -19,8 +19,8 @@ schema:
   type: integer
 supported_chrome_os_management:
 - google_cloud
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:121-
 tags:
 - admin-sharing
 type: int
