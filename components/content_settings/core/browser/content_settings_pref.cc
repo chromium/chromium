@@ -177,7 +177,7 @@ ContentSettingsPref::ContentSettingsPref(
 
   ReadContentSettingsFromPref();
 
-  registrar_->Add(*pref_name_,
+  registrar_->Add(pref_name_,
                   base::BindRepeating(&ContentSettingsPref::OnPrefChanged,
                                       base::Unretained(this)));
 }
@@ -236,7 +236,7 @@ void ContentSettingsPref::ClearPref() {
 
   {
     base::AutoReset<bool> auto_reset(&updating_preferences_, true);
-    prefs::ScopedDictionaryPrefUpdate update(prefs_, *pref_name_);
+    prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_name_);
     update->Clear();
   }
 }
@@ -276,14 +276,14 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   // valid when the notifications are sent, so that |Observe| skips the
   // notification.
   base::AutoReset<bool> auto_reset(&updating_preferences_, true);
-  prefs::ScopedDictionaryPrefUpdate update(prefs_, *pref_name_);
+  prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_name_);
   base::AutoLock auto_lock(value_map_.GetLock());
 
   value_map_.clear();
 
   // The returned value could be nullptr if the pref has never been set.
   const base::Value::Dict& all_settings_dictionary =
-      prefs_->GetDict(*pref_name_);
+      prefs_->GetDict(pref_name_);
 
   // Accumulates non-canonical pattern strings found in Prefs for which the
   // corresponding canonical pattern is also in Prefs. In these cases the
@@ -440,7 +440,7 @@ void ContentSettingsPref::UpdatePref(
 
   base::AutoReset<bool> auto_reset(&updating_preferences_, true);
   {
-    prefs::ScopedDictionaryPrefUpdate update(prefs_, *pref_name_);
+    prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_name_);
     std::unique_ptr<prefs::DictionaryValueUpdate> pattern_pairs_settings =
         update.Get();
 
