@@ -155,19 +155,42 @@ class ContextProviderCommandBuffer
   // associated shared images are destroyed.
   std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
-  base::Lock context_lock_;  // Referenced by command_buffer_.
+  //////////////////////////////////////////////////////////////////////////////
+  // IMPORTANT NOTE: All of the objects in this block are part of a complex   //
+  // graph of raw pointers (holder or pointee of various raw_ptrs). They are  //
+  // defined in topological order: only later items point to earlier items.   //
+  // - When writing any member, always ensure its pointers to earlier members
+  //   are guaranteed to stay alive.
+  // - When clearing OR overwriting any member, always ensure objects that
+  //   point to it have already been cleared.
+  //     - The topological order of definitions guarantees that the
+  //       destructors will be called in the correct order (bottom to top).
+  //     - When overwriting multiple members, similarly do so in reverse order.
+  //
+  // Please note these comments are likely not to stay perfectly up-to-date.
+
+  base::Lock context_lock_;
+  // Points to the context_lock_ field of `this`.
   std::unique_ptr<gpu::CommandBufferProxyImpl> command_buffer_;
+
+  // Points to command_buffer_.
   std::unique_ptr<gpu::CommandBufferHelper> helper_;
+  // Points to helper_.
   std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;
 
+  // Points to transfer_buffer_, helper_, and command_buffer_.
   std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl_;
+  // Points to gles2_impl_.
   std::unique_ptr<gpu::gles2::GLES2TraceImplementation> trace_impl_;
+  // Points to transfer_buffer_, helper_, and command_buffer_.
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
+  // Points to transfer_buffer_, helper_, and command_buffer_.
   std::unique_ptr<gpu::webgpu::WebGPUInterface> webgpu_interface_;
-
-  // Owned by one of gles2_impl_, raster_interface_, or webgpu_interface_. It
-  // must be declared last and cleared first.
+  // This is an alias for gles2_impl_, raster_interface_, or webgpu_interface_.
   raw_ptr<gpu::ImplementationBase> impl_ = nullptr;
+
+  // END IMPORTANT NOTE                                                       //
+  //////////////////////////////////////////////////////////////////////////////
 
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
