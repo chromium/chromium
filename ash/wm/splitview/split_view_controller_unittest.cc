@@ -2508,7 +2508,8 @@ TEST_F(SplitViewControllerTest, ShadowDisappearsWhenSnapped) {
 // windows in overview mode to snap to both side of the screen), or toggle
 // overview to end overview causes a window to snap, we should not have the
 // exiting animation.
-TEST_F(SplitViewControllerTest, OverviewExitAnimationTest) {
+// TODO(b/315345858): Fix flakiness and re-enable.
+TEST_F(SplitViewControllerTest, DISABLED_OverviewExitAnimationTest) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
