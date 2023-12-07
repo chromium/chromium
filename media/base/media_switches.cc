@@ -163,11 +163,6 @@ const char kUseFakeMjpegDecodeAccelerator[] =
 const char kDisableAcceleratedMjpegDecode[] =
     "disable-accelerated-mjpeg-decode";
 
-// When running tests on a system without the required hardware or libraries,
-// this flag will cause the tests to fail. Otherwise, they silently succeed.
-const char kRequireAudioHardwareForTesting[] =
-    "require-audio-hardware-for-testing";
-
 // Mutes audio sent to the audio device so it is not audible during
 // automated testing.
 const char kMuteAudio[] = "mute-audio";

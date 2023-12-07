@@ -388,7 +388,6 @@ static_library("test_support") {
     "audio_device_info_accessor_for_tests.h",
     "audio_system_test_util.cc",
     "audio_system_test_util.h",
-    "audio_unittest_util.cc",
     "audio_unittest_util.h",
     "mock_aecdump_recording_manager.cc",
     "mock_aecdump_recording_manager.h",
