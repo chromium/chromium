@@ -425,7 +425,11 @@
       </template>
     </cr-grid>
     <div id="footer">
-      <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}</div>
+      <div id="disclaimer">
+        $i18n{experimentalFeatureDisclaimer}
+        <a href="#" aria-label="$i18n{learnMoreAboutFeatureA11yLabel}"
+            on-click="onLearnMoreClick_">$i18n{learnMore}</a>
+      </div>
       <div hidden$="[[!loading_]]">
         <cr-loading-gradient>
           <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">

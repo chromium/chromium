@@ -79,6 +79,17 @@ suite('WallpaperSearchTest', () => {
       const event = await eventPromise;
       assertTrue(!!event);
     });
+
+    test('clicking learn more calls handler', async () => {
+      createWallpaperSearchElement();
+      const learnMoreLink =
+          wallpaperSearchElement.shadowRoot!.querySelector<HTMLAnchorElement>(
+              '#disclaimer a')!;
+      const clickEvent = new Event('click', {cancelable: true});
+      learnMoreLink.dispatchEvent(clickEvent);
+      await handler.whenCalled('openHelpArticle');
+      assertTrue(clickEvent.defaultPrevented);
+    });
   });
 
   suite('Descriptors', () => {
