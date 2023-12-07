@@ -91,8 +91,8 @@ bool To53(sql::Database& db) {
       "source_id,source_event_id,source_origin,"
       "reporting_origin,source_time,"
       "expiry_time,event_report_window_time,aggregatable_report_window_time,"
-      "source_type,attribution_logic,priority,source_site,"
-      "num_attributions,event_level_active,aggregatable_active,debug_key,"
+      "num_attributions,event_level_active,aggregatable_active,"
+      "source_type,attribution_logic,priority,source_site,debug_key,"
       "aggregatable_budget_consumed,"
       "IIF(aggregatable_budget_consumed>0,1,0),"
       "aggregatable_source,filter_data FROM sources";
