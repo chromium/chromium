@@ -266,8 +266,8 @@ void DownscaleSegmentMap(const uint8_t* src_seg_map,
                          uint8_t* dst_seg_map,
                          uint32_t dst_seg_size,
                          const gfx::Size& coded_size) {
-  CHECK(base::bits::IsPowerOfTwo(src_seg_size));
-  CHECK(base::bits::IsPowerOfTwo(dst_seg_size));
+  CHECK(std::has_single_bit(src_seg_size));
+  CHECK(std::has_single_bit(dst_seg_size));
   CHECK_LT(src_seg_size, dst_seg_size);
 
   // We want to avoid doing a division operation for each src segment, so we

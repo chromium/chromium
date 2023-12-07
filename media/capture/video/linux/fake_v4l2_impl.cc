@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <bit>
 #include <queue>
 #include <vector>
 
@@ -55,7 +56,7 @@ int Error(int error_code) {
 }
 
 __u32 RoundUpToMultipleOfPageSize(__u32 size) {
-  CHECK(base::bits::IsPowerOfTwo(base::checked_cast<__u32>(getpagesize())));
+  CHECK(std::has_single_bit(base::checked_cast<__u32>(getpagesize())));
   return base::bits::AlignUp(size, base::checked_cast<__u32>(getpagesize()));
 }
 

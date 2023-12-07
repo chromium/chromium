@@ -7,6 +7,8 @@
 #include <va/va.h>
 #include <va/va_enc_vp8.h>
 
+#include <bit>
+
 #include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
@@ -457,7 +459,7 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
                << new_num_temporal_layers;
       num_temporal_layers_ =
           base::checked_cast<uint8_t>(new_num_temporal_layers);
-      static_assert(base::bits::IsPowerOfTwo(kTemporalLayerCycle),
+      static_assert(std::has_single_bit(kTemporalLayerCycle),
                     "temporal layer cycle must be power of two");
       // The number of temporal layers is changed. We need to start with the
       // bottom temporal layer structure and frames in non-bottom temporal
