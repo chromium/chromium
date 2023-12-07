@@ -44,15 +44,14 @@ bool BaseQueue::AllocateBuffers(uint32_t num_planes) {
   CHECK(device_);
   CHECK(num_planes);
 
-  uint32_t num_buffers_requested = BufferMinimumCount();
+  const auto count =
+      device_->RequestBuffers(buffer_type_, memory_type_, BufferMinimumCount());
 
-  const auto count = device_->RequestBuffers(buffer_type_, memory_type_,
-                                             num_buffers_requested);
   if (!count) {
     return false;
   }
 
-  DVLOGF(2) << num_buffers_requested << " buffers request " << *count
+  DVLOGF(2) << BufferMinimumCount() << " buffers request " << *count
             << " buffers allocated for " << Description() << " queue.";
   buffers_.reserve(*count);
 

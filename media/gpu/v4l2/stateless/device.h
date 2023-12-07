@@ -150,7 +150,7 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // number does not need to be the same as |count|.
   absl::optional<uint32_t> RequestBuffers(BufferType type,
                                           MemoryType memory,
-                                          size_t count);
+                                          uint32_t count);
 
   // Uses the VIDIOC_QUERYBUF ioctl to fill out and return a |Buffer|.
   absl::optional<Buffer> QueryBuffer(BufferType type,
