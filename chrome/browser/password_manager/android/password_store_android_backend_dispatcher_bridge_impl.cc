@@ -93,8 +93,14 @@ bool PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment() {
   if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
     return false;
   }
-  // TODO(crbug.com/1507820): Use GMS version from the Finch config.
+
   if (current_gms_core_version < kGMSCoreVersionWithFewerErrors) {
+    return false;
+  }
+
+  // Check minimum GMSCore version from Finch in case it was bumped.
+  if (current_gms_core_version <
+      features::kMinimumGMSCoreVersionToRemoveUnenrollment.Get()) {
     return false;
   }
 
