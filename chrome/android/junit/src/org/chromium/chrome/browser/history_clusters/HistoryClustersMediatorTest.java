@@ -30,6 +30,7 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -1221,6 +1222,24 @@ public class HistoryClustersMediatorTest {
         ShadowLooper.idleMainLooper();
 
         verify(mBridge, never()).loadMoreClusters("query");
+    }
+
+    @Test
+    public void testTimeoutSpinner() {
+        Promise<HistoryClustersResult> promise = new Promise();
+        doReturn(promise).when(mBridge).queryClusters("query");
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+
+        ListItem spinnerItem = mModelList.get(0);
+        assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
+        assertEquals(
+                spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
+                State.LOADING);
+
+        shadowOf(Looper.getMainLooper())
+                .idle(HistoryClustersMediator.SPINNER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        assertEquals(0, mModelList.size());
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

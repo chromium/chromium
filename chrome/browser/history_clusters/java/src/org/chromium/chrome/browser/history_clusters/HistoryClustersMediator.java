@@ -67,6 +67,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     static final int MIN_EXPANDED_CLUSTER_SIZE = 2;
     static final long QUERY_DELAY_MS = 60;
+    static final long SPINNER_TIMEOUT_MS = 3000;
 
     interface Clock {
         long currentTimeMillis();
@@ -113,6 +114,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final Callback<String> mAnnounceForAccessibilityCallback;
     private final Handler mHandler;
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
+    private final Runnable mTimeoutSpinnerTask;
     private final boolean mIsScrollToLoadDisabled;
 
     /**
@@ -164,6 +166,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mMetricsLogger = metricsLogger;
         mAnnounceForAccessibilityCallback = announceForAccessibilityCallback;
         mHandler = handler;
+        mTimeoutSpinnerTask = mCallbackController.makeCancelable(this::timeoutSpinner);
 
         mSelectionDelegate.addObserver(
                 (selectedItems -> setSelectionActive(mSelectionDelegate.isSelectionEnabled())));
@@ -692,12 +695,24 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mModelList.remove(mMoreProgressItem);
         }
 
+        mHandler.removeCallbacks(mTimeoutSpinnerTask);
         if (shouldShowLoadIndicator) {
             mModelList.add(mMoreProgressItem);
             mMoreProgressItem.model.set(
                     HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED, showVerticallyCentered);
             mMoreProgressItem.model.set(
                     HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
+            mHandler.postDelayed(mTimeoutSpinnerTask, SPINNER_TIMEOUT_MS);
+        }
+    }
+
+    private void timeoutSpinner() {
+        if (mModelList.indexOf(mMoreProgressItem) == -1) return;
+        if (mIsScrollToLoadDisabled) {
+            mMoreProgressItem.model.set(
+                    HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, State.BUTTON);
+        } else {
+            mModelList.remove(mMoreProgressItem);
         }
     }
 
