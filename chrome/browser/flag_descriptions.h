@@ -2566,6 +2566,9 @@ extern const char kRelatedSearchesAllLanguageDescription[];
 extern const char kRelatedSearchesName[];
 extern const char kRelatedSearchesDescription[];
 
+extern const char kRemoveUPMUnenrollmentName[];
+extern const char kRemoveUPMUnenrollmentDescription[];
+
 extern const char kRequestDesktopSiteAdditionsName[];
 extern const char kRequestDesktopSiteAdditionsDescription[];
 

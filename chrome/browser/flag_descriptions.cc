@@ -4375,6 +4375,12 @@ const char kRelatedSearchesDescription[] =
     "Enables requesting related searches suggestions. These will be requested "
     "but not shown unless the UI flag is also enabled.";
 
+const char kRemoveUPMUnenrollmentName[] = "Removes unenrollment fro UPM.";
+const char kRemoveUPMUnenrollmentDescription[] =
+    "Instead of unenrolling from UPM the Password Manager will be disabled (no "
+    "password saving, no password generation, etc.) until the error "
+    "disappears.";
+
 const char kRequestDesktopSiteAdditionsName[] =
     "Secondary settings for request desktop site on Android.";
 const char kRequestDesktopSiteAdditionsDescription[] =

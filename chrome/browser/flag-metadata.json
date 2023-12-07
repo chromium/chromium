@@ -6945,6 +6945,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "remove-upm-unenrollment",
+    "owners": [ "vsemeniuk@google.com", "ioanap@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "rename-history-journeys",
     "owners": [ "mahmadi@chromium.org", "chrome-journeys@google.com" ],
     "expiry_milestone": 120
