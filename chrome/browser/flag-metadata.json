@@ -3766,7 +3766,7 @@
   {
     "name": "enable-web-bluetooth-new-permissions-backend",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-web-hid-on-extension-service-worker",
