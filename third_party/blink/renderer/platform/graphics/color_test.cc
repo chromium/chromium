@@ -765,6 +765,7 @@ TEST(BlinkColor, ConvertToColorSpace) {
         << test.expected_color.alpha_;
   }
 }
+
 TEST(BlinkColor, ResolveMissingComponents) {
   struct ResolveMissingComponentsTest {
     Color input_color;
@@ -808,6 +809,98 @@ TEST(BlinkColor, ResolveMissingComponents) {
   for (auto& test : tests) {
     test.input_color.ResolveMissingComponents();
     EXPECT_EQ(test.input_color, test.expected_color);
+  }
+}
+
+TEST(BlinkColor, SubstituteMissingParameters) {
+  Color srgb1 =
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.1, 0.2, 0.3, 0.4);
+  Color srgb2 =
+      Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5, 0.6, 0.7, 0.8);
+  Color oklab =
+      Color::FromColorSpace(Color::ColorSpace::kOklab, 0.6, 0.0, 0.1, 0.8);
+
+  // Substitute one param.
+  {
+    for (int param_index = 0; param_index < 4; param_index++) {
+      Color c1 = srgb1;
+      Color c2 = srgb2;
+      Color expected_c1 = c1;
+      switch (param_index) {
+        case 0:
+          c1.param0_is_none_ = true;
+          expected_c1.param0_ = c2.param0_;
+          break;
+        case 2:
+          c1.param1_is_none_ = true;
+          expected_c1.param1_ = c2.param1_;
+          break;
+        case 3:
+          c1.param2_is_none_ = true;
+          expected_c1.param2_ = c2.param2_;
+          break;
+        case 4:
+          c1.alpha_is_none_ = true;
+          expected_c1.alpha_ = c2.alpha_;
+      }
+
+      Color c1_copy = c1;
+      Color c2_copy = c2;
+
+      EXPECT_TRUE(Color::SubstituteMissingParameters(c1, c2));
+      EXPECT_EQ(c1, expected_c1);
+      EXPECT_EQ(c2, srgb2);
+
+      // Test with arguments inverted.
+      EXPECT_TRUE(Color::SubstituteMissingParameters(c2_copy, c1_copy));
+      EXPECT_EQ(c1_copy, expected_c1);
+      EXPECT_EQ(c2_copy, srgb2);
+    }
+  }
+
+  // Nones on both sides remain.
+  {
+    for (int param_index = 0; param_index < 4; param_index++) {
+      Color c1 = srgb1;
+      Color c2 = srgb2;
+      switch (param_index) {
+        case 0:
+          c1.param0_is_none_ = true;
+          c2.param0_is_none_ = true;
+          break;
+        case 1:
+          c1.param1_is_none_ = true;
+          c2.param1_is_none_ = true;
+          break;
+        case 2:
+          c1.param2_is_none_ = true;
+          c2.param2_is_none_ = true;
+          break;
+        case 4:
+          c1.alpha_is_none_ = true;
+          c2.alpha_is_none_ = true;
+          break;
+      }
+
+      Color expected_c1 = c1;
+      Color expected_c2 = c2;
+
+      EXPECT_TRUE(Color::SubstituteMissingParameters(c1, c2));
+      EXPECT_EQ(c1, expected_c1);
+      EXPECT_EQ(c2, expected_c2);
+
+      // Test with arguments inverted.
+      EXPECT_TRUE(Color::SubstituteMissingParameters(c2, c1));
+      EXPECT_EQ(c1, expected_c1);
+      EXPECT_EQ(c2, expected_c2);
+    }
+  }
+
+  // Different colorspaces fail
+  {
+    Color c1 = srgb1;
+    Color c2 = oklab;
+    EXPECT_FALSE(Color::SubstituteMissingParameters(c1, c2));
   }
 }
 }  // namespace blink

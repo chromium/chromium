@@ -353,6 +353,47 @@ void Color::CarryForwardAnalogousMissingComponents(
 }
 
 // static
+bool Color::SubstituteMissingParameters(Color& color1, Color& color2) {
+  if (color1.color_space_ != color2.color_space_) {
+    return false;
+  }
+
+  if (color1.param0_is_none_ && !color2.param0_is_none_) {
+    color1.param0_ = color2.param0_;
+    color1.param0_is_none_ = false;
+  } else if (color2.param0_is_none_ && !color1.param0_is_none_) {
+    color2.param0_ = color1.param0_;
+    color2.param0_is_none_ = false;
+  }
+
+  if (color1.param1_is_none_ && !color2.param1_is_none_) {
+    color1.param1_ = color2.param1_;
+    color1.param1_is_none_ = false;
+  } else if (color2.param1_is_none_ && !color1.param1_is_none_) {
+    color2.param1_ = color1.param1_;
+    color2.param1_is_none_ = false;
+  }
+
+  if (color1.param2_is_none_ && !color2.param2_is_none_) {
+    color1.param2_ = color2.param2_;
+    color1.param2_is_none_ = false;
+  } else if (color2.param2_is_none_ && !color1.param2_is_none_) {
+    color2.param2_ = color1.param2_;
+    color2.param2_is_none_ = false;
+  }
+
+  if (color1.alpha_is_none_ && !color2.alpha_is_none_) {
+    color1.alpha_ = color2.alpha_;
+    color1.alpha_is_none_ = false;
+  } else if (color2.alpha_is_none_ && !color1.alpha_is_none_) {
+    color2.alpha_ = color1.alpha_;
+    color2.alpha_is_none_ = false;
+  }
+
+  return true;
+}
+
+// static
 Color Color::InterpolateColors(
     Color::ColorSpace interpolation_space,
     absl::optional<HueInterpolationMethod> hue_method,
@@ -374,37 +415,24 @@ Color Color::InterpolateColors(
   CarryForwardAnalogousMissingComponents(color1, color1_prev_color_space);
   CarryForwardAnalogousMissingComponents(color2, color2_prev_color_space);
 
-  if (color1.alpha_is_none_ && !color2.alpha_is_none_) {
-    color1.alpha_ = color2.alpha_;
-    color1.alpha_is_none_ = false;
-  } else if (color2.alpha_is_none_ && !color1.alpha_is_none_) {
-    color2.alpha_ = color1.alpha_;
-    color2.alpha_is_none_ = false;
+  if (!SubstituteMissingParameters(color1, color2)) {
+    NOTREACHED();
+    return Color();
   }
 
-  absl::optional<float> alpha1 = color1.PremultiplyColor();
-  absl::optional<float> alpha2 = color2.PremultiplyColor();
+  float alpha1 = color1.PremultiplyColor();
+  float alpha2 = color2.PremultiplyColor();
 
-  auto HandleNoneInterpolation = [](float value1, bool value1_is_none,
-                                    float value2, bool value2_is_none) {
-    DCHECK(value1_is_none || value2_is_none);
-
-    if (!value1_is_none) {
-      return absl::optional<float>(value1);
-    }
-
-    if (!value2_is_none) {
-      return absl::optional<float>(value2);
-    }
-
-    DCHECK(value1_is_none && value2_is_none);
-    return absl::optional<float>();
-  };
+  if (!hue_method.has_value()) {
+    // https://www.w3.org/TR/css-color-4/#hue-interpolation
+    // Unless otherwise specified, if no specific hue interpolation algorithm
+    // is selected by the host syntax, the default is shorter.
+    hue_method = HueInterpolationMethod::kShorter;
+  }
 
   absl::optional<float> param0 =
-      (color1.param0_is_none_ || color2.param0_is_none_)
-          ? HandleNoneInterpolation(color1.param0_, color1.param0_is_none_,
-                                    color2.param0_, color2.param0_is_none_)
+      (color1.param0_is_none_ && color2.param0_is_none_)
+          ? absl::optional<float>(absl::nullopt)
       : (interpolation_space == ColorSpace::kHSL ||
          interpolation_space == ColorSpace::kHWB)
           ? HueInterpolation(color1.param0_, color2.param0_, percentage,
@@ -412,27 +440,21 @@ Color Color::InterpolateColors(
           : blink::Blend(color1.param0_, color2.param0_, percentage);
 
   absl::optional<float> param1 =
-      (color1.param1_is_none_ || color2.param1_is_none_)
-          ? HandleNoneInterpolation(color1.param1_, color1.param1_is_none_,
-                                    color2.param1_, color2.param1_is_none_)
+      (color1.param1_is_none_ && color2.param1_is_none_)
+          ? absl::optional<float>(absl::nullopt)
           : blink::Blend(color1.param1_, color2.param1_, percentage);
 
   absl::optional<float> param2 =
-      (color1.param2_is_none_ || color2.param2_is_none_)
-          ? HandleNoneInterpolation(color1.param2_, color1.param2_is_none_,
-                                    color2.param2_, color2.param2_is_none_)
+      (color1.param2_is_none_ && color2.param2_is_none_)
+          ? absl::optional<float>(absl::nullopt)
       : (IsChromaSecondComponent(interpolation_space))
           ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
 
-  if (color1.alpha_is_none_ || color2.alpha_is_none_) {
-    DCHECK_EQ(color1.alpha_is_none_, color2.alpha_is_none_);
-  }
-  absl::optional<float> alpha =
-      (color1.alpha_is_none_ && color2.alpha_is_none_)
-          ? absl::optional<float>(absl::nullopt)
-          : blink::Blend(alpha1.value(), alpha2.value(), percentage);
+  absl::optional<float> alpha = (color1.alpha_is_none_ && color2.alpha_is_none_)
+                                    ? absl::optional<float>(absl::nullopt)
+                                    : blink::Blend(alpha1, alpha2, percentage);
 
   Color result =
       FromColorSpace(interpolation_space, param0, param1, param2, alpha);

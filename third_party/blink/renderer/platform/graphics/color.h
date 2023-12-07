@@ -390,6 +390,7 @@ class PLATFORM_EXPORT Color {
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, toSkColor4fValidation);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ExportAsXYZD50Floats);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ResolveMissingComponents);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, SubstituteMissingParameters);
 
  private:
   String SerializeLegacyColorAsCSSColor() const;
@@ -438,6 +439,12 @@ class PLATFORM_EXPORT Color {
   static void CarryForwardAnalogousMissingComponents(
       Color color,
       ColorSpace prev_color_space);
+
+  // https://www.w3.org/TR/css-color-4/#interpolation-missing
+  // If a color with a carried forward missing component is interpolated
+  // with another color which is not missing that component, the missing
+  // component is treated as having the other color’s component value.
+  static bool SubstituteMissingParameters(Color& color1, Color& color2);
 
   ColorSpace color_space_ = ColorSpace::kSRGBLegacy;
 
