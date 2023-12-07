@@ -770,14 +770,25 @@ function isBlinkObject(x) {
 /**
  * Check whether given object `x` is a blink object and its
  * class name is `target.name`.
+ * Note: This is a hackfix to work-around the fact that we have to be able
+ * to deal with objects from multiple `global` contexts.
  */
 function isBlinkInstanceOf(x, target) {
-  return isBlinkObject(x) &&
+  return (
+    // Is Blink/native object.
+    isBlinkObject(x) &&
+    // Is not a function (to exclude classes themselves).
+    !(x instanceof Function) &&
+    // Has a ctor.
+    x.constructor &&
+    // The target has a name.
     target?.name &&
+    // The target's name is in object's prototype chain.
     hasInProtoChain(
       x.constructor,
       target.name
-    );
+    )
+  );
 }
 
 /**
