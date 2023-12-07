@@ -118,7 +118,9 @@ class AutofillPopupControllerImpl
   void SelectSuggestion(std::optional<size_t> index) override;
   void AcceptSuggestion(int index, base::TimeTicks event_time) override;
   void PerformButtonActionForSuggestion(int index) override;
-  bool RemoveSuggestion(int list_index) override;
+  bool RemoveSuggestion(
+      int list_index,
+      AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
   int GetLineCount() const override;
   std::vector<Suggestion> GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;

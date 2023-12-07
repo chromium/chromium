@@ -2080,11 +2080,6 @@ Unknown properties are collapsed to zero. -->
   <int value="32" label="CHROME_FAST_CHECKOUT"/>
 </enum>
 
-<enum name="AutofillAutocompleteSingleEntryRemovalMethod">
-  <int value="0" label="Keyboard shift + delete pressed"/>
-  <int value="1" label="Delete button clicked"/>
-</enum>
-
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
   <int value="1" label="Valid"/>
@@ -5283,6 +5278,14 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="Unspecified"/>
   <int value="1" label="SilentUpdateForIncompleteProfile"/>
   <int value="2" label="UnusableIncompleteProfile"/>
+</enum>
+
+<enum name="AutofillSingleEntryRemovalMethod">
+  <int value="0" label="Keyboard shift + delete pressed"/>
+  <int value="1" label="Delete button clicked"/>
+  <int value="2"
+      label="Keyboard accessory suggestion long pressed and deletion dialog
+             confirmed"/>
 </enum>
 
 <enum name="AutofillSubmissionSource">

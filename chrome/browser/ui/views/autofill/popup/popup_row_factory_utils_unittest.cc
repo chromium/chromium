@@ -102,53 +102,22 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
 };
 
 TEST_F(AutocompleteRowWithDeleteButtonTest,
-       AutocompleteDeleteRecordsMetricOnDeletion) {
+       AutocompleteDeleteInvokesController) {
   ShowAutocompleteSuggestion();
   views::ImageButton* button = view().GetButtonForTest();
-  base::HistogramTester histogram_tester;
   view().SetSelectedCell(PopupRowView::CellType::kContent);
   // In test env we have to manually set the bounds when a view becomes visible.
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
 
-  EXPECT_CALL(controller(), RemoveSuggestion(0)).WillOnce(Return(true));
+  EXPECT_CALL(
+      controller(),
+      RemoveSuggestion(
+          0, AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
+      .WillOnce(Return(true));
 
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
   task_environment()->RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-          kDeleteButtonClicked,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
-}
-
-TEST_F(AutocompleteRowWithDeleteButtonTest,
-       AutocompleteDeleteRecordsNoMetricOnFailedDeletion) {
-  ShowAutocompleteSuggestion();
-  views::ImageButton* button = view().GetButtonForTest();
-  base::HistogramTester histogram_tester;
-  view().SetSelectedCell(PopupRowView::CellType::kContent);
-  // In test env we have to manually set the bounds when a view becomes visible.
-  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
-
-  EXPECT_CALL(controller(), RemoveSuggestion(0)).WillOnce(Return(false));
-
-  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  generator().ClickLeftButton();
-  task_environment()->RunUntilIdle();
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-          kDeleteButtonClicked,
-      0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
 TEST_F(AutocompleteRowWithDeleteButtonTest,

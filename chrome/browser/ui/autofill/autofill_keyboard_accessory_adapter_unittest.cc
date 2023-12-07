@@ -248,9 +248,14 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, RemoveAfterConfirmation) {
       .WillOnce(WithArg<2>(Invoke([&](base::OnceClosure closure) -> void {
         confirm = std::move(closure);
       })));
-  EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(0));
+  EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(
+      0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 
-  EXPECT_CALL(*controller(), RemoveSuggestion(0)).WillOnce(Return(true));
+  EXPECT_CALL(
+      *controller(),
+      RemoveSuggestion(
+          0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory))
+      .WillOnce(Return(true));
   std::move(confirm).Run();
 }
 

@@ -205,7 +205,11 @@ bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
                             OffsetIndexFor(index), title, body);
 }
 
-bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
+bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
+    int index,
+    AutofillMetrics::SingleEntryRemovalMethod removal_method) {
+  CHECK_EQ(removal_method,
+           AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
   CHECK(view_) << "RemoveSuggestion called before a View was set!";
   std::u16string title, body;
   if (!GetRemovalConfirmationText(index, &title, &body))
@@ -285,7 +289,9 @@ AutofillKeyboardAccessoryAdapter::GetPopupScreenLocation() const {
 
 void AutofillKeyboardAccessoryAdapter::OnDeletionConfirmed(int index) {
   if (controller_)
-    controller_->RemoveSuggestion(OffsetIndexFor(index));
+    controller_->RemoveSuggestion(
+        OffsetIndexFor(index),
+        AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 }
 
 int AutofillKeyboardAccessoryAdapter::OffsetIndexFor(int element_index) const {

@@ -92,7 +92,10 @@ class MockAutofillPopupController : public AutofillPopupController {
               GetRemovalConfirmationText,
               (int, std::u16string*, std::u16string*),
               (override));
-  MOCK_METHOD(bool, RemoveSuggestion, (int), (override));
+  MOCK_METHOD(bool,
+              RemoveSuggestion,
+              (int, AutofillMetrics::SingleEntryRemovalMethod),
+              (override));
   MOCK_METHOD(void, SelectSuggestion, (absl::optional<size_t>), (override));
   MOCK_METHOD(PopupType, GetPopupType, (), (const override));
   MOCK_METHOD(base::WeakPtr<AutofillPopupController>,

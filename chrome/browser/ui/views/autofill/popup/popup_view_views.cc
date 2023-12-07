@@ -460,17 +460,10 @@ bool PopupViewViews::RemoveSelectedCell() {
     return false;
   }
 
-  bool was_autocomplete =
-      controller_->GetSuggestionAt(index->first).popup_item_id ==
-      PopupItemId::kAutocompleteEntry;
-  if (!controller_->RemoveSuggestion(index->first)) {
+  if (!controller_->RemoveSuggestion(index->first,
+                                     AutofillMetrics::SingleEntryRemovalMethod::
+                                         kKeyboardShiftDeletePressed)) {
     return false;
-  }
-
-  if (was_autocomplete) {
-    AutofillMetrics::OnAutocompleteSuggestionDeleted(
-        AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-            kKeyboardShiftDeletePressed);
   }
 
   return true;

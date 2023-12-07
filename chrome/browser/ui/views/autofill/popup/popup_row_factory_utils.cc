@@ -256,14 +256,9 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   // The closure that actually attempts to delete an entry and record metrics
   // for it.
   base::RepeatingClosure deletion_action = base::BindRepeating(
-      [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
-        if (controller && controller->RemoveSuggestion(line_number)) {
-          AutofillMetrics::OnAutocompleteSuggestionDeleted(
-              AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-                  kDeleteButtonClicked);
-        }
-      },
-      controller, line_number);
+      base::IgnoreResult(&AutofillPopupController::RemoveSuggestion),
+      controller, line_number,
+      AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked);
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
           CreateExecuteSoonWrapper(std::move(deletion_action)),

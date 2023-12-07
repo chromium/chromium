@@ -140,7 +140,9 @@ void AutofillKeyboardAccessoryView::DeletionRequested(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  controller_->RemoveSuggestion(list_index);
+  controller_->RemoveSuggestion(
+      list_index,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
 }
 
 void AutofillKeyboardAccessoryView::DeletionConfirmed(

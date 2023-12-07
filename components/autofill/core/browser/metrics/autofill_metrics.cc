@@ -2078,7 +2078,7 @@ void AutofillMetrics::OnAutocompleteSuggestionsShown() {
 
 // static
 void AutofillMetrics::OnAutocompleteSuggestionDeleted(
-    AutocompleteSingleEntryRemovalMethod removal_method) {
+    SingleEntryRemovalMethod removal_method) {
   AutofillMetrics::Log(AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
   base::UmaHistogramEnumeration(
       "Autofill.Autocomplete.SingleEntryRemovalMethod", removal_method);

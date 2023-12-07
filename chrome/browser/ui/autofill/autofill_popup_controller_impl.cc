@@ -595,7 +595,9 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
   return false;  // The ID was valid. The entry may have been deleted in a race.
 }
 
-bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
+bool AutofillPopupControllerImpl::RemoveSuggestion(
+    int list_index,
+    AutofillMetrics::SingleEntryRemovalMethod removal_method) {
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return false;
@@ -614,10 +616,13 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
           suggestions_[list_index].GetPayload<Suggestion::BackendId>())) {
     return false;
   }
-  if (suggestion_type == PopupItemId::kAutocompleteEntry && view_) {
-    view_->AxAnnounce(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-        suggestions_[list_index].main_text.value));
+  if (suggestion_type == PopupItemId::kAutocompleteEntry) {
+    AutofillMetrics::OnAutocompleteSuggestionDeleted(removal_method);
+    if (view_) {
+      view_->AxAnnounce(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
+          suggestions_[list_index].main_text.value));
+    }
   }
 
   // Remove the deleted element.

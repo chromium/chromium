@@ -103,7 +103,9 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
                                   std::u16string* body) override;
-  bool RemoveSuggestion(int index) override;
+  bool RemoveSuggestion(
+      int index,
+      AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
   void SelectSuggestion(std::optional<size_t> index) override;
   PopupType GetPopupType() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;

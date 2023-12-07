@@ -731,12 +731,13 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/false);
   Mock::VerifyAndClearExpectations(&controller());
 
-  EXPECT_CALL(controller(), RemoveSuggestion(1));
+  EXPECT_CALL(controller(),
+              RemoveSuggestion(1, AutofillMetrics::SingleEntryRemovalMethod::
+                                      kKeyboardShiftDeletePressed));
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
 }
 
-TEST_F(PopupViewViewsTest, RemoveAutofillRecordsNoAutocompleteDeletionMetrics) {
-  base::HistogramTester histogram_tester;
+TEST_F(PopupViewViewsTest, RemoveAutofillInvokesController) {
   CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
                      PopupItemId::kAutofillOptions});
 
@@ -744,38 +745,11 @@ TEST_F(PopupViewViewsTest, RemoveAutofillRecordsNoAutocompleteDeletionMetrics) {
                          PopupCellSelectionSource::kNonUserInput);
 
   // No metrics are recorded if the entry is not an Autocomplete entry.
-  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
+  EXPECT_CALL(controller(),
+              RemoveSuggestion(1, AutofillMetrics::SingleEntryRemovalMethod::
+                                      kKeyboardShiftDeletePressed))
+      .WillOnce(Return(true));
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
-  histogram_tester.ExpectTotalCount("Autocomplete.Events2", 0);
-}
-
-TEST_F(PopupViewViewsTest, RemoveAutocompleteSuggestionRecordsMetrics) {
-  base::HistogramTester histogram_tester;
-  CreateAndShowView(
-      {PopupItemId::kAutocompleteEntry, PopupItemId::kAutocompleteEntry});
-
-  view().SetSelectedCell(CellIndex{1u, CellType::kContent},
-                         PopupCellSelectionSource::kNonUserInput);
-
-  // If deletion fails, no metric is recorded.
-  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(false));
-  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
-  histogram_tester.ExpectTotalCount("Autocomplete.Events2", 0);
-
-  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
-  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-          kKeyboardShiftDeletePressed,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
 }
 
 // Ensure that the voice_over value of suggestions is presented to the

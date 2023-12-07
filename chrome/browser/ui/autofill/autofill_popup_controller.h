@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 
@@ -39,8 +40,11 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // suggestion at `index`. Button actions depend on the type of the suggestion.
   virtual void PerformButtonActionForSuggestion(int index) = 0;
 
-  // Removes the suggestion at the given index.
-  virtual bool RemoveSuggestion(int index) = 0;
+  // Removes the suggestion at the given `index`. `removal_method`specifies the
+  // UI entry point for removal, e.g. clicking on a delete button.
+  virtual bool RemoveSuggestion(
+      int index,
+      AutofillMetrics::SingleEntryRemovalMethod removal_method) = 0;
 
   // Returns the number of lines of data that there are.
   virtual int GetLineCount() const = 0;

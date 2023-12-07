@@ -775,8 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.SingleEntryRemovalMethod"
-    enum="AutofillAutocompleteSingleEntryRemovalMethod"
-    expires_after="2024-06-02">
+    enum="AutofillSingleEntryRemovalMethod" expires_after="2024-06-02">
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
