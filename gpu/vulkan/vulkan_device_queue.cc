@@ -4,12 +4,12 @@
 
 #include "gpu/vulkan/vulkan_device_queue.h"
 
+#include <bit>
 #include <cstring>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -50,7 +50,7 @@ namespace {
 VkDeviceSize GetPreferredVMALargeHeapBlockSize() {
   const VkDeviceSize block_size =
       ::features::kVulkanVMALargeHeapBlockSize.Get();
-  DCHECK(base::bits::IsPowerOfTwo(block_size));
+  DCHECK(std::has_single_bit(block_size));
   return block_size;
 }
 }  // anonymous namespace
