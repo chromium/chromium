@@ -6,8 +6,8 @@
 #define COMPONENTS_ALLOCATION_RECORDER_TESTING_MOCK_OBJECTS_H_
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"
 #include "components/allocation_recorder/crash_handler/stream_data_source_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,7 +31,7 @@ struct StreamDataSourceFactoryMock
   MOCK_METHOD(
       std::unique_ptr<::crashpad::MinidumpUserExtensionStreamDataSource>,
       CreateErrorMessage,
-      (base::StringPiece error_message),
+      (std::string_view error_message),
       (const override));
 };
 

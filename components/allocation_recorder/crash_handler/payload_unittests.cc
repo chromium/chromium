@@ -145,7 +145,7 @@ TEST_F(CreatePayloadWithMemoryOperationReportTest, VerifyErrorDataIsNotSet) {
 }
 
 TEST(CreatePayloadWithProcessingFailuresTest, VerifySingleMessage) {
-  const base::StringPiece message = "This is a very important message.";
+  const std::string_view message = "This is a very important message.";
 
   const allocation_recorder::Payload payload =
       CreatePayloadWithProcessingFailures(message);
@@ -156,8 +156,8 @@ TEST(CreatePayloadWithProcessingFailuresTest, VerifySingleMessage) {
 }
 
 TEST(CreatePayloadWithProcessingFailuresTest, VerifyMultipleMessages) {
-  const base::StringPiece messages[] = {"This is a very important message.",
-                                        "You'd better not ignore it."};
+  const std::string_view messages[] = {"This is a very important message.",
+                                       "You'd better not ignore it."};
 
   const allocation_recorder::Payload payload =
       CreatePayloadWithProcessingFailures(base::make_span(messages));
@@ -175,7 +175,7 @@ TEST(CreatePayloadWithProcessingFailuresTest, VerifyMultipleMessages) {
 }
 
 TEST(CreatePayloadWithProcessingFailuresTest, VerifyRegularReportDataIsNotSet) {
-  const base::StringPiece message = "This is a very important message.";
+  const std::string_view message = "This is a very important message.";
 
   const allocation_recorder::Payload payload =
       CreatePayloadWithProcessingFailures(message);
