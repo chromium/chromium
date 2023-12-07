@@ -58,11 +58,18 @@ base::FilePath GetExistingWallpaperPath(WallpaperType type,
   }
 
   wallpaper_path = wallpaper_dir.Append(location);
-  if (base::PathExists(wallpaper_path)) {
-    return wallpaper_path;
+  if (!base::PathExists(wallpaper_path)) {
+    return base::FilePath();
   }
 
-  return base::FilePath();
+  // If the wallpaper is a Sea Pen wallpaper, tries to update last modified time
+  // to the current time. Even when this process fails, still continues loading
+  // the wallpaper.
+  if (type == WallpaperType::kSeaPen) {
+    base::TouchFile(wallpaper_path, base::Time::Now(), base::Time::Now());
+  }
+
+  return wallpaper_path;
 }
 
 // Creates the wallpaper directory in the local file system for caching

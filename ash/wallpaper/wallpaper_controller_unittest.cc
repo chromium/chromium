@@ -877,6 +877,17 @@ class WallpaperControllerTestBase : public AshTestBase {
     run_loop.Run();
   }
 
+  // Returns the last modified time of a file. Returns the old last modified
+  // time if the process fails.
+  base::Time GetLastModifiedTime(const base::FilePath& path) {
+    base::File::Info info;
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (file.GetInfo(&info)) {
+      return info.last_modified;
+    }
+    return base::Time();
+  }
+
   raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
       controller_;
   raw_ptr<WallpaperPrefManager, DanglingUntriaged | ExperimentalAsh>
@@ -2116,6 +2127,10 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaperFromFile) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = scoped_temp_dir.GetPath().Append("111.jpg");
   ASSERT_TRUE(base::WriteFile(file_path, jpg_bytes));
+  // Updates the last modified time for the file.
+  ASSERT_TRUE(base::TouchFile(file_path, base::Time::Now() - base::Minutes(5),
+                              base::Time::Now() - base::Minutes(5)));
+  base::Time old_last_modified_time = GetLastModifiedTime(file_path);
 
   base::test::TestFuture<bool> set_wallpaper_future;
   controller_->SetSeaPenWallpaperFromFile(kAccountId1, file_path,
@@ -2133,6 +2148,9 @@ TEST_P(WallpaperControllerTest, SetSeaPenWallpaperFromFile) {
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       *expected_image.bitmap(), *controller_->GetWallpaperImage().bitmap(),
       /*max_deviation=*/1));
+
+  // Last Modified Time should be updated to current time.
+  EXPECT_TRUE(GetLastModifiedTime(file_path) > old_last_modified_time);
 }
 
 TEST_P(WallpaperControllerTest, SetDefaultWallpaperForRegularAccount) {
