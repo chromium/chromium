@@ -261,23 +261,23 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
       break;
     case CSSValueID::kMatrix:
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().A(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().A(), CSSPrimitiveValue::UnitType::kNumber));
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().B(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().B(), CSSPrimitiveValue::UnitType::kNumber));
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().C(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().C(), CSSPrimitiveValue::UnitType::kNumber));
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().D(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().D(), CSSPrimitiveValue::UnitType::kNumber));
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().E(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().E(), CSSPrimitiveValue::UnitType::kNumber));
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().F(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().F(), CSSPrimitiveValue::UnitType::kNumber));
       break;
     case CSSValueID::kScale:
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().A(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().A(), CSSPrimitiveValue::UnitType::kNumber));
       transform_value->Append(*CSSNumericLiteralValue::Create(
-          transform.Matrix().D(), CSSPrimitiveValue::UnitType::kUserUnits));
+          transform.Matrix().D(), CSSPrimitiveValue::UnitType::kNumber));
       break;
     case CSSValueID::kTranslate:
       transform_value->Append(*CSSNumericLiteralValue::Create(
