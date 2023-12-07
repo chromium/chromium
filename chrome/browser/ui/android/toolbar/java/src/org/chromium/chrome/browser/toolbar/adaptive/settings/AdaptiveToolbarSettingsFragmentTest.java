@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -46,6 +47,8 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** Tests for {@link AdaptiveToolbarSettingsFragment}. */
@@ -65,6 +68,8 @@ public class AdaptiveToolbarSettingsFragmentTest {
     @Mock Profile mProfile;
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private TemplateUrl mSearchEngine;
 
     private ChromeSwitchPreference mSwitchPreference;
     private RadioButtonGroupAdaptiveToolbarPreference mRadioPreference;
@@ -83,6 +88,8 @@ public class AdaptiveToolbarSettingsFragmentTest {
         AdaptiveToolbarFeatures.setProfile(mProfile);
 
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
+
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
     }
 
     @After

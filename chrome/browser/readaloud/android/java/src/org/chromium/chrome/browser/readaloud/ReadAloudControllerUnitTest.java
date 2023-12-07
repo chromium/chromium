@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.SearchEngineType;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
@@ -64,6 +66,8 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -102,6 +106,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private ReadAloudPrefs.Natives mReadAloudPrefsNatives;
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
+    @Mock private TemplateUrlService mTemplateUrlService;
 
     MockTabModelSelector mTabModelSelector;
 
@@ -113,6 +118,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private Playback.Metadata mMetadata;
     @Mock private WebContents mWebContents;
     @Mock private RenderFrameHost mRenderFrameHost;
+    @Mock private TemplateUrl mSearchEngine;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
 
     @Before
@@ -151,6 +157,14 @@ public class ReadAloudControllerUnitTest {
         when(mPlaybackHooks.createPlayer(any())).thenReturn(mPlayerCoordinator);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
         ReadAloudController.setPlaybackHooks(mPlaybackHooks);
+
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        doReturn(SearchEngineType.SEARCH_ENGINE_GOOGLE)
+                .when(mTemplateUrlService)
+                .getSearchEngineTypeFromTemplateUrl(anyString());
+        doReturn("Google").when(mSearchEngine).getKeyword();
+        doReturn(mSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+
         mController =
                 new ReadAloudController(
                         mActivity,
