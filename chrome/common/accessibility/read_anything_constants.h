@@ -33,11 +33,6 @@ extern const std::set<std::string> GetNonSelectableUrls();
 
 namespace {
 
-// |ui::AXMode::kHTML| is needed for URL information.
-// |ui::AXMode::kScreenReader| is needed for heading level information.
-const ui::AXMode kReadAnythingAXMode =
-    ui::AXMode::kWebContents | ui::AXMode::kHTML | ui::AXMode::kScreenReader;
-
 // Group id for the toolbar
 const int kToolbarGroupId = 0;
 
