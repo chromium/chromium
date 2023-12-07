@@ -10991,6 +10991,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableServerIbanDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableServerIban)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"seal-key", flag_descriptions::kSealKeyName,
+     flag_descriptions::kSealKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kSealKey, "")},
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-manta-service", flag_descriptions::kEnableMantaServiceName,
      flag_descriptions::kEnableMantaServiceDescription, kOsDesktop,

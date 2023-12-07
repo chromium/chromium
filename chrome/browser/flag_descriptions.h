@@ -4048,6 +4048,9 @@ extern const char kScreencastV2Description[];
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];
 
+extern const char kSealKeyName[];
+extern const char kSealKeyDescription[];
+
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 

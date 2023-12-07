@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -297,6 +298,11 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
           features::kImeSystemEmojiPickerJellySupport)) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_JELLY_SUPPORT);
+  }
+
+  if (SealUtils::ShouldEnable()) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_SEAL_SUPPORT);
   }
 
   std::move(callback).Run(enabled_features);

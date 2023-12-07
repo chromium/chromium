@@ -99,6 +99,7 @@ export class EmojiPickerApp extends PolymerElement {
       // TODO(b/297297441): Remove this property once jelly in emoji picker is
       // fully launched.
       jellySupport: {type: Boolean, value: false},
+      sealSupport: {type: Boolean, value: false},
       showGifNudgeOverlay: {type: Boolean, value: false},
       nextGifPos: {type: Object, value: () => ({})},
       status: {type: Status, value: null},
@@ -120,6 +121,7 @@ export class EmojiPickerApp extends PolymerElement {
   private incognito: boolean;
   private gifSupport: boolean;
   private jellySupport: boolean;
+  private sealSupport: boolean;
   private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
   private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxyImpl.getInstance();
@@ -509,6 +511,7 @@ export class EmojiPickerApp extends PolymerElement {
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
     this.jellySupport =
         featureList.includes(Feature.EMOJI_PICKER_JELLY_SUPPORT);
+    this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
   }
 
   private fetchOrderingData(url: string): Promise<EmojiGroupData> {

@@ -3033,6 +3033,8 @@ static_library("ui") {
       "webui/ash/emoji/gif_tenor_api_fetcher.h",
       "webui/ash/emoji/new_window_proxy.cc",
       "webui/ash/emoji/new_window_proxy.h",
+      "webui/ash/emoji/seal_utils.cc",
+      "webui/ash/emoji/seal_utils.h",
       "webui/ash/enterprise_reporting/enterprise_reporting_page_handler.cc",
       "webui/ash/enterprise_reporting/enterprise_reporting_page_handler.h",
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.cc",

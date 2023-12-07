@@ -7176,6 +7176,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "seal-key",
+    "owners": [ "greywang@google.com", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "search-suggestion-for-prerender2",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 122
