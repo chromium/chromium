@@ -85,6 +85,13 @@ void LCPCriticalPathPredictor::Reset() {
   fetched_fonts_.clear();
 }
 
+bool LCPCriticalPathPredictor::IsElementMatchingLocator(
+    const Element& element) {
+  std::string lcp_element_locator_string =
+      element_locator::OfElement(element).SerializeAsString();
+  return lcp_element_locator_strings_.Contains(lcp_element_locator_string);
+}
+
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     const Element& lcp_element) {
   if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {

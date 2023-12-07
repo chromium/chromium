@@ -47,6 +47,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
     return lcp_element_locators_;
   }
 
+  bool IsElementMatchingLocator(const Element& element);
+
   void set_lcp_influencer_scripts(HashSet<KURL> scripts);
 
   const HashSet<KURL>& lcp_influencer_scripts() {

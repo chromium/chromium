@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
@@ -577,6 +578,18 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
           for (auto& url : script_observer->GetExecutingScriptUrls()) {
             creator_scripts_.insert(url);
           }
+        }
+      }
+    }
+  }
+
+  if (features::
+          kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
+              .Get()) {
+    if (LocalFrame* frame = GetDocument().GetFrame()) {
+      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
+        if (lcpp->IsElementMatchingLocator(*this)) {
+          this->SetPredictedLcpElement();
         }
       }
     }
