@@ -48,7 +48,6 @@ void PermissionPromptBubble::ShowBubble() {
 
   disallowed_custom_cursors_scope_ =
       delegate()->GetAssociatedWebContents()->CreateDisallowCustomCursorScope();
-  occlusion_observation_.Observe(prompt_bubble->GetWidget());
 }
 
 void PermissionPromptBubble::CleanUpPromptBubble() {
@@ -141,11 +140,4 @@ const PermissionPromptBubbleBaseView* PermissionPromptBubble::GetPromptBubble()
     const {
   return static_cast<const PermissionPromptBubbleBaseView*>(
       prompt_bubble_tracker_.view());
-}
-
-void PermissionPromptBubble::OnOcclusionStateChanged(bool occluded) {
-  // Disable the prompt if it's occluded by a picture-in-picture window.
-  if (GetPromptBubble()) {
-    GetPromptBubble()->GetWidget()->GetContentsView()->SetEnabled(!occluded);
-  }
 }
