@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -604,6 +605,31 @@ absl::optional<bool> AccessToken::SetPrivilege(const std::wstring& name,
 bool AccessToken::RemovePrivilege(const std::wstring& name) {
   return AdjustPrivilege(token_, name.c_str(), SE_PRIVILEGE_REMOVED)
       .has_value();
+}
+
+bool AccessToken::RemoveAllPrivileges() {
+  absl::optional<std::vector<char>> privileges_buffer =
+      GetTokenInfo(token_.get(), TokenPrivileges);
+  if (!privileges_buffer ||
+      (privileges_buffer->size() < sizeof(TOKEN_PRIVILEGES))) {
+    return false;
+  }
+  auto* const token_privileges = GetType<TOKEN_PRIVILEGES>(privileges_buffer);
+  if (privileges_buffer->size() <
+      (offsetof(TOKEN_PRIVILEGES, Privileges) +
+       sizeof(LUID_AND_ATTRIBUTES) * token_privileges->PrivilegeCount)) {
+    return false;
+  }
+
+  for (auto privileges = base::make_span(&token_privileges->Privileges[0],
+                                         token_privileges->PrivilegeCount);
+       auto& privilege : privileges) {
+    privilege.Attributes = SE_PRIVILEGE_REMOVED;
+  }
+  return ::AdjustTokenPrivileges(
+      token_.get(), /*DisableAllPrivileges=*/FALSE, token_privileges,
+      static_cast<DWORD>(privileges_buffer->size()),
+      /*PreviousState=*/nullptr, /*ReturnLength=*/nullptr);
 }
 
 bool AccessToken::is_valid() const {

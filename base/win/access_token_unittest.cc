@@ -903,6 +903,15 @@ TEST(AccessTokenTest, RemovePrivilege) {
   EXPECT_FALSE(token->RemovePrivilege(SE_CHANGE_NOTIFY_NAME));
 }
 
+TEST(AccessTokenTest, RemoveAllPrivileges) {
+  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess(true);
+  EXPECT_FALSE(token->RemoveAllPrivileges());
+  token = AccessToken::FromCurrentProcess(true, TOKEN_ADJUST_PRIVILEGES);
+  EXPECT_TRUE(token->RemoveAllPrivileges());
+  EXPECT_EQ(token->Privileges().size(), 0U);
+  EXPECT_TRUE(token->RemoveAllPrivileges());
+}
+
 TEST(AccessTokenTest, CheckRelease) {
   absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
   ASSERT_TRUE(token);

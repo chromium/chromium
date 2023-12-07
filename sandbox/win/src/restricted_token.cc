@@ -173,7 +173,7 @@ std::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
   }
 
   if (delete_all_privileges_ && remove_traversal_privilege_ &&
-      !new_token->RemovePrivilege(SE_CHANGE_NOTIFY_NAME)) {
+      !new_token->RemoveAllPrivileges()) {
     return std::nullopt;
   }
 
