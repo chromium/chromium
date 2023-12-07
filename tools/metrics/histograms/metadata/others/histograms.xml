@@ -11732,13 +11732,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WorkerThread.ExitCode" enum="WorkerThreadExitCode"
-    expires_after="2021-10-31">
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>Records the exit code of WorkerThread.</summary>
-</histogram>
-
 <histogram name="WrenchMenu.MenuAction" enum="WrenchMenuAction"
     expires_after="2024-05-19">
   <owner>ainslie@chromium.org</owner>
