@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 
 class Profile;
 
@@ -22,7 +23,8 @@ namespace app_list {
 // cookie jar to make sure that search done through google.com would only use
 // essential cookie and data.
 // EssentialSearchManager is still WIP.
-class EssentialSearchManager : public ash::SessionObserver {
+class EssentialSearchManager : public ash::SessionObserver,
+                               public SocsCookieFetcher::Consumer {
  public:
   explicit EssentialSearchManager(Profile* primary_profile);
   ~EssentialSearchManager() override;
@@ -38,6 +40,9 @@ class EssentialSearchManager : public ash::SessionObserver {
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  // SocsCookieFetcher::Consumer
+  void OnCookieFetched(const std::string& socs_cookie) override;
+
  private:
   void FetchSocsCookie();
 
@@ -46,6 +51,8 @@ class EssentialSearchManager : public ash::SessionObserver {
       scoped_observation_{this};
 
   const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
+
+  std::unique_ptr<SocsCookieFetcher> socs_cookie_fetcher_;
 
   base::WeakPtrFactory<EssentialSearchManager> weak_ptr_factory_{this};
 };
