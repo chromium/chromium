@@ -6099,6 +6099,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
     Apps and extensions
   </message>
+  <message name="IDS_OS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
+    Apps
+  </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_OFFLINE" desc="In Device Settings > Storage, label for the total size of pinned files in Google Drive.">
     Offline files
   </message>

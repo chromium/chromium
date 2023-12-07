@@ -74,13 +74,17 @@ StorageSection::StorageSection(Profile* profile,
 StorageSection::~StorageSection() = default;
 
 void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kStorageStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kStorageStrings[] = {
       {"storageExternal", IDS_SETTINGS_STORAGE_EXTERNAL},
       {"storageExternalStorageEmptyListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_EMPTY_LIST_HEADER},
       {"storageExternalStorageListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER},
-      {"storageItemApps", IDS_SETTINGS_STORAGE_ITEM_APPS},
+      {"storageItemApps", kIsRevampEnabled ? IDS_OS_SETTINGS_STORAGE_ITEM_APPS
+                                           : IDS_SETTINGS_STORAGE_ITEM_APPS},
       {"storageItemOffline", IDS_SETTINGS_STORAGE_ITEM_OFFLINE},
       {"storageItemAvailable", IDS_SETTINGS_STORAGE_ITEM_AVAILABLE},
       {"storageItemBrowsingData", IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA},
