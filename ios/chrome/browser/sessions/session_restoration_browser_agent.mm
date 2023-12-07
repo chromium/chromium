@@ -270,8 +270,7 @@ void SessionRestorationBrowserAgent::RemoveObserver(
 }
 
 void SessionRestorationBrowserAgent::RestoreSessionWindow(
-    SessionWindowIOS* window,
-    SessionRestorationScope scope) {
+    SessionWindowIOS* window) {
   // Start the session restoration.
   restoring_session_ = true;
 
@@ -282,7 +281,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   // Restore the tabs (except the invalid ones).
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
-          browser_->GetWebStateList(), FilterInvalidTabs(window), scope,
+          browser_->GetWebStateList(), FilterInvalidTabs(window),
           enable_pinned_web_states_,
           base::BindRepeating(
               &web::WebState::CreateWithStorageSession,
@@ -312,7 +311,7 @@ void SessionRestorationBrowserAgent::RestoreSession() {
       loadSessionWithSessionID:session_identifier_
                      directory:browser_->GetBrowserState()->GetStatePath()];
 
-  RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
+  RestoreSessionWindow(session_window);
   base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
                           base::TimeTicks::Now() - start_time);
 }
@@ -346,27 +345,6 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
       tab_helper->SaveSessionStateIfStale();
     }
   }
-}
-
-NSArray<CRWSessionStorage*>*
-SessionRestorationBrowserAgent::GetRestoredSessionStoragesForScope(
-    SessionRestorationScope scope,
-    NSArray<CRWSessionStorage*>* session_storages,
-    int restored_count) {
-  NSRange restored_sessions_range;
-
-  switch (scope) {
-    case SessionRestorationScope::kPinnedOnly:
-    case SessionRestorationScope::kAll:
-      restored_sessions_range = NSMakeRange(0, restored_count);
-      break;
-    case SessionRestorationScope::kRegularOnly:
-      restored_sessions_range =
-          NSMakeRange(session_storages.count - restored_count, restored_count);
-      break;
-  }
-
-  return [session_storages subarrayWithRange:restored_sessions_range];
 }
 
 bool SessionRestorationBrowserAgent::CanSaveSession() {

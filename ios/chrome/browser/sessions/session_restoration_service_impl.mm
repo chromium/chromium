@@ -355,7 +355,7 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
           browser->GetWebStateList(), std::move(session.session_metadata),
-          SessionRestorationScope::kAll, enable_pinned_web_states_,
+          enable_pinned_web_states_,
           base::BindRepeating(&CreateWebState, session_dir,
                               browser->GetBrowserState(),
                               std::move(session.web_state_storage_map)));
