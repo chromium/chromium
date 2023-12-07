@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CustomEventMap, FilesEventTarget} from '../common/js/files_event_target.js';
 import type {VolumeType} from '../common/js/volume_manager_types.js';
 
 import type {EntryLocation} from './entry_location.js';
@@ -9,10 +10,49 @@ import type {FilesAppDirEntry, FilesAppEntry} from './files_app_entry_interfaces
 import type {VolumeInfo} from './volume_info.js';
 import type {VolumeInfoList} from './volume_info_list.js';
 
+
+export type DeviceConnectionChangedEvent = CustomEvent<undefined>&{
+  type: 'drive-connection-changed',
+};
+
+/**
+ * An event triggered when a user tries to mount the volume which is
+ * already mounted. The event object must have a volumeId property.
+ */
+export type VolumeAlreadyMountedEvent = CustomEvent<{
+  volumeId: string,
+}>&{
+  type: 'volume_already_mounted',
+};
+
+/**
+ * An event triggered when an archive file is newly mounted, or when opened a
+ * one already mounted.
+ */
+export type ArchiveOpenEvent = CustomEvent<{
+  mountPoint: DirectoryEntry,
+}>&{
+  type: 'archive_opened',
+};
+
+/**
+ * Event object which is dispatched with 'externally-unmounted' event.
+ */
+export type ExternallyUnmountedEvent = CustomEvent<VolumeInfo>&{
+  type: 'externally-unmounted',
+};
+
+export interface VolumeManagerEventMap extends CustomEventMap {
+  'drive-connection-changed': DeviceConnectionChangedEvent;
+  'volume_already_mounted': VolumeAlreadyMountedEvent;
+  'archive_opened': ArchiveOpenEvent;
+  'externally-unmounted': ExternallyUnmountedEvent;
+}
+
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
  */
-export interface VolumeManager {
+export interface VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
   /**
    * The list of VolumeInfo instances for each mounted volume.
    */
@@ -99,30 +139,6 @@ export interface VolumeManager {
   getLocationInfo(entry: Entry|FilesAppEntry): EntryLocation|null;
 
   /**
-   * Adds an event listener to the target.
-   * @param type The name of the event.
-   * @param handler The handler for the event. This is called when the event is
-   *     dispatched.
-   */
-  addEventListener(type: string, handler: (arg0: Event) => void): void;
-
-  /**
-   * Removes an event listener from the target.
-   * @param type The name of the event.
-   * @param handler The handler for the event.
-   */
-  removeEventListener(type: string, handler: (arg0: Event) => void): void;
-
-  /**
-   * Dispatches an event and calls all the listeners that are listening to
-   * the type of the event.
-   * @param event The event to dispatch.
-   * @return Whether the default action was prevented. If someone
-   *     calls preventDefault on the event object then this returns false.
-   */
-  dispatchEvent(event: Event): boolean;
-
-  /**
    * Searches the information of the volume that exists on the given device
    * path.
    * @param devicePath Path of the device to search.
@@ -163,8 +179,3 @@ export interface VolumeManager {
    */
   isAllowedVolume(volumeInfo: VolumeInfo): boolean;
 }
-
-/**
- * Event object which is dispatched with 'externally-unmounted' event.
- */
-export type ExternallyUnmountedEvent = CustomEvent<VolumeInfo>;

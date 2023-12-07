@@ -20,10 +20,10 @@ function createMockVolumeManager(): MockVolumeManager {
   // Patch its addEventListener, removeEventListener methods to make them log
   // (instead of throw) "not implemented", since those throw events break the
   // FilteredVolumeManager initialization code in tests.
-  volumeManager.addEventListener = (_type, _handler) => {
+  volumeManager.addEventListener = (_type: string, _handler: any) => {
     console.log('MockVolumeManager.addEventListener not implemented');
   };
-  volumeManager.removeEventListener = (_type, _handler) => {
+  volumeManager.removeEventListener = (_type: string, _handler: any) => {
     console.log('MockVolumeManager.removeEventListener not implemented');
   };
 

@@ -15,7 +15,6 @@ image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
   # Files Common:
-  "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_entry.js",
 
   # Externs:
@@ -27,7 +26,6 @@ static_js_files = [
   "file_manager/externs/exif_entry.js",
   "file_manager/externs/metadata_model.js",
   "file_manager/externs/progress_center_panel.js",
-  "file_manager/externs/volume_info_list.js",
   "file_manager/externs/ts/state.js",
   "file_manager/externs/ts/store.js",
 
@@ -93,16 +91,17 @@ ts_files = [
   "file_manager/common/js/array_data_model.ts",
   "file_manager/common/js/async_util.ts",
   "file_manager/common/js/cr_ui.ts",
-  "file_manager/common/js/files_app_entry_types.ts",
   "file_manager/common/js/dialog_type.ts",
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/error_counter.ts",
-  "file_manager/common/js/files_event_target.ts",
   "file_manager/common/js/file_tasks.ts",
   "file_manager/common/js/file_type.ts",
   "file_manager/common/js/file_types_base.ts",
+  "file_manager/common/js/files_app_entry_types.ts",
   "file_manager/common/js/files_app_state.ts",
+  "file_manager/common/js/files_event_target.ts",
+  "file_manager/common/js/filtered_volume_manager.ts",
   "file_manager/common/js/flags.ts",
   "file_manager/common/js/glitch.ts",
   "file_manager/common/js/icon_util.ts",
@@ -593,6 +592,7 @@ checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/externs/volume_info.d.ts",
+  "file_manager/externs/volume_info_list.d.ts",
   "file_manager/externs/volume_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
   "file_manager/foreground/js/ui/tree.d.ts",

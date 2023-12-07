@@ -5,14 +5,14 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {isComputersRoot, isFakeEntry, isSameEntry, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
 import {FileSystemType, getRootTypeFromVolumeType, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {VolumeInfoList} from '../../externs/volume_info_list.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';
 import {VolumeInfoImpl} from './volume_info_impl.js';
@@ -28,13 +28,15 @@ let volumeManagerInstance: VolumeManager|null = null;
 /**
  * Mock class for VolumeManager.
  */
-export class MockVolumeManager implements VolumeManager {
-  volumeInfoList: VolumeInfoList = new VolumeInfoListImpl();
+export class MockVolumeManager extends
+    FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
+  volumeInfoList = new VolumeInfoListImpl();
   driveConnectionState: chrome.fileManagerPrivate.DriveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
   };
 
   constructor() {
+    super();
     // Create Drive.   Drive attempts to resolve FilesSystemURLs for '/root',
     // '/team_drives' and '/Computers' during initialization. Create a
     // filesystem with those entries now, and mock
@@ -255,17 +257,18 @@ export class MockVolumeManager implements VolumeManager {
     throw new Error('Not implemented');
   }
 
-  addEventListener(_type: string, _handler: (arg0: Event) => void) {
+  override addEventListener(_type: string, _handler: any) {
     throw new Error('Not implemented');
   }
 
-  removeEventListener(_type: string, _handler: (arg0: Event) => void) {
+  override removeEventListener(_type: string, _handler: any) {
     throw new Error('Not implemented');
   }
 
-  dispatchEvent(_event: Event): boolean {
+  override dispatchEvent(_event: Event): boolean {
     throw new Error('Not implemented');
   }
+
 
   hasDisabledVolumes(): boolean {
     return false;

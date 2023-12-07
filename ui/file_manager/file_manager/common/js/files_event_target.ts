@@ -33,7 +33,7 @@ export interface FilesEventTarget<EventMap extends CustomEventMap> {
       type: string, callback: EventListenerOrEventListenerObject|null,
       options?: AddEventListenerOptions|boolean): void;
   removeEventListener<K extends keyof EventMap>(
-      type: K, listener: (event: EventMap[K]) => any,
+      type: K, listener: (event: EventMap[K]) => void,
       options?: boolean|EventListenerOptions): void;
   removeEventListener(
       type: string, listener: EventListenerOrEventListenerObject|null,

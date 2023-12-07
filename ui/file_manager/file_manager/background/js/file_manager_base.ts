@@ -8,10 +8,10 @@ import {getDirectory} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
 import {isInGuestMode} from '../../common/js/util.js';
-import {createArchiveOpenedEvent, Source, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
+import {ARCHIVE_OPENED_EVENT_TYPE, Source, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeAlreadyMountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
 import {AppWindowWrapper} from './app_window_wrapper.js';
 import {CrostiniImpl} from './crostini.js';
@@ -19,7 +19,6 @@ import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {FileOperationHandler} from './file_operation_handler.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
-import type {VolumeAlreadyMountedEvent} from './volume_manager_impl.js';
 
 /**
  * Root class of the former background page.
@@ -131,7 +130,7 @@ export class FileManagerBase {
    * @param event An event with the volumeId or
    *     devicePath.
    */
-  private async handleViewEvent_(event: Event) {
+  private async handleViewEvent_(event: VolumeAlreadyMountedEvent) {
     const isPrimaryContext = await isInGuestMode();
     if (isPrimaryContext) {
       this.handleViewEventInternal_(event);
@@ -141,13 +140,10 @@ export class FileManagerBase {
   /**
    * @param event An event with the volumeId.
    */
-  private async handleViewEventInternal_(event: Event): Promise<void> {
+  private async handleViewEventInternal_(event: VolumeAlreadyMountedEvent):
+      Promise<void> {
     await volumeManagerFactory.getInstance();
-    // event can only be VolumeAlreadyMountedEvent according to the
-    // addEventListener in the constructor.
-    const volumeAlreadyMountedEvent = event as VolumeAlreadyMountedEvent;
-    this.navigateToVolumeInFocusedWindowWhenReady_(
-        volumeAlreadyMountedEvent.volumeId);
+    this.navigateToVolumeInFocusedWindowWhenReady_(event.detail.volumeId);
   }
 
   /**
@@ -237,7 +233,8 @@ export class FileManagerBase {
         await this.retrieveEntryInVolume_(volume, directoryPath);
     if (directoryEntry) {
       const volumeManager = await volumeManagerFactory.getInstance();
-      volumeManager.dispatchEvent(createArchiveOpenedEvent(directoryEntry));
+      volumeManager.dispatchEvent(new CustomEvent(
+          ARCHIVE_OPENED_EVENT_TYPE, {detail: {mountPoint: directoryEntry}}));
     }
   }
 

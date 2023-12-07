@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {promisify} from '../../common/js/api.js';
 import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
 import {timeoutPromise} from '../../common/js/util.js';
-import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
@@ -153,10 +152,6 @@ export async function createVolumeInfo(
 }
 
 
-export type VolumeAlreadyMountedEvent = Event&{
-  volumeId: string,
-};
-
 type RequestSuccessCallback = (volumeInfo?: VolumeInfo) => void;
 type RequestErrorCallback = (error: VolumeError) => void;
 interface Request {
@@ -168,7 +163,8 @@ interface Request {
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
  */
-export class VolumeManagerImpl extends EventTarget implements VolumeManager {
+export class VolumeManagerImpl extends
+    FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
   volumeInfoList = new VolumeInfoListImpl();
 
   /**
@@ -230,7 +226,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
   private onDriveConnectionStatusChanged_() {
     chrome.fileManagerPrivate.getDriveConnectionState(state => {
       this.driveConnectionState_ = state;
-      dispatchSimpleEvent(this, 'drive-connection-changed');
+      this.dispatchEvent(new CustomEvent('drive-connection-changed'));
     });
   }
 
@@ -412,8 +408,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
             console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
-                new Event(VOLUME_ALREADY_MOUNTED) as VolumeAlreadyMountedEvent;
-            navigationEvent.volumeId = volumeId;
+                new CustomEvent('volume_already_mounted', {detail: {volumeId}});
             this.dispatchEvent(navigationEvent);
             this.finishRequest_(requestKey, volumeError);
             return;

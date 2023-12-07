@@ -364,18 +364,6 @@ export const PHOTOS_DOCUMENTS_PROVIDER_VOLUME_ID =
 export const MEDIA_DOCUMENTS_PROVIDER_ID =
     'com.android.providers.media.documents';
 
-
-/**
- * Creates an CustomEvent object for changing current directory when an
- * archive file is newly mounted, or when opened a one already mounted.
- * @param mountPoint The root directory of the mounted volume.
- */
-export function createArchiveOpenedEvent(mountPoint: DirectoryEntry):
-    CustomEvent<DirectoryEntry> {
-  return new CustomEvent<DirectoryEntry>(
-      ARCHIVE_OPENED_EVENT_TYPE, {detail: mountPoint});
-}
-
 /** Checks if a file entry is a Recent entry coming from ARC source. */
 export function isRecentArcEntry(entry: Entry|null): boolean {
   return !!entry &&
