@@ -50,6 +50,25 @@ export function assertNotReached(optMessage = 'Unreachable code hit'): never {
 }
 
 /**
+ * Check if a value is a instance of a class.
+ *
+ * @param value The value to check.
+ * @param ctor A user-defined constructor.
+ */
+export function checkInstanceof<T>(
+    value: unknown,
+    // "unknown" doesn't work well here if the constructor have overloads with
+    // different numbers of argument and strictNullChecks on.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ctor: new (...args: any[]) => T,
+    ): T|null {
+  if (!(value instanceof ctor)) {
+    return null;
+  }
+  return value;
+}
+
+/**
  * @param value The value to check.
  * @param ctor A user-defined constructor.
  * @param optMessage A message to show when this is hit.
@@ -133,8 +152,8 @@ export function assertExists<T>(
  * @return The value if it's an enum variant, null otherwise.
  */
 export function checkEnumVariant<T extends string>(
-    enumType: {[key: string]: T}, value: string|null|undefined): T|null {
-  if (value === null || value === undefined ||
+    enumType: {[key: string]: T}, value: unknown): T|null {
+  if (value === null || value === undefined || typeof value !== 'string' ||
       !Object.values<string>(enumType).includes(value)) {
     return null;
   }
@@ -152,7 +171,7 @@ export function checkEnumVariant<T extends string>(
  * @return The value if it's an enum variant, throws assertion error otherwise.
  */
 export function assertEnumVariant<T extends string>(
-    enumType: {[key: string]: T}, value: string|null|undefined): T {
+    enumType: {[key: string]: T}, value: unknown): T {
   const ret = checkEnumVariant(enumType, value);
   assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;

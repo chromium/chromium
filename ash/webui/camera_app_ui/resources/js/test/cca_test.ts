@@ -10,6 +10,7 @@ import {
 } from '../assert.js';
 import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import * as dom from '../dom.js';
+import {ModeSelector} from '../lit/components/mode-selector.js';
 import * as localStorage from '../models/local_storage.js';
 import {
   TIME_LAPSE_MAX_DURATION,
@@ -519,10 +520,9 @@ export class CCATest {
    */
   static switchMode(mode: Mode): void {
     assertEnumVariant(Mode, mode);
-    const modeSelector =
-        dom.get(`.mode-item>input[data-mode="${mode}"]`, HTMLInputElement);
+    const modeSelector = dom.get(SELECTOR_MAP.modeSelector, ModeSelector);
     assert(isVisibleElement(modeSelector), 'Mode selector is not visible');
-    modeSelector.click();
+    modeSelector.changeModeForTesting(mode);
   }
 
   /**

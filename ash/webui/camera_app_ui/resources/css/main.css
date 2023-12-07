@@ -40,10 +40,6 @@ html {
   height: 100%;  /* Required for printing. */
 }
 
-audio {
-  display: none;
-}
-
 body {
   background: var(--cros-sys-app_base);
   bottom: 0;
@@ -197,125 +193,17 @@ body.tablet-landscape .actions-group {
   flex-direction: column-reverse;
 }
 
-body.doc-mode-reviewing #mode-selector {
-  visibility: hidden;
-}
-
-#mode-selector {
-  --fade-padding: 24px;
-  --scrollbar-height: 4px;
-
+mode-selector {
   left: calc(var(--left-line) * 2);
   right: calc(var(--right-line) * 2);
-}
 
-#mode-selector::before,
-#mode-selector::after {
-  /* This is for "fading" effect when window is narrow and the mode selector
-   * overflows, so we use the same color as the background color here. */
-  background: linear-gradient(to right, var(--cros-sys-app_base), transparent);
-  content: '';
-  display: block;
-  height: calc(100% - var(--scrollbar-height));
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: var(--fade-padding);
-  z-index: 2;
-}
-
-#mode-selector::before {
-  left: 0;
-}
-
-#mode-selector::after {
-  right: 0;
-  transform: scaleX(-1);
-}
-
-#modes-group {
-  display: block;
-  overflow: auto;
-  padding: 10px 0;
-  pointer-events: auto;
-  text-align: center;
-  user-select: none;
-  white-space: nowrap;
+  body:is(.taking.video, .should-handle-intent-result, .doc-mode-reviewing) & {
+    display: none;
+  }
 }
 
 :is(#start-takephoto, #recordvideo, #video-snapshot):disabled {
   opacity: 0.38;
-}
-
-#modes-group::-webkit-scrollbar-thumb {
-  background: var(--cros-sys-scrollbar);
-  border-radius: 2px;
-  height: auto;
-  width: auto;
-}
-
-#modes-group::-webkit-scrollbar {
-  height: var(--scrollbar-height);
-  width: auto;
-}
-
-body:is(.taking.video, .should-handle-intent-result) #modes-group {
-  display: none;
-}
-
-#modes-group .mode-item {
-  display: inline-block;
-  font-size: 0; /* Remove space between inline-block. */
-  margin: 0 8px;
-  position: relative;
-}
-
-#modes-group .mode-item.hide {
-  display: none;
-}
-
-#modes-group .mode-item.first {
-  margin-inline-start: var(--fade-padding);
-}
-
-#modes-group .mode-item.last {
-  margin-inline-end: var(--fade-padding);
-}
-
-#modes-group .mode-item input:active {
-  /* Don't scale when active to prevent twitching. See b/197583162. */
-  transform: none;
-}
-
-#modes-group .mode-item:has(input[data-disabled=true]) {
-  opacity: 0.38;
-}
-
-div.mode-item>input {
-  border-radius: 16px/50%;
-}
-
-div.mode-item>span {
-  border-radius: 16px/50%;
-  color: var(--cros-sys-on_surface);
-  display: inline-block;
-  font: var(--cros-button-1-font);
-  padding: 8px 12px;
-  position: relative;
-  z-index: 0;
-}
-
-.mode-item>input {
-  height: 100%;
-  outline-offset: 7px;
-  position: absolute;
-  width: 100%;
-  z-index: 1;
-}
-
-.mode-item>input:checked + span {
-  background: var(--cros-sys-primary);
-  color: var(--cros-sys-inverse_on_surface);
 }
 
 button.shutter {

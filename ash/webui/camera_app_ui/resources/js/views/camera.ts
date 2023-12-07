@@ -25,6 +25,7 @@ import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
 import {I18nString} from '../i18n_string.js';
+import {ModeSelector} from '../lit/components/mode-selector.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
@@ -127,7 +128,7 @@ export class Camera extends View implements CameraViewUI {
    */
   private readonly takeQueue = new AsyncJobQueue('drop');
 
-  private readonly modesGroup = dom.get('#modes-group', HTMLElement);
+  private readonly modeSelector = dom.get('mode-selector', ModeSelector);
 
   private readonly defaultFocus = queuedAsyncCallback('drop', async () => {
     await this.cameraReady.wait();
@@ -256,8 +257,7 @@ export class Camera extends View implements CameraViewUI {
 
     this.cameraManager.registerCameraUI({
       onTryingNewConfig: (config: CameraConfig) => {
-        this.updateModeUI(config.mode);
-        this.updateShutterLabel(config.mode);
+        this.updateMode(config.mode);
       },
       onUpdateConfig: async (config: CameraConfig) => {
         nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
@@ -265,71 +265,46 @@ export class Camera extends View implements CameraViewUI {
         this.updateActiveCamera(config.deviceId);
 
         // Update current mode.
-        const supportedModes =
+        this.modeSelector.supportedModes =
             await this.cameraManager.getSupportedModes(config.deviceId);
-        const items = dom.getAll('div.mode-item', HTMLDivElement);
-        let first: HTMLElement|null = null;
-        let last: HTMLElement|null = null;
-        for (const el of items) {
-          const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
-          const supported = supportedModes.includes(
-              assertEnumVariant(Mode, radio.dataset['mode']));
-          el.classList.toggle('hide', !supported);
-          if (supported) {
-            if (first === null) {
-              first = el;
-            }
-            last = el;
-          }
-        }
-        for (const el of items) {
-          el.classList.toggle('first', el === first);
-          el.classList.toggle('last', el === last);
-        }
       },
       onCameraUnavailable: () => {
         this.cameraReady = new WaitableEvent();
+        updateModeSelectorDisabled();
       },
       onCameraAvailable: () => {
         this.cameraReady.signal();
+        updateModeSelectorDisabled();
       },
     });
 
-    const checkModesGroupDisabled = () => {
-      const disabled =
+    const updateModeSelectorDisabled = () => {
+      const disabled = !this.cameraReady.isSignaled() ||
           !state.get(state.State.STREAMING) || state.get(state.State.TAKING);
-      const modes =
-          dom.getAllFrom(this.modesGroup, '.mode-item>input', HTMLInputElement);
-      for (const mode of modes) {
-        // Use data-disabled here because:
-        // 1. `mode.disabled = true` loses focus on the element.
-        // 2. `mode.setAttribute('aria-disabled', 'true')` makes ChromeVox
-        //    always announce the element is disabled.
-        mode.dataset['disabled'] = String(disabled);
-      }
+      this.modeSelector.disabled = disabled;
     };
-    state.addObserver(state.State.STREAMING, checkModesGroupDisabled);
-    state.addObserver(state.State.TAKING, checkModesGroupDisabled);
-    checkModesGroupDisabled();
 
-    for (const el of dom.getAll('.mode-item>input', HTMLInputElement)) {
-      el.addEventListener('click', (event) => {
-        if (!this.cameraReady.isSignaled() ||
-            el.dataset['disabled'] === 'true') {
-          event.preventDefault();
-        }
-      });
-      el.addEventListener('change', async () => {
-        if (el.checked) {
-          const mode = assertEnumVariant(Mode, el.dataset['mode']);
-          this.updateModeUI(mode);
-          this.updateShutterLabel(mode);
-          state.set(PerfEvent.MODE_SWITCHING, true);
-          const isSuccess = await this.cameraManager.switchMode(mode) ?? false;
-          state.set(PerfEvent.MODE_SWITCHING, false, {hasError: !isSuccess});
-        }
-      });
-    }
+    state.addObserver(state.State.STREAMING, updateModeSelectorDisabled);
+    state.addObserver(state.State.TAKING, updateModeSelectorDisabled);
+    updateModeSelectorDisabled();
+
+    this.modeSelector.addEventListener('mode-change', async (e) => {
+      // TODO(pihsun): Check if there's a cleaner way to have typed custom
+      // events. Current options are:
+      // * Setting HTMLElementEventMap, which are global and would make all
+      //   HTMLElement have that event on type level and is not ideal.
+      // * Override addEventListener/removeEventListener in the custom
+      //   component (e.g.
+      //   https://gist.github.com/difosfor/ceeb01d03a8db7dc68d5cd4167d60637).
+      //   This requires lots of boilerplate code.
+      const mode =
+          assertEnumVariant(Mode, assertInstanceof(e, CustomEvent).detail);
+      this.updateMode(mode);
+      state.set(PerfEvent.MODE_SWITCHING, true);
+      const isSuccess = await this.cameraManager.switchMode(mode) ?? false;
+      state.set(PerfEvent.MODE_SWITCHING, false, {hasError: !isSuccess});
+    });
+
     dom.get('#back-to-review-document', HTMLButtonElement)
         .addEventListener(
             'click',
@@ -367,21 +342,12 @@ export class Camera extends View implements CameraViewUI {
     return assertEnumVariant(Facing, this.facing);
   }
 
-  private updateModeUI(mode: Mode) {
+  private updateMode(mode: Mode) {
     for (const m of Object.values(Mode)) {
       state.set(m, m === mode);
     }
-    const element =
-        dom.get(`.mode-item>input[data-mode=${mode}]`, HTMLInputElement);
-    element.checked = true;
-    const wrapper = assertInstanceof(element.parentElement, HTMLDivElement);
-    const scrollLeft = wrapper.offsetLeft -
-        (this.modesGroup.offsetWidth - wrapper.offsetWidth) / 2;
-    this.modesGroup.scrollTo({
-      left: scrollLeft,
-      top: 0,
-      behavior: 'smooth',
-    });
+    this.modeSelector.selectedMode = mode;
+    this.updateShutterLabel(mode);
   }
 
   private updateShutterLabel(mode: Mode) {

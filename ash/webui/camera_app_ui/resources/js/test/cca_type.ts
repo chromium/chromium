@@ -69,7 +69,7 @@ export const SELECTOR_MAP = {
   lowStorageWarning: '#nudge',
   mirrorOptionOff: 'span[i18n-aria=aria_mirror_off]',
   mirrorOptionOn: 'span[i18n-aria=aria_mirror_on]',
-  modeSelector: '#modes-group',
+  modeSelector: 'mode-selector',
   openGridPanelButton: '#open-grid-panel',
   openMirrorPanelButton: '#open-mirror-panel',
   openPTZPanelButton: '#open-ptz-panel',
