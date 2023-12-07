@@ -27,7 +27,7 @@ namespace {
 // priority.
 BASE_FEATURE(kServiceWorkerStorageControlResponseUseHighPriority,
              "ServiceWorkerStorageControlResponseUseHighPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 using BrowserTaskPriority = ::content::internal::BrowserTaskPriority;
 using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;

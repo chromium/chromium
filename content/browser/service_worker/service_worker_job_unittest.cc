@@ -501,6 +501,7 @@ TEST_F(ServiceWorkerJobTest, Unregister) {
 
   WaitForVersionRunningStatus(version, blink::EmbeddedWorkerStatus::kStopped);
   registry()->GetRemoteStorageControl().FlushForTesting();
+  base::RunLoop().RunUntilIdle();
 
   // The service worker registration object host and service worker object host
   // have been destroyed together with |worker_host| by the above
