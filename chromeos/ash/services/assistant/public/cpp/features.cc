@@ -58,7 +58,7 @@ BASE_FEATURE(kEnableAssistantLearnMore,
 
 BASE_FEATURE(kEnableAssistantOnboarding,
              "AssistantOnboarding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
