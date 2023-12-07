@@ -3038,8 +3038,8 @@ if (!is_android) {
         "../browser/support_tool/signin_data_collector_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
-        "data/webui/async_gen.cc",
-        "data/webui/async_gen.h",
+        "data/webui/chromeos/async_gen.cc",
+        "data/webui/chromeos/async_gen.h",
       ]
       deps += [
         "//ash/webui/system_apps/public:system_web_app_type",
