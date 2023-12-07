@@ -27,7 +27,7 @@ LoginTabHelper::CreateAndStartMainFrameLoginDelegate(
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     LoginAuthRequiredCallback auth_required_callback) {
-  std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
+  std::unique_ptr<LoginHandler> login_handler = CreateLoginHandler(
       auth_info, web_contents, std::move(auth_required_callback));
   login_handler->StartMainFrame(
       request_id, url, response_headers,
@@ -107,7 +107,7 @@ void LoginTabHelper::DidFinishNavigation(
   network_anonymization_key_ =
       navigation_handle->GetIsolationInfo().network_anonymization_key();
 
-  login_handler_ = LoginHandler::Create(
+  login_handler_ = CreateLoginHandler(
       navigation_handle->GetAuthChallengeInfo().value(),
       navigation_handle->GetWebContents(),
       base::BindOnce(
@@ -208,6 +208,14 @@ LoginTabHelper::WillProcessMainFrameUnauthorizedResponse(
 LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<LoginTabHelper>(*web_contents) {}
+
+std::unique_ptr<LoginHandler> LoginTabHelper::CreateLoginHandler(
+    const net::AuthChallengeInfo& auth_info,
+    content::WebContents* web_contents,
+    LoginAuthRequiredCallback auth_required_callback) {
+  return LoginHandler::Create(auth_info, web_contents,
+                              std::move(auth_required_callback));
+}
 
 void LoginTabHelper::HandleCredentials(
     const std::optional<net::AuthCredentials>& credentials) {

@@ -70,10 +70,15 @@ class LoginTabHelper : public content::WebContentsObserver,
   WillProcessMainFrameUnauthorizedResponse(
       content::NavigationHandle* navigation_handle);
 
+ protected:
+  explicit LoginTabHelper(content::WebContents* web_contents);
+  virtual std::unique_ptr<LoginHandler> CreateLoginHandler(
+      const net::AuthChallengeInfo& auth_info,
+      content::WebContents* web_contents,
+      LoginAuthRequiredCallback auth_required_callback);
+
  private:
   friend class content::WebContentsUserData<LoginTabHelper>;
-
-  explicit LoginTabHelper(content::WebContents* web_contents);
 
   void HandleCredentials(
       const std::optional<net::AuthCredentials>& credentials);
