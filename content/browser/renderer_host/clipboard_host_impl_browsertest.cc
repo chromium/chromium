@@ -184,7 +184,13 @@ IN_PROC_BROWSER_TEST_P(ClipboardDocUrlBrowserTestP, HtmlUrl) {
 
 class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
  public:
-  ClipboardBrowserTest() = default;
+  ClipboardBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kEmptyClipboardRead, /*enabled*/ true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {
@@ -199,8 +205,25 @@ IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {
       blink::PermissionType::CLIPBOARD_READ_WRITE,
       blink::mojom::PermissionStatus::GRANTED);
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
-  // Currently we throw an exception if the clipboard is empty.
-  ASSERT_FALSE(ExecJs(shell(), " navigator.clipboard.read()"));
+  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount("Blink.Clipboard.Read.NumberOfFormats", 0,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, NumberOfFormatsOnRead) {
+  base::HistogramTester histogram_tester;
+  GURL main_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  PermissionController* permission_controller =
+      GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
+  url::Origin origin = url::Origin::Create(main_url);
+  SetPermissionControllerOverrideForDevTools(
+      permission_controller, origin,
+      blink::PermissionType::CLIPBOARD_READ_WRITE,
+      blink::mojom::PermissionStatus::GRANTED);
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
   SetPermissionControllerOverrideForDevTools(
       permission_controller, origin,
       blink::PermissionType::CLIPBOARD_SANITIZED_WRITE,

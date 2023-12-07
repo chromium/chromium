@@ -1509,6 +1509,10 @@
       status: "stable",
     },
     {
+      name: "EmptyClipboardRead",
+      status: "stable",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },

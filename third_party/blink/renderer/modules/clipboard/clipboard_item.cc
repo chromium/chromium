@@ -32,7 +32,7 @@ ClipboardItem* ClipboardItem::Create(
 
 ClipboardItem::ClipboardItem(
     const HeapVector<std::pair<String, ScriptPromise>>& items) {
-  DCHECK(items.size());
+  DCHECK(items.size() || RuntimeEnabledFeatures::EmptyClipboardReadEnabled());
   for (const auto& item : items) {
     String web_custom_format = Clipboard::ParseWebCustomFormat(item.first);
     if (web_custom_format.empty()) {
