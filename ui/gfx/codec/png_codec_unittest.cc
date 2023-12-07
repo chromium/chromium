@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <iomanip>
 
 #include "base/base_paths.h"
 #include "base/check.h"
