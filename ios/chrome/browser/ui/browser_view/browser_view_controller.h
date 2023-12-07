@@ -26,7 +26,6 @@
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @class BubblePresenter;
-@protocol CRWResponderInputView;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
