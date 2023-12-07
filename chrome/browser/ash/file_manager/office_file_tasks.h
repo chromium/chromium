@@ -132,10 +132,10 @@ void OnDialogChoiceReceived(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
+    ash::office_fallback::FallbackReason fallback_reason,
     gfx::NativeWindow modal_parent,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
-    const std::string& choice,
-    ash::office_fallback::FallbackReason fallback_reason);
+    const std::string& choice);
 
 // Shows a new dialog for users to choose what to do next. Returns True
 // if a new dialog has been effectively created.

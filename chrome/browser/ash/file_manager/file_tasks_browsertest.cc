@@ -1374,10 +1374,10 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
 
   // Run dialog callback, simulate user choosing to "try-again". Will succeed
   // because system is online.
-  OnDialogChoiceReceived(profile(), web_drive_office_task, file_urls, nullptr,
-                         std::move(cloud_open_metrics_),
-                         ash::office_fallback::kDialogChoiceTryAgain,
-                         ash::office_fallback::FallbackReason::kOffline);
+  OnDialogChoiceReceived(profile(), web_drive_office_task, file_urls,
+                         ash::office_fallback::FallbackReason::kOffline,
+                         nullptr, std::move(cloud_open_metrics_),
+                         ash::office_fallback::kDialogChoiceTryAgain);
 
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
@@ -1756,10 +1756,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
 
   // Run dialog callback, simulate user choosing to "try-again". Will succeed
   // because system is online, and the file doesn't need to be moved.
-  OnDialogChoiceReceived(profile(), open_in_office_task, file_urls, nullptr,
-                         std::move(cloud_open_metrics_),
-                         ash::office_fallback::kDialogChoiceTryAgain,
-                         ash::office_fallback::FallbackReason::kOffline);
+  OnDialogChoiceReceived(profile(), open_in_office_task, file_urls,
+                         ash::office_fallback::FallbackReason::kOffline,
+                         nullptr, std::move(cloud_open_metrics_),
+                         ash::office_fallback::kDialogChoiceTryAgain);
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
@@ -1822,10 +1822,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   // Run dialog callback, simulate user choosing to "cancel". The file will not
   // open.
-  OnDialogChoiceReceived(profile(), open_in_office_task, file_urls, nullptr,
-                         std::move(cloud_open_metrics_),
-                         ash::office_fallback::kDialogChoiceCancel,
-                         ash::office_fallback::FallbackReason::kOffline);
+  OnDialogChoiceReceived(profile(), open_in_office_task, file_urls,
+                         ash::office_fallback::FallbackReason::kOffline,
+                         nullptr, std::move(cloud_open_metrics_),
+                         ash::office_fallback::kDialogChoiceCancel);
 
   ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 

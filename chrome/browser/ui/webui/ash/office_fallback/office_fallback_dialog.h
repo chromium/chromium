@@ -23,8 +23,7 @@ enum class FallbackReason {
 };
 
 using DialogChoiceCallback =
-    base::OnceCallback<void(const std::string& choice,
-                            FallbackReason fallback_reason)>;
+    base::OnceCallback<void(const std::string& choice)>;
 
 // Defines the web dialog used to allow users to choose what to do when failing
 // to open office files.
@@ -47,7 +46,6 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
 
  protected:
   OfficeFallbackDialog(const std::vector<storage::FileSystemURL>& file_urls,
-                       FallbackReason fallback_reason,
                        const std::string& title_text,
                        const std::string& reason_message,
                        const std::string& instructions_message,
@@ -58,7 +56,6 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
 
  private:
   const std::vector<storage::FileSystemURL> file_urls_;
-  const FallbackReason fallback_reason_;
   const std::string title_text_;
   const std::string reason_message_;
   const std::string instructions_message_;

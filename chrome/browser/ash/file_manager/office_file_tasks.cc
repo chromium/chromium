@@ -263,10 +263,10 @@ void OnDialogChoiceReceived(
     Profile* profile,
     const TaskDescriptor& task,
     const std::vector<storage::FileSystemURL>& file_urls,
+    ash::office_fallback::FallbackReason fallback_reason,
     gfx::NativeWindow modal_parent,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
-    const std::string& choice,
-    ash::office_fallback::FallbackReason fallback_reason) {
+    const std::string& choice) {
   if (choice == ash::office_fallback::kDialogChoiceQuickOffice) {
     if (IsWebDriveOfficeTask(task)) {
       LogGoogleDriveOpenErrorUmaAfterFallback(
@@ -324,9 +324,9 @@ bool GetUserFallbackChoice(
   // `OnDialogChoiceReceived()` can open multiple files.
   std::vector<storage::FileSystemURL> first_url{file_urls.front()};
 
-  ash::office_fallback::DialogChoiceCallback callback =
-      base::BindOnce(&OnDialogChoiceReceived, profile, task, first_url,
-                     modal_parent, std::move(cloud_open_metrics));
+  ash::office_fallback::DialogChoiceCallback callback = base::BindOnce(
+      &OnDialogChoiceReceived, profile, task, first_url, fallback_reason,
+      modal_parent, std::move(cloud_open_metrics));
 
   const std::string parsed_action_id = ParseFilesAppActionId(task.action_id);
 
