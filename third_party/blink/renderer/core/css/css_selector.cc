@@ -662,6 +662,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if ((match->type == CSSSelector::kPseudoOpen ||
+       match->type == CSSSelector::kPseudoClosed) &&
+      !RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
