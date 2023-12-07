@@ -6,14 +6,19 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace ash {
 namespace {
 
 constexpr std::array<char, 3> kSentenceEndPunctuations = {'.', '?', '!'};
+constexpr std::array<char16_t, 6> kCJKSentenceEndPunctuations = {
+    u'。', u'？', u'！', u'.', u'?', u'!'};
 constexpr base::StringPiece kStartOffsetKey = "startOffset";
 constexpr base::StringPiece kEndOffsetKey = "endOffset";
 constexpr base::StringPiece kTextKey = "text";
@@ -25,6 +30,42 @@ constexpr base::StringPiece kOffset = "offset";
 constexpr base::StringPiece kRecognitionStatus = "recognitionStatus";
 constexpr base::StringPiece kMetadataVersionNumber = "version";
 constexpr base::StringPiece kGroupIdKey = "groupId";
+
+constexpr auto kLanguagesWithoutWhiteSpaces =
+    base::MakeFixedFlatSet<base::StringPiece>({
+        "ja",     // Japanese
+        "ko_KR",  // Korean
+        "th",     // Thai
+        "zh",     // Chinese
+        "zh_CN",  // Chinese Simplified
+        "zh_TW",  // Chinese Traditional
+    });
+
+// Source of common English abbreviations: icu's sentence break exception list
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/icu/source/data/brkitr/en.txt.
+constexpr auto kEnglishAbbreviationsInLowerCase =
+    base::MakeFixedFlatSet<std::string>(
+        {"l.p.",    "alt.", "approx.", "e.g.",     "o.",    "maj.",   "misc.",
+         "p.o.",    "j.d.", "jam.",    "card.",    "dec.",  "sept.",  "mr.",
+         "long.",   "hat.", "g.",      "link.",    "dc.",   "d.c.",   "m.t.",
+         "hz.",     "mrs.", "by.",     "act.",     "var.",  "n.v.",   "aug.",
+         "b.",      "s.a.", "up.",     "job.",     "num.",  "m.i.t.", "ok.",
+         "org.",    "ex.",  "cont.",   "u.",       "mart.", "fn.",    "abs.",
+         "lt.",     "z.",   "e.",      "kb.",      "est.",  "a.m.",   "l.a.",
+         "prof.",   "u.s.", "nov.",    "ph.d.",    "mar.",  "i.t.",   "exec.",
+         "jan.",    "n.y.", "x.",      "md.",      "op.",   "vs.",    "d.a.",
+         "a.d.",    "r.l.", "p.m.",    "or.",      "m.r.",  "cap.",   "pc.",
+         "feb.",    "i.e.", "sep.",    "gb.",      "k.",    "u.s.c.", "mt.",
+         "s.",      "a.s.", "c.o.d.",  "capt.",    "col.",  "in.",    "c.f.",
+         "adj.",    "ad.",  "i.d.",    "mgr.",     "r.t.",  "b.v.",   "m.",
+         "conn.",   "yr.",  "rev.",    "phys.",    "pp.",   "ms.",    "to.",
+         "sgt.",    "j.k.", "nr.",     "jun.",     "fri.",  "s.a.r.", "lev.",
+         "lt.cdr.", "def.", "f.",      "do.",      "joe.",  "id.",    "dept.",
+         "is.",     "pvt.", "diff.",   "hon.b.a.", "q.",    "mb.",    "on.",
+         "min.",    "j.b.", "ed.",     "ab.",      "a.",    "s.p.a.", "i.",
+         "comm.",   "go.",  "l.",      "all.",     "p.v.",  "t.",     "k.r.",
+         "etc.",    "d.",   "adv.",    "lib.",     "pro.",  "u.s.a.", "s.e.",
+         "aa.",     "rep.", "sq.",     "as."});
 
 base::Value::Dict HypothesisPartsToDict(
     const media::HypothesisParts& hypothesis_parts) {
@@ -40,13 +81,17 @@ base::Value::Dict HypothesisPartsToDict(
   return hypothesis_part_dict;
 }
 
-std::string GetSentenceText(
-    const std::vector<media::HypothesisParts>& sentence) {
+std::string GetSentenceText(const std::vector<media::HypothesisParts>& sentence,
+                            const std::string& caption_language) {
   std::vector<base::StringPiece> sentence_text;
   for (const auto& hypothesisPart : sentence) {
     sentence_text.push_back(hypothesisPart.text[0]);
   }
-  return base::JoinString(sentence_text, " ");
+  return base::JoinString(
+      sentence_text,
+      /*separator=*/kLanguagesWithoutWhiteSpaces.contains(caption_language)
+          ? ""
+          : " ");
 }
 
 std::vector<media::HypothesisParts> recalculateHypothesisPartTimeStamps(
@@ -61,9 +106,39 @@ std::vector<media::HypothesisParts> recalculateHypothesisPartTimeStamps(
   return sentence;
 }
 
+bool isCJKLanguage(const std::string& caption_language) {
+  // CJK languages use different sentence end punctuations.
+  return caption_language.starts_with("zh") ||
+         caption_language.starts_with("ja") ||
+         caption_language.starts_with("ko");
+}
+
+bool isEndOfSentence(const std::string& word,
+                     const std::string& caption_language) {
+  if (word.empty()) {
+    return false;
+  }
+
+  if (base::Contains(kSentenceEndPunctuations, word.back())) {
+    if (caption_language.starts_with("en") &&
+        kEnglishAbbreviationsInLowerCase.contains(base::ToLowerASCII(word))) {
+      // This is an English abbreviation, not end of a sentence.
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool isEndOfCJKSentence(std::u16string word) {
+  return !word.empty() &&
+         base::Contains(kCJKSentenceEndPunctuations, word.back());
+}
+
 std::vector<std::vector<media::HypothesisParts>>
 GetSentenceLevelHypothesisParts(
-    std::vector<media::HypothesisParts> paragraph_hypothesis_parts) {
+    std::vector<media::HypothesisParts> paragraph_hypothesis_parts,
+    const std::string& caption_language) {
   // Split HypothesisParts of a paragraph into sentences.
   std::vector<std::vector<media::HypothesisParts>> sentence_hypothesis_parts;
   bool new_sentence = true;
@@ -73,20 +148,17 @@ GetSentenceLevelHypothesisParts(
       new_sentence = false;
     }
     const std::string& original_word = hypothesisPart.text[0];
-    if (!original_word.empty() &&
-        std::find(kSentenceEndPunctuations.begin(),
-                  kSentenceEndPunctuations.end(),
-                  original_word.at(original_word.size() - 1)) !=
-            kSentenceEndPunctuations.end()) {
-      new_sentence = true;
-    }
+    new_sentence = isCJKLanguage(caption_language)
+                       ? isEndOfCJKSentence(base::UTF8ToUTF16(original_word))
+                       : isEndOfSentence(original_word, caption_language);
     sentence_hypothesis_parts.back().push_back(std::move(hypothesisPart));
   }
   return sentence_hypothesis_parts;
 }
 
 std::vector<std::unique_ptr<ProjectorTranscript>> SplitTranscriptIntoSentences(
-    std::unique_ptr<ProjectorTranscript> paragraph_transcript) {
+    std::unique_ptr<ProjectorTranscript> paragraph_transcript,
+    const std::string& caption_language) {
   std::vector<std::unique_ptr<ProjectorTranscript>> sentence_transcripts;
   const base::TimeDelta& paragraph_start_time =
       paragraph_transcript->start_time();
@@ -100,7 +172,8 @@ std::vector<std::unique_ptr<ProjectorTranscript>> SplitTranscriptIntoSentences(
   }
 
   std::vector<std::vector<media::HypothesisParts>> sentence_hypothesis_parts =
-      GetSentenceLevelHypothesisParts(std::move(paragraph_hypothesis_parts));
+      GetSentenceLevelHypothesisParts(std::move(paragraph_hypothesis_parts),
+                                      caption_language);
   base::TimeDelta sentence_start_time = paragraph_start_time;
   base::TimeDelta sentence_end_time;
   for (uint i = 0; i < sentence_hypothesis_parts.size(); ++i) {
@@ -117,7 +190,7 @@ std::vector<std::unique_ptr<ProjectorTranscript>> SplitTranscriptIntoSentences(
                   paragraph_start_time
             : paragraph_end_time;
     const std::string sentence_text =
-        GetSentenceText(current_sentence_hypothesis_parts);
+        GetSentenceText(current_sentence_hypothesis_parts, caption_language);
     sentence_transcripts.push_back(std::make_unique<ProjectorTranscript>(
         sentence_start_time, sentence_end_time,
         /*group_id=*/paragraph_start_time.InMilliseconds(), sentence_text,
@@ -234,7 +307,7 @@ void ProjectorMetadata::AddTranscript(
     std::unique_ptr<ProjectorTranscript> transcript) {
   if (ash::features::IsProjectorV2Enabled()) {
     std::vector<std::unique_ptr<ProjectorTranscript>> sentence_transcripts =
-        SplitTranscriptIntoSentences(std::move(transcript));
+        SplitTranscriptIntoSentences(std::move(transcript), caption_language_);
     AddSentenceTranscripts(std::move(sentence_transcripts));
     return;
   }
