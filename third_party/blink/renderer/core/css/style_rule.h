@@ -550,18 +550,17 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
-class StyleRuleStartingStyle : public StyleRuleCondition {
+class StyleRuleStartingStyle : public StyleRuleGroup {
  public:
   explicit StyleRuleStartingStyle(HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleStartingStyle(const StyleRuleStartingStyle&) = default;
 
-  bool ConditionIsSupported() const { return true; }
   StyleRuleStartingStyle* Copy() const {
     return MakeGarbageCollected<StyleRuleStartingStyle>(*this);
   }
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
-    StyleRuleCondition::TraceAfterDispatch(visitor);
+    StyleRuleGroup::TraceAfterDispatch(visitor);
   }
 };
 
@@ -614,7 +613,8 @@ struct DowncastTraits<StyleRuleGroup> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
-           rule.IsScopeRule() || rule.IsPositionFallbackRule();
+           rule.IsScopeRule() || rule.IsPositionFallbackRule() ||
+           rule.IsStartingStyleRule();
   }
 };
 

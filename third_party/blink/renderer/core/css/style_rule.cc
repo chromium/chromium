@@ -812,6 +812,6 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)
-    : StyleRuleCondition(kStartingStyle, "", std::move(rules)) {}
+    : StyleRuleGroup(kStartingStyle, std::move(rules)) {}
 
 }  // namespace blink
