@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -208,6 +209,7 @@ class DynamicModuleResolverTest : public testing::Test, public ModuleTestBase {
   void SetUp() override { ModuleTestBase::SetUp(); }
 
   void TearDown() override { ModuleTestBase::TearDown(); }
+  test::TaskEnvironment task_environment_;
 };
 
 }  // namespace

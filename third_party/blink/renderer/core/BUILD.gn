@@ -1493,6 +1493,7 @@ source_set("unit_tests_v2") {
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=
       rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_script, "", "script")
   sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
   sources += rebase_path(blink_core_tests_url, "", "url")
   sources += rebase_path(blink_core_tests_xmlhttprequest, "", "xmlhttprequest")

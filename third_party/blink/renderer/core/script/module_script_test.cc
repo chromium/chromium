@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 using ::testing::_;
@@ -139,6 +140,7 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
     ModuleTestBase::TearDown();
   }
 
+  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
 };
 
