@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/system/time/calendar_model.h"
 #include "base/memory/raw_ptr.h"
@@ -30,7 +31,7 @@ class PhoneHubManager;
 }
 
 // Top level model of SystemTray.
-class SystemTrayModel : public SystemTray {
+class ASH_EXPORT SystemTrayModel : public SystemTray {
  public:
   SystemTrayModel();
 

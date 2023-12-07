@@ -905,6 +905,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   friend class RootWindowController;
   friend class ShellTestApi;
   friend class SmsObserverTest;
+  friend class ScopedFakeSystemTrayModel;
 
   explicit Shell(std::unique_ptr<ShellDelegate> shell_delegate);
   ~Shell() override;

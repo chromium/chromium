@@ -41,6 +41,7 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
 
   EolNoticeQuickSettingsView* eol_notice_for_test() { return eol_notice_; }
 
+  views::View* GetManagedButtonForTest();
   views::Label* GetManagedButtonLabelForTest();
   views::Label* GetSupervisedButtonLabelForTest();
 

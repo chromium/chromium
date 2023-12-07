@@ -15,12 +15,19 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
+#include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/scoped_fake_system_tray_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/unified/quick_settings_header.h"
+#include "ash/system/unified/quick_settings_view.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
@@ -49,9 +56,6 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
   ~StatusAreaInternalsHandlerTest() override = default;
 
   void SetUp() override {
-    handler_ = std::make_unique<StatusAreaInternalsHandler>(
-        handler_remote_.BindNewPipeAndPassReceiver());
-
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kVideoConference,
                               features::kCameraEffectsSupportedByHardware},
@@ -68,6 +72,18 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
 
     AshTestBase::SetUp();
+
+    handler_ = std::make_unique<StatusAreaInternalsHandler>(
+        handler_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    AshTestBase::TearDown();
+  }
+
+  SystemTrayModel* GetFakeModel() {
+    return handler_->scoped_fake_model_->fake_model();
   }
 
   StatusAreaWidget* GetStatusAreaWidget() {
@@ -81,13 +97,13 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
     return handler_remote_;
   }
 
+  std::unique_ptr<StatusAreaInternalsHandler> handler_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
 
   mojo::Remote<mojom::status_area_internals::PageHandler> handler_remote_;
-
-  std::unique_ptr<StatusAreaInternalsHandler> handler_;
 };
 
 // Tests toggle the visibility of tray buttons.
@@ -172,6 +188,42 @@ TEST_F(StatusAreaInternalsHandlerTest, ToggleTrayButtons) {
 
     EXPECT_FALSE(tray->GetVisible()) << test_param.tray_name;
   }
+}
+
+TEST_F(StatusAreaInternalsHandlerTest, SetActiveDirectoryManaged) {
+  auto* enterprise_domain_model = GetFakeModel()->enterprise_domain();
+
+  handler_remote()->SetActiveDirectoryManaged(/*managed=*/true);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(enterprise_domain_model->active_directory_managed());
+
+  // Make sure that the enterprise managed UI is visible.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()
+                  ->bubble()
+                  ->quick_settings_view()
+                  ->header_for_testing()
+                  ->GetManagedButtonForTest()
+                  ->GetVisible());
+
+  // Close the quick settings bubble.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+
+  // Test the reset case.
+  handler_remote()->SetActiveDirectoryManaged(/*managed=*/false);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(enterprise_domain_model->active_directory_managed());
+
+  // Make sure that the enterprise managed UI is not visible.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()
+                   ->bubble()
+                   ->quick_settings_view()
+                   ->header_for_testing()
+                   ->GetManagedButtonForTest()
+                   ->GetVisible());
 }
 
 }  // namespace ash

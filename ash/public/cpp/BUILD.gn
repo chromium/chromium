@@ -351,8 +351,6 @@ component("cpp") {
     "system_notification_builder.cc",
     "system_notification_builder.h",
     "system_sounds_delegate.h",
-    "system_tray.cc",
-    "system_tray.h",
     "system_tray_client.h",
     "tab_cluster/clusterer.cc",
     "tab_cluster/clusterer.h",

@@ -77,6 +77,13 @@ export class StatusAreaInternalsElement extends PolymerElement {
     const toggled = e.detail;
     pageHandler.toggleProjectorTray(toggled);
   }
+
+  onActiveDirectoryManagedToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.setActiveDirectoryManaged(toggled);
+  }
 }
 
 customElements.define(

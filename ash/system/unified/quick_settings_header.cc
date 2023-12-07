@@ -50,6 +50,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -327,6 +328,10 @@ QuickSettingsHeader::~QuickSettingsHeader() = default;
 
 void QuickSettingsHeader::ChildVisibilityChanged(views::View* child) {
   UpdateVisibilityAndLayout();
+}
+
+views::View* QuickSettingsHeader::GetManagedButtonForTest() {
+  return enterprise_managed_view_;
 }
 
 views::Label* QuickSettingsHeader::GetManagedButtonLabelForTest() {
