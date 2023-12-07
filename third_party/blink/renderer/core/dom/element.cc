@@ -3446,7 +3446,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
     // and which element the ::first-letter inherits style from.
-    if (child_change.ReattachLayoutTree()) {
+    //
+    // If style recalc was suppressed for this element, it means it's a size
+    // query container, and child_change.ReattachLayoutTree() comes from the
+    // skipped style recalc. In that case we haven't updated the style, and we
+    // will not update the ::first-letter style in the originating element's
+    // AttachLayoutTree().
+    if (child_change.ReattachLayoutTree() && !change.IsSuppressed()) {
       // Make sure we reach this element during reattachment. There are cases
       // where we compute and store the styles for a subtree but stop attaching
       // layout objects at an element that does not allow child boxes. Marking
