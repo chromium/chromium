@@ -46,8 +46,7 @@ namespace content {
 
 namespace {
 
-using blink::mojom::SendWheelResult;
-using blink::mojom::ZoomControlResult;
+using blink::mojom::CapturedSurfaceControlResult;
 
 void BindMediaStreamDeviceObserverReceiver(
     GlobalRenderFrameHostId render_frame_host_id,
@@ -680,14 +679,14 @@ void MediaStreamDispatcherHost::SendWheel(
   if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED);
-    std::move(callback).Run(SendWheelResult::kUnknownError);
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
   if (!action || action->x < 0 || action->y < 0) {
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_SEND_WHEEL_INVALID_ACTION);
-    std::move(callback).Run(SendWheelResult::kUnknownError);
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
@@ -698,12 +697,13 @@ void MediaStreamDispatcherHost::SendWheel(
     // Either the capture session has ended, or the capture was not of a tab.
     // Note that this is not a BadMessage, because the session might have
     // ended asynchronously.
-    std::move(callback).Run(SendWheelResult::kCapturedSurfaceNotFoundError);
+    std::move(callback).Run(
+        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
     return;
   }
 
   // TODO(crbug.com/1466247): Implement (with a permission prompt).
-  std::move(callback).Run(SendWheelResult::kUnknownError);
+  std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
 }
 
 void MediaStreamDispatcherHost::GetZoomLevel(
@@ -714,7 +714,8 @@ void MediaStreamDispatcherHost::GetZoomLevel(
     ReceivedBadMessage(
         render_frame_host_id_.child_id,
         bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
-    std::move(callback).Run(absl::nullopt, ZoomControlResult::kUnknownError);
+    std::move(callback).Run(absl::nullopt,
+                            CapturedSurfaceControlResult::kUnknownError);
     return;
   }
 
@@ -725,13 +726,15 @@ void MediaStreamDispatcherHost::GetZoomLevel(
     // Either the capture session has ended, or the capture was not of a tab.
     // Note that this is not a BadMessage, because the session might have
     // ended asynchronously.
-    std::move(callback).Run(absl::nullopt,
-                            ZoomControlResult::kCapturedSurfaceNotFoundError);
+    std::move(callback).Run(
+        absl::nullopt,
+        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
     return;
   }
 
   // TODO(crbug.com/1466247): Implement (with a permission prompt).
-  std::move(callback).Run(absl::nullopt, ZoomControlResult::kUnknownError);
+  std::move(callback).Run(absl::nullopt,
+                          CapturedSurfaceControlResult::kUnknownError);
 }
 
 void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
