@@ -1327,7 +1327,7 @@
     "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
-    "owners": ["arichiv@@chromium.org"]
+    "owners": ["arichiv@chromium.org"]
   },
   {
     "prefix": "post-message-third-party-to-third-party-different-bucket-same-origin-blocked",
@@ -1336,7 +1336,7 @@
     "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024",
-    "owners": ["arichiv@@chromium.org"]
+    "owners": ["arichiv@chromium.org"]
   },
 
   "isInputPending requires threaded compositing and layerized iframes",
@@ -1388,7 +1388,8 @@
     ],
     "args": ["--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 1, 2024",
+    "owners": ["chrome-first-party-sets@chromium.org"]
   },
   {
     "prefix": "no-different-origin-dialogs",
