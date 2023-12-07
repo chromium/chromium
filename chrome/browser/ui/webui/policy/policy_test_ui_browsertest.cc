@@ -197,21 +197,11 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
         policy::features::kEnablePolicyTestPage, true);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    base::StringPiece test_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-
-    if (base::StartsWith(test_name, "PRE_") &&
-        policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+    if (policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                               chrome::GetChannel())) {
-      // Expect a browser relaunch late in browser shutdown.
-      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
-          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
-      EXPECT_CALL(*mock_relaunch_callback_, Run);
-      relaunch_chrome_override_ =
-          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
-              mock_relaunch_callback_->Get());
+      SetUpRelaunchChromeOverrideForPRETests();
     }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   }
   PolicyTestHandlerTest(const PolicyTestHandlerTest&) = delete;
   PolicyTestHandlerTest& operator=(const PolicyTestHandlerTest&) = delete;
@@ -229,6 +219,23 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
     handler->RegisterMessages();
     return handler;
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  void SetUpRelaunchChromeOverrideForPRETests() {
+    base::StringPiece test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (base::StartsWith(test_name, "PRE_")) {
+      // Expect a browser relaunch late in browser shutdown.
+      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
+          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
+      EXPECT_CALL(*mock_relaunch_callback_, Run);
+      relaunch_chrome_override_ =
+          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
+              mock_relaunch_callback_->Get());
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   /* Helper methods for executing JS strings. */
   content::EvalJsResult GetNumberOfRows() {
@@ -522,6 +529,14 @@ class PolicyTestHandlerTestDisabledByPolicy : public PolicyTestHandlerTest {
                    policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
 
     provider_.UpdateChromePolicy(policy_map);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    // `PolicyTestHandlerTest` only sets up relaunch chrome override if policy
+    // testing is enabled, but these tests require it unconditionally.
+    if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
+                                               chrome::GetChannel())) {
+      SetUpRelaunchChromeOverrideForPRETests();
+    }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   }
 
   PolicyTestHandlerTestDisabledByPolicy(
