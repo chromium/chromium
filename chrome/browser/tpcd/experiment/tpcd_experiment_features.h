@@ -18,6 +18,7 @@ extern const char kDecisionDelayTimeName[];
 extern const char kForceEligibleForTestingName[];
 extern const char kNeedOnboardingForSyntheticTrialName[];
 extern const char kNeedOnboardingForLabelName[];
+extern const char kEnableSilentOnboardingName[];
 extern const char kExclude3PCBlockedName[];
 extern const char kExcludeNotSeenAdsAPIsNoticeName[];
 extern const char kExcludeDasherAccountName[];
@@ -33,6 +34,7 @@ extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
 extern const base::FeatureParam<bool> kForceEligibleForTesting;
 extern const base::FeatureParam<bool> kNeedOnboardingForSyntheticTrial;
 extern const base::FeatureParam<bool> kNeedOnboardingForLabel;
+extern const base::FeatureParam<bool> kEnableSilentOnboarding;
 
 // Whether to exclude users who have 3P cookies blocked.
 extern const base::FeatureParam<bool> kExclude3PCBlocked;

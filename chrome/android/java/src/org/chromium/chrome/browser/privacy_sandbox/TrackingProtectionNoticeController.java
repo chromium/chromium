@@ -135,6 +135,12 @@ public class TrackingProtectionNoticeController {
     }
 
     private void showNotice() {
+        if (getNoticeType() == NoticeType.SILENT_ONBOARDING) {
+            TrackingProtectionBridge.noticeShown(getNoticeType());
+            destroy();
+            return;
+        }
+
         if (mMessageDispatcher == null) return;
 
         Resources resources = mContext.getResources();

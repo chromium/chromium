@@ -146,26 +146,6 @@ TEST_F(ExperimentManagerImplTestBase, ForceEligibleForTesting) {
   EXPECT_THAT(test_manager.IsClientEligible(), testing::Optional(true));
 }
 
-TEST_F(ExperimentManagerImplTestBase, ProfileOnboardedSetsPref) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kCookieDeprecationFacilitatedTesting,
-      {{kDisable3PCookiesName, "true"},
-       {kNeedOnboardingForSyntheticTrialName, "true"}});
-
-  TestingExperimentManagerImpl test_manager;
-  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(true)).Times(1);
-  task_environment_.FastForwardBy(delay_time_);
-
-  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
-            static_cast<int>(utils::ExperimentState::kEligible));
-
-  test_manager.NotifyProfileTrackingProtectionOnboarded();
-  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
-            static_cast<int>(utils::ExperimentState::kOnboarded));
-}
-
 class ExperimentManagerImplTest : public ExperimentManagerImplTestBase {
  public:
   ExperimentManagerImplTest() {
@@ -342,6 +322,29 @@ class ExperimentManagerImplSyntheticTrialTest
     : public ExperimentManagerImplTestBase,
       public testing::WithParamInterface<bool> {};
 
+TEST_P(ExperimentManagerImplSyntheticTrialTest, ProfileOnboardedSetsPref) {
+  const bool disable_3p_cookies = GetParam();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kCookieDeprecationFacilitatedTesting,
+      {{kDisable3PCookiesName, disable_3p_cookies ? "true" : "false"},
+       {kNeedOnboardingForSyntheticTrialName, "true"},
+       {kEnableSilentOnboardingName, "true"}});
+
+  TestingExperimentManagerImpl test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(true)).Times(1);
+  task_environment_.FastForwardBy(delay_time_);
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kEligible));
+
+  test_manager.NotifyProfileTrackingProtectionOnboarded();
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kOnboarded));
+}
+
 TEST_P(ExperimentManagerImplSyntheticTrialTest, CanRegister) {
   const bool disable_3p_cookies = GetParam();
 
@@ -349,6 +352,7 @@ TEST_P(ExperimentManagerImplSyntheticTrialTest, CanRegister) {
     utils::ExperimentState experiment_state;
     bool expected;
     bool need_onboarding = false;
+    bool enable_silent_onboarding = false;
   } kTestCases[] = {
       {
           .experiment_state = utils::ExperimentState::kUnknownEligibility,
@@ -369,6 +373,12 @@ TEST_P(ExperimentManagerImplSyntheticTrialTest, CanRegister) {
           .need_onboarding = true,
       },
       {
+          .experiment_state = utils::ExperimentState::kEligible,
+          .expected = false,
+          .need_onboarding = true,
+          .enable_silent_onboarding = true,
+      },
+      {
           .experiment_state = utils::ExperimentState::kOnboarded,
           .expected = true,
       },
@@ -380,7 +390,9 @@ TEST_P(ExperimentManagerImplSyntheticTrialTest, CanRegister) {
         features::kCookieDeprecationFacilitatedTesting,
         {{kDisable3PCookiesName, disable_3p_cookies ? "true" : "false"},
          {kNeedOnboardingForSyntheticTrialName,
-          test_case.need_onboarding ? "true" : "false"}});
+          test_case.need_onboarding ? "true" : "false"},
+         {kEnableSilentOnboardingName,
+          test_case.enable_silent_onboarding ? "true" : "false"}});
 
     prefs().SetInteger(prefs::kTPCDExperimentClientState,
                        static_cast<int>(test_case.experiment_state));

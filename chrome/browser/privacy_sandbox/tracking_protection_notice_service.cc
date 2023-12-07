@@ -76,6 +76,12 @@ void CreateHistogramNoticeServiceEvent(
           "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
           event);
       break;
+    case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.TrackingProtection.SilentOnboarding."
+          "NoticeServiceEvent",
+          event);
+      break;
   }
 }
 
@@ -446,6 +452,52 @@ void TrackingProtectionNoticeService::OffboardingNotice::OnNoticeClosed(
   notice_service()->ResetTabStripTracker();
 }
 
+TrackingProtectionNoticeService::SilentOnboardingNotice::SilentOnboardingNotice(
+    Profile* profile,
+    TrackingProtectionOnboarding* onboarding_service,
+    TrackingProtectionNoticeService* notice_service)
+    : BaseIPHNotice(profile, onboarding_service, notice_service) {
+  CreateHistogramNoticeServiceEvent(
+      GetNoticeType(),
+      TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
+}
+
+NoticeType
+TrackingProtectionNoticeService::SilentOnboardingNotice::GetNoticeType() {
+  return NoticeType::kSilentOnboarding;
+}
+
+const base::Feature&
+TrackingProtectionNoticeService::SilentOnboardingNotice::GetIPHFeature() {
+  return feature_engagement::kIPHTrackingProtectionOnboardingFeature;
+}
+
+bool TrackingProtectionNoticeService::SilentOnboardingNotice::
+    WasPromoPreviouslyDismissed(Browser* browser) {
+  return false;
+}
+
+bool TrackingProtectionNoticeService::SilentOnboardingNotice::IsPromoShowing(
+    Browser* browser) {
+  return false;
+}
+
+bool TrackingProtectionNoticeService::SilentOnboardingNotice::MaybeShowPromo(
+    Browser* browser) {
+  // Check whether the onboarding promo can be shown but not actually showing
+  // the promo.
+  return browser->window()->CanShowFeaturePromo(GetIPHFeature());
+}
+
+void TrackingProtectionNoticeService::SilentOnboardingNotice::HidePromo(
+    Browser* browser) {}
+
+void TrackingProtectionNoticeService::SilentOnboardingNotice::OnNoticeClosed(
+    base::Time showed_when,
+    user_education::FeaturePromoController* promo_controller) {
+  NOTREACHED();
+}
+
 void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
   // We only start watching updates on TabStripTracker when we actually need
   // to show a notice. If we no longer need to show the notice, we stop watching
@@ -461,6 +513,11 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
       return;
     case TrackingProtectionOnboarding::NoticeType::kOffboarding:
       offboarding_notice_ = std::make_unique<OffboardingNotice>(
+          profile_, onboarding_service_, this);
+      InitializeTabStripTracker();
+      return;
+    case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
+      silent_onboarding_notice_ = std::make_unique<SilentOnboardingNotice>(
           profile_, onboarding_service_, this);
       InitializeTabStripTracker();
       return;
@@ -524,6 +581,13 @@ void TrackingProtectionNoticeService::OnTabStripModelChanged(
         TrackingProtectionOnboarding::NoticeType::kOnboarding,
         TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
             kActiveTabChanged);
+  } else if (silent_onboarding_notice_) {
+    silent_onboarding_notice_->MaybeUpdateNoticeVisibility(
+        selection.new_contents);
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kSilentOnboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kActiveTabChanged);
   }
 }
 
@@ -570,6 +634,13 @@ void TrackingProtectionNoticeService::TabHelper::DidFinishNavigation(
         web_contents());
     CreateHistogramNoticeServiceEvent(
         TrackingProtectionOnboarding::NoticeType::kOnboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kNavigationFinished);
+  } else if (notice_service->silent_onboarding_notice_) {
+    notice_service->silent_onboarding_notice_->MaybeUpdateNoticeVisibility(
+        web_contents());
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kSilentOnboarding,
         TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
             kNavigationFinished);
   }

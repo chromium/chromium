@@ -741,16 +741,19 @@ TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
         {{tpcd::experiment::kDisable3PCookiesName,
           disable_3pcs ? "true" : "false"},
          {tpcd::experiment::kNeedOnboardingForLabelName,
-          test_case.need_onboarding ? "true" : "false"}});
+          test_case.need_onboarding ? "true" : "false"},
+         {tpcd::experiment::kEnableSilentOnboardingName, "true"}});
 
-    prefs()->SetInteger(prefs::kTrackingProtectionOnboardingStatus,
-                        static_cast<int>(test_case.onboarding_status));
     if (disable_3pcs) {
-      EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
-                test_case.expected_allowed);
+      prefs()->SetInteger(prefs::kTrackingProtectionOnboardingStatus,
+                          static_cast<int>(test_case.onboarding_status));
     } else {
-      EXPECT_TRUE(delegate()->IsCookieDeprecationLabelAllowed());
+      prefs()->SetInteger(prefs::kTrackingProtectionSilentOnboardingStatus,
+                          static_cast<int>(test_case.onboarding_status));
     }
+
+    EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
+              test_case.expected_allowed);
 
     feature_list()->Reset();
   }
