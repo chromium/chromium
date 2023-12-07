@@ -1664,6 +1664,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.BrowserLaunchedAfterTPMOwn-Start" units="ms"
+    expires_after="2024-11-17">
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from TPMOwn-Start BootTime event until BrowserLaunched BootTime event
+    during the user login on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="BootTime.Chrome" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
@@ -1736,6 +1747,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.OnAuthSuccessAfterLoginStarted" units="ms"
+    expires_after="2024-11-17">
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from the LoginStarted BootTime event until OnAuthSuccess event
+    received.
+  </summary>
+</histogram>
+
 <histogram name="BootTime.System" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
@@ -1764,6 +1786,30 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2022-04-03 to M105; data may be
     missing.
+  </summary>
+</histogram>
+
+<histogram name="BootTime.TPMOwn-StartAfterUserProfileGotten" units="ms"
+    expires_after="2024-11-17">
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from the UserProfileGotten BootTime event until TPM ownershp check
+    starts during the user login on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="BootTime.UserProfileGottenAfterAuthSuccess" units="ms"
+    expires_after="2024-11-17">
+  <owner>alemate@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Time from the AuthSuccess BootTime event until user profile loaded during
+    the user login on Chrome OS.
+
+    Usually it's time spent on user profile loading and parsing.
   </summary>
 </histogram>
 

@@ -70,9 +70,7 @@ constexpr base::FilePath::CharType kChromeFirstRender[] =
 // Names of login UMA values.
 static const char kUmaLogin[] = "BootTime.Login2";
 static const char kUmaLoginNewUser[] = "BootTime.LoginNewUser";
-constexpr char kUmaLoginPrefix[] = "BootTime.";
 constexpr char kUmaLogout[] = "ShutdownTime.Logout";
-constexpr char kUmaLogoutPrefix[] = "ShutdownTime.";
 constexpr char kUmaRestart[] = "ShutdownTime.Restart";
 
 // Name of file collecting login times.

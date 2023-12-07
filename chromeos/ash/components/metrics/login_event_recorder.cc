@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -109,12 +110,40 @@ void WriteTimes(const std::string base_name,
     UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total,
                                base::Milliseconds(1), base::Seconds(300), 100);
   }
+  const bool is_login = uma_prefix == kUmaLoginPrefix;
+
   base::TimeTicks prev = first;
   // Send first event to name the track:
   // "In Chrome, we usually don't bother setting explicit track names. If none
   // is provided, the track is named after the first event on the track."
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
+
+  base::TimeTicks ts_login_started;
+  base::TimeTicks ts_on_auth_success;
+  base::TimeTicks ts_user_profile_gotten;
+  base::TimeTicks ts_tpmown_start;
+  base::TimeTicks ts_browser_launched;
+
+  const auto store_ts = [](const LoginEventRecorder::TimeMarker& tm,
+                           const std::string& event_name,
+                           base::TimeTicks& out_ts_event) {
+    if (tm.name() == event_name) {
+      out_ts_event = tm.time();
+    }
+  };
+
+  const auto report_uma =
+      [](const LoginEventRecorder::TimeMarker& tm,
+         const std::string& event_name, base::TimeTicks& out_ts_event,
+         const std::string& uma_metric_suffix, const base::TimeTicks ts_base) {
+        if (tm.name() == event_name) {
+          out_ts_event = tm.time();
+          DCHECK(!ts_base.is_null());
+          base::UmaHistogramTimes(kUmaLoginPrefix + uma_metric_suffix,
+                                  out_ts_event - ts_base);
+        }
+      };
 
   for (unsigned int i = 0; i < times.size(); ++i) {
     const LoginEventRecorder::TimeMarker& tm = times[i];
@@ -131,6 +160,17 @@ void WriteTimes(const std::string base_name,
           "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev);
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
           "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time());
+    }
+    if (is_login) {
+      store_ts(tm, "LoginStarted", ts_login_started);
+      report_uma(tm, "OnAuthSuccess", ts_on_auth_success,
+                 "OnAuthSuccessAfterLoginStarted", ts_login_started);
+      report_uma(tm, "UserProfileGotten", ts_user_profile_gotten,
+                 "UserProfileGottenAfterAuthSuccess", ts_on_auth_success);
+      report_uma(tm, "TPMOwn-Start", ts_tpmown_start,
+                 "TPMOwn-StartAfterUserProfileGotten", ts_user_profile_gotten);
+      report_uma(tm, "BrowserLaunched", ts_browser_launched,
+                 "BrowserLaunchedAfterTPMOwn-Start", ts_tpmown_start);
     }
 
     base::TimeDelta since_first = tm.time() - first;

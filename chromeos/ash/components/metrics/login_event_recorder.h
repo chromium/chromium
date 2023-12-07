@@ -19,6 +19,11 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+// Names of UMA prefixes that are used to differentiate between different
+// WriteTimes() operations.
+constexpr char kUmaLoginPrefix[] = "BootTime.";
+constexpr char kUmaLogoutPrefix[] = "ShutdownTime.";
+
 // LoginEventRecorder is a utility class used to save the bootimes of Chrome OS.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
  public:
