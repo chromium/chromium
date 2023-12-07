@@ -71,6 +71,8 @@ void CustomProperty::ApplyInitial(StyleResolverState& state) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   bool is_inherited_property = IsInherited();
 
+  builder.SetHasVariableDeclaration();
+
   if (!registration_) {
     builder.SetVariableData(name_, nullptr, is_inherited_property);
     return;
@@ -115,6 +117,8 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
                                 ValueMode value_mode) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   DCHECK(!value.IsCSSWideKeyword());
+
+  builder.SetHasVariableDeclaration();
 
   if (value.IsInvalidVariableValue()) {
     if (!SupportsGuaranteedInvalid()) {

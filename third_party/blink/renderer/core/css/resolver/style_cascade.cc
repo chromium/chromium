@@ -944,8 +944,6 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
     resolver.DetectCycle(GetCSSPropertyLineHeight());
   }
 
-  state_.StyleBuilder().SetHasVariableDeclaration();
-
   if (resolver.InCycle()) {
     return CSSCyclicVariableValue::Create();
   }
