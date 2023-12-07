@@ -45,9 +45,7 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
 }
 
 bool NetworkServiceProxyAllowList::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-             net::features::kEnableIpProtectionProxy) &&
-         base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
+  return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }
 
 bool NetworkServiceProxyAllowList::IsPopulated() {
