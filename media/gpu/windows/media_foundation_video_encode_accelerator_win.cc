@@ -1686,7 +1686,10 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
                                       input_visible_size_.height());
   size_t dst_uv_stride = VideoFrame::RowBytes(
       VideoFrame::kUVPlane, kTargetPixelFormat, input_visible_size_.width());
-  uint8_t* end = dst_uv + dst_uv_stride * frame->rows(VideoFrame::kUVPlane);
+  uint8_t* end =
+      dst_uv + dst_uv_stride * VideoFrame::Rows(VideoFrame::kUVPlane,
+                                                kTargetPixelFormat,
+                                                input_visible_size_.height());
   DCHECK_GE(static_cast<ptrdiff_t>(scoped_buffer.max_length()),
             end - scoped_buffer.get());
 
