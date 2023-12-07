@@ -142,10 +142,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating_lacros@jacuzzi",
   "inputs.VirtualKeyboardHandwriting.floating_lacros@octopus",
 
-  # b/315204436, server-side error with Terms of Service page
-  "arc.Optin",
-  "arc.Optin.vm",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
