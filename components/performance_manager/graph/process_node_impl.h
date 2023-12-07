@@ -61,12 +61,11 @@ class ProcessNodeImpl
   explicit ProcessNodeImpl(BrowserProcessNodeTag tag);
 
   // Constructor for a renderer process.
-  explicit ProcessNodeImpl(RenderProcessHostProxy render_process_host_proxy);
+  explicit ProcessNodeImpl(RenderProcessHostProxy proxy);
 
   // Constructor for a non-renderer child process.
-  ProcessNodeImpl(
-      content::ProcessType process_type,
-      BrowserChildProcessHostProxy browser_child_process_host_proxy);
+  ProcessNodeImpl(content::ProcessType process_type,
+                  BrowserChildProcessHostProxy proxy);
 
   ProcessNodeImpl(const ProcessNodeImpl&) = delete;
   ProcessNodeImpl& operator=(const ProcessNodeImpl&) = delete;

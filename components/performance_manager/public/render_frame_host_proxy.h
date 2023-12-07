@@ -32,6 +32,10 @@ class RenderFrameHostProxy {
   // no longer exists.
   content::RenderFrameHost* Get() const;
 
+  // Returns true iff the proxy has a valid GlobalRenderFrameHostId (whose
+  // operator::bool returns true).
+  bool is_valid() const { return static_cast<bool>(global_frame_routing_id_); }
+
   // Returns the global routing ID.
   const content::GlobalRenderFrameHostId& global_frame_routing_id() const {
     return global_frame_routing_id_;

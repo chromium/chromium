@@ -22,6 +22,16 @@ namespace performance_manager {
 
 namespace {
 
+// CHECK's that `process_type` is appropriate for a BrowserChildProcessHost and
+// returns it. This is called from a ProcessNodeImpl initializer so that the
+// type is checked before the constructor body.
+content::ProcessType ValidateBrowserChildProcessType(
+    content::ProcessType process_type) {
+  CHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
+  CHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
+  return process_type;
+}
+
 void FireBackgroundTracingTriggerOnUI(const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -35,21 +45,14 @@ ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
     : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
                       AnyChildProcessHostProxy{}) {}
 
-ProcessNodeImpl::ProcessNodeImpl(
-    RenderProcessHostProxy render_process_host_proxy)
-    : ProcessNodeImpl(
-          content::PROCESS_TYPE_RENDERER,
-          AnyChildProcessHostProxy(std::move(render_process_host_proxy))) {}
+ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy)
+    : ProcessNodeImpl(content::PROCESS_TYPE_RENDERER,
+                      AnyChildProcessHostProxy(std::move(proxy))) {}
 
-ProcessNodeImpl::ProcessNodeImpl(
-    content::ProcessType process_type,
-    BrowserChildProcessHostProxy browser_child_process_host_proxy)
-    : ProcessNodeImpl(process_type,
-                      AnyChildProcessHostProxy(
-                          std::move(browser_child_process_host_proxy))) {
-  DCHECK_NE(process_type, content::PROCESS_TYPE_BROWSER);
-  DCHECK_NE(process_type, content::PROCESS_TYPE_RENDERER);
-}
+ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
+                                 BrowserChildProcessHostProxy proxy)
+    : ProcessNodeImpl(ValidateBrowserChildProcessType(process_type),
+                      AnyChildProcessHostProxy(std::move(proxy))) {}
 
 ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  AnyChildProcessHostProxy proxy)
@@ -60,6 +63,21 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
   weak_this_ = weak_factory_.GetWeakPtr();
+
+  // Child process nodes must have a valid proxy.
+  switch (process_type) {
+    case content::PROCESS_TYPE_BROWSER:
+      // Do nothing.
+      break;
+    case content::PROCESS_TYPE_RENDERER:
+      CHECK(absl::get<RenderProcessHostProxy>(child_process_host_proxy_)
+                .is_valid());
+      break;
+    default:
+      CHECK(absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_)
+                .is_valid());
+      break;
+  }
 }
 
 ProcessNodeImpl::~ProcessNodeImpl() {

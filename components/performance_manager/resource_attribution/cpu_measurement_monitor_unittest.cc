@@ -79,7 +79,7 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   // Creates a renderer process and starts mocking its CPU measurements. By
   // default the process will use 100% CPU as long as it's alive.
   TestNodeWrapper<ProcessNodeImpl> CreateMockCPURenderer() {
-    auto process_node = CreateProcessNodeAutoId(content::PROCESS_TYPE_RENDERER);
+    auto process_node = CreateRendererProcessNode();
     SetProcessCPUUsage(process_node.get(), 1.0);
     return process_node;
   }

@@ -10,11 +10,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/process_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -51,11 +54,15 @@ class PerformanceManagerImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
+using PerformanceManagerImplDeathTest = PerformanceManagerImplTest;
+
 TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
+  const auto render_process_host_id = RenderProcessHostId(1);
   int next_render_frame_id = 0;
 
   std::unique_ptr<ProcessNodeImpl> process_node =
-      PerformanceManagerImpl::CreateProcessNode(RenderProcessHostProxy());
+      PerformanceManagerImpl::CreateProcessNode(
+          RenderProcessHostProxy::CreateForTesting(render_process_host_id));
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
@@ -77,11 +84,31 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
   PerformanceManagerImpl::DeleteNode(std::move(process_node));
 }
 
+TEST_F(PerformanceManagerImplDeathTest, InvalidProcessHostProxies) {
+  const auto browser_child_process_host_id = BrowserChildProcessHostId(1);
+  EXPECT_CHECK_DEATH(
+      PerformanceManagerImpl::CreateProcessNode(RenderProcessHostProxy()));
+  EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
+      content::PROCESS_TYPE_UTILITY, BrowserChildProcessHostProxy()));
+
+  // Valid proxy, wrong process type.
+  EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
+      content::PROCESS_TYPE_BROWSER,
+      BrowserChildProcessHostProxy::CreateForTesting(
+          browser_child_process_host_id)));
+  EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
+      content::PROCESS_TYPE_RENDERER,
+      BrowserChildProcessHostProxy::CreateForTesting(
+          browser_child_process_host_id)));
+}
+
 TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
+  const auto render_process_host_id = RenderProcessHostId(1);
   int next_render_frame_id = 0;
   // Create a page node and a small hierarchy of frames.
   std::unique_ptr<ProcessNodeImpl> process_node =
-      PerformanceManagerImpl::CreateProcessNode(RenderProcessHostProxy());
+      PerformanceManagerImpl::CreateProcessNode(
+          RenderProcessHostProxy::CreateForTesting(render_process_host_id));
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
           WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},

@@ -24,6 +24,8 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_worker_service.h"
@@ -37,7 +39,8 @@ namespace performance_manager {
 
 namespace {
 
-// Generates a new sequential int ID. Used for things that need a unique ID.
+// Generates a new sequential int ID. Used for things that need a unique ID
+// and don't have a more specific generator.
 int GenerateNextId() {
   static int next_id = 0;
   return next_id++;
@@ -534,17 +537,19 @@ ProcessNodeImpl* TestProcessNodeSource::GetProcessNode(int render_process_id) {
 
 int TestProcessNodeSource::CreateProcessNode() {
   // Generate a render process ID for this process node.
-  int render_process_id = GenerateNextId();
+  static RenderProcessHostId::Generator id_generator;
+  RenderProcessHostId render_process_id = id_generator.GenerateNextId();
 
   // Create the process node and insert it into the map.
-  auto process_node =
-      PerformanceManagerImpl::CreateProcessNode(RenderProcessHostProxy());
+  auto process_node = PerformanceManagerImpl::CreateProcessNode(
+      RenderProcessHostProxy::CreateForTesting(render_process_id));
   bool inserted =
-      process_node_map_.insert({render_process_id, std::move(process_node)})
+      process_node_map_
+          .insert({render_process_id.value(), std::move(process_node)})
           .second;
   DCHECK(inserted);
 
-  return render_process_id;
+  return render_process_id.value();
 }
 
 // TestFrameNodeSource ---------------------------------------------------------
