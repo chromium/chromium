@@ -53,7 +53,7 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     _faviconContainerView = [[FaviconContainerView alloc] init];
     _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [_faviconContainerView
-        setFaviconBackgroundColor:[UIColor colorNamed:kBackgroundColor]];
+        setFaviconBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
     [contentView addSubview:_faviconContainerView];
     [_faviconContainerView
         setContentCompressionResistancePriority:UILayoutPriorityRequired
@@ -85,7 +85,7 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
         [UIButtonConfiguration plainButtonConfiguration];
     configuration.image = DefaultSymbolTemplateWithPointSize(
         kChevronDownSymbol, kSymbolAccessoryPointSize);
-    _chevronButton.tintColor = [UIColor colorNamed:kGrey700Color];
+    _chevronButton.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
     _chevronButton.configuration = configuration;
     [_chevronButton addTarget:self
                        action:@selector(chevronToggleAction:)
@@ -94,7 +94,7 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     // Add separator.
     UIView* separatorLine = [[UIView alloc] init];
     separatorLine.translatesAutoresizingMaskIntoConstraints = NO;
-    separatorLine.backgroundColor = [UIColor colorNamed:kGrey700Color];
+    separatorLine.backgroundColor = [UIColor colorNamed:kGrey300Color];
     [contentView addSubview:separatorLine];
     // Add the checked circle holder.
     _checkedCircleImageView = [[UIImageView alloc] init];
@@ -250,10 +250,11 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
   if (_checked) {
     circleImage = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
                                              kRadioButtonSize);
-    [_checkedCircleImageView setTintColor:[UIColor colorNamed:kBlue500Color]];
+    [_checkedCircleImageView setTintColor:[UIColor colorNamed:kBlueColor]];
   } else {
     circleImage = DefaultSymbolWithPointSize(kCircleSymbol, kRadioButtonSize);
-    [_checkedCircleImageView setTintColor:[UIColor colorNamed:kGrey700Color]];
+    [_checkedCircleImageView
+        setTintColor:[UIColor colorNamed:kTextQuaternaryColor]];
   }
   _checkedCircleImageView.image = circleImage;
 }
