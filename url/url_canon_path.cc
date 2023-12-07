@@ -40,9 +40,8 @@ enum CharacterFlags {
 // only flag that may be combined with others.
 //
 // This table was used to be designed to match exactly what IE did with the
-// characters, however, which doesn't comply with the URL Standard as of Jun
-// 2023. See http://crbug.com/1400251 and http://crbug.com/1252531 for efforts
-// to comply with the URL Standard.
+// characters, however, which doesn't comply with the URL Standard as of Dec
+// 2023. See https://crbug.com/1509295.
 //
 // Dot is even more special, and the escaped version is handled specially by
 // IsDot. Therefore, we don't need the "escape" flag. We just need the "special"
