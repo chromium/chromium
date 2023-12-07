@@ -55,6 +55,12 @@ bool IsEqualToKioskOrigin(const url::Origin& origin) {
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
   const ash::WebKioskAppData* app_data =
       ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
+  if (!app_data) {
+    // This can happen when the device service APIs are accessed from inside a
+    // ChromeApp.
+    return false;
+  }
+
   return url::Origin::Create(app_data->install_url()) == origin;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(KioskSessionServiceLacros::Get());

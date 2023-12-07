@@ -219,6 +219,11 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
     fake_user_manager()->LoginUser(account_id());
   }
 
+  void LoginChromeAppKioskUser() {
+    fake_user_manager()->AddKioskAppUser(account_id());
+    fake_user_manager()->LoginUser(account_id());
+  }
+
   ash::FakeChromeUserManager* fake_user_manager() const {
     return fake_user_manager_;
   }
@@ -257,6 +262,16 @@ TEST_F(DeviceAPIServiceWithKioskUserTest,
        DisableServiceForNonKioskTrustedOrigin) {
   LoginKioskUser();
   TryCreatingService(GURL(kTrustedUrl));
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+// The service should be disabled if a non-PWA kiosk user is logged in.
+TEST_F(DeviceAPIServiceWithKioskUserTest,
+       DisableServiceInChromeAppKioskSession) {
+  LoginChromeAppKioskUser();
+
+  TryCreatingService(GURL(kKioskAppUrl));
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
