@@ -615,7 +615,7 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
       [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
                                                  fromSourceApplication:nil];
 
-  EXPECT_EQ(params.postOpeningAction, SHOW_DEFAULT_BROWSER_SETTINGS);
+  EXPECT_EQ(params.postOpeningAction, EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS);
   EXPECT_TRUE(params.externalURL.is_empty());
   histogram_tester.ExpectBucketCount("IOS.LaunchSource",
                                      AppLaunchSource::EXTERNAL_ACTION, 1);

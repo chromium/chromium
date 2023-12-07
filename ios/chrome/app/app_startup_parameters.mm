@@ -149,10 +149,10 @@
 
 - (BOOL)isValidPostOpeningAction:(TabOpeningPostOpeningAction)action {
   switch (action) {
-      // NO_ACTION , SHOW_DEFAULT_BROWSER_SETTINGS and SEARCH_PASSWORDS are
-      // allowed on any URL.
+      // Post opening actions that are allowed on any URL.
     case NO_ACTION:
     case SHOW_DEFAULT_BROWSER_SETTINGS:
+    case EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS:
     case SEARCH_PASSWORDS:
       return YES;
 

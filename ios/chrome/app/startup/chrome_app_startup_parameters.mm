@@ -510,7 +510,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     params = [self newExternalActionAppStartupParameters:appId
                                              completeURL:completeURL
                                              externalURL:GURL()];
-    params.postOpeningAction = SHOW_DEFAULT_BROWSER_SETTINGS;
+    params.postOpeningAction = EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
   } else {
     action = IOSExternalAction::ACTION_INVALID;
     params = nil;

@@ -41,11 +41,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeaderItem,
 };
 
+// Values of the UMA IOS.ExternalAction.DefaultBrowserPromo histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange
+enum class ExternalActionDefaultBrowserPromoUsage {
+  kOpenSettings = 0,
+  kDismiss,
+  kMaxValue = kDismiss,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+
 }  // namespace
 
 @interface DefaultBrowserSettingsTableViewController () {
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+
+  // Whether the user visited the iOS Default Browser settings page.
+  BOOL _defaultBrowserSettingsVisited;
 }
 @end
 
@@ -152,6 +166,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
+  if (!_defaultBrowserSettingsVisited &&
+      self.source == DefaultBrowserPromoSource::kExternalAction) {
+    base::UmaHistogramEnumeration(
+        "IOS.ExternalAction.DefaultBrowserPromo",
+        ExternalActionDefaultBrowserPromoUsage::kDismiss);
+  }
+
   // No-op as there are no C++ objects or observers.
 
   _settingsAreDismissed = YES;
@@ -189,9 +210,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Responds to user action to go to default browser settings.
 - (void)openSettingsButtonPressed {
+  if (!_defaultBrowserSettingsVisited &&
+      self.source == DefaultBrowserPromoSource::kExternalAction) {
+    base::UmaHistogramEnumeration(
+        "IOS.ExternalAction.DefaultBrowserPromo",
+        ExternalActionDefaultBrowserPromoUsage::kOpenSettings);
+  }
   base::RecordAction(base::UserMetricsAction("Settings.DefaultBrowser"));
   base::UmaHistogramEnumeration("Settings.DefaultBrowserFromSource",
                                 self.source);
+
+  _defaultBrowserSettingsVisited = YES;
+
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}

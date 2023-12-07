@@ -7,12 +7,17 @@
 
 // An histogram to report the source of the default browser promo.
 // Used for UMA, do not reorder.
+// LINT.IfChange
 enum class DefaultBrowserPromoSource {
   kSettings = 0,
   kOmnibox,
   kExternalIntent,
   kSetUpList,
-  kMaxValue = kSetUpList,
+  // kExternalAction refers to Chrome being opened with a "ChromeExternalAction"
+  // host.
+  kExternalAction,
+  kMaxValue = kExternalAction,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_PROMO_SOURCE_H_

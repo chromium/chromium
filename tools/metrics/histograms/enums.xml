@@ -25860,6 +25860,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Omnibox"/>
   <int value="2" label="External Intent"/>
   <int value="3" label="Set Up List"/>
+  <int value="4" label="External Action"/>
 </enum>
 
 <enum name="IOSExternalURLRequestStatus">

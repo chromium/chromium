@@ -854,6 +854,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ExternalAction.DefaultBrowserPromo"
+    enum="IOSExternalActionDefaultBrowserPromoUsage" expires_after="2024-12-05">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the action taken by the user after they landed on the Default
+    Browser Promo from an External Action (URL passed to Chrome with
+    &quot;ChromeExternalAction&quot; as host).
+  </summary>
+</histogram>
+
 <histogram name="IOS.FeedbackKit.UserFlowStartedSuccess" enum="Boolean"
     expires_after="2023-10-31">
   <owner>rkgibson@google.com</owner>
