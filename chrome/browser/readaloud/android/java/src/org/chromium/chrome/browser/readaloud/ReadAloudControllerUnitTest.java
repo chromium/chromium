@@ -1067,6 +1067,19 @@ public class ReadAloudControllerUnitTest {
         assertTrue(mController.isHighlightingSupported());
     }
 
+    @Test
+    public void testReadabilitySupplier() {
+        String testUrl = "https://en.wikipedia.org/wiki/Google";
+
+        mController.maybeCheckReadability(new GURL(testUrl));
+
+        verify(mHooksImpl, times(1)).isPageReadable(eq(testUrl), mCallbackCaptor.capture());
+
+        mCallbackCaptor.getValue().onSuccess(testUrl, true, false);
+
+        assertEquals(mController.getReadabilitySupplier().get(), testUrl);
+    }
+
     private void onPlaybackSuccess(Playback playback) {
         mPlaybackCallbackCaptor.getValue().onSuccess(playback);
         resolvePromises();

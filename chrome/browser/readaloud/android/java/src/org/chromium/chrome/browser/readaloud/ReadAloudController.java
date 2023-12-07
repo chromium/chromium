@@ -66,6 +66,9 @@ public class ReadAloudController
 
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplierImpl<String> mReadabilitySupplier =
+            new ObservableSupplierImpl();
+    private final Map<String, String> mSanitizedToFullUrlMap = new HashMap<>();
     private final Map<String, Boolean> mReadabilityMap = new HashMap<>();
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
@@ -196,6 +199,7 @@ public class ReadAloudController
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
+                    mReadabilitySupplier.set(mSanitizedToFullUrlMap.get(url));
                 }
 
                 @Override
@@ -235,6 +239,10 @@ public class ReadAloudController
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
+    public ObservableSupplier<String> getReadabilitySupplier() {
+        return mReadabilitySupplier;
+    }
+
     private void onProfileAvailable(Profile profile) {
         mReadabilityHooks =
                 sReadabilityHooksForTesting != null
@@ -255,7 +263,7 @@ public class ReadAloudController
                         protected void onTabSelected(Tab tab) {
                             Log.d(
                                     TAG,
-                                    "onTabSelected called for"
+                                    "onTabSelected called for "
                                             + tab.getUrl().getPossiblyInvalidSpec());
                             super.onTabSelected(tab);
                             maybeCheckReadability(tab.getUrl());
@@ -276,6 +284,8 @@ public class ReadAloudController
         }
 
         String urlSpec = stripUserData(url).getSpec();
+        // TODO: 2 different URLs can have the same sanitized URL
+        mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
         if (mReadabilityMap.containsKey(urlSpec) || mPendingRequests.contains(urlSpec)) {
             return;
         }

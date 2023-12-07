@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -95,6 +97,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryC
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -324,6 +327,11 @@ public class ToolbarManager
     private static boolean sSkipRecreateForTesting;
 
     private final boolean mIsCustomTab;
+
+    @Nullable ObservableSupplier<String> mReadAloudReadabilitySupplier;
+
+    private final Callback<String> mOnReadAloudReadabilitySuccess =
+            this::onReadAloudReadabilitySuccess;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1267,6 +1275,24 @@ public class ToolbarManager
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
+    // TODO(b/315204103): add tests
+    public void setReadAloudReadabilitySupplier(
+            ObservableSupplier<String> readAloudReadabilitySupplier) {
+        mReadAloudReadabilitySupplier = readAloudReadabilitySupplier;
+        mReadAloudReadabilitySupplier.addObserver(mOnReadAloudReadabilitySuccess);
+    }
+
+    // TODO(b/315204103): add tests
+    private void onReadAloudReadabilitySuccess(String url) {
+        // Checks if ReadAloud is set as the customized button and the readable url matches the
+        // current tab
+        if (ChromeSharedPreferences.getInstance().readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS)
+                        == AdaptiveToolbarButtonVariant.READ_ALOUD
+                && mTabModelSelector.getCurrentTab().getUrl().getSpec().equals(url)) {
+            updateButtonStatus();
+        }
+    }
+
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
         mControlContainer.setImportantForAccessibility(
@@ -1952,6 +1978,11 @@ public class ToolbarManager
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
+        if (mReadAloudReadabilitySupplier != null) {
+            mReadAloudReadabilitySupplier.removeObserver(mOnReadAloudReadabilitySuccess);
+            mReadAloudReadabilitySupplier = null;
+        }
+
         mTabObscuringHandler.removeObserver(this);
 
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
@@ -2569,7 +2600,7 @@ public class ToolbarManager
             var msg =
                     String.format(
                             "BottomCtrl %s %s; actTab %s %s; urlBarTab %s, sTab %s, layout %s,"
-                                + " interval %s",
+                                    + " interval %s",
                             bc,
                             bc != null
                                     && Boolean.TRUE.equals(

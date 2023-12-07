@@ -921,6 +921,7 @@ public class RootUiCoordinator
                             mBrowserControlsManager,
                             mLayoutManager);
             mReadAloudControllerSupplier.set(controller);
+            mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
         }
     }
 
