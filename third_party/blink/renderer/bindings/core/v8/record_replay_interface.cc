@@ -222,7 +222,7 @@ function warning(...args) {
 
 function assert(v, msg = "") {
   if (!v) {
-    const m = `Command handler Assertion failed (${msg})`;
+    const m = `Assertion failed when handling command (${msg})`;
     log(`[RuntimeError] ${m} - ${Error().stack}`);
     throw new Error(m);
   }
@@ -890,7 +890,8 @@ function clearPauseDataCallback() {
  * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject
  */
 function makeDebuggeeValue(plainValue) {
-  assert(!plainValue?.objectId);
+  assert(plainValue && typeof plainValue === "object",
+    `value is not an object: ${!plainValue ? plainValue : typeof plainValue}`);
   const remoteObject = fromJsMakeDebuggeeValue(plainValue);
   return remoteObject;
 }
