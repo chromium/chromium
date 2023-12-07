@@ -420,11 +420,6 @@ const char kUseDnsHttpsSvcbAlpnDescription[] =
     "When enabled, Chrome may try QUIC on the first connection using the ALPN"
     " information in the DNS HTTPS record.";
 
-const char kSHA1ServerSignatureName[] = "Allow SHA-1 server signatures in TLS.";
-const char kSHA1ServerSignatureDescription[] =
-    "When enabled, Chrome will allow the use of SHA-1 in signatures from the "
-    "server during a TLS handshake";
-
 const char kEncryptedClientHelloName[] = "Encrypted ClientHello";
 const char kEncryptedClientHelloDescription[] =
     "When enabled, Chrome will enable Encrypted ClientHello support. This will "

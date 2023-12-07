@@ -8145,10 +8145,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"use-sha1-server-handshakes", flag_descriptions::kSHA1ServerSignatureName,
-     flag_descriptions::kSHA1ServerSignatureDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kSHA1ServerSignature)},
-
     {"encrypted-client-hello", flag_descriptions::kEncryptedClientHelloName,
      flag_descriptions::kEncryptedClientHelloDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kEncryptedClientHello)},
