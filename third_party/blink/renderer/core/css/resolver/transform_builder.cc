@@ -140,14 +140,14 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
       double sx = 1.0;
       double sy = 1.0;
       if (transform_type == TransformOperation::kScaleY) {
-        sy = first_value.GetDoubleValue();
+        sy = first_value.ComputeNumber(conversion_data);
       } else {
-        sx = first_value.GetDoubleValue();
+        sx = first_value.ComputeNumber(conversion_data);
         if (transform_type != TransformOperation::kScaleX) {
           if (transform_value.length() > 1) {
             const auto& second_value =
                 To<CSSPrimitiveValue>(transform_value.Item(1));
-            sy = second_value.GetDoubleValue();
+            sy = second_value.ComputeNumber(conversion_data);
           } else {
             sy = sx;
           }
@@ -162,11 +162,13 @@ scoped_refptr<TransformOperation> CreateTransformOperation(
       double sy = 1.0;
       double sz = 1.0;
       if (transform_type == TransformOperation::kScaleZ) {
-        sz = first_value.GetDoubleValue();
+        sz = first_value.ComputeNumber(conversion_data);
       } else {
-        sx = first_value.GetDoubleValue();
-        sy = To<CSSPrimitiveValue>(transform_value.Item(1)).GetDoubleValue();
-        sz = To<CSSPrimitiveValue>(transform_value.Item(2)).GetDoubleValue();
+        sx = first_value.ComputeNumber(conversion_data);
+        sy = To<CSSPrimitiveValue>(transform_value.Item(1))
+                 .ComputeNumber(conversion_data);
+        sz = To<CSSPrimitiveValue>(transform_value.Item(2))
+                 .ComputeNumber(conversion_data);
       }
       return ScaleTransformOperation::Create(sx, sy, sz, transform_type);
     }

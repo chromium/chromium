@@ -388,6 +388,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   inline T ConvertTo() const;  // Defined in CSSPrimitiveValueMappings.h
 
   int ComputeInteger(const CSSLengthResolver&) const;
+  double ComputeNumber(const CSSLengthResolver&) const;
 
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {

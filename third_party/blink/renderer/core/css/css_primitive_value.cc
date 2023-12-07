@@ -357,6 +357,14 @@ int CSSPrimitiveValue::ComputeInteger(
              : To<CSSNumericLiteralValue>(this)->ComputeInteger();
 }
 
+double CSSPrimitiveValue::ComputeNumber(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK(IsNumber());
+  return IsCalculated()
+             ? To<CSSMathFunctionValue>(this)->ComputeNumber(length_resolver)
+             : To<CSSNumericLiteralValue>(this)->ComputeNumber();
+}
+
 double CSSPrimitiveValue::ComputeLengthDouble(
     const CSSLengthResolver& length_resolver) const {
   if (IsCalculated()) {
