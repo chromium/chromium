@@ -76,6 +76,7 @@ source_set("permissions") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/site_engagement/content",
     "//components/subresource_filter/content/browser",
+    "//components/supervised_user/core/common:features",
     "//components/unified_consent",
     "//components/vector_icons:vector_icons",
     "//content/public/browser",

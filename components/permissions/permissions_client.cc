@@ -48,13 +48,11 @@ void PermissionsClient::AreSitesImportant(
     entry.second = false;
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 bool PermissionsClient::IsCookieDeletionDisabled(
     content::BrowserContext* browser_context,
     const GURL& origin) {
   return false;
 }
-#endif
 
 void PermissionsClient::GetUkmSourceId(content::BrowserContext* browser_context,
                                        content::WebContents* web_contents,

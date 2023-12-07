@@ -57,6 +57,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
@@ -219,19 +220,24 @@ void ChromePermissionsClient::AreSitesImportant(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Some Google-affiliated domains are not allowed to delete cookies for
 // supervised accounts.
 bool ChromePermissionsClient::IsCookieDeletionDisabled(
     content::BrowserContext* browser_context,
     const GURL& origin) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+    return false;
+  }
+#endif
+
   if (!Profile::FromBrowserContext(browser_context)->IsChild())
     return false;
 
   return google_util::IsYoutubeDomainUrl(origin, google_util::ALLOW_SUBDOMAIN,
                                          google_util::ALLOW_NON_STANDARD_PORTS);
 }
-#endif
 
 void ChromePermissionsClient::GetUkmSourceId(
     content::BrowserContext* browser_context,

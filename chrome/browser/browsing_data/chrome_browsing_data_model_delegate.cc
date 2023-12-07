@@ -28,10 +28,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/permissions/permissions_client.h"
 #endif
 
@@ -215,15 +211,12 @@ bool ChromeBrowsingDataModelDelegate::IsCookieDeletionDisabled(
     const GURL& url) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   CHECK(profile_);
-  return supervised_user::IsCookieDeletionDisabled(url, *profile_->GetPrefs());
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile_->IsChild()) {
     auto* client = permissions::PermissionsClient::Get();
     return client->IsCookieDeletionDisabled(profile_, url);
   }
-#else
-  return false;
 #endif
+  return false;
 }
 
 void ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys(

@@ -209,20 +209,6 @@ bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-bool IsCookieDeletionDisabled(const GURL& origin,
-                              const PrefService& pref_service) {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
-    return false;
-  }
-
-  if (!IsChildAccount(pref_service)) {
-    return false;
-  }
-  return google_util::IsYoutubeDomainUrl(origin, google_util::ALLOW_SUBDOMAIN,
-                                         google_util::ALLOW_NON_STANDARD_PORTS);
-}
-
 }  // namespace supervised_user
 
 #if BUILDFLAG(IS_ANDROID)

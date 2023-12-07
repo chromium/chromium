@@ -66,10 +66,6 @@
 #include "extensions/common/extension_set.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#endif
-
 namespace {
 
 struct NodeTitleComparator {
@@ -1698,20 +1694,7 @@ void CookiesTreeModel::MaybeNotifyBatchesEnded() {
 // static
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    return base::BindRepeating(
-        [](Profile* profile, const GURL& url) {
-          return profile && supervised_user::IsCookieDeletionDisabled(
-                                url, *profile->GetPrefs());
-        },
-        profile);
-#else
-    return base::NullCallback();
-#endif
-  }
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile->IsChild()) {
     return base::BindRepeating(
         [](permissions::PermissionsClient* client,

@@ -45,11 +45,6 @@ bool IsUrlFilteringEnabled(const PrefService& pref_service);
 // Returns true if the extensions permissions parental control is enabled.
 bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
 
-// Returns true if the user is supervised and the origin is a Google
-// affiliated domain that is not allowed to delete cookies for supervised users.
-bool IsCookieDeletionDisabled(const GURL& origin,
-                              const PrefService& pref_service);
-
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_
