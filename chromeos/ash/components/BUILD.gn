@@ -78,6 +78,7 @@ static_library("test_support") {
     "//base:i18n",
     "//base/test:test_support",
     "//testing/gtest",
+    "//ui/accessibility:test_support",
     "//ui/aura",
     "//ui/base",
     "//ui/display",

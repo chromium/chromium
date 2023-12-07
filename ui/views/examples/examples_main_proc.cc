@@ -29,6 +29,7 @@
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/core/embedder/embedder.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -85,6 +86,8 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
 
   if (CheckCommandLineUsage())
     return ExamplesExitCode::kSucceeded;
+
+  ui::AXPlatformForTest ax_platform;
 
   // Disabling Direct Composition works around the limitation that
   // InProcessContextFactory doesn't work with Direct Composition, causing the

@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_platform.h"
 
 namespace content {
 
@@ -148,6 +149,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void UpdateAccessibilityActivityTask();
 
   ui::AXMode accessibility_mode_;
+
+  // The process's single AXPlatform instance.
+  ui::AXPlatform ax_platform_;
 
   base::TimeDelta histogram_delay_;
 

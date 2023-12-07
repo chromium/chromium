@@ -92,6 +92,7 @@ void ViewsTestBase::TearDown() {
   teardown_called_ = true;
   testing::Test::TearDown();
   test_helper_.reset();
+  ax_platform_.reset();
 }
 
 void ViewsTestBase::SetUpForInteractiveTests() {
@@ -108,6 +109,7 @@ void ViewsTestBase::SetUpForInteractiveTests() {
   base::FilePath ui_test_pak_path;
   ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+  ax_platform_.emplace();
 }
 
 void ViewsTestBase::RunPendingMessages() {

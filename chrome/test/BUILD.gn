@@ -11094,6 +11094,7 @@ if (!is_android && !is_chromeos_device) {
         "//components/user_education/views",
         "//components/user_education/webui",
         "//components/user_notes:features",
+        "//ui/accessibility:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
         "//ui/views",

@@ -38,6 +38,8 @@ component("platform") {
     "ax_platform_tree_manager_delegate.h",
 
     # Used by browser_accessibility_state_impl.cc.
+    "ax_platform.cc",
+    "ax_platform.h",
     "ax_platform_node.cc",
     "ax_platform_node.h",
     "ax_platform_node_delegate.cc",

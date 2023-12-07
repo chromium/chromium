@@ -175,6 +175,7 @@ source_set("views_examples_proc") {
     "//components/viz/service",
     "//mojo/core/embedder",
     "//skia",
+    "//ui/accessibility:test_support",
     "//ui/base",
     "//ui/color:mixers",
     "//ui/compositor",

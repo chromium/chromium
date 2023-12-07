@@ -1106,7 +1106,7 @@ source_set("test_support") {
     "//ipc:test_support",
     "//mojo/core/embedder",
     "//skia",
-    "//ui/accessibility",
+    "//ui/accessibility:test_support",
     "//ui/base",
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_test_support",
