@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     When a session ends, record how we exited the session, whether by accepting
-    the input, canceling wiht the close button, or losing focus and not going
+    the input, canceling with the close button, or losing focus and not going
     back to the session.
   </summary>
 </histogram>
@@ -135,7 +135,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Count of the number of Compose requests for {Status} sessions. Recorded once
-    per session when it is closed or distroyed.
+    per session when it is closed or destroyed.
   </summary>
   <token key="Status">
     <variant name="Accepted"/>
@@ -143,17 +143,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Compose.Session.DialogShownCount.{Status}" units="count"
+<histogram name="Compose.Session.Consent.CloseReason"
+    enum="ComposeConsentSessionCloseReasonType" expires_after="2024-11-01">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram for recording the reason why a Compose dialog that had shown the
+    consent or disclaimer UI closed. Recorded once per session when it is closed
+    or destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Compose.Session.Consent.DialogShownCount.{FinalStatus}"
+    units="count" expires_after="2024-03-31">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of times the Compose dialog was shown in a consent UI
+    state where {FinalStatus}. Recorded once per session when it is closed,
+    destroyed, or progressed past the consent UI.
+  </summary>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="consent was accepted or acknowledged"/>
+    <variant name="Ignored" summary="consent was rejected or ignored"/>
+  </token>
+</histogram>
+
+<histogram name="Compose.Session.Consent.GivenInSession" enum="Boolean"
+    expires_after="2024-11-01">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram for recording whether consent was given or acknowledged in a
+    session, or if it was already given when the session was created. Recorded
+    once per session when it is closed or destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Compose.Session.DialogShownCount.{FinalStatus}" units="count"
     expires_after="2024-03-31">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Count of the number of times the Compose dialog is shown in an {Status}
-    session. Recorded once per session when it is closed or distroyed.
+    Count of the number of times the Compose dialog was shown in a session where
+    {FinalStatus}. Recorded once per session when it is closed or destroyed.
   </summary>
-  <token key="Status">
-    <variant name="Accepted"/>
-    <variant name="Ignored"/>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="the Compose response was inserted"/>
+    <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
 </histogram>
 
@@ -163,7 +200,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Count of the number of times undo is done during an {Status} session.
-    Recorded once per session when it is closed or distroyed.
+    Recorded once per session when it is closed or destroyed.
   </summary>
   <token key="Status">
     <variant name="Accepted"/>

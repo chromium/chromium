@@ -134,6 +134,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
     initial_consent_state_ = consent_state;
   }
 
+  compose::mojom::ConsentState get_initial_consent_state() {
+    return initial_consent_state_;
+  }
+
   // Set the first time the user progresses through the consent/disclaimer
   // dialog to the main dialog. This can only be set one way as it corresponds
   // to completion of the user's FRE.
@@ -143,6 +147,13 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Refresh the inner text on session resumption.
   void RefreshInnerText();
+
+  // Manages actions needed when a session ends at the consent/disclaimer dialog
+  // or progresses to the main dialog.
+  void HandleEndOfConsentSession();
+
+  void SetConsentCloseReason(
+      compose::ComposeConsentSessionCloseReason close_reason);
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
@@ -200,6 +211,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // session.
   bool consent_given_or_acknowledged_ = false;
 
+  // Reason that a compose consent session was exited, used for metrics.
+  compose::ComposeConsentSessionCloseReason consent_close_reason_;
   // Reason that a compose session was exited, used for metrics.
   compose::ComposeSessionCloseReason close_reason_;
   // Reason that a compose session was exited, used for quality logging.
@@ -225,6 +238,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   int compose_count_ = 0;
   int dialog_shown_count_ = 0;
   int undo_count_ = 0;
+
+  bool consent_given_in_session_ = false;
 
   InnerTextExtractor inner_text_extractor_;
   std::optional<std::string> inner_text_;
