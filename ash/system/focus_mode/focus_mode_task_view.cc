@@ -14,6 +14,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -47,6 +48,8 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 // FocusModeTaskView::TaskTextfield:
 
 class FocusModeTaskView::TaskTextfield : public SystemTextfield {
+  METADATA_HEADER(TaskTextfield, SystemTextfield)
+
  public:
   // The `kMedium` type of `SystemTextfield` has a 20px font size and a 28px
   // container height.
@@ -93,6 +96,9 @@ class FocusModeTaskView::TaskTextfield : public SystemTextfield {
   // Indicates if the textfield should should show the tooltip.
   bool show_tooltip_ = false;
 };
+
+BEGIN_METADATA(FocusModeTaskView, TaskTextfield, SystemTextfield)
+END_METADATA
 
 //---------------------------------------------------------------------
 // FocusModeTaskView::TaskTextfieldController:
