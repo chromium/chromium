@@ -572,8 +572,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   bool optimization_guide_feature_visible[4] = {false, false, false, false};
 
   for (size_t i = 0; i < 3; i++) {
-    const bool& visible = optimization_guide_service->IsSettingVisible(
-        optimization_guide_features[i]);
+    const bool visible = optimization_guide_service &&
+                         optimization_guide_service->IsSettingVisible(
+                             optimization_guide_features[i]);
     optimization_guide_feature_visible[i + 1] = visible;
 
     // The main toggle is visible only if at least one of the sub toggles is
