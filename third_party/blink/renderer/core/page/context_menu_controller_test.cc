@@ -835,6 +835,32 @@ TEST_F(ContextMenuControllerTest,
 }
 #endif
 
+TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSVGImageElement) {
+  RegisterMockedImageURLLoad("http://test.png");
+  Document* document = GetDocument();
+
+  ContextMenuAllowedScope context_menu_allowed_scope;
+  document->documentElement()->setInnerHTML(R"HTML(
+    <svg>
+      <image id="target" href="http://test.png" width="100" height="100"/>
+    </svg>
+  )HTML");
+
+  // Flush the image-loading microtask.
+  base::RunLoop().RunUntilIdle();
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  Element* image = document->getElementById(AtomicString("target"));
+  EXPECT_TRUE(ShowContextMenuForElement(image, kMenuSourceLongPress));
+
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
+            context_menu_data.media_type);
+  EXPECT_TRUE(context_menu_data.has_image_contents);
+}
+
 TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
   GetDocument()->documentElement()->setInnerHTML(
       "<textarea id='text-area' cols=6 rows=2>Sample editable text</textarea>");
