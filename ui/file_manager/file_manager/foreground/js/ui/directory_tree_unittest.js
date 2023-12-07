@@ -8,7 +8,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {EntryList} from '../../../common/js/files_app_entry_types.js';
-import {installMockChrome, MockCommandLinePrivate} from '../../../common/js/mock_chrome.js';
+import {installMockChrome} from '../../../common/js/mock_chrome.js';
 import {MockDirectoryEntry} from '../../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../../common/js/test_error_reporting.js';
 import {str} from '../../../common/js/translations.js';
@@ -72,8 +72,6 @@ export function setUp() {
     },
   };
   installMockChrome(mockChrome);
-  new MockCommandLinePrivate();
-
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   directoryModel = createFakeDirectoryModel();

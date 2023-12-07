@@ -34,7 +34,8 @@ export async function testExternalMetadataProviderBasic() {
     fileManagerPrivate: {
       getEntryProperties: function(
           entries: Entry[], names: string[],
-          callback: (props: object[]) => void) {
+          callback: (props: chrome.fileManagerPrivate.EntryProperties[]) =>
+              void) {
         assertEquals(2, entries.length);
         assertEquals('filesystem://A', entries[0]?.toURL());
         assertEquals('filesystem://B', entries[1]?.toURL());
@@ -48,19 +49,19 @@ export async function testExternalMetadataProviderBasic() {
             isMachineRoot: true,
             isExternalMedia: true,
             isArbitrarySyncFolder: true,
-          },
+          } as chrome.fileManagerPrivate.EntryProperties,
           {
             modificationTime: new Date(2015, 1, 2).getTime(),
             size: 2048,
             isMachineRoot: false,
             isExternalMedia: false,
             isArbitrarySyncFolder: false,
-          },
+          } as chrome.fileManagerPrivate.EntryProperties,
         ]);
       },
     },
     runtime: {
-      lastError: null,
+      lastError: undefined,
     },
   };
 

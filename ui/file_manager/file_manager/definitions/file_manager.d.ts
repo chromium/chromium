@@ -63,6 +63,9 @@ declare global {
 
     // Defined in the main_window_component.ts
     isFocused?: () => boolean;
+
+    // For unit test.
+    chrome: typeof chrome;
   }
 }
 

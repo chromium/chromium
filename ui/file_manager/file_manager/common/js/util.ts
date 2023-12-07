@@ -258,3 +258,14 @@ export function canBulkPinningCloudPanelShow(
 
   return false;
 }
+
+type Builtin = Date|Function|Uint8Array|string|number|boolean|undefined;
+
+/**
+ * The native Partial only marks the immediate properties as optional,
+ * DeepPartial is basically a recursive version of Partial: if the immediate
+ * property value is an Object, it allows using partial values for that object.
+ */
+export type DeepPartial<T> = T extends Builtin ? T : T extends {} ?
+    {[K in keyof T]?: DeepPartial<T[K]>} :
+    Partial<T>;

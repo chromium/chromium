@@ -5,7 +5,7 @@
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
+import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged} from '../../common/js/mock_chrome.js';
 import {storage} from '../../common/js/storage.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {getRootTypeFromVolumeType, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -325,11 +325,9 @@ export function setUpPage() {
 export function setUp() {
   assertEquals(bannerContainer.childElementCount, 0);
 
-  new MockChromeStorageAPI();
-
   installMockChrome({
     runtime: {
-      lastError: null,
+      lastError: undefined,
     },
     fileManagerPrivate: {
       UserType: {UNMANAGED: 'kUnmanaged', ORGANIZATION: 'kOrganization'},

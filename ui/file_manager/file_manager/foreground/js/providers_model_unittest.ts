@@ -6,7 +6,7 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
-import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {FileSystemType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -144,9 +144,7 @@ export function setUp() {
     runtime: {},
     fileManagerPrivate: {
       getProviders: function(
-          callback:
-              (providers: Array<Partial<chrome.fileManagerPrivate.Provider>>) =>
-                  void) {
+          callback: (providers: chrome.fileManagerPrivate.Provider[]) => void) {
         callback([
           MOUNTED_SINGLE_PROVIDING_EXTENSION,
           NOT_MOUNTED_SINGLE_PROVIDING_EXTENSION,
@@ -159,7 +157,6 @@ export function setUp() {
   };
 
   installMockChrome(mockChrome);
-  new MockCommandLinePrivate();
 
   // Install mock volume manager.
   volumeManager = new MockVolumeManager();

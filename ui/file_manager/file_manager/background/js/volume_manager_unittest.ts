@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {assertRejected, waitUntil} from '../../common/js/test_error_reporting.js';
 import {FileSystemType, RootType, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -107,7 +107,6 @@ export function setUp() {
   };
 
   installMockChrome(mockChrome);
-  new MockCommandLinePrivate();
   mockData.volumeMetadataList_ = [
     {
       volumeId: 'download:Downloads',

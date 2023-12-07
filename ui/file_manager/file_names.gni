@@ -19,7 +19,6 @@ static_js_files = [
 
   # Files Common:
   "file_manager/common/js/filtered_volume_manager.js",
-  "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
 
   # Externs:
@@ -112,6 +111,7 @@ ts_files = [
   "file_manager/common/js/icon_util.ts",
   "file_manager/common/js/lru_cache.ts",
   "file_manager/common/js/metrics.ts",
+  "file_manager/common/js/mock_chrome.ts",
   "file_manager/common/js/progress_center_common.ts",
   "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
@@ -599,6 +599,8 @@ checked_in_dts_files = [
 ]
 
 other_dts_files = [
+  # Enable this when we convert remote_call.js to TS.
+  # "//tools/typescript/definitions/command_line_private.d.ts",
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/chrome_test.d.ts",
   "//tools/typescript/definitions/metrics_private.d.ts",

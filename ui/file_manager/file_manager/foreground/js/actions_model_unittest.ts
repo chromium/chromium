@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {installMockChrome, MockCommandLinePrivate, MockMetrics} from '../../common/js/mock_chrome.js';
+import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -98,11 +98,10 @@ export function setUp() {
   const mockChrome = {
     metricsPrivate: mockMetrics,
     runtime: {
-      lastError: null,
+      lastError: undefined,
     },
   };
   installMockChrome(mockChrome);
-  new MockCommandLinePrivate();
 
   // Setup Drive file system.
   mockVolumeManager = new MockVolumeManager();

@@ -9,7 +9,6 @@ import {fakeDriveVolumeId, MockVolumeManager} from '../../background/js/mock_vol
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
-import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
@@ -59,9 +58,6 @@ let hoge;
 
 // Setup the test components.
 export function setUp() {
-  // Mock chrome APIs.
-  new MockCommandLinePrivate();
-
   // Override VolumeInfo.prototype.resolveDisplayRoot to be sync.
   // @ts-ignore: error TS7006: Parameter 'successCallback' implicitly has an
   // 'any' type.
