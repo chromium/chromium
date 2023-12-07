@@ -40,7 +40,10 @@ namespace base {
 // This test is limited to NDEBUG builds, since some containers may require
 // extra storage for supporting debug checks for things like iterators.
 TEST(ValuesTest, SizeOfValue) {
-#if defined(__GLIBCXX__)
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1507521): Remove when msvc::no_unique_address is fixed.
+  constexpr size_t kExpectedSize = 5 * sizeof(void*);
+#elif defined(__GLIBCXX__)
   // libstdc++ std::string takes already 4 machine words, so the absl::variant
   // takes 5
   constexpr size_t kExpectedSize = 5 * sizeof(void*);
