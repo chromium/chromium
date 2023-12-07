@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -132,7 +133,9 @@ class BoundSessionCookieRefreshServiceImpl
   // storage and updates all renderers.
   void TerminateSession(SessionTerminationTrigger trigger);
   void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
-  void NotifyBoundSessionTerminated(const GURL& site);
+  void NotifyBoundSessionTerminated(
+      const GURL& site,
+      const base::flat_set<std::string>& bound_cookie_names);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   // Never null. Stored as `std::unique_ptr` for polymorphism.

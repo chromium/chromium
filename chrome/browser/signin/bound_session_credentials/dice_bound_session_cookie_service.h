@@ -37,7 +37,9 @@ class DiceBoundSessionCookieService
       const DiceBoundSessionCookieService&) = delete;
 
   // BoundSessionCookieRefreshService::Observer:
-  void OnBoundSessionTerminated(const GURL& site) override;
+  void OnBoundSessionTerminated(
+      const GURL& site,
+      const base::flat_set<std::string>& bound_cookie_names) override;
 
  private:
   const raw_ref<signin::IdentityManager> identity_manager_;

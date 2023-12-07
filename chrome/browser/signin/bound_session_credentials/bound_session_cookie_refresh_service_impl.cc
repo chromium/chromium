@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -248,6 +249,8 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     SessionTerminationTrigger trigger) {
   CHECK(cookie_controller_);
   GURL session_url = cookie_controller_->url();
+  base::flat_set<std::string> bound_cookie_names =
+      cookie_controller_->bound_cookie_names();
   cookie_controller_.reset();
   // TODO(b/300627729): stop clearing all params once multiple sessions are
   // supported.
@@ -255,7 +258,7 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession(
   UpdateAllRenderers();
   RecordSessionTerminationTrigger(trigger);
 
-  NotifyBoundSessionTerminated(session_url);
+  NotifyBoundSessionTerminated(session_url, bound_cookie_names);
 }
 
 void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
@@ -265,8 +268,9 @@ void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
 }
 
 void BoundSessionCookieRefreshServiceImpl::NotifyBoundSessionTerminated(
-    const GURL& site) {
+    const GURL& site,
+    const base::flat_set<std::string>& bound_cookie_names) {
   for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
-    observer.OnBoundSessionTerminated(site);
+    observer.OnBoundSessionTerminated(site, bound_cookie_names);
   }
 }
