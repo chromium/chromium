@@ -275,29 +275,13 @@ std::unique_ptr<web::WebState> DeserializeFromProto::RestoreTabAt(
       web::WebStateID::FromSerializedValue(item_storage.identifier()));
 }
 
-struct InsertionHelper {
-  const int pinned_tabs_count;
-  const int pinned_offset;
-  const int regular_offset;
-
-  int insertion_index(int index) const {
-    if (index < pinned_tabs_count) {
-      return pinned_offset + index;
-    }
-    return regular_offset + index;
-  }
-
-  int insertion_flags(int index, bool is_active) const {
-    int flags = WebStateList::INSERT_FORCE_INDEX;
-    if (index < pinned_tabs_count) {
-      flags |= WebStateList::INSERT_PINNED;
-    }
-    if (is_active) {
-      flags |= WebStateList::INSERT_ACTIVATE;
-    }
-    return flags;
-  }
-};
+// Returns the flags used to insert a WebState at `index`, possibly marking
+// it as `pinned` or `active`.
+int WebStateInsertionFlags(int index, bool pinned, bool active) {
+  return WebStateList::INSERT_FORCE_INDEX |
+         (pinned ? WebStateList::INSERT_PINNED : 0) |
+         (active ? WebStateList::INSERT_ACTIVATE : 0);
+}
 
 // Helper function that deserialize into a WebStateList using a deserializer.
 // Used by the two implementation of `DeserializeWebStateList(...)`.
@@ -306,6 +290,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
     bool enable_pinned_web_states,
     const Deserializer& deserializer) {
   DCHECK(web_state_list);
+  DCHECK(web_state_list->empty());
 
   // Lock the WebStateList.
   WebStateList::ScopedBatchOperation lock =
@@ -314,11 +299,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   int restored_pinned_tabs_count = 0;
   const int restored_tabs_count = deserializer.GetRestoredTabsCount();
   if (enable_pinned_web_states) {
-    // Ensure that restored_pinned_tabs_count is smaller than
-    // restored_tabs_count (to avoid crashing if the storage
-    // on disk is partially invalid).
-    restored_pinned_tabs_count = std::min(
-        restored_tabs_count, deserializer.GetRestoredPinnedTabsCount());
+    restored_pinned_tabs_count = deserializer.GetRestoredPinnedTabsCount();
   }
 
   // If the restoration range is empty, then there is nothing to do. This
@@ -332,39 +313,6 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   std::vector<web::WebState*> restored_web_states;
   restored_web_states.reserve(restored_tabs_count);
 
-  // If there is only one tab, and it is the new tab page, clobber it before
-  // restoring any tabs (this avoid having to search for the tab amongst all
-  // the ones that have been restored).
-  if (web_state_list->count() == 1) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(0);
-
-    // Check for realization before checking for a pending load to prevent
-    // force-realization of the tab. An unrealized WebState cannot have a
-    // load pending anyway.
-    const bool has_pending_load =
-        web_state->IsRealized() &&
-        web_state->GetNavigationManager()->GetPendingItem();
-
-    if (!has_pending_load) {
-      const GURL last_committed_url = web_state->GetLastCommittedURL();
-      if (last_committed_url == kChromeUINewTabURL) {
-        web_state_list->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
-      }
-    }
-  }
-
-  // Instantiate an InsertionHelper object that will help compute the indexes
-  // and flags used to insert the WebState in the WebStateList.
-  //
-  // The tabs will be inserted in order at the end of their section (pinned
-  // or not), so the insertion index is the offset to the end of the section
-  // plus their index in the stored.
-  const InsertionHelper helper{
-      .pinned_tabs_count = restored_pinned_tabs_count,
-      .pinned_offset = web_state_list->pinned_tabs_count(),
-      .regular_offset = web_state_list->count(),
-  };
-
   // Get the index of the active item according to storage. Used to mark
   // the WebState as active during the insertion, if restored.
   const int active_index = deserializer.GetActiveIndex();
@@ -376,11 +324,13 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
     std::unique_ptr<web::WebState> web_state = deserializer.RestoreTabAt(index);
     restored_web_states.push_back(web_state.get());  // Store pointer to item.
 
-    const int inserted_index = web_state_list->InsertWebState(
-        helper.insertion_index(index), std::move(web_state),
-        helper.insertion_flags(index, index == active_index), WebStateOpener{});
+    const int insertion_flags = WebStateInsertionFlags(
+        index, index < restored_pinned_tabs_count, index == active_index);
 
-    DCHECK_EQ(inserted_index, helper.insertion_index(index));
+    const int inserted_index = web_state_list->InsertWebState(
+        index, std::move(web_state), insertion_flags, WebStateOpener{});
+
+    DCHECK_EQ(inserted_index, index);
   }
 
   // Check that all WebStates have been restored.
@@ -397,8 +347,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
     // so the opener will be at index `ref.index`.
     web::WebState* opener = restored_web_states[ref.index];
     web_state_list->SetOpenerOfWebStateAt(
-        helper.insertion_index(index),
-        WebStateOpener(opener, ref.navigation_index));
+        index, WebStateOpener(opener, ref.navigation_index));
   }
 
   return restored_web_states;

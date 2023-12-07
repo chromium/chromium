@@ -47,6 +47,8 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 // Returns a vector containing pointer to the restored WebStates. The
 // pointers are still owned by the WebStateList, so they may become
 // invalid as soon as the list is mutated.
+//
+// It is an error to call the method if `web_state_list` is not empty.
 std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     SessionWindowIOS* session_window,
@@ -60,6 +62,8 @@ std::vector<web::WebState*> DeserializeWebStateList(
 // Returns a vector containing pointer to the restored WebStates. The
 // pointers are still owned by the WebStateList, so they may become
 // invalid as soon as the list is mutated.
+//
+// It is an error to call the method if `web_state_list` is not empty.
 std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     ios::proto::WebStateListStorage storage,

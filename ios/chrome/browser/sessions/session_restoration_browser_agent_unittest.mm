@@ -6,6 +6,7 @@
 
 #import "base/files/file_path.h"
 #import "base/run_loop.h"
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -276,7 +277,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSesssion_MixedNoNavigation) {
       "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
-// Tests that restoring a session works correctly on empty WebStateList.
+// Tests that restoring a session works correctly.
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
   CreateSessionRestorationBrowserAgent(true);
 
@@ -301,150 +302,6 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
 
   // Check that the first tab is pinned.
   ASSERT_TRUE(browser_->GetWebStateList()->IsWebStatePinnedAt(0));
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
-}
-
-// Tests that restoring a session works correctly on non empty WebStateList.
-TEST_F(SessionRestorationBrowserAgentTest,
-       RestoreSessionWithNonEmptyWebStateList) {
-  CreateSessionRestorationBrowserAgent(true);
-
-  web::WebState* web_state =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
-                        /*pinned=*/false, /*background=*/false);
-
-  SessionWindowIOS* window =
-      CreateSessionWindow(SessionInfo<3>{.active_index = 2,
-                                         .tab_infos = {
-                                             TabInfo{},
-                                             TabInfo{},
-                                             TabInfo{},
-                                         }});
-  session_restoration_agent_->RestoreSessionWindow(window);
-
-  ASSERT_EQ(4, browser_->GetWebStateList()->count());
-  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(3),
-            browser_->GetWebStateList()->GetActiveWebState());
-  EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
-  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(1));
-  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(2));
-  EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(3));
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
-}
-
-// Tests that restoring a session works correctly on non empty WebStatelist
-// with pinned WebStates present.
-TEST_F(SessionRestorationBrowserAgentTest, RestoreAllWebStatesInSession) {
-  CreateSessionRestorationBrowserAgent(true);
-
-  web::WebState* pinned_web_state_0 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
-                        /*pinned=*/true, /*background=*/false);
-  web::WebState* pinned_web_state_1 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/1,
-                        /*pinned=*/true, /*background=*/false);
-  web::WebState* pinned_web_state_2 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/2,
-                        /*pinned=*/true, /*background=*/false);
-
-  web::WebState* regular_web_state_0 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/3,
-                        /*pinned=*/false, /*background=*/false);
-  web::WebState* regular_web_state_1 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/4,
-                        /*pinned=*/false, /*background=*/false);
-  web::WebState* regular_web_state_2 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/5,
-                        /*pinned=*/false, /*background=*/false);
-  web::WebState* regular_web_state_3 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/6,
-                        /*pinned=*/false, /*background=*/false);
-
-  SessionWindowIOS* window =
-      CreateSessionWindow(SessionInfo<5>{.active_index = 1,
-                                         .tab_infos = {
-                                             TabInfo{.pinned = true},
-                                             TabInfo{.pinned = true},
-                                             TabInfo{},
-                                             TabInfo{},
-                                             TabInfo{},
-                                         }});
-
-  session_restoration_agent_->RestoreSessionWindow(window);
-
-  ASSERT_EQ(12, browser_->GetWebStateList()->count());
-  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(4),
-            browser_->GetWebStateList()->GetActiveWebState());
-  EXPECT_EQ(pinned_web_state_0, browser_->GetWebStateList()->GetWebStateAt(0));
-  EXPECT_EQ(pinned_web_state_1, browser_->GetWebStateList()->GetWebStateAt(1));
-  EXPECT_EQ(pinned_web_state_2, browser_->GetWebStateList()->GetWebStateAt(2));
-  EXPECT_EQ(regular_web_state_0, browser_->GetWebStateList()->GetWebStateAt(5));
-  EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(6));
-  EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(7));
-  EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(8));
-
-  // Expect a log of 0 duplicate.
-  histogram_tester_.ExpectUniqueSample(
-      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
-}
-
-// Tests that restoring a session with pinned tabs disabled  works correctly
-// on non empty WebStatelist with pinned WebStates present.
-TEST_F(SessionRestorationBrowserAgentTest,
-       RestoreAllWebStatesInSessionWithPinnedTabsDisabled) {
-  CreateSessionRestorationBrowserAgent(false);
-
-  web::WebState* pinned_web_state_0 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
-                        /*pinned=*/true, /*background=*/false);
-  web::WebState* pinned_web_state_1 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/1,
-                        /*pinned=*/true, /*background=*/false);
-  web::WebState* pinned_web_state_2 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/2,
-                        /*pinned=*/true, /*background=*/false);
-
-  web::WebState* regular_web_state_0 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/3,
-                        /*pinned=*/false, /*background=*/false);
-  web::WebState* regular_web_state_1 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/4,
-                        /*pinned=*/false, /*background=*/false);
-  web::WebState* regular_web_state_2 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/5,
-                        /*pinned=*/false, /*background=*/false);
-  web::WebState* regular_web_state_3 =
-      InsertNewWebState(/*parent=*/nullptr, /*index=*/6,
-                        /*pinned=*/false, /*background=*/false);
-
-  SessionWindowIOS* window =
-      CreateSessionWindow(SessionInfo<5>{.active_index = 2,
-                                         .tab_infos = {
-                                             TabInfo{.pinned = true},
-                                             TabInfo{.pinned = true},
-                                             TabInfo{},
-                                             TabInfo{},
-                                             TabInfo{},
-                                         }});
-
-  session_restoration_agent_->RestoreSessionWindow(window);
-
-  ASSERT_EQ(12, browser_->GetWebStateList()->count());
-  EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(9),
-            browser_->GetWebStateList()->GetActiveWebState());
-  EXPECT_EQ(pinned_web_state_0, browser_->GetWebStateList()->GetWebStateAt(0));
-  EXPECT_EQ(pinned_web_state_1, browser_->GetWebStateList()->GetWebStateAt(1));
-  EXPECT_EQ(pinned_web_state_2, browser_->GetWebStateList()->GetWebStateAt(2));
-  EXPECT_EQ(regular_web_state_0, browser_->GetWebStateList()->GetWebStateAt(3));
-  EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(4));
-  EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(5));
-  EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(6));
 
   // Expect a log of 0 duplicate.
   histogram_tester_.ExpectUniqueSample(
@@ -615,12 +472,11 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
 TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
   CreateSessionRestorationBrowserAgent(true);
 
-  InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
-                    /*pinned=*/false,
-                    /*background=*/false);
-
   TestSessionRestorationObserver observer;
-  session_restoration_agent_->AddObserver(&observer);
+  base::ScopedObservation<SessionRestorationBrowserAgent,
+                          SessionRestorationObserver>
+      scoped_observation(&observer);
+  scoped_observation.Observe(session_restoration_agent_);
 
   SessionWindowIOS* window =
       CreateSessionWindow(SessionInfo<3>{.active_index = 2,
@@ -631,11 +487,10 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
                                          }});
 
   session_restoration_agent_->RestoreSessionWindow(window);
-  ASSERT_EQ(4, browser_->GetWebStateList()->count());
+  ASSERT_EQ(3, browser_->GetWebStateList()->count());
 
   EXPECT_TRUE(observer.restore_started());
   EXPECT_EQ(observer.restored_web_states_count(), 3);
-  session_restoration_agent_->RemoveObserver(&observer);
 
   // Expect a log of 0 duplicate.
   histogram_tester_.ExpectUniqueSample(
