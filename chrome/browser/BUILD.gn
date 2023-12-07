@@ -6293,6 +6293,10 @@ static_library("browser") {
   }
 
   if (enterprise_data_controls) {
+    sources += [
+      "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
+      "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h",
+    ]
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
