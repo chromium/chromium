@@ -719,6 +719,11 @@ crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExt
 
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
+###########################
+# SkiaGraphite failures #
+###########################
+crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
+
 ###############################
 # New failures in WebGL rolls #
 ###############################
