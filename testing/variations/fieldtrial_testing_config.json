@@ -12562,41 +12562,6 @@
             ]
         }
     ],
-    "ParentalControlsOnIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FilterWebsitesForSupervisedUsersOnDesktopAndIOS"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ParentalControlsOnLinuxMacWindows": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230926",
-                    "enable_features": [
-                        "ClearingCookiesKeepsSupervisedUsersSignedIn",
-                        "EnableManagedByParentUi",
-                        "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
-                        "SupervisedPrefsControlledBySupervisedStore"
-                    ]
-                }
-            ]
-        }
-    ],
     "ParkableImages": [
         {
             "platforms": [
