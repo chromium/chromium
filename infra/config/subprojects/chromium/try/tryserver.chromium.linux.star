@@ -988,6 +988,8 @@ try_.builder(
             "ci/chromeos-js-code-coverage",
         ],
     ),
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 50,
