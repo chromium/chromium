@@ -21,6 +21,7 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {parseTrashInfoFiles, startIOTask} from './api.js';
@@ -132,11 +133,12 @@ export function isAllTrashEntries(
  * from trash will delete forever.
  */
 export function deleteIsForever(
-    entries: FileSystemEntry[], volumeManager: VolumeManager): boolean {
+    entries: Array<Entry|FilesAppEntry>,
+    volumeManager: VolumeManager): boolean {
   const enabledTrashVolumeURLs = getEnabledTrashVolumeURLs(
       volumeManager, /*includeTrashPath=*/ false,
       /*deleteIsForeverOnly=*/ true);
-  return entries.every((e: FileSystemEntry) => {
+  return entries.every(e => {
     for (const volumeURL of enabledTrashVolumeURLs) {
       if (e.toURL().startsWith(volumeURL)) {
         return true;
@@ -151,7 +153,8 @@ export function deleteIsForever(
  * trashed.
  */
 export function shouldMoveToTrash(
-    entries: FileSystemEntry[], volumeManager: VolumeManager): boolean {
+    entries: Array<Entry|FilesAppEntry>,
+    volumeManager: VolumeManager): boolean {
   const urls: Array<{volume: string, volumeAndTrashPath: string}> = [];
   for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
     const volumeInfo = volumeManager.volumeInfoList.item(i);

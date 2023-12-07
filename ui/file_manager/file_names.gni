@@ -290,6 +290,7 @@ ts_files = [
   "file_manager/foreground/js/directory_model.ts",
   "file_manager/foreground/js/empty_folder_controller.ts",
   "file_manager/foreground/js/fake_android_app_list_model.ts",
+  "file_manager/foreground/js/file_manager_commands_util.ts",
   "file_manager/foreground/js/file_rename.ts",
   "file_manager/foreground/js/file_selection.ts",
   "file_manager/foreground/js/file_tasks.ts",

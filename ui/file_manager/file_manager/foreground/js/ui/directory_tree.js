@@ -349,6 +349,7 @@ export class DirectoryItem extends FilesTreeItem {
    * The DirectoryEntry corresponding to this DirectoryItem. This may be
    * a dummy DirectoryEntry.
    * @type {DirectoryEntry|null}
+   * @override
    */
   get entry() {
     return null;
@@ -2050,6 +2051,7 @@ export class ShortcutItem extends FilesTreeItem {
 
   /**
    * The DirectoryEntry corresponding to this DirectoryItem.
+   * @override
    */
   get entry() {
     return this.dirEntry_;
@@ -2268,6 +2270,7 @@ export class FakeItem extends FilesTreeItem {
 
   /**
    * The DirectoryEntry corresponding to this DirectoryItem.
+   * @override
    */
   get entry() {
     return this.dirEntry_;

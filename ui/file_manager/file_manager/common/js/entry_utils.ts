@@ -9,6 +9,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {constants} from '../../foreground/js/constants.js';
 import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
+import type {TreeItem} from '../../foreground/js/ui/tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey} from '../../state/ducks/volumes.js';
 import {getEntry, getStore} from '../../state/store.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
@@ -228,7 +229,7 @@ export function isTeamDriveRoot(entry: Entry|FilesAppEntry) {
 /**
  * Obtains whether an entry is the grand root directory of Shared Drives.
  */
-export function isTeamDrivesGrandRoot(entry: Entry|FakeEntry) {
+export function isTeamDrivesGrandRoot(entry: Entry|FilesAppEntry) {
   if (!entry.fullPath) {
     return false;
   }
@@ -618,7 +619,7 @@ export function urlToEntry(url: string) {
  * which cannot be modified such as deleted/cut or renamed.
  */
 export function isNonModifiable(
-    volumeManager: VolumeManager, entry: Entry|FilesAppEntry) {
+    volumeManager: VolumeManager, entry: Entry|FilesAppEntry|undefined) {
   if (!entry) {
     return false;
   }
@@ -914,8 +915,8 @@ export function shouldSupportDriveSpecificIcons(fileData: FileData): boolean {
  * Extracts the `entry` from the supplied `treeItem` depending on if the new
  * directory tree is enabled or not.
  */
-export function getTreeItemEntry(treeItem: DirectoryItem|XfTreeItem|
-                                 null): Entry|FilesAppEntry|null {
+export function getTreeItemEntry(treeItem: DirectoryItem|XfTreeItem|TreeItem|
+                                 null|undefined): Entry|FilesAppEntry|null {
   if (!treeItem) {
     return null;
   }

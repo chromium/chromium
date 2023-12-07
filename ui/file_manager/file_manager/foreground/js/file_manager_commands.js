@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
-import {entriesToURLs, isFakeEntry, isGrandRootEntryInDrives, isInteractiveVolume, isNonModifiable, isRecentRootType, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, isTrashRootType, unwrapEntry} from '../../common/js/entry_utils.js';
+import {entriesToURLs, isFakeEntry, isGrandRootEntryInDrives, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
@@ -24,21 +24,18 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {DialogType, State} from '../../externs/ts/state.js';
 import {readSubDirectories} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
-import {getFileData, getStore} from '../../state/store.js';
+import {getStore} from '../../state/store.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {CommonActionId, InternalActionId} from './actions_model.js';
 import {constants} from './constants.js';
-import {DirectoryModel} from './directory_model.js';
-import {FileSelection} from './file_selection.js';
+import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getEventEntry, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
 import {HoldingSpaceUtil} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {Command} from './ui/command.js';
 import {contextMenuHandler} from './ui/context_menu_handler.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-import {List} from './ui/list.js';
-
 
 /**
  * TODO(TS): Remove when converting to TS.
@@ -54,7 +51,7 @@ function getCommand(event) {
  * A command.
  * @abstract
  */
-export class FilesCommand {
+class FilesCommand {
   /**
    * Handles the execute event.
    * @param {!Event} event Command event.
@@ -79,544 +76,6 @@ export class FilesCommand {
     event.canExecute = true;
   }
 }
-
-/**
- * Utility for commands.
- */
-const CommandUtil = {};
-
-/**
- * The IDs of elements that can trigger share action.
- * @enum {string}
- * @const
- */
-CommandUtil.SharingActionElementId = {
-  CONTEXT_MENU: 'file-list',
-  SHARE_SHEET: 'sharesheet-button',
-};
-
-/**
- * Helper function that for the given event returns the launch source of the
- * sharesheet. If the source cannot be determined, this function returns
- * chrome.fileManagerPrivate.SharesheetLaunchSource.UNKNOWN.
- * @param {!Event} event The event that triggered the sharesheet.
- * @return {!chrome.fileManagerPrivate.SharesheetLaunchSource}
- */
-CommandUtil.getSharesheetLaunchSource = event => {
-  // @ts-ignore: error TS2339: Property 'id' does not exist on type
-  // 'EventTarget'.
-  const id = event.target.id;
-  switch (id) {
-    case CommandUtil.SharingActionElementId.CONTEXT_MENU:
-      return chrome.fileManagerPrivate.SharesheetLaunchSource.CONTEXT_MENU;
-    case CommandUtil.SharingActionElementId.SHARE_SHEET:
-      return chrome.fileManagerPrivate.SharesheetLaunchSource.SHARESHEET_BUTTON;
-    default: {
-      console.error('Unrecognized event.target.id for sharesheet launch', id);
-      return chrome.fileManagerPrivate.SharesheetLaunchSource.UNKNOWN;
-    }
-  }
-};
-
-/**
- * Extracts entry on which command event was dispatched.
- *
- * @param {!CommandHandlerDeps} fileManager
- * @param {EventTarget} element Element which is the command event's target.
- * @return {Entry|FakeEntry} Entry of the found node.
- */
-CommandUtil.getCommandEntry = (fileManager, element) => {
-  const entries = CommandUtil.getCommandEntries(fileManager, element);
-  // @ts-ignore: error TS2322: Type 'FileSystemEntry | null | undefined' is not
-  // assignable to type 'FileSystemEntry | FakeEntry'.
-  return entries.length === 0 ? null : entries[0];
-};
-
-/**
- * Extracts entries on which command event was dispatched.
- *
- * @param {!CommandHandlerDeps} fileManager
- * @param {?EventTarget} element Element which is the command event's target.
- * @return {!Array<!Entry>} Entries of the found node.
- */
-CommandUtil.getCommandEntries = (fileManager, element) => {
-  // DirectoryItem has "entry" attribute.
-  // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-  // 'EventTarget'.
-  if (element && element.entry) {
-    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-    // 'EventTarget'.
-    return [element.entry];
-  }
-
-  // DirectoryTree has the focused item.
-  const focusedItem = getFocusedTreeItem(element);
-  // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-  // 'XfTreeItem | DirectoryItem'.
-  if (focusedItem?.entry) {
-    // @ts-ignore: error TS2339: Property 'entry' does not exist on type
-    // 'XfTreeItem | DirectoryItem'.
-    return [focusedItem.entry];
-  }
-
-  // The event target could still be a descendant of a DirectoryItem element
-  // (e.g. the eject button).
-  if (isNewDirectoryTreeEnabled()) {
-    // Handle eject button in the new directory tree.
-    // @ts-ignore: error TS2339: Property 'classList' does not exist on type
-    // 'EventTarget'.
-    if (element.classList.contains('root-eject')) {
-      // @ts-ignore: error TS2339: Property 'closest' does not exist on type
-      // 'EventTarget'.
-      const treeItem = element.closest('xf-tree-item');
-      if (treeItem?.entry) {
-        return [treeItem.entry];
-      }
-    }
-  } else {
-    // @ts-ignore: error TS18047: 'fileManager.ui.directoryTree' is possibly
-    // 'null'.
-    if (fileManager.ui.directoryTree.contains(/** @type {Node} */ (element))) {
-      // @ts-ignore: error TS2339: Property 'closest' does not exist on type
-      // 'EventTarget'.
-      const treeItem = element.closest('.tree-item');
-      if (treeItem && treeItem.entry) {
-        return [treeItem.entry];
-      }
-    }
-  }
-
-  // File list (List).
-  // @ts-ignore: error TS2339: Property 'selectedItems' does not exist on type
-  // 'EventTarget'.
-  if (element.selectedItems && element.selectedItems.length) {
-    // @ts-ignore: error TS2339: Property 'selectedItems' does not exist on type
-    // 'EventTarget'.
-    const entries = element.selectedItems;
-    // Check if it is Entry or not by checking for toURL().
-    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
-    return entries.filter(entry => ('toURL' in entry));
-  }
-
-  // Commands in the action bar can only act in the currently selected files.
-  if (fileManager.ui.actionbar.contains(/** @type {Node} */ (element))) {
-    return fileManager.getSelection().entries;
-  }
-
-  // Context Menu: redirect to the element the context menu is displayed for.
-  // @ts-ignore: error TS2339: Property 'contextElement' does not exist on type
-  // 'EventTarget'.
-  if (element.contextElement) {
-    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
-    // type 'EventTarget'.
-    return CommandUtil.getCommandEntries(fileManager, element.contextElement);
-  }
-
-  // Context Menu Item: redirect to the element the context menu is displayed
-  // for.
-  // @ts-ignore: error TS2339: Property 'parentElement' does not exist on type
-  // 'EventTarget'.
-  if (element.parentElement.contextElement) {
-    return CommandUtil.getCommandEntries(
-        // @ts-ignore: error TS2339: Property 'parentElement' does not exist on
-        // type 'EventTarget'.
-        fileManager, element.parentElement.contextElement);
-  }
-
-  return [];
-};
-
-/**
- * Extracts a directory which contains entries on which command event was
- * dispatched.
- *
- * @param {EventTarget} element Element which is the command event's target.
- * @param {DirectoryModel} directoryModel
- * @return {DirectoryEntry|FilesAppEntry} The extracted parent entry.
- */
-CommandUtil.getParentEntry = (element, directoryModel) => {
-  const focusedItem = getFocusedTreeItem(element);
-  // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
-  // 'XfTreeItem | DirectoryItem'.
-  if (focusedItem?.parentItem?.entry) {
-    // DirectoryTree has the focused item.
-    // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
-    // 'XfTreeItem | DirectoryItem'.
-    return focusedItem.parentItem.entry;
-    // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
-    // 'EventTarget'.
-  } else if (element.parentItem?.entry) {
-    // DirectoryItem has parentItem.
-    // @ts-ignore: error TS2339: Property 'parentItem' does not exist on type
-    // 'EventTarget'.
-    return element.parentItem.entry;
-  } else if (element instanceof List) {
-    // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry |
-    // FilesAppDirEntry | null' is not assignable to type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    return directoryModel ? directoryModel.getCurrentDirEntry() : null;
-  } else {
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-    // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    return null;
-  }
-};
-
-/**
- * Returns VolumeInfo from the current target for commands, based on |element|.
- * It can be from directory tree (clicked item or selected item), or from file
- * list selected items; or null if can determine it.
- *
- * @param {EventTarget} element
- * @param {!CommandHandlerDeps} fileManager
- * @return {import('../../externs/volume_info.js').VolumeInfo}
- */
-CommandUtil.getElementVolumeInfo = (element, fileManager) => {
-  // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
-  // 'EventTarget'.
-  if (element.volumeInfo) {
-    // @ts-ignore: error TS2339: Property 'volumeInfo' does not exist on type
-    // 'EventTarget'.
-    return element.volumeInfo;
-  }
-  const entry = CommandUtil.getCommandEntry(fileManager, element);
-  // @ts-ignore: error TS2322: Type 'VolumeInfo | null' is not assignable to
-  // type 'VolumeInfo'.
-  return entry && fileManager.volumeManager.getVolumeInfo(entry);
-};
-
-/**
- * Sets the command as visible only when the current volume is drive and it's
- * running as a normal app, not as a modal dialog.
- * NOTE: This doesn't work for directory tree menu, because user can right-click
- * on any visible volume.
- * @param {!Event} event Command event to mark.
- * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps to use.
- */
-CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly =
-    (event, fileManager) => {
-      const enabled = fileManager.directoryModel.isOnDrive() &&
-          !isModal(fileManager.dialogType);
-      // @ts-ignore: error TS2339: Property 'canExecute' does not exist on type
-      // 'Event'.
-      event.canExecute = enabled;
-      // @ts-ignore: error TS2339: Property 'command' does not exist on type
-      // 'Event'.
-
-      event.command.setHidden(!enabled);
-    };
-
-/**
- * Sets the default handler for the commandId and prevents handling
- * the keydown events for this command. Not doing that breaks relationship
- * of original keyboard event and the command. WebKit would handle it
- * differently in some cases.
- * @param {Node} node to register command handler on.
- * @param {string} commandId Command id to respond to.
- */
-CommandUtil.forceDefaultHandler = (node, commandId) => {
-  const doc = node.ownerDocument;
-  const command = /** @type {!Command} */ (
-      // @ts-ignore: error TS18047: 'doc' is possibly 'null'.
-      doc.body.querySelector('command[id="' + commandId + '"]'));
-  node.addEventListener('keydown', e => {
-    // @ts-ignore: error TS2339: Property 'matchesEvent' does not exist on type
-    // 'Command'.
-    if (command.matchesEvent(e)) {
-      // Prevent CommandManager of handling it and leave it
-      // for the default handler.
-      e.stopPropagation();
-    }
-  });
-  node.addEventListener('command', event => {
-    const command = getCommand(event);
-    if (command.id !== commandId) {
-      return;
-    }
-    document.execCommand(command.id);
-    event.cancelBubble = true;
-  });
-  node.addEventListener('canExecute', event => {
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    if (event.command.id !== commandId || event.target !== node) {
-      return;
-    }
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    event.canExecute = document.queryCommandEnabled(event.command.id);
-    // @ts-ignore: error TS2339: Property 'command' does not exist on type
-    // 'Event'.
-    event.command.setHidden(false);
-  });
-};
-
-/**
- * Returns a directory entry when only one entry is selected and it is
- * directory. Otherwise, returns null.
- * @param {FileSelection} selection Instance of FileSelection.
- * @return {?DirectoryEntry} Directory entry which is selected alone.
- */
-CommandUtil.getOnlyOneSelectedDirectory = selection => {
-  if (!selection) {
-    return null;
-  }
-  if (selection.totalCount !== 1) {
-    return null;
-  }
-  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  if (!selection.entries[0].isDirectory) {
-    return null;
-  }
-  return /** @type {!DirectoryEntry} */ (selection.entries[0]);
-};
-
-/**
- * Returns true if the given entry is the root entry of the volume.
- * @param {!import('../../externs/volume_manager.js').VolumeManager}
- *     volumeManager
- * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
- * @return {boolean} True if the entry is a root entry.
- */
-CommandUtil.isRootEntry = (volumeManager, entry) => {
-  if (!volumeManager || !entry) {
-    return false;
-  }
-
-  const volumeInfo = volumeManager.getVolumeInfo(entry);
-  return !!volumeInfo && isSameEntry(volumeInfo.displayRoot, entry);
-};
-
-/**
- * Returns true if the given event was triggered by the selection menu button.
- * @event {!Event} event Command event.
- * @return {boolean} Ture if the event was triggered by the selection menu
- * button.
- */
-// @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
-CommandUtil.isFromSelectionMenu = event => {
-  return event.target.id == 'selection-menu-button';
-};
-
-/**
- * If entry is fake/invalid/non-interactive/root, we don't show menu items
- * intended for regular entries.
- * @param {!import('../../externs/volume_manager.js').VolumeManager}
- *     volumeManager
- * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
- * @return {boolean} True if we should show the menu items for regular entries.
- */
-CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
-  // If the entry is fake entry, hide context menu entries.
-  if (isFakeEntry(entry)) {
-    return false;
-  }
-
-  // If the entry is not a valid entry, hide context menu entries.
-  if (!volumeManager) {
-    return false;
-  }
-
-  const volumeInfo = volumeManager.getVolumeInfo(entry);
-  if (!volumeInfo) {
-    return false;
-  }
-
-  // If the entry belongs to a non-interactive volume, hide context menu
-  // entries.
-  if (!isInteractiveVolume(volumeInfo)) {
-    return false;
-  }
-
-  // If the entry is root entry of its volume (but not a team drive root),
-  // hide context menu entries.
-  if (CommandUtil.isRootEntry(volumeManager, entry) &&
-      !isTeamDriveRoot(entry)) {
-    return false;
-  }
-
-  if (isTeamDrivesGrandRoot(entry)) {
-    return false;
-  }
-
-  return true;
-};
-
-/**
- * Returns whether all of the given entries have the given capability.
- *
- * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps.
- * @param {!Array<Entry>} entries List of entries to check capabilities for.
- * @param {string} capability Name of the capability to check for.
- */
-CommandUtil.hasCapability = (fileManager, entries, capability) => {
-  if (entries.length == 0) {
-    return false;
-  }
-
-  // Check if the capability is true or undefined, but not false. A capability
-  // can be undefined if the metadata is not fetched from the server yet (e.g.
-  // if we create a new file in offline mode), or if there is a problem with the
-  // cache and we don't have data yet. For this reason, we need to allow the
-  // functionality even if it's not set.
-  // TODO(crbug.com/849999): Store restrictions instead of capabilities.
-  const metadata = fileManager.metadataModel.getCache(entries, [capability]);
-  return metadata.length === entries.length &&
-      // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-      // expression of type 'string' can't be used to index type 'MetadataItem'.
-      metadata.every(item => item[capability] !== false);
-};
-
-/**
- * Checks if the handler should ignore the current event, eg. since there is
- * a popup dialog currently opened.
- *
- * @param {!Document} doc
- * @return {boolean} True if the event should be ignored, false otherwise.
- */
-CommandUtil.shouldIgnoreEvents = function(doc) {
-  // Do not handle commands, when a dialog is shown. Do not use querySelector
-  // as it's much slower, and this method is executed often.
-  const dialogs = doc.getElementsByClassName('cr-dialog-container');
-  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  if (dialogs.length !== 0 && dialogs[0].classList.contains('shown')) {
-    return true;
-  }
-
-  return false;  // Do not ignore.
-};
-
-/**
- * Returns true if all entries is inside Drive volume, which includes all Drive
- * parts (Shared Drives, My Drive, Shared with me, etc).
- *
- * @param {!Array<!Entry|!FilesAppEntry>} entries
- * @param {!import('../../externs/volume_manager.js').VolumeManager}
- *     volumeManager
- * @return {boolean}
- */
-CommandUtil.isDriveEntries = (entries, volumeManager) => {
-  if (!entries.length) {
-    return false;
-  }
-
-  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | FilesAppEntry
-  // | undefined' is not assignable to parameter of type 'FileSystemEntry |
-  // FilesAppEntry'.
-  const volumeInfo = volumeManager.getVolumeInfo(entries[0]);
-  if (!volumeInfo) {
-    return false;
-  }
-
-  if (volumeInfo.volumeType === VolumeType.DRIVE &&
-      isSameVolume(entries, volumeManager)) {
-    return true;
-  }
-
-  return false;
-};
-
-/**
- * Returns true if all entries descend from the My Drive root (e.g. not located
- * within Shared with me or Shared drives).
- *
- * @param {!Array<!Entry|!FilesAppEntry>} entries
- * @param {!State} state
- * @return {boolean}
- */
-CommandUtil.isOnlyMyDriveEntries = (entries, state) => {
-  if (!entries.length) {
-    return false;
-  }
-
-  for (const entry of entries) {
-    const fileData = getFileData(state, entry.toURL());
-    if (!fileData) {
-      return false;
-    }
-    if (fileData.rootType !== RootType.DRIVE) {
-      return false;
-    }
-  }
-  return true;
-};
-
-/**
- * Returns true if the current root is Trash. Items in
- * Trash are a fake representation of a file + its
- * metadata. Some actions are infeasible and items should
- * be restored to enable these actions.
- * @param {!CommandHandlerDeps} fileManager file manager
- *     command handler.
- * @returns {boolean}
- */
-CommandUtil.isOnTrashRoot = fileManager => {
-  const currentRootType = fileManager.directoryModel.getCurrentRootType();
-  if (!currentRootType) {
-    return false;
-  }
-  return isTrashRootType(currentRootType);
-};
-
-
-/**
- * Extracts entry on which command event was dispatched.
- *
- * @param {!Event} event Command event to mark.
- * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps to use.
- * @return {Entry|FilesAppDirEntry|undefined} Entry of the event node.
- */
-CommandUtil.getEventEntry = (event, fileManager) => {
-  let entry;
-  // @ts-ignore: error TS18047: 'fileManager.ui.directoryTree' is possibly
-  // 'null'.
-  if (fileManager.ui.directoryTree.contains(
-          /** @type {Node} */ (event.target))) {
-    // The command is executed from the directory tree context menu.
-    // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is not
-    // assignable to parameter of type 'EventTarget'.
-    entry = CommandUtil.getCommandEntry(fileManager, event.target);
-  } else {
-    // The command is executed from the gear menu.
-    entry = fileManager.directoryModel.getCurrentDirEntry();
-  }
-  return entry;
-};
-
-
-
-/**
- * Returns true if the current volume is interactive.
- * @param {!CommandHandlerDeps} fileManager file manager
- *     command handler.
- * @returns {boolean}
- */
-CommandUtil.currentVolumeIsInteractive = fileManager => {
-  const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
-  if (!volumeInfo) {
-    return true;
-  }
-  return isInteractiveVolume(volumeInfo);
-};
-
-
-/**
- * Returns true if any entry belongs to a non-interactive volume.
- * @param {!Array<!Entry>} entries
- * @param {!CommandHandlerDeps} fileManager file manager
- *     command handler.
- * @returns {boolean}
- */
-CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
-  return entries.some(entry => {
-    const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
-    if (!volumeInfo) {
-      return false;
-    }
-    return isInteractiveVolume(volumeInfo);
-  });
-};
-
 
 /**
  * Handle of the command events.
@@ -702,7 +161,7 @@ export class CommandHandler {
    * @private
    */
   onCommand_(event) {
-    if (CommandUtil.shouldIgnoreEvents(assert(this.fileManager_.document))) {
+    if (shouldIgnoreEvents(assert(this.fileManager_.document))) {
       return;
     }
     const command = getCommand(event);
@@ -718,7 +177,7 @@ export class CommandHandler {
    * @private
    */
   onCanExecute_(event) {
-    if (CommandUtil.shouldIgnoreEvents(assert(this.fileManager_.document))) {
+    if (shouldIgnoreEvents(assert(this.fileManager_.document))) {
       return;
     }
     // @ts-ignore: error TS2339: Property 'command' does not exist on type
@@ -875,7 +334,7 @@ class UnmountCommand extends FilesCommand {
     let label = '';
     // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is not
     // assignable to parameter of type 'EventTarget'.
-    const entry = CommandUtil.getCommandEntry(fileManager, event.target);
+    const entry = getCommandEntry(fileManager, event.target);
     if (entry instanceof EntryList) {
       // The element is a group of removable partitions.
       if (!entry) {
@@ -892,7 +351,7 @@ class UnmountCommand extends FilesCommand {
       const volumeInfo =
           // @ts-ignore: error TS2345: Argument of type 'EventTarget | null' is
           // not assignable to parameter of type 'EventTarget'.
-          CommandUtil.getElementVolumeInfo(event.target, fileManager);
+          getElementVolumeInfo(event.target, fileManager);
       if (!volumeInfo) {
         errorCallback();
         return;
@@ -928,9 +387,8 @@ class UnmountCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const volumeInfo =
-        CommandUtil.getElementVolumeInfo(event.target, fileManager);
-    const entry = CommandUtil.getCommandEntry(fileManager, event.target);
+    const volumeInfo = getElementVolumeInfo(event.target, fileManager);
+    const entry = getCommandEntry(fileManager, event.target);
 
     let volumeType;
     if (entry && entry instanceof EntryList) {
@@ -977,7 +435,7 @@ class FormatCommand extends FilesCommand {
     if (fileManager.ui.directoryTree.contains(
             /** @type {Node} */ (event.target))) {
       // The command is executed from the directory tree context menu.
-      root = CommandUtil.getCommandEntry(fileManager, event.target);
+      root = getCommandEntry(fileManager, event.target);
     } else {
       // The command is executed from the gear menu.
       root = directoryModel.getCurrentDirEntry();
@@ -1004,7 +462,7 @@ class FormatCommand extends FilesCommand {
     if (fileManager.ui.directoryTree.contains(
             /** @type {Node} */ (event.target))) {
       // The command is executed from the directory tree context menu.
-      root = CommandUtil.getCommandEntry(fileManager, event.target);
+      root = getCommandEntry(fileManager, event.target);
     } else {
       // The command is executed from the gear menu.
       root = directoryModel.getCurrentDirEntry();
@@ -1051,7 +509,7 @@ class EraseDeviceCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const root = CommandUtil.getEventEntry(event, fileManager);
+    const root = getEventEntry(event, fileManager);
 
     if (root && root instanceof EntryList) {
       // @ts-ignore: error TS2304: Cannot find name 'FilesFormatDialog'.
@@ -1069,7 +527,7 @@ class EraseDeviceCommand extends FilesCommand {
       event.command.setHidden(true);
       return;
     }
-    const root = CommandUtil.getEventEntry(event, fileManager);
+    const root = getEventEntry(event, fileManager);
     const location = root && fileManager.volumeManager.getLocationInfo(root);
     const writable = location && !location.isReadOnly;
     const isRoot = location && location.isRootEntry;
@@ -1109,7 +567,7 @@ class NewFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     // @ts-ignore: error TS7034: Variable 'targetDirectory' implicitly has type
@@ -1247,16 +705,16 @@ class NewFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
     }
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     // If there is a selected entry on a non-interactive volume, remove
     // new-folder command.
     if (entries.length > 0 &&
-        !CommandUtil.containsNonInteractiveEntry(entries, fileManager)) {
+        !containsNonInteractiveEntry(entries, fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -1271,15 +729,14 @@ class NewFolderCommand extends FilesCommand {
 
       const locationInfo = fileManager.volumeManager.getLocationInfo(entry);
       event.canExecute = locationInfo && !locationInfo.isReadOnly &&
-          CommandUtil.hasCapability(fileManager, [entry], 'canAddChildren');
+          hasCapability(fileManager, [entry], 'canAddChildren');
       event.command.setHidden(false);
     } else {
       // If blank space was clicked and current volume is non-interactive,
       // remove new-folder command.
       // @ts-ignore: error TS2367: This comparison appears to be unintentional
       // because the types 'FileSystemEntry[]' and 'number' have no overlap.
-      if (entries.length === 0 &&
-          !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+      if (entries.length === 0 && !currentVolumeIsInteractive(fileManager)) {
         event.canExecute = false;
         event.command.setHidden(true);
         return;
@@ -1289,8 +746,7 @@ class NewFolderCommand extends FilesCommand {
       event.canExecute = !fileManager.directoryModel.isReadOnly() &&
           !fileManager.namingController.isRenamingInProgress() &&
           !directoryModel.isSearching() &&
-          CommandUtil.hasCapability(
-              fileManager, [directoryEntry], 'canAddChildren');
+          hasCapability(fileManager, [directoryEntry], 'canAddChildren');
       event.command.setHidden(false);
     }
     if (this.busy_) {
@@ -1457,7 +913,7 @@ export class DeleteCommand extends FilesCommand {
    * @override
    */
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const command = getCommand(event);
     const permanentlyDelete = command.id === 'delete';
 
@@ -1471,11 +927,11 @@ export class DeleteCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
 
     // If entries contain fake, non-interactive or root entry, remove delete
     // option.
-    if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
+    if (!entries.every(shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager))) {
       event.canExecute = false;
       event.command.setHidden(true);
@@ -1517,7 +973,7 @@ export class DeleteCommand extends FilesCommand {
 
   /**
    * Delete the entries (if the entries can be deleted).
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|FilesAppEntry|FakeEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @param {boolean} permanentlyDelete if true, entries are permanently deleted
    *     rather than moved to trash.
@@ -1528,7 +984,7 @@ export class DeleteCommand extends FilesCommand {
   deleteEntries(entries, fileManager, permanentlyDelete, dialog = null) {
     // Verify that the entries are not fake, non-interactive or root entries,
     // and that they can be deleted.
-    if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
+    if (!entries.every(shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager)) ||
         !this.canDeleteEntries_(entries, fileManager)) {
       return;
@@ -1604,7 +1060,7 @@ export class DeleteCommand extends FilesCommand {
   /**
    * Returns true if all entries can be deleted. Note: This does not check for
    * root or fake entries.
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|FilesAppEntry|FakeEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @return {boolean}
    * @private
@@ -1613,7 +1069,7 @@ export class DeleteCommand extends FilesCommand {
     return entries.length > 0 &&
         !this.containsReadOnlyEntry_(entries, fileManager) &&
         fileManager.directoryModel.canDeleteEntries() &&
-        CommandUtil.hasCapability(fileManager, entries, 'canDelete');
+        hasCapability(fileManager, entries, 'canDelete');
   }
 
   /**
@@ -1626,7 +1082,7 @@ export class DeleteCommand extends FilesCommand {
   canDeleteEntries(entries, fileManager) {
     // Verify that the entries are not fake, non-interactive or root entries,
     // and that they can be deleted.
-    if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
+    if (!entries.every(shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager)) ||
         !this.canDeleteEntries_(entries, fileManager)) {
       return false;
@@ -1638,7 +1094,7 @@ export class DeleteCommand extends FilesCommand {
   /**
    * Returns true if any entry belongs to a read-only volume or is
    * forced to be read-only like MyFiles>Downloads.
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|FilesAppEntry|FakeEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @return {boolean}
    * @private
@@ -1668,7 +1124,7 @@ class RestoreFromTrashCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   async execute_(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
 
     const infoEntries = [];
     // @ts-ignore: error TS7034: Variable 'failedParents' implicitly has type
@@ -1750,7 +1206,7 @@ class RestoreFromTrashCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
 
     const enabled = entries.length > 0 && entries.every(e => isTrashEntry(e)) &&
         fileManager.trashEnabled;
@@ -1811,12 +1267,12 @@ class EmptyTrashCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
     // is not assignable to parameter of type 'FileSystemEntry | FilesAppEntry'.
     const trashRoot = entries.length === 1 && isTrashRoot(entries[0]) &&
         fileManager.trashEnabled;
-    event.canExecute = trashRoot || CommandUtil.isOnTrashRoot(fileManager);
+    event.canExecute = trashRoot || isOnTrashRoot(fileManager);
     event.command.setHidden(!trashRoot);
   }
 }
@@ -1831,7 +1287,7 @@ class PasteCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     fileManager.document.execCommand(getCommand(event).id);
@@ -1841,7 +1297,7 @@ class PasteCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -1855,21 +1311,20 @@ class PasteCommand extends FilesCommand {
 
     // Hide this command if only one folder is selected.
     event.command.setHidden(
-        !!CommandUtil.getOnlyOneSelectedDirectory(fileManager.getSelection()));
+        !!getOnlyOneSelectedDirectory(fileManager.getSelection()));
 
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     // If there is a selected entry on a non-interactive volume, remove paste
     // command.
     if (entries.length > 0 &&
-        !CommandUtil.containsNonInteractiveEntry(entries, fileManager)) {
+        !containsNonInteractiveEntry(entries, fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
     } else if (
         // @ts-ignore: error TS2367: This comparison appears to be unintentional
         // because the types 'FileSystemEntry[]' and 'number' have no overlap.
-        entries.length === 0 &&
-        !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+        entries.length === 0 && !currentVolumeIsInteractive(fileManager)) {
       // If blank space was clicked and current volume is non-interactive,
       // remove paste command.
       event.canExecute = false;
@@ -1916,13 +1371,13 @@ class PasteIntoFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
   // 'any' type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (entries.length !== 1 || !entries[0].isDirectory ||
-        !CommandUtil.shouldShowMenuItemsForEntry(
+        !shouldShowMenuItemsForEntry(
             // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
             // undefined' is not assignable to parameter of type
             // 'FileSystemEntry | FakeEntry'.
@@ -1947,17 +1402,17 @@ class PasteIntoFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
   // 'any' type.
   canExecute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
     }
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
 
     // Show this item only when one directory is selected.
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     if (entries.length !== 1 || !entries[0].isDirectory ||
-        !CommandUtil.shouldShowMenuItemsForEntry(
+        !shouldShowMenuItemsForEntry(
             // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
             // undefined' is not assignable to parameter of type
             // 'FileSystemEntry | FakeEntry'.
@@ -1987,7 +1442,7 @@ class CutCopyCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     // Cancel check-select-mode on cut/copy.  Any further selection of a dir
@@ -2012,13 +1467,13 @@ class CutCopyCommand extends FilesCommand {
     const command = event.command;
     const isMove = command.id === 'cut';
     // Disable Copy command in Trash.
-    if (!isMove && CommandUtil.isOnTrashRoot(fileManager)) {
+    if (!isMove && isOnTrashRoot(fileManager)) {
       event.command.setHidden(true);
       event.canExecute = false;
       return;
     }
 
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const target = event.target;
     const volumeManager = fileManager.volumeManager;
     command.setHidden(false);
@@ -2039,7 +1494,7 @@ class CutCopyCommand extends FilesCommand {
       }
 
       // If entry is fake, non-interactive or root, remove cut/copy option.
-      if (!CommandUtil.shouldShowMenuItemsForEntry(volumeManager, entry)) {
+      if (!shouldShowMenuItemsForEntry(volumeManager, entry)) {
         command.setHidden(true);
         return false;
       }
@@ -2070,15 +1525,14 @@ class CutCopyCommand extends FilesCommand {
 
     /** @returns {boolean} If the operation is allowed in the File List. */
     function canDoFileList() {
-      if (CommandUtil.shouldIgnoreEvents(assert(fileManager.document))) {
+      if (shouldIgnoreEvents(assert(fileManager.document))) {
         return false;
       }
 
       // If entries contain fake, non-interactive or root entry, remove cut/copy
       // option.
       if (!fileManager.getSelection().entries.every(
-              CommandUtil.shouldShowMenuItemsForEntry.bind(
-                  null, volumeManager))) {
+              shouldShowMenuItemsForEntry.bind(null, volumeManager))) {
         command.setHidden(true);
         return false;
       }
@@ -2087,8 +1541,7 @@ class CutCopyCommand extends FilesCommand {
       // remove cut/copy command.
       // @ts-ignore: error TS2367: This comparison appears to be unintentional
       // because the types 'FileSystemEntry[]' and 'number' have no overlap.
-      if (entries.length === 0 &&
-          !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+      if (entries.length === 0 && !currentVolumeIsInteractive(fileManager)) {
         command.setHidden(true);
         return false;
       }
@@ -2128,11 +1581,11 @@ class RenameCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const entry = CommandUtil.getCommandEntry(fileManager, event.target);
+    const entry = getCommandEntry(fileManager, event.target);
     if (isNonModifiable(fileManager.volumeManager, entry)) {
       return;
     }
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     let isRemovableRoot = false;
@@ -2140,8 +1593,7 @@ class RenameCommand extends FilesCommand {
     if (entry) {
       volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
       // Checks whether the target is an external drive.
-      if (volumeInfo &&
-          CommandUtil.isRootEntry(fileManager.volumeManager, entry)) {
+      if (volumeInfo && isRootEntry(fileManager.volumeManager, entry)) {
         isRemovableRoot = true;
       }
     }
@@ -2176,7 +1628,7 @@ class RenameCommand extends FilesCommand {
       }
     }
 
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -2184,12 +1636,11 @@ class RenameCommand extends FilesCommand {
 
     // Check if it is removable drive
     if ((() => {
-          const root = CommandUtil.getCommandEntry(fileManager, event.target);
+          const root = getCommandEntry(fileManager, event.target);
           // |root| is null for unrecognized volumes. Do not enable rename
           // command for such volumes because they need to be formatted prior to
           // rename.
-          if (!root ||
-              !CommandUtil.isRootEntry(fileManager.volumeManager, root)) {
+          if (!root || !isRootEntry(fileManager.volumeManager, root)) {
             return false;
           }
           const volumeInfo = fileManager.volumeManager.getVolumeInfo(root);
@@ -2215,12 +1666,12 @@ class RenameCommand extends FilesCommand {
     }
 
     // Check if it is file or folder
-    const renameTarget = CommandUtil.isFromSelectionMenu(event) ?
+    const renameTarget = isFromSelectionMenu(event) ?
         fileManager.ui.listContainer.currentList :
         event.target;
-    const entries = CommandUtil.getCommandEntries(fileManager, renameTarget);
+    const entries = getCommandEntries(fileManager, renameTarget);
     if (entries.length === 0 ||
-        !CommandUtil.shouldShowMenuItemsForEntry(
+        !shouldShowMenuItemsForEntry(
             // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
             // undefined' is not assignable to parameter of type
             // 'FileSystemEntry | FakeEntry'.
@@ -2232,7 +1683,7 @@ class RenameCommand extends FilesCommand {
     }
 
     const parentEntry =
-        CommandUtil.getParentEntry(renameTarget, fileManager.directoryModel);
+        getParentEntry(renameTarget, fileManager.directoryModel);
     const locationInfo = parentEntry ?
         fileManager.volumeManager.getLocationInfo(parentEntry) :
         null;
@@ -2248,7 +1699,7 @@ class RenameCommand extends FilesCommand {
 
     event.canExecute = entries.length === 1 && volumeIsNotReadOnly &&
         !recentArcEntry && !isDriveGrandRoot &&
-        CommandUtil.hasCapability(fileManager, entries, 'canRename');
+        hasCapability(fileManager, entries, 'canRename');
     event.command.setHidden(false);
   }
 }
@@ -2343,7 +1794,7 @@ class DriveBuyMoreSpaceCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
   // 'any' type.
   canExecute(event, fileManager) {
-    CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(event, fileManager);
+    canExecuteVisibleOnDriveInNormalAppModeOnly(event, fileManager);
   }
 }
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
@@ -2367,7 +1818,7 @@ class DriveGoToDriveCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
   // 'any' type.
   canExecute(event, fileManager) {
-    CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(event, fileManager);
+    canExecuteVisibleOnDriveInNormalAppModeOnly(event, fileManager);
   }
 }
 // @ts-ignore: error TS2341: Property 'COMMANDS_' is private and only accessible
@@ -2430,11 +1881,11 @@ class InvokeSharesheetCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     const entries = fileManager.selectionHandler.selection.entries;
-    const launchSource = CommandUtil.getSharesheetLaunchSource(event);
+    const launchSource = getSharesheetLaunchSource(event);
     const dlpSourceUrls = fileManager.metadataModel
                               .getCache(entries, ['sourceUrl'])
                               // @ts-ignore: error TS7006: Parameter 'm'
@@ -2454,7 +1905,7 @@ class InvokeSharesheetCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -2465,7 +1916,7 @@ class InvokeSharesheetCommand extends FilesCommand {
         // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
         // type.
         (entries.some(entry => entry.isDirectory) &&
-         (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
+         (!isDriveEntries(entries, fileManager.volumeManager) ||
           entries.length > 1))) {
       event.canExecute = false;
       event.command.setHidden(true);
@@ -2630,7 +2081,7 @@ class GoToFileLocationCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
   // 'any' type.
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     if (entries.length !== 1) {
       return;
     }
@@ -2665,7 +2116,7 @@ class GoToFileLocationCommand extends FilesCommand {
     }
 
     // Available for a single entry.
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     event.canExecute = entries.length === 1;
     event.command.setHidden(!event.canExecute);
   }
@@ -2906,7 +2357,7 @@ class TogglePinnedCommand extends FilesCommand {
     const actionsController = fileManager.actionsController;
 
     // Avoid flickering menu height: synchronously define command visibility.
-    if (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager)) {
+    if (!isDriveEntries(entries, fileManager.volumeManager)) {
       command.setHidden(true);
       return;
     }
@@ -2918,7 +2369,7 @@ class TogglePinnedCommand extends FilesCommand {
       const state = /** @type {State} */ (getStore().getState());
       // @ts-ignore: error TS18048: 'state.preferences' is possibly 'undefined'.
       const bulkPinningPref = state.preferences.driveFsBulkPinningEnabled;
-      if (bulkPinningPref && CommandUtil.isOnlyMyDriveEntries(entries, state)) {
+      if (bulkPinningPref && isOnlyMyDriveEntries(entries, state)) {
         command.setHidden(true);
         event.canExecute = false;
         return;
@@ -2971,13 +2422,13 @@ class ExtractAllCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     let dirEntry = fileManager.getCurrentDirectoryEntry();
     if (!dirEntry ||
         !fileManager.getSelection().entries.every(
-            CommandUtil.shouldShowMenuItemsForEntry.bind(
+            shouldShowMenuItemsForEntry.bind(
                 null, fileManager.volumeManager))) {
       return;
     }
@@ -2997,7 +2448,7 @@ class ExtractAllCommand extends FilesCommand {
     const dirEntry = fileManager.getCurrentDirectoryEntry();
     const selection = fileManager.getSelection();
 
-    if (CommandUtil.isOnTrashRoot(fileManager) || !dirEntry || !selection ||
+    if (isOnTrashRoot(fileManager) || !dirEntry || !selection ||
         selection.totalCount === 0) {
       event.command.setHidden(true);
       event.canExecute = false;
@@ -3027,13 +2478,13 @@ class ZipSelectionCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     const dirEntry = fileManager.getCurrentDirectoryEntry();
     if (!dirEntry ||
         !fileManager.getSelection().entries.every(
-            CommandUtil.shouldShowMenuItemsForEntry.bind(
+            shouldShowMenuItemsForEntry.bind(
                 null, fileManager.volumeManager))) {
       return;
     }
@@ -3048,7 +2499,7 @@ class ZipSelectionCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -3065,7 +2516,7 @@ class ZipSelectionCommand extends FilesCommand {
       return;
     }
 
-    if (!selection.entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
+    if (!selection.entries.every(shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager))) {
       event.canExecute = false;
       event.command.setHidden(true);
@@ -3106,7 +2557,7 @@ class ShareCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
@@ -3127,12 +2578,12 @@ class ShareCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const command = event.command;
     const actionsController = fileManager.actionsController;
 
     // Avoid flickering menu height: synchronously define command visibility.
-    if (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager)) {
+    if (!isDriveEntries(entries, fileManager.volumeManager)) {
       command.setHidden(true);
       return;
     }
@@ -3176,7 +2627,7 @@ class ManageInDriveCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
@@ -3198,12 +2649,12 @@ class ManageInDriveCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const command = event.command;
     const actionsController = fileManager.actionsController;
 
     // Avoid flickering menu height: synchronously define command visibility.
-    if (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager)) {
+    if (!isDriveEntries(entries, fileManager.volumeManager)) {
       command.setHidden(true);
       return;
     }
@@ -3324,7 +2775,7 @@ class GuestOsShareCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const entry = CommandUtil.getCommandEntry(fileManager, event.target);
+    const entry = getCommandEntry(fileManager, event.target);
     if (!entry || !entry.isDirectory) {
       return;
     }
@@ -3391,7 +2842,7 @@ class GuestOsShareCommand extends FilesCommand {
   // type.
   canExecute(event, fileManager) {
     // Must be single directory not already shared.
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     event.canExecute = entries.length === 1 && entries[0].isDirectory &&
         !fileManager.crostini.isPathShared(this.vmName_, entries[0]) &&
@@ -3464,7 +2915,7 @@ class GuestOsManagingSharingCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     event.canExecute = entries.length === 1 && entries[0].isDirectory &&
         fileManager.crostini.isPathShared(this.vmName_, entries[0]);
@@ -3540,7 +2991,7 @@ class PinFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
@@ -3562,12 +3013,12 @@ class PinFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const command = event.command;
     const actionsController = fileManager.actionsController;
 
     // Avoid flickering menu height: synchronously define command visibility.
-    if (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager)) {
+    if (!isDriveEntries(entries, fileManager.volumeManager)) {
       command.setHidden(true);
       return;
     }
@@ -3613,7 +3064,7 @@ class UnpinFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const actionsController = fileManager.actionsController;
 
     fileManager.actionsController.getActionsForEntries(entries).then(
@@ -3635,12 +3086,12 @@ class UnpinFolderCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = getCommandEntries(fileManager, event.target);
     const command = event.command;
     const actionsController = fileManager.actionsController;
 
     // Avoid flickering menu height: synchronously define command visibility.
-    if (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager)) {
+    if (!isDriveEntries(entries, fileManager.volumeManager)) {
       command.setHidden(true);
       return;
     }
@@ -3896,8 +3347,7 @@ class ConfigureCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    const volumeInfo =
-        CommandUtil.getElementVolumeInfo(event.target, fileManager);
+    const volumeInfo = getElementVolumeInfo(event.target, fileManager);
     if (volumeInfo && volumeInfo.configurable) {
       fileManager.volumeManager.configure(volumeInfo);
     }
@@ -3907,8 +3357,7 @@ class ConfigureCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    const volumeInfo =
-        CommandUtil.getElementVolumeInfo(event.target, fileManager);
+    const volumeInfo = getElementVolumeInfo(event.target, fileManager);
     event.canExecute = volumeInfo && volumeInfo.configurable;
     event.command.setHidden(!event.canExecute);
   }
@@ -3952,7 +3401,7 @@ class SetWallpaperCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   execute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       return;
     }
     const entry = fileManager.getSelection().entries[0];
@@ -4002,7 +3451,7 @@ class SetWallpaperCommand extends FilesCommand {
   // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an 'any'
   // type.
   canExecute(event, fileManager) {
-    if (CommandUtil.isOnTrashRoot(fileManager)) {
+    if (isOnTrashRoot(fileManager)) {
       event.canExecute = false;
       event.command.setHidden(true);
       return;
@@ -4088,5 +3537,3 @@ class ShowProvidersSubmenuCommand extends FilesCommand {
 // within class 'CommandHandler'.
 CommandHandler.COMMANDS_['show-providers-submenu'] =
     new ShowProvidersSubmenuCommand();
-
-export {CommandUtil};

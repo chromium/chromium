@@ -64,7 +64,8 @@ import {DirectoryModel} from './directory_model.js';
 import {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
 import {importElements} from './elements_importer.js';
 import {EmptyFolderController} from './empty_folder_controller.js';
-import {CommandHandler, CommandUtil} from './file_manager_commands.js';
+import {CommandHandler} from './file_manager_commands.js';
+import {forceDefaultHandler} from './file_manager_commands_util.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
@@ -963,10 +964,10 @@ export class FileManager extends EventTarget {
    * @private
    */
   registerInputCommands_(node) {
-    CommandUtil.forceDefaultHandler(node, 'cut');
-    CommandUtil.forceDefaultHandler(node, 'copy');
-    CommandUtil.forceDefaultHandler(node, 'paste');
-    CommandUtil.forceDefaultHandler(node, 'delete');
+    forceDefaultHandler(node, 'cut');
+    forceDefaultHandler(node, 'copy');
+    forceDefaultHandler(node, 'paste');
+    forceDefaultHandler(node, 'delete');
     node.addEventListener('keydown', e => {
       // @ts-ignore: error TS2339: Property 'keyCode' does not exist on type
       // 'Event'.
