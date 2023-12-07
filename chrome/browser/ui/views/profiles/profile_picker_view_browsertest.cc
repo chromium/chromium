@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
-                       ForceSigninAbortedBySyncDeclined) {
+                       ForceSigninAbortedBySyncDeclined_ThenSigninAgain) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Only the default profile exists at this point.
   size_t initial_profile_count = 1u;
@@ -960,6 +960,27 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Makes sure that the only profile that exist is the default one and not the
   // one we attempted to create.
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), initial_profile_count);
+
+  // ---------------------------------------------------------------------------
+  // This part of the test is to make sure we can safely instantiate a new sign
+  // in flow after declining the first one.
+  // ---------------------------------------------------------------------------
+
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+
+  // Create a second signin flow as part of the same session.
+  Profile* force_sign_in_profile_2 =
+      SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer1@gmail.com",
+                          "Joe", kNoHostedDomainFound, true);
+
+  LoginUIServiceFactory::GetForProfile(force_sign_in_profile_2)
+      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+
+  Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1u).Wait();
+  WaitForPickerClosed();
+
+  // The browser is for the newly created profile.
+  EXPECT_EQ(new_browser->profile(), force_sign_in_profile_2);
 }
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,

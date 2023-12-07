@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -94,7 +95,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   base::WeakPtr<ProfilePickerSignedInFlowController>
       weak_signed_in_flow_controller_;
 
-  raw_ptr<Profile> created_profile_ = nullptr;
+  base::WeakPtr<Profile> created_profile_;
   PostHostClearedCallback post_host_cleared_callback_;
 };
 

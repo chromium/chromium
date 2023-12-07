@@ -500,7 +500,7 @@ ProfilePickerFlowController::CreateSignedInFlowController(
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!weak_signed_in_flow_controller_);
 
-  created_profile_ = signed_in_profile;
+  created_profile_ = signed_in_profile->GetWeakPtr();
   auto step_completed_callback =
       base::BindOnce(&ProfilePickerFlowController::HandleIdentityStepsCompleted,
                      // Unretained ok: the callback is passed to a step that
@@ -519,10 +519,11 @@ void ProfilePickerFlowController::HandleIdentityStepsCompleted(
     bool is_continue_callback) {
   CHECK(post_host_cleared_callback_->is_null());
   CHECK(!post_host_cleared_callback->is_null());
+  CHECK(created_profile_);
   post_host_cleared_callback_ = std::move(post_host_cleared_callback);
 
   if (is_continue_callback) {
-    FinishFlowAndRunInBrowser(created_profile_,
+    FinishFlowAndRunInBrowser(created_profile_.get(),
                               std::move(post_host_cleared_callback_));
     return;
   }
@@ -543,7 +544,7 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
     // TODO(crbug.com/1501785): Find a way to get the web contents without
     // relying on the weak ptr.
     SearchEngineChoiceService* search_engine_choice_service =
-        SearchEngineChoiceServiceFactory::GetForProfile(created_profile_);
+        SearchEngineChoiceServiceFactory::GetForProfile(created_profile_.get());
     RegisterStep(Step::kSearchEngineChoice,
                  ProfileManagementStepController::CreateForSearchEngineChoice(
                      host(), search_engine_choice_service,
@@ -561,7 +562,7 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
           host(),
           base::BindOnce(
               &ProfilePickerFlowController::FinishFlowAndRunInBrowser,
-              base::Unretained(this), base::Unretained(created_profile_),
+              base::Unretained(this), base::Unretained(created_profile_.get()),
               std::move(post_host_cleared_callback_))));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kFinishFlow);
