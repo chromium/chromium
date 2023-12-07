@@ -6839,7 +6839,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6418160186546245112">S'està tornant a la versió de <ph name="IDS_SHORT_PRODUCT_NAME" /> instal·lada anteriorment.</translation>
 <translation id="641817663353603351">Re Pàg</translation>
 <translation id="6418481728190846787">Retira l'accés a totes les aplicacions permanentment</translation>
-<translation id="6418511932144861495">Instal·la una actualització molt important</translation>
+<translation id="6418511932144861495">Instal·la una actualització crítica</translation>
 <translation id="641867537956679916">El teu administrador ha iniciat la sessió per examinar un problema. Podràs continuar utilitzant el dispositiu després que l'administrador te'n torni el control.</translation>
 <translation id="641899100123938294">Cerca dispositius nous</translation>
 <translation id="6419524191360800346">Hi ha una actualització a Debian 11 (Bullseye) disponible</translation>
@@ -7117,7 +7117,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6646696210740573446">Envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Google.</translation>
 <translation id="6647228709620733774">URL de revocació de l'entitat emissora de certificats de Netscape</translation>
 <translation id="6647690760956378579">Escolta la veu natural</translation>
-<translation id="6648911618876616409">Hi ha una actualització molt important a punt per instal·lar-se. Inicia la sessió per començar.</translation>
+<translation id="6648911618876616409">Hi ha una actualització crítica a punt per instal·lar-se. Inicia la sessió per començar.</translation>
 <translation id="6649018507441623493">Un moment…</translation>
 <translation id="6650206238642452078">Subscriure's a esdeveniments del sistema ChromeOS</translation>
 <translation id="665061930738760572">Obre en una &amp;finestra nova</translation>

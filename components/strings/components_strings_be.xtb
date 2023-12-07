@@ -2889,7 +2889,7 @@
 <translation id="6883221904761970440">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў закрыты</translation>
 <translation id="6884662655240309489">Памер 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
-<translation id="6888584790432772780">Chrome спрасціў гэту старонку для больш зручнага чытання. Ён атрымаў зыходную старонку па небяспечным падключэнні.</translation>
+<translation id="6888584790432772780">Браўзер Chrome спрасціў гэту старонку для больш зручнага чытання. Зыходная старонка загружана праз неабароненае падключэнне.</translation>
 <translation id="6890443033788248019">Дазволіць вызначэнне месцазнаходжання?</translation>
 <translation id="6890531741535756070">Для спраўджання купляў на сайтах, якія карыстаюцца паслугамі пастаўшчыка <ph name="PROVIDER_ORIGIN" />, вы выбралі наступную прыладу: <ph name="DEVICE_LABEL" />. Гэты пастаўшчык мог захаваць інфармацыю пра ваш спосаб аплаты. Вы можаце <ph name="BEGIN_LINK" />запытаць яе выдаленне<ph name="END_LINK" />.</translation>
 <translation id="6890956352250146925">Варыянты дзеянняў з файламі cookie і данымі сайтаў</translation>
@@ -3198,7 +3198,7 @@
 <translation id="7455133967321480974">Выкарыстоўваць глабальныя стандартныя налады (заблакіраваць)</translation>
 <translation id="7455452752247248289">Карпаратыўныя тэхналогіі</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7461924472993315131">PIN-код</translation>
+<translation id="7461924472993315131">Замацаваць</translation>
 <translation id="7463075493919226237">Аўстралійскі футбол</translation>
 <translation id="7465036432780054056">Сайт <ph name="EMBEDDED_URL" /> атрымае інфармацыю, што вы наведвалі старонку <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 цаляў</translation>

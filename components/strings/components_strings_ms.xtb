@@ -1733,7 +1733,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4506176782989081258">Ralat pengesahan: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Menghubungi pentadbir sistem</translation>
 <translation id="450710068430902550">Berkongsi dengan Pentadbir</translation>
-<translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menterjemahkan halaman ini dengan Google Terjemah</translation>
+<translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menterjemahkan halaman ini dengan Google Translate</translation>
 <translation id="4514308731478712184">Matikan Perjalanan</translation>
 <translation id="4515275063822566619">Kad dan alamat adalah daripada Chrome dan Akaun Google anda (<ph name="ACCOUNT_EMAIL" />). Anda boleh mengurus kad dan alamat ini dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4519245469315452746">Peranti anda terganggu semasa proses pengemaskinian.</translation>
@@ -1995,7 +1995,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5023310440958281426">Semak dasar pentadbir anda</translation>
 <translation id="5030338702439866405">Dikeluarkan Oleh</translation>
 <translation id="503069730517007720">Sijil akar bagi "<ph name="SOFTWARE_NAME" />" diperlukan tetapi tidak dipasang. Pentadbir IT anda harus melihat arahan konfigurasi "<ph name="SOFTWARE_NAME" />" untuk menyelesaikan masalah ini. <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="5031870354684148875">Perihal Google Terjemah</translation>
+<translation id="5031870354684148875">Perihal Google Translate</translation>
 <translation id="503498442187459473"><ph name="HOST" /> mahu menggunakan kamera dan mikrofon anda</translation>
 <translation id="5035135400558156732">Berkebun</translation>
 <translation id="503574301575803523">SRA3</translation>
@@ -2280,7 +2280,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5610142619324316209">Menyemak sambungan</translation>
 <translation id="5610807607761827392">Anda boleh mengurus kad dan alamat dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
-<translation id="561165882404867731">Terjemahkan halaman ini dengan Google Terjemah</translation>
+<translation id="561165882404867731">Terjemahkan halaman ini dengan Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> mahu menggunakan lokasi komputer anda</translation>
 <translation id="561669346091975195">Rancangan TV cereka sains &amp; fantasi</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> telah terlalu kerap mengubah hala anda.</translation>

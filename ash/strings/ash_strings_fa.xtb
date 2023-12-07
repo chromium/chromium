@@ -501,7 +501,7 @@
 <translation id="3090989381251959936">روشن/خاموش کردن <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">از سررسید گذشته است</translation>
 <translation id="3095995014811312755">نسخه</translation>
-<translation id="309749186376891736">حرکت دادن نشانگر</translation>
+<translation id="309749186376891736">حرکت دادن مکان‌نما</translation>
 <translation id="3100274880412651815">بستن حالت ضبط</translation>
 <translation id="3105917916468784889">گرفتن نماگرفت</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
@@ -566,7 +566,7 @@
 <translation id="3341303451326249809">نماگرفت گرفته شد</translation>
 <translation id="334252345105450327">گرفتن نماگرفت</translation>
 <translation id="3346728094401457853">گذرواژه دستگاه را برای <ph name="EMAIL" /> وارد کنید</translation>
-<translation id="334927402682780278">انتخاب متن از نشانگر تا انتهای خط</translation>
+<translation id="334927402682780278">انتخاب متن از مکان‌نما تا انتهای خط</translation>
 <translation id="3349345708646875009">باز کردن مدیر وظایف</translation>
 <translation id="3364721542077212959">ابزارهای قلم</translation>
 <translation id="3365977133351922112">تلفنتان خیلی دور است. تلفنتان را نزدیک‌تر بیاورید.</translation>
@@ -1729,7 +1729,7 @@
 <translation id="7994370417837006925">ورود چندگانه به سیستم</translation>
 <translation id="7995804128062002838">صفحه‌نمایش ضبط نشد</translation>
 <translation id="8000066093800657092">بدون شبکه</translation>
-<translation id="8001755249288974029">انتخاب متن از نشانگر تا ابتدای خط</translation>
+<translation id="8001755249288974029">انتخاب متن از مکان‌نما تا ابتدای خط</translation>
 <translation id="8004512796067398576">افزایش</translation>
 <translation id="8026334261755873520">پاک کردن داده‌های مرور</translation>
 <translation id="8028993641010258682">اندازه</translation>
