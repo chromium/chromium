@@ -380,22 +380,6 @@ void StorageRemoverHelper::RemoveDataKeyEntries(
   std::move(sync_completion).Run();
 }
 
-void RemoveBrowsingDataEntries(
-    const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
-    std::unique_ptr<StorageRemoverHelper> storage_remover_helper,
-    base::OnceClosure completed) {
-  // Bind the lifetime of the helper to the lifetime of the callback.
-  auto* helper_pointer = storage_remover_helper.get();
-
-  base::OnceClosure wrapped_completed = base::BindOnce(
-      [](std::unique_ptr<StorageRemoverHelper> storage_remover,
-         base::OnceClosure completed) { std::move(completed).Run(); },
-      std::move(storage_remover_helper), std::move(completed));
-
-  helper_pointer->RemoveDataKeyEntries(browsing_data_entries,
-                                       std::move(wrapped_completed));
-}
-
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
   callbacks_expected_++;
   return base::BindOnce(&StorageRemoverHelper::BackendFinished,
@@ -740,6 +724,23 @@ void BrowsingDataModel::BuildFromStoragePartition(
   model_pointer->PopulateFromDisk(std::move(completion));
 }
 
+void BrowsingDataModel::RemoveBrowsingDataEntriesFromDisk(
+    const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
+    base::OnceClosure completed) {
+  // Bind the lifetime of the helper to the lifetime of the callback.
+  auto helper = std::make_unique<StorageRemoverHelper>(
+      storage_partition_, quota_helper_, delegate_.get());
+  auto* helper_pointer = helper.get();
+
+  base::OnceClosure wrapped_completed = base::BindOnce(
+      [](std::unique_ptr<StorageRemoverHelper> storage_remover,
+         base::OnceClosure completed) { std::move(completed).Run(); },
+      std::move(helper), std::move(completed));
+
+  helper_pointer->RemoveDataKeyEntries(browsing_data_entries,
+                                       std::move(wrapped_completed));
+}
+
 std::unique_ptr<BrowsingDataModel> BrowsingDataModel::BuildEmpty(
     content::StoragePartition* storage_partition,
     std::unique_ptr<Delegate> delegate) {
@@ -766,10 +767,8 @@ void BrowsingDataModel::RemoveBrowsingData(const DataOwner& data_owner,
                                            base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto helper = std::make_unique<StorageRemoverHelper>(
-      storage_partition_, quota_helper_, delegate_.get());
-  RemoveBrowsingDataEntries(browsing_data_entries_[data_owner],
-                            std::move(helper), std::move(completed));
+  RemoveBrowsingDataEntriesFromDisk(browsing_data_entries_[data_owner],
+                                    std::move(completed));
 
   // Immediately remove the affected entries from the in-memory model. Different
   // UI elements have different sync vs. async expectations. Exposing a
@@ -788,10 +787,8 @@ void BrowsingDataModel::RemovePartitionedBrowsingData(
   GetAffectedDataKeyEntriesForRemovePartitionedBrowsingData(
       data_owner, top_level_site, affected_data_key_entries);
 
-  auto helper = std::make_unique<StorageRemoverHelper>(
-      storage_partition_, quota_helper_, delegate_.get());
-  RemoveBrowsingDataEntries(affected_data_key_entries, std::move(helper),
-                            std::move(completed));
+  RemoveBrowsingDataEntriesFromDisk(affected_data_key_entries,
+                                    std::move(completed));
 
   // Immediately remove the affected entries from the in-memory model.
   // Different UI elements have different sync vs. async expectations.
@@ -817,10 +814,8 @@ void BrowsingDataModel::RemoveUnpartitionedBrowsingData(
     }
   }
 
-  auto helper = std::make_unique<StorageRemoverHelper>(
-      storage_partition_, quota_helper_, delegate_.get());
-  RemoveBrowsingDataEntries(affected_data_key_entries, std::move(helper),
-                            std::move(completed));
+  RemoveBrowsingDataEntriesFromDisk(affected_data_key_entries,
+                                    std::move(completed));
 
   auto& data_owner_entries = browsing_data_entries_[data_owner];
   for (auto& entry : affected_data_key_entries) {

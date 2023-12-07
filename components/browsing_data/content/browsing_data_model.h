@@ -294,6 +294,12 @@ class BrowsingDataModel {
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
           complete_callback);
 
+  // Takes a list of `browsing_data_entries` to remove from disk and runs
+  // `completed` callback on completion.
+  virtual void RemoveBrowsingDataEntriesFromDisk(
+      const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
+      base::OnceClosure completed);
+
   // Private as one of the static BuildX functions should be used instead.
   explicit BrowsingDataModel(
       content::StoragePartition* storage_partition,
