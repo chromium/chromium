@@ -338,6 +338,12 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual(runtime['version'], '13.1')
     self.assertEqual(runtime['identifier'], '111111')
 
+  def test_get_simulator_runtime_info_by_id(self, _, _2):
+    runtime = iossim_util.get_simulator_runtime_info_by_id('111111')
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['version'], '13.1')
+    self.assertEqual(runtime['identifier'], '111111')
+
   def test_get_simulator_runtime_info(self, _, _2):
     runtime = iossim_util.get_simulator_runtime_info('13.1')
     self.assertIsNotNone(runtime)
@@ -395,17 +401,23 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual(check_output_mock.call_count, 1)
 
   def test_delete_simulator_runtime_and_wait_success(self, _, _2):
-    with mock.patch('iossim_util.get_simulator_runtime_info') \
+    with mock.patch('iossim_util.get_simulator_runtime_info_by_id') \
+        as mock_get_runtime_info_by_id, \
+        mock.patch('iossim_util.get_simulator_runtime_info') \
         as mock_get_runtime_info, \
         mock.patch('iossim_util.delete_simulator_runtime') \
         as mock_delete_runtime:
-      mock_get_runtime_info.side_effect = [
+      mock_get_runtime_info_by_id.side_effect = [
           {
               'identifier': '111111',
               'state': 'deleting'
           },
           None,
       ]
+      mock_get_runtime_info.return_value = {
+          'identifier': '111111',
+          'state': 'ready'
+      }
       mock_delete_runtime.return_value = None
 
       iossim_util.delete_simulator_runtime_and_wait('13.1')
