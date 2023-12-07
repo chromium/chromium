@@ -27,7 +27,6 @@
 import("//build/config/cast.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
   import("//ios/features.gni")
 }
 

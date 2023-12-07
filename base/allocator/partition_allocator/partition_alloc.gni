@@ -6,10 +6,6 @@ import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/partition_alloc.gni")
 
-if (is_apple) {
-  import("//build/config/features.gni")
-}
-
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
 # access the generate "buildflags" and the "raw_ptr" definitions implemented
 # with RawPtrNoOpImpl. Everything else is considered not supported.
