@@ -47,8 +47,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -SwitchAccessTest.NavigateButtonsInTextFieldMenu
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
-# TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
--DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
 # TODO(crbug.com/1478586): Flaky.

@@ -3166,21 +3166,19 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
   ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 
   // Enter overview and save the current desk as a template. The current desk
-  // has one lacros browser, and one regular browser.
+  // has one lacros browser.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateButton();
 
-  // Launch the saved desk template. We expect two launched lacros windows,
-  // since the regular browser window was saved and will be launched as a lacros
-  // window. Check the launched windows will have data in
-  // `app_restore::kWindowInfoKey`, otherwise ash does not know that they are
-  // launched from desk templates. See https://crbug.com/1333965 for more
-  // details.
+  // Launch the saved desk template. We expect one launched lacros windows.
+  // Check the launched windows will have data in `app_restore::kWindowInfoKey`,
+  // otherwise ash does not know that they are launched from desk templates. See
+  // https://crbug.com/1333965 for more details.
   LacrosWindowWaiter waiter;
   ClickFirstTemplateItem();
-  aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/2u);
-  ASSERT_EQ(2u, launched_windows.size());
+  aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/1u);
+  ASSERT_EQ(1u, launched_windows.size());
   for (auto* window : launched_windows) {
     EXPECT_TRUE(window->GetProperty(app_restore::kWindowInfoKey));
   }
