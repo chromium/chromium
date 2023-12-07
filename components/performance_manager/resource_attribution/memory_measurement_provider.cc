@@ -55,12 +55,18 @@ void MemoryMeasurementProvider::OnMemorySummary(
   // Returns true if a new result was created, false if one already existed.
   auto accumulate_summary = [&results, now = base::TimeTicks::Now()](
                                 const ResourceContext& context,
-                                MemorySummaryMeasurement summary) -> bool {
+                                MemorySummaryMeasurement summary,
+                                MeasurementAlgorithm algorithm) -> bool {
     // Create a result with metadata if the key isn't in the map yet.
     const auto [it, inserted] = results.try_emplace(
-        context, QueryResult(MemorySummaryResult{
-                     .metadata = {.measurement_time = now}}));
+        context,
+        QueryResult(MemorySummaryResult{
+            .metadata = {.measurement_time = now, .algorithm = algorithm}}));
     MemorySummaryResult& result = absl::get<MemorySummaryResult>(it->second);
+    if (!inserted) {
+      CHECK_LE(result.metadata.measurement_time, now);
+      CHECK_EQ(result.metadata.algorithm, algorithm);
+    }
     result.resident_set_size_kb += summary.resident_set_size_kb;
     result.private_footprint_kb += summary.private_footprint_kb;
     return inserted;
@@ -68,7 +74,9 @@ void MemoryMeasurementProvider::OnMemorySummary(
 
   // Iterate and record all process results.
   for (const auto& [process_context, process_summary] : process_summaries) {
-    bool inserted = accumulate_summary(process_context, process_summary);
+    bool inserted =
+        accumulate_summary(process_context, process_summary,
+                           MeasurementAlgorithm::kDirectMeasurement);
     CHECK(inserted);
 
     // Split results between all frames and workers in the process.
@@ -79,15 +87,19 @@ void MemoryMeasurementProvider::OnMemorySummary(
     resource_attribution::SplitResourceAmongFramesAndWorkers(
         process_summary, process_node,
         [&](const FrameNode* f, MemorySummaryMeasurement summary) {
-          bool inserted = accumulate_summary(f->GetResourceContext(), summary);
+          bool inserted = accumulate_summary(f->GetResourceContext(), summary,
+                                             MeasurementAlgorithm::kSplit);
           CHECK(inserted);
-          accumulate_summary(f->GetPageNode()->GetResourceContext(), summary);
+          accumulate_summary(f->GetPageNode()->GetResourceContext(), summary,
+                             MeasurementAlgorithm::kSum);
         },
         [&](const WorkerNode* w, MemorySummaryMeasurement summary) {
-          bool inserted = accumulate_summary(w->GetResourceContext(), summary);
+          bool inserted = accumulate_summary(w->GetResourceContext(), summary,
+                                             MeasurementAlgorithm::kSplit);
           CHECK(inserted);
           for (const PageNode* page_node : GetWorkerClientPages(w)) {
-            accumulate_summary(page_node->GetResourceContext(), summary);
+            accumulate_summary(page_node->GetResourceContext(), summary,
+                               MeasurementAlgorithm::kSum);
           }
         });
   }

@@ -155,12 +155,15 @@ QueryParams CreateQueryParams(
 
 // Returns a MemorySummaryResult containing the default fake memory results.
 // This can be used for the results from a process, or a page or frame that gets
-// all the memory from one process.
-MemorySummaryResult FakeMemorySummaryResult() {
+// all the memory from one process. `expected_algorithm` is the measurement
+// algorithm for that context type.
+MemorySummaryResult FakeMemorySummaryResult(
+    MeasurementAlgorithm expected_algorithm) {
   // Since the tests use the mock clock, the measurement time is the same time
   // the fake result is created.
   return {
-      .metadata = {.measurement_time = base::TimeTicks::Now()},
+      .metadata = {.measurement_time = base::TimeTicks::Now(),
+                   .algorithm = expected_algorithm},
       .resident_set_size_kb = kFakeResidentSetSize,
       .private_footprint_kb = kFakePrivateFootprint,
   };
@@ -250,7 +253,8 @@ TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_Memory) {
   auto expect_memory_results = [&](const QueryResultMap& results) {
     EXPECT_THAT(results,
                 ElementsAre(ResultForContextMatches<MemorySummaryResult>(
-                    main_frame_context(), FakeMemorySummaryResult())));
+                    main_frame_context(),
+                    FakeMemorySummaryResult(MeasurementAlgorithm::kSplit))));
   };
 
   base::RunLoop run_loop;
@@ -269,7 +273,8 @@ TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPUAndMemory) {
     // result should be delivered from the scheduler without a CPU measurement.
     EXPECT_THAT(results,
                 ElementsAre(ResultForContextMatches<MemorySummaryResult>(
-                    main_frame_context(), FakeMemorySummaryResult())));
+                    main_frame_context(),
+                    FakeMemorySummaryResult(MeasurementAlgorithm::kSplit))));
   };
 
   base::RunLoop run_loop;
@@ -285,15 +290,16 @@ TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPUAndMemory) {
 TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnceWithTaskRunner) {
   auto main_thread_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::RunLoop run_loop;
-  auto expect_results_on_main_thread =
-      [this, main_thread_task_runner,
-       quit_closure = run_loop.QuitClosure()](const QueryResultMap& results) {
-        EXPECT_THAT(results,
-                    ElementsAre(ResultForContextMatches<MemorySummaryResult>(
-                        main_frame_context(), FakeMemorySummaryResult())));
-        EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
-        std::move(quit_closure).Run();
-      };
+  auto expect_results_on_main_thread = [this, main_thread_task_runner,
+                                        quit_closure = run_loop.QuitClosure()](
+                                           const QueryResultMap& results) {
+    EXPECT_THAT(results,
+                ElementsAre(ResultForContextMatches<MemorySummaryResult>(
+                    main_frame_context(),
+                    FakeMemorySummaryResult(MeasurementAlgorithm::kSplit))));
+    EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
+    std::move(quit_closure).Run();
+  };
 
   // Create the query on the graph sequence, but tell it to run the result
   // callback on the main thread.
@@ -459,7 +465,8 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
       main_thread_observer,
       OnResourceUsageUpdated(ElementsAre(
           ResultForContextMatchesAll<MemorySummaryResult, CPUTimeResult>(
-              main_frame_context(), FakeMemorySummaryResult(), _))))
+              main_frame_context(),
+              FakeMemorySummaryResult(MeasurementAlgorithm::kSplit), _))))
       .WillOnce([&] {
         EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
         barrier_closure.Run();
@@ -468,7 +475,8 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
       graph_sequence_observer,
       OnResourceUsageUpdated(ElementsAre(
           ResultForContextMatchesAll<MemorySummaryResult, CPUTimeResult>(
-              main_frame_context(), FakeMemorySummaryResult(), _))))
+              main_frame_context(),
+              FakeMemorySummaryResult(MeasurementAlgorithm::kSplit), _))))
       .WillOnce([&] {
         EXPECT_TRUE(graph_sequence_task_runner->RunsTasksInCurrentSequence());
         barrier_closure.Run();
@@ -516,7 +524,8 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryAndQueryOnce) {
         results,
         ElementsAre(
             ResultForContextMatchesAll<MemorySummaryResult, CPUTimeResult>(
-                main_frame_context(), FakeMemorySummaryResult(), _)));
+                main_frame_context(),
+                FakeMemorySummaryResult(MeasurementAlgorithm::kSplit), _)));
   };
 
   base::RunLoop run_loop;

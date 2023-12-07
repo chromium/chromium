@@ -127,11 +127,15 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
   // CPUTimeResult with cumulative_cpu `last_measurements_[context] +
   // expected_delta`. That is, since the last time `context` was tested, expect
   // that `expected_delta` was added to its CPU measurement, which was taken at
-  // `expected_measurement_time`.
-  auto CPUDeltaMatches(const ResourceContext& context,
-                       base::TimeDelta expected_delta,
-                       base::TimeTicks expected_measurement_time =
-                           base::TimeTicks::Now()) const {
+  // `expected_measurement_time`. `expected_algorithm` is the measurement
+  // algorithm that should be used, which defaults to the algorithm used for
+  // processes (kDirectMeasurement).
+  auto CPUDeltaMatchesWithMeasurementTime(
+      const ResourceContext& context,
+      base::TimeDelta expected_delta,
+      base::TimeTicks expected_measurement_time,
+      MeasurementAlgorithm expected_algorithm =
+          MeasurementAlgorithm::kDirectMeasurement) const {
     base::TimeDelta expected_cpu = expected_delta;
     base::TimeTicks expected_start_time;
     const auto last_it = last_measurements_.find(context);
@@ -141,9 +145,6 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
           absl::get<CPUTimeResult>(last_it->second).start_time;
     }
     return VariantWith<CPUTimeResult>(AllOf(
-        Field("metadata", &CPUTimeResult::metadata,
-              Field("measurement_time", &ResultMetadata::measurement_time,
-                    expected_measurement_time)),
         Field("cumulative_cpu", &CPUTimeResult::cumulative_cpu, expected_cpu),
         // `start_time` should not change. If this was the first measurement,
         // allow any non-null `start_time`. Note Conditional() doesn't
@@ -152,7 +153,21 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
         // temporary.
         Field("start_time", &CPUTimeResult::start_time,
               Conditional(last_it != last_measurements_.end(),
-                          expected_start_time, Not(base::TimeTicks())))));
+                          expected_start_time, Not(base::TimeTicks()))),
+        ResultMetadataMatches<CPUTimeResult>(expected_measurement_time,
+                                             expected_algorithm)));
+  }
+
+  // As CPUDeltaMatchesWithMeasurementTime, but assumes the mock clock hasn't
+  // advanced since the measurement (so the measurement time is "now").
+  auto CPUDeltaMatches(const ResourceContext& context,
+                       base::TimeDelta expected_delta,
+                       MeasurementAlgorithm expected_algorithm =
+                           MeasurementAlgorithm::kDirectMeasurement) const {
+    return CPUDeltaMatchesWithMeasurementTime(
+        context, expected_delta,
+        /*expected_measurement_time=*/base::TimeTicks::Now(),
+        expected_algorithm);
   }
 
   // GMock matcher expecting that a given QueryResult variant contains a
@@ -362,14 +377,17 @@ TEST_F(ResourceAttrCPUMonitorTest, ExitTiming) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_THAT(current_measurements_[renderer4->GetResourceContext()],
-              CPUDeltaMatches(renderer4->GetResourceContext(),
-                              base::TimeDelta(), previous_update_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer4->GetResourceContext(), base::TimeDelta(),
+                  previous_update_time));
   EXPECT_THAT(current_measurements_[renderer5->GetResourceContext()],
-              CPUDeltaMatches(renderer5->GetResourceContext(),
-                              base::TimeDelta(), previous_update_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer5->GetResourceContext(), base::TimeDelta(),
+                  previous_update_time));
   EXPECT_THAT(current_measurements_[renderer6->GetResourceContext()],
-              CPUDeltaMatches(renderer6->GetResourceContext(),
-                              base::TimeDelta(), previous_update_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer6->GetResourceContext(), base::TimeDelta(),
+                  previous_update_time));
 
   EXPECT_THAT(current_measurements_[renderer7->GetResourceContext()],
               CPUDeltaMatches(renderer7->GetResourceContext(),
@@ -510,24 +528,29 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
                     StartTimeMatches(monitoring_start_time)));
 
   EXPECT_THAT(current_measurements_[frame_context],
-              AllOf(CPUDeltaMatches(frame_context, split_process_cpu_delta),
+              AllOf(CPUDeltaMatches(frame_context, split_process_cpu_delta,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(monitoring_start_time)));
   EXPECT_THAT(
       current_measurements_[other_frame_context],
-      AllOf(CPUDeltaMatches(other_frame_context, split_process_cpu_delta),
+      AllOf(CPUDeltaMatches(other_frame_context, split_process_cpu_delta,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(monitoring_start_time)));
   EXPECT_THAT(current_measurements_[worker_context],
-              AllOf(CPUDeltaMatches(worker_context, split_process_cpu_delta),
+              AllOf(CPUDeltaMatches(worker_context, split_process_cpu_delta,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(monitoring_start_time)));
 
   EXPECT_THAT(
       current_measurements_[child_frame_context],
-      AllOf(CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta),
+      AllOf(CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(monitoring_start_time)));
-  EXPECT_THAT(current_measurements_[other_worker_context],
-              AllOf(CPUDeltaMatches(other_worker_context,
-                                    other_process_split_cpu_delta),
-                    StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(
+      current_measurements_[other_worker_context],
+      AllOf(CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta,
+                            MeasurementAlgorithm::kSplit),
+            StartTimeMatches(monitoring_start_time)));
 
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
@@ -535,11 +558,13 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   // MockMultiplePagesAndWorkersWithMultipleProcessesGraph.
   EXPECT_THAT(
       current_measurements_[page_context],
-      AllOf(CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.4),
+      AllOf(CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.4,
+                            MeasurementAlgorithm::kSum),
             StartTimeMatches(monitoring_start_time)));
   EXPECT_THAT(
       current_measurements_[other_page_context],
-      AllOf(CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.7),
+      AllOf(CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.7,
+                            MeasurementAlgorithm::kSum),
             StartTimeMatches(monitoring_start_time)));
 
   // Modify the CPU usage of each process, ensure all frames and workers are
@@ -563,27 +588,34 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
       CPUDeltaMatches(other_process_context, kTimeBetweenMeasurements * 0.8));
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[other_frame_context],
-              CPUDeltaMatches(other_frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(other_frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[worker_context],
-              CPUDeltaMatches(worker_context, split_process_cpu_delta));
+              CPUDeltaMatches(worker_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(
       current_measurements_[child_frame_context],
-      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[other_worker_context],
-      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
 
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`.
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.2));
+              CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.2,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(
       current_measurements_[other_page_context],
-      CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.9));
+      CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.9,
+                      MeasurementAlgorithm::kSum));
 
   // Drop CPU usage of `other_process` to 0%. Only advance part of the normal
   // measurement interval, to be sure that the percentage usage doesn't depend
@@ -606,26 +638,33 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
               CPUDeltaMatches(other_process_context, base::TimeDelta()));
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[other_frame_context],
-              CPUDeltaMatches(other_frame_context, split_process_cpu_delta));
+              CPUDeltaMatches(other_frame_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[worker_context],
-              CPUDeltaMatches(worker_context, split_process_cpu_delta));
+              CPUDeltaMatches(worker_context, split_process_cpu_delta,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(
       current_measurements_[child_frame_context],
-      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(child_frame_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[other_worker_context],
-      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta));
+      CPUDeltaMatches(other_worker_context, other_process_split_cpu_delta,
+                      MeasurementAlgorithm::kSplit));
 
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`.
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, kShortInterval * 0.2));
+              CPUDeltaMatches(page_context, kShortInterval * 0.2,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, kShortInterval * 0.1));
+              CPUDeltaMatches(other_page_context, kShortInterval * 0.1,
+                              MeasurementAlgorithm::kSum));
 }
 
 // Tests that CPU usage of processes is correctly distributed between FrameNodes
@@ -721,13 +760,16 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
               CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
   EXPECT_THAT(
       current_measurements_[frame_context],
-      CPUDeltaMatches(frame_context, process_4way_split + process_5way_split));
+      CPUDeltaMatches(frame_context, process_4way_split + process_5way_split,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame1_context],
               AllOf(CPUDeltaMatches(new_frame1_context,
-                                    process_4way_split + process_5way_split),
+                                    process_4way_split + process_5way_split,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time1)));
   EXPECT_THAT(current_measurements_[new_frame2_context],
-              AllOf(CPUDeltaMatches(new_frame2_context, process_5way_split),
+              AllOf(CPUDeltaMatches(new_frame2_context, process_5way_split,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time2)));
   EXPECT_FALSE(base::Contains(current_measurements_, new_frame3_context));
 
@@ -737,20 +779,24 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   EXPECT_THAT(
       current_measurements_[child_frame_context],
       CPUDeltaMatches(child_frame_context,
-                      other_process_3way_split + other_process_4way_split));
+                      other_process_3way_split + other_process_4way_split,
+                      MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[new_worker1_context],
-      AllOf(CPUDeltaMatches(new_worker1_context, other_process_3way_split +
-                                                     other_process_4way_split),
+      AllOf(CPUDeltaMatches(new_worker1_context,
+                            other_process_3way_split + other_process_4way_split,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time1)));
   EXPECT_THAT(
       current_measurements_[new_worker2_context],
-      AllOf(CPUDeltaMatches(new_worker2_context, other_process_4way_split),
+      AllOf(CPUDeltaMatches(new_worker2_context, other_process_4way_split,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time2)));
   EXPECT_FALSE(base::Contains(current_measurements_, new_worker3_context));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta));
+              CPUDeltaMatches(page_context, expected_page_delta,
+                              MeasurementAlgorithm::kSum));
 
   new_frame1.reset();
   new_worker1.reset();
@@ -788,18 +834,20 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
               CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
   EXPECT_THAT(
       current_measurements_[frame_context],
-      CPUDeltaMatches(frame_context, process_5way_split + process_4way_split));
-  EXPECT_THAT(
-      current_measurements_[new_frame1_context],
-      CPUDeltaMatches(new_frame1_context, base::TimeDelta(),
-                      /*expected_measurement_time=*/node_removed_time1));
-  EXPECT_THAT(
-      current_measurements_[new_frame2_context],
-      CPUDeltaMatches(new_frame2_context, process_5way_split,
-                      /*expected_measurement_time=*/node_removed_time2));
+      CPUDeltaMatches(frame_context, process_5way_split + process_4way_split,
+                      MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_frame1_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_frame1_context, base::TimeDelta(), node_removed_time1,
+                  MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_frame2_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_frame2_context, process_5way_split, node_removed_time2,
+                  MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_frame3_context],
               AllOf(CPUDeltaMatches(new_frame3_context,
-                                    process_5way_split + process_4way_split),
+                                    process_5way_split + process_4way_split,
+                                    MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time3)));
 
   EXPECT_THAT(
@@ -808,23 +856,26 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   EXPECT_THAT(
       current_measurements_[child_frame_context],
       CPUDeltaMatches(child_frame_context,
-                      other_process_4way_split + other_process_3way_split));
-  EXPECT_THAT(
-      current_measurements_[new_worker1_context],
-      CPUDeltaMatches(new_worker1_context, base::TimeDelta(),
-                      /*expected_measurement_time=*/node_removed_time1));
-  EXPECT_THAT(
-      current_measurements_[new_worker2_context],
-      CPUDeltaMatches(new_worker2_context, other_process_4way_split,
-                      /*expected_measurement_time=*/node_removed_time2));
+                      other_process_4way_split + other_process_3way_split,
+                      MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_worker1_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_worker1_context, base::TimeDelta(), node_removed_time1,
+                  MeasurementAlgorithm::kSplit));
+  EXPECT_THAT(current_measurements_[new_worker2_context],
+              CPUDeltaMatchesWithMeasurementTime(
+                  new_worker2_context, other_process_4way_split,
+                  node_removed_time2, MeasurementAlgorithm::kSplit));
   EXPECT_THAT(
       current_measurements_[new_worker3_context],
-      AllOf(CPUDeltaMatches(new_worker3_context, other_process_4way_split +
-                                                     other_process_3way_split),
+      AllOf(CPUDeltaMatches(new_worker3_context,
+                            other_process_4way_split + other_process_3way_split,
+                            MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time3)));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta2));
+              CPUDeltaMatches(page_context, expected_page_delta2,
+                              MeasurementAlgorithm::kSum));
 }
 
 // Tests that WorkerNode CPU usage is correctly distributed to pages as clients
@@ -867,20 +918,26 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
       kTimeBetweenMeasurements * 0.5 / 3;
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, process_split));
+              CPUDeltaMatches(frame_context, process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker1_context],
-              CPUDeltaMatches(new_worker1_context, process_split));
+              CPUDeltaMatches(new_worker1_context, process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[child_frame_context],
-              CPUDeltaMatches(child_frame_context, other_process_split));
+              CPUDeltaMatches(child_frame_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker2_context],
-              CPUDeltaMatches(new_worker2_context, other_process_split));
+              CPUDeltaMatches(new_worker2_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, 2 * process_split));
+              CPUDeltaMatches(page_context, 2 * process_split,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
               CPUDeltaMatches(other_page_context,
-                              process_split + 2 * other_process_split));
+                              process_split + 2 * other_process_split,
+                              MeasurementAlgorithm::kSum));
 
   // Half-way through the interval, make `frame` a client of `new_worker1` and
   // `worker` a client of `new_worker2`.
@@ -899,20 +956,26 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
       /*second half, 4 nodes*/ (3 * process_split + other_process_split) / 2;
 
   EXPECT_THAT(current_measurements_[frame_context],
-              CPUDeltaMatches(frame_context, process_split));
+              CPUDeltaMatches(frame_context, process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker1_context],
-              CPUDeltaMatches(new_worker1_context, process_split));
+              CPUDeltaMatches(new_worker1_context, process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[child_frame_context],
-              CPUDeltaMatches(child_frame_context, other_process_split));
+              CPUDeltaMatches(child_frame_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
   EXPECT_THAT(current_measurements_[new_worker2_context],
-              CPUDeltaMatches(new_worker2_context, other_process_split));
+              CPUDeltaMatches(new_worker2_context, other_process_split,
+                              MeasurementAlgorithm::kSplit));
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta));
+              CPUDeltaMatches(page_context, expected_page_delta,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
               CPUDeltaMatches(other_page_context,
-                              process_split + 2 * other_process_split));
+                              process_split + 2 * other_process_split,
+                              MeasurementAlgorithm::kSum));
 
   // Half-way through the interval, make `other_worker` a client of
   // `new_worker2` instead of `worker`.
@@ -939,9 +1002,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
       /*second half, 4 nodes*/ (process_split + 3 * other_process_split) / 2;
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta2));
+              CPUDeltaMatches(page_context, expected_page_delta2,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, expected_other_page_delta));
+              CPUDeltaMatches(other_page_context, expected_other_page_delta,
+                              MeasurementAlgorithm::kSum));
 
   // Test workers with multiple clients, and multiple paths to the same
   // FrameNode or PageNode.
@@ -975,9 +1040,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta3));
+              CPUDeltaMatches(page_context, expected_page_delta3,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, expected_other_page_delta2));
+              CPUDeltaMatches(other_page_context, expected_other_page_delta2,
+                              MeasurementAlgorithm::kSum));
 
   // Break the link between `new_worker2` and `new_worker1`. `new_worker2`
   // should still be in `page` because a path to `frame` still exists:
@@ -988,9 +1055,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   UpdateAndGetCPUMeasurements();
 
   EXPECT_THAT(current_measurements_[page_context],
-              CPUDeltaMatches(page_context, expected_page_delta3));
+              CPUDeltaMatches(page_context, expected_page_delta3,
+                              MeasurementAlgorithm::kSum));
   EXPECT_THAT(current_measurements_[other_page_context],
-              CPUDeltaMatches(other_page_context, expected_other_page_delta2));
+              CPUDeltaMatches(other_page_context, expected_other_page_delta2,
+                              MeasurementAlgorithm::kSum));
 
   // Need to remove all clients before deleting WorkerNodes
   auto remove_clients = [](TestNodeWrapper<WorkerNodeImpl>& worker) {
@@ -1063,11 +1132,13 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
 
   // After an error the previous measurement should be returned unchanged.
   EXPECT_THAT(current_measurements_[renderer1->GetResourceContext()],
-              CPUDeltaMatches(renderer1->GetResourceContext(),
-                              base::TimeDelta(), previous_measurement_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer1->GetResourceContext(), base::TimeDelta(),
+                  previous_measurement_time));
   EXPECT_THAT(current_measurements_[renderer2->GetResourceContext()],
-              CPUDeltaMatches(renderer2->GetResourceContext(),
-                              base::TimeDelta(), previous_measurement_time));
+              CPUDeltaMatchesWithMeasurementTime(
+                  renderer2->GetResourceContext(), base::TimeDelta(),
+                  previous_measurement_time));
   EXPECT_FALSE(
       base::Contains(current_measurements_, renderer3->GetResourceContext()));
   EXPECT_FALSE(

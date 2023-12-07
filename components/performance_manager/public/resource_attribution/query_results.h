@@ -20,12 +20,29 @@ namespace performance_manager::resource_attribution {
 // The Resource Attribution result and metadata structs described in
 // https://bit.ly/resource-attribution-api#heading=h.k8fjwkwxxdj6.
 
-// TODO(crbug.com/1471683): Add MeasurementAlgorithm to metadata
+// The methods used to produce a result.
+enum class MeasurementAlgorithm {
+  // The values in this result were measured directly, such as with an
+  // OS system call.
+  kDirectMeasurement,
+
+  // The values in this result are estimates derived by subdividing direct
+  // measurements of a context between several related contexts, such as with
+  // SplitResourceAmongFramesAndWorkers().
+  kSplit,
+
+  // The values in this result are estimates derived by summing kSplit estimates
+  // over a collection of contexts.
+  kSum,
+};
 
 // Metadata about the measurement that produced a result.
 struct ResultMetadata {
   // The time this measurement was taken.
   base::TimeTicks measurement_time;
+
+  // Method used to assign measurement results to the resource context.
+  MeasurementAlgorithm algorithm;
 
   friend constexpr auto operator<=>(const ResultMetadata&,
                                     const ResultMetadata&) = default;

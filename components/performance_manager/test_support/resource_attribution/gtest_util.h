@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/type_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +44,25 @@ constexpr std::string_view TypeNameString<MemorySummaryResult>() {
 }
 
 }  // namespace internal
+
+// gMock matcher expecting that a given ResultType object (which can be any
+// alternative in the QueryResult variant) has a ResultMetadata member whose
+// fields match `measurement_time_matcher` and `algorithm_matcher`.
+template <
+    typename ResultType,
+    typename Matcher1,
+    typename Matcher2,
+    internal::EnableIfIsVariantAlternative<ResultType, QueryResult> = true>
+auto ResultMetadataMatches(Matcher1 measurement_time_matcher,
+                           Matcher2 algorithm_matcher) {
+  return ::testing::Field(
+      "metadata", &ResultType::metadata,
+      ::testing::AllOf(::testing::Field("measurement_time",
+                                        &ResultMetadata::measurement_time,
+                                        measurement_time_matcher),
+                       ::testing::Field("algorithm", &ResultMetadata::algorithm,
+                                        algorithm_matcher)));
+}
 
 // gMock matcher expecting that a given QueryResults object contains a result of
 // type ResultType that matches `matcher`.
@@ -131,8 +151,24 @@ auto ResultForContextMatchesAll(const ResourceContext& resource_context,
 // Test result printers. These need to go in the same namespace as the type
 // being printed.
 
+inline void PrintTo(MeasurementAlgorithm algorithm, std::ostream* os) {
+  switch (algorithm) {
+    case MeasurementAlgorithm::kDirectMeasurement:
+      *os << "DirectMeasurement";
+      return;
+    case MeasurementAlgorithm::kSplit:
+      *os << "Split";
+      return;
+    case MeasurementAlgorithm::kSum:
+      *os << "Sum";
+      return;
+  }
+  *os << "UnknownAlgorithm:" << static_cast<int>(algorithm);
+}
+
 inline void PrintTo(const ResultMetadata& metadata, std::ostream* os) {
-  *os << "measurement_time:" << metadata.measurement_time;
+  *os << "measurement_time:" << metadata.measurement_time
+      << ",algorithm:" << ::testing::PrintToString(metadata.algorithm);
 }
 
 inline void PrintTo(const CPUTimeResult& result, std::ostream* os) {

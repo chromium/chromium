@@ -84,12 +84,13 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
 };
 
 // GMock matcher expecting that a given MemorySummaryResult has the metadata
-// filled in and all memory measurements >0.
-auto MemorySummaryResultIsPositive() {
+// filled in and all memory measurements >0. `expected_algorithm` is the
+// measurement algorithm that should be used.
+auto MemorySummaryResultIsPositive(MeasurementAlgorithm expected_algorithm) {
+  // Expect any positive measurement time in the past.
+  auto expected_measurement_time_matcher =
+      AllOf(Gt(base::TimeTicks()), Lt(base::TimeTicks::Now()));
   return VariantWith<MemorySummaryResult>(AllOf(
-      Field("metadata", &MemorySummaryResult::metadata,
-            Field("measurement_time", &ResultMetadata::measurement_time,
-                  AllOf(Gt(base::TimeTicks()), Lt(base::TimeTicks::Now())))),
 #if BUILDFLAG(IS_IOS)
       // TODO(crbug.com/1506552): iOS doesn't support private_memory_footprint,
       // so it's always 0.
@@ -100,7 +101,9 @@ auto MemorySummaryResultIsPositive() {
             Gt(0u)),
 #endif
       Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size_kb,
-            Gt(0u))));
+            Gt(0u)),
+      ResultMetadataMatches<MemorySummaryResult>(
+          expected_measurement_time_matcher, expected_algorithm)));
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
@@ -125,19 +128,26 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
       FrameContext::FromRenderFrameHost(child_rfh).value();
   const ResourceContext process_context =
       ProcessContext::FromRenderProcessHost(main_rfh->GetProcess()).value();
+  const ResourceContext page_context =
+      PageContext::FromWebContents(shell()->web_contents()).value();
 
   // Measure the memory of all processes. Results will include the browser and
   // utility processes.
   ResultMap results = WaitForMemorySummary();
   EXPECT_THAT(
       results,
-      IsSupersetOf(
-          {Pair(process_context, MemorySummaryResultIsPositive()),
-           Pair(main_frame_context, MemorySummaryResultIsPositive()),
-           Pair(child_frame_context, MemorySummaryResultIsPositive())}));
+      IsSupersetOf({
+          Pair(process_context, MemorySummaryResultIsPositive(
+                                    MeasurementAlgorithm::kDirectMeasurement)),
+          Pair(main_frame_context,
+               MemorySummaryResultIsPositive(MeasurementAlgorithm::kSplit)),
+          Pair(child_frame_context,
+               MemorySummaryResultIsPositive(MeasurementAlgorithm::kSplit)),
+          Pair(page_context,
+               MemorySummaryResultIsPositive(MeasurementAlgorithm::kSum)),
+      }));
 
-  // The process memory should be split between frames in the
-  // process.
+  // The process memory should be split between frames in the process.
   const auto main_frame_result =
       absl::get<MemorySummaryResult>(results.at(main_frame_context));
   const auto child_frame_result =
@@ -152,6 +162,16 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
             process_result.resident_set_size_kb);
   EXPECT_LE(child_frame_result.private_footprint_kb,
             process_result.private_footprint_kb);
+
+  // The page memory should be the sum of all its frames, from any process.
+  const auto page_result =
+      absl::get<MemorySummaryResult>(results.at(page_context));
+  EXPECT_EQ(page_result.resident_set_size_kb,
+            main_frame_result.resident_set_size_kb +
+                child_frame_result.resident_set_size_kb);
+  EXPECT_EQ(page_result.private_footprint_kb,
+            main_frame_result.private_footprint_kb +
+                child_frame_result.private_footprint_kb);
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
@@ -179,17 +199,28 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
       ProcessContext::FromRenderProcessHost(main_rfh->GetProcess()).value();
   const ResourceContext process_b_context =
       ProcessContext::FromRenderProcessHost(child_rfh->GetProcess()).value();
+  const ResourceContext page_context =
+      PageContext::FromWebContents(shell()->web_contents()).value();
 
   // Measure the memory of all processes. Results will include the browser and
   // utility processes.
   ResultMap results = WaitForMemorySummary();
   EXPECT_THAT(
       results,
-      IsSupersetOf(
-          {Pair(process_a_context, MemorySummaryResultIsPositive()),
-           Pair(process_b_context, MemorySummaryResultIsPositive()),
-           Pair(main_frame_context, MemorySummaryResultIsPositive()),
-           Pair(child_frame_context, MemorySummaryResultIsPositive())}));
+      IsSupersetOf({
+          Pair(process_a_context,
+               MemorySummaryResultIsPositive(
+                   MeasurementAlgorithm::kDirectMeasurement)),
+          Pair(process_b_context,
+               MemorySummaryResultIsPositive(
+                   MeasurementAlgorithm::kDirectMeasurement)),
+          Pair(main_frame_context,
+               MemorySummaryResultIsPositive(MeasurementAlgorithm::kSplit)),
+          Pair(child_frame_context,
+               MemorySummaryResultIsPositive(MeasurementAlgorithm::kSplit)),
+          Pair(page_context,
+               MemorySummaryResultIsPositive(MeasurementAlgorithm::kSum)),
+      }));
 
   // Each process memory should be assigned entirely to the frame in the
   // process.
@@ -209,6 +240,16 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
             process_b_result.resident_set_size_kb);
   EXPECT_EQ(child_frame_result.private_footprint_kb,
             process_b_result.private_footprint_kb);
+
+  // The page memory should be the sum of all its frames, from any process.
+  const auto page_result =
+      absl::get<MemorySummaryResult>(results.at(page_context));
+  EXPECT_EQ(page_result.resident_set_size_kb,
+            main_frame_result.resident_set_size_kb +
+                child_frame_result.resident_set_size_kb);
+  EXPECT_EQ(page_result.private_footprint_kb,
+            main_frame_result.private_footprint_kb +
+                child_frame_result.private_footprint_kb);
 }
 
 }  // namespace
