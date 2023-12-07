@@ -221,11 +221,16 @@ static ALLOWED_LICENSES: [(&str, &str); 20] = [
     ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache 2.0"),
 ];
 
-static EXPECTED_LICENSE_FILE: [(&str, &str); 6] = [
+static EXPECTED_LICENSE_FILE: [(&str, &str); 11] = [
     ("Apache 2.0", "LICENSE-APACHE"),
     ("Apache 2.0", "LICENSE-APACHE.txt"),
     ("Apache 2.0", "LICENSE"),
     ("MIT", "LICENSE"),
     ("MIT", "LICENSE-MIT"),
     ("MIT", "LICENSE-MIT.txt"),
+    ("BSD 3-Clause", "LICENSE"),
+    ("BSD 3-Clause", "LICENSE-BSD"),
+    ("ISC", "LICENSE"),
+    ("ISC", "LICENSE-ISC"),
+    ("Apache 2.0 | BSD 3-Clause", "LICENSE"),
 ];
