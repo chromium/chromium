@@ -9,10 +9,6 @@
 #include <string>
 
 #include "ash/constants/app_types.h"
-#include "ash/rotator/screen_rotation_animator.h"
-#include "ash/rotator/screen_rotation_animator_observer.h"
-#include "ash/shell.h"
-#include "ash/shell_observer.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
@@ -29,8 +25,6 @@ namespace arc {
 
 class ArcWmMetrics : public aura::EnvObserver,
                      public aura::WindowObserver,
-                     public ash::ScreenRotationAnimatorObserver,
-                     public ash::ShellObserver,
                      public display::DisplayObserver {
  public:
   ArcWmMetrics();
@@ -50,8 +44,6 @@ class ArcWmMetrics : public aura::EnvObserver,
   static std::string GetWindowExitTabletModeTimeHistogramName(
       ash::AppType app_type);
 
-  static std::string GetWindowRotateTimeHistogramName(ash::AppType app_type);
-
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -64,14 +56,6 @@ class ArcWmMetrics : public aura::EnvObserver,
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // ash::ScreenRotationAnimatorObserver:
-  void OnScreenCopiedBeforeRotation() override;
-  void OnScreenRotationAnimationFinished(ash::ScreenRotationAnimator* animator,
-                                         bool canceled) override;
-
-  // ash::ShellObserver:
-  void OnRootWindowWillShutdown(aura::Window* root_window) override;
-
  private:
   friend class ArcWmMetricsTest;
 
@@ -79,10 +63,7 @@ class ArcWmMetrics : public aura::EnvObserver,
 
   class WindowCloseObserver;
 
-  class WindowRotationObserver;
-
   void OnOperationCompleted(aura::Window* window);
-  void OnWindowRotationCompleted(aura::Window* window);
 
   void OnWindowCloseRequested(aura::Window* window);
   void OnWindowCloseCompleted(aura::Window* window);
@@ -102,24 +83,12 @@ class ArcWmMetrics : public aura::EnvObserver,
   base::flat_map<aura::Window*, std::unique_ptr<WindowStateChangeObserver>>
       exiting_tablet_mode_observing_windows_;
 
-  // The map of windows that being observed by WindowRotationObserver and
-  // their corresponding observers.
-  base::flat_map<aura::Window*, std::unique_ptr<WindowRotationObserver>>
-      rotation_observing_windows_;
-
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  base::ScopedMultiSourceObservation<ash::ScreenRotationAnimator,
-                                     ash::ScreenRotationAnimatorObserver>
-      screen_rotation_observations_{this};
-
-  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
-      this};
 
   base::WeakPtrFactory<ArcWmMetrics> weak_ptr_factory_{this};
 };
