@@ -2844,6 +2844,10 @@ void RenderFrameImpl::CommitNavigationWithParams(
                .Get() ||
       frame_->IsOutermostMainFrame()) {
     frame_->SetLCPPHint(std::move(commit_params->lcpp_hint));
+  } else {
+    // When there's a pre-existing LCPP hint on frame, we want to remove the
+    // existing hint. Hence calling SetLCPPHint(nullptr) is required.
+    frame_->SetLCPPHint(nullptr);
   }
 
   // Note: this intentionally does not call |Detach()| before |reset()|. If
