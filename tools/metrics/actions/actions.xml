@@ -3550,6 +3550,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AppHome_LaunchApp">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User launches a web app by clicking on the app icon from the new
+    chrome://apps page. This results in the web app's start_url opening up in a
+    dedicated window or in a browser tab, depending on the user's preference.
+  </description>
+</action>
+
 <action name="AppHome_LaunchAtStartupChecked">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@chromium.org</owner>
@@ -3579,16 +3589,6 @@ should be able to be added at any place in this file.
     of this dialog will expire as well. If the user ends up launching the app
     itself, the web app's start_url opening up in a dedicated window or in a
     browser tab, depending on the user's preference.
-  </description>
-</action>
-
-<action name="AppHome_LaunchWebApp">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@chromium.org</owner>
-  <description>
-    User launches a web app by clicking on the app icon from the new
-    chrome://apps page. This results in the web app's start_url opening up in a
-    dedicated window or in a browser tab, depending on the user's preference.
   </description>
 </action>
 
