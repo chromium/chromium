@@ -8,7 +8,7 @@
 #include "base/logging.h"
 
 // Add a common prefix to all our logs, to make them easy to find.
-#define CRD_DVLOG(level) DVLOG(level) << "CRD: "
+#define CRD_VLOG(level) VLOG(level) << "CRD: "
 #define CRD_LOG(level) LOG(level) << "CRD: "
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_LOGGING_H_

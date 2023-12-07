@@ -56,11 +56,11 @@ bool IsRunningAutoLaunchedKiosk(const user_manager::UserManager& user_manager) {
 // Helper method that DVLOGs all the given networks.
 void LogNetworks(const std::vector<NetworkStatePropertiesPtr>& networks,
                  const char* type) {
-  CRD_DVLOG(3) << "Found " << networks.size() << " " << type << " networks:";
+  CRD_VLOG(3) << "Found " << networks.size() << " " << type << " networks:";
   for (const auto& network : networks) {
-    CRD_DVLOG(3) << "   --> " << network->name << " (" << network->guid << "): "
-                 << " ONC source: " << network->source
-                 << ", Type: " << network->type;
+    CRD_VLOG(3) << "   --> " << network->name << " (" << network->guid
+                << "): " << " ONC source: " << network->source
+                << ", Type: " << network->type;
   }
 }
 

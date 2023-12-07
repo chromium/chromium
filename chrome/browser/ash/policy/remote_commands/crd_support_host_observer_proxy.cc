@@ -45,17 +45,17 @@ void SupportHostObserverProxy::Bind(
 
 // `remoting::mojom::SupportHostObserver` implementation:
 void SupportHostObserverProxy::OnHostStateStarting() {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 }
 
 void SupportHostObserverProxy::OnHostStateRequestedAccessCode() {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 }
 
 void SupportHostObserverProxy::OnHostStateReceivedAccessCode(
     const std::string& access_code,
     base::TimeDelta lifetime) {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 
   for (auto& observer : observers_) {
     observer.OnAccessCodeReceived(access_code);
@@ -63,12 +63,12 @@ void SupportHostObserverProxy::OnHostStateReceivedAccessCode(
 }
 
 void SupportHostObserverProxy::OnHostStateConnecting() {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 }
 
 void SupportHostObserverProxy::OnHostStateConnected(
     const std::string& remote_username) {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 
   for (auto& observer : observers_) {
     observer.OnClientConnected();
@@ -92,29 +92,29 @@ void SupportHostObserverProxy::OnHostStateDisconnected(
 
 void SupportHostObserverProxy::OnNatPolicyChanged(
     remoting::mojom::NatPolicyStatePtr nat_policy_state) {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 }
 
 void SupportHostObserverProxy::OnHostStateError(int64_t error) {
   const ErrorCode error_code = static_cast<ErrorCode>(error);
 
-  CRD_DVLOG(3) << __func__
-               << " with error code: " << ErrorCodeToString(error_code) << "("
-               << error_code << ")";
+  CRD_VLOG(3) << __func__
+              << " with error code: " << ErrorCodeToString(error_code) << "("
+              << error_code << ")";
 
   ReportHostStopped(ToExtendedStartCrdSessionResultCode(error_code),
                     "host state error");
 }
 
 void SupportHostObserverProxy::OnPolicyError() {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 
   ReportHostStopped(ExtendedStartCrdSessionResultCode::kFailureHostPolicyError,
                     "policy error");
 }
 
 void SupportHostObserverProxy::OnInvalidDomainError() {
-  CRD_DVLOG(3) << __func__;
+  CRD_VLOG(3) << __func__;
 
   ReportHostStopped(
       ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError,
@@ -122,7 +122,7 @@ void SupportHostObserverProxy::OnInvalidDomainError() {
 }
 
 void SupportHostObserverProxy::OnMojomConnectionDropped() {
-  CRD_DVLOG(3) << "Mojom connection with CRD host dropped";
+  CRD_VLOG(3) << "Mojom connection with CRD host dropped";
 
   ReportHostStopped(ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
                     "mojom connection dropped");

@@ -65,12 +65,12 @@ class ScopedCurtain {
   ScopedCurtain(ash::curtain::SecurityCurtainController& curtain_controller,
                 ash::curtain::SecurityCurtainController::InitParams params)
       : curtain_controller_(curtain_controller) {
-    CRD_DVLOG(3) << "Enabling curtain screen";
+    CRD_VLOG(3) << "Enabling curtain screen";
     curtain_controller_->Enable(params);
   }
 
   ~ScopedCurtain() {
-    CRD_DVLOG(3) << "Disabling curtain screen";
+    CRD_VLOG(3) << "Disabling curtain screen";
     curtain_controller_->Disable();
   }
 
@@ -383,7 +383,7 @@ class CrdAdminSessionController::CrdHostSession {
   }
 
   void Start(SessionStartParameters parameters) {
-    CRD_DVLOG(1) << "CRD Host session started successfully";
+    CRD_VLOG(1) << "CRD Host session started successfully";
     is_curtained_ = parameters.curtained;
     scoped_curtain_ = std::move(parameters.curtain);
     scoped_session_terminator_ = std::move(parameters.session_terminator);
@@ -411,7 +411,7 @@ class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
 
  private:
   void Start() {
-    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters_;
+    CRD_VLOG(3) << "Starting CRD session with parameters " << parameters_;
     remoting_service_->StartSession(
         GetSessionParameters(parameters_), GetEnterpriseParameters(parameters_),
         base::BindOnce(&NewSessionLauncher::OnSessionStartResponse,
@@ -465,7 +465,7 @@ class CrdAdminSessionController::ReconnectedSessionLauncher
 
  private:
   void TryToReconnect() {
-    CRD_DVLOG(3) << "Checking for reconnectable session";
+    CRD_VLOG(3) << "Checking for reconnectable session";
 
     // First fetch the id of the reconnectable session.
     remoting_service_->GetReconnectableSessionId(base::BindOnce(
@@ -483,12 +483,12 @@ class CrdAdminSessionController::ReconnectedSessionLauncher
           on_done,
       std::optional<remoting::SessionId> id) {
     if (!id.has_value()) {
-      CRD_DVLOG(3) << "No reconnectable CRD session found.";
+      CRD_VLOG(3) << "No reconnectable CRD session found.";
       return ReportLaunchFailure(
           ExtendedStartCrdSessionResultCode::kFailureUnknownError);
     }
-    CRD_DVLOG(3) << "Reconnectable CRD session found with id " << id.value()
-                 << ". Now fetching OAuth token";
+    CRD_VLOG(3) << "Reconnectable CRD session found with id " << id.value()
+                << ". Now fetching OAuth token";
 
     // Ensure the screen is curtained off as soon as it is clear there is a
     // reconnectable session.
@@ -503,8 +503,8 @@ class CrdAdminSessionController::ReconnectedSessionLauncher
 
   void ReconnectToSession(remoting::SessionId id,
                           std::optional<std::string> oauth_token) {
-    CRD_DVLOG(3) << "OAuth token fetch done. Success? "
-                 << oauth_token.has_value();
+    CRD_VLOG(3) << "OAuth token fetch done. Success? "
+                << oauth_token.has_value();
 
     if (!oauth_token.has_value()) {
       CRD_LOG(WARNING)
@@ -609,14 +609,14 @@ bool CrdAdminSessionController::HasActiveSession() const {
 }
 
 void CrdAdminSessionController::TerminateSession() {
-  CRD_DVLOG(3) << "Terminating CRD session";
+  CRD_VLOG(3) << "Terminating CRD session";
   active_session_ = nullptr;
 }
 
 void CrdAdminSessionController::OnHostStopped(
     ExtendedStartCrdSessionResultCode result,
     const std::string& message) {
-  CRD_DVLOG(3) << "Destroying CRD host session asynchronously";
+  CRD_VLOG(3) << "Destroying CRD host session asynchronously";
 
   DeleteSoon(std::move(active_session_));
 }
@@ -641,7 +641,7 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
     SessionEndCallback session_finished_callback) {
   CHECK(!HasActiveSession());
 
-  CRD_DVLOG(3) << "Starting CRD host session";
+  CRD_VLOG(3) << "Starting CRD host session";
 
   active_session_ = CreateCrdHostSession();
 

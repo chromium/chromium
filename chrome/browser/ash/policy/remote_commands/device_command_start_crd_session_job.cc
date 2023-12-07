@@ -207,8 +207,8 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
                  << std::quoted(command_payload);
     return false;
   }
-  CRD_DVLOG(1) << "Received remote command with payload "
-               << std::quoted(command_payload);
+  CRD_VLOG(1) << "Received remote command with payload "
+              << std::quoted(command_payload);
 
   const base::Value::Dict& root_dict = root->GetDict();
 
@@ -243,7 +243,7 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
   CRD_LOG(INFO) << "Running start CRD session command";
 
   if (delegate_->HasActiveSession()) {
-    CRD_DVLOG(1) << "Terminating active session";
+    CRD_VLOG(1) << "Terminating active session";
     delegate_->TerminateSession();
     CHECK(!delegate_->HasActiveSession());
   }
@@ -311,7 +311,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
         ExtendedStartCrdSessionResultCode::kFailureNoOauthToken, "");
   }
 
-  CRD_DVLOG(1) << "Received OAuth token, now retrieving CRD access code";
+  CRD_VLOG(1) << "Received OAuth token, now retrieving CRD access code";
   SessionParameters parameters;
   parameters.oauth_token = std::move(oauth_token).value();
   parameters.user_name = robot_account_id_;
@@ -384,8 +384,8 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
 }
 
 bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
-  CRD_DVLOG(2) << "User is of type "
-               << UserSessionTypeToString(GetCurrentUserSessionType());
+  CRD_VLOG(2) << "User is of type "
+              << UserSessionTypeToString(GetCurrentUserSessionType());
 
   if (curtain_local_user_session_) {
     return UserSessionSupportsRemoteAccess(GetCurrentUserSessionType());

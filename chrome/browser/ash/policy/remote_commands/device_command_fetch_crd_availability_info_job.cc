@@ -118,8 +118,8 @@ void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
                                                GetCurrentUserSessionType())))
           .value();
 
-  CRD_DVLOG(1) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "
-               << payload;
+  CRD_VLOG(1) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "
+              << payload;
   std::move(callback).Run(ResultType::kSuccess, std::move(payload));
 }
 

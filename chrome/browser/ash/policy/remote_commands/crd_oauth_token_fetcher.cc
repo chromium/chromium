@@ -35,7 +35,7 @@ RealCrdOAuthTokenFetcher::RealCrdOAuthTokenFetcher(
 RealCrdOAuthTokenFetcher::~RealCrdOAuthTokenFetcher() = default;
 
 void RealCrdOAuthTokenFetcher::Start(OAuthTokenCallback done_callback) {
-  CRD_DVLOG(1) << "Fetching OAuth access token";
+  CRD_VLOG(1) << "Fetching OAuth access token";
 
   done_callback_ = std::move(done_callback);
 
@@ -48,7 +48,7 @@ void RealCrdOAuthTokenFetcher::Start(OAuthTokenCallback done_callback) {
 void RealCrdOAuthTokenFetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  CRD_DVLOG(1) << "Received OAuth access token";
+  CRD_VLOG(1) << "Received OAuth access token";
   oauth_request_.reset();
   std::move(done_callback_).Run(token_response.access_token);
 }
