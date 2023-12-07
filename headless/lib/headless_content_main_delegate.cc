@@ -339,7 +339,7 @@ void HeadlessContentMainDelegate::InitCrashReporter(
       command_line.GetSwitchValueASCII(::switches::kProcessType);
   bool enable_crash_reporter =
       process_type.empty() &&
-      command_line.HasSwitch(switches::kEnableCrashReporter) &&
+      command_line.HasSwitch(::switches::kEnableCrashReporter) &&
       !command_line.HasSwitch(switches::kDisableCrashReporter);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

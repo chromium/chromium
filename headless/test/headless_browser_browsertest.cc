@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -429,7 +430,7 @@ class CrashReporterTest : public HeadlessBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CreateNewTempDirectory(FILE_PATH_LITERAL("CrashReporterTest"),
                                  &crash_dumps_dir_);
-    command_line->AppendSwitch(switches::kEnableCrashReporter);
+    command_line->AppendSwitch(::switches::kEnableCrashReporter);
     command_line->AppendSwitchPath(switches::kCrashDumpsDir, crash_dumps_dir_);
     HeadlessBrowserTest::SetUpCommandLine(command_line);
   }

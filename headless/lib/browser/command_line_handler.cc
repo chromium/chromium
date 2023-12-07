@@ -75,10 +75,10 @@ bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
 
 void HandleProxyServer(base::CommandLine& command_line,
                        HeadlessBrowser::Options::Builder& builder) {
-  DCHECK(command_line.HasSwitch(switches::kProxyServer));
+  DCHECK(command_line.HasSwitch(::switches::kProxyServer));
 
   std::string proxy_server =
-      command_line.GetSwitchValueASCII(switches::kProxyServer);
+      command_line.GetSwitchValueASCII(::switches::kProxyServer);
   auto proxy_config = std::make_unique<net::ProxyConfig>();
   proxy_config->proxy_rules().ParseFromString(proxy_server);
   if (command_line.HasSwitch(switches::kProxyBypassList)) {
@@ -173,7 +173,7 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     builder.EnableDevToolsPipe();
   }
 
-  if (command_line.HasSwitch(switches::kProxyServer)) {
+  if (command_line.HasSwitch(::switches::kProxyServer)) {
     HandleProxyServer(command_line, builder);
   }
 

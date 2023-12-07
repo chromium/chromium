@@ -44,9 +44,6 @@ const char kDiskCacheDir[] = "disk-cache-dir";
 // (experimental).
 const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
 
-// Enable crash reporter for headless.
-const char kEnableCrashReporter[] = "enable-crash-reporter";
-
 // Enable hardware GPU support.
 // Headless uses swiftshader by default for consistency across headless
 // environments. This flag just turns forcing of swiftshader off and lets
@@ -86,10 +83,6 @@ const char kPasswordStore[] = "password-store";
 // comma-separated list of bypass rules. See:
 // "net/proxy_resolution/proxy_bypass_rules.h" for the format of these rules.
 const char kProxyBypassList[] = "proxy-bypass-list";
-
-// Uses a specified proxy server, overrides system settings. This switch only
-// affects HTTP and HTTPS requests.
-const char kProxyServer[] = "proxy-server";
 
 // Use the given address instead of the default loopback for accepting remote
 // debugging connections. Should be used together with --remote-debugging-port.
