@@ -169,21 +169,6 @@ const thunderboltRegEx = buildWordMatcher([
 ]);
 
 /**
- * Regular expression to check for Audio-related keywords.
- */
- const audioRegEx = buildWordMatcher([
-  'audio',
-  'sound',
-  'mic',
-  'speaker',
-  'headphone',
-  'headset',
-  'recording',
-  'volume',
-  'earbud',
-]);
-
-/**
  * Regular expression to check for all strings indicating that a user can't
  * connect to a HID or Audio device. This is also a likely indication of a
  * Bluetooth related issue.
@@ -355,10 +340,6 @@ function checkForShowQuestionnaire(inputEvent: Event) {
 
   if (displayRegEx.test(matchedText)) {
     toAppend.push(...domainQuestions['display']);
-  }
-
-  if (audioRegEx.test(matchedText)) {
-    toAppend.push(...domainQuestions['audio']);
   }
 
   if (thunderboltRegEx.test(matchedText)) {

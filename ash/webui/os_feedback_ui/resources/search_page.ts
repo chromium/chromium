@@ -73,19 +73,6 @@ const thunderboltRegEx = buildWordMatcher([
   'TB4',
 ]);
 
-/**  Regular expression to check for Audio-related keywords. */
-const audioRegEx = buildWordMatcher([
-  'audio',
-  'sound',
-  'mic',
-  'speaker',
-  'headphone',
-  'headset',
-  'recording',
-  'volume',
-  'earbud',
-]);
-
 /**
  * @fileoverview
  * 'search-page' is the first step of the feedback tool. It displays live help
@@ -428,10 +415,6 @@ export class SearchPageElement extends SearchPageElementBase {
 
     if (displayRegEx.test(matchedText)) {
       toAppend.push(...domainQuestions['display']);
-    }
-
-    if (audioRegEx.test(matchedText)) {
-      toAppend.push(...domainQuestions['audio']);
     }
 
     if (thunderboltRegEx.test(matchedText)) {
