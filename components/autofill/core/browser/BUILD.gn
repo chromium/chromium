@@ -184,6 +184,8 @@ static_library("browser") {
     "field_type_utils.h",
     "field_types.cc",
     "field_types.h",
+    "filling_product.cc",
+    "filling_product.h",
     "form_autofill_history.cc",
     "form_autofill_history.h",
     "form_data_importer.cc",
