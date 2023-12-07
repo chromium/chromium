@@ -169,6 +169,7 @@
 }
 
 - (void)showStoreKitWithProductIdentifier:(NSString*)productIdentifer
+                            providerToken:(NSString*)providerToken
                             campaignToken:(NSString*)campaignToken {
   if (_storeKitCoordinator) {
     [_storeKitCoordinator stop];
@@ -181,6 +182,7 @@
   _storeKitCoordinator.delegate = self;
   _storeKitCoordinator.iTunesProductParameters = @{
     SKStoreProductParameterITunesItemIdentifier : productIdentifer,
+    SKStoreProductParameterProviderToken : providerToken,
     SKStoreProductParameterCampaignToken : campaignToken
   };
   [_storeKitCoordinator start];

@@ -38,6 +38,7 @@
 
 // Show and hide StoreKit.
 - (void)showStoreKitWithProductIdentifier:(NSString*)productIdentifer
+                            providerToken:(NSString*)providerToken
                             campaignToken:(NSString*)campaignToken;
 - (void)hideStoreKit;
 

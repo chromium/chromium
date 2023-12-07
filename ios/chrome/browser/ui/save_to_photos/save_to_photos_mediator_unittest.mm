@@ -598,6 +598,7 @@ TEST_F(SaveToPhotosMediatorTest,
   // identifier.
   OCMExpect([mock_save_to_photos_mediator_delegate
       showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier
+                          providerToken:kGooglePhotosStoreKitProviderToken
                           campaignToken:kGooglePhotosStoreKitCampaignToken]);
 
   // Simulate the user tapped the "Open" button.

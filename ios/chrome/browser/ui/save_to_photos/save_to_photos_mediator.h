@@ -27,6 +27,10 @@ class WebState;
 // Photos app product identifier passed to the StoreKit view.
 extern NSString* const kGooglePhotosAppProductIdentifier;
 
+// This provider token is passed to the StoreKit view so the number of Photos
+// app installs from Chrome can be measured. This should not be modified.
+extern NSString* const kGooglePhotosStoreKitProviderToken;
+
 // This campaign token is passed to the StoreKit view so the number of Photos
 // app installs from Chrome can be measured. This should not be modified.
 extern NSString* const kGooglePhotosStoreKitCampaignToken;
