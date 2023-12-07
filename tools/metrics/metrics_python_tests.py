@@ -42,6 +42,7 @@ sys.exit(
             'histograms/generate_expired_histograms_array_unittest.py',
             'histograms/generate_histograms_variants_allowlist_unittest.py',
             'histograms/pretty_print_test.py',
+            'histograms/validate_token_test.py',
             '../json_comment_eater/json_comment_eater_test.py',
             '../json_to_struct/element_generator_test.py',
             '../json_to_struct/struct_generator_test.py',
