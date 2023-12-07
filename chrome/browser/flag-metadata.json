@@ -7424,15 +7424,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "site-data-improvements",
-    "owners": [
-      "andzaytsev@google.com",
-      "sauski@google.com",
-      "chrome-privacy-controls@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "site-instance-groups-for-data-urls",
     "owners": [ "yangsharon@chromium.org", "site-isolation-dev@chromium.org" ],
     "expiry_milestone": 125

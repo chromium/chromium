@@ -224,10 +224,7 @@ public class WebsitePermissionsFetcher {
 
         private void addAllFetchers(TaskQueue queue) {
             addFetcherForStorage(queue);
-            // Fetch cookies if the new UI is enabled.
-            if (SiteSettingsFeatureMap.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
-                queue.add(new CookiesInfoFetcher());
-            }
+            queue.add(new CookiesInfoFetcher());
             for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
                 addFetcherForContentSettingsType(queue, type);
             }

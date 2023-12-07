@@ -245,7 +245,6 @@
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
-#include "components/browser_ui/site_settings/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/messages/android/messages_feature.h"
@@ -8778,12 +8777,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"site-data-improvements", flag_descriptions::kSiteDataImprovementsName,
-     flag_descriptions::kSiteDataImprovementsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(browser_ui::kSiteDataImprovements)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,

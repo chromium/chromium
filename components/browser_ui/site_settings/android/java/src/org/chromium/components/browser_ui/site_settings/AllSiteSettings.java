@@ -435,7 +435,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     }
 
     private void addPreferencesFromXml() {
-        if (isNewAllSitesUiEnabled()) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
             ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
             if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
@@ -464,7 +464,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     private boolean addWebsites(Collection<Website> sites) {
         filterSelectedDomains(sites);
-        if (isNewAllSitesUiEnabled()) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             List<WebsiteEntry> entries = WebsiteGroup.groupWebsites(sites);
             List<WebsiteRowPreference> preferences = new ArrayList<>();
             // Find entries matching the current search.
@@ -524,12 +524,5 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 it.remove();
             }
         }
-    }
-
-    /** Returns whether the new All Sites UI should be used. */
-    private boolean isNewAllSitesUiEnabled() {
-        // Only in the "All sites" mode and with the flag enabled.
-        return mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
-                && SiteSettingsUtil.isSiteDataImprovementEnabled();
     }
 }

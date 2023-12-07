@@ -97,11 +97,6 @@ public class SiteSettingsUtil {
         return ContentSettingsType.DEFAULT;
     }
 
-    /** @return whether the flag for the improved UI for "All sites" and "Site settings" is enabled. */
-    public static boolean isSiteDataImprovementEnabled() {
-        return SiteSettingsFeatureMap.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
-    }
-
     /**
      * @param context A {@link Context} object to pull strings out of.
      * @param storage The amount of storage (in bytes) used by the entry.

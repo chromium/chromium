@@ -4516,10 +4516,6 @@ const char kSearchResumptionModuleAndroidName[] = "Search Resumption Module";
 const char kSearchResumptionModuleAndroidDescription[] =
     "Enable showing search suggestions on NTP";
 
-const char kSiteDataImprovementsName[] = "Site data improvements";
-const char kSiteDataImprovementsDescription[] =
-    "Improved 'All sites' and 'Site settings' pages on Android.";
-
 const char kStartSurfaceDisabledFeedImprovementName[] =
     "Start Surface Disabled Feed Improvement";
 const char kStartSurfaceDisabledFeedImprovementDescription[] =

@@ -121,7 +121,6 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsCo
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.Website;
@@ -1241,15 +1240,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
-    public void testOnlyExpectedPreferencesAllSites() {
-        checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, NULL_ARRAY);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
     public void testOnlyExpectedPreferencesZoom() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.ZOOM, NULL_ARRAY);
     }
@@ -1257,8 +1247,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
-    public void testOnlyExpectedPreferencesAllSitesV2() {
+    public void testOnlyExpectedPreferencesAllSites() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK);
     }
 

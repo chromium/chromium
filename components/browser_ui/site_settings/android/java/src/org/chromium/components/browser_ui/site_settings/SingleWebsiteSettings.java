@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.format.Formatter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -572,21 +571,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         long usage = mSite.getTotalUsage();
         int cookies = mSite.getNumberOfCookies();
         // Only take cookies into account when the new UI is enabled.
-        if (usage > 0 || (SiteSettingsUtil.isSiteDataImprovementEnabled() && cookies > 0)) {
+        if (usage > 0 || cookies > 0) {
             boolean appFound =
                     getSiteSettingsDelegate()
                             .getOriginsWithInstalledApp()
                             .contains(mSite.getAddress().getOrigin());
             Context context = preference.getContext();
-            if (SiteSettingsUtil.isSiteDataImprovementEnabled()) {
-                preference.setTitle(
-                        SiteSettingsUtil.generateStorageUsageText(context, usage, cookies));
-            } else {
-                preference.setTitle(
-                        String.format(
-                                context.getString(R.string.origin_settings_storage_usage_brief),
-                                Formatter.formatShortFileSize(context, usage)));
-            }
+            preference.setTitle(SiteSettingsUtil.generateStorageUsageText(context, usage, cookies));
             preference.setDataForDisplay(mSite.getTitle(), appFound, /* isGroup= */ false);
             if (mSite.isCookieDeletionDisabled(
                     getSiteSettingsDelegate().getBrowserContextHandle())) {
@@ -599,19 +590,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private void setupResetSitePreference() {
         Preference preference = findPreference(PREF_RESET_SITE);
-        int titleResId;
-        if (SiteSettingsUtil.isSiteDataImprovementEnabled()) {
-            titleResId =
-                    mHideNonPermissionPreferences
-                            ? R.string.page_info_permissions_reset
-                            : R.string.website_reset_full;
-        } else {
-            titleResId =
-                    mHideNonPermissionPreferences
-                            ? R.string.page_info_permissions_reset
-                            : R.string.website_reset;
-        }
-        preference.setTitle(titleResId);
+        preference.setTitle(
+                mHideNonPermissionPreferences
+                        ? R.string.page_info_permissions_reset
+                        : R.string.website_reset_full);
         preference.setOrder(mMaxPermissionOrder + 1);
         preference.setOnPreferenceClickListener(this);
         if (mSite.isCookieDeletionDisabled(getSiteSettingsDelegate().getBrowserContextHandle())) {
@@ -1405,14 +1387,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         View dialogView =
                 getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
         TextView mainMessage = dialogView.findViewById(R.id.main_message);
-        if (SiteSettingsUtil.isSiteDataImprovementEnabled()) {
-            mainMessage.setText(
-                    getString(
-                            R.string.website_single_reset_confirmation,
-                            mSite.getAddress().getHost()));
-        } else {
-            mainMessage.setText(R.string.website_reset_confirmation);
-        }
+        mainMessage.setText(
+                getString(
+                        R.string.website_single_reset_confirmation, mSite.getAddress().getHost()));
         TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);

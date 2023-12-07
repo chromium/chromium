@@ -6,17 +6,11 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("site_settings_jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java" ]
 }
 
 source_set("android") {
   sources = [
-    "features.cc",
-    "features.h",
-    "site_settings_feature_map.cc",
     "storage_info_fetcher.cc",
     "storage_info_fetcher.h",
     "website_preference_bridge.cc",
@@ -88,8 +82,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessSubpageSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageAccessWebsitePreference.java",
