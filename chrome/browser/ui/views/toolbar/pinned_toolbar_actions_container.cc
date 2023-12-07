@@ -380,6 +380,12 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
       button = AddPopOutButtonFor(id);
     }
   }
+  // If the button doesn't exist, do nothing. This could happen if |is_active|
+  // is false and there is no existing pinned out popped out button for the
+  // |id|.
+  if (!button) {
+    return;
+  }
 
   // Update button highlight and force visibility if the button is active.
   if (is_active) {
