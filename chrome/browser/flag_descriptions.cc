@@ -831,11 +831,6 @@ const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";
 
-const char kConsumerAutoUpdateToggleAllowedName[] =
-    "Allow Consumer Auto Update Toggle";
-const char kConsumerAutoUpdateToggleAllowedDescription[] =
-    "Allow enabling the consumer auto update toggle in settings";
-
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "
     "navigation";

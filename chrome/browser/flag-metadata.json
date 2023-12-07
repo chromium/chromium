@@ -1285,14 +1285,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "consumer-auto-update-toggle-allowed",
-    "owners": [
-      "kimjae@chromium.org",
-      "xiaohuic@chromium.org"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "content-languages-in-language-picker",
     "owners": [
       "perrier@google.com",

@@ -481,9 +481,6 @@ extern const char kChromeRefresh2023TopChromeFontDescription[];
 extern const char kCommerceHintAndroidName[];
 extern const char kCommerceHintAndroidDescription[];
 
-extern const char kConsumerAutoUpdateToggleAllowedName[];
-extern const char kConsumerAutoUpdateToggleAllowedDescription[];
-
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
