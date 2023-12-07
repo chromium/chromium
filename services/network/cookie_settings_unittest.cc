@@ -71,35 +71,22 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
       net::CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie_partition_key);
 }
 
-struct TestCase {
-  std::string test_name;
-  bool storage_access_grant_eligible;
-  bool top_level_storage_access_grant_eligible;
+// NOTE: Consider modifying
+// /components/content_settings/core/browser/cookie_settings_unittest.cc if
+// applicable.
+enum TestVariables {
+  kTopLevelStorageAccessGrantEligible = 0,
+  kStorageAccessGrantsEligible,
   // Whether `net::features::kTpcdSupportSettings` is enabled.
-  bool eligible_for_3pcd_support;
+  k3pcdSupportEligible,
+  kTrackingProtectionEnabledFor3pcd,
+  kForceThirdPartyCookieBlockingFlagEnabled
 };
 
-class CookieSettingsTest
-    : public testing::TestWithParam<std::tuple<bool, bool, TestCase>> {
+class CookieSettingsTestBase {
  public:
-  CookieSettingsTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (IsForceThirdPartyCookieBlockingFlagEnabled()) {
-      enabled_features.push_back(net::features::kForceThirdPartyCookieBlocking);
-      enabled_features.push_back(net::features::kThirdPartyStoragePartitioning);
-    }
-
-    if (Is3pcdSupportEligible()) {
-      enabled_features.push_back(net::features::kTpcdSupportSettings);
-    } else {
-      disabled_features.push_back(net::features::kTpcdSupportSettings);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  CookieSettingsTestBase()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ContentSettingPatternSource CreateSetting(
       const std::string& primary_pattern,
@@ -120,28 +107,64 @@ class CookieSettingsTest
     task_environment_.FastForwardBy(delta);
   }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
+class CookieSettingsTest
+    : public CookieSettingsTestBase,
+      public testing::TestWithParam<
+          std::tuple</*kTopLevelStorageAccessGrantEligible*/ bool,
+                     /*kStorageAccessGrantsEligible*/ bool,
+                     /*k3pcdSupportEligible*/ bool,
+                     /*kTrackingProtectionEnabledFor3pcd*/ bool,
+                     /*kForceThirdPartyCookieBlockingFlagEnabled*/ bool>> {
+ public:
+  CookieSettingsTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsForceThirdPartyCookieBlockingFlagEnabled()) {
+      enabled_features.push_back(net::features::kForceThirdPartyCookieBlocking);
+      enabled_features.push_back(net::features::kThirdPartyStoragePartitioning);
+    }
+
+    if (Is3pcdSupportEligible()) {
+      enabled_features.push_back(net::features::kTpcdSupportSettings);
+    } else {
+      disabled_features.push_back(net::features::kTpcdSupportSettings);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   // Indicates whether the setting comes from the testing flag if the test case
   // has 3pc blocked.
   bool IsForceThirdPartyCookieBlockingFlagEnabled() const {
-    return std::get<0>(GetParam());
+    return std::get<TestVariables::kForceThirdPartyCookieBlockingFlagEnabled>(
+        GetParam());
   }
 
   bool IsTrackingProtectionEnabledFor3pcd() const {
-    return std::get<1>(GetParam());
+    return std::get<TestVariables::kTrackingProtectionEnabledFor3pcd>(
+        GetParam());
   }
 
   bool IsStorageAccessGrantEligible() const {
-    return std::get<2>(GetParam()).storage_access_grant_eligible;
+    return std::get<TestVariables::kStorageAccessGrantsEligible>(GetParam());
   }
 
   bool IsTopLevelStorageAccessGrantEligible() const {
-    return std::get<2>(GetParam()).top_level_storage_access_grant_eligible;
+    return std::get<TestVariables::kTopLevelStorageAccessGrantEligible>(
+        GetParam());
   }
 
   bool Is3pcdSupportEligible() const {
-    return std::get<2>(GetParam()).eligible_for_3pcd_support;
+    return std::get<TestVariables::k3pcdSupportEligible>(GetParam());
   }
-
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
     if (IsStorageAccessGrantEligible()) {
@@ -212,10 +235,6 @@ class CookieSettingsTest
     }
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(CookieSettingsTest, GetCookieSettingDefault) {
@@ -1725,56 +1744,170 @@ TEST_P(CookieSettingsTest,
   EXPECT_THAT(excluded_cookies, IsEmpty());
 }
 
-const TestCase kOverrideTestCases[] = {
-    {"disable_all", /*storage_access_grant_eligible=*/false,
-     /*top_level_storage_access_grant_eligible=*/false,
-     /*eligible_for_3pcd_support=*/false},
-    {"disable_SAA_disable_TopLevel_enable_3PCD",
-     /*storage_access_grant_eligible=*/false,
-     /*top_level_storage_access_grant_eligible=*/false,
-     /*eligible_for_3pcd_support=*/true},
-    {"disable_SAA_enable_TopLevel_disable_3PCD",
-     /*storage_access_grant_eligible=*/false,
-     /*top_level_storage_access_grant_eligible=*/true,
-     /*eligible_for_3pcd_support=*/false},
-    {"disable_SAA_enable_TopLevel_enable_3PCD",
-     /*storage_access_grant_eligible=*/false,
-     /*top_level_storage_access_grant_eligible=*/true,
-     /*eligible_for_3pcd_support=*/true},
-    {"enable_SAA_disable_TopLevel_disable_3PCD",
-     /*storage_access_grant_eligible=*/true,
-     /*top_level_storage_access_grant_eligible=*/false,
-     /*eligible_for_3pcd_support=*/false},
-    {"enable_SAA_disable_TopLevel_enable_3PCD",
-     /*storage_access_grant_eligible=*/true,
-     /*top_level_storage_access_grant_eligible=*/false,
-     /*eligible_for_3pcd_support=*/true},
-    {"enable_SAA_enable_TopLevel_disable_3PCD",
-     /*storage_access_grant_eligible=*/true,
-     /*top_level_storage_access_grant_eligible=*/true,
-     /*eligible_for_3pcd_support=*/false},
-    {"enable_all", /*storage_access_grant_eligible=*/true,
-     /*top_level_storage_access_grant_eligible=*/true,
-     /*eligible_for_3pcd_support=*/true},
-};
+// NOTE: These tests will fail if their FINAL name is of length greater than 256
+// characters. Thus, try to avoid (unnecessary) generalized parameterization
+// when possible.
+std::string CustomTestName(
+    const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
+  std::stringstream custom_test_name;
+  // clang-format off
+  custom_test_name
+      << "TopLvStorageAccess_"
+      << std::get<TestVariables::kTopLevelStorageAccessGrantEligible>(info.param)
+      << "_StorageAccess_"
+      << std::get<TestVariables::kStorageAccessGrantsEligible>(info.param)
+      << "_3pcdSupport_"
+      << std::get<TestVariables::k3pcdSupportEligible>(info.param)
+      << "_TpcdMetadataGrants_"
+      << std::get<TestVariables::kTrackingProtectionEnabledFor3pcd>(info.param)
+      << "_Force3pcb_"
+      << std::get<TestVariables::kForceThirdPartyCookieBlockingFlagEnabled>(info.param);
+  // clang-format on
+  return custom_test_name.str();
+}
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
     testing::Combine(testing::Bool(),
                      testing::Bool(),
-                     testing::ValuesIn(kOverrideTestCases)),
-    // Print test name. `info` is type of std::tuple<bool, TestCase>.
-    [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
-      std::stringstream ss;
-      ss << (std::get<0>(info.param) ? "testing_3pcb_on" : "testing_3pcb_off")
-         << "_AND_"
-         << (std::get<1>(info.param) ? "tracking_protection_3pcb_on"
-                                     : "tracking_protection_3pcb_off")
-         << "_AND_" << std::get<2>(info.param).test_name;
-      std::string s = ss.str();
-      return ss.str();
-    });
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
+    CustomTestName);
+
+class CookieSettingsTpcdMetadataGrantsTest
+    : public CookieSettingsTestBase,
+      public testing::TestWithParam</* net::features::kTpcdMetadataGrants: */
+                                    bool> {
+ public:
+  CookieSettingsTpcdMetadataGrantsTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsTpcdMetadataGrantEligible()) {
+      enabled_features.push_back(net::features::kTpcdMetadataGrants);
+    } else {
+      disabled_features.push_back(net::features::kTpcdMetadataGrants);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsTpcdMetadataGrantEligible() const { return GetParam(); }
+
+  net::CookieSettingOverrides GetCookieSettingOverrides() const {
+    net::CookieSettingOverrides overrides;
+    return overrides;
+  }
+
+  ContentSetting SettingWith3pcdMetadataGrantEligibleOverride() const {
+    return IsTpcdMetadataGrantEligible() ? CONTENT_SETTING_ALLOW
+                                         : CONTENT_SETTING_BLOCK;
+  }
+
+  // The storage access result would be blocked if not for a
+  // `net::features::kTpcdMetadataGrants` enablement.
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWith3pcdMetadataGrantOverride() const {
+    if (IsTpcdMetadataGrantEligible()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_3PCD_METADATA_GRANT;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
+  }
+};
+
+TEST_P(CookieSettingsTpcdMetadataGrantsTest, Grants) {
+  GURL first_party_url = GURL(kURL);
+  GURL third_party_url_1 = GURL(kOtherURL);
+  GURL third_party_url_2 = GURL(kDomainURL);
+
+  base::HistogramTester histogram_tester;
+
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
+
+  // Precautionary - ensures that a default cookie setting is specified.
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
+
+  // Allowlisting.
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_METADATA_GRANTS,
+      {CreateSetting(third_party_url_1.host(), first_party_url.host(),
+                     CONTENT_SETTING_ALLOW)});
+
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  EXPECT_EQ(settings.GetCookieSetting(third_party_url_1, first_party_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWith3pcdMetadataGrantEligibleOverride());
+
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWith3pcdMetadataGrantOverride(), 1);
+
+  EXPECT_EQ(settings.GetCookieSetting(first_party_url, third_party_url_1,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD_METADATA_GRANT,
+      IsTpcdMetadataGrantEligible() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      BlockedStorageAccessResultWith3pcdMetadataGrantOverride(),
+      IsTpcdMetadataGrantEligible() ? 1 : 2);
+
+  EXPECT_EQ(settings.GetCookieSetting(third_party_url_2, first_party_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTpcdMetadataGrantsTest, ExplicitSettingPreserved) {
+  GURL first_party_url = GURL(kURL);
+  GURL third_party_url = GURL(kOtherURL);
+  base::HistogramTester histogram_tester;
+
+  CookieSettings settings;
+  settings.set_block_third_party_cookies(true);
+  settings.set_mitigations_enabled_for_3pcd(true);
+
+  // Precautionary - ensures that a default cookie setting is specified.
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
+
+  // Explicit setting.
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("*", first_party_url.host(), CONTENT_SETTING_BLOCK)});
+
+  // Allowlisting.
+  settings.set_content_settings(
+      ContentSettingsType::TPCD_METADATA_GRANTS,
+      {CreateSetting(third_party_url.host(), first_party_url.host(),
+                     CONTENT_SETTING_ALLOW)});
+
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  EXPECT_EQ(settings.GetCookieSetting(third_party_url, first_party_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         CookieSettingsTpcdMetadataGrantsTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace network

@@ -61,6 +61,8 @@ constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
 #endif
 
+// NOTE: Consider modifying services/network/cookie_settings_unittest.cc if
+// applicable.
 enum TestVariables {
   kTopLevelStorageAccessGrantEligible = 0,
   kStorageAccessGrantsEligible,
@@ -299,7 +301,7 @@ class CookieSettingsTest
   }
 
   // The storage access result would be blocked if not for a
-  // `net::features::kThirdPartyStoragePartitioning` enablement.
+  // `net::features::kTpcdMetadataGrants` enablement.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWith3pcdMetadataGrantOverride() const {
     if (Is3pcdMetadataGrantEligible()) {
@@ -1876,6 +1878,10 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
                                test.cookie_domain));
   }
 }
+
+// NOTE: These tests will fail if their FINAL name is of length greater than 256
+// characters. Thus, try to avoid (unnecessary) generalized parameterization
+// when possible.
 std::string CustomTestName(
     const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
   std::stringstream custom_test_name;
