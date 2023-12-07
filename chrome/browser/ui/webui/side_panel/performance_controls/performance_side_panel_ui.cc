@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/battery_saver_card_handler.h"
@@ -25,7 +26,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui)
+PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui,
+                                               const GURL& url)
     : ui::MojoBubbleWebUIController(web_ui, true) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -53,6 +55,17 @@ PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui)
       "isPerformanceMemoryInterventionEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceMemoryIntervention));
+
+  url::Component query(0, static_cast<int>(url.query_piece().length()));
+  url::Component key, value;
+  while (url::ExtractQueryKeyValue(url.query_piece().data(), &query, &key,
+                                   &value)) {
+    if (url.query_piece().substr(key.begin, key.len) == "notifications") {
+      base::StringPiece value_str =
+          url.query_piece().substr(value.begin, value.len);
+      source->AddString("sidePanelNotifications", std::string{value_str});
+    }
+  }
 }
 
 PerformanceSidePanelUI::~PerformanceSidePanelUI() = default;

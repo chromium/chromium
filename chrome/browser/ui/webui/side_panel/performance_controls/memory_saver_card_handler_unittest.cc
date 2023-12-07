@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "ui/base/models/menu_model.h"
@@ -17,8 +18,9 @@ namespace {
 
 class MockPerformanceSidePanelUI : public PerformanceSidePanelUI {
  public:
-  explicit MockPerformanceSidePanelUI(content::WebUI* test_web_ui)
-      : PerformanceSidePanelUI(test_web_ui) {}
+  explicit MockPerformanceSidePanelUI(content::WebUI* test_web_ui,
+                                      const GURL& url)
+      : PerformanceSidePanelUI(test_web_ui, url) {}
 };
 
 class TestMemorySaverCardHandler : public MemorySaverCardHandler {
@@ -39,8 +41,8 @@ class MemorySaverCardHandlerTest : public BrowserWithTestWindowTest {
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
-    performance_side_panel_ui_ =
-        std::make_unique<MockPerformanceSidePanelUI>(test_web_ui_.get());
+    performance_side_panel_ui_ = std::make_unique<MockPerformanceSidePanelUI>(
+        test_web_ui_.get(), GURL(chrome::kChromeUIPerformanceSidePanelURL));
     handler_ = std::make_unique<TestMemorySaverCardHandler>(
         performance_side_panel_ui_.get());
   }

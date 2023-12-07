@@ -392,6 +392,14 @@ WebUIController* NewWebUI<WelcomeUI>(WebUI* web_ui, const GURL& url) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if !BUILDFLAG(IS_ANDROID)
+template <>
+WebUIController* NewWebUI<PerformanceSidePanelUI>(WebUI* web_ui,
+                                                  const GURL& url) {
+  return new PerformanceSidePanelUI(web_ui, url);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 bool IsAboutUI(const GURL& url) {
   return (url.host_piece() == chrome::kChromeUIChromeURLsHost ||
           url.host_piece() == chrome::kChromeUICreditsHost

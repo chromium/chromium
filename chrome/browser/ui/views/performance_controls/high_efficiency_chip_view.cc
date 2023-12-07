@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
+#include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
+#include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom-shared.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -146,11 +149,12 @@ void HighEfficiencyChipView::UpdateImpl() {
 
 void HighEfficiencyChipView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  // If the performance side panel experiment is enabled, open the side panel.
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceControlsSidePanel)) {
-    SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
-        SidePanelEntryId::kPerformance, SidePanelOpenTrigger::kToolbarButton);
+    PerformanceSidePanelCoordinator::GetOrCreateForBrowser(browser_)->Show(
+        {side_panel::mojom::PerformanceSidePanelNotification::
+             kMemorySaverRevisitDiscardedTab},
+        SidePanelOpenTrigger::kToolbarButton);
     return;
   }
 

@@ -16,16 +16,23 @@ interface PerformancePageHandlerFactory {
 };
 
 enum ResourceType {
-    kMemory = 0,
-    kCPU = 1,
-    kNetwork = 2,
+  kMemory = 0,
+  kCPU = 1,
+  kNetwork = 2,
 };
 
 enum HealthLevel {
-    kHealthy,
-    kMedium,
-    kUnhealthy,
-  };
+  kHealthy,
+  kMedium,
+  kUnhealthy,
+};
+
+// This enum is used in query params when constructing a WebUI Side Panel. Even
+// though it is not used in mojom interfaces, it is defined here to keep it in
+// sync between the browser and WebUI.
+enum PerformanceSidePanelNotification {
+  kMemorySaverRevisitDiscardedTab = 0,
+};
 
 // Browser-side handler for requests from WebUI page.
 interface PerformancePageHandler {

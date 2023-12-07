@@ -14,6 +14,7 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+#include "url/gurl.h"
 
 class PerformancePageHandler;
 class BatterySaverCardHandler;
@@ -25,7 +26,7 @@ class PerformanceSidePanelUI
       side_panel::mojom::BatterySaverCardHandlerFactory,
       side_panel::mojom::MemorySaverCardHandlerFactory {
  public:
-  explicit PerformanceSidePanelUI(content::WebUI* web_ui);
+  PerformanceSidePanelUI(content::WebUI* web_ui, const GURL& url);
   PerformanceSidePanelUI(const PerformanceSidePanelUI&) = delete;
   PerformanceSidePanelUI& operator=(const PerformanceSidePanelUI&) = delete;
   ~PerformanceSidePanelUI() override;
