@@ -57,34 +57,25 @@ bool DisplayDriverController::IsDriverInstalled() {
   HDEVINFO hdevinfo =
       SetupDiGetClassDevsW(&GUID_DEVCLASS_DISPLAY, NULL, NULL, 0);
   if (hdevinfo == INVALID_HANDLE_VALUE) {
+    LOG(ERROR) << "SetupDiGetClassDevsW failed: " << hdevinfo;
     return false;
   }
-  DWORD error = 0;
-  DWORD index = 0;
-  do {
-    SP_DEVINFO_DATA devinfo;
-    devinfo.cbSize = sizeof(devinfo);
-    if (!SetupDiEnumDeviceInfo(hdevinfo, index++, &devinfo)) {
-      break;
-    }
-    if (!SetupDiBuildDriverInfoList(hdevinfo, &devinfo, SPDIT_COMPATDRIVER)) {
-      break;
-    }
-    SP_DRVINFO_DATA_W drvdata;
-    drvdata.cbSize = sizeof(SP_DRVINFO_DATA_W);
-    if (!SetupDiEnumDriverInfoW(hdevinfo, &devinfo, SPDIT_COMPATDRIVER, 0,
-                                &drvdata)) {
-      error = GetLastError();
-      if (error != ERROR_NO_MORE_ITEMS) {
-        break;
-      }
-    }
+  if (!SetupDiBuildDriverInfoList(hdevinfo, NULL, SPDIT_CLASSDRIVER)) {
+    LOG(ERROR) << "SetupDiBuildDriverInfoList failed: " << GetLastError();
+  }
+  SP_DRVINFO_DATA_W drvdata;
+  drvdata.cbSize = sizeof(SP_DRVINFO_DATA_W);
+  for (DWORD index = 0; SetupDiEnumDriverInfoW(
+           hdevinfo, NULL, SPDIT_CLASSDRIVER, index++, &drvdata);) {
     if (std::wstring(drvdata.Description) == kDriverDeviceName &&
         std::wstring(drvdata.MfgName) == kDriverManufacturer) {
       SetupDiDestroyDeviceInfoList(hdevinfo);
       return true;
     }
-  } while (error != ERROR_NO_MORE_ITEMS);
+  }
+  DWORD error = GetLastError();
+  LOG_IF(ERROR, error != ERROR_NO_MORE_ITEMS && error != ERROR_SUCCESS)
+      << "SetupDiEnumDriverInfoW failed: " << error;
   SetupDiDestroyDeviceInfoList(hdevinfo);
   return false;
 }
