@@ -554,6 +554,29 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateLogServerIbanLinkClickedFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateLogServerIbanLinkClickedFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  // If `personal_data` is not available, then don't do anything.
+  autofill::PersonalDataManager* personal_data =
+      client->GetPersonalDataManager();
+
+  if (!personal_data || !personal_data->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  personal_data->LogServerIbanLinkClicked();
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
 
 ExtensionFunction::ResponseAction

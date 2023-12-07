@@ -415,6 +415,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private onRemoteEditIbanMenuClick_() {
+    this.paymentsManager_.logServerIbanLinkClicked();
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('managePaymentMethodsUrl'));
   }

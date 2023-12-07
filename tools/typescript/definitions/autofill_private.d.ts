@@ -215,6 +215,7 @@ declare global {
       export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
+      export function logServerIbanLinkClicked(): void;
       export function setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;

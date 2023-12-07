@@ -108,6 +108,10 @@ void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event);
 void LogIbanSuggestionBlockListStatusMetric(
     IbanSuggestionBlockListStatus event);
 
+// Records the fact that the server IBAN link was clicked with information
+// about the current sync state.
+void LogServerIbanLinkClicked(AutofillMetrics::PaymentsSigninState sync_state);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_

@@ -198,6 +198,24 @@ class AutofillPrivateLogServerCardLinkClickedFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateLogServerIbanLinkClickedFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateLogServerIbanLinkClickedFunction() = default;
+  AutofillPrivateLogServerIbanLinkClickedFunction(
+      const AutofillPrivateLogServerIbanLinkClickedFunction&) = delete;
+  AutofillPrivateLogServerIbanLinkClickedFunction& operator=(
+      const AutofillPrivateLogServerIbanLinkClickedFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.logServerIbanLinkClicked",
+                             AUTOFILLPRIVATE_SERVERIBANLINKCLICKED)
+
+ protected:
+  ~AutofillPrivateLogServerIbanLinkClickedFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
     : public ExtensionFunction {
  public:

@@ -587,6 +587,10 @@ class PersonalDataManager : public KeyedService,
   // about the current sync state.
   void LogServerCardLinkClicked() const;
 
+  // Logs the fact that the server IBAN link was clicked including information
+  // about the current sync state.
+  void LogServerIbanLinkClicked() const;
+
   // Records the sync transport consent if the user is in sync transport mode.
   virtual void OnUserAcceptedUpstreamOffer();
 

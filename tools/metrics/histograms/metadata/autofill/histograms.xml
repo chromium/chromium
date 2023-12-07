@@ -4127,6 +4127,17 @@ chromium-metrics-reviews@google.com.
   <token key="FlowType" variants="Autofill.ServerCardUnmaskFlowType"/>
 </histogram>
 
+<histogram name="Autofill.ServerIbanLinkClicked" enum="AutofillSyncState"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the sync state when the user clicks on a server IBAN's [Edit in Google
+    Pay] link.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

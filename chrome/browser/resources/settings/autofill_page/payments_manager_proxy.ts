@@ -64,6 +64,11 @@ export interface PaymentsManagerProxy {
   logServerCardLinkClicked(): void;
 
   /**
+   * Logs that the server IBAN's "Edit in Google Pay" link was clicked.
+   */
+  logServerIbanLinkClicked(): void;
+
+  /**
    * Enables FIDO authentication for card unmasking.
    */
   setCreditCardFidoAuthEnabledState(enabled: boolean): void;
@@ -163,6 +168,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   logServerCardLinkClicked() {
     chrome.autofillPrivate.logServerCardLinkClicked();
+  }
+
+  logServerIbanLinkClicked() {
+    chrome.autofillPrivate.logServerIbanLinkClicked();
   }
 
   setCreditCardFidoAuthEnabledState(enabled: boolean) {

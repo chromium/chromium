@@ -331,6 +331,8 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   logServerCardLinkClicked() {}
 
+  logServerIbanLinkClicked() {}
+
   migrateCreditCards() {}
 
   removeCreditCard(_guid: string) {

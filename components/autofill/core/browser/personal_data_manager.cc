@@ -2454,6 +2454,11 @@ void PersonalDataManager::LogServerCardLinkClicked() const {
   AutofillMetrics::LogServerCardLinkClicked(GetPaymentsSigninStateForMetrics());
 }
 
+void PersonalDataManager::LogServerIbanLinkClicked() const {
+  autofill_metrics::LogServerIbanLinkClicked(
+      GetPaymentsSigninStateForMetrics());
+}
+
 void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
   // If the user is in sync transport mode for Wallet, record an opt-in.
   if (IsPaymentsWalletSyncTransportEnabled()) {

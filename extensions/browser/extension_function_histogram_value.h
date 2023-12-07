@@ -1914,6 +1914,7 @@ enum HistogramValue {
   DOCUMENTSCAN_OPENSCANNER = 1852,
   DOCUMENTSCAN_CLOSESCANNER = 1853,
   ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS = 1854,
+  AUTOFILLPRIVATE_SERVERIBANLINKCLICKED = 1855,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

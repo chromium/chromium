@@ -77,4 +77,8 @@ void LogIbanSuggestionBlockListStatusMetric(
       "Autofill.Iban.ShowSuggestionsBlocklistDecision", event);
 }
 
+void LogServerIbanLinkClicked(AutofillMetrics::PaymentsSigninState sync_state) {
+  base::UmaHistogramEnumeration("Autofill.ServerIbanLinkClicked", sync_state);
+}
+
 }  // namespace autofill::autofill_metrics
