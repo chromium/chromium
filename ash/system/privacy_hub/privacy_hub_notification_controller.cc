@@ -277,6 +277,7 @@ void PrivacyHubNotificationController::UpdateSoftwareSwitchNotification(
   }
 }
 
+// TODO(janlanik): Does this support geolocation?
 bool PrivacyHubNotificationController::
     IsSoftwareSwitchNotificationDisplayedForSensor(Sensor sensor) {
   return combined_notification_->IsShown() && sensors_.Has(sensor);

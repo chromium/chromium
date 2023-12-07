@@ -11221,6 +11221,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ash/login/login_manager_test.cc",
         "../browser/ash/login/login_manager_test.h",
         "../browser/ui/ash/clipboard_history_interactive_uitest.cc",
+        "../browser/ui/ash/privacy_hub/geolocation_switch_interactive_uitest.cc",
       ]
 
       # These tests are not applicable on Chrome OS.

@@ -123,6 +123,13 @@ GeolocationAccessLevel GeolocationPrivacySwitchController::AccessLevel() const {
           prefs::kUserGeolocationAccessLevel));
 }
 
+void GeolocationPrivacySwitchController::SetAccessLevel(
+    GeolocationAccessLevel access_level) {
+  CHECK(pref_change_registrar_);
+  pref_change_registrar_->prefs()->SetInteger(
+      prefs::kUserGeolocationAccessLevel, static_cast<int>(access_level));
+}
+
 void GeolocationPrivacySwitchController::UpdateNotification() {
   PrivacyHubNotificationController* notification_controller =
       PrivacyHubNotificationController::Get();

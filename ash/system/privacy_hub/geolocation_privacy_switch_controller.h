@@ -55,7 +55,11 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // returned ).
   std::vector<std::u16string> GetActiveApps(size_t max_count) const;
 
+  // Retrieves the current access level.
   GeolocationAccessLevel AccessLevel() const;
+
+  // Sets the current access level.
+  void SetAccessLevel(GeolocationAccessLevel access_level);
 
   // Called when the notification should be updated (either preference changed
   // or apps started/stopped attempting to use geolocation).
