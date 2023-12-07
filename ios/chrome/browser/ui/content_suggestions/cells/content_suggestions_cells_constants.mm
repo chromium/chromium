@@ -15,3 +15,5 @@ NSString* const kContentSuggestionsWhatsNewIdentifier =
 
 NSString* const kQuerySuggestionViewA11yIdentifierPrefix =
     @"QuerySuggestionViewA11yIdentifierPrefix";
+
+const CGFloat kMagicStackImageContainerWidth = 50;

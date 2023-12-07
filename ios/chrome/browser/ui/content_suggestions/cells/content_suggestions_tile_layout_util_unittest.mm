@@ -27,10 +27,10 @@ TEST_F(ContentSuggestionsTileLayoutUtilTest, MostVisitedCellSize) {
   EXPECT_TRUE(CGSizeEqualToSize(
       kContentSuggestionsTileViewSizeSmall, MostVisitedCellSize(UIContentSizeCategoryLarge)));
   EXPECT_TRUE(
-      CGSizeEqualToSize(kContentSuggestionsTileViewSizeSmall,
+      CGSizeEqualToSize(kContentSuggestionsTileViewSizeMedium,
                         MostVisitedCellSize(UIContentSizeCategoryExtraLarge)));
   EXPECT_TRUE(CGSizeEqualToSize(
-      kContentSuggestionsTileViewSizeSmall,
+      kContentSuggestionsTileViewSizeMedium,
       MostVisitedCellSize(UIContentSizeCategoryExtraExtraLarge)));
   EXPECT_TRUE(CGSizeEqualToSize(
       kContentSuggestionsTileViewSizeMedium,

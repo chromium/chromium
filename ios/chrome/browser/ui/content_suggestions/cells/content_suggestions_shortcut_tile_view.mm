@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -31,8 +32,10 @@ const CGFloat kIconSize = 56;
 
     [self.imageContainerView addSubview:_iconView];
     AddSameConstraints(self.imageContainerView, _iconView);
+    CGFloat iconSize =
+        IsMagicStackEnabled() ? kMagicStackImageContainerWidth : kIconSize;
     [NSLayoutConstraint activateConstraints:@[
-      [_iconView.widthAnchor constraintEqualToConstant:kIconSize],
+      [_iconView.widthAnchor constraintEqualToConstant:iconSize],
       [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
     ]];
 

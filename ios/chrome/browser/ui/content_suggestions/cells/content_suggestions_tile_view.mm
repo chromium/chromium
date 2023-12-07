@@ -28,12 +28,15 @@ const CGFloat kPreferredMaxWidth = 74;
 @property(nonatomic, strong) UIPointerInteraction* pointerInteraction;
 @end
 
-@implementation ContentSuggestionsTileView
+@implementation ContentSuggestionsTileView {
+  ContentSuggestionsTileType _type;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
                      tileType:(ContentSuggestionsTileType)type {
   self = [super initWithFrame:frame];
   if (self) {
+    _type = type;
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
@@ -41,6 +44,7 @@ const CGFloat kPreferredMaxWidth = 74;
     _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self updateTitleLabelNumberOfLines];
 
     _imageContainerView = [[UIView alloc] init];
     _imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -108,6 +112,7 @@ const CGFloat kPreferredMaxWidth = 74;
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     self.titleLabel.font = [self titleLabelFont];
+    [self updateTitleLabelNumberOfLines];
   }
 }
 
@@ -134,6 +139,27 @@ const CGFloat kPreferredMaxWidth = 74;
       [UIPointerShape shapeWithRoundedRect:_imageContainerView.frame
                               cornerRadius:8.0];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+// Updates the title label's number of rows depending on the preferred content
+// size if it is in the Magic Stack since the Magic Stack has a fixed height,
+// limiting the space available for multiple lines of text.
+- (void)updateTitleLabelNumberOfLines {
+  if (!IsMagicStackEnabled() ||
+      (_type == ContentSuggestionsTileType::kMostVisited &&
+       !ShouldPutMostVisitedSitesInMagicStack())) {
+    return;
+  }
+
+  UIContentSizeCategory category =
+      self.traitCollection.preferredContentSizeCategory;
+  NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
+      category, UIContentSizeCategoryExtraLarge);
+  if (result == NSOrderedAscending) {
+    self.titleLabel.numberOfLines = kLabelNumLines;
+  } else {
+    self.titleLabel.numberOfLines = 1;
+  }
 }
 
 @end

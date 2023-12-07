@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -15,13 +16,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-// Image container width when kMagicStack is enabled.
-const CGFloat kMagicStackImageContainerWidth = 50;
-
-}  // namespace
 
 @interface ContentSuggestionsMostVisitedTileView ()
 

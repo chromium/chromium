@@ -34,12 +34,13 @@ CGFloat ContentSuggestionsTilesHorizontalSpacing(UITraitCollection* trait_collec
 CGSize MostVisitedCellSize(UIContentSizeCategory category) {
   NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
       category, UIContentSizeCategoryAccessibilityMedium);
+  BOOL isSmallestSize =
+      UIContentSizeCategoryCompareToCategory(
+          category, UIContentSizeCategoryExtraLarge) == NSOrderedAscending;
   switch (result) {
     case NSOrderedAscending:
-      return ([category
-                 isEqualToString:UIContentSizeCategoryExtraExtraExtraLarge])
-                 ? kContentSuggestionsTileViewSizeMedium
-                 : kContentSuggestionsTileViewSizeSmall;
+      return isSmallestSize ? kContentSuggestionsTileViewSizeSmall
+                            : kContentSuggestionsTileViewSizeMedium;
     case NSOrderedSame:
       return kContentSuggestionsTileViewSizeLarge;
     case NSOrderedDescending:
