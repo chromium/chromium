@@ -35,6 +35,7 @@
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_web_view_helper.h"
 #include "extensions/renderer/extensions_render_frame_observer.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
@@ -137,7 +138,8 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
   // injects it using SetExtensionDispatcher(). Don't overwrite it.
   if (!extension_dispatcher_) {
     extension_dispatcher_ = std::make_unique<extensions::Dispatcher>(
-        std::make_unique<ChromeExtensionsDispatcherDelegate>());
+        std::make_unique<ChromeExtensionsDispatcherDelegate>(),
+        std::move(api_providers_));
   }
   extension_dispatcher_->OnRenderThreadStarted(thread);
   permissions_policy_delegate_ =

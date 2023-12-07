@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +38,8 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
     renderer_client_ = std::make_unique<TestExtensionsRendererClient>();
     ExtensionsRendererClient::Set(renderer_client_.get());
     extension_dispatcher_ = std::make_unique<Dispatcher>(
-        std::make_unique<ChromeExtensionsDispatcherDelegate>());
+        std::make_unique<ChromeExtensionsDispatcherDelegate>(),
+        std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>>());
     policy_delegate_ = std::make_unique<RendererPermissionsPolicyDelegate>(
         extension_dispatcher_.get());
   }

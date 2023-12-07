@@ -5,6 +5,7 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/debug/leak_annotations.h"
 #include "base/run_loop.h"
@@ -20,6 +21,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -126,7 +128,9 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
       ChromeExtensionsRendererClient::GetInstance();
   ext_client->SetExtensionDispatcherForTest(
       std::make_unique<extensions::Dispatcher>(
-          std::make_unique<ChromeExtensionsDispatcherDelegate>()));
+          std::make_unique<ChromeExtensionsDispatcherDelegate>(),
+          std::vector<
+              std::unique_ptr<extensions::ExtensionsRendererAPIProvider>>()));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

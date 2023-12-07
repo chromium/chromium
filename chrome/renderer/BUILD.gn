@@ -353,6 +353,7 @@ static_library("renderer") {
     ]
     deps += [
       "//chrome/common/extensions/api",
+      "//chrome/renderer/controlled_frame",
       "//components/guest_view/renderer",
       "//extensions:extensions_resources",
       "//extensions/common:mojom",

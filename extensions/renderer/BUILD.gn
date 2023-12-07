@@ -134,6 +134,7 @@ source_set("renderer") {
     "extension_web_view_helper.h",
     "extensions_render_frame_observer.cc",
     "extensions_render_frame_observer.h",
+    "extensions_renderer_api_provider.h",
     "extensions_renderer_client.cc",
     "extensions_renderer_client.h",
     "feature_cache.cc",

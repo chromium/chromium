@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
@@ -71,6 +72,7 @@
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_interaction_provider.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
 #include "extensions/renderer/id_generator_custom_bindings.h"
@@ -269,8 +271,11 @@ Dispatcher::PendingServiceWorker::~PendingServiceWorker() = default;
 
 // Note that we can't use Blink public APIs in the constructor because Blink
 // is not initialized at the point we create Dispatcher.
-Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
+Dispatcher::Dispatcher(
+    std::unique_ptr<DispatcherDelegate> delegate,
+    std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers)
     : delegate_(std::move(delegate)),
+      api_providers_(std::move(api_providers)),
       content_watcher_(new ContentWatcher()),
       source_map_(&ui::ResourceBundle::GetSharedInstance()),
       v8_schema_registry_(new V8SchemaRegistry),
@@ -1525,7 +1530,9 @@ void Dispatcher::EnableCustomElementAllowlist() {
   blink::WebCustomElement::AddEmbedderCustomElementName("appview");
   blink::WebCustomElement::AddEmbedderCustomElementName("extensionoptions");
   blink::WebCustomElement::AddEmbedderCustomElementName("webview");
-  delegate_->EnableCustomElementAllowlist();
+  for (const auto& api_provider : api_providers_) {
+    api_provider->EnableCustomElementAllowlist();
+  }
 }
 
 void Dispatcher::UpdateAllBindings(bool api_permissions_changed) {
@@ -1568,6 +1575,9 @@ void Dispatcher::PopulateSourceMap() {
   for (const auto& resource : resources)
     source_map_.RegisterSource(resource.name, resource.id);
   delegate_->PopulateSourceMap(&source_map_);
+  for (const auto& api_provider : api_providers_) {
+    api_provider->PopulateSourceMap(&source_map_);
+  }
 }
 
 bool Dispatcher::IsWithinPlatformApp() {
@@ -1623,9 +1633,14 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // Require WebView.
   if (context->GetAvailability("webViewInternal").is_available()) {
     requires_guest_view_module = true;
-    // The embedder of the extensions layer may define its own implementation
-    // of WebView.
-    delegate_->RequireWebViewModules(context);
+
+    // If none of the API providers require a WebView module, use the embedder's
+    // implementation.
+    if (!RequireWebViewModulesFromProviders(context)) {
+      // The embedder of the extensions layer may define its own implementation
+      // of WebView.
+      delegate_->RequireWebViewModules(context);
+    }
   } else if (web_view_permission_exists) {
     module_system->Require("webViewDeny");
   }
@@ -1640,6 +1655,15 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
         ->GetSettings()
         ->SetForceMainWorldInitialization(true);
   }
+}
+
+bool Dispatcher::RequireWebViewModulesFromProviders(ScriptContext* context) {
+  for (const auto& api_provider : api_providers_) {
+    if (api_provider->RequireWebViewModules(context)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(

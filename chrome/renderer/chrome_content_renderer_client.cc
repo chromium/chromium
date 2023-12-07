@@ -52,6 +52,7 @@
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/controlled_frame/controlled_frame_extensions_renderer_api_provider.h"
 #include "chrome/renderer/google_accounts_private_api_extension.h"
 #include "chrome/renderer/loadtimes_extension_bindings.h"
 #include "chrome/renderer/media/flash_embed_rewrite.h"
@@ -120,6 +121,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/worker_script_context_set.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/media_switches.h"
@@ -427,7 +429,12 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   web_cache_impl_ = std::make_unique<web_cache::WebCacheImpl>();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  ChromeExtensionsRendererClient::GetInstance()->RenderThreadStarted();
+  ChromeExtensionsRendererClient* chrome_extensions_renderer_client =
+      ChromeExtensionsRendererClient::GetInstance();
+  chrome_extensions_renderer_client->AddAPIProvider(
+      std::make_unique<
+          controlled_frame::ControlledFrameExtensionsRendererAPIProvider>());
+  chrome_extensions_renderer_client->RenderThreadStarted();
   WebSecurityPolicy::RegisterURLSchemeAsExtension(
       WebString::FromASCII(extensions::kExtensionScheme));
 #endif
