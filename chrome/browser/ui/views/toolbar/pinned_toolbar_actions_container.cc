@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <type_traits>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -356,10 +358,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
       gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   toolbar_divider_->SetVisible(false);
 
-  // Create the pinned action buttons.
-  for (const auto& id : model_->pinned_action_ids()) {
-    AddPinnedActionButtonFor(id);
-  }
+  // Initialize the pinned action buttons.
+  UpdateViews();
 }
 
 PinnedToolbarActionsContainer::~PinnedToolbarActionsContainer() = default;
@@ -518,30 +518,24 @@ views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
 }
 
 void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
-  const auto iter = base::ranges::find(
-      pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
-  if (iter != pinned_buttons_.end()) {
-    return;
-  }
-  AddPinnedActionButtonFor(id);
   RecordPinnedActionsCount(model_->pinned_action_ids().size());
-
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PinnedToolbarActionsContainer::OnActionRemoved(
     const actions::ActionId& id) {
-  RemovePinnedActionButtonFor(id);
   RecordPinnedActionsCount(model_->pinned_action_ids().size());
-
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
                                                   int from_index,
                                                   int to_index) {
-  ReorderViews();
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+}
 
+void PinnedToolbarActionsContainer::OnActionsChanged() {
+  UpdateViews();
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -643,7 +637,6 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     button->SetPinned(true);
     pinned_buttons_.push_back(AddChildView(std::move(button)));
   }
-  ReorderViews();
 }
 
 void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
@@ -660,10 +653,10 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     popped_out_buttons_.push_back(*iter);
   }
   pinned_buttons_.erase(iter);
+
   // Flex specification of the divider needs to be updated when an active pinned
   // button moves to popped out state.
   UpdateDividerFlexSpecification();
-  ReorderViews();
 }
 
 PinnedToolbarActionsContainer::PinnedActionToolbarButton*
@@ -732,6 +725,49 @@ void PinnedToolbarActionsContainer::ReorderViews() {
     ReorderChildView(popped_out_button, index);
     index++;
   }
+}
+
+void PinnedToolbarActionsContainer::UpdateViews() {
+  std::vector<actions::ActionId> old_ids;
+  for (PinnedActionToolbarButton* const button : pinned_buttons_) {
+    old_ids.push_back(button->GetActionId());
+  }
+
+  const std::vector<actions::ActionId>& new_ids = model_->pinned_action_ids();
+
+  // 1. Remove buttons for actions in the UI that are not present in the
+  // model.
+  for (const actions::ActionId& id : old_ids) {
+    if (base::Contains(new_ids, id)) {
+      continue;
+    }
+
+    // End the drag session if the dragged button is being removed.
+    if (drop_info_ && drop_info_->action_id == id) {
+      drop_info_.reset();
+    }
+
+    RemovePinnedActionButtonFor(id);
+  }
+
+  // 2. Add buttons for actions that are in the model but not in the UI.
+  for (const actions::ActionId& id : new_ids) {
+    if (base::Contains(old_ids, id)) {
+      continue;
+    }
+
+    AddPinnedActionButtonFor(id);
+  }
+
+  // 3. Clamp the drag index within the new bounds of the container in cases
+  // where a button was removed by sync while a user was dragging a different
+  // button.
+  if (drop_info_.get() && drop_info_->index >= pinned_buttons_.size()) {
+    drop_info_->index = std::max(size_t(0), pinned_buttons_.size() - 1);
+  }
+
+  // 4. Ensure the views match the ordering in the model.
+  ReorderViews();
 }
 
 void PinnedToolbarActionsContainer::SetActionButtonIconVisibility(

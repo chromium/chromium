@@ -400,6 +400,3 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
 
 // TODO(dljames): Write tests for guest and incognito mode profile that check
 // that we cannot modify the model at all.
-
-// TODO(dljames): Write tests for ids that are directly added to the prefs
-// object.
