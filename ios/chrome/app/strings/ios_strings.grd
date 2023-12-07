@@ -4134,15 +4134,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_PASSWORDS_EXCEPTIONS_HEADING" desc="The title for a list of sites where passwords will not be saved. These items are already saved by the browser and can only be deleted. [Length: one line] [iOS only]">
       Never Saved
       </message>
-      <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON" desc="The title of the OK button of the Signed In Accounts view [iOS only] [20em]">
-        OK, Got It
-      </message>
-      <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON" desc="The title of the Settings button of the Signed In Accounts view [iOS only] [20em]">
-        Settings
-      </message>
-      <message name="IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_TITLE" desc="The title of the Signed In Accounts view [iOS only] [30em]">
-        You're signed in
-      </message>
       <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
         Sign In Again
       </message>

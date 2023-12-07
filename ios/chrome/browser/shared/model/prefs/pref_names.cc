@@ -413,13 +413,6 @@ const char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
 // True if the memory debugging tools should be visible.
 const char kShowMemoryDebuggingTools[] = "ios.memory.show_debugging_tools";
 
-// List which contains the last known list of accounts.
-const char kSigninLastAccounts[] = "ios.signin.last_accounts";
-
-// Boolean which indicates if the pref which contains the last known list of
-// accounts was migrated to use account ids instead of emails.
-const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
-
 // Boolean which indicates if user should be prompted to sign in again
 // when a new tab is created.
 const char kSigninShouldPromptForSigninAgain[] =

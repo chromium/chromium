@@ -55,8 +55,6 @@ source_set("model") {
     "signin_client_factory.h",
     "signin_error_controller_factory.cc",
     "signin_error_controller_factory.h",
-    "user_approved_account_list_manager.h",
-    "user_approved_account_list_manager.mm",
   ]
   deps = [
     ":capabilities_types",
@@ -342,7 +340,6 @@ source_set("unit_tests") {
     "resized_avatar_cache_unittest.mm",
     "signin_browser_state_info_updater_unittest.mm",
     "signin_util_unittest.mm",
-    "user_approved_account_list_manager_unittest.mm",
   ]
   deps = [
     ":capabilities_types",

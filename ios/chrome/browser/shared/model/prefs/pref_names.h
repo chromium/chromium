@@ -109,8 +109,6 @@ extern const char kNetworkPredictionSetting[];
 extern const char kNtpShownBookmarksFolder[];
 extern const char kShowMemoryDebuggingTools[];
 
-extern const char kSigninLastAccounts[];
-extern const char kSigninLastAccountsMigrated[];
 extern const char kSigninShouldPromptForSigninAgain[];
 extern const char kSigninWebSignDismissalCount[];
 

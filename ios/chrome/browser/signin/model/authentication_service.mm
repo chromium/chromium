@@ -75,7 +75,6 @@ AuthenticationService::AuthenticationService(
       account_manager_service_(account_manager_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      user_approved_account_list_manager_(pref_service),
       weak_pointer_factory_(this) {
   DCHECK(pref_service_);
   DCHECK(sync_setup_service_);
@@ -92,8 +91,6 @@ void AuthenticationService::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kSigninShouldPromptForSigninAgain,
                                 false);
-  registry->RegisterListPref(prefs::kSigninLastAccounts);
-  registry->RegisterBooleanPref(prefs::kSigninLastAccountsMigrated, false);
 }
 
 void AuthenticationService::Initialize(
@@ -111,13 +108,6 @@ void AuthenticationService::Initialize(
   identity_manager_observation_.Observe(identity_manager_);
   HandleForgottenIdentity(nil, /*should_prompt=*/true,
                           device_restore_session == signin::Tribool::kTrue);
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // If the user is signed out, the list is supposed to be empty. To avoid
-    // any issue if a crash happened between the sign-out and clearing out
-    // the list, it is better to clear out this list.
-    // See crbug.com/3862523.
-    user_approved_account_list_manager_.ClearApprovedAccountList();
-  }
 
   // Clean up account-scoped settings, in case any accounts were removed from
   // the device while Chrome wasn't running.
@@ -181,7 +171,6 @@ void AuthenticationService::Initialize(
 }
 
 void AuthenticationService::Shutdown() {
-  user_approved_account_list_manager_.Shutdown();
   identity_manager_observation_.Reset();
   account_manager_service_observation_.Reset();
   delegate_.reset();
@@ -258,24 +247,6 @@ void AuthenticationService::ResetReauthPromptForSignInAndSync() {
 
 bool AuthenticationService::ShouldReauthPromptForSignInAndSync() const {
   return pref_service_->GetBoolean(prefs::kSigninShouldPromptForSigninAgain);
-}
-
-bool AuthenticationService::IsAccountListApprovedByUser() const {
-  DCHECK(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-  std::vector<CoreAccountInfo> accounts_info =
-      identity_manager_->GetAccountsWithRefreshTokens();
-  return user_approved_account_list_manager_.IsAccountListApprouvedByUser(
-      accounts_info);
-}
-
-void AuthenticationService::ApproveAccountList() {
-  DCHECK(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-  if (IsAccountListApprovedByUser())
-    return;
-  std::vector<CoreAccountInfo> current_accounts_info =
-      identity_manager_->GetAccountsWithRefreshTokens();
-  user_approved_account_list_manager_.SetApprovedAccountList(
-      current_accounts_info);
 }
 
 bool AuthenticationService::HasPrimaryIdentity(
@@ -504,19 +475,6 @@ base::WeakPtr<AuthenticationService> AuthenticationService::GetWeakPtr() {
 
 void AuthenticationService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      DCHECK(user_approved_account_list_manager_.GetApprovedAccountIDList()
-                 .empty());
-      ApproveAccountList();
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      user_approved_account_list_manager_.ClearApprovedAccountList();
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-
   for (auto& observer : observer_list_) {
     observer.OnPrimaryIdentityChanged();
   }
@@ -714,17 +672,10 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
   if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return;
 
-  DCHECK(
-      !user_approved_account_list_manager_.GetApprovedAccountIDList().empty());
   identity_manager_->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin));
-  if (!keychain_reload) {
-    // The changes come from Chrome, so we can approve this new account list,
-    // since this change comes from the user.
-    ApproveAccountList();
-  }
 }
 
 void AuthenticationService::FirePrimaryAccountRestricted() {

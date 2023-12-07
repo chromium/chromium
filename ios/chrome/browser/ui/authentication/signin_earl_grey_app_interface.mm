@@ -129,12 +129,6 @@
                                                     URL:gURL];
 }
 
-+ (void)clearLastSignedInAccounts {
-  PrefService* prefService =
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
-  prefService->ClearPref(prefs::kSigninLastAccounts);
-}
-
 + (void)presentSignInAccountsViewControllerIfNecessary {
   chrome_test_util::PresentSignInAccountsViewControllerIfNecessary();
 }

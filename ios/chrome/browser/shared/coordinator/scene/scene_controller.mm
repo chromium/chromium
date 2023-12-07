@@ -116,7 +116,6 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
-#import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
@@ -261,15 +260,11 @@ void InjectNTP(Browser* browser) {
                                SettingsNavigationControllerDelegate,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
-                               SignedInAccountsViewControllerDelegate,
                                TabGridCoordinatorDelegate,
                                WebStateListObserving> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
-  // View controller presents the signed in accounts when they have changed
-  // while the application was in background.
-  SignedInAccountsViewController* _signedInAccountsVC;
   std::unique_ptr<
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
       _incognitoWebStateObserver;
@@ -805,14 +800,6 @@ void InjectNTP(Browser* browser) {
 // user is signed in to Chrome, the other when the user is signed out of
 // Chrome).
 - (void)tryPresentSigninModalUI {
-  [self presentSignInAccountsViewControllerIfNecessary];
-  if (_signedInAccountsVC) {
-    // The sign-in upgrade promo cannot be shown when the signed-in accounts
-    // view controller in shown (signed-in accounts view controller in only
-    // presented when the user is signed in to Chrome).
-    return;
-  }
-
   // If the sign-in promo is not eligible, return immediately.
   if (![self shouldPresentSigninUpgradePromo]) {
     return;
@@ -847,31 +834,6 @@ void InjectNTP(Browser* browser) {
         }
         [weakSelf presentSigninUpgradePromo];
       }));
-}
-
-// Present the sign-in accounts view if the accounts have changed while in
-// background.
-- (void)presentSignInAccountsViewControllerIfNecessary {
-  ChromeBrowserState* browserState = self.currentInterface.browserState;
-  DCHECK(browserState);
-
-  if (_signedInAccountsVC ||
-      ![SignedInAccountsViewController
-          shouldBePresentedForBrowserState:browserState]) {
-    return;
-  }
-
-  // The signed-in view controller needs to be presented.
-  id<ApplicationSettingsCommands> settingsHandler =
-      HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
-                         ApplicationSettingsCommands);
-  _signedInAccountsVC = [[SignedInAccountsViewController alloc]
-      initWithBrowserState:browserState
-                dispatcher:settingsHandler];
-  _signedInAccountsVC.delegate = self;
-  [[self topPresentedViewController] presentViewController:_signedInAccountsVC
-                                                  animated:YES
-                                                completion:nil];
 }
 
 - (void)initializeUI {
@@ -1136,10 +1098,6 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)teardownUI {
-  [_signedInAccountsVC teardownUI];
-  _signedInAccountsVC.delegate = nil;
-  _signedInAccountsVC = nil;
-
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
@@ -1369,12 +1327,6 @@ void InjectNTP(Browser* browser) {
       // `self.signinCoordinator` is set to show the forced sign-in prompt.
       return NO;
     }
-  }
-
-  if (_signedInAccountsVC) {
-    // Don't handle intents if the user has the Signed In Accounts view
-    // controller presented on the screen.
-    return NO;
   }
 
   return YES;
@@ -3389,16 +3341,6 @@ void InjectNTP(Browser* browser) {
       };
 
   [self.signinCoordinator start];
-}
-
-#pragma mark - SignedInAccountsViewControllerDelegate
-
-- (void)signedInAccountsViewControllerIsDismissed:
-    (SignedInAccountsViewController*)signedInAccountsViewController {
-  CHECK_EQ(_signedInAccountsVC, signedInAccountsViewController);
-  [_signedInAccountsVC teardownUI];
-  _signedInAccountsVC.delegate = nil;
-  _signedInAccountsVC = nil;
 }
 
 #pragma mark - WebStateListObserving

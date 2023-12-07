@@ -178,6 +178,10 @@ inline constexpr char kSyncRequested[] = "sync.requested";
 const char kAutofillBrandingKeyboardAccessoriesTapped[] =
     "ios.autofill.branding.keyboard_accessory_tapped";
 
+// Deprecated 12/2023.
+const char kSigninLastAccounts[] = "ios.signin.last_accounts";
+const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -662,6 +666,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kSyncRequested, false);
 
   registry->RegisterBooleanPref(prefs::kDetectUnitsEnabled, true);
+
+  registry->RegisterListPref(kSigninLastAccounts);
+  registry->RegisterBooleanPref(kSigninLastAccountsMigrated, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -840,6 +847,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 10/2023, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/1486420): Remove ~one year after full launch.
   browser_sync::MaybeMigrateSyncingUserToSignedIn(state_path, prefs);
+
+  // Added 12/2023.
+  prefs->ClearPref(kSigninLastAccounts);
+  prefs->ClearPref(kSigninLastAccountsMigrated);
 }
 
 void MigrateObsoleteUserDefault() {

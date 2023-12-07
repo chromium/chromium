@@ -17,7 +17,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/user_approved_account_list_manager.h"
 
 namespace syncer {
 class SyncService;
@@ -93,19 +92,6 @@ class AuthenticationService : public KeyedService,
 
   // Returns whether user should be prompted to Sign in and sync to Chrome.
   bool ShouldReauthPromptForSignInAndSync() const;
-
-  // Returns whether the current account list has been approved by the user.
-  // This method should only be called when there is a primary account.
-  //
-  // TODO(crbug.com/1084491): To make sure IsAccountListApprovedByUser()
-  // a non-stale value, an notification need to be implemented when the SSO
-  // keychain is reloaded. The user can add/remove an account while Chrome
-  // is in foreground (with split screen on iPad).
-  bool IsAccountListApprovedByUser() const;
-
-  // Saves the current account list in Chrome as being approved by the user.
-  // This method should only be called when there is a primary account.
-  void ApproveAccountList();
 
   // SystemIdentity management
 
@@ -246,9 +232,6 @@ class AuthenticationService : public KeyedService,
   base::ObserverList<AuthenticationServiceObserver, true> observer_list_;
   // Whether Initialized has been called.
   bool initialized_ = false;
-
-  // Manager for the approved account list.
-  UserApprovedAccountListManager user_approved_account_list_manager_;
 
   // Whether the AuthenticationService is currently reloading credentials, used
   // to avoid an infinite reloading loop.
