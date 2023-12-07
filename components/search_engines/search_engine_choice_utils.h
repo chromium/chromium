@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/search_engines/search_engine_type.h"
 
 namespace policy {
