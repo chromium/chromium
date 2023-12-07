@@ -139,6 +139,8 @@ ComposeSession::ComposeSession(
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
+      consent_close_reason_(
+          compose::ComposeConsentSessionCloseReason::kEndedImplicitly),
       close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
       final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
@@ -156,23 +158,33 @@ ComposeSession::ComposeSession(
 }
 
 ComposeSession::~ComposeSession() {
-  // Don't log any metrics for sessions that only display consent/disclaimer
+  // Log separate metrics for sessions that only display consent/disclaimer
   // dialogs.
-  // TODO(b/312295685): Add metrics for consent dialog related close reasons.
   if (initial_consent_state_ != compose::mojom::ConsentState::kConsented &&
       !consent_given_or_acknowledged_) {
+    compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
+    compose::LogComposeConsentSessionDialogShownCount(consent_close_reason_,
+                                                      dialog_shown_count_);
     return;
   }
 
+  // Log whether or not the user inserted text after having
+  // accepted/acknowledged consent in the same session.
+  if (consent_given_in_session_) {
+    compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
+  }
+
   LogComposeSessionCloseMetrics(close_reason_, compose_count_,
-                                dialog_shown_count_, undo_count_);
+                                dialog_shown_count_, undo_count_,
+                                consent_given_in_session_);
+
   // If we have a modeling quality log entry, upload it.
   if (most_recent_ok_state_->modeling_log_entry()) {
     most_recent_ok_state_->modeling_log_entry()
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_final_status(final_status_);
-    // Quality log would automaticlaly be uploaded on the destruction of
-    // a modeling_log_entry. However in order to more easily test the qulity
+    // Quality log would automatically be uploaded on the destruction of a
+    // modeling_log_entry_. However in order to more easily test the quality
     // uploads we are calling upload directly here.
     if (model_quality_logs_uploader_) {
       model_quality_logs_uploader_->UploadModelQualityLogs(
@@ -559,6 +571,23 @@ void ComposeSession::RefreshInnerText() {
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ComposeSession::HandleEndOfConsentSession() {
+  compose::LogComposeConsentSessionDialogShownCount(consent_close_reason_,
+                                                    dialog_shown_count_);
+
+  // If consent was given or the disclaimer was acknowledged, then the Compose
+  // session persists and transitions to the main dialog. Reset the dialog shown
+  // count so that metrics for the main dialog are unaffected by the consent
+  // session.
+  dialog_shown_count_ = 1;
+  consent_given_in_session_ = true;
+}
+
+void ComposeSession::SetConsentCloseReason(
+    compose::ComposeConsentSessionCloseReason close_reason) {
+  consent_close_reason_ = close_reason;
 }
 
 void ComposeSession::SetCloseReason(

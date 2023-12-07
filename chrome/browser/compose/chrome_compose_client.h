@@ -138,6 +138,11 @@ class ChromeComposeClient
                              const autofill::FormFieldData& trigger_field,
                              ComposeCallback callback);
 
+  // Set the exit reason for a session that does not progress past the
+  // consent/disclaimer UI.
+  void SetConsentSessionCloseReason(
+      compose::ComposeConsentSessionCloseReason close_reason);
+
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);
 
@@ -147,6 +152,9 @@ class ChromeComposeClient
 
   // Removes all sessions and resets `active_compose_field_id_`.
   void RemoveAllSessions();
+
+  // Returns nullptr if no such session exists.
+  ComposeSession* GetSessionForActiveComposeField();
 
   compose::ComposeManagerImpl manager_;
 

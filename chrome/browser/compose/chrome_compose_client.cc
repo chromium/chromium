@@ -145,9 +145,14 @@ void ChromeComposeClient::ShowUI() {
 
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
-    // TODO(b/312295685): Add metrics for consent dialog related close reasons.
     case compose::mojom::CloseReason::kConsentCloseButton:
+      SetConsentSessionCloseReason(
+          compose::ComposeConsentSessionCloseReason::kCloseButtonPressed);
+      RemoveActiveSession();
+      break;
     case compose::mojom::CloseReason::kPageContentConsentDeclined:
+      SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
+                                       kPageContentConsentDeclined);
       RemoveActiveSession();
       break;
     case compose::mojom::CloseReason::kCloseButton:
@@ -158,6 +163,8 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
     case compose::mojom::CloseReason::kInsertButton:
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kAcceptedSuggestion);
+      SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
+                                       kPageContentConsentGivenWithInsert);
       RemoveActiveSession();
       break;
   }
@@ -170,17 +177,33 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
 void ChromeComposeClient::ApproveConsent() {
   pref_service_->SetBoolean(
       unified_consent::prefs::kPageContentCollectionEnabled, true);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   pref_service_->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
-#endif
   UpdateAllSessionsWithConsentApproved();
+
+  // This marks the end of a "consent session" as the dialog moves to the main
+  // UI state. Log relevant metrics for the consent session.
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->SetConsentCloseReason(
+        compose::ComposeConsentSessionCloseReason::
+            kPageContentConsentAcceptedWithoutInsert);
+    active_session->HandleEndOfConsentSession();
+  }
 }
 
 void ChromeComposeClient::AcknowledgeConsentDisclaimer() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   pref_service_->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
-#endif
   UpdateAllSessionsWithConsentApproved();
+
+  // This marks the end of a "consent session" as the dialog moves to the main
+  // UI state. Log relevant metrics for the consent session.
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->SetConsentCloseReason(
+        compose::ComposeConsentSessionCloseReason::
+            kPageContentDisclaimerAcknowledgedWithoutInsert);
+    active_session->HandleEndOfConsentSession();
+  }
 }
 
 void ChromeComposeClient::UpdateAllSessionsWithConsentApproved() {
@@ -216,6 +239,15 @@ void ChromeComposeClient::CreateOrUpdateSession(
       // new one, which will require a close reason.
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
+      // Set the equivalent close reason if the existing session was in a
+      // consent state.
+      auto it = sessions_.find(active_compose_field_id_.value());
+      current_session = it->second.get();
+      if (current_session->get_initial_consent_state() !=
+          compose::mojom::ConsentState::kConsented) {
+        SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
+                                         kNewSessionWithSelectedText);
+      }
     }
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
@@ -252,17 +284,27 @@ void ChromeComposeClient::RemoveActiveSession() {
   active_compose_field_id_.reset();
 }
 
+void ChromeComposeClient::SetConsentSessionCloseReason(
+    compose::ComposeConsentSessionCloseReason close_reason) {
+  if (debug_session_) {
+    return;
+  }
+
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->SetConsentCloseReason(close_reason);
+  }
+}
+
 void ChromeComposeClient::SetSessionCloseReason(
     compose::ComposeSessionCloseReason close_reason) {
   if (debug_session_) {
     return;
   }
 
-  if (active_compose_field_id_.has_value()) {
-    auto it = sessions_.find(active_compose_field_id_.value());
-    if (it != sessions_.end()) {
-      it->second->SetCloseReason(close_reason);
-    }
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->SetCloseReason(close_reason);
   }
 }
 
@@ -273,6 +315,16 @@ void ChromeComposeClient::RemoveAllSessions() {
 
   sessions_.erase(sessions_.begin(), sessions_.end());
   active_compose_field_id_.reset();
+}
+
+ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {
+  if (active_compose_field_id_.has_value()) {
+    auto it = sessions_.find(active_compose_field_id_.value());
+    if (it != sessions_.end()) {
+      return it->second.get();
+    }
+  }
+  return nullptr;
 }
 
 compose::mojom::ConsentState ChromeComposeClient::GetConsentStateFromPrefs() {
@@ -371,11 +423,9 @@ int ChromeComposeClient::GetSessionCountForTest() {
 }
 
 void ChromeComposeClient::OpenFeedbackPageForTest(std::string feedback_id) {
-  if (active_compose_field_id_.has_value()) {
-    auto it = sessions_.find(active_compose_field_id_.value());
-    if (it != sessions_.end()) {
-      it->second->OpenFeedbackPage(feedback_id);
-    }
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->OpenFeedbackPage(feedback_id);
   }
 }
 
