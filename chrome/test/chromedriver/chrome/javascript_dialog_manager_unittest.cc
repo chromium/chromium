@@ -73,7 +73,6 @@ TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
   ASSERT_EQ(kOk, manager.GetDialogMessage(&message).code());
 
   ASSERT_TRUE(manager.OnConnected(&client).IsOk());
-  ASSERT_EQ("Page.enable", client.commands_[0].method);
   ASSERT_FALSE(manager.IsDialogOpen());
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
   ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());

@@ -175,10 +175,6 @@ Status PerformanceLogger::EnableInspectorDomains(DevToolsClient* client) {
   if (IsEnabled(prefs_.network)) {
     enable_commands.push_back("Network.enable");
   }
-  if (IsEnabled(prefs_.page) && (client->GetOwner() == nullptr ||
-                                 !client->GetOwner()->IsServiceWorker())) {
-    enable_commands.push_back("Page.enable");
-  }
   for (const auto& enable_command : enable_commands) {
     base::Value::Dict params;  // All the enable commands have empty params.
     Status status = client->SendCommand(enable_command, params);

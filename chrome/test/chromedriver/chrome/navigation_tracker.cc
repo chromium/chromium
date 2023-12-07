@@ -260,9 +260,7 @@ bool NavigationTracker::IsNonBlocking() const {
 Status NavigationTracker::OnConnected(DevToolsClient* client) {
   ClearFrameStates();
   InitCurrentFrame(kUnknown);
-  // Enable page domain notifications to allow tracking navigation state.
-  base::Value::Dict empty_params;
-  return client_->SendCommand("Page.enable", empty_params);
+  return Status{kOk};
 }
 
 Status NavigationTracker::OnEvent(DevToolsClient* client,
