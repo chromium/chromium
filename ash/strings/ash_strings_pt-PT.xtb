@@ -447,6 +447,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2914580577416829331">Capturas de ecrã</translation>
 <translation id="2924416280450782352">Não é possível mostrar os itens. Experimente reabrir este painel.</translation>
 <translation id="2931572158271115754">Nada nesta lista de tarefas.</translation>
+<translation id="2935225303485967257">Gerir perfis</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2942350706960889382">Lupa ancorada</translation>
 <translation id="2942516765047364088">Posição da prateleira</translation>
@@ -624,6 +625,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3593646411856133110">Deslize rapidamente para cima sem soltar para ver as apps abertas.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="3596012367874587041">Definições da app</translation>
+<translation id="3598452309062311481">pesquisa + h</translation>
 <translation id="3600061223661453002">Desativado</translation>
 <translation id="3604801046548457007">Foi criado o espaço de trabalho <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Visualização em braille ligada.</translation>
@@ -659,6 +661,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="36813544980941320">As redes Wi-Fi serão partilhadas entre o seu telemóvel e o dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> e. em seguida, <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Sites</translation>
+<translation id="3697991387880191195">Prima o atalho de captura de ecrã</translation>
 <translation id="3702809606464356667">Ao mostrar as janelas do espaço de trabalho atual, prima a tecla da seta para cima para mostrar janelas de todos os espaços de trabalho</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -774,6 +777,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4190780880566297084">Ignorar configuração da visualização das fotos, dos conteúdos multimédia e das apps recentes do telemóvel</translation>
 <translation id="4192112279662688596">Ou</translation>
 <translation id="4193857202545160520">Mostrar cliques e teclas</translation>
+<translation id="4193969623755915875">Abra a "Ajuda" na app Explore com "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">Versão atual: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
@@ -834,6 +838,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Quer ativá-la?</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Não é possível guardar a gravação de ecrã</translation>
+<translation id="4403371424034411727">O <ph name="PERIPHERAL_NAME" /> está ligado e pronto a usar. Pode personalizar o rato nas Definições.</translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
@@ -955,6 +960,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4889868803215848840">Envie feedback opcional para melhorar as sugestões:</translation>
 <translation id="4890187583552566966">O Assistente Google foi desativado pelo administrador.</translation>
 <translation id="4890408602550914571">Certifique-se de que o telemóvel está próximo e com o Bluetooth ativado.</translation>
+<translation id="4892981359753171125">Controlo facial</translation>
 <translation id="4895488851634969361">A bateria está carregada.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
@@ -1293,6 +1299,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6199775032047436064">Recarregar a página actual</translation>
 <translation id="6200515304866777730">Não suportado pela app</translation>
 <translation id="6210042900243040400">Ligue o dispositivo <ph name="NAME" /> guardado anteriormente em <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Personalize o seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Fazer uma gravação de ecrã ou uma captura de ecrã parcial</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
 <translation id="622484624075952240">Para baixo</translation>
@@ -1534,6 +1541,7 @@ Nova instalação</translation>
 <translation id="726276584504105859">Arraste para aqui para utilizar o ecrã dividido</translation>
 <translation id="7262906531272962081">Criar lembrete</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retrocesso</translation>
+<translation id="7285232777292757180">Use a ferramenta de captura de ecrã nas Definições rápidas para fazer capturas de ecrã</translation>
 <translation id="7302889331339392448">As Legendas instantâneas estão desativadas.</translation>
 <translation id="7303365578352795231">A responder noutro dispositivo…</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1925,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="888982883502837004">Estão disponíveis atualizações de firmware para o seu dispositivo. Clique para rever e atualizar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> será eliminado permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />). Ligue o dispositivo à alimentação.</translation>
+<translation id="8897940060812808966">O <ph name="PERIPHERAL_NAME" /> está ligado e pronto a usar. Pode personalizar o tablet de gráficos nas Definições.</translation>
 <translation id="88986195241502842">Página para baixo</translation>
 <translation id="8905919797434099235">(Sem título)</translation>
 <translation id="890616557918890486">Alterar origem</translation>

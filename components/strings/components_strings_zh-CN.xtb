@@ -87,6 +87,7 @@
 <translation id="11635448457105324">“管理地址”按钮，激活它即可在 Chrome 设置中添加和管理地址</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1165174597379888365">访问过的网页</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{无}=1{来自 1 个网站（您的 Google 账号仍会保持登录状态）}other{来自 # 个网站（您的 Google 账号仍会保持登录状态）}}</translation>
 <translation id="1165852471352757509">电视纪录片与纪实片</translation>
 <translation id="1174644974616730562">中式 #1 信封</translation>
 <translation id="1174723505405632867">您想允许 <ph name="EMBEDDED_URL" /> 在 <ph name="TOP_LEVEL_URL" /> 上使用 Cookie 和网站数据吗？

@@ -447,6 +447,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2914580577416829331">Mga pag-capture ng screen</translation>
 <translation id="2924416280450782352">Hindi maipakita ang mga item. Subukang buksan ulit ang panel na ito.</translation>
 <translation id="2931572158271115754">Walang anumang nasa listahang ito ng gagawin.</translation>
+<translation id="2935225303485967257">Pamahalaan ang mga profile</translation>
 <translation id="2941112035454246133">Mababa</translation>
 <translation id="2942350706960889382">Naka-dock na Magnifier</translation>
 <translation id="2942516765047364088">Posisyon ng shelf</translation>
@@ -624,6 +625,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3593646411856133110">Mag-swipe pataas at i-hold para makita ang mga nakabukas na app</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="3596012367874587041">Mga setting ng app</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">I-off</translation>
 <translation id="3604801046548457007">Ginawa ang Desk <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Nagkonekta ng braille display.</translation>
@@ -775,6 +777,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4190780880566297084">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan, media, at app ng iyong telepono</translation>
 <translation id="4192112279662688596">O</translation>
 <translation id="4193857202545160520">Ipakita ang mga click at key</translation>
+<translation id="4193969623755915875">Buksan ang "Tulong" sa Explore app gamit ang "<ph name="NEW_SHORTCUT" />."</translation>
 <translation id="4195579532193195633">Kasalukuyang bersyon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Magpatuloy kung saan ka tumigil</translation>
 <translation id="4195877955194704651">Button ng mga awtomatikong pag-click</translation>
@@ -957,6 +960,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4889868803215848840">Magbigay ng opsyonal na feedback para mapahusay ang mga suhestyon:</translation>
 <translation id="4890187583552566966">Na-disable ng iyong administrator ang Google Assistant.</translation>
 <translation id="4890408602550914571">Tiyaking nasa malapit ang iyong telepono at naka-on ang Bluetooth nito.</translation>
+<translation id="4892981359753171125">Kontrol gamit ang mukha</translation>
 <translation id="4895488851634969361">Puno na ang baterya.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>

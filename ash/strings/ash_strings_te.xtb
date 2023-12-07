@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">స్క్రీన్ క్యాప్చర్‌లు</translation>
 <translation id="2924416280450782352">ఐటెమ్‌లను చూపడం సాధ్యం కాదు. ఈ ప్యానెల్‌ను మళ్లీ తెరవడానికి ట్రై చేయండి.</translation>
 <translation id="2931572158271115754">ఈ చేయాల్సిన అసైన్‌మెంట్‌ల లిస్ట్‌లో ఏమీ లేదు.</translation>
+<translation id="2935225303485967257">ప్రొఫైళ్లను మేనేజ్ చేయండి</translation>
 <translation id="2941112035454246133">తక్కువ</translation>
 <translation id="2942350706960889382">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
 <translation id="2942516765047364088">అర స్థానం</translation>
@@ -624,6 +625,7 @@
 <translation id="3593646411856133110">తెరిచి ఉన్న యాప్‌లను చూడటానికి పైకి స్వైప్ చేసి, పట్టుకోండి</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
 <translation id="3596012367874587041">యాప్ సెట్టింగ్‌లు</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">ఆఫ్ చేయండి</translation>
 <translation id="3604801046548457007">"<ph name="DESK_TITILE" />" డెస్క్ క్రియేట్ చేయబడింది</translation>
 <translation id="3606978283550408104">బ్రెయిలీ డిస్‌ప్లే కనెక్ట్ చేయబడింది.</translation>
@@ -776,6 +778,7 @@
 <translation id="4190780880566297084">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="4192112279662688596">లేదా</translation>
 <translation id="4193857202545160520">క్లిక్‌లు, కీలను చూడండి</translation>
+<translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />"ను ఉపయోగించి అన్వేషణ యాప్‌లో ఉన్న "సహాయ" విభాగాన్ని తెరవండి.</translation>
 <translation id="4195579532193195633">ప్రస్తుత వెర్షన్ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ఇంతకు ముందు ఆపిన చోట నుండే కొనసాగించండి</translation>
 <translation id="4195877955194704651">ఆటోమేటిక్ క్లిక్‌ల బటన్</translation>
@@ -958,6 +961,7 @@
 <translation id="4889868803215848840">సూచనలను మెరుగుపరచడానికి ఆప్షనల్ ఫీడ్‌బ్యాక్ ఇవ్వండి:</translation>
 <translation id="4890187583552566966">Google Assistantను మీ నిర్వాహ‌కుడు నిలిపివేశారు.</translation>
 <translation id="4890408602550914571">మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే బ్లూటూత్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
+<translation id="4892981359753171125">ఫేస్ కంట్రోల్</translation>
 <translation id="4895488851634969361">బ్యాటరీ నిండింది.</translation>
 <translation id="490375751687810070">నిలువుగా ఉంది</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ</translation>

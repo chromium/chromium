@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">Слики од екранот</translation>
 <translation id="2924416280450782352">Не може да се прикажат ставките. Обидете се да ја отворите таблава повторно.</translation>
 <translation id="2931572158271115754">Нема ништо на списоков со задачи.</translation>
+<translation id="2935225303485967257">Управувајте со профилите</translation>
 <translation id="2941112035454246133">Низок</translation>
 <translation id="2942350706960889382">Закотвена лупа</translation>
 <translation id="2942516765047364088">Позиција на полица</translation>
@@ -659,6 +660,7 @@
 <translation id="36813544980941320">Wi-Fi мрежите ќе се споделуваат помеѓу вашиот телефон и <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потоа <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Веб-страници</translation>
+<translation id="3697991387880191195">Притиснете ја кратенката за слика од екранот</translation>
 <translation id="3702809606464356667">Се прикажуваат прозорци од тековната работна површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од сите работни површини</translation>
 <translation id="3702846122927433391">Население во Нигерија</translation>
 <translation id="3705722231355495246">–</translation>
@@ -835,6 +837,7 @@
 <translation id="4389184120735010762">Ја притиснавте кратенката од тастатура за закотвената лупа. Дали сакате да ја вклучите?</translation>
 <translation id="439598569299422042">Паузирано, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не може да се зачува снимка на екран</translation>
+<translation id="4403371424034411727">Уредот <ph name="PERIPHERAL_NAME" /> е поврзан и подготвен за користење. Глувчето може да го приспособите во „Поставки“.</translation>
 <translation id="4405151984121254935">Поврзаниот вид периферен уред не е поддржан</translation>
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
@@ -1294,6 +1297,7 @@
 <translation id="6199775032047436064">Повторно вчитај ја тековната страница</translation>
 <translation id="6200515304866777730">Не е поддржано од апликацијата</translation>
 <translation id="6210042900243040400">Поврзете го уредот (<ph name="NAME" />) претходно зачуван на <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Приспособете го вашиот <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Снимете делумна слика од екранот или снимка од екранот</translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
@@ -1535,6 +1539,7 @@
 <translation id="726276584504105859">Повлечете тука за да користите поделен екран</translation>
 <translation id="7262906531272962081">Создајте потсетник</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">За снимање слики од екранот, користете ја алатката „Снимање на екранот“ во „Брзи поставки“</translation>
 <translation id="7302889331339392448">„Автоматските титлови“ се исклучени.</translation>
 <translation id="7303365578352795231">Се одговара на друг уред.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1923,7 @@
 <translation id="888982883502837004">Има ажурирања за фирмверот на уредот. Кликнете за да ги прегледате и да ажурирате.</translation>
 <translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />). Приклучете го уредот во струја.</translation>
+<translation id="8897940060812808966">Уредот <ph name="PERIPHERAL_NAME" /> е поврзан и подготвен за користење. Таблетот за графика може да го приспособите во „Поставки“.</translation>
 <translation id="88986195241502842">Страница подолу</translation>
 <translation id="8905919797434099235">(Без наслов)</translation>
 <translation id="890616557918890486">Промени го изворот</translation>

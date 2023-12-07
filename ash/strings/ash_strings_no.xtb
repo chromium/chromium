@@ -447,6 +447,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2914580577416829331">Skjermdumper</translation>
 <translation id="2924416280450782352">Kan ikke vise elementene. Prøv å åpne dette panelet på nytt.</translation>
 <translation id="2931572158271115754">Det er ingenting på denne huskelisten.</translation>
+<translation id="2935225303485967257">Administrer profiler</translation>
 <translation id="2941112035454246133">Lav</translation>
 <translation id="2942350706960889382">Dokket lupe</translation>
 <translation id="2942516765047364088">Hylleposisjon</translation>
@@ -624,6 +625,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3593646411856133110">Sveip opp og hold for å se åpne apper</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3596012367874587041">Appinnstillinger</translation>
+<translation id="3598452309062311481">Søk+H</translation>
 <translation id="3600061223661453002">Av</translation>
 <translation id="3604801046548457007">Opprettet skrivebord <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">En leselist er tilkoblet.</translation>
@@ -775,6 +777,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4190780880566297084">Lukk konfigurering av visning av nylige bilder, medier og apper fra telefonen din</translation>
 <translation id="4192112279662688596">eller</translation>
 <translation id="4193857202545160520">Vis klikk og nøkler</translation>
+<translation id="4193969623755915875">Åpne «Hjelp» i Utforsk-appen med «<ph name="NEW_SHORTCUT" />».</translation>
 <translation id="4195579532193195633">Gjeldende versjon: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Fortsett der du slapp</translation>
 <translation id="4195877955194704651">Automatisk klikk-knapp</translation>
@@ -957,6 +960,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4889868803215848840">Gi en valgfri tilbakemelding for å gjøre forslagene bedre:</translation>
 <translation id="4890187583552566966">Administratoren din har slått av Google-assistenten.</translation>
 <translation id="4890408602550914571">Sørg for at telefonen er i nærheten, og at Bluetooth er slått på.</translation>
+<translation id="4892981359753171125">Ansiktskontroll</translation>
 <translation id="4895488851634969361">Batteriet er fullt.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>

@@ -174,6 +174,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1883255238294161206">Fechar lista</translation>
 <translation id="1889872080060107187">Vai iniciar sessão em <ph name="URL" /></translation>
 <translation id="1890237935065108104">Esta definição não está disponível.</translation>
+<translation id="1891199774460536658">Acompanhar automaticamente todas as embalagens detetadas</translation>
 <translation id="1894023287452300670">Monitorize o preço aqui</translation>
 <translation id="189531189292803889">O seu iPad foi restaurado recentemente, o que pode ter alterado o navegador predefinido.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
@@ -653,6 +654,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4493604894403585654">Tem sessão iniciada como <ph name="USER_EMAIL" />. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4502566650163919158">Rever agora</translation>
 <translation id="4508750114462689118">Fechar a promoção de início de sessão</translation>
+<translation id="4509449376545878717">Nunca detetar embalagens automaticamente</translation>
 <translation id="4514889972748124117">Sugerir palavra-passe forte…</translation>
 <translation id="4520798012560649652">Saiba mais acerca do Modo de navegação anónima</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
@@ -1337,6 +1339,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8023878949384262191">Expande a secção.</translation>
 <translation id="8027581147000338959">Abrir numa Nova Janela</translation>
 <translation id="8032569120109842252">A seguir</translation>
+<translation id="8040207962129315716">Perguntar-me sempre</translation>
 <translation id="804225253087497565">O <ph name="BEGIN_LINK" />histórico de pesquisas<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> podem ser guardados na sua Conta Google quando tem sessão iniciada. Pode eliminá-los em qualquer altura.</translation>
 <translation id="804427445359061970">Os seus separadores de outros dispositivos serão apresentados aqui</translation>
 <translation id="8044568254381073661">Guarde sem encriptação</translation>
@@ -1476,6 +1479,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8766790350274092814">As palavras-passe de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> vão ser apagadas. As suas contas não vão ser apagadas.</translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8780076847684176174">{count,plural, =1{Rever separador…}other{Rever todos os separadores…}}</translation>
+<translation id="8782570580170191813">Acompanhar sempre as embalagens</translation>
 <translation id="8787968206789828143">Pesquise na Web</translation>
 <translation id="8792626944327216835">microfone</translation>
 <translation id="8803639129939845298">Seguro</translation>

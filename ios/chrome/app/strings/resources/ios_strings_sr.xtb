@@ -837,6 +837,7 @@
 <translation id="5457226814769348910">Отвори офлајн верзију</translation>
 <translation id="5475069061743940393">Праћење пакета</translation>
 <translation id="5478327362747197944">Правите догађаје у календару директно кликом на датум на веб-страници.</translation>
+<translation id="5482922178977937393">Желите обавештења за вести, спорт и друго на основу интересовања?</translation>
 <translation id="5489208564673669003">Да бисте управљали колачићима за све сајтове, погледајте <ph name="BEGIN_LINK" />Подешавања колачића<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="5497202150450073388">Покушана је испорука. Покушаћемо поново.</translation>
@@ -1478,6 +1479,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8766790350274092814">Лозинке за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ће бити избрисане. Ваши налози неће бити избрисани.</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Прегледај картицу…}one{Прегледај све картице…}few{Прегледај све картице…}other{Прегледај све картице…}}</translation>
+<translation id="8782570580170191813">Увек прати пакете</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Безбедан</translation>

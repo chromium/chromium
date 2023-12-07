@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Gumb Upravljaj adresama, aktivirajte ga za dodavanje adresa i upravljanje njima u postavkama Chromea</translation>
 <translation id="1165039591588034296">Pogreška</translation>
 <translation id="1165174597379888365">Posjetili ste stranicu</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Nijedna}=1{S jedne web-lokacije (ostat ćete prijavljeni na Google račun)}one{S # web-lokacije (ostat ćete prijavljeni na Google račun)}few{S # web-lokacije (ostat ćete prijavljeni na Google račun)}other{S # web-lokacija (ostat ćete prijavljeni na Google račun)}}</translation>
 <translation id="1165852471352757509">Dokumentarne emisije</translation>
 <translation id="1174644974616730562">Kineska omotnica br. 1</translation>
 <translation id="1174723505405632867">Želite li dopustiti da <ph name="EMBEDDED_URL" /> koristi kolačiće i podatke web-lokacije na <ph name="TOP_LEVEL_URL" />?

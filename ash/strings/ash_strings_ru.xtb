@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">Снимки экрана</translation>
 <translation id="2924416280450782352">Не удается показать элементы. Попробуйте открыть панель снова.</translation>
 <translation id="2931572158271115754">Список пуст.</translation>
+<translation id="2935225303485967257">Управление профилями</translation>
 <translation id="2941112035454246133">Низкий</translation>
 <translation id="2942350706960889382">Закрепленная лупа</translation>
 <translation id="2942516765047364088">Положение панели запуска</translation>
@@ -659,6 +660,7 @@
 <translation id="36813544980941320">На вашем телефоне и устройстве <ph name="DEVICE_NAME" /> будут использоваться одинаковые сети Wi-Fi.</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, затем <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Сайты</translation>
+<translation id="3697991387880191195">Воспользуйтесь быстрой командой для создания скриншота</translation>
 <translation id="3702809606464356667">Показаны окна текущего рабочего стола. Чтобы показать окна со всех рабочих столов, нажмите на стрелку вверх.</translation>
 <translation id="3702846122927433391">Население Нигерии</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +836,7 @@
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
 <translation id="439598569299422042">Приостановлено, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не удалось сохранить скринкаст</translation>
+<translation id="4403371424034411727">Мышь <ph name="PERIPHERAL_NAME" /> подключена и готова к работе. Ее параметры можно изменить в настройках.</translation>
 <translation id="4405151984121254935">Подключенное периферийное устройство этого типа не поддерживается.</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
@@ -1293,6 +1296,7 @@
 <translation id="6199775032047436064">Обновление страницы</translation>
 <translation id="6200515304866777730">Не поддерживается приложением</translation>
 <translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
+<translation id="6212097153736801627">Настройте устройство <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Сделать скриншот или запись видео с части экрана</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
@@ -1534,6 +1538,7 @@
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7262906531272962081">Создать напоминание</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
+<translation id="7285232777292757180">Чтобы сделать скриншот, воспользуйтесь инструментом записи экрана в быстрых настройках.</translation>
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1922,7 @@
 <translation id="888982883502837004">Для вашего устройства доступны обновления встроенного ПО. Нажмите, чтобы посмотреть и установить их.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будет удален без возможности восстановления.</translation>
 <translation id="889790758758811533">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />. Подключите устройство к источнику питания.</translation>
+<translation id="8897940060812808966">Графический планшет <ph name="PERIPHERAL_NAME" /> подключен и готов к работе. Его параметры можно изменить в настройках.</translation>
 <translation id="88986195241502842">На страницу вниз</translation>
 <translation id="8905919797434099235">Без названия</translation>
 <translation id="890616557918890486">Изменить источник</translation>

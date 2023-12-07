@@ -447,6 +447,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2914580577416829331">Regjistrimet e ekranit</translation>
 <translation id="2924416280450782352">Artikujt nuk mund të shfaqen. Provo ta rihapësh këtë panel.</translation>
 <translation id="2931572158271115754">Nuk ka asgjë në këtë listë detyrash.</translation>
+<translation id="2935225303485967257">Menaxho profilet</translation>
 <translation id="2941112035454246133">E ulët</translation>
 <translation id="2942350706960889382">Zmadhuesi i stacionuar</translation>
 <translation id="2942516765047364088">Pozicioni i raftit</translation>
@@ -659,6 +660,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="36813544980941320">Rrjetet Wi-Fi do të ndahen mes telefonit tënd dhe <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, më pas <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Uebsajtet</translation>
+<translation id="3697991387880191195">Shtyp shkurtoren e pamjes së ekranit</translation>
 <translation id="3702809606464356667">Po shfaqen dritaret nga tavolina aktuale e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga të gjitha tavolinat e punës</translation>
 <translation id="3702846122927433391">Popullsia në Nigeri</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +836,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
 <translation id="439598569299422042">Në pauzë, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Transmetimi i ekranit nuk mund të ruhet</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> është lidhur dhe është gati për përdorim. Mund ta personalizosh miun te "Cilësimet".</translation>
 <translation id="4405151984121254935">Lloji i pajisjes së lidhur periferike nuk mbështetet</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
@@ -1293,6 +1296,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="6199775032047436064">Ringarko faqen aktuale</translation>
 <translation id="6200515304866777730">Nuk mbështetet nga aplikacioni</translation>
 <translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Personalizo pajisjen tënde <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Nxirr regjistrimin e ekranit ose pamjen e pjesshme të ekranit</translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
@@ -1534,6 +1538,7 @@ Instalim i ri</translation>
 <translation id="726276584504105859">Zvarrit këtu për të përdorur ekranin e ndarë</translation>
 <translation id="7262906531272962081">Krijo alarm rikujtues</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + tasti Backspace</translation>
+<translation id="7285232777292757180">Përdor veglën e regjistrimit të ekranit te cilësimet e shpejta për të nxjerr pamje ekrani</translation>
 <translation id="7302889331339392448">"Titrat në çast" janë joaktivë.</translation>
 <translation id="7303365578352795231">Po përgjigjet në një pajisje tjetër</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1922,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="888982883502837004">Ofrohen përditësime firmueri për pajisjen tënde. Kliko për të shqyrtuar dhe përditësuar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> do të fshihet përgjithmonë</translation>
 <translation id="889790758758811533">Bateria e mbetur: <ph name="PERCENTAGE" />% (rreth <ph name="TIME_LEFT" />). Lidhe pajisjen me një burim të energjisë elektrike.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> është lidhur dhe është gati për përdorim. Mund ta personalizosh tabletin tënd të grafikës te "Cilësimet".</translation>
 <translation id="88986195241502842">Faqe poshtë</translation>
 <translation id="8905919797434099235">(Pa titull)</translation>
 <translation id="890616557918890486">Ndrysho burimin</translation>

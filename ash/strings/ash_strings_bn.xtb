@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">স্ক্রিন ক্যাপচার</translation>
 <translation id="2924416280450782352">আইটেম দেখানো যাবে না। এই প্যানেল আবার খোলার চেষ্টা করুন।</translation>
 <translation id="2931572158271115754">কী কাজ করতে হবে এই তালিকায় তার কিছুই নেই।</translation>
+<translation id="2935225303485967257">প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="2941112035454246133">নিম্ন</translation>
 <translation id="2942350706960889382">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2942516765047364088">তাকের লোকেশন</translation>
@@ -624,6 +625,7 @@
 <translation id="3593646411856133110">খুলে রাখা অ্যাপগুলি দেখার জন্য উপরের দিকে সোয়াইপ করে ধরে রাখুন</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
 <translation id="3596012367874587041">অ্যাপ সেটিংস</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">বন্ধ আছে</translation>
 <translation id="3604801046548457007">ডেস্ক <ph name="DESK_TITILE" /> তৈরি করা হয়েছে</translation>
 <translation id="3606978283550408104">ব্রেইল প্রদর্শন সংযুক্ত হয়েছে৷</translation>
@@ -775,6 +777,7 @@
 <translation id="4190780880566297084">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও অ্যাপ দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="4192112279662688596">অথবা</translation>
 <translation id="4193857202545160520">ক্লিক এবং কী দেখান</translation>
+<translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />"-এর মাধ্যমে 'ঘুরে দেখুন' অ্যাপে "সহায়তা" বিকল্প খুলুন।</translation>
 <translation id="4195579532193195633">বর্তমান ভার্সন <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">আপনি যেখানে ছেডেছেন সেখান থেকে চালিয়ে যান</translation>
 <translation id="4195877955194704651">অটোমেটিক ক্লিক বোতাম</translation>
@@ -957,6 +960,7 @@
 <translation id="4889868803215848840">সাজেশন উন্নত করতে অতিরিক্ত মতামত দিন:</translation>
 <translation id="4890187583552566966">আপনার প্রশাসকের দ্বারা Google অ্যাসিস্ট্যান্ট অক্ষম করা হয়েছে।</translation>
 <translation id="4890408602550914571">আপনার ফোন কাছাকাছি রয়েছে কিনা এবং তাতে ব্লুটুথ চালু আছে কিনা দেখে নিন।</translation>
+<translation id="4892981359753171125">ফেস কন্ট্রোল</translation>
 <translation id="4895488851634969361">ব্যাটারি পূর্ণ৷</translation>
 <translation id="490375751687810070">উল্লম্ব</translation>
 <translation id="490788395437447240">ব্যাটারিতে <ph name="BATTERY_PERCENTAGE" />% চার্জ আছে</translation>

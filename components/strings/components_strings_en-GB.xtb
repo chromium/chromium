@@ -116,6 +116,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1206967143813997005">Bad initial signature</translation>
 <translation id="1209206284964581585">Hide for now</translation>
 <translation id="121201262018556460">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate containing a weak key. An attacker could have broken the private key and the server may not be the server you expected (you may be communicating with an attacker).</translation>
+<translation id="1212527389003717329">Download started. To see it, press and hold |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">System Security</translation>
 <translation id="1222060260947439312">Right tray</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -286,6 +287,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Furnished Rentals</translation>
 <translation id="1527263332363067270">Waiting for connection…</translation>
+<translation id="1528311629279578926">The connection is blocked because it was initiated by a public page to connect to devices or servers on your private network. Reload this page to allow the connection.</translation>
 <translation id="1529789484829130889">Tray 8</translation>
 <translation id="1530707389502320859">The site that you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.</translation>
 <translation id="1532118530259321453">This page says</translation>
@@ -1161,6 +1163,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3325027355611702542">Campers and Motorhomes</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Not eligible for virtual card</translation>
+<translation id="3336044043987989409">Press the reload button to allow connection to devices or servers on your private network.</translation>
 <translation id="3338095232262050444">Secure</translation>
 <translation id="333839153442689579">High-Intensity Interval Training</translation>
 <translation id="3339440062908617027">Running and walking</translation>

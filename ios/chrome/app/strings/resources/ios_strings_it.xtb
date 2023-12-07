@@ -837,6 +837,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5457226814769348910">Apri versione offline</translation>
 <translation id="5475069061743940393">Monitoraggio della spedizione</translation>
 <translation id="5478327362747197944">Crea direttamente eventi nel calendario facendo clic su una data in una pagina web.</translation>
+<translation id="5482922178977937393">Vuoi ricevere notifiche relative a notizie, sport e altro in base ai tuoi interessi?</translation>
 <translation id="5489208564673669003">Per gestire i cookie per tutti i siti, vedi le <ph name="BEGIN_LINK" />Impostazioni dei cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blocca tutti i cookie (opzione non consigliata)</translation>
 <translation id="5497202150450073388">Tentativo di consegna effettuato. Verrà eseguito un nuovo tentativo</translation>
@@ -1478,6 +1479,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8766790350274092814">Le password di <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" /> verranno eliminate. I tuoi account non verranno eliminati.</translation>
 <translation id="8775144690796719618">URL non valido</translation>
 <translation id="8780076847684176174">{count,plural, =1{Rivedi la scheda...}other{Rivedi tutte le schede...}}</translation>
+<translation id="8782570580170191813">Monitora sempre i pacchi</translation>
 <translation id="8787968206789828143">Cerca sul Web</translation>
 <translation id="8792626944327216835">microfono</translation>
 <translation id="8803639129939845298">Sicuro</translation>

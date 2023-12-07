@@ -267,8 +267,6 @@ Politika, Etkin değerine ayarlanırsa kullanıcıların, <ph name="CHALLENGE_US
 <translation id="1198458955128279215">Özellik kullanıma sunma planının varsayılan davranışını kullan.</translation>
 <translation id="119943715168319757">MIDI ayarları</translation>
 <translation id="1202216683470826356">Yeni Sekme Sayfası'nda kartları göster</translation>
-<translation id="120314092766637918">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında istemci taraflı kimlik avı koruması özelliği <ph name="PRODUCT_NAME" /> için <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> tarafından kontrol edilir. <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> için <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> veya <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" /> seçeneği ayarlanırsa istemci taraflı kimlik avı koruması bir sayfanın kimlik avı amaçlı olup olmadığını kontrol etmek için yerel bir model çalıştırır. Model sayfanın kimlik avı amaçlı olduğunu belirlerse <ph name="PRODUCT_NAME" /> son kararı vermesi için Google'a istek gönderir.
-Bu politika devre dışı bırakıldığında istemci taraflı kimlik avı koruması herhangi bir şekilde koruma sağlamaz ve Google'a karar vermesi için veri göndermez.</translation>
 <translation id="1204263402976895730">Etkinleştirilmiş kurumsal yazıcılar</translation>
 <translation id="1207301487141109411">Yerel dosya sisteminden, kameradan ve Google profilinden kullanıcı avatarı seçimini engelle</translation>
 <translation id="1209065772997672966">Politikayı ayarlamak, pop-up'ları açabilen siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
@@ -1897,7 +1895,6 @@ seçimdir.</translation>
 <translation id="2506865562891982662">Kullanıcıların, <ph name="PRODUCT_NAME" /> menüsünde erişim kodu veya QR kodu kullanarak yayın cihazı seçmesine izin ver.</translation>
 <translation id="2509748672176727116">Kullanıcı, ağ paketi yakalama işlemleri gerçekleştirebilir</translation>
 <translation id="2509919237512982967">M84'e kadar Eski Form Kontrollerini kullanın.</translation>
-<translation id="251050607781210155">Güvenli Tarama İstemci Tarafı Kimlik Avı Koruması'na izin ver</translation>
 <translation id="2512972020817284317">Kullanıcı düzeyinde bulut politikalarını birleştirmeyi etkinleştirin.</translation>
 <translation id="2515699738406900920">Başlangıçta profil seçicinin kullanılabilirlik durumu</translation>
 <translation id="2517466659416174529">Arka plandaki sekmeleri dondurmaya izin ver</translation>
@@ -6640,7 +6637,6 @@ Not: İstemcinin belirtilen gün sayısından daha uzun bir süre boyunca çevri
 
 Ayarlanmazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
 <translation id="6556586932263358975">Ekranın kilitlenmesine izin ver</translation>
-<translation id="6557178935482719861">Güvenli Tarama İstemci Tarafı Kimlik Avı Koruması'nı devre dışı bırak</translation>
 <translation id="6558013557780651644">Sistem boştayken yapılan işlemler gerçekleştirilmeden önceki gecikme</translation>
 <translation id="6558812160831988140">Uygulama kullanımıyla ilgili raporlama</translation>
 <translation id="6559057113164934677">Hiçbir sitenin kamera ve mikrofona erişmesine izin verme</translation>
@@ -8082,7 +8078,6 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 
       Not: Kullanabileceğiniz değişkenlerin listesine bakın (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7719808201797990069">Sekme silmeyle ilgili URL kalıbı istisnaları</translation>
-<translation id="7721018062743758054">Güvenli Tarama İstemci Tarafı Kimlik Avı Koruması, <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> politikası tarafından kontrol ediliyor</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> kullanıcı kimliği</translation>
 <translation id="7728486978686128364">DELETE/GET/HEAD/OPTIONS/POST/PUT haricindeki istek yöntemlerini büyük harfle yazma</translation>
 <translation id="7731026922044991970">Tüm sitelerde çerezler için eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri dön</translation>

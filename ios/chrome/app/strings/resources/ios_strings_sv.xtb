@@ -174,6 +174,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1883255238294161206">Komprimera lista</translation>
 <translation id="1889872080060107187">Du loggar in på <ph name="URL" /></translation>
 <translation id="1890237935065108104">Inställningen är inte tillgänglig.</translation>
+<translation id="1891199774460536658">Spåra alla identifierade försändelser automatiskt</translation>
 <translation id="1894023287452300670">Bevaka pris här</translation>
 <translation id="189531189292803889">Din iPad återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
 <translation id="1910975740091000991">Chrome för iOS</translation>
@@ -653,6 +654,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4493604894403585654">Du är inloggad som <ph name="USER_EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4502566650163919158">Kontrollera nu</translation>
 <translation id="4508750114462689118">Stäng inloggningskampanj</translation>
+<translation id="4509449376545878717">Identifiera aldrig försändelser automatiskt</translation>
 <translation id="4514889972748124117">Föreslå ett starkt lösenord …</translation>
 <translation id="4520798012560649652">Läs mer om inkognitoläget</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bokmärke}other{{count} bokmärken}}</translation>
@@ -1337,6 +1339,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8023878949384262191">Expanderar avsnittet.</translation>
 <translation id="8027581147000338959">Öppna i nytt fönster</translation>
 <translation id="8032569120109842252">Följer</translation>
+<translation id="8040207962129315716">Fråga mig varje gång</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Sökhistorik<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="804427445359061970">Flikar från andra enheter visas här</translation>
 <translation id="8044568254381073661">Spara utan kryptering</translation>

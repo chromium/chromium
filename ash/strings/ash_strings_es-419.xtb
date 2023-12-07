@@ -447,6 +447,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
 <translation id="2924416280450782352">No se pueden mostrar los elementos. Intenta volver a abrir este panel.</translation>
 <translation id="2931572158271115754">No hay nada en esta lista de tareas pendientes.</translation>
+<translation id="2935225303485967257">Administrar perfiles</translation>
 <translation id="2941112035454246133">Baja</translation>
 <translation id="2942350706960889382">Lupa con vista acoplada</translation>
 <translation id="2942516765047364088">Posición de la barra</translation>
@@ -659,6 +660,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="36813544980941320">Se compartirán las redes Wi-Fi entre tu teléfono y tu <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, luego, <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Sitios web</translation>
+<translation id="3697991387880191195">Presiona el atajo para realizar captura de pantalla</translation>
 <translation id="3702809606464356667">Se muestran las ventanas del escritorio actual. Para ver las de todos los escritorios, presiona la flecha hacia arriba.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -835,6 +837,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4389184120735010762">Presionaste la combinación de teclas para activar la lupa con vista acoplada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">Pausado: <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">No se pudo guardar la presentación en pantalla</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> está conectada y lista para usarse. Puedes personalizar el mouse en Configuración.</translation>
 <translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
@@ -1294,6 +1297,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6199775032047436064">Cargar de nuevo la página actual</translation>
 <translation id="6200515304866777730">No es compatible con la app</translation>
 <translation id="6210042900243040400">Conectar <ph name="NAME" /> que guardaste anteriormente en <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Personaliza tu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Tomar una captura de pantalla parcial o grabar la pantalla</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti y a tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Abajo</translation>
@@ -1535,6 +1539,7 @@ Nueva instalación</translation>
 <translation id="726276584504105859">Arrastra hasta aquí para usar la pantalla dividida</translation>
 <translation id="7262906531272962081">Crear un recordatorio</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retroceso</translation>
+<translation id="7285232777292757180">Usar la herramienta de captura de pantalla en la configuración rápida para tomar capturas de pantalla</translation>
 <translation id="7302889331339392448">El Subtitulado instantáneo está desactivado.</translation>
 <translation id="7303365578352795231">Se responderá en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1918,6 +1923,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz clic para revisarlas y aplicarlas.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se borrará de forma permanente.</translation>
 <translation id="889790758758811533">Queda <ph name="PERCENTAGE" />% de batería (aproximadamente <ph name="TIME_LEFT" />). Conecta tu dispositivo a la corriente.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> está conectada y lista para usarse. Puedes personalizar tu tablet digitalizadora en Configuración.</translation>
 <translation id="88986195241502842">Avanzar página</translation>
 <translation id="8905919797434099235">(Sin título)</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>

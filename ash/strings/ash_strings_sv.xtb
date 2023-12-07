@@ -447,6 +447,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2914580577416829331">Skärmbilder/skärminspelningar</translation>
 <translation id="2924416280450782352">Det går inte att visa objekt. Testa att öppna panelen igen.</translation>
 <translation id="2931572158271115754">Det finns inget på den här att göra-listan.</translation>
+<translation id="2935225303485967257">Hantera profiler</translation>
 <translation id="2941112035454246133">Låg</translation>
 <translation id="2942350706960889382">Dockad skärmförstoring</translation>
 <translation id="2942516765047364088">Hyllposition</translation>
@@ -659,6 +660,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="36813544980941320">wifi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> följt av <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Webbplatser</translation>
+<translation id="3697991387880191195">Tryck på genvägen till skärmbild</translation>
 <translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +836,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
 <translation id="439598569299422042">Pausad, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Det gick inte att spara screencast</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> har anslutits och är redo att användas. Du kan anpassa musen i inställningarna.</translation>
 <translation id="4405151984121254935">Typen av kringutrustning som är ansluten stöds inte</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
@@ -1293,6 +1296,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6199775032047436064">Hämta aktuell sida igen</translation>
 <translation id="6200515304866777730">Stöds inte av appen</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Anpassa <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Ta en skärmbild eller skärminspelning av en del av skärmen</translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
@@ -1534,6 +1538,7 @@ Nyligen installerad</translation>
 <translation id="726276584504105859">Dra hit för att dela upp skärmen</translation>
 <translation id="7262906531272962081">Skapa påminnelse</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+ backsteg</translation>
+<translation id="7285232777292757180">Ta skärmbilder med skärmbildsverktyget i snabbinställningarna</translation>
 <translation id="7302889331339392448">Live Caption är inaktiverat.</translation>
 <translation id="7303365578352795231">Svarar på en annan enhet.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1922,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="888982883502837004">Det finns firmware-uppdateringar för enheten. Klicka här om du vill granska dem och uppdatera.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> raderas permanent</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />). Anslut enheten till en strömkälla.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> har anslutits och är redo att användas. Du kan anpassa grafiksurfplattan i inställningarna.</translation>
 <translation id="88986195241502842">Nedåt en sida</translation>
 <translation id="8905919797434099235">(Ingen titel)</translation>
 <translation id="890616557918890486">Ändra källa</translation>

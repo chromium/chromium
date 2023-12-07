@@ -1472,6 +1472,7 @@
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8780076847684176174">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
+<translation id="8782570580170191813">始终跟踪包裹</translation>
 <translation id="8787968206789828143">在网络上搜索</translation>
 <translation id="8792626944327216835">麦克风</translation>
 <translation id="8803639129939845298">安全</translation>

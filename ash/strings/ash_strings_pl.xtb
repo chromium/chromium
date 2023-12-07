@@ -447,6 +447,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2914580577416829331">Zrzuty ekranu</translation>
 <translation id="2924416280450782352">Nie można wyświetlić elementów. Spróbuj ponownie otworzyć ten panel.</translation>
 <translation id="2931572158271115754">Na tej liście zadań nic nie ma.</translation>
+<translation id="2935225303485967257">Zarządzaj profilami</translation>
 <translation id="2941112035454246133">Niski</translation>
 <translation id="2942350706960889382">Lupa zadokowana</translation>
 <translation id="2942516765047364088">Pozycja półki</translation>
@@ -624,6 +625,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3593646411856133110">Aby zobaczyć otwarte aplikacje, przesuń palcem w górę i przytrzymaj</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
 <translation id="3596012367874587041">Ustawienia aplikacji</translation>
+<translation id="3598452309062311481">wyszukaj + H</translation>
 <translation id="3600061223661453002">Wył.</translation>
 <translation id="3604801046548457007">Utworzono biurko <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Podłączono monitor brajlowski.</translation>
@@ -775,6 +777,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4190780880566297084">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych i aplikacji z telefonu</translation>
 <translation id="4192112279662688596">lub</translation>
 <translation id="4193857202545160520">Pokaż kliknięcia i klawisze</translation>
+<translation id="4193969623755915875">Otwórz „Pomoc” w aplikacji Odkrywaj, naciskając „<ph name="NEW_SHORTCUT" />”.</translation>
 <translation id="4195579532193195633">Aktualna wersja <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
 <translation id="4195877955194704651">Automatyczne klikanie przycisku</translation>
@@ -957,6 +960,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4889868803215848840">Podaj opcjonalną opinię, żeby ulepszyć sugestie:</translation>
 <translation id="4890187583552566966">Asystenta Google wyłączył administrator.</translation>
 <translation id="4890408602550914571">Sprawdź, czy telefon jest w pobliżu i ma włączony Bluetooth.</translation>
+<translation id="4892981359753171125">Sterowanie twarzą</translation>
 <translation id="4895488851634969361">Bateria jest pełna.</translation>
 <translation id="490375751687810070">Pionowo</translation>
 <translation id="490788395437447240">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>

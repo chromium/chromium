@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Dugme Upravljajte adresama, aktivirajte ga da biste dodali adrese i upravljali njima u podešavanjima Chrome-a</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1165174597379888365">Stranica je posećena</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Nijedan}=1{Sa 1 sajta (ostaćete prijavljeni na Google nalog)}one{Sa # sajta (ostaćete prijavljeni na Google nalog)}few{Sa # sajta (ostaćete prijavljeni na Google nalog)}other{Sa # sajtova (ostaćete prijavljeni na Google nalog)}}</translation>
 <translation id="1165852471352757509">Dokumentarni TV film i emisija</translation>
 <translation id="1174644974616730562">Kineska koverta br. 1</translation>
 <translation id="1174723505405632867">Želite li da dozvolite da <ph name="EMBEDDED_URL" /> koristi kolačiće i podatke o sajtovima na <ph name="TOP_LEVEL_URL" />?
@@ -116,6 +117,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1206967143813997005">Neispravan potpis inicijalima</translation>
 <translation id="1209206284964581585">Sakrij za sada</translation>
 <translation id="121201262018556460">Pokušali ste da kontaktirate <ph name="DOMAIN" />, ali je server poslao sertifikat koji sadrži slab ključ. Moguće je da je napadač otkrio privatni ključ i da server možda nije onaj koji mislite da jeste (možda komunicirate sa napadačem).</translation>
+<translation id="1212527389003717329">Preuzimanje je počelo. Da biste je videli, pritisnite i zadržite |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Bezbednost sistema</translation>
 <translation id="1222060260947439312">Desna fioka</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1521655867290435174">Google tabele</translation>
 <translation id="1524669537550112617">Iznajmljivanje opremljenih nekretnina</translation>
 <translation id="1527263332363067270">Čeka se veza…</translation>
+<translation id="1528311629279578926">Veza je blokirana zato što ju je pokrenula javna stranica za povezivanje sa uređajima ili serverima na privatnoj mreži. Ponovo učitajte ovu stranicu da biste dozvolili povezivanje.</translation>
 <translation id="1529789484829130889">8. fioka</translation>
 <translation id="1530707389502320859">Sajt koji ste upravo probali da posetite deluje lažno. Napadači ponekad imitiraju sajtove tako što neznatno i skoro neprimetno izmene URL.</translation>
 <translation id="1532118530259321453">Ova stranica navodi:</translation>
@@ -1161,6 +1164,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3325027355611702542">Kamperi i rekreativna vozila</translation>
 <translation id="3329013043687509092">Zasićenost boja</translation>
 <translation id="3333762389743153920">Ne ispunjava uslove za virtuelnu karticu</translation>
+<translation id="3336044043987989409">Pritisnite dugme za ponovno učitavanje da biste omogućili povezivanje sa uređajima ili serverima na privatnoj mreži.</translation>
 <translation id="3338095232262050444">Bezbedan</translation>
 <translation id="333839153442689579">Intervalni trening velikog intenziteta</translation>
 <translation id="3339440062908617027">Trčanje i hodanje</translation>

@@ -116,6 +116,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1206967143813997005">Hasierako sinadurak ez du balio</translation>
 <translation id="1209206284964581585">Ezkutatu</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> domeinuarekin komunikatzen saiatu zara, baina zerbitzariak aurkeztu duen ziurtagiriaren gakoa ez da segurua. Agian erasotzaile batek gako pribatua bortxatu du eta zerbitzaria ez da espero zenuena (agian erasotzaile batekin komunikatzen ari zara).</translation>
+<translation id="1212527389003717329">Deskargatzen hasi da. Ikusteko, eduki sakatuta |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Sistemaren segurtasuna</translation>
 <translation id="1222060260947439312">Eskuineko erretilua</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +287,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1521655867290435174">Google Kalkulu-orriak</translation>
 <translation id="1524669537550112617">Altzariz hornitutako jabetzen alokairua</translation>
 <translation id="1527263332363067270">Konektatzeko zain…</translation>
+<translation id="1528311629279578926">Konexioa blokeatuta dago, orri publiko batek abiarazi duelako zure sare pribatuko gailu edo zerbitzarietara konektatzeko helburuarekin. Konektatzeko baimena emateko, kargatu orria berriro.</translation>
 <translation id="1529789484829130889">8. erretilua</translation>
 <translation id="1530707389502320859">Bisitatzen saiatu zaren webguneak faltsua dirudi. Batzuetan, erasotzaileek webgune ofizialen plantak egiten dituzte URLari aldaketa oso txikiak eginda.</translation>
 <translation id="1532118530259321453">Orriak hau dio:</translation>
@@ -375,6 +377,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Lau aste baino gehiago dituzten gaiak automatikoki ezabatzen ditu Chrome-k. Arakatzen jarraitu ahala, baliteke gai bat berriro agertzea zerrendan. Era berean, Chrome-k webguneekin partekatzerik nahi ez duzun gaiak blokea ditzakezu, eta iragarkien gaiak desaktibatu. Horretarako, joan Chrome-ren ezarpenetara.</translation>
 <translation id="1697532407822776718">Prest zaude!</translation>
 <translation id="1699651774646344471">Orain, Google-ko kontuko helbideak erabil ditzakezu</translation>
+<translation id="1700542542921501212">Sarean bilaketak egiteko, <ph name="SEARCH_ENGINE_NAME" /> erabil dezakezu.</translation>
 <translation id="1702815194757674443">ROC 16K (Txina)</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoom-mailak</translation>
@@ -1157,6 +1160,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3325027355611702542">Karabanak eta autokarabanak</translation>
 <translation id="3329013043687509092">Asetasuna</translation>
 <translation id="3333762389743153920">Ez da egokia txartel birtuala izateko</translation>
+<translation id="3336044043987989409">Zure sare pribatuko gailu edo zerbitzarietara konektatzeko baimena emateko, sakatu berriro kargatzeko botoia.</translation>
 <translation id="3338095232262050444">Segurua da</translation>
 <translation id="333839153442689579">Intentsitate handiko bitarte-entrenamendua</translation>
 <translation id="3339440062908617027">Korrika egitea eta ibiltzea</translation>

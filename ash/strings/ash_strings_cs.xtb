@@ -447,6 +447,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2914580577416829331">Snímky obrazovky</translation>
 <translation id="2924416280450782352">Položky nelze zobrazit. Už jste tento panel otevřít znovu.</translation>
 <translation id="2931572158271115754">Tento seznam úkolů je prázdný.</translation>
+<translation id="2935225303485967257">Spravovat profily</translation>
 <translation id="2941112035454246133">Nízká</translation>
 <translation id="2942350706960889382">Zabudovaná lupa</translation>
 <translation id="2942516765047364088">Pozice poličky</translation>
@@ -659,6 +660,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> a poté <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Webové stránky</translation>
+<translation id="3697991387880191195">Stiskněte zkratku k pořízení snímku obrazovky</translation>
 <translation id="3702809606464356667">Zobrazují se okna z aktuální plochy, stisknutím šipky nahoru zobrazíte okna ze všech ploch</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +836,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
 <translation id="439598569299422042">Pozastaveno, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Záznam obrazovky se nepodařilo uložit.</translation>
+<translation id="4403371424034411727">Zařízení <ph name="PERIPHERAL_NAME" /> je připojeno a připraveno k použití. Myš si můžete přizpůsobit v Nastavení.</translation>
 <translation id="4405151984121254935">Připojený typ periferního zařízení není podporován</translation>
 <translation id="4406883609789734330">Živý přepis</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
@@ -1293,6 +1296,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6199775032047436064">Znovu načíst aktuální stránku</translation>
 <translation id="6200515304866777730">Aplikace tuto funkci nepodporuje</translation>
 <translation id="6210042900243040400">Připojit zařízení <ph name="NAME" />, které bylo dříve uloženo do účtu <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Přizpůsobte si zařízení <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Pořídit snímek nebo záznam části obrazovky</translation>
 <translation id="6220928844947387476">Nyní můžete nahrávat sebe a obrazovku současně</translation>
 <translation id="622484624075952240">Dolů</translation>
@@ -1533,6 +1537,7 @@ Nová instalace</translation>
 <translation id="726276584504105859">Chcete-li použít rozdělenou obrazovku, přetáhněte okno sem</translation>
 <translation id="7262906531272962081">Vytvořit připomenutí</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">K pořízení snímků obrazovky můžete použít nástroj pro záznam obrazovky v rychlém nastavení</translation>
 <translation id="7302889331339392448">Živý přepis je vypnutý.</translation>
 <translation id="7303365578352795231">Odpověď dostanete v jiném zařízení.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1915,6 +1920,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="888982883502837004">Pro zařízení jsou k dispozici aktualizace firmwaru. Kliknutím je můžete zobrazit a provést aktualizaci.</translation>
 <translation id="8896630965521842259">Šablona <ph name="DESK_TEMPLATE_NAME" /> bude trvale smazána</translation>
 <translation id="889790758758811533">Stav baterie: <ph name="PERCENTAGE" /> % (přibližně na <ph name="TIME_LEFT" />). Připojte zařízení k napájení.</translation>
+<translation id="8897940060812808966">Zařízení <ph name="PERIPHERAL_NAME" /> je připojeno a připraveno k použití. Grafický tablet si můžete přizpůsobit v Nastavení.</translation>
 <translation id="88986195241502842">O stránku dolů</translation>
 <translation id="8905919797434099235">(Bez názvu)</translation>
 <translation id="890616557918890486">Změnit zdroj</translation>

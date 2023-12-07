@@ -174,7 +174,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="1883255238294161206">Suzi spisak</translation>
 <translation id="1889872080060107187">Prijavit ćete se na <ph name="URL" /></translation>
 <translation id="1890237935065108104">Postavka nije dostupna.</translation>
-<translation id="1891199774460536658">Automatsko praćenje svih otkrivenih paketa</translation>
+<translation id="1891199774460536658">Automatski prati sve otkrivene pakete</translation>
 <translation id="1894023287452300670">Pratite cijenu ovdje</translation>
 <translation id="189531189292803889">Vaš iPad je nedavno vraćen u prethodno stanje, zbog čega vam je možda promijenjen zadani preglednik.</translation>
 <translation id="1910975740091000991">Chrome za iOS</translation>
@@ -654,7 +654,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4493604894403585654">Prijavljeni ste kao <ph name="USER_EMAIL" />. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="4502566650163919158">Provjeri sada</translation>
 <translation id="4508750114462689118">Zatvaranje promocije za prijavu</translation>
-<translation id="4509449376545878717">Nikad automatski ne otkrivaj pakete</translation>
+<translation id="4509449376545878717">Nikada nemoj automatski otkrivati pakete</translation>
 <translation id="4514889972748124117">Predloži jaku lozinku...</translation>
 <translation id="4520798012560649652">Saznajte više o anonimnom načinu rada</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
@@ -1479,6 +1479,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="8766790350274092814">Lozinke za <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> će se izbrisati. Vaši računi se neće izbrisati.</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Pregledaj karticu…}one{Pregledaj sve kartice…}few{Pregledaj sve kartice…}other{Pregledaj sve kartice…}}</translation>
+<translation id="8782570580170191813">Uvijek prati pakete</translation>
 <translation id="8787968206789828143">Pretražite na webu</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Sigurno</translation>

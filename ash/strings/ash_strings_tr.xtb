@@ -447,6 +447,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2914580577416829331">Yakalanan ekranlar</translation>
 <translation id="2924416280450782352">Öğeler gösterilemiyor. Bu paneli yeniden açmayı deneyin.</translation>
 <translation id="2931572158271115754">Bu yapılacak işler listesinde hiçbir şey yok.</translation>
+<translation id="2935225303485967257">Profilleri yönet</translation>
 <translation id="2941112035454246133">Düşük</translation>
 <translation id="2942350706960889382">Yerleştirilmiş Büyüteç</translation>
 <translation id="2942516765047364088">Raf konumu</translation>
@@ -659,6 +660,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="36813544980941320">Kablosuz ağlar; telefonunuz ve <ph name="DEVICE_NAME" /> arasında paylaşılacak</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ardından <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Web siteleri</translation>
+<translation id="3697991387880191195">Ekran görüntüsü alma kısayoluna basın</translation>
 <translation id="3702809606464356667">Mevcut masadaki pencereler gösteriliyor, tüm masalardaki pencerelerin gösterilmesi için Yukarı ok tuşuna basın</translation>
 <translation id="3702846122927433391">Nijerya'nın nüfusu</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +836,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4389184120735010762">Yerleştirilmiş büyüteç klavye kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
 <translation id="439598569299422042">Duraklatıldı, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ekran video kaydı kaydedilemiyor</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> bağlandı ve kullanıma hazır. Farenizi Ayarlar'dan özelleştirebilirsiniz.</translation>
 <translation id="4405151984121254935">Bağlı çevre birimi türü desteklenmiyor</translation>
 <translation id="4406883609789734330">Canlı Altyazı</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
@@ -1293,6 +1296,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="6199775032047436064">Geçerli sayfayı yeniden yükle</translation>
 <translation id="6200515304866777730">Uygulama tarafından desteklenmiyor</translation>
 <translation id="6210042900243040400">Önceden <ph name="EMAIL" /> hesabına kaydedilmiş <ph name="NAME" /> cihazını bağlayın</translation>
+<translation id="6212097153736801627"><ph name="PERIPHERAL_NAME" /> cihazınızı özelleştirin</translation>
 <translation id="6213808132343683860">Kısmi ekran görüntüsü veya ekran kaydı alın</translation>
 <translation id="6220928844947387476">Artık aynı anda hem kendinizi hem ekranınızı kaydedebilirsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
@@ -1534,6 +1538,7 @@ Yeni yüklenmiş</translation>
 <translation id="726276584504105859">Ekranı bölünmüş olarak kullanmak için burayı sürükleyin</translation>
 <translation id="7262906531272962081">Hatırlatıcı oluştur</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + geri tuşu</translation>
+<translation id="7285232777292757180">Ekran görüntüsü almak için Hızlı Ayarlar'daki ekran görüntüsü aracını kullanın</translation>
 <translation id="7302889331339392448">Canlı Altyazı kapalı.</translation>
 <translation id="7303365578352795231">Başka bir cihazda yanıtlanıyor.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1922,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="888982883502837004">Donanım yazılımı güncellemeleri cihazınızda kullanılabilir. İnceleyip güncellemek için tıklayın.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> kalıcı olarak silinecek</translation>
 <translation id="889790758758811533">%<ph name="PERCENTAGE" /> pil kaldı (yaklaşık <ph name="TIME_LEFT" />). Cihazınızı güç kaynağına bağlayın.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> bağlandı ve kullanıma hazır. Grafik tabletinizi Ayarlar'dan özelleştirebilirsiniz.</translation>
 <translation id="88986195241502842">Bir sayfa aşağı gider</translation>
 <translation id="8905919797434099235">(Başlık yok)</translation>
 <translation id="890616557918890486">Kaynağı değiştir</translation>

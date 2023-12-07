@@ -174,6 +174,7 @@
 <translation id="1883255238294161206">כיווץ רשימה</translation>
 <translation id="1889872080060107187">הכניסה תהיה אל <ph name="URL" /></translation>
 <translation id="1890237935065108104">ההגדרה הזאת לא זמינה.</translation>
+<translation id="1891199774460536658">מעקב אוטומטי אחר כל החבילות שזוהו</translation>
 <translation id="1894023287452300670">כאן ניתן לעקוב אחר המחיר</translation>
 <translation id="189531189292803889">‏ה-iPad שוחזר לאחרונה, ויכול להיות שדפדפן ברירת מחדל השתנה בעקבות זאת.</translation>
 <translation id="1910975740091000991">‏Chrome ל-iOS</translation>
@@ -653,6 +654,7 @@
 <translation id="4493604894403585654">‏נכנסת לחשבון בתור <ph name="USER_EMAIL" /> אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4502566650163919158">לבדיקה</translation>
 <translation id="4508750114462689118">סגירת קידום הכניסה</translation>
+<translation id="4509449376545878717">ללא זיהוי אוטומטי של חבילות</translation>
 <translation id="4514889972748124117">הצעת סיסמה חזקה…</translation>
 <translation id="4520798012560649652">למידע נוסף בנושא המצב הפרטי</translation>
 <translation id="452503091941773389">{count,plural, =1{סימניה אחת ({count})}one{{count} סימניות}two{{count} סימניות}other{{count} סימניות}}</translation>
@@ -835,6 +837,7 @@
 <translation id="5457226814769348910">פתיחה של גרסת אופליין</translation>
 <translation id="5475069061743940393">מעקב אחר חבילה</translation>
 <translation id="5478327362747197944">ניתן ליצור אירועים ישירות ביומן בלחיצה על תאריך בדף אינטרנט.</translation>
+<translation id="5482922178977937393">רוצה לקבל התראות לגבי חדשות, ספורט ועוד על סמך תחומי העניין שלך?</translation>
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="5497202150450073388">בוצע ניסיון מסירה. יתבצע ניסיון נוסף</translation>
@@ -1336,6 +1339,7 @@
 <translation id="8023878949384262191">מרחיב את הקטע.</translation>
 <translation id="8027581147000338959">פתיחה בחלון חדש</translation>
 <translation id="8032569120109842252">במעקב</translation>
+<translation id="8040207962129315716">יש לשאול אותי בכל פעם</translation>
 <translation id="804225253087497565">‏<ph name="BEGIN_LINK" />היסטוריית החיפושים<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />סוגי פעילות אחרים<ph name="END_LINK" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="804427445359061970">כאן יופיעו הכרטיסיות שפתוחות במכשירים אחרים</translation>
 <translation id="8044568254381073661">שמירה ללא הצפנה</translation>

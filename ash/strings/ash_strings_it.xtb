@@ -447,6 +447,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
 <translation id="2924416280450782352">Impossibile mostrare elementi. Prova a riaprire questo riquadro.</translation>
 <translation id="2931572158271115754">Questa lista di cose da fare è vuota.</translation>
+<translation id="2935225303485967257">Gestisci profili</translation>
 <translation id="2941112035454246133">Bassa</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>
 <translation id="2942516765047364088">Posizione barra delle app</translation>
@@ -624,6 +625,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3593646411856133110">Scorri verso l'alto e tieni premuto per vedere le app aperte</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="3596012367874587041">Impostazioni app</translation>
+<translation id="3598452309062311481">tasto per la ricerca + H</translation>
 <translation id="3600061223661453002">Off</translation>
 <translation id="3604801046548457007">Scrivania <ph name="DESK_TITILE" /> creata</translation>
 <translation id="3606978283550408104">Display Braille collegato.</translation>
@@ -772,6 +774,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4190780880566297084">Chiudi la configurazione della visualizzazione di app, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="4192112279662688596">oppure</translation>
 <translation id="4193857202545160520">Mostra clic e tasti</translation>
+<translation id="4193969623755915875">Apri "Guida" nell'app Esplora con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">Versione attuale: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continua dal punto in cui avevi interrotto</translation>
 <translation id="4195877955194704651">Pulsante Clic automatici</translation>
@@ -954,6 +957,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4889868803215848840">Fornisci un feedback facoltativo per migliorare i suggerimenti:</translation>
 <translation id="4890187583552566966">L'Assistente Google è stato disattivato dall'amministratore.</translation>
 <translation id="4890408602550914571">Assicurati che il tuo telefono sia nelle vicinanze e che il Bluetooth sia attivo.</translation>
+<translation id="4892981359753171125">Controllo del volto</translation>
 <translation id="4895488851634969361">La batteria è carica.</translation>
 <translation id="490375751687810070">Verticale</translation>
 <translation id="490788395437447240">Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>

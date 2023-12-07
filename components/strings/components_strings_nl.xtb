@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Knop Adressen beheren. Activeer deze om adressen toe te voegen en te beheren in de Chrome-instellingen.</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1165174597379888365">Pagina is bezocht</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 site (je blijft ingelogd op je Google-account)}other{Van # sites (je blijft ingelogd op je Google-account)}}</translation>
 <translation id="1165852471352757509">Tv-documentaires en non-fictie</translation>
 <translation id="1174644974616730562">Envelop Chinees #1</translation>
 <translation id="1174723505405632867">Wil je toestaan dat <ph name="EMBEDDED_URL" /> cookies en sitegegevens gebruikt op <ph name="TOP_LEVEL_URL" />?
@@ -116,6 +117,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1206967143813997005">Onjuiste eerste handtekening</translation>
 <translation id="1209206284964581585">Voorlopig verbergen</translation>
 <translation id="121201262018556460">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat geretourneerd met een zwakke sleutel. Een hacker kan de persoonlijke sleutel hebben aangepast en het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).</translation>
+<translation id="1212527389003717329">Download gestart. Houd je vinger op |<ph name="ACCELERATOR" />| om de download te bekijken.</translation>
 <translation id="1219129156119358924">Systeembeveiliging</translation>
 <translation id="1222060260947439312">Rechterlade</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1521655867290435174">Google Spreadsheets</translation>
 <translation id="1524669537550112617">Gemeubileerde huurwoningen</translation>
 <translation id="1527263332363067270">Wachten op verbinding...</translation>
+<translation id="1528311629279578926">De verbinding is geblokkeerd omdat deze is gestart door een openbare pagina om verbinding te maken met apparaten of servers in je privénetwerk. Laad deze pagina opnieuw om de verbinding toe te staan.</translation>
 <translation id="1529789484829130889">Lade 8</translation>
 <translation id="1530707389502320859">De site die je zojuist probeerde te bezoeken, lijkt nep te zijn. Aanvallers maken sites soms na door kleine wijzigingen in de URL aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1532118530259321453">Deze pagina meldt het volgende</translation>
@@ -375,6 +378,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Als je blijft browsen, kan een onderwerp opnieuw in de lijst verschijnen. Je kunt ook onderwerpen blokkeren waarvan je niet wilt dat de Chrome ze deelt met sites, en advertentieonderwerpen op elk moment uitzetten via de Chrome-instellingen.</translation>
 <translation id="1697532407822776718">Je bent nu klaar!</translation>
 <translation id="1699651774646344471">Je kunt nu adressen uit je Google-account gebruiken</translation>
+<translation id="1700542542921501212">Je kunt <ph name="SEARCH_ENGINE_NAME" /> gebruiken om op internet te zoeken.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoomniveaus</translation>
@@ -1157,6 +1161,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3325027355611702542">Campers en RV's</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3333762389743153920">Niet geschikt als virtuele kaart</translation>
+<translation id="3336044043987989409">Druk op de knop voor opnieuw laden om de verbinding met apparaten of servers in je privénetwerk toe te staan.</translation>
 <translation id="3338095232262050444">Beveiligd</translation>
 <translation id="333839153442689579">High-intensity interval training (HIIT)</translation>
 <translation id="3339440062908617027">Hardlopen en wandelen</translation>

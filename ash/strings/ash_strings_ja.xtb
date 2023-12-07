@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">画面キャプチャ</translation>
 <translation id="2924416280450782352">アイテムを表示できません。このパネルをもう一度開いてみてください。</translation>
 <translation id="2931572158271115754">この ToDo リストは空です。</translation>
+<translation id="2935225303485967257">プロフィールを管理</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="2942350706960889382">ドッキング拡大鏡</translation>
 <translation id="2942516765047364088">シェルフの位置</translation>
@@ -624,6 +625,7 @@
 <translation id="3593646411856133110">開いているアプリを表示するには、上にスワイプして長押ししてください</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="3596012367874587041">アプリの設定</translation>
+<translation id="3598452309062311481">検索+H</translation>
 <translation id="3600061223661453002">オフ</translation>
 <translation id="3604801046548457007">デスク <ph name="DESK_TITILE" /> が作成されました</translation>
 <translation id="3606978283550408104">ブライユ点字ディスプレイが接続されています。</translation>
@@ -775,6 +777,7 @@
 <translation id="4190780880566297084">スマートフォンの最近の写真、メディア、アプリの表示の設定を行わない</translation>
 <translation id="4192112279662688596">または</translation>
 <translation id="4193857202545160520">クリックとキーを表示</translation>
+<translation id="4193969623755915875">「<ph name="NEW_SHORTCUT" />」で「使い方・ヒント」アプリの [ヘルプ] を開きます。</translation>
 <translation id="4195579532193195633">現在のバージョン <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
@@ -957,6 +960,7 @@
 <translation id="4889868803215848840">提案内容を改善するため、よろしければフィードバックをご提供ください:</translation>
 <translation id="4890187583552566966">Google アシスタントは管理者によって無効にされています。</translation>
 <translation id="4890408602550914571">スマートフォンが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
+<translation id="4892981359753171125">顔コントロール</translation>
 <translation id="4895488851634969361">バッテリー残量: 満。</translation>
 <translation id="490375751687810070">縦</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>

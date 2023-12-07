@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">Знімки екрана</translation>
 <translation id="2924416280450782352">Не вдається показати об’єкти. Відкрийте панель іще раз.</translation>
 <translation id="2931572158271115754">У цьому списку немає завдань.</translation>
+<translation id="2935225303485967257">Керувати профілями</translation>
 <translation id="2941112035454246133">Низький</translation>
 <translation id="2942350706960889382">Закріплена лупа</translation>
 <translation id="2942516765047364088">Розташування полиці</translation>
@@ -659,6 +660,7 @@
 <translation id="36813544980941320">Ваш телефон і пристрій <ph name="DEVICE_NAME" /> підключатимуться до однакових мереж Wi-Fi</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Веб-сайти</translation>
+<translation id="3697991387880191195">Натисніть ярлик для створення знімка екрана</translation>
 <translation id="3702809606464356667">Показано вікна поточного робочого столу. Щоб показати вікна всіх робочих столів, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +836,7 @@
 <translation id="4389184120735010762">Ви натиснули комбінацію клавіш для закріпленої лупи. Увімкнути?</translation>
 <translation id="439598569299422042">Призупинено, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не вдалося зберегти скрінкаст</translation>
+<translation id="4403371424034411727">Мишу <ph name="PERIPHERAL_NAME" /> підключено й можна використовувати. Ви можете змінити її параметри в Налаштуваннях.</translation>
 <translation id="4405151984121254935">Тип підключеного периферійного пристрою не підтримується</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
@@ -1293,6 +1296,7 @@
 <translation id="6199775032047436064">Перезавантажити поточну сторінку</translation>
 <translation id="6200515304866777730">Не підтримується додатком</translation>
 <translation id="6210042900243040400">Підключіть пристрій <ph name="NAME" />, який уже збережено в обліковому записі <ph name="EMAIL" /></translation>
+<translation id="6212097153736801627">Персоналізуйте свій пристрій <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Зробити знімок частини екрана або почати запис відео з неї</translation>
 <translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
 <translation id="622484624075952240">Донизу</translation>
@@ -1534,6 +1538,7 @@
 <translation id="726276584504105859">Перетягніть сюди, щоб розділити екран</translation>
 <translation id="7262906531272962081">Створити нагадування</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Робіть знімки екрана за допомогою спеціального інструмента у швидких налаштуваннях</translation>
 <translation id="7302889331339392448">Живі субтитри вимкнено.</translation>
 <translation id="7303365578352795231">Відповідь на іншому пристрої.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1922,7 @@
 <translation id="888982883502837004">Для вашого пристрою доступні оновлення мікропрограми. Натисніть, щоб переглянути й оновити.</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> буде видалено назавжди</translation>
 <translation id="889790758758811533">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />). Підключіть пристрій до джерела живлення.</translation>
+<translation id="8897940060812808966">Графічний планшет <ph name="PERIPHERAL_NAME" /> підключено й можна використовувати. Ви можете змінити його параметри в Налаштуваннях.</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>
 <translation id="8905919797434099235">(Без назви)</translation>
 <translation id="890616557918890486">Змінити джерело</translation>

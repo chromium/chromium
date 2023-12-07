@@ -174,6 +174,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1889872080060107187">Iniciarás sesión en <ph name="URL" /></translation>
 <translation id="1890237935065108104">Este ajuste no está disponible.</translation>
+<translation id="1891199774460536658">Hacer un seguimiento automático de todos los envíos detectados</translation>
 <translation id="1894023287452300670">Sigue el precio aquí</translation>
 <translation id="189531189292803889">Tu iPad se ha restaurado recientemente, lo que puede que haya cambiado tu navegador predeterminado.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
@@ -653,6 +654,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4493604894403585654">Has iniciado sesión como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4502566650163919158">Comprobar ahora</translation>
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>
+<translation id="4509449376545878717">No detectar nunca envíos automáticamente</translation>
 <translation id="4514889972748124117">Sugerir contraseña segura...</translation>
 <translation id="4520798012560649652">Más información sobre el modo Incógnito</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
@@ -1336,6 +1338,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8023878949384262191">Amplía la sección.</translation>
 <translation id="8027581147000338959">Abrir en una ventana nueva</translation>
 <translation id="8032569120109842252">Siguiendo</translation>
+<translation id="8040207962129315716">Preguntarme siempre</translation>
 <translation id="804225253087497565">Es posible que el <ph name="BEGIN_LINK" />historial de búsqueda<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.</translation>
 <translation id="804427445359061970">Aquí verás las pestañas de otros dispositivos</translation>
 <translation id="8044568254381073661">Guardar sin cifrado</translation>

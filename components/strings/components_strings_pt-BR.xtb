@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Botão "Gerenciar endereços". Ative para adicionar e gerenciar endereços nas configurações do Chrome</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1165174597379888365">Uma página é acessada</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Nenhum}=1{Em 1 site. Sua Conta do Google vai continuar conectada}one{Em # site. Sua Conta do Google vai continuar conectada}other{Em # sites. Sua Conta do Google vai continuar conectada}}</translation>
 <translation id="1165852471352757509">Documentário de TV e não ficção</translation>
 <translation id="1174644974616730562">Envelope chinês 1</translation>
 <translation id="1174723505405632867">Você quer permitir que <ph name="EMBEDDED_URL" /> use cookies e dados do site em <ph name="TOP_LEVEL_URL" />?

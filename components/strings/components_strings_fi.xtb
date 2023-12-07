@@ -116,6 +116,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1206967143813997005">Virheellinen alkuperäinen allekirjoitus</translation>
 <translation id="1209206284964581585">Piilota toistaiseksi</translation>
 <translation id="121201262018556460">Yritit yhdistää verkkotunnukseen <ph name="DOMAIN" />, mutta palvelin esitti varmenteen, joka käyttää heikkoa avainta. Hakkeri on saattanut murtaa avaimen. Palvelin ei siis välttämättä ole tavoittelemasi palvelin, vaan saatat viestiä hakkerin kanssa.</translation>
+<translation id="1212527389003717329">Lataus aloitettu. Näet sen painamalla pitkään |<ph name="ACCELERATOR" />|-painiketta.</translation>
 <translation id="1219129156119358924">Järjestelmän suojaus</translation>
 <translation id="1222060260947439312">Oikea lokero</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -286,6 +287,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Kalustetut vuokra-asunnot</translation>
 <translation id="1527263332363067270">Odotetaan yhteyttä…</translation>
+<translation id="1528311629279578926">Yhteys on estetty, koska julkinen sivu aloitti yhteyden muodostamisen yksityisessä verkossasi oleviin laitteisiin tai palvelimiin. Salli yhteys päivittämällä tämä sivu.</translation>
 <translation id="1529789484829130889">Lokero 8</translation>
 <translation id="1530707389502320859">Sivusto, jolle yritit juuri siirtyä, ei vaikuta aidolta. Hyökkääjät jäljittelevät joskus sivustoja tekemällä URL-osoitteeseen pieniä muutoksia, joita on vaikea havaita.</translation>
 <translation id="1532118530259321453">Viesti tältä sivulta</translation>
@@ -1162,6 +1164,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3325027355611702542">Asuntovaunut ja matkailuautot</translation>
 <translation id="3329013043687509092">Värikylläisyys</translation>
 <translation id="3333762389743153920">Virtuaalista korttia ei saatavilla</translation>
+<translation id="3336044043987989409">Salli päivityspainiketta painamalla yhteys laitteisiin tai palvelimiin, jotka ovat yksityisessä verkossa.</translation>
 <translation id="3338095232262050444">Turvallinen</translation>
 <translation id="333839153442689579">High intensity ‑intervalliharjoittelu</translation>
 <translation id="3339440062908617027">Juoksu ja kävely</translation>

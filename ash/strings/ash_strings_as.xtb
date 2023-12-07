@@ -447,6 +447,7 @@
 <translation id="2914580577416829331">স্ক্ৰীন কেপচাৰ</translation>
 <translation id="2924416280450782352">বস্তু দেখুৱাব নোৱাৰি। এই পেনেলটো পুনৰ খুলি চাওক।</translation>
 <translation id="2931572158271115754">এই টু-ডু লিষ্টত একো নাই।</translation>
+<translation id="2935225303485967257">প্ৰ’ফাইল পৰিচালনা কৰক</translation>
 <translation id="2941112035454246133">কম</translation>
 <translation id="2942350706960889382">ড'ক কৰা বিৱৰ্ধক</translation>
 <translation id="2942516765047364088">শ্বেল্ফৰ স্থান</translation>
@@ -624,6 +625,7 @@
 <translation id="3593646411856133110">খোলা এপ্‌সমূহ চাবলৈ ওপৰলৈ ছোৱাইপ কৰি ধৰি ৰাখক</translation>
 <translation id="3595596368722241419">বেটাৰী চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="3596012367874587041">এপৰ ছেটিং</translation>
+<translation id="3598452309062311481">সন্ধান+h</translation>
 <translation id="3600061223661453002">অফ কৰক</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ডেস্কখন সৃষ্টি কৰা হ’ল</translation>
 <translation id="3606978283550408104">ব্ৰেইল ডিছপ্লে’ সংযোগ কৰা হৈছে।</translation>
@@ -775,6 +777,7 @@
 <translation id="4190780880566297084">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া আৰু এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰাটো বাতিল কৰক</translation>
 <translation id="4192112279662688596">অথবা</translation>
 <translation id="4193857202545160520">ক্লিক আৰু কীসমূহ দেখুৱাওক</translation>
+<translation id="4193969623755915875">Explore এপত "<ph name="NEW_SHORTCUT" />"ৰ জৰিয়তে "সহায়" খোলক।</translation>
 <translation id="4195579532193195633">সাম্প্ৰতিক সংস্কৰণ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">আপুনি পূর্বতে এৰাৰ পৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4195877955194704651">স্বয়ংক্ৰিয়ভাৱে ক্লিকৰ বুটাম</translation>
@@ -957,6 +960,7 @@
 <translation id="4889868803215848840">পৰামৰ্শ উন্নত কৰিবলৈ ঐচ্ছিক মতামত প্ৰদান কৰক:</translation>
 <translation id="4890187583552566966">আপোনাৰ প্ৰশাসকে Google Assistant অক্ষম কৰিছে।</translation>
 <translation id="4890408602550914571">আপোনাৰ ফ’নটো ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
+<translation id="4892981359753171125">মুখাৱয়বৰ জৰিয়তে নিয়ন্ত্ৰণ</translation>
 <translation id="4895488851634969361">বেটাৰী চ্চার্জ সম্পূর্ণ হৈছে।</translation>
 <translation id="490375751687810070">উলম্ব</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>

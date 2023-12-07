@@ -174,6 +174,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1883255238294161206">Lijst samenvouwen</translation>
 <translation id="1889872080060107187">Je logt in bij <ph name="URL" /></translation>
 <translation id="1890237935065108104">Deze instelling is niet beschikbaar.</translation>
+<translation id="1891199774460536658">Alle gevonden pakketten automatisch volgen</translation>
 <translation id="1894023287452300670">Hier kun je de prijs volgen</translation>
 <translation id="189531189292803889">Je iPad is recent hersteld, waardoor je standaardbrowser misschien is veranderd.</translation>
 <translation id="1910975740091000991">Chrome voor iOS</translation>
@@ -653,6 +654,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4493604894403585654">Je bent ingelogd als <ph name="USER_EMAIL" />. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="4502566650163919158">Nu checken</translation>
 <translation id="4508750114462689118">Inlogpromo sluiten</translation>
+<translation id="4509449376545878717">Pakketten nooit automatisch vinden</translation>
 <translation id="4514889972748124117">Sterk wachtwoord voorstellen…</translation>
 <translation id="4520798012560649652">Meer informatie over de incognitomodus</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
@@ -835,6 +837,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5457226814769348910">Offline versie openen</translation>
 <translation id="5475069061743940393">Verzendstatus bijhouden</translation>
 <translation id="5478327362747197944">Maak rechtstreeks Agenda-afspraken door op een datum op een webpagina te klikken.</translation>
+<translation id="5482922178977937393">Wil je meldingen krijgen voor onder andere nieuws en sport op basis van je interesses?</translation>
 <translation id="5489208564673669003">Ga naar <ph name="BEGIN_LINK" />Cookie-instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="5490005495580364134">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="5497202150450073388">Geprobeerd te bezorgen. Er wordt een nieuwe poging gedaan.</translation>
@@ -1336,6 +1339,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8023878949384262191">Hiermee wordt het gedeelte uitgevouwen.</translation>
 <translation id="8027581147000338959">Openen in nieuw venster</translation>
 <translation id="8032569120109842252">Je volgt</translation>
+<translation id="8040207962129315716">Altijd vragen</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Zoekgeschiedenis<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />andere vormen van activiteit<ph name="END_LINK" /> kunnen worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.</translation>
 <translation id="804427445359061970">Hier vind je je tabbladen van andere apparaten</translation>
 <translation id="8044568254381073661">Opslaan zonder versleuteling</translation>
@@ -1475,6 +1479,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8766790350274092814">Wachtwoorden voor <ph name="WEBSITE" /> en <ph name="SECOND_WEBSITE" /> worden verwijderd. Je accounts zelf worden niet verwijderd.</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Het tabblad checken...}other{Alle tabbladen checken...}}</translation>
+<translation id="8782570580170191813">Pakketten altijd volgen</translation>
 <translation id="8787968206789828143">Zoeken op internet</translation>
 <translation id="8792626944327216835">microfoon</translation>
 <translation id="8803639129939845298">Beveiligd</translation>
