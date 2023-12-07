@@ -5537,12 +5537,12 @@
   {
     "name": "ntp-alpha-background-collections",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "ntp-background-image-error-detection",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 126
   },
   {
     "name": "ntp-cache-one-google-bar",
