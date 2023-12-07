@@ -5163,7 +5163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.V4l2VideoDecoder.Error" enum="V4l2VideoDecoderFunctions"
-    expires_after="2023-12-07">
+    expires_after="2024-05-19">
   <owner>stevecho@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -5174,7 +5174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.V4l2VideoDecoder.MediaIoctlError"
-    enum="MediaIoctlRequests" expires_after="2023-12-07">
+    enum="MediaIoctlRequests" expires_after="2024-05-19">
   <owner>stevecho@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
