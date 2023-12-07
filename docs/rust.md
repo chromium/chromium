@@ -242,6 +242,22 @@ file, rooted in the `gen` output directory, use
    [rust-analyzer](https://rust-analyzer.github.io/) it should detect the
    `rust-project.json` and use this to give you rich browsing, autocompletion,
    type annotations etc. for all the Rust within the Chromium codebase.
+5. Point rust-analyzer to the rust toolchain in Chromium. Otherwise you will
+   need to install Rustc in your system, and Chromium uses the nightly
+   compiler, so you would need that to match. Add the following to
+   `.vscode/settings.json` in the Chromium checkout:
+   ```
+   {
+      // The rest of the settings...
+
+      "rust-analyzer.cargo.extraEnv": {
+        "PATH": "../../third_party/rust-toolchain/bin:$PATH",
+      }
+   }
+   ```
+   This assumes you are working with an output directory like `out/Debug` which
+   has two levels; adjust the number of `..` in the path according to your own
+   setup.
 
 # Using cargo
 
