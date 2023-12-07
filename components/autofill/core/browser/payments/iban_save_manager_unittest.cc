@@ -396,36 +396,101 @@ TEST_F(IbanSaveManagerTest, StrikesPresentWhenIbanSaved_Local) {
 }
 
 TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_SyncServiceNotAvailable) {
-  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(/*sync_service=*/nullptr));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(
+      /*sync_service=*/nullptr,
+      AutofillMetrics::PaymentsSigninState::kSignedOut));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kSyncServiceNull, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled.SignedOut",
+      autofill_metrics::IbanUploadEnabledStatus::kSyncServiceNull, 1);
 }
 
 TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_AuthError) {
+  base::HistogramTester histogram_tester;
   // Set the SyncService to paused state.
   sync_service_.SetPersistentAuthError();
-  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(&sync_service_));
+
+  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(
+      &sync_service_, AutofillMetrics::PaymentsSigninState::kSyncPaused));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kSyncServicePaused, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled.SyncPaused",
+      autofill_metrics::IbanUploadEnabledStatus::kSyncServicePaused, 1);
 }
 
 TEST_F(IbanSaveManagerTest,
        IsIbanUploadEnabled_SyncDoesNotHaveAutofillWalletDataActiveType) {
+  base::HistogramTester histogram_tester;
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(&sync_service_));
+
+  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(
+      &sync_service_,
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled.SignedInAndSyncFeatureEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
 }
 
 TEST_F(IbanSaveManagerTest,
        IsIbanUploadEnabled_SyncServiceUsingExplicitPassphrase) {
+  base::HistogramTester histogram_tester;
   sync_service_.SetIsUsingExplicitPassphrase(true);
-  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(&sync_service_));
+
+  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(
+      &sync_service_,
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kUsingExplicitSyncPassphrase,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled.SignedInAndSyncFeatureEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kUsingExplicitSyncPassphrase,
+      1);
 }
 
 TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_SyncServiceLocalSyncOnly) {
+  base::HistogramTester histogram_tester;
   sync_service_.SetLocalSyncEnabled(true);
-  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(&sync_service_));
+
+  EXPECT_FALSE(IbanSaveManager::IsIbanUploadEnabled(
+      &sync_service_,
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kLocalSyncEnabled, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled.SignedInAndSyncFeatureEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kLocalSyncEnabled, 1);
 }
 
 TEST_F(IbanSaveManagerTest, IsIbanUploadEnabled_Enabled) {
-  EXPECT_TRUE(IbanSaveManager::IsIbanUploadEnabled(&sync_service_));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(IbanSaveManager::IsIbanUploadEnabled(
+      &sync_service_,
+      AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kEnabled, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.IbanUploadEnabled.SignedInAndSyncFeatureEnabled",
+      autofill_metrics::IbanUploadEnabledStatus::kEnabled, 1);
 }
 
 // Test that upload save should be offered to a new IBAN when the preflight

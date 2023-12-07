@@ -81,4 +81,15 @@ void LogServerIbanLinkClicked(AutofillMetrics::PaymentsSigninState sync_state) {
   base::UmaHistogramEnumeration("Autofill.ServerIbanLinkClicked", sync_state);
 }
 
+void LogIbanUploadEnabledMetric(
+    IbanUploadEnabledStatus metric,
+    AutofillMetrics::PaymentsSigninState sync_state) {
+  const std::string base_metric = std::string("Autofill.IbanUploadEnabled");
+  base::UmaHistogramEnumeration(base_metric, metric);
+
+  const std::string sync_subhistogram_metric =
+      base_metric + AutofillMetrics::GetMetricsSyncStateSuffix(sync_state);
+  base::UmaHistogramEnumeration(sync_subhistogram_metric, metric);
+}
+
 }  // namespace autofill::autofill_metrics

@@ -161,6 +161,21 @@ chromium-metrics-reviews@google.com.
       summary="Request failed in retrieving the virtual card information."/>
 </variants>
 
+<variants name="Autofill.PaymentsSigninState">
+  <variant name="SignedIn" summary="The user is signed in to Chromium"/>
+  <variant name="SignedInAndSyncFeatureEnabled"
+      summary="The user is signed in, has enabled the sync feature and has
+               not disabled Wallet sync"/>
+  <variant name="SignedInAndWalletSyncTransportEnabled"
+      summary="The user is signed in to Chromium and sync transport is active
+               for Wallet data"/>
+  <variant name="SignedOut" summary="The user is not signed in to Chromium"/>
+  <variant name="SyncPaused"
+      summary="The user has enabled the sync feature, but has then signed
+               out, so sync is paused"/>
+  <variant name="Unknown" summary="Unknown state"/>
+</variants>
+
 <variants name="Autofill.ProgressDialog.FlowType">
   <variant name="AndroidFIDO"
       summary="Progress dialog while authenticating with FIDO on Android"/>
@@ -2273,6 +2288,32 @@ chromium-metrics-reviews@google.com.
     selected, and the user has at least one IBAN saved. The metric is recorded
     upon each action, such as IBAN suggestions being shown or selected.
   </summary>
+</histogram>
+
+<histogram name="Autofill.IbanUploadEnabled" enum="IbanUploadEnabledStatus"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the reason why (or why not) IBAN upload was enabled. Logged when a user
+    submits a form, which triggers the check to decide whether to ask the users
+    if they want to upload the IBAN.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.IbanUploadEnabled.{AutofillPaymentsSigninState}"
+    enum="IbanUploadEnabledStatus" expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the reason why (or why not) IBAN upload was enabled. Logged when a user
+    submits a form, which triggers the check to decide whether to ask the users
+    if they want to upload the IBAN.
+  </summary>
+  <token key="AutofillPaymentsSigninState"
+      variants="Autofill.PaymentsSigninState"/>
 </histogram>
 
 <histogram name="Autofill.ImageFetcher.RequestLatency" units="ms"

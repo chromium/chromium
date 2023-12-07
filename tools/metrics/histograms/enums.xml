@@ -24912,6 +24912,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="IBAN suggestion selected (once)"/>
 </enum>
 
+<enum name="IbanUploadEnabledStatus">
+  <int value="0" label="Sync service is null"/>
+  <int value="1" label="Sync service is paused"/>
+  <int value="2"
+      label="Sync service missing AUTOFILL_WALLET_DATA active data type"/>
+  <int value="3" label="User has an explicit sync passphrase"/>
+  <int value="4" label="Local sync is enabled"/>
+  <int value="5" label="Success, IBAN upload enabled"/>
+</enum>
+
 <enum name="IDBAction">
   <int value="0" label="BackingStoreOpenAttempt">
     Recorded when the there is an attempt to open the backing store from disk,

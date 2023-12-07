@@ -34,10 +34,14 @@ std::string IbanSaveManager::GetPartialIbanHashString(
 
 // static
 bool IbanSaveManager::IsIbanUploadEnabled(
-    const syncer::SyncService* sync_service) {
+    const syncer::SyncService* sync_service,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
   // If Chrome sync is not active, upload IBAN save is not offered, since the
   // user would not be able to see the IBANs until sync is active again.
   if (!sync_service) {
+    autofill_metrics::LogIbanUploadEnabledMetric(
+        autofill_metrics::IbanUploadEnabledStatus::kSyncServiceNull,
+        signin_state_for_metrics);
     return false;
   }
 
@@ -47,6 +51,9 @@ bool IbanSaveManager::IsIbanUploadEnabled(
   // IBANs until sync is turned on.
   if (sync_service->GetTransportState() ==
       syncer::SyncService::TransportState::PAUSED) {
+    autofill_metrics::LogIbanUploadEnabledMetric(
+        autofill_metrics::IbanUploadEnabledStatus::kSyncServicePaused,
+        signin_state_for_metrics);
     return false;
   }
 
@@ -54,6 +61,10 @@ bool IbanSaveManager::IsIbanUploadEnabled(
   // upload IBAN save is not offered, since the user won't be able to see the
   // IBANs in the settings page.
   if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
+    autofill_metrics::LogIbanUploadEnabledMetric(
+        autofill_metrics::IbanUploadEnabledStatus::
+            kSyncServiceMissingAutofillWalletDataActiveType,
+        signin_state_for_metrics);
     return false;
   }
 
@@ -62,14 +73,24 @@ bool IbanSaveManager::IsIbanUploadEnabled(
   // information accessible to Google. Since upload makes IBAN data available
   // to other Google systems, disable it for passphrase users.
   if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+    autofill_metrics::LogIbanUploadEnabledMetric(
+        autofill_metrics::IbanUploadEnabledStatus::kUsingExplicitSyncPassphrase,
+        signin_state_for_metrics);
     return false;
   }
 
   // Don't offer upload for users that are only syncing locally, since they
   // won't receive the IBANs back from Google Payments.
   if (sync_service->IsLocalSyncEnabled()) {
+    autofill_metrics::LogIbanUploadEnabledMetric(
+        autofill_metrics::IbanUploadEnabledStatus::kLocalSyncEnabled,
+        signin_state_for_metrics);
     return false;
   }
+
+  autofill_metrics::LogIbanUploadEnabledMetric(
+      autofill_metrics::IbanUploadEnabledStatus::kEnabled,
+      signin_state_for_metrics);
   return true;
 }
 
@@ -100,7 +121,9 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
   // Trigger server save if available, otherwise local save as long as the IBAN
   // isn't already saved locally.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
-      IsIbanUploadEnabled(client_->GetSyncService())) {
+      IsIbanUploadEnabled(client_->GetSyncService(),
+                          client_->GetPersonalDataManager()
+                              ->GetPaymentsSigninStateForMetrics())) {
     return TypeOfOfferToSave::kOfferServerSave;
   } else if (!MatchesExistingLocalIban(import_candidate)) {
     return TypeOfOfferToSave::kOfferLocalSave;

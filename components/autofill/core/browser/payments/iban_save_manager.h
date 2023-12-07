@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/signatures.h"
@@ -49,7 +50,9 @@ class IbanSaveManager {
 
   // Returns true if uploading IBANs to Payments servers is enabled. This
   // requires the appropriate flags and user settings to be set.
-  static bool IsIbanUploadEnabled(const syncer::SyncService* sync_service);
+  static bool IsIbanUploadEnabled(
+      const syncer::SyncService* sync_service,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
   // Checks that all requirements for offering local/server IBAN save are
   // fulfilled, and if they are, offers save. Returns true if a save prompt was
