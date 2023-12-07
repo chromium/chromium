@@ -55,6 +55,11 @@ void KeepAliveURLLoaderService::FactoryContext::OnDidCommitNavigation(
   CHECK(policy_container_host);
 }
 
+void KeepAliveURLLoaderService::FactoryContext::UpdateFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> new_factory) {
+  factory = new_factory;
+}
+
 // KeepAliveURLLoaderFactoriesBase is an abstract base class for creating and
 // managing all the KeepAliveURLLoader instances created by multiple factories
 // of the same `Interface`.

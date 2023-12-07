@@ -1102,6 +1102,11 @@ class CONTENT_EXPORT NavigationRequest
     subresource_proxying_url_loader_service_bind_context_ = bind_context;
   }
 
+  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+  keep_alive_url_loader_factory_context() {
+    return keep_alive_url_loader_factory_context_;
+  }
+
   void set_keep_alive_url_loader_factory_context(
       base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
           factory_context) {

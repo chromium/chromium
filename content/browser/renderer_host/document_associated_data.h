@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
@@ -124,6 +125,21 @@ class DocumentAssociatedData : public base::SupportsUserData {
     devtools_navigation_token_ = devtools_navigation_token;
   }
 
+  // fetch keepalive handing:
+  //
+  // Contains the weak pointer to the FactoryContext of the in-browser
+  // URLLoaderFactory implementation used by this document.
+  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+  keep_alive_url_loader_factory_context() const {
+    return keep_alive_url_loader_factory_context_;
+  }
+  void set_keep_alive_url_loader_factory_context(
+      base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+          factory_context) {
+    DCHECK(!keep_alive_url_loader_factory_context_);
+    keep_alive_url_loader_factory_context_ = factory_context;
+  }
+
   // Produces weak pointers to the hosting RenderFrameHostImpl. This is
   // invalidated whenever DocumentAssociatedData is destroyed, due to
   // RenderFrameHost deletion or cross-document navigation.
@@ -139,6 +155,8 @@ class DocumentAssociatedData : public base::SupportsUserData {
   std::vector<internal::DocumentServiceBase*> services_;
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
   std::optional<base::UnguessableToken> devtools_navigation_token_;
+  base::WeakPtr<KeepAliveURLLoaderService::FactoryContext>
+      keep_alive_url_loader_factory_context_;
 
   base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
 };

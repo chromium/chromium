@@ -74,6 +74,20 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // Updates `weak_document_ptr` and other document-related fields.
     void OnDidCommitNavigation(WeakDocumentPtr committed_document);
 
+    // Updates `factory` using the given `new_factory`.
+    //
+    // Only called either
+    // (1) when DevTools tries to intercept every URLLoaderFactory
+    // (2) after network service crashes
+    //
+    // The default subresources loading, including non-keepalive fetch requests,
+    // don't go through browser. Hence, their intercepted URLLoaderFactory are
+    // updated via SubresourceLoaderUpdater::UpdateSubresourceLoaderFactories().
+    // On the other hand, calling this method can update the fetch keepalive
+    // factory directly in-browser.
+    void UpdateFactory(
+        scoped_refptr<network::SharedURLLoaderFactory> new_factory);
+
     // The factory to use for the requests initiated from this context.
     scoped_refptr<network::SharedURLLoaderFactory> factory;
 
