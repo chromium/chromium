@@ -957,17 +957,6 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
   AXID ax_id = it_id->value;
   DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
 
-  if (IsDisplayLocked(layout_object) ||
-      !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
-    // Change from AXLayoutObject -> AXNodeObject.
-    // We previously saved the node in the cache with its layout object,
-    // but now it's in a locked subtree so we should remove the entry with its
-    // layout object and replace it with an AXNodeObject created from the node
-    // instead. Do this later at a safe time.
-    Remove(const_cast<LayoutObject*>(layout_object));
-    return nullptr;
-  }
-
   auto it_result = objects_.find(ax_id);
   AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
   DCHECK(result) << "Had AXID for Node but no entry in objects_";
@@ -1386,18 +1375,14 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
     if (!obj->IsMissingParent()) {
       return obj;
     }
-    if (parent_if_known) {
-      // The parent is provided when the object is being added to the parent.
-      // This is expected when re-adding a child to a parent via
-      // AXNodeObject::AddChildren(), as the parent on previous children
-      // will have been cleared immediately before re-adding any of them.
-      obj->SetParent(parent_if_known);
-      return obj;
-    }
+    CHECK(parent_if_known) << "Missing parent: " << obj->ToString(true, true);
 
-    // TODO(accessibility) Try to get rid of repair situations by addressing
-    // partial subtrees and mid-tree object removal directly when they occur.
-    return RepairChildrenOfIncludedParent(node);
+    // The parent is provided when the object is being added to the parent.
+    // This is expected when re-adding a child to a parent via
+    // AXNodeObject::AddChildren(), as the parent on previous children
+    // will have been cleared immediately before re-adding any of them.
+    obj->SetParent(parent_if_known);
+    return obj;
   }
 
   return CreateAndInit(node, node->GetLayoutObject(), parent_if_known);
@@ -1819,15 +1804,22 @@ void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node,
   Remove(ax_id, notify_parent);
 }
 
-// This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
-  Remove(layout_object, /* notify_parent */ true);
-}
-
 void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
                                bool notify_parent) {
-  if (!layout_object)
-    return;
+  CHECK(layout_object);
+
+  if (IsA<LayoutView>(layout_object)) {
+    // A document is being destroyed.
+    // This code is only reached when it is a popup being destroyed.
+    // TODO(accessibility) Can we remove this case since Blink calls
+    // RemovePopup(document) for us?
+    DCHECK(!popup_document_ ||
+           popup_document_ == &layout_object->GetDocument());
+    // Popup has been destroyed.
+    if (popup_document_) {
+      RemovePopup(popup_document_);
+    }
+  }
 
   // If a DOM node is present, it will have been used to back the AXObject, in
   // which case we need to call Remove(node) instead.
@@ -1837,27 +1829,15 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
     if (node->IsPseudoElement()) {
       DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromRemove, node);
     }
-    // Shadow root subtrees that don't have layout objects for the assigned
-    // nodes will not reach Node::RemovedFromFlatTree() and therefore the
-    // safest thing to do is ensure everything under a shadow host is removed
-    // when the host itself is removed.
-    if (node->GetShadowRoot()) {
-      RemoveSubtreeWhenSafe(node);
-    }
-    if (layout_object->Style() &&
-        !layout_object->Style()->IsContentVisibilityVisible()) {
-      // If a content-visibility: auto/hidden node is removed, remove the entire
-      // subtree because any AXObject descendants are now invalid, and there
-      // will not be any other signals to hook for invalidation or removal.
-      RemoveSubtreeWhenSafe(node);
-    }
+
     if (IsA<HTMLImageElement>(node)) {
       // If an image is removed, ensure its entire subtree is deleted as there
       // may have been children supplied via a map.
-      if (auto* layout_image = DynamicTo<LayoutImage>(layout_object)) {
+      if (auto* layout_image =
+              DynamicTo<LayoutImage>(node->GetLayoutObject())) {
         if (auto* map = layout_image->ImageMap()) {
           if (map->ImageElement() == node) {
-            RemoveSubtreeWhenSafe(map, false);
+            RemoveSubtreeWithFlatTraversal(map, /*remove_root*/ false);
           }
         }
       }
@@ -1875,7 +1855,7 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
   DCHECK(ax_id);
 
   layout_object_mapping_.erase(iter);
-  Remove(ax_id, notify_parent);
+  Remove(ax_id, false);
 }
 
 // This is safe to call even if there isn't a current mapping.
@@ -1951,6 +1931,24 @@ void AXObjectCacheImpl::RemoveIncludedSubtree(AXObject* object,
   }
   if (remove_root) {
     Remove(object, /* notify_parent */ false);
+  }
+}
+
+void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(
+    LayoutObject* subtree_root) {
+  Remove(subtree_root, /*notify_parent*/ true);
+
+  LayoutObject* iter = subtree_root;
+  while ((iter = iter->NextInPreOrder(subtree_root)) != nullptr) {
+    Remove(iter, /*notify_parent*/ false);
+  }
+}
+
+void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(Node* subtree_root) {
+  if (subtree_root->GetLayoutObject()) {
+    RemoveAXObjectsInLayoutSubtree(subtree_root->GetLayoutObject());
+  } else {
+    Remove(subtree_root, /*notify_parent*/ true);
   }
 }
 
@@ -2289,7 +2287,7 @@ void AXObjectCacheImpl::TextChanged(Node* node) {
     return;
   }
 
-  DeferTreeUpdate(TreeUpdateReason::kTextChangedFromTextChangedNode, node);
+  DeferTreeUpdate(TreeUpdateReason::kTextChangedOnNode, node);
 }
 
 // Return a node for the current layout object or ancestor layout object.
@@ -2311,17 +2309,21 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
   // when it has a block sibling.
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    // A text changed event is redundant with children changed on the same node.
-    if (base::Contains(nodes_with_pending_children_changed_, node)) {
+    // If the text changed in a pseudo element, rebuild the entire subtree.
+    if (node->IsPseudoElement()) {
+      RemoveAXObjectsInLayoutSubtree(node->GetLayoutObject());
+    } else if (base::Contains(nodes_with_pending_children_changed_, node)) {
+      // Text changed is redundant with children changed on the same node.
       return;
     }
 
-    DeferTreeUpdate(TreeUpdateReason::kTextChangedFromTextChangedNode, node);
+    DeferTreeUpdate(TreeUpdateReason::kTextChangedOnClosestNodeForLayoutObject,
+                    node);
     return;
   }
 
   if (Get(layout_object)) {
-    DeferTreeUpdate(TreeUpdateReason::kTextChangedFromTextChangedAXObject,
+    DeferTreeUpdate(TreeUpdateReason::kTextChangedOnLayoutObject,
                     Get(layout_object));
   }
 }
@@ -3333,6 +3335,12 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     if (node->GetDocument() != document || !node->isConnected()) {
       return nullptr;
     }
+
+    VLOG(1) << "\n**** Processing tree update:" << "\n* Node: " << node
+            << "\n* Layout Object: " << node->GetLayoutObject()
+            << "\n* Event: " << tree_update->event
+            << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
+
     AXObject* ax_object = GetOrCreate(node);
     if (!ax_object || ax_object->IsDetached()) {
       return nullptr;
@@ -3357,6 +3365,11 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     return nullptr;
   }
 
+  VLOG(1) << "\n**** Processing tree update:" << "\n* AXObject: "
+          << ax_object->ToString(true, true)
+          << "\n* Event: " << tree_update->event
+          << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
+
   if (ax_object->GetNode() && !ax_object->GetNode()->isConnected()) {
     return nullptr;
   }
@@ -3368,6 +3381,9 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
   // TODO(accessibility) Try to get rid of repair situations by addressing
   // partial subtrees and mid-tree object removal directly when they occur.
   if (ax_object->IsMissingParent()) {
+    // TODO(accessibility) This should become a CHECK once we resolve remaining
+    // cases. Breaks on https://github.com/openui/open-ui/discussions/960.
+    DCHECK(false) << "Missing parent on: " << ax_object->ToString(true, true);
     if (!ax_object->GetNode()) {
       RemoveIncludedSubtree(ax_object, /* remove_root */ true);
       return nullptr;
@@ -3415,7 +3431,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       case TreeUpdateReason::kMarkAXSubtreeDirty:
         MarkAXSubtreeDirtyWithCleanLayout(ax_object);
         break;
-      case TreeUpdateReason::kTextChangedFromTextChangedAXObject:
+      case TreeUpdateReason::kTextChangedOnLayoutObject:
         TextChangedWithCleanLayout(ax_object->GetNode(), ax_object);
         break;
       default:
@@ -3496,7 +3512,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
       SectionOrRegionRoleMaybeChangedWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kTextChangedFromTextChangedNode:
+    case TreeUpdateReason::kTextChangedOnNode:
+    case TreeUpdateReason::kTextChangedOnClosestNodeForLayoutObject:
       TextChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kTextMarkerDataAdded:

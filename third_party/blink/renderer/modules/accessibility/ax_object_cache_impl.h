@@ -212,7 +212,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // It will also notify the parent that its children have changed, so that the
   // parent will recompute its children and be reserialized.
   void Remove(AccessibleNode*) override;
-  void Remove(LayoutObject*) override;
   void Remove(Node*) override;
   void RemovePopup(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
@@ -242,6 +241,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If |remove_root|, remove the root of the subtree, otherwise only
   // descendants are removed.
   void RemoveIncludedSubtree(AXObject* object, bool remove_root);
+  // Remove all AXObjects in the layout subtree of node, and notify the parent.
+  void RemoveAXObjectsInLayoutSubtree(LayoutObject* layout_object) override;
+  void RemoveAXObjectsInLayoutSubtree(Node* node) override;
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
@@ -787,20 +789,21 @@ class MODULES_EXPORT AXObjectCacheImpl
     kSectionOrRegionRoleMaybeChangedFromLabel = 26,
     kSectionOrRegionRoleMaybeChangedFromLabelledBy = 27,
     kSectionOrRegionRoleMaybeChangedFromTitle = 28,
-    kTextChangedFromTextChangedNode = 29,
-    kTextMarkerDataAdded = 30,
-    kUpdateActiveMenuOption = 31,
-    kNodeIsAttached = 32,
-    kUpdateAriaOwns = 33,
-    kUpdateTableRole = 34,
-    kUseMapAttributeChanged = 35,
-    kValidationMessageVisibilityChanged = 36,
+    kTextChangedOnNode = 29,
+    kTextChangedOnClosestNodeForLayoutObject = 30,
+    kTextMarkerDataAdded = 31,
+    kUpdateActiveMenuOption = 32,
+    kNodeIsAttached = 33,
+    kUpdateAriaOwns = 34,
+    kUpdateTableRole = 35,
+    kUseMapAttributeChanged = 36,
+    kValidationMessageVisibilityChanged = 37,
 
     // These updates are associated with an AXID:
     kChildrenChanged = 100,
     kMarkAXObjectDirty = 101,
     kMarkAXSubtreeDirty = 102,
-    kTextChangedFromTextChangedAXObject = 103
+    kTextChangedOnLayoutObject = 103
   };
 
   struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {

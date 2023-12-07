@@ -102,9 +102,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Will also notify the parent that its children have changed, so that the
   // parent will recompute its children and be reserialized.
   virtual void Remove(AccessibleNode*) = 0;
-  virtual void Remove(LayoutObject*) = 0;
   virtual void Remove(Node*) = 0;
   virtual void RemoveSubtreeWhenSafe(Node*, bool remove_root = true) = 0;
+  virtual void RemoveAXObjectsInLayoutSubtree(LayoutObject*) = 0;
+  virtual void RemoveAXObjectsInLayoutSubtree(Node*) = 0;
   virtual void RemovePopup(Document*) = 0;
   virtual void Remove(AbstractInlineTextBox*) = 0;
 
