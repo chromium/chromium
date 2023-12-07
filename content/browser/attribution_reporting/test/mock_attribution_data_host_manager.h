@@ -87,7 +87,7 @@ class MockAttributionDataHostManager : public AttributionDataHostManager {
                GlobalRenderFrameHostId,
                int64_t last_navigation_id,
                absl::optional<blink::AttributionSrcToken>,
-               std::string devtools_request_id),
+               absl::optional<std::string> devtools_request_id),
               (override));
 
   MOCK_METHOD(bool,

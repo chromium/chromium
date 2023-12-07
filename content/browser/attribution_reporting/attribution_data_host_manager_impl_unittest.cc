@@ -3418,26 +3418,30 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger_ParsingFails) {
   const auto context_origin =
       *SuitableOrigin::Deserialize("https://destination.test");
 
-  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+  for (const auto& devtools_request_id :
+       std::vector<absl::optional<std::string>>{absl::nullopt,
+                                                kDevtoolsRequestId}) {
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
 
-  // TODO(https://crbug.com/1457238): Add expectation that
-  // NotifyFailedTriggerRegistration is called.
+    // TODO(https://crbug.com/1457238): Add expectation that
+    // NotifyFailedTriggerRegistration is called.
 
-  data_host_manager_.NotifyBackgroundRegistrationStarted(
-      kBackgroundId, context_origin,
-      /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-      kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
-      kDevtoolsRequestId);
+    data_host_manager_.NotifyBackgroundRegistrationStarted(
+        kBackgroundId, context_origin,
+        /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        devtools_request_id);
 
-  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->SetHeader(kAttributionReportingRegisterTriggerHeader, "");
-  data_host_manager_.NotifyBackgroundRegistrationData(
-      kBackgroundId, headers.get(), reporting_url,
-      network::AttributionReportingRuntimeFeatures(),
-      /*trigger_verifications=*/{});
-  data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterTriggerHeader, "");
+    data_host_manager_.NotifyBackgroundRegistrationData(
+        kBackgroundId, headers.get(), reporting_url,
+        network::AttributionReportingRuntimeFeatures(),
+        /*trigger_verifications=*/{});
+    data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
 
-  task_environment_.FastForwardBy(base::TimeDelta());
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
 }
 
 TEST_F(AttributionDataHostManagerImplTest, Background_InvalidHeaders) {
@@ -3534,26 +3538,30 @@ TEST_F(AttributionDataHostManagerImplTest, Background_InvalidHeaders) {
        .headers = {os_trigger, web_trigger}},
   };
 
-  for (const auto& test_case : kTestCases) {
-    data_host_manager_.NotifyBackgroundRegistrationStarted(
-        kBackgroundId, context_origin,
-        /*is_within_fenced_frame=*/false, test_case.eligibility, kFrameId,
-        kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
-        kDevtoolsRequestId);
+  for (const auto& devtools_request_id :
+       std::vector<absl::optional<std::string>>{absl::nullopt,
+                                                kDevtoolsRequestId}) {
+    for (const auto& test_case : kTestCases) {
+      data_host_manager_.NotifyBackgroundRegistrationStarted(
+          kBackgroundId, context_origin,
+          /*is_within_fenced_frame=*/false, test_case.eligibility, kFrameId,
+          kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+          devtools_request_id);
 
-    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    for (const auto& header : test_case.headers) {
-      headers->SetHeader(header.first, header.second);
+      auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+      for (const auto& header : test_case.headers) {
+        headers->SetHeader(header.first, header.second);
+      }
+      EXPECT_EQ(data_host_manager_.NotifyBackgroundRegistrationData(
+                    kBackgroundId, headers.get(), reporting_url,
+                    {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+                    /*trigger_verifications=*/{}),
+                test_case.expect_registration)
+          << test_case.description;
+      data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+      task_environment_.FastForwardBy(base::TimeDelta());
     }
-    EXPECT_EQ(data_host_manager_.NotifyBackgroundRegistrationData(
-                  kBackgroundId, headers.get(), reporting_url,
-                  {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
-                  /*trigger_verifications=*/{}),
-              test_case.expect_registration)
-        << test_case.description;
-    data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
-
-    task_environment_.FastForwardBy(base::TimeDelta());
   }
 }
 

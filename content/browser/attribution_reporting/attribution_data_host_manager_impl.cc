@@ -187,11 +187,15 @@ class RegistrationNavigationContext {
   AttributionInputEvent input_event_;
 };
 
-void LogAuditIssue(GlobalRenderFrameHostId render_frame_id,
-                   const GURL& request_url,
-                   const std::string& request_devtools_id,
-                   absl::optional<std::string> invalid_parameter,
-                   AttributionReportingIssueType violation_type) {
+void MaybeLogAuditIssue(GlobalRenderFrameHostId render_frame_id,
+                        const GURL& request_url,
+                        const absl::optional<std::string>& request_devtools_id,
+                        absl::optional<std::string> invalid_parameter,
+                        AttributionReportingIssueType violation_type) {
+  if (!request_devtools_id.has_value()) {
+    return;
+  }
+
   auto* render_frame_host = RenderFrameHost::FromID(render_frame_id);
   if (!render_frame_host) {
     return;
@@ -208,7 +212,7 @@ void LogAuditIssue(GlobalRenderFrameHostId render_frame_id,
   }
 
   auto affected_request = blink::mojom::AffectedRequest::New();
-  affected_request->request_id = request_devtools_id;
+  affected_request->request_id = request_devtools_id.value();
   affected_request->url = request_url.spec();
   details->request = std::move(affected_request);
 
@@ -410,7 +414,8 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 
   // For sources & triggers received through the data host, issues are
   // identified and reported in blink. As such, we don't need to plumb the
-  // devtools request ID.
+  // devtools request ID. A request might also not have a defined ID when there
+  // are no devtools agents registered.
   absl::optional<std::string> devtools_request_id_;
 
   // When the registration is tied to a navigation, we store additional context
@@ -852,11 +857,10 @@ void AttributionDataHostManagerImpl::ParseHeader(
   switch (registrar) {
     case Registrar::kWeb:
       if (!network::HasAttributionWebSupport(attribution_support)) {
-        CHECK(it->devtools_request_id());
-        LogAuditIssue(
+        MaybeLogAuditIssue(
             it->render_frame_id(),
             /*request_url=*/pending_decode.reporting_url,
-            *it->devtools_request_id(),
+            it->devtools_request_id(),
             /*invalid_parameter=*/absl::nullopt,
             /*violation_type=*/
             blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport);
@@ -872,11 +876,10 @@ void AttributionDataHostManagerImpl::ParseHeader(
       break;
     case Registrar::kOs:
       if (!network::HasAttributionOsSupport(attribution_support)) {
-        CHECK(it->devtools_request_id());
-        LogAuditIssue(
+        MaybeLogAuditIssue(
             it->render_frame_id(),
             /*request_url=*/pending_decode.reporting_url,
-            *it->devtools_request_id(),
+            it->devtools_request_id(),
             /*invalid_parameter=*/absl::nullopt,
             /*violation_type=*/
             blink::mojom::AttributionReportingIssueType::kNoWebOrOsSupport);
@@ -1043,9 +1046,9 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
       runtime_features.Has(
           network::AttributionReportingRuntimeFeature::kCrossAppWeb),
       it->eligibility(),
-      base::BindRepeating(&LogAuditIssue, it->render_frame_id(),
+      base::BindRepeating(&MaybeLogAuditIssue, it->render_frame_id(),
                           /*request_url=*/reporting_url,
-                          *it->devtools_request_id(),
+                          it->devtools_request_id(),
                           /*invalid_parameter=*/absl::nullopt));
   if (!header.has_value()) {
     return false;
@@ -1152,7 +1155,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
     GlobalRenderFrameHostId render_frame_id,
     int64_t last_navigation_id,
     absl::optional<blink::AttributionSrcToken> attribution_src_token,
-    std::string devtools_request_id) {
+    absl::optional<std::string> devtools_request_id) {
   CHECK(BackgroundRegistrationsEnabled());
 
   absl::optional<RegistrationNavigationContext> navigation_context;
@@ -1245,9 +1248,9 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
       runtime_features.Has(
           network::AttributionReportingRuntimeFeature::kCrossAppWeb),
       it->eligibility(),
-      base::BindRepeating(&LogAuditIssue, it->render_frame_id(),
+      base::BindRepeating(&MaybeLogAuditIssue, it->render_frame_id(),
                           /*request_url=*/reporting_url,
-                          *it->devtools_request_id(),
+                          it->devtools_request_id(),
                           /*invalid_parameter=*/absl::nullopt));
   if (!header.has_value()) {
     return false;
@@ -1468,9 +1471,9 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
       runtime_features.Has(
           network::AttributionReportingRuntimeFeature::kCrossAppWeb),
       it->eligibility(),
-      base::BindRepeating(&LogAuditIssue, it->render_frame_id(),
+      base::BindRepeating(&MaybeLogAuditIssue, it->render_frame_id(),
                           /*request_url=*/reporting_url,
-                          *it->devtools_request_id(),
+                          it->devtools_request_id(),
                           /*invalid_parameter=*/absl::nullopt));
   if (!header.has_value()) {
     MaybeOnRegistrationsFinished(it);
@@ -1545,13 +1548,13 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
     attribution_manager_->HandleSource(std::move(*source),
                                        registrations.render_frame_id());
   } else {
-    CHECK(registrations.devtools_request_id());
-    LogAuditIssue(registrations.render_frame_id(),
-                  /*request_url=*/pending_decode.reporting_url,
-                  *registrations.devtools_request_id(),
-                  /*invalid_parameter=*/pending_decode.header,
-                  /*violation_type=*/
-                  AttributionReportingIssueType::kInvalidRegisterSourceHeader);
+    MaybeLogAuditIssue(
+        registrations.render_frame_id(),
+        /*request_url=*/pending_decode.reporting_url,
+        registrations.devtools_request_id(),
+        /*invalid_parameter=*/pending_decode.header,
+        /*violation_type=*/
+        AttributionReportingIssueType::kInvalidRegisterSourceHeader);
     attribution_reporting::RecordSourceRegistrationError(source.error());
   }
 }
@@ -1654,10 +1657,10 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
       }
     } else {
       const auto& pending_decode = registrations->pending_os_decodes().front();
-      LogAuditIssue(
+      MaybeLogAuditIssue(
           registrations->render_frame_id(),
           /*request_url=*/pending_decode.reporting_url,
-          *registrations->devtools_request_id(),
+          registrations->devtools_request_id(),
           /*invalid_parameter=*/pending_decode.header,
           /*violation_type=*/
           AttributionReportingIssueType::kInvalidRegisterOsSourceHeader);

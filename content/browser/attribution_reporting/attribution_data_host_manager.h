@@ -124,7 +124,7 @@ class AttributionDataHostManager
       GlobalRenderFrameHostId render_frame_id,
       int64_t last_navigation_id,
       absl::optional<blink::AttributionSrcToken> attribution_src_token,
-      std::string devtools_request_id) = 0;
+      absl::optional<std::string> devtools_request_id) = 0;
 
   // Notifies the manager that a background attribution request has sent a
   // response. May be called multiple times for the same request; for redirects

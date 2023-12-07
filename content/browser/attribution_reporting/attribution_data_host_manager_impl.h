@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
@@ -110,7 +111,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       GlobalRenderFrameHostId render_frame_id,
       int64_t last_navigation_id,
       absl::optional<blink::AttributionSrcToken> attribution_src_token,
-      std::string devtools_request_id) override;
+      absl::optional<std::string> devtools_request_id) override;
   bool NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId id,
       const net::HttpResponseHeaders* headers,
