@@ -96,14 +96,8 @@ class OpenXrController {
       XrAction action,
       std::string binding_string) const;
 
-  absl::optional<gfx::Transform> GetPointerFromGripTransform(
+  absl::optional<gfx::Transform> GetGripFromPointerTransform(
       XrTime predicted_display_time) const;
-
-  absl::optional<gfx::Transform> GetTransformFromSpaces(
-      XrTime predicted_display_time,
-      XrSpace target,
-      XrSpace origin,
-      bool* emulated_position) const;
 
   template <typename T>
   XrResult QueryState(XrAction action, T* action_state) const {

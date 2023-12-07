@@ -39,6 +39,49 @@ std::string GetTopLevelUserPath(OpenXrHandednessType type) {
   return std::string("/user/hand/") + GetStringFromType(type);
 }
 
+absl::optional<gfx::Transform> GetOriginFromTarget(
+    XrTime predicted_display_time,
+    XrSpace origin,
+    XrSpace target,
+    bool* emulated_position) {
+  XrSpaceLocation location = {XR_TYPE_SPACE_LOCATION};
+  // emulated_position indicates when there is a fallback from a fully-tracked
+  // (i.e. 6DOF) type case to some form of orientation-only type tracking
+  // (i.e. 3DOF/IMU type sensors)
+  // Thus we have to make sure orientation is tracked.
+  // Valid Bit only indicates it's either tracked or emulated, we have to check
+  // for XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT to make sure orientation is
+  // tracked.
+  if (XR_FAILED(
+          xrLocateSpace(target, origin, predicted_display_time, &location)) ||
+      !(location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) ||
+      !(location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)) {
+    return absl::nullopt;
+  }
+
+  *emulated_position = true;
+  if (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) {
+    *emulated_position = false;
+  }
+
+  // Convert the orientation and translation given by runtime into a
+  // transformation matrix.
+  gfx::DecomposedTransform decomp;
+  decomp.quaternion =
+      gfx::Quaternion(location.pose.orientation.x, location.pose.orientation.y,
+                      location.pose.orientation.z, location.pose.orientation.w);
+  decomp.translate[0] = location.pose.position.x;
+  decomp.translate[1] = location.pose.position.y;
+  decomp.translate[2] = location.pose.position.z;
+
+  *emulated_position = true;
+  if (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) {
+    *emulated_position = false;
+  }
+
+  return gfx::Transform::Compose(decomp);
+}
+
 }  // namespace
 
 OpenXrController::OpenXrController()
@@ -67,6 +110,7 @@ OpenXrController::~OpenXrController() {
     xrDestroySpace(pointer_pose_space_);
   }
 }
+
 XrResult OpenXrController::Initialize(
     OpenXrHandednessType type,
     XrInstance instance,
@@ -261,7 +305,7 @@ mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
   }
 
   description_->input_from_pointer =
-      GetPointerFromGripTransform(predicted_display_time);
+      GetGripFromPointerTransform(predicted_display_time);
 
   return description_.Clone();
 }
@@ -356,58 +400,15 @@ absl::optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
     XrTime predicted_display_time,
     XrSpace local_space,
     bool* emulated_position) const {
-  return GetTransformFromSpaces(predicted_display_time, grip_pose_space_,
-                                local_space, emulated_position);
+  return GetOriginFromTarget(predicted_display_time, local_space,
+                             grip_pose_space_, emulated_position);
 }
 
-absl::optional<gfx::Transform> OpenXrController::GetPointerFromGripTransform(
+absl::optional<gfx::Transform> OpenXrController::GetGripFromPointerTransform(
     XrTime predicted_display_time) const {
   bool emulated_position;
-  return GetTransformFromSpaces(predicted_display_time, pointer_pose_space_,
-                                grip_pose_space_, &emulated_position);
-}
-
-absl::optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
-    XrTime predicted_display_time,
-    XrSpace target,
-    XrSpace origin,
-    bool* emulated_position) const {
-  XrSpaceLocation location = {XR_TYPE_SPACE_LOCATION};
-  // emulated_position indicates when there is a fallback from a fully-tracked
-  // (i.e. 6DOF) type case to some form of orientation-only type tracking
-  // (i.e. 3DOF/IMU type sensors)
-  // Thus we have to make sure orientation is tracked.
-  // Valid Bit only indicates it's either tracked or emulated, we have to check
-  // for XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT to make sure orientation is
-  // tracked.
-  if (XR_FAILED(
-          xrLocateSpace(target, origin, predicted_display_time, &location)) ||
-      !(location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) ||
-      !(location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)) {
-    return absl::nullopt;
-  }
-
-  *emulated_position = true;
-  if (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) {
-    *emulated_position = false;
-  }
-
-  // Convert the orientation and translation given by runtime into a
-  // transformation matrix.
-  gfx::DecomposedTransform decomp;
-  decomp.quaternion =
-      gfx::Quaternion(location.pose.orientation.x, location.pose.orientation.y,
-                      location.pose.orientation.z, location.pose.orientation.w);
-  decomp.translate[0] = location.pose.position.x;
-  decomp.translate[1] = location.pose.position.y;
-  decomp.translate[2] = location.pose.position.z;
-
-  *emulated_position = true;
-  if (location.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) {
-    *emulated_position = false;
-  }
-
-  return gfx::Transform::Compose(decomp);
+  return GetOriginFromTarget(predicted_display_time, grip_pose_space_,
+                             pointer_pose_space_, &emulated_position);
 }
 
 XrResult OpenXrController::CreateActionsForButton(
