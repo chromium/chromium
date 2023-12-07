@@ -111,34 +111,6 @@ enum class ProfileSignout {
   kMaxValue = kIdleTimeoutPolicyTriggeredSignOut
 };
 
-// Enum values used for use with "Signin.AllAccessPointActions" histograms.
-enum AccessPointAction {
-  // The infobar was shown to the user.
-  HISTOGRAM_SHOWN = 0,
-  // The user pressed the accept button to perform the suggested action.
-  HISTOGRAM_ACCEPTED = 1,
-  // The user pressed the reject to turn off the feature.
-  // Deprecated: HISTOGRAM_REJECTED = 2,
-  // The user pressed the X button to dismiss the infobar this time.
-  // Deprecated: HISTOGRAM_DISMISSED = 3,
-  // The user completely ignored the infobar.  Either they navigated away, or
-  // they used the page as is.
-  // Deprecated: HISTOGRAM_IGNORED = 4,
-  // The user clicked on the learn more link in the infobar.
-  // Deprecated: HISTOGRAM_LEARN_MORE = 5,
-  // The sync was started with default settings.
-  HISTOGRAM_WITH_DEFAULTS = 6,
-  // The sync was started with advanced settings.
-  HISTOGRAM_WITH_ADVANCED = 7,
-  // The sync was started through auto-accept with default settings.
-  // Deprecated: HISTOGRAM_AUTO_WITH_DEFAULTS = 8,
-  // The sync was started through auto-accept with advanced settings.
-  // Deprecated: HISTOGRAM_AUTO_WITH_ADVANCED = 9,
-  // The sync was aborted with an undo button.
-  // Deprecated: HISTOGRAM_UNDO = 10,
-  HISTOGRAM_MAX = 11
-};
-
 // Enum values which enumerates all access points where sign in could be
 // initiated. Not all of them exist on all platforms. They are used with
 // "Signin.SigninStartedAccessPoint" and "Signin.SigninCompletedAccessPoint"

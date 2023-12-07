@@ -56,7 +56,6 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
     bool skip_for_now = false;
     bool trusted_value = false;
     bool trusted_found = false;
-    bool choose_what_to_sync = false;
     // Whether the account should be available in ARC after addition. Used only
     // on Chrome OS.
     bool is_available_in_arc = false;

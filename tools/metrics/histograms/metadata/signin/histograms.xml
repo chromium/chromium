@@ -22,15 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Signin" enum="SigninHelperFlow" expires_after="2023-08-20">
-  <owner>mlerman@chromium.org</owner>
-  <summary>
-    Tracks user interactions as they sign in through a flow. The suffix of the
-    histogram indicates what UI widget or application flow triggered the signin
-    flow.
-  </summary>
-</histogram>
-
 <histogram name="Signin.AccountCapabilities.FetchLatency" units="ms"
     expires_after="2024-06-30">
   <owner>tju@google.com</owner>

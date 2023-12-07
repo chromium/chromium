@@ -442,41 +442,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure"/>
 </enum>
 
-<enum name="SigninHelperFlow">
-  <int value="0" label="Shown">The signin flow was shown to the user.</int>
-  <int value="1" label="Accepted">The user pressed accept to sign in.</int>
-  <int value="2" label="(Obsolete) Rejected. Deprecated as of 10/2023.">
-    The user pressed the reject to sign in.
-  </int>
-  <int value="3" label="(Obsolete) Dismissed. Deprecated as of 10/2023.">
-    The user pressed the X button to dismiss the signin promo.
-  </int>
-  <int value="4" label="(Obsolete) Ignored. Deprecated as of 10/2023.">
-    The user completely ignored the signin promo. Either they navigated away, or
-    they used the page as is.
-  </int>
-  <int value="5" label="(Obsolete) Learn More. Deprecated as of 10/2023.">
-    The user clicked on the learn more link in the signin promo.
-  </int>
-  <int value="6" label="Accept with Defaults">
-    The sync was started with default settings.
-  </int>
-  <int value="7" label="Accept with Advanced">
-    The sync was started with advanced settings.
-  </int>
-  <int value="8"
-      label="(Obsolete) Auto-Accept with Defaults. Deprecated as of 10/2023.">
-    The sync was started through auto-accept with default settings.
-  </int>
-  <int value="9"
-      label="(Obsolete) Auto-Accept with Advanced. Deprecated as of 10/2023.">
-    The sync was started through auto-accept with advanced settings.
-  </int>
-  <int value="10" label="(Obsolete) Undo. Deprecated as of 10/2023.">
-    The sync was aborted with an undo button.
-  </int>
-</enum>
-
 <enum name="SigninInterceptFREDialogEvent">
   <int value="0" label="FRE started"/>
   <int value="1" label="Sync confirmation shown"/>

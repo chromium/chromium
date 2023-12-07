@@ -4490,14 +4490,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Network.Shill.WiFi.RememberedUserNetworkCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin_Actions" separator=".">
-  <suffix name="AllAccessPointActions" label=""/>
-  <suffix name="AndroidAccountConsistencyFirstRunActions"
-      label="Signin Flow shown on android after Account Consistency flag was
-             enabled."/>
-  <affected-histogram name="Signin"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Signin_Reconciler_Duration_UpTo3mins" separator=".">
   <suffix name="Failure" label="Failed execution of reconciler"/>
   <suffix name="Success" label="Successful execution of reconciler"/>

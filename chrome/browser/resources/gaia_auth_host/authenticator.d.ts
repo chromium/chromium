@@ -26,7 +26,6 @@ export interface SyncTrustedVaultKeys {
 }
 
 export interface AuthCompletedCredentials {
-  chooseWhatToSync: boolean;
   email: string;
   gaiaId: string;
   passwordAttributes: PasswordAttributes;
