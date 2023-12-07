@@ -20,7 +20,7 @@ import com.sun.source.tree.AnnotationTree;
         summary = "Use androidx.annotation.Nullable instead of javax.annotation.Nullable.",
         severity = BugPattern.SeverityLevel.ERROR,
         linkType = BugPattern.LinkType.CUSTOM,
-        link = "http://crbug.com/771683")
+        link = "https://crbug.com/771683")
 public class AndroidNullableCheck extends BugChecker implements BugChecker.AnnotationTreeMatcher {
     static final Matcher<AnnotationTree> IS_JAVAX_NULLABLE =
             Matchers.anyOf(Matchers.isType("javax.annotation.Nullable"));

@@ -16,7 +16,7 @@ import com.sun.source.tree.AnnotationTree;
 /**
  * Assert class names of classes with Java tests in them end with "Test".
  *
- * Test classes are identified as those that are annotated with {@link org.junit.runner.RunWith}.
+ * <p>Test classes are identified as those that are annotated with {@link org.junit.runner.RunWith}.
  * This works for both JUnit and Instrumentation tests.
  */
 @AutoService(BugChecker.class)
@@ -25,7 +25,7 @@ import com.sun.source.tree.AnnotationTree;
         summary = "Class names of classes with tests in them should end with \"Test\".",
         severity = BugPattern.SeverityLevel.ERROR,
         linkType = BugPattern.LinkType.CUSTOM,
-        link = "http://crbug.com/1029370")
+        link = "https://crbug.com/1029370")
 public class TestClassNameCheck extends BugChecker implements BugChecker.AnnotationTreeMatcher {
     static final Matcher<AnnotationTree> TEST_ANNOTATION =
             Matchers.anyOf(Matchers.isType("org.junit.runner.RunWith"));
