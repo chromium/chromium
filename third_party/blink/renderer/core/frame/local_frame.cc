@@ -3318,4 +3318,8 @@ bool LocalFrame::HasBlockingReasonsHelper(
   return false;
 }
 
+void LocalFrame::RegisterRecordReplayAuthTokenObserver() {
+  mojo_handler_->RegisterRecordReplayAuthTokenObserver();
+}
+
 }  // namespace blink

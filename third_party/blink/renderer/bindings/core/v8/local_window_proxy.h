@@ -39,12 +39,14 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8.h"
+#include "components/record_replay/services/auth_token/public/mojom/auth_token.mojom.h"
 
 namespace blink {
 
 class HTMLDocument;
 class ScriptState;
 class SecurityOrigin;
+class RecordReplayEventListener;
 
 // Subclass of WindowProxy that only handles LocalFrame.
 class LocalWindowProxy final : public WindowProxy {
@@ -71,6 +73,8 @@ class LocalWindowProxy final : public WindowProxy {
       v8::Context::AbortScriptExecutionCallback callback);
 
  private:
+  void SetupRecordReplayEventListener();
+
   // LocalWindowProxy overrides:
   bool IsLocal() const override { return true; }
   void Initialize() override;
@@ -110,6 +114,9 @@ class LocalWindowProxy final : public WindowProxy {
     return To<LocalFrame>(WindowProxy::GetFrame());
   }
 
+  mojo::Remote<auth_token::mojom::RecordReplayAuthTokenStore> auth_token_store_;
+  
+  Member<RecordReplayEventListener> record_replay_listener_;
   Member<ScriptState> script_state_;
   bool context_was_created_from_snapshot_ = false;
 };
