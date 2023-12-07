@@ -409,15 +409,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &performance_manager::features::kPerformanceControlsPerformanceSurvey,
       kHatsSurveyTriggerPerformanceControlsPerformance,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"high_efficiency_mode"},
-      std::vector<std::string>{"battery_saver_mode"});
+      std::vector<std::string>{"high_efficiency_mode", "battery_saver_mode"},
+      std::vector<std::string>{});
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsBatteryPerformanceSurvey,
       kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"high_efficiency_mode"},
-      std::vector<std::string>{"battery_saver_mode"});
+      std::vector<std::string>{"high_efficiency_mode", "battery_saver_mode"},
+      std::vector<std::string>{});
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsHighEfficiencyOptOutSurvey,
