@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -261,6 +262,44 @@ TEST_F(TabbedPaneWithWidgetTest, ArrowKeyBindings) {
   // Right arrow again should wrap to tab 0:
   SendKeyPressToSelectedTab(ui::VKEY_RIGHT);
   EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
+}
+
+TEST_F(TabbedPaneWithWidgetTest, ArrowKeyBindingsWithRTL) {
+  // Add several tabs; only the first should be selected automatically.
+  base::i18n::SetRTLForTesting(true);
+  EXPECT_TRUE(base::i18n::IsRTL());
+  for (size_t i = 0; i < 3; ++i) {
+    tabbed_pane_->AddTab(DefaultTabTitle(), std::make_unique<View>());
+    EXPECT_EQ(i + 1, tabbed_pane_->GetTabCount());
+  }
+
+  EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Left arrow should select tab 1:
+  SendKeyPressToSelectedTab(ui::VKEY_LEFT);
+  EXPECT_EQ(1u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Left arrow should select tab 2:
+  SendKeyPressToSelectedTab(ui::VKEY_LEFT);
+  EXPECT_EQ(2u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Left arrow again should wrap to tab 0:
+  SendKeyPressToSelectedTab(ui::VKEY_LEFT);
+  EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Right arrow again should wrap to tab 2:
+  SendKeyPressToSelectedTab(ui::VKEY_RIGHT);
+  EXPECT_EQ(2u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Right arrow again should wrap to tab 1:
+  SendKeyPressToSelectedTab(ui::VKEY_RIGHT);
+  EXPECT_EQ(1u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Right arrow again should wrap to tab 0:
+  SendKeyPressToSelectedTab(ui::VKEY_RIGHT);
+  EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
+
+  base::i18n::SetRTLForTesting(false);
 }
 
 // Use TabbedPane::HandleAccessibleAction() to select tabs and make sure their

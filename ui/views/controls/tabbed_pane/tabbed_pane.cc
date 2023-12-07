@@ -180,8 +180,12 @@ bool TabbedPaneTab::OnKeyPressed(const ui::KeyEvent& event) {
   const ui::KeyboardCode key = event.key_code();
   if (tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal) {
     // Use left and right arrows to navigate tabs in horizontal orientation.
+    int delta = key == ui::VKEY_RIGHT ? 1 : -1;
+    if (base::i18n::IsRTL()) {
+      delta = key == ui::VKEY_RIGHT ? -1 : 1;
+    }
     return (key == ui::VKEY_LEFT || key == ui::VKEY_RIGHT) &&
-           tabbed_pane_->MoveSelectionBy(key == ui::VKEY_RIGHT ? 1 : -1);
+           tabbed_pane_->MoveSelectionBy(delta);
   }
   // Use up and down arrows to navigate tabs in vertical orientation.
   return (key == ui::VKEY_UP || key == ui::VKEY_DOWN) &&
