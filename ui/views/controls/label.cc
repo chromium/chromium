@@ -10,7 +10,6 @@
 #include <cmath>
 #include <limits>
 #include <utility>
-#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
@@ -24,7 +23,6 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -36,11 +34,9 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/background.h"
-#include "ui/views/cascading_property.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/selection_controller.h"
-#include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
 namespace {
