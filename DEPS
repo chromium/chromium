@@ -1462,7 +1462,7 @@ deps = {
     Var('chromium_git') + '/external/libaddressinput.git' + '@' + 'e8712e415627f22d0b00ebee8db99547077f39bd',
 
   'src/third_party/libaom/source/libaom':
-    Var('aomedia_git') + '/aom.git' + '@' +  'd583f4f6e6005ecdc622dfc62518b5b85565f57f',
+    Var('aomedia_git') + '/aom.git' + '@' +  '9f37747f2e45f7c273eee56e209b65f03200952a',
 
   'src/third_party/libavif/src':
     Var('chromium_git') + '/external/github.com/AOMediaCodec/libavif.git' + '@' + Var('libavif_revision'),
