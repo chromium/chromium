@@ -26,24 +26,30 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
   OcclusionTrackerPauser& operator=(const OcclusionTrackerPauser&) = delete;
   ~OcclusionTrackerPauser() override;
 
-  // Pause the occlusion tracker until all new animations added after this
-  // are finished. If the timeout is elapsed before all new animations are
-  // finished, the pause will be unpaused.
+  // Pause the occlusion tracker until all new animations added after this are
+  // finished. If the timeout is elapsed before all new animations are finished,
+  // the pause will be unpaused. This function requires there to be at least one
+  // animation running, or at least one animation about to run as a
+  // precondition.
   void PauseUntilAnimationsEnd(base::TimeDelta timeout);
 
   // ui::CompositorObserver:
-  void OnFirstAnimationStarted(ui::Compositor* compositor) override {}
+  void OnFirstAnimationStarted(ui::Compositor* compositor) override;
   void OnFirstNonAnimatedFrameStarted(ui::Compositor* compositor) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
  private:
   void Pause(ui::Compositor* compositor);
   void OnFinish(ui::Compositor* compositor);
-  void Timeout();
+  void Shutdown(bool timed_out);
 
   base::OneShotTimer timer_;
   base::ScopedMultiSourceObservation<ui::Compositor, ui::CompositorObserver>
       observations_{this};
+
+  // Keeps track of compositors that are animating. We can unpause when this is
+  // empty.
+  base::flat_set<ui::Compositor*> animating_compositors_;
 
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause> scoped_pause_;
 };

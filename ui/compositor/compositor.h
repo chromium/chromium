@@ -210,6 +210,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void DisableAnimations();
   void EnableAnimations();
   bool animations_are_enabled() const { return animations_are_enabled_; }
+  bool IsAnimating() const { return animation_started_; }
 
   cc::AnimationTimeline* GetAnimationTimeline() const;
 
