@@ -5,6 +5,7 @@ include_rules = [
   "+chromeos/ash/services/recording/recording_service_test_api.h",
   "+components/capture_mode/camera_video_frame_handler.h",
   "+components/viz/client/client_resource_provider.h",
+  "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/common/context_result.h",
