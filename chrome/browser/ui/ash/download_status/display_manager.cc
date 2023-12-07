@@ -174,10 +174,10 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
 
   DisplayMetadata display_metadata;
 
+  // NOTE: Since `download_status_updater_` owns `DisplayManager`, using
+  // `base::Unretained()` is safe here.
   std::vector<CommandInfo> command_infos;
   if (download_status.cancellable.value_or(false)) {
-    // NOTE: Since `download_status_updater_` owns `DisplayManager`, using
-    // `base::Unretained()` is safe here.
     command_infos.emplace_back(
         base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Cancel,
                             base::Unretained(download_status_updater_),
@@ -185,6 +185,14 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
                             /*callback=*/base::DoNothing()),
         &kCancelIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL,
         CommandType::kCancel);
+  }
+  if (download_status.pausable.value_or(false)) {
+    command_infos.emplace_back(
+        base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Pause,
+                            base::Unretained(download_status_updater_),
+                            download_status.guid,
+                            /*callback=*/base::DoNothing()),
+        &kPauseIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE, CommandType::kPause);
   }
   display_metadata.command_infos = std::move(command_infos);
 

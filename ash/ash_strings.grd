@@ -7345,6 +7345,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL" desc="Text of the command to cancel a download.">
         Cancel
       </message>
+      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE" desc="Text of the command to pause a download.">
+        Pause
+      </message>
      </messages>
     </release>
 </grit>
