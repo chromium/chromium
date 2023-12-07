@@ -534,10 +534,9 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
   void ValidateEmptyWebAppSettingsPolicy() {
     EXPECT_TRUE(policy_manager().settings_by_url_.empty());
-    ASSERT_TRUE(policy_manager().default_settings_);
 
     WebAppPolicyManager::WebAppSetting expected_default;
-    EXPECT_EQ(policy_manager().default_settings_->run_on_os_login_policy,
+    EXPECT_EQ(policy_manager().default_settings_.run_on_os_login_policy,
               expected_default.run_on_os_login_policy);
   }
 

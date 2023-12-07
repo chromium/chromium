@@ -138,10 +138,7 @@ BASE_FEATURE(kDesktopPWAsForceUnregisterOSIntegration,
 const char WebAppPolicyManager::kInstallResultHistogramName[];
 
 WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
-    : profile_(profile),
-      pref_service_(profile_->GetPrefs()),
-      default_settings_(
-          std::make_unique<WebAppPolicyManager::WebAppSetting>()) {}
+    : profile_(profile), pref_service_(profile_->GetPrefs()) {}
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
@@ -471,7 +468,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
       pref_service_->GetList(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
-  default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
+  default_settings_ = WebAppPolicyManager::WebAppSetting();
 
   // Read default policy, if provided.
   const auto it = base::ranges::find(
@@ -480,9 +477,9 @@ void WebAppPolicyManager::ParsePolicySettings() {
       });
 
   if (it != web_apps_list.end() && it->is_dict()) {
-    if (!default_settings_->Parse(it->GetDict(), true)) {
+    if (!default_settings_.Parse(it->GetDict(), true)) {
       SYSLOG(WARNING) << "Malformed default web app management setting.";
-      default_settings_->ResetSettings();
+      default_settings_ = WebAppPolicyManager::WebAppSetting();
     }
   }
 
@@ -500,7 +497,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
       continue;
     }
 
-    WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
+    WebAppPolicyManager::WebAppSetting by_url(default_settings_);
     if (by_url.Parse(dict, /*for_default_settings=*/false)) {
       settings_by_url_[url.spec()] = by_url;
     } else {
@@ -686,7 +683,7 @@ RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByManifestId(
   auto it = settings_by_url_.find(manifest_id);
   if (it != settings_by_url_.end())
     return it->second.run_on_os_login_policy;
-  return default_settings_->run_on_os_login_policy;
+  return default_settings_.run_on_os_login_policy;
 }
 
 void WebAppPolicyManager::SetOnAppsSynchronizedCompletedCallbackForTesting(
@@ -777,7 +774,7 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(
   if (it != settings_by_url_.end()) {
     return it->second.prevent_close;
   }
-  return default_settings_->prevent_close;
+  return default_settings_.prevent_close;
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -805,10 +802,6 @@ void WebAppPolicyManager::OnAppsSynchronized(
   }
 
   OnWebAppForceInstallPolicyParsed();
-}
-
-WebAppPolicyManager::WebAppSetting::WebAppSetting() {
-  ResetSettings();
 }
 
 bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
@@ -848,12 +841,6 @@ bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
         force_unregistration_value.value_or(false);
   }
   return true;
-}
-
-void WebAppPolicyManager::WebAppSetting::ResetSettings() {
-  run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
-  prevent_close = false;
-  force_unregister_os_integration = false;
 }
 
 WebAppPolicyManager::CustomManifestValues::CustomManifestValues() = default;

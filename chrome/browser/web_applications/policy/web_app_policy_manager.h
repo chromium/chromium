@@ -119,16 +119,10 @@ class WebAppPolicyManager {
   friend class WebAppPolicyManagerTest;
 
   struct WebAppSetting {
-    WebAppSetting();
-    WebAppSetting(const WebAppSetting&) = default;
-    WebAppSetting& operator=(const WebAppSetting&) = default;
-    ~WebAppSetting() = default;
-
     bool Parse(const base::Value::Dict& dict, bool for_default_settings);
-    void ResetSettings();
 
-    RunOnOsLoginPolicy run_on_os_login_policy;
-    bool prevent_close;
+    RunOnOsLoginPolicy run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
+    bool prevent_close = false;
     bool force_unregister_os_integration = false;
   };
 
@@ -227,7 +221,7 @@ class WebAppPolicyManager {
 
   base::flat_map<std::string, WebAppSetting> settings_by_url_;
   base::flat_map<GURL, CustomManifestValues> custom_manifest_values_by_url_;
-  std::unique_ptr<WebAppSetting> default_settings_;
+  WebAppSetting default_settings_;
 
   base::OnceClosure policy_settings_and_force_installs_applied_;
 
