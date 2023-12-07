@@ -23,6 +23,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager::metrics {
@@ -133,7 +134,11 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     kDelayed,
   };
 
-  using PageCPUUsageVector = std::vector<std::pair<const PageNode*, double>>;
+  // The percent CPU usage for each PageNode that was measured. This stores a
+  // PageContext instead of a node pointer in case the PageNode is deleted while
+  // taking asynchronous system CPU measurements.
+  using PageCPUUsageVector =
+      std::vector<std::pair<resource_attribution::PageContext, double>>;
 
   using PageNodeInfoMap = std::map<const TabPageDecorator::TabHandle*,
                                    std::unique_ptr<PageNodeInfo>>;
@@ -179,21 +184,16 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
       base::OnceCallback<void(const PageCPUUsageVector&,
                               absl::optional<PressureSample>)> callback);
 
-  // Invoked asynchronously from CalculatePageCPUUsage() when system CPU
-  // measurements are available. Invokes `cpu_monitor_` to get page CPU
-  // measurements.
-  void OnSystemCPUUsageResult(
-      base::OnceCallback<void(const PageCPUUsageVector&,
-                              absl::optional<PressureSample>)> callback,
-      absl::optional<PressureSample> system_cpu);
-
-  // Invoked asynchronously from OnSystemCPUUsageResult() when page CPU
-  // measurements are also ready. Converts the measurements in `cpu_usage_map`
-  // to a vector and passes both page and system results to `callback`.
+  // Invoked asynchronously from CalculatePageCPUUsage() when page CPU
+  // measurements are ready. Converts the measurements in `cpu_usage_map`
+  // to a vector, collects system CPU from either `system_cpu_probe_` or
+  // `delayed_system_cpu_probe_` (depending on the value of
+  // `use_delayed_system_cpu_probe`) and passes both page and system results to
+  // `callback`.
   void OnPageCPUUsageResult(
+      bool use_delayed_system_cpu_probe,
       base::OnceCallback<void(const PageCPUUsageVector&,
                               absl::optional<PressureSample>)> callback,
-      absl::optional<PressureSample> system_cpu,
       const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map);
 
   // If this is called, CollectSlice() and CollectPageResourceUsage() will not

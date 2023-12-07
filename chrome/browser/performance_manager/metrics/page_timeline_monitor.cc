@@ -141,12 +141,17 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Calculate the overall CPU usage.
   double total_cpu_usage = 0;
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
     total_cpu_usage += cpu_usage;
   }
 
   const auto now = base::TimeTicks::Now();
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
+    const PageNode* page_node = page_context.GetPageNode();
+    if (!page_node) {
+      // Page was deleted while waiting for system CPU. Nothing to log.
+      continue;
+    }
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
     ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
         .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
@@ -333,7 +338,7 @@ void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
   // no-op if it was already nullptr.
   delayed_system_cpu_probe_.reset();
   double total_cpu_usage = 0;
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
     total_cpu_usage += cpu_usage;
   }
 
@@ -358,7 +363,12 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   int foreground_tab_count = 0;
   int background_tab_count = 0;
 
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
+    const PageNode* page_node = page_context.GetPageNode();
+    if (!page_node) {
+      // Page was deleted while waiting for system CPU.
+      continue;
+    }
     if (GetBackgroundStateForMeasurementPeriod(
             page_node, now - time_of_last_resource_usage_) !=
         PageMeasurementBackgroundState::kForeground) {
@@ -515,47 +525,39 @@ void PageTimelineMonitor::CalculatePageCPUUsage(
     base::OnceCallback<void(const PageCPUUsageVector&,
                             absl::optional<PressureSample>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // First fetch the system CPU usage if available.
-  CpuProbe* cpu_probe = use_delayed_system_cpu_probe
-                            ? delayed_system_cpu_probe_.get()
-                            : system_cpu_probe_.get();
-  if (cpu_probe) {
-    cpu_probe->RequestSample(
-        base::BindOnce(&PageTimelineMonitor::OnSystemCPUUsageResult,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    OnSystemCPUUsageResult(std::move(callback), absl::nullopt);
-  }
-}
-
-void PageTimelineMonitor::OnSystemCPUUsageResult(
-    base::OnceCallback<void(const PageCPUUsageVector&,
-                            absl::optional<PressureSample>)> callback,
-    absl::optional<PressureSample> system_cpu) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_monitor_.UpdateCPUMeasurements(base::BindOnce(
       &PageTimelineMonitor::OnPageCPUUsageResult, weak_factory_.GetWeakPtr(),
-      std::move(callback), std::move(system_cpu)));
+      use_delayed_system_cpu_probe, std::move(callback)));
 }
 
 void PageTimelineMonitor::OnPageCPUUsageResult(
+    bool use_delayed_system_cpu_probe,
     base::OnceCallback<void(const PageCPUUsageVector&,
                             absl::optional<PressureSample>)> callback,
-    absl::optional<PressureSample> system_cpu,
     const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Calculate the overall CPU usage.
   PageCPUUsageVector page_cpu_usage;
   page_cpu_usage.reserve(page_node_info_map_.size());
-
   for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
     const PageNode* page_node = tab_handle->page_node();
     CheckPageState(page_node, *info_ptr);
     double cpu_usage =
         PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
-    page_cpu_usage.emplace_back(page_node, cpu_usage);
+    page_cpu_usage.emplace_back(page_node->GetResourceContext(), cpu_usage);
   }
-  std::move(callback).Run(std::move(page_cpu_usage), std::move(system_cpu));
+
+  // Now fetch the system CPU usage if available.
+  CpuProbe* cpu_probe = use_delayed_system_cpu_probe
+                            ? delayed_system_cpu_probe_.get()
+                            : system_cpu_probe_.get();
+  if (cpu_probe) {
+    cpu_probe->RequestSample(
+        base::BindOnce(std::move(callback), page_cpu_usage));
+  } else {
+    std::move(callback).Run(page_cpu_usage, absl::nullopt);
+  }
 }
 
 void PageTimelineMonitor::SetTriggerCollectionManuallyForTesting() {
