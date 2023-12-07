@@ -318,69 +318,8 @@ bool HasPermissionToActivate(aura::Window* window) {
   return permission && permission->Check(Permission::Capability::kActivate);
 }
 
-bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
-  // TODO(crbug.com/1401822): remove the old behavior, once the fix is
-  // stabilized.
-  if (base::FeatureList::IsEnabled(ash::features::kExoConsumedByImeByFlag)) {
-    return ui::GetKeyboardImeFlags(event) & ui::kPropertyKeyboardImeHandledFlag;
-  }
-
-  // Check if IME consumed the event, to avoid it to be doubly processed.
-  // First let us see whether IME is active and is in text input mode.
-  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(window);
-  ui::InputMethod* ime = widget ? widget->GetInputMethod() : nullptr;
-  if (!ime || ime->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE ||
-      ime->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL) {
-    return false;
-  }
-
-  // Case 1:
-  // When IME ate a key event but did not emit character insertion event yet
-  // (e.g., when it is still showing a candidate list UI to the user,) the
-  // consumed key event is re-sent after masked |key_code| by VKEY_PROCESSKEY.
-  if (event.key_code() == ui::VKEY_PROCESSKEY)
-    return true;
-
-  // Except for PROCESSKEY, never discard "key-up" events. A keydown not paired
-  // by a keyup can trigger a never-ending key repeat in the client, which can
-  // never be desirable.
-  if (event.type() == ui::ET_KEY_RELEASED)
-    return false;
-
-  // Case 2:
-  // When IME ate a key event and generated a single character input, it leaves
-  // the key event as-is, and in addition calls the active ui::TextInputClient's
-  // InsertChar() method. (In our case, arc::ArcImeService::InsertChar()).
-  //
-  // In Chrome OS (and Web) convention, the two calls won't cause duplicates,
-  // because key-down events do not mean any character inputs there.
-  // (InsertChar issues a DOM "keypress" event, which is distinct from keydown.)
-  // Unfortunately, this is not necessary the case for our clients that may
-  // treat keydown as a trigger of text inputs. We need suppression for keydown.
-  //
-  // Same condition as ash/components/arc/ime/arc_ime_service.cc#InsertChar.
-  const char16_t ch = event.GetCharacter();
-  const bool is_control_char =
-      (0x00 <= ch && ch <= 0x1f) || (0x7f <= ch && ch <= 0x9f);
-  if (!is_control_char && !ui::IsSystemKeyModifier(event.flags()))
-    return true;
-
-  // Case 3:
-  // Workaround for apps that doesn't handle hardware keyboard events well.
-  // Keys typically on software keyboard and lack of them are fatal, namely,
-  // unmodified enter and backspace keys, are sent through IME.
-  constexpr int kModifierMask = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
-                                ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
-                                ui::EF_ALTGR_DOWN | ui::EF_MOD3_DOWN;
-  // Same condition as ash/components/arc/ime/arc_ime_service.cc#InsertChar.
-  if ((event.flags() & kModifierMask) == 0) {
-    if (event.key_code() == ui::VKEY_RETURN ||
-        event.key_code() == ui::VKEY_BACK) {
-      return true;
-    }
-  }
-
-  return false;
+bool ConsumedByIme(const ui::KeyEvent& event) {
+  return ui::GetKeyboardImeFlags(event) & ui::kPropertyKeyboardImeHandledFlag;
 }
 
 void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window,

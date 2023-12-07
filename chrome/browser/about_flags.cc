@@ -8258,10 +8258,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"exo-consumed-by-ime-by-flag",
-     flag_descriptions::kExoConsumedByImeByFlagName,
-     flag_descriptions::kExoConsumedByImeByFlagDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kExoConsumedByImeByFlag)},
     {"exo-gamepad-vibration", flag_descriptions::kExoGamepadVibrationName,
      flag_descriptions::kExoGamepadVibrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGamepadVibration)},

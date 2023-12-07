@@ -64,26 +64,6 @@ class KeyboardTest : public test::ExoTestBase {
   ~KeyboardTest() override = default;
 };
 
-class KeyboardKeyTest : public KeyboardTest,
-                        public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          ash::features::kExoConsumedByImeByFlag);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          ash::features::kExoConsumedByImeByFlag);
-    }
-    KeyboardTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(, KeyboardKeyTest, ::testing::Bool());
-
 class MockKeyboardDelegate : public KeyboardDelegate {
  public:
   MockKeyboardDelegate() = default;
@@ -292,7 +272,7 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
-TEST_P(KeyboardKeyTest, OnKeyboardKey) {
+TEST_F(KeyboardTest, OnKeyboardKey) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -448,7 +428,7 @@ TEST_P(KeyboardKeyTest, OnKeyboardKey) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
-TEST_P(KeyboardKeyTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
+TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
@@ -533,7 +513,7 @@ TEST_P(KeyboardKeyTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   input_method->SetFocusedTextInputClient(nullptr);
 }
 
-TEST_P(KeyboardKeyTest, OnKeyboardKey_KeyboardInhibit) {
+TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 

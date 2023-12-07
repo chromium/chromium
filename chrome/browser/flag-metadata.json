@@ -3980,11 +3980,6 @@
     "expiry_milestone": 83
   },
   {
-    "name": "exo-consumed-by-ime-by-flag",
-    "owners": [ "hidehiko@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "exo-gamepad-vibration",
     "owners": [ "prabirmsp@chromium.org" ],
     "expiry_milestone": 90

@@ -230,29 +230,6 @@ void TextInputTest::TestSurface::TearDown() {
   buffer_.reset();
 }
 
-// Test for both kExoConsumedByImeByFlag enabled and disabled.
-class TextInputTestWithConsumedByIme
-    : public TextInputTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          ash::features::kExoConsumedByImeByFlag);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          ash::features::kExoConsumedByImeByFlag);
-    }
-
-    TextInputTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(, TextInputTestWithConsumedByIme, ::testing::Bool());
-
 TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
@@ -590,7 +567,7 @@ TEST_F(TextInputTest, Commit) {
   EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
-TEST_P(TextInputTestWithConsumedByIme, InsertChar) {
+TEST_F(TextInputTest, InsertChar) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
@@ -601,7 +578,7 @@ TEST_P(TextInputTestWithConsumedByIme, InsertChar) {
   text_input()->InsertChar(ev);
 }
 
-TEST_P(TextInputTestWithConsumedByIme, InsertCharCtrlV) {
+TEST_F(TextInputTest, InsertCharCtrlV) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
@@ -612,7 +589,7 @@ TEST_P(TextInputTestWithConsumedByIme, InsertCharCtrlV) {
   text_input()->InsertChar(ev);
 }
 
-TEST_P(TextInputTestWithConsumedByIme, InsertCharNormalKey) {
+TEST_F(TextInputTest, InsertCharNormalKey) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
@@ -625,7 +602,7 @@ TEST_P(TextInputTestWithConsumedByIme, InsertCharNormalKey) {
   text_input()->InsertChar(ev);
 }
 
-TEST_P(TextInputTestWithConsumedByIme, InsertCharNumpadEqual) {
+TEST_F(TextInputTest, InsertCharNumpadEqual) {
   text_input()->Activate(seat(), surface(),
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
@@ -635,19 +612,10 @@ TEST_P(TextInputTestWithConsumedByIme, InsertCharNumpadEqual) {
                   base::TimeTicks());
   ev.set_character(u'=');
 
-  if (GetParam()) {
-    // If ConsumedByIme fix is enabled, InsertChar should ignore it (because
-    // it is not consumed by IME), and exo::Keyboard is expected to handle the
-    // case.
-    EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
-    EXPECT_CALL(*delegate(), Commit(_)).Times(0);
-  } else {
-    // If ConsumedByIme fix is disabled, the event is (wrongly) interpreted
-    // as consumed by IME, so exo::Keyboard does not send key events.
-    // Instead, InsertChar here is expected to send the event via Commit().
-    EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
-    EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"="))).Times(1);
-  }
+  // InsertChar should ignore it (because it is not consumed by IME),
+  // and exo::Keyboard is expected to handle the case.
+  EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
+  EXPECT_CALL(*delegate(), Commit(_)).Times(0);
   text_input()->InsertChar(ev);
   testing::Mock::VerifyAndClearExpectations(delegate());
 }

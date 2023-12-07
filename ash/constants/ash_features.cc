@@ -928,12 +928,6 @@ BASE_FEATURE(kExoOrdinalMotion,
 
 // Enables to check KeyEvent flag to see if the event is consumed by IME
 // or not (=decides using heuristics based on key code etc.).
-BASE_FEATURE(kExoConsumedByImeByFlag,
-             "ExoConsumedByImeByFlag",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables to check KeyEvent flag to see if the event is consumed by IME
-// or not (=decides using heuristics based on key code etc.).
 BASE_FEATURE(kExoSurroundingTextOffset,
              "ExoSurroundingTextOffset",
              base::FEATURE_ENABLED_BY_DEFAULT);

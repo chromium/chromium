@@ -6443,12 +6443,6 @@ const char kEolIncentiveName[] = "Enable end of life incentives";
 const char kEolIncentiveDescription[] =
     "Allows end of life incentives to be shown within the system ui.";
 
-const char kExoConsumedByImeByFlagName[] =
-    "Use the consumed bit from IME in exo";
-const char kExoConsumedByImeByFlagDescription[] =
-    "To see whether a key event is consumed or not, this let exo to use a bit"
-    " from IME directly, instead of using heuristics based on key code etc.";
-
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "
