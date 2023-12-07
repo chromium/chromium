@@ -5,6 +5,7 @@
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import type {ShowEvent} from '../../definitions/context_menu_handler_events.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
@@ -52,7 +53,7 @@ export class ActionsController {
     // Attach listeners to events based on user action to show the menu, which
     // updates the DOM.
     contextMenuHandler.addEventListener(
-        'show', this.onContextMenuShow_.bind(this));
+        'show', this.onContextMenuShow_.bind(this) as EventListener);
     this.ui_.selectionMenuButton.addEventListener(
         'menushow', this.onMenuShow_.bind(this));
     this.ui_.gearButton.addEventListener(
@@ -112,7 +113,7 @@ export class ActionsController {
     this.initializingModels_.delete(key);
   }
 
-  private updateView_(element: Element) {
+  private updateView_(element: HTMLElement) {
     const entries = this.getEntriesFor_(element);
 
     // Try to update synchronously.
@@ -134,12 +135,12 @@ export class ActionsController {
     });
   }
 
-  private onContextMenuShow_(event: Event) {
-    this.updateView_((event as any).element);
+  private onContextMenuShow_(event: ShowEvent) {
+    this.updateView_(event.detail.element);
   }
 
   private onMenuShow_(event: Event) {
-    this.updateView_(event.target as Element);
+    this.updateView_(event.target as HTMLElement);
   }
 
   private onSelectionChanged_() {

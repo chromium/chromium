@@ -122,16 +122,20 @@ export class CommandHandler {
         'canExecute', this.onCanExecute_.bind(this));
 
     contextMenuHandler.addEventListener(
-        'show', this.onContextMenuShow_.bind(this));
+        'show',
+        /** @type {EventListener} */ (this.onContextMenuShow_.bind(this)));
     contextMenuHandler.addEventListener(
-        'hide', this.onContextMenuHide_.bind(this));
+        'hide',
+        /** @type {EventListener} */ (this.onContextMenuHide_.bind(this)));
   }
 
-  /** @param {!Event} event */
+  /**
+   * @param {import('../../definitions/context_menu_handler_events.js').ShowEvent}
+   *     event
+   */
   onContextMenuShow_(event) {
     this.lastFocusedElement_ = document.activeElement;
-    // @ts-ignore: error TS2339: Property 'menu' does not exist on type 'Event'.
-    const menu = event.menu;
+    const menu = event.detail.menu;
     // Set focus asynchronously to give time for menu "show" event to finish and
     // have all items set up before focusing.
     setTimeout(() => {
@@ -141,9 +145,11 @@ export class CommandHandler {
     }, 0);
   }
 
-  /** @param {!Event} event */
-  // @ts-ignore: error TS6133: 'event' is declared but its value is never read.
-  onContextMenuHide_(event) {
+  /**
+   * @param {import('../../definitions/context_menu_handler_events.js').HideEvent}
+   *     _event
+   */
+  onContextMenuHide_(_event) {
     if (this.lastFocusedElement_) {
       const activeElement = document.activeElement;
       if (activeElement && activeElement.tagName === 'BODY') {

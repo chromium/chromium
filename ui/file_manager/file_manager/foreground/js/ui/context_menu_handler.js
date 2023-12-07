@@ -14,7 +14,6 @@ import {MenuItem} from './menu_item.js';
 import {HideType} from './multi_menu_button.js';
 import {positionPopupAtPoint} from './position_util.js';
 
-
 /**
  * Handles context menus.
  * @implements {EventListener}
@@ -154,12 +153,8 @@ class ContextMenuHandler extends EventTarget {
     // parameter of type 'EventTarget'.
     this.showingEvents_.add(menu, 'activate', this);
 
-    const ev = new Event('show');
-    // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
-    // type 'Menu'.
-    ev.element = menu.contextElement;
-    // @ts-ignore: error TS2339: Property 'menu' does not exist on type 'Event'.
-    ev.menu = menu;
+    const ev =
+        new CustomEvent('show', {detail: {element: menu.contextElement, menu}});
     this.dispatchEvent(ev);
   }
 
@@ -206,12 +201,8 @@ class ContextMenuHandler extends EventTarget {
     // to be shown again.
     this.hideTimestamp_ = 0;
 
-    const ev = new Event('hide');
-    // @ts-ignore: error TS2339: Property 'element' does not exist on type
-    // 'Event'.
-    ev.element = originalContextElement;
-    // @ts-ignore: error TS2339: Property 'menu' does not exist on type 'Event'.
-    ev.menu = menu;
+    const ev = new CustomEvent(
+        'hide', {detail: {element: originalContextElement, menu}});
     this.dispatchEvent(ev);
   }
 
