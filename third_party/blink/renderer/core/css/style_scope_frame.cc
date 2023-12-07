@@ -74,7 +74,7 @@ StyleScopeFrame::ScopeSet* StyleScopeFrame::CalculateSeenImplicitScopes() {
     owns_set = true;
     scopes = MakeGarbageCollected<ScopeSet>();
     for (Element* e = &element_; e; e = e->ParentOrShadowHostElement()) {
-      add_triggered_scopes(element_);
+      add_triggered_scopes(*e);
     }
   }
 
