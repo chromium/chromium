@@ -43,7 +43,9 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -54,6 +56,8 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/intent_constants.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -559,6 +563,8 @@ void ArcApps::Initialize() {
   }
   AppPublisher::Publish(std::move(apps), AppType::kArc,
                         /*should_notify_initialized=*/true);
+
+  ObserveDisabledSystemFeaturesPolicy();
 }
 
 void ArcApps::Shutdown() {
@@ -1343,7 +1349,8 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   auto install_reason = GetInstallReason(prefs, app_id, app_info);
   auto app = AppPublisher::MakeApp(
       AppType::kArc, app_id,
-      app_info.suspended ? Readiness::kDisabledByPolicy : Readiness::kReady,
+      IsAppSuspended(app_id, app_info) ? Readiness::kDisabledByPolicy
+                                       : Readiness::kReady,
       app_info.name, install_reason,
       install_reason == InstallReason::kSystem ? InstallSource::kSystem
                                                : InstallSource::kPlayStore);
@@ -1449,7 +1456,7 @@ void ArcApps::ConvertAndPublishPackageApps(
 IconEffects ArcApps::GetIconEffects(const std::string& app_id,
                                     const ArcAppListPrefs::AppInfo& app_info) {
   IconEffects icon_effects = IconEffects::kNone;
-  if (app_info.suspended) {
+  if (IsAppSuspended(app_id, app_info)) {
     icon_effects =
         static_cast<IconEffects>(icon_effects | IconEffects::kBlocked);
   }
@@ -1609,4 +1616,81 @@ void ArcApps::OnInstallationFinished(const std::string& package_name,
   }
 }
 
+void ArcApps::ObserveDisabledSystemFeaturesPolicy() {
+  PrefService* const local_state = g_browser_process->local_state();
+  if (!local_state) {  // Sometimes it's not available in tests.
+    return;
+  }
+
+  local_state_pref_change_registrar_.Init(local_state);
+  local_state_pref_change_registrar_.Add(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      base::BindRepeating(&ArcApps::OnDisableListPolicyChanged,
+                          base::Unretained(this)));
+}
+
+void ArcApps::OnDisableListPolicyChanged() {
+  PrefService* const local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return;
+  }
+
+  const base::Value::List& disabled_system_features_pref =
+      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
+  bool disable_arc_settings = false;
+  for (const auto& entry : disabled_system_features_pref) {
+    if (static_cast<policy::SystemFeature>(entry.GetInt()) ==
+        policy::SystemFeature::kOsSettings) {
+      disable_arc_settings = true;
+      break;
+    }
+  }
+
+  ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
+  if (!arc_prefs) {
+    return;
+  }
+
+  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      arc_prefs->GetApp(arc::kSettingsAppId);
+  if (!app_info) {
+    return;
+  }
+
+  bool is_disabled = false;
+  bool found = proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [&is_disabled](const apps::AppUpdate& update) {
+        is_disabled = (update.Readiness() == Readiness::kDisabledByPolicy);
+      });
+  if (!found) {
+    return;
+  }
+
+  if (disable_arc_settings == is_disabled) {
+    return;
+  }
+
+  auto app = std::make_unique<App>(AppType::kArc, arc::kSettingsAppId);
+  if (disable_arc_settings) {
+    settings_app_is_disabled_ = true;
+    app->readiness = Readiness::kDisabledByPolicy;
+    app->icon_key = IconKey(/*raw_icon_updated=*/false, IconEffects::kBlocked);
+  } else {
+    settings_app_is_disabled_ = false;
+    app->readiness =
+        app_info->suspended ? Readiness::kDisabledByPolicy : Readiness::kReady;
+    app->icon_key = IconKey(GetIconEffects(arc::kSettingsAppId, *app_info));
+  }
+
+  AppPublisher::Publish(std::move(app));
+}
+
+bool ArcApps::IsAppSuspended(const std::string& app_id,
+                             const ArcAppListPrefs::AppInfo& app_info) {
+  if (app_id == arc::kSettingsAppId && settings_app_is_disabled_) {
+    return true;
+  }
+
+  return app_info.suspended;
+}
 }  // namespace apps

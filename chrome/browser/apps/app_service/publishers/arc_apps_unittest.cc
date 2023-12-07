@@ -38,13 +38,21 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -135,10 +143,24 @@ GURL FileInDownloads(Profile* profile, base::FilePath file) {
       .ToGURL();
 }
 
+std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  arc::mojom::AppInfoPtr app(arc::mojom::AppInfo::New());
+  app->name = "settings";
+  app->package_name = "com.android.settings";
+  app->activity = "com.android.settings.Settings";
+  app->sticky = false;
+  apps.push_back(std::move(app));
+  return apps;
+}
+
 }  // namespace
 
 class ArcAppsPublisherTest : public testing::Test {
  public:
+  ArcAppsPublisherTest()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())) {}
   void SetUp() override {
     testing::Test::SetUp();
 
@@ -163,6 +185,11 @@ class ArcAppsPublisherTest : public testing::Test {
     arc_file_system_bridge_ = std::make_unique<arc::ArcFileSystemBridge>(
         profile(), arc_bridge_service);
 
+    auto web_app_policy_manager =
+        std::make_unique<web_app::WebAppPolicyManager>(profile());
+    web_app_policy_manager->SetSystemWebAppDelegateMap(&system_apps_);
+    auto* provider = web_app::FakeWebAppProvider::Get(profile());
+    provider->SetWebAppPolicyManager(std::move(web_app_policy_manager));
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     app_service_test_.SetUp(profile_.get());
@@ -240,8 +267,12 @@ class ArcAppsPublisherTest : public testing::Test {
     return result;
   }
 
+ protected:
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ash::SystemWebAppDelegateMap system_apps_;
   ArcAppTest arc_test_;
   std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
@@ -370,6 +401,42 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsPlayStoreDefault) {
 
   ASSERT_EQ(arc::kPlayStoreAppId, preferred_apps().FindPreferredAppForUrl(
                                       GURL("https://play.google.com/foo")));
+}
+
+// Verifies that disabling OS settings by SystemFeaturesDisableList policy will
+// disable ARC settings as well. Clearing the policy should re-enable ARC
+// settings.
+TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
+  arc_test()->app_instance()->SendRefreshAppList(GetArcSettingsAppInfo());
+
+  // Change SystemFeaturesDisableList policy to disable OS Setting.
+  {
+    ScopedListPrefUpdate update(
+        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+    update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
+  }
+
+  // Verify that ARC settings readiness is set to disabled by policy.
+  bool found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Readiness(), apps::Readiness::kDisabledByPolicy);
+      });
+  ASSERT_TRUE(found);
+
+  // Clear SystemFeaturesDisableList policy.
+  {
+    ScopedListPrefUpdate update(
+        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+    update->clear();
+  }
+
+  // Verify that ARC settings readiness is set to ready.
+  found = false;
+  found = app_service_proxy()->AppRegistryCache().ForOneApp(
+      arc::kSettingsAppId, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(update.Readiness(), apps::Readiness::kReady);
+      });
+  ASSERT_TRUE(found);
 }
 
 class ArcAppsPublisherManagedProfileTest : public ArcAppsPublisherTest {

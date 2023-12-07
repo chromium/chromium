@@ -36,6 +36,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -222,6 +223,16 @@ class ArcApps : public KeyedService,
       base::OnceCallback<void(MenuItems)> callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
+  // Observes DisabledSystemFeaturesList policy.
+  void ObserveDisabledSystemFeaturesPolicy();
+
+  // Triggered when DisabledSystemFeaturesList policy changes.
+  void OnDisableListPolicyChanged();
+
+  // Returns true if the app is suspended.
+  bool IsAppSuspended(const std::string& app_id,
+                      const ArcAppListPrefs::AppInfo& app_info);
+
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
 
@@ -261,6 +272,10 @@ class ArcApps : public KeyedService,
       instance_registry_observation_{this};
 
   bool settings_app_is_active_ = false;
+
+  bool settings_app_is_disabled_ = false;
+
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   base::WeakPtrFactory<ArcApps> weak_ptr_factory_{this};
 };
