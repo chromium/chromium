@@ -205,6 +205,7 @@ ts_library("build_ts") {
     "os_feedback_ui/search_page_test.js",
     "os_feedback_ui/share_data_page_test.js",
     "set_time_dialog/set_time_dialog_test.js",
+    "set_time_dialog/test_set_time_browser_proxy.js",
     "shimless_rma/all_inputs_disabled_test.js",
     "shimless_rma/critical_error_page_test.js",
     "shimless_rma/fake_shimless_rma_service_test.js",

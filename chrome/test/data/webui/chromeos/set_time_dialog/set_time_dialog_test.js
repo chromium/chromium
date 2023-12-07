@@ -8,49 +8,12 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SetTimeBrowserProxyImpl} from 'chrome://set-time/set_time_browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestSetTimeBrowserProxy} from './test_set_time_browser_proxy.js';
 
 suite('SetTimeDialog', function() {
   let setTimeElement = null;
   let testBrowserProxy = null;
-
-  /** @implements {SetTimeBrowserProxy} */
-  class TestSetTimeBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      super([
-        'sendPageReady',
-        'setTimeInSeconds',
-        'setTimezone',
-        'dialogClose',
-        'doneClicked',
-      ]);
-    }
-
-    /** @override */
-    sendPageReady() {
-      this.methodCalled('sendPageReady');
-    }
-
-    /** @override */
-    setTimeInSeconds(timeInSeconds) {
-      this.methodCalled('setTimeInSeconds', timeInSeconds);
-    }
-
-    /** @override */
-    setTimezone(timezone) {
-      this.methodCalled('setTimezone', timezone);
-    }
-
-    /** @override */
-    dialogClose() {
-      this.methodCalled('dialogClose');
-    }
-
-    /** @override */
-    doneClicked() {
-      this.methodCalled('doneClicked');
-    }
-  }
 
   suiteSetup(function() {
     // Must use existing timezones in the test.
