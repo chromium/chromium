@@ -72,6 +72,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/window_properties.h"
@@ -2647,15 +2648,22 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
 }
 
 bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
-  if (!window)
+  if (!window) {
     return false;
-  if (window == GetAttachedBrowserWidget()->GetNativeWindow())
-    return true;
+  }
 
+  if (window == GetAttachedBrowserWidget()->GetNativeWindow()) {
+    return true;
+  }
+
+  // Return false if `other_browser_view` is null or already closed. The latter
+  // check is required since the widget may still alive on asynchronous
+  // platforms such as Mac.
   BrowserView* other_browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
-  if (!other_browser_view)
+  if (!other_browser_view || other_browser_view->GetWidget()->IsClosed()) {
     return false;
+  }
   Browser* other_browser = other_browser_view->browser();
 
   // Do not allow dragging into a window with a modal dialog, it causes a
@@ -2670,8 +2678,8 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   const int active_index = model->active_index();
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1411448): Investigate. Remove DumpWithoutCrashing() when it
-  // is resolved.
+  // TODO(crbug.com/1411448): Remove DumpWithoutCrashing() if Widget::IsClosed()
+  // check above works.
   if (!model->ContainsIndex(active_index)) {
     if (active_index == TabStripModel::kNoTab) {
       LOG(ERROR) << "TabStripModel of the browser tyring to attach to has no "
