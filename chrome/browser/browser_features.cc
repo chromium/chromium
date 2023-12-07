@@ -63,6 +63,8 @@ const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaEndpoint{
     &kDevToolsConsoleInsights, "aida_endpoint", /*default*/ ""};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsApiKey{
     &kDevToolsConsoleInsights, "aida_api_key", /*default*/ ""};
+const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
+    &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
 
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().
