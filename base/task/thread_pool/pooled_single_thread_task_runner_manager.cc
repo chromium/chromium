@@ -14,12 +14,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/message_loop/message_pump.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/priority_queue.h"
@@ -470,7 +470,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
       return false;
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
-              GetDefaultTaskLeeway());
+              MessagePump::GetCurrentTaskLeeway());
     return PostTask(std::move(task));
   }
 
@@ -483,7 +483,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
       return false;
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
-              GetDefaultTaskLeeway(), delay_policy);
+              MessagePump::GetCurrentTaskLeeway(), delay_policy);
     return PostTask(std::move(task));
   }
 

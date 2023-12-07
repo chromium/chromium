@@ -33,6 +33,13 @@ class BASE_EXPORT MessagePump {
 
   static void InitializeFeatures();
 
+  // Manage the state of |kAlignWakeUps| and the leeway of the process.
+  static void OverrideAlignWakeUpsState(bool enabled, TimeDelta leeway);
+  static void ResetAlignWakeUpsState();
+  static bool GetAlignWakeUpsEnabled();
+  static TimeDelta GetCurrentTaskLeeway();
+  static TimeDelta GetTaskLeewayForCurrentThread();
+
   // Creates the default MessagePump based on |type|. Caller owns return value.
   static std::unique_ptr<MessagePump> Create(MessagePumpType type);
 

@@ -60,10 +60,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);
 // Feature to run tasks by batches before pumping out messages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
 
-BASE_EXPORT void InitializeTaskLeeway();
-BASE_EXPORT TimeDelta GetTaskLeewayForCurrentThread();
-BASE_EXPORT TimeDelta GetDefaultTaskLeeway();
-
 // Controls the max number of delayed tasks that can run before selecting an
 // immediate task in sequence manager.
 BASE_EXPORT BASE_DECLARE_FEATURE(kMaxDelayedStarvationTasks);
