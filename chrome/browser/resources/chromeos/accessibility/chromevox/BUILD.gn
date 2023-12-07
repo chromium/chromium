@@ -25,7 +25,7 @@ common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 ts_modules = []
 
 # TS files needed from ../common/.
-common_ts_modules = []
+common_ts_modules = [ "flags.ts" ]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
@@ -47,7 +47,6 @@ chromevox_es6_modules = [
   "../common/cursors/range.js",
   "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
-  "../common/flags.js",
   "$tsc_common_out_dir/instance_checker.js",
   "../common/key_code.js",
   "../common/local_storage.js",

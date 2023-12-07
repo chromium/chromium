@@ -28,6 +28,7 @@ group("build") {
 ts_modules = [
   "array_util.ts",
   "chrome_event_handler.ts",
+  "flags.ts",
   "instance_checker.ts",
   "paragraph_utils.ts",
   "word_utils.ts",
@@ -39,6 +40,7 @@ ts_library("ts_build") {
   definitions = [
     "../definitions/tts.d.ts",
     "../definitions/automation.d.ts",
+    "../definitions/command_line_private.d.ts",
     "../definitions/extensions.d.ts",
     "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
@@ -65,7 +67,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "cursors/recovery_strategy.js",
     "event_generator.js",
     "event_handler.js",
-    "flags.js",
     "gdocs_script.js",
     "key_code.js",
     "local_storage.js",

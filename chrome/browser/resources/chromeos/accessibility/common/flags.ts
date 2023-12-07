@@ -4,21 +4,18 @@
 
 /** @fileoverview Manages fetching and checking command line flags. */
 
-/** @enum {string} */
-export const FlagName = {
-  CHROMEVOX_Q1_FAST_TRACK: 'enable-chromevox-q1-fast-track-features',
-  MAGNIFIER_DEBUG_DRAW_RECT: 'enable-magnifier-debug-draw-rect',
-  MANIFEST_V3: 'enable-experimental-accessibility-manifest-v3',
-  SWITCH_ACCESS_TEXT: 'enable-experimental-accessibility-switch-access-text',
-};
+export enum FlagName {
+  CHROMEVOX_Q1_FAST_TRACK = 'enable-chromevox-q1-fast-track-features',
+  MAGNIFIER_DEBUG_DRAW_RECT = 'enable-magnifier-debug-draw-rect',
+  MANIFEST_V3 = 'enable-experimental-accessibility-manifest-v3',
+  SWITCH_ACCESS_TEXT = 'enable-experimental-accessibility-switch-access-text',
+}
 
 export class Flags {
-  constructor() {
-    /** @private {!Object<!FlagName, boolean>} */
-    this.enabled_ = {};
-  }
+  private enabled_: Partial<Record<FlagName, boolean>> = {};
+  static instance: Flags;
 
-  static async init() {
+  static async init(): Promise<void> {
     if (Flags.instance) {
       throw new Error(
           'Cannot create two instances of Flags in the same context');
@@ -27,20 +24,13 @@ export class Flags {
     await Flags.instance.fetch_();
   }
 
-  /**
-   * @param {!FlagName} flagName
-   * @return {boolean}
-   */
-  static isEnabled(flagName) {
+  static isEnabled(flagName: FlagName): boolean|undefined {
+    // Note: Will return undefined for any flag if Flags not initialized.
     return Flags.instance.enabled_[flagName];
   }
 
-  /**
-   * @return {!Promise}
-   * @private
-   */
-  async fetch_() {
-    const promises = [];
+  private async fetch_(): Promise<void[]> {
+    const promises: Array<Promise<void>> = [];
     for (const flag of Object.values(FlagName)) {
       promises.push(new Promise(resolve => {
         chrome.commandLinePrivate.hasSwitch(flag, result => {
