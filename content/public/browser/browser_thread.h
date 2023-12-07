@@ -61,6 +61,11 @@ class CONTENT_EXPORT BrowserThread {
     // This is the thread that processes non-blocking I/O, i.e. IPC and network.
     // Blocking I/O should happen in base::ThreadPool. It is joined on shutdown
     // (and thus any task posted to it may block shutdown).
+    //
+    // The name is admittedly confusing, as the IO thread is not for blocking
+    // I/O like calling base::File::Read. "The highly responsive, non-blocking
+    // I/O thread for IPC" is more accurate but too long for an enum name. See
+    // docs/transcripts/wuwt-e08-processes.md at 44:20 for more history.
     IO,
 
     // NOTE: do not add new threads here. Instead you should just use
