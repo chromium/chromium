@@ -54,6 +54,7 @@ class PinnedToolbarActionsContainer
 
     // Button:
     gfx::Size CalculatePreferredSize() const override;
+    void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
     void UpdatePinnedStateForContextMenu();
 
