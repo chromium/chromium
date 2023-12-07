@@ -363,11 +363,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         int apsBackgroundIncognitoHoveredTint =
                 ColorUtils.setAlphaComponent(
-                        context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        context.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
         int apsBackgroundIncognitoPressedTint =
                 ColorUtils.setAlphaComponent(
-                        context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        context.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
 
         // Primary container for default bg color.
@@ -381,11 +381,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Surface-2 baseline for incognito bg color.
         int BackgroundIncognitoDefaultTint =
-                context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline);
+                context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
 
         // Surface-5 baseline for incognito pressed bg color
         int BackgroundIncognitoPressedTint =
-                context.getResources().getColor(R.color.default_bg_color_dark_elev_5_baseline);
+                context.getColor(R.color.default_bg_color_dark_elev_5_baseline);
 
         // Tab strip redesign new tab button night mode bg color.
         if (ColorUtils.inNightMode(context)) {

@@ -199,14 +199,6 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * @see android.content.res.Resources#getColor(int id).
-     */
-    @SuppressWarnings("deprecation")
-    public static int getColor(Resources res, int id) throws NotFoundException {
-        return res.getColor(id);
-    }
-
-    /**
      * @see android.widget.TextView#setTextAppearance(int id).
      */
     @SuppressWarnings("deprecation")

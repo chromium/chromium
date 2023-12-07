@@ -53,7 +53,7 @@ class TileViewHolder extends ViewHolder {
         if (bitmap == null) {
             thumbnail.setImageDrawable(
                     new ColorDrawable(
-                            thumbnail.getResources().getColor(R.color.image_loading_color)));
+                            thumbnail.getContext().getColor(R.color.image_loading_color)));
         } else {
             thumbnail.setImageBitmap(bitmap);
         }

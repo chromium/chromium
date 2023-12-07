@@ -250,7 +250,7 @@ public class StripLayoutHelperManagerTest {
         @ColorInt
         int hoverBackgroundDefaultIncognitoColor =
                 ColorUtils.setAlphaComponent(
-                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.08 * 255));
         assertEquals(
                 "Model selector button hover highlight pressed tint is not as expected",
@@ -264,7 +264,7 @@ public class StripLayoutHelperManagerTest {
         @ColorInt
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
-                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.12 * 255));
         assertEquals(
                 "Model selector button hover highlight pressed tint is not as expected",

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
@@ -107,10 +106,9 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getUrlBarPrimaryTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int darkTextColor = resources.getColor(R.color.branded_url_text_on_light_bg);
-        final int lightTextColor = resources.getColor(R.color.branded_url_text_on_dark_bg);
-        final int incognitoColor = resources.getColor(R.color.url_bar_primary_text_incognito);
+        final int darkTextColor = mActivity.getColor(R.color.branded_url_text_on_light_bg);
+        final int lightTextColor = mActivity.getColor(R.color.branded_url_text_on_dark_bg);
+        final int incognitoColor = mActivity.getColor(R.color.url_bar_primary_text_incognito);
         final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorOnSurface, TAG);
 
         assertEquals(
@@ -137,10 +135,9 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getUrlBarSecondaryTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int darkTextColor = resources.getColor(R.color.branded_url_text_variant_on_light_bg);
-        final int lightTextColor = resources.getColor(R.color.branded_url_text_variant_on_dark_bg);
-        final int incognitoColor = resources.getColor(R.color.url_bar_secondary_text_incognito);
+        final int darkTextColor = mActivity.getColor(R.color.branded_url_text_variant_on_light_bg);
+        final int lightTextColor = mActivity.getColor(R.color.branded_url_text_variant_on_dark_bg);
+        final int incognitoColor = mActivity.getColor(R.color.url_bar_secondary_text_incognito);
         final int defaultColor =
                 MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
 
@@ -168,9 +165,8 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getUrlBarDangerColor() {
-        final Resources resources = mActivity.getResources();
-        final int redOnDark = resources.getColor(R.color.default_red_light);
-        final int redOnLight = resources.getColor(R.color.default_red_dark);
+        final int redOnDark = mActivity.getColor(R.color.default_red_light);
+        final int redOnLight = mActivity.getColor(R.color.default_red_dark);
 
         assertEquals(
                 "Danger color for DARK_THEME should be the lighter red.",
@@ -196,9 +192,8 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getUrlBarSecureColor() {
-        final Resources resources = mActivity.getResources();
-        final int greenOnDark = resources.getColor(R.color.default_green_light);
-        final int greenOnLight = resources.getColor(R.color.default_green_dark);
+        final int greenOnDark = mActivity.getColor(R.color.default_green_light);
+        final int greenOnLight = mActivity.getColor(R.color.default_green_dark);
 
         assertEquals(
                 "Secure color for DARK_THEME should be the lighter green.",
@@ -224,8 +219,7 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getSuggestionPrimaryTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int incognitoColor = resources.getColor(R.color.default_text_color_light);
+        final int incognitoColor = mActivity.getColor(R.color.default_text_color_light);
         final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorOnSurface, TAG);
 
         assertEquals(
@@ -252,8 +246,7 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getSuggestionSecondaryTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int incognitoColor = resources.getColor(R.color.default_text_color_secondary_light);
+        final int incognitoColor = mActivity.getColor(R.color.default_text_color_secondary_light);
         final int defaultColor =
                 MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
 
@@ -281,8 +274,7 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getSuggestionUrlTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int incognitoColor = resources.getColor(R.color.suggestion_url_color_incognito);
+        final int incognitoColor = mActivity.getColor(R.color.suggestion_url_color_incognito);
         final int defaultColor = SemanticColorUtils.getDefaultTextColorLink(mActivity);
 
         assertEquals(
@@ -309,11 +301,10 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getStatusSeparatorColor() {
-        final Resources resources = mActivity.getResources();
-        final int darkColor = resources.getColor(R.color.locationbar_status_separator_color_dark);
-        final int lightColor = resources.getColor(R.color.locationbar_status_separator_color_light);
+        final int darkColor = mActivity.getColor(R.color.locationbar_status_separator_color_dark);
+        final int lightColor = mActivity.getColor(R.color.locationbar_status_separator_color_light);
         final int incognitoColor =
-                resources.getColor(R.color.locationbar_status_separator_color_incognito);
+                mActivity.getColor(R.color.locationbar_status_separator_color_incognito);
         final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorOutline, TAG);
 
         assertEquals(
@@ -340,11 +331,10 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getStatusPreviewTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int darkColor = resources.getColor(R.color.locationbar_status_preview_color_dark);
-        final int lightColor = resources.getColor(R.color.locationbar_status_preview_color_light);
+        final int darkColor = mActivity.getColor(R.color.locationbar_status_preview_color_dark);
+        final int lightColor = mActivity.getColor(R.color.locationbar_status_preview_color_light);
         final int incognitoColor =
-                resources.getColor(R.color.locationbar_status_preview_color_incognito);
+                mActivity.getColor(R.color.locationbar_status_preview_color_incognito);
         final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorPrimary, TAG);
 
         assertEquals(
@@ -371,11 +361,10 @@ public class OmniboxResourceProviderTest {
 
     @Test
     public void getStatusOfflineTextColor() {
-        final Resources resources = mActivity.getResources();
-        final int darkColor = resources.getColor(R.color.locationbar_status_offline_color_dark);
-        final int lightColor = resources.getColor(R.color.locationbar_status_offline_color_light);
+        final int darkColor = mActivity.getColor(R.color.locationbar_status_offline_color_dark);
+        final int lightColor = mActivity.getColor(R.color.locationbar_status_offline_color_light);
         final int incognitoColor =
-                resources.getColor(R.color.locationbar_status_offline_color_incognito);
+                mActivity.getColor(R.color.locationbar_status_offline_color_incognito);
         final int defaultColor =
                 MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
 

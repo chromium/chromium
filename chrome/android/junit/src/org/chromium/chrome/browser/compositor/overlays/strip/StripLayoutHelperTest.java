@@ -746,7 +746,7 @@ public class StripLayoutHelperTest {
         when(ntb.isIncognito()).thenReturn(true);
         int defaultNTBHoverBackgroundIncognitoTint =
                 ColorUtils.setAlphaComponent(
-                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.08 * 255));
         assertEquals(
                 "New tab button hover highlight default tint is not as expected",
@@ -759,7 +759,7 @@ public class StripLayoutHelperTest {
         when(ntb.isPressedFromMouse()).thenReturn(true);
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
-                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.12 * 255));
         assertEquals(
                 "New tab button hover highlight pressed tint is not as expected",
@@ -859,7 +859,7 @@ public class StripLayoutHelperTest {
         when(closeButton.isHovered()).thenReturn(true);
         int defaultNTBHoverBackgroundIncognitoTint =
                 ColorUtils.setAlphaComponent(
-                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.08 * 255));
         assertEquals(
                 "Close button hover highlight default tint is not as expected",
@@ -872,7 +872,7 @@ public class StripLayoutHelperTest {
         when(closeButton.isPressedFromMouse()).thenReturn(true);
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
-                        mContext.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        mContext.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.12 * 255));
         assertEquals(
                 "Close button hover highlight pressed tint is not as expected",

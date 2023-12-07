@@ -55,7 +55,8 @@ public class PageInfoRowView extends FrameLayout {
         setVisibility(params.visible ? VISIBLE : GONE);
         if (!params.visible) return;
 
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        Context context = getContext();
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         mIcon.setImageResource(params.iconResId);
         if (params.decreaseIconSize) {
             // All icons are 24dp but some are effectively 20dp because fill the side with padding.
@@ -69,9 +70,9 @@ public class PageInfoRowView extends FrameLayout {
         ImageViewCompat.setImageTintList(
                 mIcon,
                 params.iconTint != 0
-                        ? ColorStateList.valueOf(getResources().getColor(params.iconTint))
+                        ? ColorStateList.valueOf(context.getColor(params.iconTint))
                         : AppCompatResources.getColorStateList(
-                                getContext(), R.color.default_icon_color_tint_list));
+                                context, R.color.default_icon_color_tint_list));
 
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
@@ -88,7 +89,7 @@ public class PageInfoRowView extends FrameLayout {
         }
         if (params.rowTint != 0) {
             setBackgroundColor(
-                    AppCompatResources.getColorStateList(getContext(), params.rowTint)
+                    AppCompatResources.getColorStateList(context, params.rowTint)
                             .getDefaultColor());
         }
     }

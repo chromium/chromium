@@ -433,7 +433,7 @@ public class CreatorCoordinator
                             public void setNavigationBarScrimFraction(float scrimFraction) {}
                         },
                         mCreatorViewGroup,
-                        mActivity.getResources().getColor(R.color.default_scrim_color));
+                        mActivity.getColor(R.color.default_scrim_color));
 
         mBottomSheetContainer = new FrameLayout(mActivity);
         mBottomSheetContainer.setId(R.id.creator_content_preview_bottom_sheet);

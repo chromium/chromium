@@ -396,7 +396,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_radius),
                 0,
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
-                resources.getColor(R.color.modern_grey_800_alpha_38));
+                context.getColor(R.color.modern_grey_800_alpha_38));
 
         mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
     }

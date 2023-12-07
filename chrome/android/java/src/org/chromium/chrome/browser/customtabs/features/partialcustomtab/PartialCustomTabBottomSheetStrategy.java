@@ -432,7 +432,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void setScrimFraction(float scrimFraction) {
-        int scrimColor = mActivity.getResources().getColor(R.color.default_scrim_color);
+        int scrimColor = mActivity.getColor(R.color.default_scrim_color);
         float scrimColorAlpha = (scrimColor >>> 24) / 255f;
         int scrimColorOpaque = scrimColor & 0xFF000000;
         int color =
@@ -459,8 +459,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @Override
     public void onFindToolbarShown() {
         if (mIsTablet) return;
-        int findToolbarBackground =
-                mActivity.getResources().getColor(R.color.find_in_page_background_color);
+        int findToolbarBackground = mActivity.getColor(R.color.find_in_page_background_color);
         getDragBarBackground().setColor(findToolbarBackground);
 
         if (isFullHeight()) return;

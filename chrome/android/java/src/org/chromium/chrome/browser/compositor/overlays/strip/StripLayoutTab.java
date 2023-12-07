@@ -284,12 +284,12 @@ public class StripLayoutTab implements VirtualView {
         @ColorInt
         int apsBackgroundIncognitoHoveredTint =
                 ColorUtils.setAlphaComponent(
-                        context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        context.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
         @ColorInt
         int apsBackgroundIncognitoPressedTint =
                 ColorUtils.setAlphaComponent(
-                        context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        context.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
 
         // Only set color for hover bg.

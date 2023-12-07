@@ -86,11 +86,11 @@ public class AddExceptionPreference extends Preference
         setOnPreferenceClickListener(this);
 
         setKey(key);
-        Resources resources = getContext().getResources();
-        mPrefAccentColor = SemanticColorUtils.getDefaultControlColorActive(getContext());
-        mErrorColor = resources.getColor(R.color.default_red);
+        Resources resources = context.getResources();
+        mPrefAccentColor = SemanticColorUtils.getDefaultControlColorActive(context);
+        mErrorColor = context.getColor(R.color.default_red);
         mDefaultColor =
-                AppCompatResources.getColorStateList(getContext(), R.color.default_text_color_list)
+                AppCompatResources.getColorStateList(context, R.color.default_text_color_list)
                         .getDefaultColor();
 
         Drawable plusIcon = ApiCompatibilityUtils.getDrawable(resources, R.drawable.plus);

@@ -187,13 +187,13 @@ public class ThemeUtils {
         final Resources res = context.getResources();
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
             return isIncognito
-                    ? res.getColor(R.color.divider_line_bg_color_light)
+                    ? context.getColor(R.color.divider_line_bg_color_light)
                     : SemanticColorUtils.getDividerLineBgColor(context);
         }
 
         final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);
         final @ColorInt int hairlineColorOpaque =
-                res.getColor(R.color.toolbar_hairline_overlay_opaque) & 0xFF000000;
+                context.getColor(R.color.toolbar_hairline_overlay_opaque) & 0xFF000000;
         return ColorUtils.getColorWithOverlay(toolbarColor, hairlineColorOpaque, alpha);
     }
 }

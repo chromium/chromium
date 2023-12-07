@@ -96,6 +96,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
                         ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         float resizeRatio = (float) dragShadowSpec.targetWidth / dragShadowSpec.startWidth;
         Resources res = containerView.getResources();
+        Context context = containerView.getContext();
         mProgress = 0f;
 
         mStartBounds.set(0, 0, dragShadowSpec.startWidth, dragShadowSpec.startHeight);
@@ -135,7 +136,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
         mPaintBorder = new Paint();
         mPaintBorder.setStyle(Paint.Style.STROKE);
         mPaintBorder.setStrokeWidth(mBorderSize);
-        mPaintBorder.setColor(res.getColor(R.color.drag_shadow_outline_color));
+        mPaintBorder.setColor(context.getColor(R.color.drag_shadow_outline_color));
         mTransformMatrix = new Matrix();
     }
 

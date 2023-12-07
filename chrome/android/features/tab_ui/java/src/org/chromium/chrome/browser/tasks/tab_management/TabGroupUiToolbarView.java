@@ -153,7 +153,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
         @ColorInt
         int primaryColor =
                 isIncognito
-                        ? getResources().getColor(R.color.dialog_bg_color_dark_baseline)
+                        ? getContext().getColor(R.color.dialog_bg_color_dark_baseline)
                         : SemanticColorUtils.getDialogBgColor(getContext());
         setPrimaryColor(primaryColor);
 

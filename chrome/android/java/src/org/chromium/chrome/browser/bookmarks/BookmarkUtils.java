@@ -778,7 +778,7 @@ public class BookmarkUtils {
                         iconSize,
                         iconSize,
                         iconSize / 2,
-                        res.getColor(R.color.default_favicon_background_color),
+                        context.getColor(R.color.default_favicon_background_color),
                         getDisplayTextSize(res))
                 : FaviconUtils.createCircularIconGenerator(context);
     }

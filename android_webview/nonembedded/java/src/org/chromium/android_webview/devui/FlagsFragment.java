@@ -183,7 +183,7 @@ public class FlagsFragment extends DevUiBaseFragment {
     }
 
     private void setClearTextButtonEnabled(EditText editText, boolean enabled) {
-        int iconColor = getResources().getColor(R.color.navigation_unselected);
+        int iconColor = getContext().getColor(R.color.navigation_unselected);
         Drawable clearTextIcon = getContext().getDrawable(R.drawable.ic_clear_text);
         clearTextIcon.mutate();
         clearTextIcon.setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.SRC_IN));
@@ -506,9 +506,9 @@ public class FlagsFragment extends DevUiBaseFragment {
 
             TextView flagsDescriptionView = view.findViewById(R.id.flags_description);
             flagsDescriptionView.setText(
-                    "By enabling these features, you could "
-                            + "lose app data or compromise your security or privacy. Enabled features "
-                            + "apply to WebViews across all apps on the device.");
+                    "By enabling these features, you could lose app data or compromise your"
+                        + " security or privacy. Enabled features apply to WebViews across all apps"
+                        + " on the device.");
 
             return view;
         }

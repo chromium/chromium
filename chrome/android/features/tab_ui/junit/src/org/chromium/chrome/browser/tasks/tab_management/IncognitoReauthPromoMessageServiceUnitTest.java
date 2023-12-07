@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOG
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOGNITO_REAUTH_PROMO_SHOW_COUNT;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.SmallTest;
@@ -70,7 +69,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     @Mock private Profile mProfileMock;
     @Mock private Context mContextMock;
-    @Mock private Resources mResourcesMock;
     @Mock private SnackbarManager mSnackbarManagerMock;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -398,8 +396,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         final String snackBarTestString = "This is written inside the snackbar.";
         when(mContextMock.getString(R.string.incognito_reauth_snackbar_text))
                 .thenReturn(snackBarTestString);
-        when(mContextMock.getResources()).thenReturn(mResourcesMock);
-        when(mResourcesMock.getColor(R.color.snackbar_background_color_baseline_dark))
+        when(mContextMock.getColor(R.color.snackbar_background_color_baseline_dark))
                 .thenReturn(R.color.snackbar_background_color_baseline_dark);
         doNothing().when(mSnackbarManagerMock).showSnackbar(mSnackbarArgumentCaptor.capture());
 
@@ -415,8 +412,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         verify(mMessageObserverMock, times(1)).messageInvalidate(MessageType.FOR_TESTING);
 
         verify(mContextMock, times(1)).getString(R.string.incognito_reauth_snackbar_text);
-        verify(mContextMock, times(1)).getResources();
-        verify(mResourcesMock, times(1)).getColor(R.color.snackbar_background_color_baseline_dark);
+        verify(mContextMock, times(1)).getColor(R.color.snackbar_background_color_baseline_dark);
         verify(mSnackbarManagerMock, times(1)).showSnackbar(mSnackbarArgumentCaptor.getValue());
 
         assertFalse(

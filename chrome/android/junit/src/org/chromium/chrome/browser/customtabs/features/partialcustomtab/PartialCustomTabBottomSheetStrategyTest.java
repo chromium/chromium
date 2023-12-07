@@ -933,7 +933,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         strategy.setToolbarColorForTesting(PCCT_TOOLBAR_COLOR);
         doReturn(FIND_TOOLBAR_COLOR)
-                .when(mPCCTTestRule.mResources)
+                .when(mPCCTTestRule.mActivity)
                 .getColor(eq(R.color.find_in_page_background_color));
         doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
 

@@ -84,7 +84,6 @@ public class ShoppingAccessoryView extends FrameLayout {
                         .getBackground()
                         .setColorFilter(
                                 getContext()
-                                        .getResources()
                                         .getColor(R.color.price_drop_annotation_bg_color),
                                 PorterDuff.Mode.SRC_ATOP);
             }
@@ -92,7 +91,6 @@ public class ShoppingAccessoryView extends FrameLayout {
                     mPriceTrackedIcon,
                     ColorStateList.valueOf(
                             getContext()
-                                    .getResources()
                                     .getColor(R.color.price_drop_annotation_text_green)));
 
             // Primary text displays the current price.

@@ -175,8 +175,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
                 @ColorInt
                 int searchBackgroundColor =
                         isIncognito
-                                ? getResources()
-                                        .getColor(R.color.toolbar_text_box_background_incognito)
+                                ? mContext.getColor(R.color.toolbar_text_box_background_incognito)
                                 : ChromeColors.getSurfaceColor(
                                         mContext, R.dimen.toolbar_text_box_elevation);
                 shapeDrawable.mutate();

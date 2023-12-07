@@ -223,7 +223,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
         // TODO(crbug.com/1227656):  Confirm with UX to see how the background color of the
         // snackbar needs to be revised.
         snackbar.setBackgroundColor(
-                mContext.getResources().getColor(R.color.snackbar_background_color_baseline_dark));
+                mContext.getColor(R.color.snackbar_background_color_baseline_dark));
         snackbar.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary_Baseline_Light);
         snackbar.setSingleLine(false);
         mSnackBarManager.showSnackbar(snackbar);

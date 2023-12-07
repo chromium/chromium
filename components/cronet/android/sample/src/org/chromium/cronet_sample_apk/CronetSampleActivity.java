@@ -74,8 +74,8 @@ public class CronetSampleActivity extends FragmentActivity {
                             : R.style.UnselectedNavigationButton);
             int color =
                     isSelectedFragment
-                            ? getResources().getColor(R.color.navigation_selected)
-                            : getResources().getColor(R.color.navigation_unselected);
+                            ? getColor(R.color.navigation_selected)
+                            : getColor(R.color.navigation_unselected);
             for (Drawable drawable : textView.getCompoundDrawables()) {
                 if (drawable != null) {
                     drawable.mutate();
