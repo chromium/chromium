@@ -43,13 +43,6 @@ constexpr auto enabled_by_default_desktop_only =
 
 constexpr auto enabled_by_default_mobile_only =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    true;
-#else
-    false;
-#endif
-
-constexpr auto enabled_by_default_ios_only =
-#if BUILDFLAG(IS_IOS)
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
     base::FEATURE_DISABLED_BY_DEFAULT;
@@ -225,7 +218,7 @@ BASE_FEATURE(kPageEntitiesModelResetOnShutdown,
 // Enables push notification of hints.
 BASE_FEATURE(kPushNotifications,
              "OptimizationGuidePushNotifications",
-             enabled_by_default_ios_only);
+             enabled_by_default_mobile_only);
 
 // This feature flag does not turn off any behavior, it is only used for
 // experiment parameters.
