@@ -57,12 +57,17 @@ UpdateService::Priority Priority() {
              : UpdateService::Priority::kForeground;
 }
 
+std::string Quoted(const std::string& value) {
+  return "\"" + value + "\"";
+}
+
 bool OutputInJSONFormat() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kJSONFormatSwitch);
 }
 
-std::string Quoted(const std::string& value) {
-  return "\"" + value + "\"";
+std::string ValueToJSONString(const base::Value& value) {
+  std::string value_string;
+  return base::JSONWriter::Write(value, &value_string) ? value_string : "";
 }
 
 void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
@@ -199,12 +204,22 @@ void UpdaterUtilApp::ListApps() {
   service_proxy_->GetAppStates(base::BindOnce(
       [](base::OnceCallback<void(int)> cb,
          const std::vector<updater::UpdateService::AppState>& states) {
-        std::cout << "Registered apps : {" << std::endl;
-        for (updater::UpdateService::AppState app : states) {
-          std::cout << "\t" << Quoted(app.app_id) << " = "
-                    << Quoted(app.version.GetString()) << ';' << std::endl;
+        if (OutputInJSONFormat()) {
+          base::Value::Dict apps;
+          for (updater::UpdateService::AppState app : states) {
+            apps.Set(app.app_id, base::Value::Dict().Set(
+                                     "version", app.version.GetString()));
+          }
+          std::cout << ValueToJSONString(base::Value(std::move(apps)))
+                    << std::endl;
+        } else {
+          std::cout << "Registered apps : {" << std::endl;
+          for (updater::UpdateService::AppState app : states) {
+            std::cout << "\t" << Quoted(app.app_id) << " = "
+                      << Quoted(app.version.GetString()) << ';' << std::endl;
+          }
+          std::cout << '}' << std::endl;
         }
-        std::cout << '}' << std::endl;
         std::move(cb).Run(0);
       },
       base::BindOnce(&UpdaterUtilApp::Shutdown, this)));
@@ -266,14 +281,24 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
           [](scoped_refptr<AppState> app_state,
              base::OnceCallback<void(int)> cb, UpdateService::Result result) {
             if (result == UpdateService::Result::kSuccess) {
-              std::cout << Quoted(app_state->app_id()) << " : {" << std::endl;
-              std::cout << "\tCurrent Version = "
-                        << Quoted(app_state->current_version()) << ";"
-                        << std::endl;
-              std::cout << "\tAvailable Version = "
-                        << Quoted(app_state->next_version()) << ";"
-                        << std::endl;
-              std::cout << "}" << std::endl;
+              if (OutputInJSONFormat()) {
+                base::Value::Dict app;
+                app.Set(app_state->app_id(),
+                        base::Value::Dict()
+                            .Set("CurrentVersion", app_state->current_version())
+                            .Set("NextVersion", app_state->next_version()));
+                std::cout << ValueToJSONString(base::Value(std::move(app)))
+                          << std::endl;
+              } else {
+                std::cout << Quoted(app_state->app_id()) << " : {" << std::endl
+                          << "\tCurrent Version = "
+                          << Quoted(app_state->current_version()) << ";"
+                          << std::endl
+                          << "\tNext Version = "
+                          << Quoted(app_state->next_version()) << ";"
+                          << std::endl
+                          << "}" << std::endl;
+              }
               std::move(cb).Run(0);
             }
           },
@@ -321,14 +346,9 @@ void UpdaterUtilApp::ListPolicies() {
         auto configurator = base::MakeRefCounted<Configurator>(
             CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants());
         if (OutputInJSONFormat()) {
-          std::string policy_string;
-          if (base::JSONWriter::Write(
-                  configurator->GetPolicyService()->GetAllPolicies(),
-                  &policy_string)) {
-            std::cout << policy_string << std::endl;
-          } else {
-            LOG(ERROR) << "Failed to write policy as JSON string.";
-          }
+          std::cout << ValueToJSONString(
+                           configurator->GetPolicyService()->GetAllPolicies())
+                    << std::endl;
         } else {
           std::cout
               << "Updater policies: "
