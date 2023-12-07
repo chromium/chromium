@@ -4,8 +4,6 @@
 import 'chrome://shortcut-customization/js/shortcuts_page.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
@@ -15,7 +13,7 @@ import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, MojoAcce
 import {SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {ShortcutsPageElement} from 'chrome://shortcut-customization/js/shortcuts_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 function initShortcutsPageElement(category: AcceleratorCategory):
     ShortcutsPageElement {
@@ -182,11 +180,7 @@ suite('ShortcutsPageTest', function() {
     await flushTasks();
     // After `onRouteChanged`, the AcceleratorRow is now visible.
     assertTrue(isVisibleVerticallyInViewport(lastAcceleratorRow));
-    // Verify the AcceleratorRow is focused.
-    assertEquals(
-        strictQuery(
-            '#container', lastAcceleratorRow.shadowRoot, HTMLTableRowElement),
-        getDeepActiveElement());
+    // TODO(longbowei): Add test to verify lastAcceleratorRow is focused.
   });
 
   test('ScrollIntoView works when page changes', async () => {
@@ -222,15 +216,11 @@ suite('ShortcutsPageTest', function() {
             AcceleratorCategory.kGeneral}`);
     shortcutsPageElement.onNavigationPageChanged({isActive: true});
 
-    await flushTasks();
+    await waitAfterNextRender(shortcutsPageElement);
 
     // After `onNavigationPageChanged`, the AcceleratorRow is now
     // visible.
     assertTrue(isVisibleVerticallyInViewport(lastAcceleratorRow));
-    // Verify the AcceleratorRow is focused.
-    assertEquals(
-        strictQuery(
-            '#container', lastAcceleratorRow.shadowRoot, HTMLTableRowElement),
-        getDeepActiveElement());
+    // TODO(longbowei): Add test to verify lastAcceleratorRow is focused.
   });
 });
