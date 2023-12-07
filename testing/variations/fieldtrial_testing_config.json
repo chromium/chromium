@@ -18074,6 +18074,7 @@
                     "name": "Enabled",
                     "params": {
                         "TpcdBackfillPopupHeuristicsGrants": "30d",
+                        "TpcdPopupHeuristicEnableForIframeInitiator": "all",
                         "TpcdReadHeuristicsGrants": "true",
                         "TpcdRedirectHeuristicRequireABAFlow": "true",
                         "TpcdRedirectHeuristicRequireCurrentInteraction": "true",
