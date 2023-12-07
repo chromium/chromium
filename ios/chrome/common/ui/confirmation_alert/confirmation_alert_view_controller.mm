@@ -700,6 +700,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   title.adjustsFontForContentSizeCategory = YES;
   title.accessibilityIdentifier =
       kConfirmationAlertTitleAccessibilityIdentifier;
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
   return title;
 }
 
