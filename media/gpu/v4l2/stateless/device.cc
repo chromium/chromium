@@ -260,6 +260,12 @@ struct timeval Buffer::GetTimeval() const {
   return time_val_;
 }
 
+uint64_t Buffer::GetTimeAsFrameID() const {
+  DCHECK_EQ(time_val_.tv_sec, 0);
+
+  return time_val_.tv_usec;
+}
+
 bool Buffer::CopyDataIn(const void* data, size_t length) {
   DVLOGF(4) << MappedAddress(0) << " : " << data << " : " << length;
 

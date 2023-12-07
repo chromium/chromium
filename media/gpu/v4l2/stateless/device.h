@@ -60,6 +60,7 @@ class Buffer {
 
   void SetTimeAsFrameID(uint64_t usec);
   struct timeval GetTimeval() const;
+  uint64_t GetTimeAsFrameID() const;
 
   // Method for copying compressed input data into a Buffer's backing store. It
   // is limited to destination buffers that have a single plane and are memory

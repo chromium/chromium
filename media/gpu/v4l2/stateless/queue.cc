@@ -416,6 +416,88 @@ bool OutputQueue::PrepareBuffers() {
   return true;
 }
 
+bool OutputQueue::DequeueBuffer() {
+  CHECK(device_);
+  // The assumption is there is only one buffer in flight at a time.
+  const auto buffer = device_->DequeueBuffer(buffer_type_, memory_type_,
+                                             buffer_format_.NumPlanes());
+
+  // So there should never be more than one buffer ready to dequeue. If there
+  // is another buffer to be dequeued then this will fail.
+  // TODO: Should this be a return value? The function is a bool, so this could
+  // be returned but it would incur an extra dequeue attempt
+  DCHECK(absl::nullopt == device_->DequeueBuffer(buffer_type_, memory_type_,
+                                                 buffer_format_.NumPlanes()));
+
+  // Once the buffer is dequeued it needs to be tracked. The index is all that
+  // is needed to track the buffer. That index is what will be used when passing
+  // the buffer off. The time is need to tell which buffer should be passed off.
+  // With MPEG codecs display order can be different then decode order. For
+  // this reason the most recently decoded buffer may not be displayed right
+  // away.
+  //
+  // The input and output queues are independent. When the input buffer is done
+  // being decoded the timestamp is copied over to the output buffer. When
+  // this frame is ready to be displayed the timestamp is what will be
+  // needed. Because of the detached nature of the queues there is no way to
+  // know which output buffer index corresponds to the input buffer. Using
+  // the timestamp this can be found.
+  const auto result = decoded_and_dequeued_frames_.insert(
+      {buffer->GetTimeAsFrameID(), buffer->GetIndex()});
+
+  DVLOGF(3) << "Inserted buffer (" << buffer->GetIndex()
+            << ") with a frame id of " << buffer->GetTimeAsFrameID();
+
+  return result.second;
+}
+
+absl::optional<uint32_t> OutputQueue::UseDequeuedBuffer(uint64_t frame_id) {
+  DVLOGF(3) << "Attempting to use frame with id : " << frame_id;
+  // The frame_id is copied from the input buffer to the output buffer. This is
+  // the only way to know which output buffer contains the decoded picture for
+  // a given compressed input buffer.
+  auto it = decoded_and_dequeued_frames_.find(frame_id);
+  if (it != decoded_and_dequeued_frames_.end()) {
+    const uint32_t index = it->second;
+    decoded_and_dequeued_frames_.erase(it);
+    DVLOGF(3) << "Found match (" << index << ") for frame id of (" << frame_id
+              << ").";
+    return index;
+  }
+
+  // The corresponding frame may not have been dequeued when this function has
+  // been called. This is not an error, but expected. When this occurs the
+  // caller should try again after waiting for another buffer to be dequeued.
+  return absl::nullopt;
+}
+
+scoped_refptr<VideoFrame> OutputQueue::DecodedFrameByIndex(uint32_t index) {
+  DVLOGF(4) << Description() << " index : " << index;
+  CHECK(device_);
+
+  // This frame can not be re-enqueued right away.
+  // 1. it hasn't been displayed yet. the underlying buffer is passed on
+  //    to the display/image processor. it can only be requeued after that
+  //    has occurred.
+  // 2. the frame can be used as a reference frame. it can only re-enqueued
+  //    after all of the frames that reference it are decoded (but not
+  //    necessarily displayed)
+
+  return video_frames_[index];
+}
+
+bool OutputQueue::QueueBufferByIndex(uint32_t index) {
+  DVLOGF(4) << Description() << " index : " << index;
+  if (!device_->QueueBuffer(buffers_[index], base::ScopedFD(-1))) {
+    NOTREACHED() << "Failed to queue buffer.";
+    return false;
+  }
+
+  free_buffer_indices_.erase(index);
+
+  return true;
+}
+
 std::string OutputQueue::Description() {
   return "output";
 }

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -99,10 +100,14 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // passed along to the display.
   void DequeueDecodedBuffers();
 
+  void EnqueueDecodedBufferByIndex(uint32_t index);
+
   // Process the data in the |compressed_buffer| using the |decoder_|.
   void ProcessCompressedBuffer(scoped_refptr<DecoderBuffer> compressed_buffer,
                                VideoDecoder::DecodeCB decode_cb,
                                int32_t bitstream_id);
+
+  void ServiceDisplayQueue();
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 
@@ -110,7 +115,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
 
   // Callback obtained from Initialize() to be called after every frame
   // has finished decoding and is ready for the client to display.
-  OutputCB output_cb_;
+  OutputCB output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  // Callback to be used after a chunk is decoded.
+  DecodeCB decode_done_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // Video decoder used to parse stream headers by software.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
@@ -137,11 +145,15 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   base::IdTypeU32<FrameID>::Generator frame_id_generator_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
+  base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
+
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
   // |wake_event_|.
   scoped_refptr<base::SequencedTaskRunner> event_task_runner_;
+
+  std::queue<scoped_refptr<StatelessDecodeSurface>> display_queue_;
 
   // Weak factories associated with the main thread
   // (|decoder_sequence_checker_|).

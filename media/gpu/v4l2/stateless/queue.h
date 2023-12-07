@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_QUEUE_H_
 #define MEDIA_GPU_V4L2_STATELESS_QUEUE_H_
 
+#include <map>
 #include <set>
 #include <vector>
 
@@ -38,6 +39,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
  protected:
   bool AllocateBuffers(uint32_t num_planes);
   virtual std::string Description() = 0;
+  void ReturnBuffer(uint32_t index);
   absl::optional<uint32_t> GetFreeBufferIndex();
 
   scoped_refptr<StatelessDevice> device_;
@@ -86,22 +88,54 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   OutputQueue(scoped_refptr<StatelessDevice> device);
   ~OutputQueue() override;
 
+  // Drivers can support multiple raw formats. ChromeOS would like to use
+  // specific formats. |NegotiateFormat| chooses the raw format that satisfies
+  // both requirements.
   bool NegotiateFormat();
+
+  // Allocate and prepare the buffers that will store the decoded raw frames.
   bool PrepareBuffers() override;
 
+  // Return the video frame that corresponds to a buffer index. The buffer
+  // index is tracked as it moves through the queue. When it is completed
+  // processing the corresponding video frame can be retrieved.
+  scoped_refptr<VideoFrame> DecodedFrameByIndex(uint32_t index);
+
+  // After a buffer has been used it needs to be returned to the pool of
+  // available buffers.
+  bool QueueBufferByIndex(uint32_t index);
+
+  // Retrieved the index of a buffer given a |frame_id|. Raw frame buffers have
+  // the |frame_id| from the compressed frame copied into their structure.
+  absl::optional<uint32_t> UseDequeuedBuffer(uint64_t frame_id);
+
+  // Return the raw frame format chosen by |NegotiateFormat|
   Fourcc GetQueueFormat() const { return buffer_format_.fourcc; }
+
+  // Return the resolution of the raw frames.
   gfx::Size GetVideoResolution() const { return buffer_format_.resolution; }
 
+  // Removes the raw frame from the queue of the driver and prepares it for
+  // usage.
+  bool DequeueBuffer();
+
  private:
+  // Create |VideoFrame| by exporting the dmabuf backing the buffer.
   scoped_refptr<VideoFrame> CreateVideoFrame(uint32_t index);
 
   std::string Description() override;
+
   uint32_t BufferMinimumCount() override;
 
   BufferFormat buffer_format_;
 
   // Vector to hold |VideoFrame|s for the life of the queue.
   std::vector<scoped_refptr<VideoFrame>> video_frames_;
+
+  // A mapping from frame id to buffer buffer index. Once a frame is decoded it
+  // placed in this map. The frame id to buffer index mapping is how the input
+  // queue is mapped to the output queue.
+  std::map<uint64_t, uint32_t> decoded_and_dequeued_frames_;
 };
 
 }  // namespace media
