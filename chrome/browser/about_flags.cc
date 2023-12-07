@@ -4661,6 +4661,17 @@ const FeatureEntry kFeatureEntries[] = {
                                        "DXGIWaitableSwapChain"),
     },
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+    {
+        "enable-encrypted-AV1",
+        flag_descriptions::kEnableEncryptedAV1Name,
+        flag_descriptions::kEnableEncryptedAV1Description,
+        kOsAndroid,
+        FEATURE_VALUE_TYPE(media::kEnableEncryptedAV1),
+    },
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {
         "fluent-overlay-scrollbars",

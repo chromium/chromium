@@ -31039,6 +31039,7 @@ from previous Chrome versions.
   <int value="-1021038914" label="CrostiniImeSupport:enabled"/>
   <int value="-1020450980" label="gesture-deletion"/>
   <int value="-1020437363" label="LightweightReactions:disabled"/>
+  <int value="-1020250356" label="EnableEncryptedAV1:disabled"/>
   <int value="-1019967332" label="VrBrowsing:enabled"/>
   <int value="-1019760093" label="PrintWithPostScriptType42Fonts:enabled"/>
   <int value="-1019492310"
@@ -34990,6 +34991,7 @@ from previous Chrome versions.
   <int value="859913799" label="EnableDesksTrackpadSwipeImprovements:disabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
   <int value="861351290" label="FontManagerEarlyInit:enabled"/>
+  <int value="861968979" label="EnableEncryptedAV1:enabled"/>
   <int value="862453793" label="TranslateUI2016Q2:enabled"/>
   <int value="863493664" label="LacrosMoveProfileMigration:disabled"/>
   <int value="863584992" label="ExtensionsFSPInServiceWorkers:enabled"/>

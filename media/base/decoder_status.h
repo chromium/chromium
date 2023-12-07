@@ -5,7 +5,11 @@
 #ifndef MEDIA_BASE_DECODER_STATUS_H_
 #define MEDIA_BASE_DECODER_STATUS_H_
 
+#include <ostream>
+
+#include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_export.h"
 #include "media/base/status.h"
 
 namespace media {
@@ -46,6 +50,9 @@ struct DecoderStatusTraits {
 };
 
 using DecoderStatus = TypedStatus<DecoderStatusTraits>;
+
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
+                                      const DecoderStatus& status);
 
 // Helper class for ensuring that Decode() traces are properly unique and closed
 // if the Decode is aborted via a WeakPtr invalidation. We use the |this|

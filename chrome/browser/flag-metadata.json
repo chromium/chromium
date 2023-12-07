@@ -2587,6 +2587,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-encrypted-AV1",
+    "owners": [ "jrummell@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "enable-eol-notification-reset-dismissed-prefs",
     "owners": [ "mmourgos@chromium.org", "tbarzic@chromium.org"],
     "expiry_milestone": 116
