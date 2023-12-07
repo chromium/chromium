@@ -306,18 +306,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="History.ClearBrowsingData.HistoryNoticeShownInFooterWhenUpdated"
-    enum="BooleanShown" expires_after="M81">
-  <owner>msramek@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Whether a notice about other forms of browsing history was shown in the
-    footer of the Clear Browsing Data dialog. This is recorded every time the
-    dialog is opened.
-  </summary>
-</histogram>
-
 <histogram name="History.ClearBrowsingData.ImportantDeselectedNum"
     units="units" expires_after="2024-05-04">
   <owner>ayui@chromium.org</owner>

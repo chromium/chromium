@@ -726,9 +726,6 @@ BOOL UIIsBlocking(Browser* browser) {
   if (!model) {
     return;
   }
-  UMA_HISTOGRAM_BOOLEAN(
-      "History.ClearBrowsingData.HistoryNoticeShownInFooterWhenUpdated",
-      _shouldShowNoticeAboutOtherFormsOfBrowsingHistory);
 
   if (![self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
