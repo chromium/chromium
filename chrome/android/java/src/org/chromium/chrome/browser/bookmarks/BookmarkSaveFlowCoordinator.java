@@ -236,7 +236,6 @@ public class BookmarkSaveFlowCoordinator {
     }
 
     private void destroy() {
-        mDestroyChecker.checkNotDestroyed();
         mDestroyChecker.destroy();
 
         // The bottom sheet was closed by a means other than one of the edit actions.
