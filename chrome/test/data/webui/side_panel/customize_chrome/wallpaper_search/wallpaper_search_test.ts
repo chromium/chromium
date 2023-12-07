@@ -991,6 +991,64 @@ suite('WallpaperSearchTest', () => {
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
     });
+
+    test('maintains focus on error ui if error is unresolved', async () => {
+      windowProxy.setResultFor('onLine', false);
+      createWallpaperSearchElement();
+      await flushTasks();
+      assertEquals(
+          $$<HTMLElement>(
+              wallpaperSearchElement, '#errorDescription')!.textContent,
+          'Check your internet and try again.');
+      assertEquals(
+          wallpaperSearchElement.$.error,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(
+          $$<HTMLElement>(
+              wallpaperSearchElement, '#errorDescription')!.textContent,
+          'Check your internet and try again.');
+      assertEquals(
+          wallpaperSearchElement.$.error,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+    });
+
+    test('refocuses on search ui after error is resolved', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kError, results: []}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertEquals(
+          wallpaperSearchElement.$.wallpaperSearch,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(
+          wallpaperSearchElement.$.error,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+      $$<HTMLElement>(wallpaperSearchElement, '#errorCTA')!.click();
+
+      assertEquals(
+          wallpaperSearchElement.$.wallpaperSearch,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({status: WallpaperSearchStatus.kOk, results: []}));
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      assertEquals(
+          wallpaperSearchElement.$.wallpaperSearch,
+          wallpaperSearchElement.shadowRoot!.activeElement);
+    });
   });
 
   suite('Feedback', () => {

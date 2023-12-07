@@ -287,14 +287,15 @@
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">$i18n{wallpaperSearchHeader}</h2>
   </sp-heading>
-  <div class="content" id="error" hidden$="[[!errorState_]]">
+  <div class="content" id="error" hidden$="[[!errorState_]]" tabindex="-1">
     <div id="errorTitle">[[errorState_.title]]</div>
     <div id="errorDescription">[[errorState_.description]]</div>
     <cr-button id="errorCTA" on-click="onErrorClick_">
       [[errorState_.callToAction]]
     </cr-button>
   </div>
-  <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]">
+  <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]"
+      tabindex="-1">
     <customize-chrome-combobox id="descriptorComboboxA"
         label="$i18n{wallpaperSearchSubjectLabel}"
         value="{{selectedDescriptorA_}}">

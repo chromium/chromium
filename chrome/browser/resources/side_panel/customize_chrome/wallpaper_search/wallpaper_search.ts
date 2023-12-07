@@ -87,6 +87,7 @@ export interface WallpaperSearchElement {
     descriptorComboboxB: CustomizeChromeCombobox,
     descriptorComboboxC: CustomizeChromeCombobox,
     descriptorMenuD: CrActionMenuElement,
+    error: HTMLElement,
     feedbackButtons: CrFeedbackButtonsElement,
     heading: SpHeading,
     historyCard: HTMLElement,
@@ -147,6 +148,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       status_: {
         type: WallpaperSearchStatus,
         value: WallpaperSearchStatus.kOk,
+        observer: 'onStatusChange_',
       },
       submitBtnText_: {
         type: String,
@@ -522,6 +524,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         CustomizeChromeAction.WALLPAPER_SEARCH_RESULT_IMAGE_SELECTED);
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
         e.model.item.id, WindowProxy.getInstance().now());
+  }
+
+  private onStatusChange_() {
+    if (this.status_ === WallpaperSearchStatus.kOk) {
+      this.$.wallpaperSearch.focus();
+    } else {
+      this.$.error.focus();
+    }
   }
 
   private shouldShowFeedbackButtons_() {
