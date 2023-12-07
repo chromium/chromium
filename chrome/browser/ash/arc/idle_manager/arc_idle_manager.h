@@ -41,9 +41,9 @@ class ArcIdleManager : public KeyedService,
     // smartphone (screen updates are turned off, leading to a progressive
     // power down of the system, including doze mode).
     // Switches are made via the Android |bridge|.
-    virtual void SetInteractiveMode(ArcPowerBridge* arc_power_bridge,
-                                    ArcBridgeService* bridge,
-                                    bool enable) = 0;
+    virtual void SetIdleState(ArcPowerBridge* arc_power_bridge,
+                              ArcBridgeService* bridge,
+                              bool enable) = 0;
   };
 
   ArcIdleManager(content::BrowserContext* context, ArcBridgeService* bridge);
