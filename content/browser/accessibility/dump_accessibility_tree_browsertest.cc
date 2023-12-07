@@ -2500,7 +2500,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
   RunHtmlTest(FILE_PATH_LITERAL("input-search.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInsertBefore) {
+// TODO(crbug.com/1503056): Enable flaky tests
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_AccessibilityInsertBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("insert-before.html"));
 }
 
