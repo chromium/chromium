@@ -8304,7 +8304,7 @@
   {
     "name": "web-midi",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "reillyg@chromium.org", "deviceapi-team@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 124
   },
   {
     "name": "web-otp-backend",
