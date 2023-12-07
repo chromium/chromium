@@ -26,8 +26,10 @@ crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.html
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
 
-crbug.com/810960 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.html [ Timeout ]
-crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.html [ Timeout ]
+# Very slow under MSAN. See https://bugs.chromium.org/p/chromium/issues/detail?id=1508160#c5
+crbug.com/810960 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.html [ Skip ]
+crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.html [ Skip ]
+crbug.com/1508160 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.html [ Skip ]
 
 # These tests use OpenGl, which crashes on MSAN builds due to missing instrumentation
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
