@@ -5,12 +5,31 @@
 #include "ui/accessibility/platform/ax_platform.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace ui {
 
 // The test harness creates an instance. Make sure the getter works.
 TEST(AXPlatformTest, GetInstance) {
   [[maybe_unused]] auto& instance = AXPlatform::GetInstance();
+}
+
+// Tests that AXPlatformNode::GetAccessibilityMode returns the value managed
+// by the process-wide AXPlatform.
+TEST(AXPlatformTest, GetAccessibilityMode) {
+  EXPECT_EQ(AXPlatformNode::GetAccessibilityMode(), AXMode());
+  AXPlatform::GetInstance().SetMode(kAXModeBasic);
+  EXPECT_EQ(AXPlatformNode::GetAccessibilityMode(), kAXModeBasic);
+}
+
+// Tests that AXPlatformNode::SetAXMode mutates the value managed by the
+// process-wide AXPlatform.
+TEST(AXPlatformTest, SetAXMode) {
+  AXPlatformNode::SetAXMode(kAXModeBasic);
+  EXPECT_EQ(AXPlatform::GetInstance().GetMode(), kAXModeBasic);
+  AXPlatformNode::SetAXMode(AXMode::kNone);
+  EXPECT_EQ(AXPlatform::GetInstance().GetMode(), AXMode());
 }
 
 }  // namespace ui

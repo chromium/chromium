@@ -64,7 +64,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   static void RemoveAXModeObserver(AXModeObserver* observer);
 
   // Convenience method to get the current accessibility mode.
-  static AXMode GetAccessibilityMode() { return ax_mode_; }
+  // Note: new callers should use AXPlatform::GetMode.
+  static AXMode GetAccessibilityMode();
 
   // Helper static function to notify all global observers about
   // the addition of an AXMode flag.
@@ -144,8 +145,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
 
   static base::LazyInstance<NativeWindowHandlerCallback>::Leaky
       native_window_handler_;
-
-  static AXMode ax_mode_;
 
   static bool disallow_ax_mode_changes_;
 

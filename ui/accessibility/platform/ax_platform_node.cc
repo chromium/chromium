@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
 
@@ -21,9 +22,6 @@ base::LazyInstance<base::ObserverList<AXModeObserver>::Unchecked>::Leaky
 // static
 base::LazyInstance<AXPlatformNode::NativeWindowHandlerCallback>::Leaky
     AXPlatformNode::native_window_handler_ = LAZY_INSTANCE_INITIALIZER;
-
-// static
-AXMode AXPlatformNode::ax_mode_;
 
 // static
 bool AXPlatformNode::disallow_ax_mode_changes_;
@@ -94,25 +92,31 @@ void AXPlatformNode::RemoveAXModeObserver(AXModeObserver* observer) {
 }
 
 // static
+AXMode AXPlatformNode::GetAccessibilityMode() {
+  return AXPlatform::GetInstance().GetMode();
+}
+
+// static
 void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
   if (disallow_ax_mode_changes_) {
     return;
   }
 
-  AXMode new_ax_mode(ax_mode_);
-  new_ax_mode |= mode_flags;
-
-  if (new_ax_mode == ax_mode_)
+  auto& ax_platform = AXPlatform::GetInstance();
+  const AXMode old_ax_mode = ax_platform.GetMode();
+  const AXMode new_ax_mode = old_ax_mode | mode_flags;
+  if (new_ax_mode == old_ax_mode) {
     return;  // No change.
+  }
 
-  ax_mode_ = new_ax_mode;
+  ax_platform.SetMode(new_ax_mode);
   for (auto& observer : ax_mode_observers_.Get())
     observer.OnAXModeAdded(mode_flags);
 }
 
 // static
 void AXPlatformNode::SetAXMode(AXMode new_mode) {
-  ax_mode_ = new_mode;
+  AXPlatform::GetInstance().SetMode(new_mode);
 }
 
 // static

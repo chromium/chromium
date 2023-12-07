@@ -5,20 +5,27 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_FOR_TEST_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_FOR_TEST_H_
 
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform.h"
 
 namespace ui {
 
 // A process-wide AXPlatform instance for use by tests.
-class AXPlatformForTest {
+class AXPlatformForTest : public AXPlatform::Delegate {
  public:
   AXPlatformForTest() = default;
   AXPlatformForTest(const AXPlatformForTest&) = delete;
   AXPlatformForTest& operator=(const AXPlatformForTest&) = delete;
-  ~AXPlatformForTest() = default;
+  ~AXPlatformForTest() override = default;
+
+  // AXPlatform::Delegate:
+  AXMode GetProcessMode() override;
+  void SetProcessMode(AXMode new_mode) override;
 
  private:
-  AXPlatform ax_platform_;
+  AXPlatform ax_platform_{*this};
+
+  AXMode mode_;
 };
 
 }  // namespace ui

@@ -20,7 +20,7 @@ AXPlatform& AXPlatform::GetInstance() {
   return *g_instance;
 }
 
-AXPlatform::AXPlatform() {
+AXPlatform::AXPlatform(Delegate& delegate) : delegate_(delegate) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }

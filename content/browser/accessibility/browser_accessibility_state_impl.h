@@ -40,7 +40,8 @@ struct FocusedNodeDetails;
 // mechanism).
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
-      public ui::AXModeObserver {
+      public ui::AXModeObserver,
+      public ui::AXPlatform::Delegate {
  public:
   BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
   BrowserAccessibilityStateImpl& operator=(
@@ -93,8 +94,12 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // used profile.
   bool IsCaretBrowsingEnabled() const;
 
-  // AXModeObserver
+  // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
+
+  // ui::AXPlatform::Delegate:
+  ui::AXMode GetProcessMode() override;
+  void SetProcessMode(ui::AXMode new_mode) override;
 
   // The global accessibility mode is automatically enabled based on
   // usage of accessibility APIs. When we detect a significant amount
@@ -151,7 +156,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   ui::AXMode accessibility_mode_;
 
   // The process's single AXPlatform instance.
-  ui::AXPlatform ax_platform_;
+  ui::AXPlatform ax_platform_{*this};
 
   base::TimeDelta histogram_delay_;
 
