@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -94,6 +95,11 @@ class ChromePermissionRequestManagerTest
 
   void Accept() {
     manager_->Accept();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AcceptThisTime() {
+    manager_->AcceptThisTime();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -618,6 +624,52 @@ TEST_F(ChromePermissionRequestManagerTest,
   EXPECT_EQ((base::ValueToTime(permissions_actions[0].GetDict().Find("time")))
                 .value_or(base::Time()),
             recorded_time);
+}
+
+TEST_F(ChromePermissionRequestManagerTest,
+       TestEmbargoForEmbeddedPermissionRequest) {
+  GURL url(permissions::MockPermissionRequest::kDefaultOrigin);
+  permissions::RequestType request_type =
+      permissions::RequestType::kCameraStream;
+  permissions::PermissionDecisionAutoBlocker* autoblocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser_context());
+
+  // Do not count permission element requests towards embargo
+  {
+    permissions::MockPermissionRequest request(
+        request_type, /* embedded_permission_element_initiated= */ true);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request);
+    WaitForBubbleToBeShown();
+    Closing();
+
+    EXPECT_EQ(
+        autoblocker->GetDismissCount(url, request.GetContentSettingsType()), 0);
+  }
+
+  // Count normal permission towards embargo (used in next step)
+  {
+    permissions::MockPermissionRequest request(
+        request_type, /* embedded_permission_element_initiated= */ false);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request);
+    WaitForBubbleToBeShown();
+    Closing();
+
+    EXPECT_EQ(
+        autoblocker->GetDismissCount(url, request.GetContentSettingsType()), 1);
+  }
+
+  // Reset embargo counter when accepting this time and using permission element
+  {
+    permissions::MockPermissionRequest request(
+        request_type, /* embedded_permission_element_initiated= */ true);
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request);
+    WaitForBubbleToBeShown();
+    AcceptThisTime();
+
+    EXPECT_EQ(
+        autoblocker->GetDismissCount(url, request.GetContentSettingsType()), 0);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

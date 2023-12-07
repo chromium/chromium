@@ -1076,13 +1076,15 @@ void PermissionRequestManager::CurrentRequestsDecided(
 
     PermissionEmbargoStatus embargo_status =
         PermissionEmbargoStatus::NOT_EMBARGOED;
-    if (permission_action == PermissionAction::DISMISSED) {
+    if (permission_action == PermissionAction::DISMISSED &&
+        !request->IsEmbeddedPermissionElementInitiated()) {
       if (autoblocker->RecordDismissAndEmbargo(
               request->requesting_origin(), request->GetContentSettingsType(),
               ShouldCurrentRequestUseQuietUI())) {
         embargo_status = PermissionEmbargoStatus::REPEATED_DISMISSALS;
       }
-    } else if (permission_action == PermissionAction::IGNORED) {
+    } else if (permission_action == PermissionAction::IGNORED &&
+               !request->IsEmbeddedPermissionElementInitiated()) {
       if (autoblocker->RecordIgnoreAndEmbargo(
               request->requesting_origin(), request->GetContentSettingsType(),
               ShouldCurrentRequestUseQuietUI())) {
