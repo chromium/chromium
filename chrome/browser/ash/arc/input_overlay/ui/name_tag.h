@@ -45,7 +45,7 @@ class NameTag : public views::View {
   ~NameTag() override;
 
   void SetTitle(const std::u16string& title);
-  void SetMaximumWidth(int available_width);
+  void SetAvailableWidth(size_t available_width);
 
   // Set state depending on `is_error`. If `is_error` true, `error_tooltip` is
   // tooltip text for `error_icon_`.
@@ -57,13 +57,18 @@ class NameTag : public views::View {
   friend class EditLabelTest;
 
   void Init();
+  // Child labels are multi-lines. It needs to set fit width depending on
+  // whether `error_icon_` shows up.
+  void UpdateLabelsFitWidth();
 
   raw_ptr<views::ImageView> error_icon_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> subtitle_label_ = nullptr;
 
   // True if this view is in EditingList. Otherwise, it is in ButtonOptionsMenu.
-  bool for_editing_list_;
+  const bool for_editing_list_;
+
+  size_t available_width_ = 0;
 };
 
 }  // namespace arc::input_overlay

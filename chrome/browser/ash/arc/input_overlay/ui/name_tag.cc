@@ -48,6 +48,11 @@ void NameTag::SetTitle(const std::u16string& title) {
   title_label_->SetText(title);
 }
 
+void NameTag::SetAvailableWidth(size_t available_width) {
+  available_width_ = available_width;
+  UpdateLabelsFitWidth();
+}
+
 void NameTag::SetState(bool is_error, const std::u16string& error_tooltip) {
   error_icon_->SetTooltipText(error_tooltip);
   error_icon_->SetVisible(is_error);
@@ -58,6 +63,7 @@ void NameTag::SetState(bool is_error, const std::u16string& error_tooltip) {
   title_label_->SetEnabledColorId(for_editing_list_ && is_error
                                       ? cros_tokens::kCrosSysError
                                       : cros_tokens::kCrosSysOnSurface);
+  UpdateLabelsFitWidth();
 
   // The widget may need a resize.
   auto* widget = GetWidget();
@@ -72,14 +78,6 @@ void NameTag::SetState(bool is_error, const std::u16string& error_tooltip) {
                  widget->GetContentsView())) {
     menu->UpdateWidget();
   }
-}
-
-void NameTag::SetMaximumWidth(int available_width) {
-  const int shortened_width =
-      available_width - (kErrorIconSize + kErrorIconSpacing);
-  title_label_->SetMaximumWidth(for_editing_list_ ? shortened_width
-                                                  : available_width);
-  subtitle_label_->SetMaximumWidth(shortened_width);
 }
 
 void NameTag::Init() {
@@ -135,6 +133,14 @@ void NameTag::Init() {
   subtitle_label_->SetMultiLine(true);
   subtitle_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_label_->SetVisible(false);
+}
+
+void NameTag::UpdateLabelsFitWidth() {
+  const int error_space =
+      error_icon_->GetVisible() ? kErrorIconSize + kErrorIconSpacing : 0;
+  title_label_->SizeToFit(for_editing_list_ ? available_width_ - error_space
+                                            : available_width_);
+  subtitle_label_->SizeToFit(available_width_ - error_space);
 }
 
 BEGIN_METADATA(NameTag)

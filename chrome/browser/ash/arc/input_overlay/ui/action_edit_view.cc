@@ -87,7 +87,7 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
       controller_, action_, name_tag_, /*should_update_title=*/true));
 
-  name_tag_->SetMaximumWidth(
+  name_tag_->SetAvailableWidth(
       (for_editing_list ? kEditingListWidth : kButtonOptionsMenuWidth) -
       2 * kEditingListInsideBorderInsets - 2 * kHorizontalInsets -
       padding_width - labels_view_->GetPreferredSize().width());
