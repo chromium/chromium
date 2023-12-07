@@ -146,6 +146,33 @@ void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
           destination_folder_url));
 }
 
+bool OneDriveUploadHandler::FileAlreadyBeingUploaded() {
+  auto odfs_info = GetODFSInfo(profile_);
+  for (std::reference_wrapper<const file_manager::io_task::ProgressStatus>
+           status : io_task_controller_->TaskStatuses()) {
+    // Check upload (copy/move) tasks.
+    if (status.get().type != file_manager::io_task::OperationType::kCopy &&
+        status.get().type != file_manager::io_task::OperationType::kMove) {
+      continue;
+    }
+
+    // Check upload to ODFS tasks.
+    if (!UrlIsOnODFS(profile_, status.get().GetDestinationFolder())) {
+      continue;
+    }
+
+    for (const auto& entry_status : status.get().sources) {
+      if (entry_status.url == source_url_) {
+        // The same source url is being uploaded to ODFS.
+        return true;
+      }
+    }
+  }
+
+  // No duplicate task.
+  return false;
+}
+
 void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
     const FileSystemURL& destination_folder_url,
     base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
@@ -168,6 +195,12 @@ void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
                        base::BindOnce(&OneDriveUploadHandler::OnMountResponse,
                                       weak_ptr_factory_.GetWeakPtr()));
     }
+    return;
+  }
+
+  if (FileAlreadyBeingUploaded()) {
+    LOG(WARNING) << "File already being uploaded";
+    OnAbandonedUpload();
     return;
   }
 
@@ -238,6 +271,16 @@ void OneDriveUploadHandler::OnFailedUpload(
   if (callback_) {
     std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
                              0);
+  }
+}
+
+void OneDriveUploadHandler::OnAbandonedUpload() {
+  if (notification_manager_) {
+    notification_manager_->CloseNotification();
+  }
+  if (callback_) {
+    std::move(callback_).Run(OfficeTaskResult::kFileAlreadyBeingUploaded,
+                             absl::nullopt, 0);
   }
 }
 

@@ -270,15 +270,6 @@ void CloudUploadNotificationManager::ShowUploadError(
                                            /*metadata=*/nullptr);
 }
 
-void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
-  if (state_ == State::kInProgress) {
-    state_ = State::kInProgressTimedOut;
-  } else if (state_ == State::kWaitingForInProgressTimeout) {
-    state_ = State::kComplete;
-    ShowCompleteNotification();
-  }
-}
-
 void CloudUploadNotificationManager::CloseNotification() {
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          notification_id_);
@@ -286,6 +277,15 @@ void CloudUploadNotificationManager::CloseNotification() {
   complete_notification_timer_.Stop();
   if (callback_) {
     std::move(callback_).Run();
+  }
+}
+
+void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
+  if (state_ == State::kInProgress) {
+    state_ = State::kInProgressTimedOut;
+  } else if (state_ == State::kWaitingForInProgressTimeout) {
+    state_ = State::kComplete;
+    ShowCompleteNotification();
   }
 }
 
@@ -329,10 +329,6 @@ void CloudUploadNotificationManager::HandleCompleteNotificationClick(
 bool CloudUploadNotificationManager::CanCancel() {
   return state_ == State::kUninitialized || state_ == State::kInProgress ||
          state_ == State::kInProgressTimedOut;
-}
-
-void CloudUploadNotificationManager::CloseForTest() {
-  CloseNotification();
 }
 
 }  // namespace ash::cloud_upload

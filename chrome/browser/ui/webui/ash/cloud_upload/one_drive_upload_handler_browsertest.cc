@@ -224,20 +224,23 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
 
   // Watch for a valid `uploaded_file_url`.
   void OnUploadSuccessful(
+      OfficeTaskResult expected_task_result,
       OfficeTaskResult task_result,
       std::optional<storage::FileSystemURL> uploaded_file_url,
       int64_t size) {
     ASSERT_TRUE(uploaded_file_url.has_value());
-    observed_task_result_ = task_result;
+    ASSERT_EQ(expected_task_result, task_result);
     EndWait();
   }
 
   // Watch for an invalid `uploaded_file_url`.
-  void OnUploadFailed(OfficeTaskResult task_result,
-                      std::optional<storage::FileSystemURL> uploaded_file_url,
-                      int64_t size) {
+  void OnUploadFailedOrAbandoned(
+      OfficeTaskResult expected_task_result,
+      OfficeTaskResult task_result,
+      std::optional<storage::FileSystemURL> uploaded_file_url,
+      int64_t size) {
     ASSERT_FALSE(uploaded_file_url.has_value());
-    observed_task_result_ = task_result;
+    ASSERT_EQ(expected_task_result, task_result);
     EndWait();
   }
 
@@ -273,7 +276,6 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
                                          /*file_count=*/1);
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_ref_ =
       cloud_open_metrics_->GetSafeRef();
-  OfficeTaskResult observed_task_result_;
   base::HistogramTester histogram_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -298,7 +300,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
-                     base::Unretained(this)),
+                     base::Unretained(this),
+                     /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
   SetUpRunLoopAndWait();
 
@@ -311,7 +314,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
 
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kSuccess, 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kMoved);
 }
 
 IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
@@ -327,7 +329,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
-                     base::Unretained(this)),
+                     base::Unretained(this),
+                     /*expected_task_result=*/OfficeTaskResult::kCopied),
       cloud_open_metrics_ref_);
   SetUpRunLoopAndWait();
 
@@ -340,7 +343,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
 
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kSuccess, 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kCopied);
 }
 
 // Test that when the upload to ODFS fails due reauthentication to OneDrive
@@ -379,8 +381,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   SetOnNotificationDisplayedCallback(std::move(on_notification));
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
-      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadFailed,
-                     base::Unretained(this)),
+      base::BindOnce(
+          &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+          base::Unretained(this),
+          /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
   SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
 
@@ -397,7 +401,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kCloudReauthRequired,
                                 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kFailedToUpload);
 }
 
 // Test that when the upload to ODFS fails due reauthentication to OneDrive
@@ -428,8 +431,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   SetUpRunLoop(/*conditions_to_end_wait=*/2);
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
-      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadFailed,
-                     base::Unretained(this)),
+      base::BindOnce(
+          &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+          base::Unretained(this),
+          /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
   Wait();
 
@@ -445,7 +450,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   histogram_.ExpectUniqueSample(
       kOneDriveUploadResultMetricName,
       OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired, 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kFailedToUpload);
 }
 
 class OneDriveUploadHandlerTest_ReauthEnabled
@@ -487,7 +491,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest_ReauthEnabled,
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
-                     base::Unretained(this)),
+                     base::Unretained(this),
+                     /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
   SetUpRunLoopAndWait();
 
@@ -501,7 +506,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest_ReauthEnabled,
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kSuccessAfterReauth,
                                 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kMoved);
 }
 
 // Test that when reauthentication to OneDrive is required (before starting the
@@ -539,8 +543,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   SetUpRunLoop(/*conditions_to_end_wait=*/2);
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
-      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadFailed,
-                     base::Unretained(this)),
+      base::BindOnce(
+          &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+          base::Unretained(this),
+          /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
   Wait();
   // Check that the source file still exists only at the intended source
@@ -555,7 +561,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   histogram_.ExpectUniqueSample(
       kOneDriveUploadResultMetricName,
       OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired, 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kFailedToUpload);
 }
 
 // Test that when the upload to ODFS fails due an access error that is not
@@ -587,8 +592,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
   SetOnNotificationDisplayedCallback(std::move(on_notification));
   OneDriveUploadHandler::Upload(
       profile(), source_file_url,
-      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadFailed,
-                     base::Unretained(this)),
+      base::BindOnce(
+          &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+          base::Unretained(this),
+          /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
   SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
 
@@ -604,7 +611,102 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
                                 -base::File::FILE_ERROR_ACCESS_DENIED, 1);
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kCloudAccessDenied, 1);
-  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kFailedToUpload);
+}
+
+// Tests that a duplicate upload is abandoned.
+IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, NoDuplicateUploads) {
+  SetUpObservers();
+  SetUpMyFiles();
+  SetUpODFS();
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
+
+  // Start the second upload after the first one starts.
+  provided_file_system_->SetCreateFileCallback(
+      base::BindLambdaForTesting([&]() {
+        OneDriveUploadHandler::Upload(
+            profile(), source_file_url,
+            base::BindOnce(
+                &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+                base::Unretained(this), /*expected_task_result=*/
+                OfficeTaskResult::kFileAlreadyBeingUploaded),
+            cloud_open_metrics_ref_);
+      }));
+
+  // Start the first upload.
+  OneDriveUploadHandler::Upload(
+      profile(), source_file_url,
+      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
+                     base::Unretained(this),
+                     /*expected_task_result=*/OfficeTaskResult::kMoved),
+      cloud_open_metrics_ref_);
+
+  SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
+
+  // Check that the source file has been moved to OneDrive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name)));
+    CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+  }
+
+  // There should only be one UploadResult from the first upload.
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kSuccess, 1);
+}
+
+// Tests that when there is an upload occurring followed by a second, unrelated
+// upload, both are successful.
+IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UnrelatedUploads) {
+  SetUpObservers();
+  SetUpMyFiles();
+  SetUpODFS();
+  const std::string test_file_name1 = "text.docx";
+  FileSystemURL source_file_url1 =
+      SetUpSourceFile(test_file_name1, my_files_dir_);
+  const std::string test_file_name2 = "presentation.pptx";
+  FileSystemURL source_file_url2 =
+      SetUpSourceFile(test_file_name2, my_files_dir_);
+
+  // Start the second, unrelated, upload after the first one starts.
+  provided_file_system_->SetCreateFileCallback(
+      base::BindLambdaForTesting([&]() {
+        OneDriveUploadHandler::Upload(
+            profile(), source_file_url2,
+            base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
+                           base::Unretained(this),
+                           /*expected_task_result=*/OfficeTaskResult::kMoved),
+            cloud_open_metrics_ref_);
+      }));
+
+  // Start the first upload.
+  OneDriveUploadHandler::Upload(
+      profile(), source_file_url1,
+      base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
+                     base::Unretained(this),
+                     /*expected_task_result=*/OfficeTaskResult::kMoved),
+      cloud_open_metrics_ref_);
+
+  SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
+
+  // Check that the first source file has been moved to OneDrive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name1)));
+    CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name1));
+  }
+
+  // Check that the second source file has been moved to OneDrive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_FALSE(base::PathExists(my_files_dir_.AppendASCII(test_file_name2)));
+    CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name2));
+  }
+
+  // There should be two UploadResults.
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kSuccess, 2);
 }
 
 }  // namespace ash::cloud_upload

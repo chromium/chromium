@@ -56,6 +56,9 @@ class OneDriveUploadHandler
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
   void Run(UploadCallback callback);
 
+  // Checks if there already exists an upload task for this file.
+  bool FileAlreadyBeingUploaded();
+
   void GetODFSMetadataAndStartIOTask();
 
   // If reauth is required, request a new mount without a notification. If that
@@ -78,6 +81,9 @@ class OneDriveUploadHandler
   // upload callback.
   void OnFailedUpload(OfficeFilesUploadResult result_metric,
                       std::string error_message = GetGenericErrorMessage());
+
+  // Ends upload in an abandoned state and runs the upload callback.
+  void OnAbandonedUpload();
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(

@@ -138,6 +138,16 @@ class CloudUploadNotificationManagerTest : public testing::Test {
 };
 
 TEST_F(CloudUploadNotificationManagerTest,
+       DoesNothingWhenCreatedAndImmediatelyClosed) {
+  scoped_refptr<CloudUploadNotificationManager> manager =
+      base::MakeRefCounted<CloudUploadNotificationManager>(
+          profile(), file_name_, "Google Drive", "Google Docs", 1,
+          UploadType::kMove);
+
+  manager->CloseNotification();
+}
+
+TEST_F(CloudUploadNotificationManagerTest,
        ShowUploadProgressCreatesNotificationForMove) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
@@ -148,7 +158,7 @@ TEST_F(CloudUploadNotificationManagerTest,
   manager->ShowUploadProgress(1);
   ASSERT_TRUE(HaveMoveProgressNotification());
 
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest,
@@ -162,7 +172,7 @@ TEST_F(CloudUploadNotificationManagerTest,
   manager->ShowUploadProgress(1);
   ASSERT_TRUE(HaveCopyProgressNotification());
 
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest, MinimumTimingForMove) {
@@ -262,7 +272,7 @@ TEST_F(CloudUploadNotificationManagerTest, CancelClick) {
 
   // Run loop until |cancel_callback| is called.
   run_loop.Run();
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest,
@@ -279,7 +289,7 @@ TEST_F(CloudUploadNotificationManagerTest,
   ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
   manager->MarkUploadComplete();
   ASSERT_TRUE(HaveMoveProgressNotificationWithoutCancelButton());
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest,
@@ -300,7 +310,7 @@ TEST_F(CloudUploadNotificationManagerTest,
   task_environment_.FastForwardBy(base::Milliseconds(6000));
   ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
 
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
@@ -330,7 +340,7 @@ TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
 
   // Run loop until |HandleNotificationClick| is called.
   run_loop.Run();
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpenForMove) {
@@ -349,7 +359,7 @@ TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpenForMove) {
   task_environment_.FastForwardBy(base::Seconds(60));
   ASSERT_TRUE(HaveMoveErrorNotification());
 
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpenForCopy) {
@@ -368,7 +378,7 @@ TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpenForCopy) {
   task_environment_.FastForwardBy(base::Seconds(60));
   ASSERT_TRUE(HaveCopyErrorNotification());
 
-  manager->CloseForTest();
+  manager->CloseNotification();
 }
 
 TEST_F(CloudUploadNotificationManagerTest, ManagerLifetime) {
