@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
+
 @protocol TabGroupsCommands;
 
-@interface TabGroupViewController : UIViewController
+// Tab group view controller displaying one group.
+@interface TabGroupViewController : UIViewController <TabGroupConsumer>
 
 // Initiates a TabGroupViewController with `handler` to handle user action.
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler;

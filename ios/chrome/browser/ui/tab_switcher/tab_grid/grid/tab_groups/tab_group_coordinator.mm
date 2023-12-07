@@ -30,15 +30,18 @@
 }
 
 - (void)start {
-  _mediator = [[TabGroupMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController = [[TabGroupViewController alloc] initWithHandler:handler];
 
+  _mediator = [[TabGroupMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()
+                  consumer:_viewController];
+
   // TODO(crbug.com/1501837): Add the tab group animation when user tap on a tab
   // group cell in the tab grid.
-  _viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+  _viewController.modalPresentationStyle =
+      UIModalPresentationOverCurrentContext;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];

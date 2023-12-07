@@ -7,12 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol TabGroupConsumer;
 class WebStateList;
 
+// Tab group mediator in charge to handle model update for one group.
 @interface TabGroupMediator : NSObject
 
 // TODO(crbug.com/1501837): Add a tab group ID when the ID will be available.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                            consumer:(id<TabGroupConsumer>)consumer;
 
 @end
 
