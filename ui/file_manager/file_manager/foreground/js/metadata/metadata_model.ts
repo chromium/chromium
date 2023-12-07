@@ -131,7 +131,7 @@ export class MetadataModel {
    *     new value for each metadata property passed in `names`.
    */
   update(
-      fileUrls: string[], names: string[],
+      fileUrls: string[], names: MetadataKey[],
       values: Array<Array<string|number|boolean>>) {
     const {allEntries} = getStore().getState();
 
@@ -148,8 +148,7 @@ export class MetadataModel {
       // TODO(austinct): Change the function call signature and update all
       // callers to allow this statement to be well typed without the type
       // assertions.
-      names.forEach(
-          (key, j) => (item[key as MetadataKey] as any) = values[i]![j]);
+      names.forEach((key, j) => (item[key] as any) = values[i]![j]);
       itemsToUpdate.push(item);
     }
 
@@ -251,8 +250,8 @@ export class MetadataModel {
 
 class MetadataProviderCallbackRequest {
   constructor(
-      private entries_: Array<Entry|FilesAppEntry>, private names_: string[],
-      private cache_: MetadataCacheSet,
+      private entries_: Array<Entry|FilesAppEntry>,
+      private names_: MetadataKey[], private cache_: MetadataCacheSet,
       private fulfill_: (items: MetadataItem[]) => void) {}
 
   /**

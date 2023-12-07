@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+
 import {MetadataKey} from './metadata_item.js';
 
 export class MetadataRequest {
   /**
    * @param names Property name list to be requested.
    */
-  constructor(public entry: Entry, public names: MetadataKey[]) {}
+  constructor(public entry: Entry|FilesAppEntry, public names: MetadataKey[]) {}
 }

@@ -8,7 +8,7 @@ import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
-import {MetadataItem} from './metadata_item.js';
+import {MetadataItem, MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 /**
@@ -16,20 +16,13 @@ import {MetadataRequest} from './metadata_request.js';
  * provider are set on it.
  */
 export class MetadataSetEvent extends Event {
-  /**
-   * @param {string} name
-   * @param {!Array<!FileEntry>} entries
-   * @param {!Map<string, !FileEntry>} entriesMap
-   * @param {!Set<string>} names
-   */
-  constructor(name, entries, entriesMap, names) {
+  constructor(
+      name: string, public entries: Array<Entry|FilesAppEntry>,
+      public entriesMap: Map<string, Entry|FilesAppEntry>,
+      public names: Set<string>) {
     super(name);
-    this.entries = entries;
-    this.entriesMap = entriesMap;
-    this.names = names;
   }
 }
-
 
 /**
  * A collection of MetadataCacheItem objects. This class acts as a map from file
@@ -39,37 +32,21 @@ export class MetadataSetEvent extends Event {
  * put them in the LOADING state).
  */
 export class MetadataCacheSet extends EventTarget {
-  constructor() {
-    super();
-
-    /**
-     * @private <!Map<string, !MetadataCacheItem>>
-     * @const
-     */
-    this.items_ = new Map();
-
-    /**
-     * @private @type {number}
-     */
-    this.requestIdCounter_ = 0;
-  }
+  private items_ = new Map<string, MetadataCacheItem>();
+  private requestIdCounter_: number = 0;
 
   /**
    * Creates list of MetadataRequest based on the cache state.
-   * @param {!Array<!Entry|!FilesAppEntry>} entries
-   * @param {!Array<string>} names
-   * @return {!Array<!MetadataRequest>}
    */
-  createRequests(entries, names) {
+  createRequests(entries: Array<Entry|FilesAppEntry>, names: MetadataKey[]):
+      MetadataRequest[] {
     const urls = entriesToURLs(entries);
     const requests = [];
-    for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.get(urls[i]);
+    for (const [i, entry] of entries.entries()) {
+      const item = this.items_.get(urls[i]!);
       const requestedNames = item ? item.createRequests(names) : names;
       if (requestedNames.length) {
-        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
-        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
-        requests.push(new MetadataRequest(entries[i], requestedNames));
+        requests.push(new MetadataRequest(entry, requestedNames));
       }
     }
     return requests;
@@ -77,46 +54,39 @@ export class MetadataCacheSet extends EventTarget {
 
   /**
    * Updates cache states to start the given requests.
-   * @param {number} requestId
-   * @param {!Array<!MetadataRequest>} requests
    */
-  startRequests(requestId, requests) {
-    for (let i = 0; i < requests.length; i++) {
-      const request = requests[i];
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      const url = requests[i].entry['cachedUrl'] || requests[i].entry.toURL();
+  startRequests(requestId: number, requests: MetadataRequest[]) {
+    for (const request of requests) {
+      const url = request.entry.toURL();
       let item = this.items_.get(url);
       if (!item) {
         item = new MetadataCacheItem();
         this.items_.set(url, item);
       }
-      // @ts-ignore: error TS18048: 'request' is possibly 'undefined'.
       item.startRequests(requestId, request.names);
     }
   }
 
   /**
-   * Stores results from MetadataProvider with the request Id.
-   * @param {number} requestId Request ID. If a newer operation has already been
-   *     done, the results must be ignored.
-   * @param {!Array<!Entry|!FilesAppEntry>} entries
-   * @param {!Array<!MetadataItem>} results
-   * @param {!Array<string>} names Property names that have been requested and
-   *     updated.
-   * @return {boolean} Whether at least one result is stored or not.
+   * Stores results from MetadataProvider with the request ID.
+   * @param requestId Request ID. If a newer operation has already been done,
+   *     the results must be ignored.
+   * @param names Property names that have been requested and updated.
+   * @return Whether at least one result is stored or not.
    */
-  storeProperties(requestId, entries, results, names) {
-    /** @type {!Array<!FileEntry>} */
-    const changedEntries = [];
+  storeProperties(
+      requestId: number, entries: Array<Entry|FilesAppEntry>,
+      results: MetadataItem[], names: MetadataKey[]): boolean {
+    const changedEntries: Array<Entry|FilesAppEntry> = [];
     const urls = entriesToURLs(entries);
-    const entriesMap = new Map();
+    const entriesMap = new Map<string, Entry|FilesAppEntry>();
 
-    for (let i = 0; i < entries.length; i++) {
-      const url = urls[i];
+    for (const [i, entry] of entries.entries()) {
+      const url = urls[i]!;
       const item = this.items_.get(url);
-      if (item && item.storeProperties(requestId, results[i])) {
-        changedEntries.push(/** @type{!FileEntry} */ (entries[i]));
-        entriesMap.set(url, entries[i]);
+      if (item && item.storeProperties(requestId, results[i]!)) {
+        changedEntries.push(entry);
+        entriesMap.set(url, entry);
       }
     }
 
@@ -133,15 +103,16 @@ export class MetadataCacheSet extends EventTarget {
   /**
    * Obtains cached properties for entries and names.
    * Note that it returns invalidated properties also.
-   * @param {!Array<!Entry|!FilesAppEntry>} entries Entries.
-   * @param {!Array<string>} names Property names.
-   * @return {!Array<!MetadataItem>} metadata for the given entries.
+   * @param entries Entries.
+   * @param names Property names.
+   * @return metadata for the given entries.
    */
-  get(entries, names) {
+  get(entries: Array<Entry|FilesAppEntry>,
+      names: MetadataKey[]): MetadataItem[] {
     const results = [];
     const urls = entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.get(urls[i]);
+      const item = this.items_.get(urls[i]!);
       results.push(item ? item.get(names) : {});
     }
     return results;
@@ -150,14 +121,14 @@ export class MetadataCacheSet extends EventTarget {
   /**
    * Obtains cached properties for file URLs and names.
    * Note that it returns invalidated properties also.
-   * @param {!Array<!string>} urls File URLs.
-   * @param {!Array<string>} names Property names.
-   * @return {!Array<!MetadataItem>} metadata for the given entries.
+   * @param urls File URLs.
+   * @param names Property names.
+   * @return metadata for the given entries.
    */
-  getByUrls(urls, names) {
+  getByUrls(urls: string[], names: MetadataKey[]): MetadataItem[] {
     const results = [];
-    for (let i = 0; i < urls.length; i++) {
-      const item = this.items_.get(urls[i]);
+    for (const url of urls) {
+      const item = this.items_.get(url);
       results.push(item ? item.get(names) : {});
     }
     return results;
@@ -167,15 +138,16 @@ export class MetadataCacheSet extends EventTarget {
    * Marks the caches of entries as invalidates and forces to reload at the next
    * time of startRequests. Optionally, takes an array of metadata names and
    * only invalidates those.
-   * @param {number} requestId Request ID of the invalidation request. This must
+   * @param requestId Request ID of the invalidation request. This must
    *     be larger than other request ID passed to the set before.
-   * @param {!Array<!Entry|!FilesAppEntry>} entries
-   * @param {!Array<string>} [names]
+   * @param [names]
    */
-  invalidate(requestId, entries, names) {
+  invalidate(
+      requestId: number, entries: Array<Entry|FilesAppEntry>,
+      names?: MetadataKey[]) {
     const urls = entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.get(urls[i]);
+      const item = this.items_.get(urls[i]!);
       if (item) {
         item.invalidate(requestId, names);
       }
@@ -184,11 +156,10 @@ export class MetadataCacheSet extends EventTarget {
 
   /**
    * Clears the caches of entries.
-   * @param {!Array<string>} urls
    */
-  clear(urls) {
-    for (let i = 0; i < urls.length; i++) {
-      this.items_.delete(urls[i]);
+  clear(urls: string[]) {
+    for (const url of urls) {
+      this.items_.delete(url);
     }
   }
 
@@ -201,15 +172,14 @@ export class MetadataCacheSet extends EventTarget {
 
   /**
    * Creates snapshot of the cache for entries.
-   * @param {!Array<!Entry|!FilesAppEntry>} entries
-   * @return {!MetadataCacheSet} a cache with metadata for the given entries.
+   * @return a cache with metadata for the given entries.
    */
-  createSnapshot(entries) {
+  createSnapshot(entries: Array<Entry|FilesAppEntry>): MetadataCacheSet {
     const snapshot = new MetadataCacheSet();
     const items = snapshot.items_;
     const urls = entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
-      const url = urls[i];
+      const url = urls[i]!;
       const item = this.items_.get(url);
       if (item) {
         items.set(url, item.clone());
@@ -220,17 +190,17 @@ export class MetadataCacheSet extends EventTarget {
 
   /**
    * Returns whether all the given properties are fulfilled.
-   * @param {!Array<!Entry|!FilesAppEntry>} entries Entries.
-   * @param {!Array<string>} names Property names.
-   * @return {boolean}
+   * @param entries Entries.
+   * @param names Property names.
    */
-  hasFreshCache(entries, names) {
+  hasFreshCache(entries: Array<Entry|FilesAppEntry>, names: MetadataKey[]):
+      boolean {
     if (!names.length) {
       return true;
     }
     const urls = entriesToURLs(entries);
     for (let i = 0; i < entries.length; i++) {
-      const item = this.items_.get(urls[i]);
+      const item = this.items_.get(urls[i]!);
       if (!(item && item.hasFreshCache(names))) {
         return false;
       }
@@ -240,9 +210,8 @@ export class MetadataCacheSet extends EventTarget {
 
   /**
    * Generates a unique request ID every time when it is called.
-   * @return {number}
    */
-  generateRequestId() {
+  generateRequestId(): number {
     return this.requestIdCounter_++;
   }
 }
