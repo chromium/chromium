@@ -52,7 +52,7 @@ class FakeCTVerifier : public CTVerifier {
               base::StringPiece stapled_ocsp_response,
               base::StringPiece sct_list_from_tls_extension,
               SignedCertificateTimestampAndStatusList* output_scts,
-              const NetLogWithSource& net_log) override {
+              const NetLogWithSource& net_log) const override {
     *output_scts = scts_;
   }
 

@@ -16,7 +16,7 @@ void DoNothingCTVerifier::Verify(
     base::StringPiece stapled_ocsp_response,
     base::StringPiece sct_list_from_tls_extension,
     SignedCertificateTimestampAndStatusList* output_scts,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log) const {
   output_scts->clear();
 }
 

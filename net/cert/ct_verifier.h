@@ -33,7 +33,7 @@ class NET_EXPORT CTVerifier {
                       base::StringPiece stapled_ocsp_response,
                       base::StringPiece sct_list_from_tls_extension,
                       SignedCertificateTimestampAndStatusList* output_scts,
-                      const NetLogWithSource& net_log) = 0;
+                      const NetLogWithSource& net_log) const = 0;
 };
 
 }  // namespace net

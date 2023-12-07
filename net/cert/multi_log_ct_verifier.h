@@ -65,7 +65,7 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
               base::StringPiece stapled_ocsp_response,
               base::StringPiece sct_list_from_tls_extension,
               SignedCertificateTimestampAndStatusList* output_scts,
-              const NetLogWithSource& net_log) override;
+              const NetLogWithSource& net_log) const override;
 
  private:
   // Verify a list of SCTs from |encoded_sct_list| over |expected_entry|,
@@ -75,13 +75,14 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
                   const ct::SignedEntryData& expected_entry,
                   ct::SignedCertificateTimestamp::Origin origin,
                   X509Certificate* cert,
-                  SignedCertificateTimestampAndStatusList* output_scts);
+                  SignedCertificateTimestampAndStatusList* output_scts) const;
 
   // Verifies a single, parsed SCT against all logs.
-  bool VerifySingleSCT(scoped_refptr<ct::SignedCertificateTimestamp> sct,
-                       const ct::SignedEntryData& expected_entry,
-                       X509Certificate* cert,
-                       SignedCertificateTimestampAndStatusList* output_scts);
+  bool VerifySingleSCT(
+      scoped_refptr<ct::SignedCertificateTimestamp> sct,
+      const ct::SignedEntryData& expected_entry,
+      X509Certificate* cert,
+      SignedCertificateTimestampAndStatusList* output_scts) const;
 
   // Mapping from a log's ID to the verifier for this log.
   // A log's ID is the SHA-256 of the log's key, as defined in section 3.2.

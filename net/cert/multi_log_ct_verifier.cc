@@ -92,7 +92,7 @@ void MultiLogCTVerifier::Verify(
     base::StringPiece stapled_ocsp_response,
     base::StringPiece sct_list_from_tls_extension,
     SignedCertificateTimestampAndStatusList* output_scts,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log) const {
   DCHECK(cert);
   DCHECK(output_scts);
 
@@ -148,7 +148,7 @@ void MultiLogCTVerifier::VerifySCTs(
     const ct::SignedEntryData& expected_entry,
     ct::SignedCertificateTimestamp::Origin origin,
     X509Certificate* cert,
-    SignedCertificateTimestampAndStatusList* output_scts) {
+    SignedCertificateTimestampAndStatusList* output_scts) const {
   if (logs_.empty())
     return;
 
@@ -177,7 +177,7 @@ bool MultiLogCTVerifier::VerifySingleSCT(
     scoped_refptr<ct::SignedCertificateTimestamp> sct,
     const ct::SignedEntryData& expected_entry,
     X509Certificate* cert,
-    SignedCertificateTimestampAndStatusList* output_scts) {
+    SignedCertificateTimestampAndStatusList* output_scts) const {
   // Assume this SCT is untrusted until proven otherwise.
   const auto& it = logs_.find(sct->log_id);
   if (it == logs_.end()) {

@@ -589,12 +589,12 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
 // anything.
 class MockCTVerifier : public CTVerifier {
  public:
-  MOCK_METHOD5(Verify,
-               void(X509Certificate*,
-                    base::StringPiece,
-                    base::StringPiece,
-                    SignedCertificateTimestampAndStatusList*,
-                    const NetLogWithSource&));
+  MOCK_CONST_METHOD5(Verify,
+                     void(X509Certificate*,
+                          base::StringPiece,
+                          base::StringPiece,
+                          SignedCertificateTimestampAndStatusList*,
+                          const NetLogWithSource&));
 };
 
 // A mock CTPolicyEnforcer that returns a custom verification result.
