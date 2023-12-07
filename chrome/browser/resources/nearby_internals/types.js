@@ -27,6 +27,7 @@ export const ActionValues = {
   FIRST_TIME_FLOW: 3,
   RESET_NEARBY_SHARE: 4,
   ADD_CHIME_CLIENT: 5,
+  SHOW_RECEIVED_NOTIFICATION: 6,
 };
 
 /**
