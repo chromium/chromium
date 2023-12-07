@@ -1572,12 +1572,27 @@ struct ElementWiseBinaryTester {
                                    output_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
   }
+
+  void TestLogicalOperators() {
+    const mojom::ElementWiseBinary::Kind kLogicalOperators[] = {
+        mojom::ElementWiseBinary::Kind::kEqual,
+        mojom::ElementWiseBinary::Kind::kGreater,
+        mojom::ElementWiseBinary::Kind::kGreaterOrEqual,
+        mojom::ElementWiseBinary::Kind::kLesser,
+        mojom::ElementWiseBinary::Kind::kLesserOrEqual,
+    };
+
+    for (const auto& op : kLogicalOperators) {
+      kind = op;
+      Test();
+    }
+  }
 };
 
 TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
-  // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1,
-  // 5}. Both the a and b dimensions have axes with length one that are
-  // expanded to a larger size during the broadcast operation.
+  // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1, 5}.
+  // Both the a and b dimensions have axes with length one that are expanded to
+  // a larger size during the broadcast operation.
   // a_dimensions     (4d) 8 * 1 * 6 * 1
   // b_dimensions     (3d)     7 * 1 * 5
   // output_dimenions (4d) 8 * 7 * 6 * 5
@@ -1591,39 +1606,6 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {8, 7, 6, 5}},
         .expected = true}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{.kind = mojom::ElementWiseBinary::Kind::kEqual,
-                            .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {8, 1, 6, 1}},
-                            .rhs = {.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {7, 1, 5}},
-                            .output = {.type = mojom::Operand::DataType::kUint8,
-                                       .dimensions = {8, 7, 6, 5}},
-                            .expected = true}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{.kind = mojom::ElementWiseBinary::Kind::kGreater,
-                            .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {8, 1, 6, 1}},
-                            .rhs = {.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {7, 1, 5}},
-                            .output = {.type = mojom::Operand::DataType::kUint8,
-                                       .dimensions = {8, 7, 6, 5}},
-                            .expected = true}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{.kind = mojom::ElementWiseBinary::Kind::kLesser,
-                            .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {8, 1, 6, 1}},
-                            .rhs = {.type = mojom::Operand::DataType::kFloat32,
-                                    .dimensions = {7, 1, 5}},
-                            .output = {.type = mojom::Operand::DataType::kUint8,
-                                       .dimensions = {8, 7, 6, 5}},
-                            .expected = true}
         .Test();
   }
 
@@ -1642,77 +1624,11 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
         .expected = true}
         .Test();
   }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kEqual,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2, 1}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
-        .output = {.type = mojom::Operand::DataType::kUint8,
-                   .dimensions = {4, 2, 4}},
-        .expected = true}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kGreater,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2, 1}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
-        .output = {.type = mojom::Operand::DataType::kUint8,
-                   .dimensions = {4, 2, 4}},
-        .expected = true}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kLesser,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2, 1}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
-        .output = {.type = mojom::Operand::DataType::kUint8,
-                   .dimensions = {4, 2, 4}},
-        .expected = true}
-        .Test();
-  }
 
   // Test the invalid graph for the input shapes are not broadcastable.
   {
     ElementWiseBinaryTester{
         .kind = mojom::ElementWiseBinary::Kind::kMul,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {4, 2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kEqual,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {4, 2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kGreater,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {4, 2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kLesser,
         .lhs = {.type = mojom::Operand::DataType::kFloat32,
                 .dimensions = {4, 2}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
@@ -1735,39 +1651,6 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
         .expected = false}
         .Test();
   }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kEqual,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kGreater,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kLesser,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32,
-                .dimensions = {4, 2}},
-        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
-        .expected = false}
-        .Test();
-  }
 
   // Test the invalid graph for input types don't match.
   {
@@ -1777,33 +1660,6 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
         .rhs = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kEqual,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .rhs = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
-        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kGreater,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .rhs = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
-        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
-        .expected = false}
-        .Test();
-  }
-  {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kLesser,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .rhs = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
-        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
         .expected = false}
         .Test();
   }
@@ -1818,32 +1674,85 @@ TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
         .expected = false}
         .Test();
   }
+}
+
+TEST_F(WebNNGraphImplTest, ElementWiseBinaryLogicalTest) {
+  // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1, 5}.
+  // Both the a and b dimensions have axes with length one that are expanded to
+  // a larger size during the broadcast operation.
+  // a_dimensions     (4d) 8 * 1 * 6 * 1
+  // b_dimensions     (3d)     7 * 1 * 5
+  // output_dimenions (4d) 8 * 7 * 6 * 5
   {
-    ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kEqual,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
-        .expected = false}
-        .Test();
+    ElementWiseBinaryTester{.lhs = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {8, 1, 6, 1}},
+                            .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {7, 1, 5}},
+                            .output = {.type = mojom::Operand::DataType::kUint8,
+                                       .dimensions = {8, 7, 6, 5}},
+                            .expected = true}
+        .TestLogicalOperators();
   }
+
+  // Testing building with two input dimensions - {4, 2, 1} and {4}.
+  // a_dimensions     (3d) 4 * 2 * 1
+  // b_dimensions     (1d)         4
+  // output_dimenions (3d) 4 * 2 * 4
   {
     ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kGreater,
-        .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
-        .expected = false}
-        .Test();
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {4, 2, 1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {4, 2, 4}},
+        .expected = true}
+        .TestLogicalOperators();
   }
+
+  // Test the invalid graph for the input shapes are not broadcastable.
   {
     ElementWiseBinaryTester{
-        .kind = mojom::ElementWiseBinary::Kind::kLesser,
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {4, 2}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {4}},
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {4, 2}},
+        .expected = false}
+        .TestLogicalOperators();
+  }
+
+  // Test the invalid graph for the output shapes are not expected.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {4, 2}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {4, 2}},
+        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
+        .expected = false}
+        .TestLogicalOperators();
+  }
+
+  // Test the invalid graph for input types don't match.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .rhs = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2}},
+        .expected = false}
+        .TestLogicalOperators();
+  }
+
+  // Test the invalid graph for when the output data type is not kUint8 for
+  // logical operators.
+  {
+    ElementWiseBinaryTester{
         .lhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
         .rhs = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
-        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2}},
         .expected = false}
-        .Test();
+        .TestLogicalOperators();
   }
 }
 

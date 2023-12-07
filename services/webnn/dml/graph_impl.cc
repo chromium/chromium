@@ -91,8 +91,12 @@ std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
       return "equal";
     case mojom::ElementWiseBinary::Kind::kGreater:
       return "greater";
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+      return "greaterOrEqual";
     case mojom::ElementWiseBinary::Kind::kLesser:
       return "lesser";
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+      return "lesserOrEqual";
   }
   NOTREACHED_NORETURN();
 }
@@ -857,11 +861,27 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           inputs);
       break;
     }
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
+      binary_node = CreateBinaryOperator<
+          DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL_OPERATOR_DESC>(
+          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+          graph_builder,
+          DML_OPERATOR_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL, inputs);
+      break;
+    }
     case mojom::ElementWiseBinary::Kind::kLesser: {
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_LESS_THAN, inputs);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
+      binary_node = CreateBinaryOperator<
+          DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL_OPERATOR_DESC>(
+          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL,
+          inputs);
       break;
     }
   }

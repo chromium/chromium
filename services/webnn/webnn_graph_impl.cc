@@ -521,6 +521,14 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
+  return kind == mojom::ElementWiseBinary::Kind::kEqual ||
+         kind == mojom::ElementWiseBinary::Kind::kGreater ||
+         kind == mojom::ElementWiseBinary::Kind::kGreaterOrEqual ||
+         kind == mojom::ElementWiseBinary::Kind::kLesser ||
+         kind == mojom::ElementWiseBinary::Kind::kLesserOrEqual;
+}
+
 bool ValidateElementWiseBinaryDataTypes(
     const mojom::Operand* lhs,
     const mojom::Operand* rhs,
@@ -531,36 +539,15 @@ bool ValidateElementWiseBinaryDataTypes(
     return false;
   }
 
-  switch (operation->kind) {
-    case mojom::ElementWiseBinary::Kind::kSub:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kAdd:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kMul:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kDiv:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kMax:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kMin:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kPow: {
-      if (output->data_type != lhs->data_type) {
-        // For arithmetic operations, the input and output data type must match.
-        return false;
-      }
-      break;
+  if (IsLogicalElementWiseBinary(operation->kind)) {
+    if (output->data_type != mojom::Operand::DataType::kUint8) {
+      // For logical operations, the output data type must be uint8.
+      return false;
     }
-    case mojom::ElementWiseBinary::Kind::kEqual:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kGreater:
-      [[fallthrough]];
-    case mojom::ElementWiseBinary::Kind::kLesser: {
-      if (output->data_type != mojom::Operand::DataType::kUint8) {
-        // For logical operations, the output data type must be uint8.
-        return false;
-      }
-      break;
+  } else {
+    // For all other operations, the input and output data types must match.
+    if (output->data_type != lhs->data_type) {
+      return false;
     }
   }
 

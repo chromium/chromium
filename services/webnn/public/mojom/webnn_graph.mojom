@@ -187,7 +187,9 @@ struct ElementWiseBinary  {
     kPow,
     kEqual,
     kGreater,
+    kGreaterOrEqual,
     kLesser,
+    kLesserOrEqual,
   };
 
   // The kind of binary operation.
