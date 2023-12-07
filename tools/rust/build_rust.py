@@ -13,7 +13,7 @@ Rust has an official boostrapping build. At a high level:
    the latest beta is downloaded. If building stable 1.57.0, stage0 is stable
    1.56.1.
 2. Stage 0 libstd is built. This is different than the libstd downloaded above.
-3. Stage 1 rustc is built with rustc from (1) and libstd from (2)
+3. Stage 1 rustc is built with rustc from (1)c and libstd from (2)
 2. Stage 1 libstd is built with stage 1 rustc. Later artifacts built with
    stage 1 rustc are built with stage 1 libstd.
 
@@ -759,6 +759,17 @@ def main():
         # https://github.com/rust-lang/rust/pull/118410 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                       '81cd7c5b11766ed1e3214a2233371fb6d72ed89c')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118610 has been merged.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '0899efe363292f786e67c978ec77439c437d0e74')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '43baf5dc1fa6758c0268e30530d821d8b36fee07')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '4ac32747ba280faa5cea05ad3f54a31c03257171')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '01046205f3970e7ce111c9a0d63ed512c5a354d5')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
