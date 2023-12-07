@@ -14,38 +14,48 @@ import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
 suite('FlagsAppTest', function() {
   const supportedFeatures: Feature[] = [
     {
-      'description': 'available_feature_1',
-      'internal_name': 'available_feature_1',
+      // Experiment with default option
+      'description': 'available feature',
+      'internal_name': 'available-feature',
       'is_default': true,
-      'name': 'available_feature_1',
+      'name': 'available feature',
       'enabled': true,
       'options': [
         {
           'description': 'Default',
-          'internal_name': 'available_feature_1',
+          'internal_name': 'available-feature@0',
           'selected': false,
         },
         {
           'description': 'Enabled',
-          'internal_name': 'available_feature_1',
+          'internal_name': 'available-feature@1',
           'selected': false,
         },
         {
           'description': 'Disabled',
-          'internal_name': 'available_feature_1',
+          'internal_name': 'available-feature@2',
           'selected': false,
         },
       ],
       'supported_platforms': ['Windows'],
     },
+    {
+      // Experiment without default option
+      'description': 'availabl feature non default',
+      'internal_name': 'available-feature-non-default',
+      'is_default': true,
+      'name': 'available feature non default',
+      'enabled': false,
+      'supported_platforms': ['Windows'],
+    },
   ];
   const unsupportedFeatures: Feature[] = [
     {
-      'description': 'unavailable_feature_1',
+      'description': 'unavailable feature',
       'enabled': false,
-      'internal_name': 'unavailable_feature_1',
+      'internal_name': 'unavailable-feature',
       'is_default': true,
-      'name': 'unavailable_feature_1',
+      'name': 'unavailable feature',
       'supported_platforms': ['ChromeOS', 'Android'],
     },
   ];
@@ -87,6 +97,75 @@ suite('FlagsAppTest', function() {
         new CustomEvent('input', {composed: true, bubbles: true}));
   }
 
+  function selectChange(selectEl: HTMLSelectElement, index: number) {
+    selectEl.selectedIndex = index;
+    selectEl.dispatchEvent(
+        new CustomEvent('change', {composed: true, bubbles: true}));
+  }
+
+  test('check available/unavailable tabs are rendered properly', function() {
+    const availableTab = app.getRequiredElement('#tab-available');
+    const unavailableTab = app.getRequiredElement('#tab-unavailable');
+
+    assertTrue(isVisible(availableTab));
+    assertTrue(isVisible(unavailableTab));
+
+    const defaultAvailableExperimentsContainer =
+        app.getRequiredElement('#default-experiments');
+    assertTrue(isVisible(defaultAvailableExperimentsContainer));
+
+    const nonDefaultAvailableExperimentsContainer =
+        app.getRequiredElement('#non-default-experiments');
+    assertFalse(isVisible(nonDefaultAvailableExperimentsContainer));
+
+    const unavailableExperimentsContainer =
+        app.getRequiredElement('#unavailable-experiments');
+    assertFalse(isVisible(unavailableExperimentsContainer));
+
+    // Toggle unavailable tab and the unavailable experiments container becomes
+    // visible.
+    unavailableTab.click();
+    assertTrue(isVisible(unavailableExperimentsContainer));
+    assertFalse(isVisible(defaultAvailableExperimentsContainer));
+  });
+
+  test(
+      'enable experiment and selectExperimentalFeature event fired',
+      function() {
+        const experimentWithDefault =
+            app.getRequiredElement('#default-experiments')
+                .querySelectorAll('flags-experiment')[0];
+        assertTrue(!!experimentWithDefault);
+        const select =
+            experimentWithDefault.getRequiredElement<HTMLSelectElement>(
+                '.experiment-select');
+        assertTrue(!!select);
+
+        // Initially, the selected option is "Default" at index 0
+        assertEquals(0, select.selectedIndex);
+
+        // Select the "Enabled" option at index 1
+        selectChange(select, 1);
+        return browserProxy.whenCalled('selectExperimentalFeature');
+      });
+
+  test(
+      'enable experiment and enableExperimentalFeature event fired',
+      function() {
+        const experimentWithNoDefault =
+            app.getRequiredElement('#default-experiments')
+                .querySelectorAll('flags-experiment')[1];
+        assertTrue(!!experimentWithNoDefault);
+        const select =
+            experimentWithNoDefault.getRequiredElement<HTMLSelectElement>(
+                '.experiment-enable-disable');
+        assertTrue(!!select);
+
+        // Select the non-default option at index 1
+        selectChange(select, 1);
+        return browserProxy.whenCalled('enableExperimentalFeature');
+      });
+
   test('clear search button shown/hidden', async function() {
     // The clear search button is hidden initially.
     assertFalse(isVisible(clearSearch));
@@ -98,7 +177,8 @@ suite('FlagsAppTest', function() {
     await searchEventPromise;
     assertTrue(isVisible(clearSearch));
 
-    // The clear search button is hidden after button clicked.
+    // The clear search button is pressed then search text is cleared and button
+    // is hidden
     clearSearch.click();
     assertEquals('', searchTextArea.value);
     assertFalse(isVisible(clearSearch));
@@ -130,7 +210,7 @@ suite('FlagsAppTest', function() {
           app.$all('.tab-content .no-match');
       assertTrue(!!noMatchMsg[0]);
       assertEquals(
-          1,
+          2,
           app.$all(`#tab-content-available flags-experiment:not(.hidden)`)
               .length);
       assertTrue(!!noMatchMsg[1]);

@@ -14,3 +14,7 @@ class FlagsUiBrowserTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, App) {
   RunTest("flags/app_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, Experiment) {
+  RunTest("flags/experiment_test.js", "mocha.run()");
+}
