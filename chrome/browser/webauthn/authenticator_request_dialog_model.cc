@@ -2182,28 +2182,22 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     }
 #endif
 
-    const bool is_passkey_request =
-        resident_key_requirement() !=
-        device::ResidentKeyRequirement::kDiscouraged;
-    if (is_passkey_request) {
-      // If attachment=any, then don't jump to suggesting a phone.
-      // TODO(crbug.com/1426628): makeCredential requests should always have
-      // `make_credential_attachment` set. Stop being hesitant.
-      if ((!transport_availability_.make_credential_attachment ||
-           *transport_availability_.make_credential_attachment !=
-               device::AuthenticatorAttachment::kAny) &&
-          paired_phone_names().empty()) {
-        priority_list.emplace_back(Mechanism::AddPhone());
+    // If attachment=any, then don't jump to suggesting any specific mechanism.
+    if (*transport_availability_.make_credential_attachment !=
+        device::AuthenticatorAttachment::kAny) {
+      const bool is_passkey_request =
+          resident_key_requirement() !=
+          device::ResidentKeyRequirement::kDiscouraged;
+      if (is_passkey_request) {
+        if (paired_phone_names().empty()) {
+          priority_list.emplace_back(Mechanism::AddPhone());
+        }
+      } else {
+        // This seems like it might be an error (crbug.com/1426244) as we might
+        // still want to jump to platform authenticators for passkey requests if
+        // we don't jump to a phone.
+        priority_list.emplace_back(Mechanism::WindowsAPI());
       }
-    } else {
-      // This seems like it might be an error (crbug.com/1426244) as we might
-      // still want to jump to platform authenticators for passkey requests if
-      // we don't jump to a phone.
-      if (kShowCreatePlatformPasskeyStep) {
-        priority_list.emplace_back(
-            Mechanism::Transport(AuthenticatorTransport::kInternal));
-      }
-      priority_list.emplace_back(Mechanism::WindowsAPI());
     }
   }
 

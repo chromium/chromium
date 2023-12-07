@@ -658,6 +658,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        cable_ui},
 #endif
 
+       // With attachment=undefined, the UI should jump to mechanism selection.
+       {L, mc, {usb, internal, cable}, {att_any}, {}, {add, t(internal)}, mss},
+       {L, mc, {usb, internal}, {att_any, rk}, {}, {t(internal), t(usb)}, mss},
+
 #if defined(NEW_UI)
       // QR code first: Make credential should jump to the QR code with
       // RK=true.
@@ -1429,7 +1433,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
       SCOPED_TRACE(testing::Message() << "win v" << win_webauthn_api_version);
 
       AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
-      tai.make_credential_attachment = device::AuthenticatorAttachment::kAny;
+      tai.make_credential_attachment =
+          device::AuthenticatorAttachment::kCrossPlatform;
       tai.request_type = device::FidoRequestType::kMakeCredential;
       tai.has_win_native_api_authenticator = true;
       tai.win_native_ui_shows_resident_credential_notice = true;
@@ -1449,21 +1454,27 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
       model.StartFlow(std::move(tai),
                       /*is_conditional_mediation=*/false);
 
-      if (!is_passkey_request || win_webauthn_api_version >= 6) {
-        // The Windows native UI should have been triggered.
-        EXPECT_EQ(model.current_step(), Step::kNotStarted);
-
-        if (win_webauthn_api_version >= 6) {
-          // Windows handles hybrid itself starting with this version, so
-          // canceling shouldn't try to show Chrome UI.
-          EXPECT_FALSE(model.OnWinUserCancelled());
-          continue;
-        } else {
-          // Canceling the Windows native UI should be handled.
-          EXPECT_TRUE(model.OnWinUserCancelled());
-        }
+      const bool win_ui_was_immediately_triggered =
+          !is_passkey_request || win_webauthn_api_version == 6;
+      if (!win_ui_was_immediately_triggered) {
+        EXPECT_NE(model.current_step(), Step::kNotStarted);
+        // Canceling the Windows UI ends the request because the user must have
+        // selected the Windows option first.
+        EXPECT_FALSE(model.OnWinUserCancelled());
+        continue;
       }
 
+      EXPECT_EQ(model.current_step(), Step::kNotStarted);
+
+      if (win_webauthn_api_version >= 6) {
+        // Windows handles hybrid itself starting with this version, so
+        // canceling shouldn't try to show Chrome UI.
+        EXPECT_FALSE(model.OnWinUserCancelled());
+        continue;
+      }
+
+      // Canceling the Windows native UI should be handled.
+      EXPECT_TRUE(model.OnWinUserCancelled());
       // The mechanism selection sheet should now be showing.
       EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
       // Canceling the Windows UI ends the request because the user must have
@@ -1687,11 +1698,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
     EXPECT_CALL(mock_observer, OnStepTransition());
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
-#if BUILDFLAG(IS_MAC)
-    EXPECT_EQ(Step::kCreatePasskey, model.current_step());
-#else
     EXPECT_EQ(Step::kMechanismSelection, model.current_step());
-#endif
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
     EXPECT_CALL(mock_observer, OnStepTransition());
