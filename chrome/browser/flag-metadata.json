@@ -7661,7 +7661,7 @@
   {
     "name": "tab-hover-card-images",
     "owners": [ "dfried@chromium.org", "estalin@chromium.org" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 130
   },
   {
     "name": "tab-inactivity-threshold",
