@@ -92,6 +92,7 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
         std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
     : manager_(manager), span_(std::move(span)) {
   DCHECK_NE(manager, nullptr);
+  recordreplay::RegisterPointer("DiscardableMemoryImpl", this);
 }
 
 ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
@@ -99,10 +100,12 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
   base::AutoLock lock(manager_->lock_);
   if (!span_) {
     DCHECK(!is_locked());
+    recordreplay::UnregisterPointer(this);
     return;
   }
 
   manager_->UnlockAndReleaseMemory(this, std::move(span_));
+  recordreplay::UnregisterPointer(this);
 }
 
 bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
