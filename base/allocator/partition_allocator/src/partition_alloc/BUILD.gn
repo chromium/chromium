@@ -504,9 +504,7 @@ if (is_clang_or_gcc) {
     }
     if (is_android) {
       # The Android NDK supports PR_MTE_* macros as of NDK r23.
-      if (android_ndk_major_version >= 23) {
-        defines += [ "HAS_PR_MTE_MACROS" ]
-      }
+      defines += [ "HAS_PR_MTE_MACROS" ]
     }
     if (use_starscan) {
       if (current_cpu == "x64") {

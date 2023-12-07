@@ -118,11 +118,9 @@ if (is_android || is_chromeos) {
       # Today (2023-08-30) only the canary Android NDK supports RISC-V64.
       default_android_ndk_root = "//third_party/android_toolchain_canary/ndk"
     }
-    default_android_ndk_version = "r25c"
-    default_android_ndk_major_version = 25
+    default_android_ndk_version = "r26b"
   } else {
     assert(defined(default_android_ndk_version))
-    assert(defined(default_android_ndk_major_version))
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
@@ -183,7 +181,6 @@ if (is_android || is_chromeos) {
   declare_args() {
     android_ndk_root = default_android_ndk_root
     android_ndk_version = default_android_ndk_version
-    android_ndk_major_version = default_android_ndk_major_version
 
     # Android API level for 32 bits platforms
     android32_ndk_api_level = default_min_sdk_version
@@ -392,8 +389,6 @@ if (is_android || is_chromeos) {
   android_tool_prefix = "$clang_base_path/bin/llvm-"
   android_readelf = "${android_tool_prefix}readobj"
   android_objcopy = "${android_tool_prefix}objcopy"
-  android_gdbserver =
-      "$android_ndk_root/prebuilt/$android_prebuilt_arch/gdbserver/gdbserver"
 
   android_sdk_tools_bundle_aapt2 = "${android_sdk_tools_bundle_aapt2_dir}/aapt2"
 

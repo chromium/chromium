@@ -193,7 +193,10 @@ void SchedGetParamThread(base::WaitableEvent* thread_run) {
 
   // Verify that the SIGSYS handler sets errno properly.
   errno = 0;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
   BPF_ASSERT_EQ(-1, sched_getparam(tid, NULL));
+#pragma clang diagnostic pop
   BPF_ASSERT_EQ(EINVAL, errno);
 
   thread_run->Signal();
