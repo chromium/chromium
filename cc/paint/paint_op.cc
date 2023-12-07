@@ -971,10 +971,12 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
   unsigned int count = 0;
   reader.Read(&count);
-  reader.Read(&op->slug);
-  op->extra_slugs.resize(count - 1);
-  for (auto& extra_slug : op->extra_slugs) {
-    reader.Read(&extra_slug);
+  if (count > 0) {
+    reader.Read(&op->slug);
+    op->extra_slugs.resize(count - 1);
+    for (auto& extra_slug : op->extra_slugs) {
+      reader.Read(&extra_slug);
+    }
   }
   return op;
 }
