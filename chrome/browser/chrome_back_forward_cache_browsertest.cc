@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 }
 
 // Flaky on Mac and Linux: crbug.com/1492026
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DISABLED_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
 #else
 #define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
