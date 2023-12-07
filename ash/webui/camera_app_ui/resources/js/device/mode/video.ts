@@ -268,6 +268,11 @@ export class Video extends ModeBase {
   private stopped = false;
 
   /**
+   * Callback to stop the loop of requesting video frames in the gif mode.
+   */
+  private stopCapturingGifCallback: (() => void)|null = null;
+
+  /**
    * HTMLElement displaying warning about low storage.
    */
   private readonly lowStorageWarningNudge = dom.get('#nudge', HTMLDivElement);
@@ -712,6 +717,9 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING, false);
       state.set(state.State.RECORDING_PAUSED, false);
       state.set(state.State.RECORDING_UI_PAUSED, false);
+      if (this.recordingType === RecordType.GIF) {
+        this.stopCapturingGifCallback?.();
+      }
     } else {
       sound.cancel('recordStart');
 
@@ -745,23 +753,21 @@ export class Video extends ModeBase {
     const context = assertInstanceof(
         canvas.getContext('2d', {willReadFrequently: true}),
         OffscreenCanvasRenderingContext2D);
-    if (videoTrack.readyState === 'ended') {
+    if (videoTrack.readyState === 'ended' ||
+        !state.get(state.State.RECORDING)) {
       throw new NoFrameError();
     }
     const frames = await new Promise<number>((resolve) => {
       let encodedFrames = 0;
       let writtenFrames = 0;
       let handle: number;
-      function stopRecording() {
+      const stopRecording = () => {
+        this.stopCapturingGifCallback = null;
         video.cancelVideoFrameCallback(handle);
         videoTrack.removeEventListener('ended', stopRecording);
         resolve(writtenFrames);
-      }
+      };
       function updateCanvas() {
-        if (!state.get(state.State.RECORDING)) {
-          stopRecording();
-          return;
-        }
         encodedFrames++;
         if (encodedFrames % GRAB_GIF_FRAME_RATIO === 0) {
           writtenFrames++;
@@ -771,6 +777,7 @@ export class Video extends ModeBase {
         handle = video.requestVideoFrameCallback(updateCanvas);
       }
       videoTrack.addEventListener('ended', stopRecording);
+      this.stopCapturingGifCallback = stopRecording;
       handle = video.requestVideoFrameCallback(updateCanvas);
     });
     if (frames === 0) {
