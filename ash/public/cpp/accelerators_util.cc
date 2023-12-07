@@ -223,9 +223,9 @@ std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
               ui::KeycodeConverter::DomKeyToKeyString(domkey_it.dom_key));
         }
       }
-      // Else, return "Unidentified {digit}" for Unidentified key.
-      return base::UTF8ToUTF16(base::StringPrintf(
-          "Unidentified %u", static_cast<unsigned int>(key_code)));
+      // Else, return "Key {digit}" for Unidentified key.
+      return base::UTF8ToUTF16(
+          base::StringPrintf("Key %u", static_cast<unsigned int>(key_code)));
     }
     // Otherwise, get the key_display from a util function.
     return KeycodeToKeyString(key_code);

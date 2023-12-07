@@ -252,13 +252,13 @@ suite('shortcutUtilsTest', function() {
     });
     assertEquals('ViewAllApps', getUnidentifiedKeyDisplay(key_event_1));
 
-    // For other unidentified keys, keydisplay is "Keycode {digit}".
+    // For other unidentified keys, keydisplay is "Key {digit}".
     const key_event_2 = new KeyboardEvent('keydown', {
       key: 'Unidentified',
       keyCode: 10,
       code: 'Unidentified',
     });
-    assertEquals('Unidentified 10', getUnidentifiedKeyDisplay(key_event_2));
+    assertEquals('Key 10', getUnidentifiedKeyDisplay(key_event_2));
   });
 
   test('areAcceleratorsEqual', async () => {

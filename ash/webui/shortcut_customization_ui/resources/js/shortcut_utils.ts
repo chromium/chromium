@@ -419,7 +419,7 @@ export const getUnidentifiedKeyDisplay = (e: KeyboardEvent): string => {
     return unidentifiedKeyCodeToKey[e.keyCode] || e.key;
   }
 
-  return `Unidentified ${e.keyCode}`;
+  return `Key ${e.keyCode}`;
 };
 
 /**
