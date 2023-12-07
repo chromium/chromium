@@ -108,34 +108,8 @@ enum RTCPeerConnectionState {
     [CallWith=ScriptState] Promise<void> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
     [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate(RTCIceCandidateInit candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
 
-    // getStats() has a standardized version and a legacy non-standard version.
-    //
-    // In the legacy getStats() API the returned metrics are a completely
-    // different set of metrics than the standard compliant version, presented
-    // in a different format. They are undocumented, implementation-specific and
-    // should go away but it is still heavily used. The selector argument can
-    // optionally be used to filter the results only to return metrics relevant
-    // for the selector.
-    // TODO(hbos): Deprecate and remove this API. https://crbug.com/822696
-    //
-    // Due to a limitation of generated V8 bindings (https://crbug.com/828401),
-    // it is not possible to express both legacy and spec-compliant versions of
-    // getStats() in IDL. This version implements two different APIs with custom
-    // bindings to resolve which one to call in rtc_peer_connection.cc:
-    //
-    // 1. Promise<void> getStats(RTCStatsCallback successCallback, optional MediaStreamTrack? selector);
-    //    Promise<void> getStats(RTCStatsCallback successCallback, any ignoredArgument)
-    //    This is the legacy getStats() API, for more details on the legacy API
-    //    and the IDL for when the selector is present, see above.
-    //
-    // 2. Promise<RTCStatsReport> getStats(optional MediaStreamTrack? selector = null);
-    //    This is the spec-compliant version of getStats(). Spec for API:
-    //    https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-getstats
-    //    Spec for metrics: https://w3c.github.io/webrtc-stats/
-    //    List of implemented stats:
-    //    https://cs.chromium.org/chromium/src/third_party/webrtc/api/stats/rtcstats_objects.h
-    //    See also RTCRtpSender.getStats() and RTCRtpReceiver.getStats().
-    [CallWith=ScriptState, RaisesException] Promise<any> getStats(optional any callbackOrSelector, optional any legacySelector);
+    // https://w3c.github.io/webrtc-pc/#sec.stats-model
+    [CallWith=ScriptState, RaisesException] Promise<RTCStatsReport> getStats(optional MediaStreamTrack? selector = null);
 
     // RTP Media API
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-gettransceivers
@@ -179,6 +153,3 @@ callback RTCPeerConnectionErrorCallback = void (DOMException error);
 
 // https://w3c.github.io/webrtc-pc/#dom-rtcsessiondescriptioncallback
 callback RTCSessionDescriptionCallback = void (RTCSessionDescriptionInit description);
-
-// No spec.  Blink specific definition.
-callback RTCStatsCallback = void (RTCStatsResponse response);

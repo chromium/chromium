@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_stats_request.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -87,66 +86,6 @@ ACTION_TEMPLATE(SaveArgPointeeMove,
                 AND_1_VALUE_PARAMS(pointer)) {
   *pointer = std::move(*testing::get<k>(args));
 }
-
-class MockRTCStatsResponse : public LocalRTCStatsResponse {
- public:
-  MockRTCStatsResponse() : report_count_(0), statistic_count_(0) {}
-
-  void addStats(const RTCLegacyStats& stats) override {
-    ++report_count_;
-    for (std::unique_ptr<RTCLegacyStatsMemberIterator> member(stats.Iterator());
-         !member->IsEnd(); member->Next()) {
-      ++statistic_count_;
-    }
-  }
-
-  int report_count() const { return report_count_; }
-
- private:
-  int report_count_;
-  int statistic_count_;
-};
-
-// Mocked wrapper for RTCStatsRequest
-class MockRTCStatsRequest : public LocalRTCStatsRequest {
- public:
-  MockRTCStatsRequest()
-      : has_selector_(false), request_succeeded_called_(false) {}
-
-  bool hasSelector() const override { return has_selector_; }
-  MediaStreamComponent* component() const override { return component_; }
-  scoped_refptr<LocalRTCStatsResponse> createResponse() override {
-    DCHECK(!response_.get());
-    response_ = new rtc::RefCountedObject<MockRTCStatsResponse>();
-    return response_;
-  }
-
-  void requestSucceeded(const LocalRTCStatsResponse* response) override {
-    EXPECT_EQ(response, response_.get());
-    request_succeeded_called_ = true;
-  }
-
-  // Function for setting whether or not a selector is available.
-  void setSelector(MediaStreamComponent* component) {
-    has_selector_ = true;
-    component_ = component;
-  }
-
-  // Function for inspecting the result of a stats request.
-  MockRTCStatsResponse* result() {
-    if (request_succeeded_called_) {
-      return response_.get();
-    } else {
-      return nullptr;
-    }
-  }
-
- private:
-  bool has_selector_;
-  Persistent<MediaStreamComponent> component_;
-  scoped_refptr<MockRTCStatsResponse> response_;
-  bool request_succeeded_called_;
-};
 
 class MockPeerConnectionTracker : public PeerConnectionTracker {
  public:
@@ -859,61 +798,6 @@ TEST_F(RTCPeerConnectionHandlerTest, addStreamWithStoppedAudioAndVideoTrack) {
   EXPECT_TRUE(AddStream(local_stream));
   EXPECT_EQ(stream_label.Utf8(), mock_peer_connection_->stream_label());
   EXPECT_EQ(2u, mock_peer_connection_->GetSenders().size());
-
-  StopAllTracks(local_stream);
-}
-
-TEST_F(RTCPeerConnectionHandlerTest, GetStatsNoSelector) {
-  scoped_refptr<MockRTCStatsRequest> request(
-      new rtc::RefCountedObject<MockRTCStatsRequest>());
-  pc_handler_->getStats(request.get());
-  RunMessageLoopsUntilIdle();
-  ASSERT_TRUE(request->result());
-  EXPECT_LT(1, request->result()->report_count());
-}
-
-TEST_F(RTCPeerConnectionHandlerTest, GetStatsAfterClose) {
-  scoped_refptr<MockRTCStatsRequest> request(
-      new rtc::RefCountedObject<MockRTCStatsRequest>());
-  pc_handler_->Close();
-  RunMessageLoopsUntilIdle();
-  pc_handler_->getStats(request.get());
-  RunMessageLoopsUntilIdle();
-  ASSERT_TRUE(request->result());
-  EXPECT_LT(1, request->result()->report_count());
-}
-
-TEST_F(RTCPeerConnectionHandlerTest, GetStatsWithLocalSelector) {
-  MediaStreamDescriptor* local_stream = CreateLocalMediaStream("local_stream");
-  EXPECT_TRUE(AddStream(local_stream));
-  auto components = local_stream->AudioComponents();
-  ASSERT_LE(1ul, components.size());
-
-  scoped_refptr<MockRTCStatsRequest> request(
-      new rtc::RefCountedObject<MockRTCStatsRequest>());
-  request->setSelector(components[0]);
-  pc_handler_->getStats(request.get());
-  RunMessageLoopsUntilIdle();
-  EXPECT_EQ(1, request->result()->report_count());
-
-  StopAllTracks(local_stream);
-}
-
-TEST_F(RTCPeerConnectionHandlerTest, GetStatsWithBadSelector) {
-  // The setup is the same as GetStatsWithLocalSelector, but the stream is not
-  // added to the PeerConnection.
-  MediaStreamDescriptor* local_stream =
-      CreateLocalMediaStream("local_stream_2");
-  auto tracks = local_stream->AudioComponents();
-  Member<MediaStreamComponent> component = tracks[0];
-  mock_peer_connection_->SetGetStatsResult(false);
-
-  scoped_refptr<MockRTCStatsRequest> request(
-      new rtc::RefCountedObject<MockRTCStatsRequest>());
-  request->setSelector(component);
-  pc_handler_->getStats(request.get());
-  RunMessageLoopsUntilIdle();
-  EXPECT_EQ(0, request->result()->report_count());
 
   StopAllTracks(local_stream);
 }

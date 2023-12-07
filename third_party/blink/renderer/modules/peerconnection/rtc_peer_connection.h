@@ -87,7 +87,6 @@ class RTCSessionDescriptionInit;
 class ScriptState;
 class V8RTCPeerConnectionErrorCallback;
 class V8RTCSessionDescriptionCallback;
-class V8RTCStatsCallback;
 class V8UnionMediaStreamTrackOrString;
 class V8VoidFunction;
 
@@ -200,24 +199,9 @@ class MODULES_EXPORT RTCPeerConnection final
 
   void removeStream(MediaStream*, ExceptionState&);
 
-  // Calls LegacyCallbackBasedGetStats() or PromiseBasedGetStats() (or rejects
-  // with an exception) depending on type, see rtc_peer_connection.idl.
-  ScriptPromise getStats(ScriptState* script_state, ExceptionState&);
   ScriptPromise getStats(ScriptState* script_state,
-                         ScriptValue callback_or_selector,
+                         MediaStreamTrack* selector,
                          ExceptionState&);
-  ScriptPromise getStats(ScriptState* script_state,
-                         ScriptValue callback_or_selector,
-                         ScriptValue legacy_selector,
-                         ExceptionState&);
-  ScriptPromise LegacyCallbackBasedGetStats(
-      ScriptState*,
-      V8RTCStatsCallback* success_callback,
-      MediaStreamTrack* selector,
-      ExceptionState&);
-  ScriptPromise PromiseBasedGetStats(ScriptState*,
-                                     MediaStreamTrack* selector,
-                                     ExceptionState&);
 
   const HeapVector<Member<RTCRtpTransceiver>>& getTransceivers() const;
   const HeapVector<Member<RTCRtpSender>>& getSenders() const;

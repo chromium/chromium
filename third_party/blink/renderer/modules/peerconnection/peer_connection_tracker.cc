@@ -443,68 +443,6 @@ const char* GetTransceiverUpdatedReasonString(
   return nullptr;
 }
 
-// Builds a dictionary Value from the StatsReport.
-// Note:
-// The format must be consistent with what webrtc_internals.js expects.
-// If you change it here, you must change webrtc_internals.js as well.
-absl::optional<base::Value::Dict> GetDictValueStats(const StatsReport& report) {
-  if (report.values().empty())
-    return absl::nullopt;
-
-  base::Value::List values;
-
-  for (const auto& v : report.values()) {
-    const StatsReport::ValuePtr& value = v.second;
-    values.Append(value->display_name());
-    switch (value->type()) {
-      case StatsReport::Value::kInt:
-        values.Append(value->int_val());
-        break;
-      case StatsReport::Value::kFloat:
-        values.Append(value->float_val());
-        break;
-      case StatsReport::Value::kString:
-        values.Append(value->string_val());
-        break;
-      case StatsReport::Value::kStaticString:
-        values.Append(value->static_string_val());
-        break;
-      case StatsReport::Value::kBool:
-        values.Append(value->bool_val());
-        break;
-      case StatsReport::Value::kInt64:  // int64_t isn't supported, so use
-                                        // string.
-      case StatsReport::Value::kId:
-      default:
-        values.Append(value->ToString());
-        break;
-    }
-  }
-
-  base::Value::Dict dict;
-  dict.Set("timestamp", report.timestamp());
-  dict.Set("values", std::move(values));
-
-  return dict;
-}
-
-// Builds a dictionary Value from the StatsReport.
-absl::optional<base::Value::Dict> GetDictValue(const StatsReport& report) {
-  absl::optional<base::Value::Dict> stats = GetDictValueStats(report);
-  if (!stats)
-    return absl::nullopt;
-
-  // Note:
-  // The format must be consistent with what webrtc_internals.js expects.
-  // If you change it here, you must change webrtc_internals.js as well.
-  base::Value::Dict result;
-  result.Set("stats", std::move(stats).value());
-  result.Set("id", report.id()->ToString());
-  result.Set("type", report.TypeToString());
-
-  return result;
-}
-
 int GetNextProcessLocalID() {
   static int next_local_id = 1;
   return next_local_id++;
@@ -513,65 +451,8 @@ int GetNextProcessLocalID() {
 }  // namespace
 
 // chrome://webrtc-internals displays stats and stats graphs. The call path
-// involves thread and process hops (IPC). This is the webrtc::StatsObserver
-// that is used when webrtc-internals wants legacy stats. It starts in
-// webrtc_internals.js performing requestLegacyStats and the result gets
-// asynchronously delivered to webrtc_internals.js at addLegacyStats.
-class InternalLegacyStatsObserver : public webrtc::StatsObserver {
- public:
-  InternalLegacyStatsObserver(
-      int lid,
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-      CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback)
-      : lid_(lid),
-        main_thread_(std::move(main_thread)),
-        completion_callback_(std::move(completion_callback)) {}
-
-  void OnComplete(const StatsReports& reports) override {
-    base::Value::List list;
-    for (const auto* r : reports) {
-      absl::optional<base::Value::Dict> report = GetDictValue(*r);
-      if (report)
-        list.Append(std::move(*report));
-    }
-
-    if (!list.empty()) {
-      PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
-          CrossThreadBindOnce(&InternalLegacyStatsObserver::OnCompleteImpl,
-                              std::move(list), lid_,
-                              std::move(completion_callback_)));
-    }
-  }
-
- protected:
-  ~InternalLegacyStatsObserver() override {
-    // Will be destructed on libjingle's signaling thread.
-    // The signaling thread is where libjingle's objects live and from where
-    // libjingle makes callbacks.  This may or may not be the same thread as
-    // the main thread.
-  }
-
- private:
-  // Static since |this| will most likely have been deleted by the time we
-  // get here.
-  static void OnCompleteImpl(
-      base::Value::List list,
-      int lid,
-      CrossThreadOnceFunction<void(int, base::Value::List)>
-          completion_callback) {
-    DCHECK(!list.empty());
-    std::move(completion_callback).Run(lid, std::move(list));
-  }
-
-  const int lid_;
-  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
-  CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback_;
-};
-
-// chrome://webrtc-internals displays stats and stats graphs. The call path
-// involves thread and process hops (IPC). This is the ----webrtc::StatsObserver
-// that is used when webrtc-internals wants standard stats. It starts in
+// involves thread and process hops (IPC). This is the stats observer that is
+// used when webrtc-internals wants standard stats. It starts in
 // webrtc_internals.js performing requestStandardStats and the result gets
 // asynchronously delivered to webrtc_internals.js at addStandardStats.
 class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
@@ -851,21 +732,6 @@ void PeerConnectionTracker::GetStandardStats() {
             CrossThreadBindOnce(&PeerConnectionTracker::AddStandardStats,
                                 WrapCrossThreadWeakPersistent(this))));
     pair.key->GetStandardStatsForTracker(observer);
-  }
-}
-
-void PeerConnectionTracker::GetLegacyStats() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-
-  for (const auto& pair : peer_connection_local_id_map_) {
-    rtc::scoped_refptr<InternalLegacyStatsObserver> observer(
-        new rtc::RefCountedObject<InternalLegacyStatsObserver>(
-            pair.value, main_thread_task_runner_,
-            CrossThreadBindOnce(&PeerConnectionTracker::AddLegacyStats,
-                                WrapCrossThreadWeakPersistent(this))));
-    pair.key->GetStats(observer,
-                       webrtc::PeerConnectionInterface::kStatsOutputLevelDebug,
-                       nullptr);
   }
 }
 

@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_stats_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -108,7 +107,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_request_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_request_promise_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_stats_request_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_track_event.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_void_request_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_void_request_promise_impl.h"
@@ -126,7 +124,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_offer_options_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_stats_request.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -1628,96 +1625,8 @@ bool RTCPeerConnection::IsRemoteStream(MediaStream* stream) const {
 }
 
 ScriptPromise RTCPeerConnection::getStats(ScriptState* script_state,
+                                          MediaStreamTrack* selector,
                                           ExceptionState& exception_state) {
-  return getStats(script_state,
-                  ScriptValue(script_state->GetIsolate(),
-                              v8::Undefined(script_state->GetIsolate())),
-                  ScriptValue(script_state->GetIsolate(),
-                              v8::Undefined(script_state->GetIsolate())),
-                  exception_state);
-}
-
-ScriptPromise RTCPeerConnection::getStats(ScriptState* script_state,
-                                          ScriptValue callback_or_selector,
-                                          ExceptionState& exception_state) {
-  return getStats(script_state, std::move(callback_or_selector),
-                  ScriptValue(script_state->GetIsolate(),
-                              v8::Undefined(script_state->GetIsolate())),
-                  exception_state);
-}
-
-ScriptPromise RTCPeerConnection::getStats(ScriptState* script_state,
-                                          ScriptValue callback_or_selector,
-                                          ScriptValue legacy_selector,
-                                          ExceptionState& exception_state) {
-  auto* isolate = script_state->GetIsolate();
-  auto first_argument = callback_or_selector.V8Value();
-  // Custom binding for legacy "getStats(RTCStatsCallback callback)".
-  if (first_argument->IsFunction()) {
-    V8RTCStatsCallback* success_callback =
-        V8RTCStatsCallback::Create(first_argument.As<v8::Function>());
-    MediaStreamTrack* selector_or_null =
-        V8MediaStreamTrack::ToWrappable(isolate, legacy_selector.V8Value());
-    return LegacyCallbackBasedGetStats(script_state, success_callback,
-                                       selector_or_null, exception_state);
-  }
-  // Custom binding for spec-compliant
-  // "getStats(optional MediaStreamTrack? selector)". null is a valid selector
-  // value, but a value of the wrong type isn't.
-  if (first_argument->IsNullOrUndefined())
-    return PromiseBasedGetStats(script_state, nullptr, exception_state);
-
-  MediaStreamTrack* track =
-      V8MediaStreamTrack::ToWrappable(isolate, first_argument);
-  if (track)
-    return PromiseBasedGetStats(script_state, track, exception_state);
-
-  exception_state.ThrowTypeError(
-      "The argument provided as parameter 1 is neither a callback (function) "
-      "or selector (MediaStreamTrack or null).");
-  return ScriptPromise();
-}
-
-ScriptPromise RTCPeerConnection::LegacyCallbackBasedGetStats(
-    ScriptState* script_state,
-    V8RTCStatsCallback* success_callback,
-    MediaStreamTrack* selector,
-    ExceptionState& exception_state) {
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  // This API is only usable if this Deprecation Trial is enabled:
-  // https://developer.chrome.com/origintrials/#/view_trial/3633278999381147649
-  // TODO(https://crbug.com/822696): In M122, delete this API.
-  bool deprecation_trial_enabled =
-      RuntimeEnabledFeatures::RTCLegacyCallbackBasedGetStatsEnabled(context);
-  if (deprecation_trial_enabled) {
-    // The deprecation trial is enabled, allow API usage without the warning.
-    UseCounter::Count(context,
-                      WebFeature::kRTCPeerConnectionLegacyGetStatsTrial);
-  } else {
-    // The deprecation trial is not enabled: count deprecation and throw.
-    Deprecation::CountDeprecation(
-        context, WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The callback-based getStats() method is no longer supported.");
-    return ScriptPromise();
-  }
-  auto* stats_request = MakeGarbageCollected<RTCStatsRequestImpl>(
-      GetExecutionContext(), this, success_callback, selector);
-  // FIXME: Add passing selector as part of the statsRequest.
-  peer_handler_->GetStats(stats_request);
-
-  resolver->Resolve();
-  return promise;
-}
-
-ScriptPromise RTCPeerConnection::PromiseBasedGetStats(
-    ScriptState* script_state,
-    MediaStreamTrack* selector,
-    ExceptionState& exception_state) {
   if (!selector) {
     ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kRTCPeerConnectionGetStats);

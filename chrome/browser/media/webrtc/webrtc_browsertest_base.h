@@ -121,10 +121,6 @@ class WebRtcTestBase : public InProcessBrowserTest {
   std::string ExecuteJavascript(const std::string& javascript,
                                 content::WebContents* tab_contents) const;
 
-  // TODO(https://crbug.com/1004239): Remove this function as soon as browser
-  // tests stop relying on the legacy getStats() API.
-  void ChangeToLegacyGetStats(content::WebContents* tab) const;
-
   // Sets up a peer connection in the tab and adds the current local stream
   // (which you can prepare by calling one of the GetUserMedia* methods above).
   // Optionally, |certificate_keygen_algorithm| is JavaScript for an
