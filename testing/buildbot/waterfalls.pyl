@@ -3294,7 +3294,7 @@
       },
       'Mac Builder (reclient compare)': {
         'additional_compile_targets': [
-          'all',
+          'chrome',
         ],
         'test_suites': {
           'scripts': 'chromium_mac_scripts',

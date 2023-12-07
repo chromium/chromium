@@ -106,7 +106,7 @@
   },
   "Mac Builder (reclient compare)": {
     "additional_compile_targets": [
-      "all"
+      "chrome"
     ],
     "scripts": [
       {
