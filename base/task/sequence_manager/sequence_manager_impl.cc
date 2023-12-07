@@ -562,6 +562,11 @@ void SequenceManagerImpl::ScheduleWork() {
 void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
                                         absl::optional<WakeUp> wake_up) {
   auto next_wake_up = AdjustWakeUp(wake_up, lazy_now);
+
+  recordreplay::Assert(
+    "[RUN-2801-2978] SequenceManagerImpl::SetNextWakeUp %d",
+    next_wake_up && next_wake_up->is_immediate());
+
   if (next_wake_up && next_wake_up->is_immediate()) {
     ScheduleWork();
   } else {

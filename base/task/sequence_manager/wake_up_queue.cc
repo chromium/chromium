@@ -79,6 +79,10 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
     pending_high_res_wake_up_count_++;
   DCHECK_GE(pending_high_res_wake_up_count_, 0);
 
+  recordreplay::Assert(
+    "[RUN-2801-2978] WakeUpQueue::SetNextWakeUpForQueue %d",
+    new_wake_up != previous_wake_up);
+
   if (new_wake_up != previous_wake_up)
     OnNextWakeUpChanged(lazy_now, GetNextDelayedWakeUp());
 }

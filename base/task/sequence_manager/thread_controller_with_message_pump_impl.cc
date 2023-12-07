@@ -182,6 +182,10 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
       wake_up.has_value() ? WakeUpRunTime(*wake_up) : TimeTicks::Max();
   DCHECK_LT(lazy_now->Now(), run_time);
 
+  recordreplay::Assert(
+    "[RUN-2801-2978] ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork A %d",
+    main_thread_only().next_delayed_do_work == run_time);
+
   if (main_thread_only().next_delayed_do_work == run_time)
     return;
   main_thread_only().next_delayed_do_work = run_time;

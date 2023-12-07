@@ -197,6 +197,10 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
     const Delegate::NextWorkInfo& next_work_info) {
   DCHECK(!next_work_info.is_immediate());
 
+  recordreplay::Assert(
+    "[RUN-2801-2978] MessagePumpCFRunLoopBase::ScheduleDelayedWork A %lld",
+    next_work_info.delayed_run_time.ToInternalValue());
+
   if (g_enable_optimizations.load(std::memory_order_relaxed)) {
     // No-op if the delayed run time hasn't changed.
     if (next_work_info.delayed_run_time == delayed_work_scheduled_at_)

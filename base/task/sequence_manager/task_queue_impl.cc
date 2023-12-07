@@ -1329,6 +1329,11 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   if (main_thread_only().delayed_incoming_queue.empty())
     return;
 
+  recordreplay::Assert(
+    "[RUN-2801-2978] TaskQueueImpl::ReclaimMemory %d %d",
+    !!g_is_sweep_cancelled_tasks_enabled,
+    !!main_thread_only().delayed_work_queue);
+
   if (g_is_sweep_cancelled_tasks_enabled) {
     main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
         sequence_manager_);
