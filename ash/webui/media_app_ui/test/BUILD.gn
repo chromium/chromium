@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+
+assert(is_chromeos_ash)
+
+# For tests, use the same staging folder as resources/js.
+test_stage_folder = "$target_gen_dir/../resources/js/stage"
+
+# Move files to the stage folder to combine all resources in the same folder for
+# TypeScript compilation.
+# This is for files direct from the src/:  input_folder="./".
+copy("stage_tests_static") {
+  sources = [
+    "guest_query_receiver.d.ts",
+    "media_app_guest_ui_browsertest.ts",
+    "test_api.d.ts",
+  ]
+  outputs = [ test_stage_folder + "/{{source_file_part}}" ]
+  deps = [
+    "//ash/webui/media_app_ui/resources/js:stage_generated",
+    "//ash/webui/media_app_ui/resources/js:stage_static",
+  ]
+}
+
+# Copy unconverted JS files to the same folder as the TypeScript output, so the
+# test harness can load all the .js from the same place.
+ts_output_folder = "$target_gen_dir/.."
+copy("copy_unconverted_js") {
+  sources = [
+    "driver.js",
+    "guest_query_receiver.js",
+    "media_app_ui_browsertest.js",
+    "test_worker.js",
+  ]
+  outputs = [ ts_output_folder + "/{{source_file_part}}" ]
+}

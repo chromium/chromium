@@ -26,7 +26,7 @@ constexpr char kTestHarness[] = "media_app_ui_browsertest.js";
 
 // Path to test files loaded via the TestFileRequestFilter.
 constexpr base::FilePath::CharType kTestFileLocation[] =
-    FILE_PATH_LITERAL("ash/webui/media_app_ui/test");
+    FILE_PATH_LITERAL("ash/webui/media_app_ui");
 
 // Paths requested on the media-app origin that should be delivered by the test
 // handler.
