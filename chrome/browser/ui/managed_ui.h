@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_MANAGED_UI_H_
 #define CHROME_BROWSER_UI_MANAGED_UI_H_
 
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -93,7 +93,7 @@ std::u16string GetManagementPageSubtitle(Profile* profile);
 // representation of the manager identity if available and an empty string if
 // the device is managed but the manager is not known or if the policy store
 // hasn't been loaded yet.
-absl::optional<std::string> GetDeviceManagerIdentity();
+std::optional<std::string> GetDeviceManagerIdentity();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the UTF8-encoded string representation of the the entity that manages
@@ -103,7 +103,7 @@ absl::optional<std::string> GetDeviceManagerIdentity();
 //  - session manager can be different from account manager for a profile in
 //    this session, and also
 //  - session manager can be different from device manager.
-absl::optional<std::string> GetSessionManagerIdentity();
+std::optional<std::string> GetSessionManagerIdentity();
 #endif
 
 // Returns the UTF8-encoded string representation of the the entity that manages
@@ -113,7 +113,7 @@ absl::optional<std::string> GetSessionManagerIdentity();
 // information, this function defaults to the domain of the account.
 // TODO(crbug.com/1081272): Refactor localization hints for all strings that
 // depend on this function.
-absl::optional<std::string> GetAccountManagerIdentity(Profile* profile);
+std::optional<std::string> GetAccountManagerIdentity(Profile* profile);
 
 }  // namespace chrome
 

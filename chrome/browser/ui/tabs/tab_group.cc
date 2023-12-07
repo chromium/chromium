@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"
@@ -88,26 +88,26 @@ bool TabGroup::IsCustomized() const {
   return is_customized_;
 }
 
-absl::optional<int> TabGroup::GetFirstTab() const {
+std::optional<int> TabGroup::GetFirstTab() const {
   for (int i = 0; i < controller_->GetTabCount(); ++i) {
     if (controller_->GetTabGroupForTab(i) == id_)
       return i;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> TabGroup::GetLastTab() const {
+std::optional<int> TabGroup::GetLastTab() const {
   for (int i = controller_->GetTabCount() - 1; i >= 0; --i) {
     if (controller_->GetTabGroupForTab(i) == id_)
       return i;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 gfx::Range TabGroup::ListTabs() const {
-  absl::optional<int> maybe_first_tab = GetFirstTab();
+  std::optional<int> maybe_first_tab = GetFirstTab();
   if (!maybe_first_tab)
     return gfx::Range();
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -54,7 +55,6 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -458,8 +458,8 @@ void WallpaperControllerClientImpl::FetchGooglePhotosPhoto(
       base::BindOnce(&WallpaperControllerClientImpl::OnGooglePhotosPhotoFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback));
   google_photos_photos_fetchers_[account_id]->AddRequestAndStartIfNecessary(
-      id, /*album_id=*/absl::nullopt,
-      /*resume_token=*/absl::nullopt, /*shuffle=*/false,
+      id, /*album_id=*/std::nullopt,
+      /*resume_token=*/std::nullopt, /*shuffle=*/false,
       std::move(fetched_callback));
 }
 
@@ -479,8 +479,8 @@ void WallpaperControllerClientImpl::FetchDailyGooglePhotosPhoto(
       &WallpaperControllerClientImpl::OnGooglePhotosDailyAlbumFetched,
       weak_factory_.GetWeakPtr(), account_id, std::move(callback));
   google_photos_photos_fetchers_[account_id]->AddRequestAndStartIfNecessary(
-      /*item_id=*/absl::nullopt, album_id,
-      /*resume_token=*/absl::nullopt, /*shuffle=*/true,
+      /*item_id=*/std::nullopt, album_id,
+      /*resume_token=*/std::nullopt, /*shuffle=*/true,
       std::move(fetched_callback));
 }
 

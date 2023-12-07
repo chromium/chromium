@@ -1193,7 +1193,7 @@ void ChromeShelfController::OnAppImageUpdated(
     const std::string& app_id,
     const gfx::ImageSkia& image,
     bool is_placeholder_icon,
-    const absl::optional<gfx::ImageSkia>& badge_image) {
+    const std::optional<gfx::ImageSkia>& badge_image) {
   TRACE_EVENT0("ui", "ChromeShelfController::OnAppImageUpdated");
   bool is_standard_icon = true;
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
@@ -1232,7 +1232,7 @@ void ChromeShelfController::OnAppImageUpdated(
 
 void ChromeShelfController::UpdateAppImage(
     const std::string& app_id,
-    const absl::optional<gfx::ImageSkia>& badge_image,
+    const std::optional<gfx::ImageSkia>& badge_image,
     bool is_placeholder_icon,
     const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "ChromeShelfController::UpdateAppImage");

@@ -139,13 +139,13 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
 }  // namespace
 
-absl::optional<ExtensionSettingsOverriddenDialog::Params>
-GetNtpOverriddenParams(Profile* profile) {
+std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
+    Profile* profile) {
   const GURL ntp_url(chrome::kChromeUINewTabURL);
   const extensions::Extension* extension =
       ExtensionWebUI::GetExtensionControllingURL(ntp_url, profile);
   if (!extension)
-    return absl::nullopt;
+    return std::nullopt;
 
   // This preference tracks whether users have acknowledged the extension's
   // control, so that they are not warned twice about the same extension.
@@ -212,12 +212,12 @@ GetNtpOverriddenParams(Profile* profile) {
       std::move(dialog_message), icon);
 }
 
-absl::optional<ExtensionSettingsOverriddenDialog::Params>
+std::optional<ExtensionSettingsOverriddenDialog::Params>
 GetSearchOverriddenParams(Profile* profile) {
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(profile);
   if (!extension)
-    return absl::nullopt;
+    return std::nullopt;
 
   // For historical reasons, the search override preference is the same as the
   // one we use for the controlled home setting. We continue this so that
@@ -253,7 +253,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // as crazy as using filesystem: URLs as a search engine.
   if (!secondary_search.origin.is_empty() &&
       secondary_search.origin == search_url.DeprecatedGetOriginAsURL()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Format the URL for display.

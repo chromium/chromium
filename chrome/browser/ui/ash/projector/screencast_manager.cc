@@ -121,7 +121,7 @@ ScreencastManager::~ScreencastManager() = default;
 
 void ScreencastManager::GetVideo(
     const std::string& video_file_id,
-    const absl::optional<std::string>& resource_key,
+    const std::optional<std::string>& resource_key,
     ProjectorAppClient::OnGetVideoCallback callback) const {
   // TODO(b/237089852): Handle the resource key once LocateFilesByItemIds()
   // supports it.
@@ -142,7 +142,7 @@ void ScreencastManager::ResetScopeSuppressDriveNotifications() {
 void ScreencastManager::OnVideoFilePathLocated(
     const std::string& video_id,
     ProjectorAppClient::OnGetVideoCallback callback,
-    absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
+    std::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
   if (!paths || paths.value().size() != 1u) {
     std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
         base::StringPrintf("Failed to find DriveFS path with video file id=%s",

@@ -197,7 +197,7 @@ CastNotificationControllerLacros::GetButtons(
 }
 
 void CastNotificationControllerLacros::OnNotificationClicked(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (freeze_button_index_ && button_index == freeze_button_index_) {
     FreezeOrUnfreezeCastStream();
   } else if (button_index == stop_button_index_) {

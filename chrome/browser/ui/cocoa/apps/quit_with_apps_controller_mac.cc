@@ -96,9 +96,8 @@ void QuitWithAppsController::Close(bool by_user) {
     suppress_for_session_ = true;
 }
 
-void QuitWithAppsController::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+void QuitWithAppsController::Click(const std::optional<int>& button_index,
+                                   const std::optional<std::u16string>& reply) {
   CloseNotification(notification_profile_);
 
   if (!button_index)

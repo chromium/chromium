@@ -36,9 +36,8 @@ class WebAppIconHealthChecks : public WebAppInstallManagerObserver {
 
  private:
   void RunDiagnostics();
-  void SaveDiagnosticForApp(
-      webapps::AppId app_id,
-      absl::optional<WebAppIconDiagnostic::Result> result);
+  void SaveDiagnosticForApp(webapps::AppId app_id,
+                            std::optional<WebAppIconDiagnostic::Result> result);
   void RecordDiagnosticResults();
 
   raw_ptr<Profile> profile_ = nullptr;

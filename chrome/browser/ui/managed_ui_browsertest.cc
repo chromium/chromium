@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTestCros, GetManagedUiWebUILabel) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetSessionManagerIdentity_Unmanaged) {
-  EXPECT_EQ(absl::nullopt, chrome::GetSessionManagerIdentity());
+  EXPECT_EQ(std::nullopt, chrome::GetSessionManagerIdentity());
 }
 
 IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetSessionManagerIdentity_Managed) {
@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetSessionManagerIdentity_Managed) {
   policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
       std::move(profile_policy_data));
 
-  absl::optional<std::string> identity = chrome::GetSessionManagerIdentity();
+  std::optional<std::string> identity = chrome::GetSessionManagerIdentity();
   EXPECT_TRUE(identity.has_value());
   EXPECT_EQ("domain.com", *identity);
 }

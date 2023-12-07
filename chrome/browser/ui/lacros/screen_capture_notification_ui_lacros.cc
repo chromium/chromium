@@ -41,7 +41,7 @@ gfx::NativeViewId ScreenCaptureNotificationUILacros::OnStarted(
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
               [](base::WeakPtr<ScreenCaptureNotificationUILacros> controller,
-                 absl::optional<int> button_index) {
+                 std::optional<int> button_index) {
                 if (!button_index || !controller) {
                   return;
                 }

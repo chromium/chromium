@@ -51,7 +51,7 @@ void LogTabStripOrganizationUKM(
         tab_strip_model->GetWebContentsAt(tab_index);
 
     // Get group information at the index.
-    absl::optional<tab_groups::TabGroupId> maybe_group_id =
+    std::optional<tab_groups::TabGroupId> maybe_group_id =
         tab_strip_model->GetTabGroupForTab(tab_index);
 
     // Add all

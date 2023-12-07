@@ -37,7 +37,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
       // to this View, so it needs to reference via a WeakPtr in case
       // the contents wrapper is destroyed before `this`.
       base::WeakPtr<BubbleContentsWrapper> contents_wrapper,
-      const std::optional<gfx::Rect>& anchor_rect = absl::nullopt,
+      const std::optional<gfx::Rect>& anchor_rect = std::nullopt,
       views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT);
   WebUIBubbleDialogView(const WebUIBubbleDialogView&) = delete;
   WebUIBubbleDialogView& operator=(const WebUIBubbleDialogView&) = delete;

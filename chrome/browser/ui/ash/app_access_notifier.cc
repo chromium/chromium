@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 
 #include <list>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -43,7 +43,7 @@ apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
       .GetAppCapabilityAccessCache(account_id);
 }
 
-absl::optional<std::u16string> MapAppIdToShortName(
+std::optional<std::u16string> MapAppIdToShortName(
     std::string app_id,
     apps::AppCapabilityAccessCache* capability_cache,
     apps::AppRegistryCache* registry_cache,
@@ -52,7 +52,7 @@ absl::optional<std::u16string> MapAppIdToShortName(
   DCHECK(registry_cache);
 
   for (const std::string& app : apps_accessing_sensor) {
-    absl::optional<std::u16string> name;
+    std::optional<std::u16string> name;
     registry_cache->ForOneApp(app,
                               [&app_id, &name](const apps::AppUpdate& update) {
                                 if (update.AppId() == app_id) {
@@ -63,7 +63,7 @@ absl::optional<std::u16string> MapAppIdToShortName(
       return name;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // A helper to send `ash::CameraPrivacySwitchController` a notification when an
@@ -135,7 +135,7 @@ std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingSensor(
 
   std::vector<std::u16string> app_names;
   for (const auto& app_id : *app_id_list) {
-    absl::optional<std::u16string> app_name = MapAppIdToShortName(
+    std::optional<std::u16string> app_name = MapAppIdToShortName(
         app_id, cap_cache, reg_cache, apps_accessing_sensor);
     if (app_name.has_value())
       app_names.push_back(app_name.value());
@@ -186,7 +186,7 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {
     // TODO(b/251686202): Finish Launch App functionality.
-    auto launch_app_callback = absl::nullopt;
+    auto launch_app_callback = std::nullopt;
 
     auto* registry_cache = GetActiveUserAppRegistryCache();
     if (!registry_cache) {
@@ -194,11 +194,11 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     }
 
     auto app_type = registry_cache->GetAppType(app_id);
-    absl::optional<base::RepeatingClosure> launch_settings_callback;
+    std::optional<base::RepeatingClosure> launch_settings_callback;
     if (app_type == apps::AppType::kSystemWeb) {
       // We don't have the capability to launch privacy settings for system web
       // app, so we will disable the settings button for this type of app.
-      launch_settings_callback = absl::nullopt;
+      launch_settings_callback = std::nullopt;
     } else {
       launch_settings_callback =
           base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
@@ -248,9 +248,9 @@ void AppAccessNotifier::ActiveUserChanged(user_manager::User* active_user) {
 }
 
 // static
-absl::optional<std::u16string> AppAccessNotifier::GetAppShortNameFromAppId(
+std::optional<std::u16string> AppAccessNotifier::GetAppShortNameFromAppId(
     std::string app_id) {
-  absl::optional<std::u16string> name;
+  std::optional<std::u16string> name;
   auto* registry_cache = GetActiveUserAppRegistryCache();
   if (!registry_cache)
     return name;

@@ -30,11 +30,11 @@ TEST_F(SidePanelEntryKeyTest, ReturnsCorrectStringForExtensionEntry) {
 }
 
 TEST_F(SidePanelEntryKeyTest, ReturnsCorrectActionIdForEntryId) {
-  absl::optional<actions::ActionId> reading_list_action_id =
+  std::optional<actions::ActionId> reading_list_action_id =
       SidePanelEntryIdToActionId(SidePanelEntryId::kReadingList);
   EXPECT_TRUE(reading_list_action_id.has_value());
   EXPECT_EQ(kActionSidePanelShowReadingList, reading_list_action_id.value());
-  absl::optional<actions::ActionId> bookmarks_action_id =
+  std::optional<actions::ActionId> bookmarks_action_id =
       SidePanelEntryIdToActionId(SidePanelEntryId::kBookmarks);
   EXPECT_TRUE(bookmarks_action_id.has_value());
   EXPECT_EQ(kActionSidePanelShowBookmarks, bookmarks_action_id.value());

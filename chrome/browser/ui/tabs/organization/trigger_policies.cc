@@ -55,7 +55,7 @@ void UsageTickClock::OnSessionEnded(base::TimeDelta session_length,
   // Ignore `session_length`/`session_end`; they don't come from `base_clock_`.
   usage_time_in_completed_sessions_ +=
       base_clock_->NowTicks() - current_usage_session_start_time_.value();
-  current_usage_session_start_time_ = absl::nullopt;
+  current_usage_session_start_time_ = std::nullopt;
 }
 
 ProfilePrefBackoffLevelProvider::ProfilePrefBackoffLevelProvider(
@@ -100,7 +100,7 @@ bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
   // Restart the cycle if `period_` has elapsed.
   if (current_time > cycle_start_time_ + period) {
     cycle_start_time_ += period;
-    best_score = absl::nullopt;
+    best_score = std::nullopt;
     base::UmaHistogramBoolean("TabOrganization.Trigger.TriggeredInPeriod",
                               has_triggered_);
     has_triggered_ = false;
@@ -116,7 +116,7 @@ bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
 
   // Trigger if we haven't triggered yet and have a new high score.
   if (!has_triggered_ && best_score.has_value() && score > best_score) {
-    best_score = absl::nullopt;
+    best_score = std::nullopt;
     has_triggered_ = true;
     return true;
   }

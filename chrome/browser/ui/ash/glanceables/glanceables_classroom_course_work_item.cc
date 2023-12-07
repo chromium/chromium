@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 
+#include <optional>
+
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_student_submissions_response_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -20,11 +21,11 @@ bool TimesWithinDelta(const base::Time& lhs,
   return (lhs - rhs).magnitude() <= max_distance;
 }
 
-absl::optional<base::Time> ConvertCourseWorkItemDue(
-    const absl::optional<google_apis::classroom::CourseWorkItem::DueDateTime>&
+std::optional<base::Time> ConvertCourseWorkItemDue(
+    const std::optional<google_apis::classroom::CourseWorkItem::DueDateTime>&
         raw_due) {
   if (!raw_due.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Time::Exploded exploded_due = {.year = raw_due->year,
@@ -32,7 +33,7 @@ absl::optional<base::Time> ConvertCourseWorkItemDue(
                                              .day_of_month = raw_due->day};
   base::Time due;
   if (!base::Time::FromUTCExploded(exploded_due, &due)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return due + raw_due->time_of_day;
 }
@@ -138,7 +139,7 @@ void GlanceablesClassroomCourseWorkItem::RevalidateCourseWorkItem() {
 }
 
 bool GlanceablesClassroomCourseWorkItem::SatisfiesPredicates(
-    base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+    base::RepeatingCallback<bool(const std::optional<base::Time>&)>
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate) const {
@@ -167,7 +168,7 @@ GlanceablesClassroomCourseWorkItem::CreateClassroomAssignment(
     bool include_aggregated_submissions_state) const {
   CHECK(IsValid());
 
-  absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
+  std::optional<GlanceablesClassroomAggregatedSubmissionsState>
       aggregated_submissions_state;
   if (include_aggregated_submissions_state) {
     aggregated_submissions_state = current_submissions_state_;

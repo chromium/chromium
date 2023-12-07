@@ -131,7 +131,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
       const std::string& path,
       const content::RenderFrameHost* parent_frame,
       const webapps::ManifestId& parent_manifest_id) {
-    return GenerateAppId(/*manifest_id_path=*/absl::nullopt,
+    return GenerateAppId(/*manifest_id_path=*/std::nullopt,
                          GetURLFromPath(path, parent_frame),
                          parent_manifest_id);
   }
@@ -284,7 +284,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   webapps::ManifestId parent_app_manifest_id_;
   mojo::Remote<SubAppsService> remote_;
   base::AutoReset<
-      absl::optional<SubAppsInstallDialogController::DialogActionForTesting>>
+      std::optional<SubAppsInstallDialogController::DialogActionForTesting>>
       dialog_override_;
   std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server_;
   std::unique_ptr<NotificationDisplayServiceTester>
@@ -821,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify that there are no apps registered as parent app's sub apps.
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  EXPECT_EQ(absl::nullopt, standalone_app->parent_app_id());
+  EXPECT_EQ(std::nullopt, standalone_app->parent_app_id());
 
   // Verify that the standalone app no longer has the sub-app install source.
   EXPECT_TRUE(standalone_app->HasOnlySource(WebAppManagement::kSync));
@@ -1008,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromManifestId(sub_app_id_2, parent_manifest_id())));
 
-  absl::optional<message_center::Notification> uninstall_notification =
+  std::optional<message_center::Notification> uninstall_notification =
       notification_display_service_->GetNotification(
           SubAppsServiceImpl::kSubAppsUninstallNotificationId);
   ASSERT_TRUE(uninstall_notification.has_value());

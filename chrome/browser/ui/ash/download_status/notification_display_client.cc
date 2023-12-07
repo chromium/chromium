@@ -116,7 +116,7 @@ void NotificationDisplayClient::AddOrUpdate(
 
   // TODO(http://b/306459683): Change this code after `DisplayMetadata` uses a
   // data structure to represent download progress.
-  if (const absl::optional<int64_t>& received_bytes =
+  if (const std::optional<int64_t>& received_bytes =
           display_metadata.received_bytes;
       received_bytes > 0 && received_bytes == display_metadata.total_bytes) {
     // The download associated with `guid` completes. We no longer anticipate

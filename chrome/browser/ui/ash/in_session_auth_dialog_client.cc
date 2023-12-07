@@ -92,7 +92,7 @@ void InSessionAuthDialogClient::StartFingerprintAuthSession(
 void InSessionAuthDialogClient::OnPrepareLegacyFingerprintFactor(
     base::OnceCallback<void(bool)> callback,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   user_context_ = std::move(user_context);
 
   if (error.has_value()) {
@@ -120,7 +120,7 @@ void InSessionAuthDialogClient::EndFingerprintAuthSession(
 void InSessionAuthDialogClient::OnTerminateLegacyFingerprintFactor(
     base::OnceClosure callback,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   // Proceed to updating the state and running the callback.
   // We need this regardless of whether an error occurred.
   if (error.has_value()) {
@@ -217,7 +217,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
 
 void InSessionAuthDialogClient::OnPinAttemptDone(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (!error.has_value()) {
     OnAuthSuccess(std::move(*user_context));
   } else {
@@ -259,7 +259,7 @@ void InSessionAuthDialogClient::OnAuthSessionStarted(
     base::OnceCallback<void(bool)> callback,
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to start auth session, code "
                << error->get_cryptohome_code();
@@ -286,7 +286,7 @@ void InSessionAuthDialogClient::OnAuthSessionStarted(
 void InSessionAuthDialogClient::OnAuthVerified(
     bool authenticated_by_password,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   // Take back ownership of user_context for future auth attempts.
   user_context_ = std::move(user_context);
 

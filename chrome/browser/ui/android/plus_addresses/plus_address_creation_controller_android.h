@@ -40,7 +40,7 @@ class PlusAddressCreationControllerAndroid
   void set_suppress_ui_for_testing(bool should_suppress);
 
   // Validate storage and clearing of `plus_profile_`.
-  absl::optional<PlusProfile> get_plus_profile_for_testing();
+  std::optional<PlusProfile> get_plus_profile_for_testing();
 
  private:
   // WebContentsUserData:
@@ -64,7 +64,7 @@ class PlusAddressCreationControllerAndroid
   bool suppress_ui_for_testing_ = false;
   // This is set by OnPlusAddressReserved and cleared when it's confirmed or
   // when the dialog is closed or cancelled.
-  absl::optional<PlusProfile> plus_profile_;
+  std::optional<PlusProfile> plus_profile_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerAndroid> weak_ptr_factory_{
       this};

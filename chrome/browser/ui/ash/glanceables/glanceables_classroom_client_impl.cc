@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -262,7 +262,7 @@ void GlanceablesClassroomClientImpl::GetCompletedStudentAssignments(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return true; });
+      [](const std::optional<base::Time>& due) { return true; });
   auto submission_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
         return state == GlanceablesClassroomStudentSubmissionState::kTurnedIn ||
@@ -288,7 +288,7 @@ void GlanceablesClassroomClientImpl::
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
+      [](const base::Time& now, const std::optional<base::Time>& due) {
         return due.has_value() && now < due.value();
       },
       clock_->Now());
@@ -318,7 +318,7 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithMissedDueDate(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
+      [](const base::Time& now, const std::optional<base::Time>& due) {
         return due.has_value() && now > due.value();
       },
       clock_->Now());
@@ -348,7 +348,7 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return !due.has_value(); });
+      [](const std::optional<base::Time>& due) { return !due.has_value(); });
   auto submission_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
         return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
@@ -372,7 +372,7 @@ void GlanceablesClassroomClientImpl::
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
+      [](const base::Time& now, const std::optional<base::Time>& due) {
         // Only include items which an approaching due date.
         return due.has_value() && now < due.value();
       },
@@ -406,7 +406,7 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const base::Time& now, const absl::optional<base::Time>& due) {
+      [](const base::Time& now, const std::optional<base::Time>& due) {
         //  Only include items with a due date in the past.
         return due.has_value() && now > due.value();
       },
@@ -440,7 +440,7 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
   CHECK(callback);
 
   auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return !due.has_value(); });
+      [](const std::optional<base::Time>& due) { return !due.has_value(); });
 
   auto submissions_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
@@ -464,7 +464,7 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
 void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
     GetAssignmentsCallback callback) {
   auto due_predicate = base::BindRepeating(
-      [](const absl::optional<base::Time>& due) { return true; });
+      [](const std::optional<base::Time>& due) { return true; });
 
   auto submissions_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
@@ -1072,7 +1072,7 @@ void GlanceablesClassroomClientImpl::OnTeacherDataFetched(
 }
 
 bool GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
-    base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+    base::RepeatingCallback<bool(const std::optional<base::Time>&)>
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate,
@@ -1124,7 +1124,7 @@ bool GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
 }
 
 bool GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
-    base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+    base::RepeatingCallback<bool(const std::optional<base::Time>&)>
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate,

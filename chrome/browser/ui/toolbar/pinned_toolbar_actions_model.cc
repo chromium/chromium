@@ -192,7 +192,7 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
 
   for (const base::Value& action_id : updated_pinned_action_ids) {
     if (action_id.is_string()) {
-      const absl::optional<actions::ActionId>& id =
+      const std::optional<actions::ActionId>& id =
           actions::ActionIdMap::StringToActionId(action_id.GetString());
       // It could be possible that an ActionId is not mapped to the string if it
       // comes from the prefs object. Example: One version could have an id that
@@ -268,9 +268,8 @@ void PinnedToolbarActionsModel::UpdateSearchCompanionDefaultState() {
                         !companion_should_be_default_pinned;
 
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
-  const absl::optional<std::string>& id =
-      actions::ActionIdMap::ActionIdToString(
-          kActionSidePanelShowSearchCompanion);
+  const std::optional<std::string>& id = actions::ActionIdMap::ActionIdToString(
+      kActionSidePanelShowSearchCompanion);
   // The ActionId should have a string equivalent.
   CHECK(id.has_value());
 
@@ -301,7 +300,7 @@ void PinnedToolbarActionsModel::UpdatePref(
   base::Value::List& list_of_values = update.Get();
   list_of_values.clear();
   for (auto id : updated_list) {
-    const absl::optional<std::string>& id_string =
+    const std::optional<std::string>& id_string =
         actions::ActionIdMap::ActionIdToString(id);
     // The ActionId should have a string equivalent.
     CHECK(id_string.has_value());

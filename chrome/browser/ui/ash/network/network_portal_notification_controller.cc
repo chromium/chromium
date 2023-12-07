@@ -116,16 +116,16 @@ class NotificationDelegateImpl : public message_center::NotificationDelegate {
   NotificationDelegateImpl& operator=(const NotificationDelegateImpl&) = delete;
 
   // message_center::NotificationDelegate
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   ~NotificationDelegateImpl() override = default;
 };
 
 void NotificationDelegateImpl::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   NET_LOG(USER) << "Captive Portal notification: Click";
   NetworkPortalSigninController::Get()->ShowSignin(
       NetworkPortalSigninController::SigninSource::kNotification);

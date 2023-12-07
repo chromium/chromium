@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_TABS_TAB_MODEL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 class TabModel final : public SupportsHandles<const TabModel> {
@@ -29,7 +29,7 @@ class TabModel final : public SupportsHandles<const TabModel> {
   }
   bool pinned() const { return pinned_; }
   bool blocked() const { return blocked_; }
-  absl::optional<tab_groups::TabGroupId> group() const { return group_; }
+  std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
   void set_contents(std::unique_ptr<content::WebContents> contents) {
     contents_ = std::move(contents);
@@ -41,7 +41,7 @@ class TabModel final : public SupportsHandles<const TabModel> {
   }
   void set_pinned(bool pinned) { pinned_ = pinned; }
   void set_blocked(bool blocked) { blocked_ = blocked; }
-  void set_group(absl::optional<tab_groups::TabGroupId> group) {
+  void set_group(std::optional<tab_groups::TabGroupId> group) {
     group_ = group;
   }
 
@@ -59,7 +59,7 @@ class TabModel final : public SupportsHandles<const TabModel> {
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;
-  absl::optional<tab_groups::TabGroupId> group_ = absl::nullopt;
+  std::optional<tab_groups::TabGroupId> group_ = std::nullopt;
 };
 
 using TabHandle = TabModel::Handle;

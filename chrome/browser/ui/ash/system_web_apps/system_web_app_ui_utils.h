@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_UI_UTILS_H_
 #define CHROME_BROWSER_UI_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_UI_UTILS_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -21,16 +21,16 @@ class Profile;
 namespace ash {
 
 // Returns the system app type for the given App ID.
-absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
+std::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
     const webapps::AppId& app_id);
 
 // Returns the PWA system App ID for the given system app type.
-absl::optional<webapps::AppId> GetAppIdForSystemWebApp(
+std::optional<webapps::AppId> GetAppIdForSystemWebApp(
     Profile* profile,
     SystemWebAppType app_type);
 
-absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
+std::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
     SystemWebAppType app_type,
     int64_t display_id);
@@ -45,7 +45,7 @@ struct SystemAppLaunchParams {
   // specified its WebAppInstallInfo).
   //
   // This is mutually exclusive with non-empty |launch_paths|.
-  absl::optional<GURL> url;
+  std::optional<GURL> url;
 
   // Where the app is launched from.
   apps::LaunchSource launch_source = apps::LaunchSource::kFromChromeInternal;
@@ -123,8 +123,8 @@ bool IsSystemWebApp(Browser* browser);
 bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type);
 
 // Returns the SystemWebAppType that should capture the |url|.
-absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
-                                                             const GURL& url);
+std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
+                                                            const GURL& url);
 
 // Returns the minimum window size for a system web app, or an empty size if
 // the app does not specify a minimum size.

@@ -116,7 +116,7 @@ class DeleteAddressProfileDialogControllerImplTest
         }));
   }
 
-  absl::optional<bool> user_accepted_delete_;
+  std::optional<bool> user_accepted_delete_;
   base::CallbackListSubscription subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;

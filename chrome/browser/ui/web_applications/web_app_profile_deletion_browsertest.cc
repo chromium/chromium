@@ -131,8 +131,8 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
   void PublishWebApp(apps::AppPtr app) override {}
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
-      absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone) override {}
+      std::optional<bool> accessing_camera,
+      std::optional<bool> accessing_microphone) override {}
 };
 
 // Flaky on Windows: https://crbug.com/1247547.

@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_SEARCH_ENGINES_TEMPLATE_URL_TABLE_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/table_model.h"
 
 class TemplateURL;
@@ -70,7 +70,7 @@ class TemplateURLTableModel : public ui::TableModel,
 
   // Returns the index of the TemplateURL, or nullopt if it the TemplateURL is
   // not found.
-  absl::optional<size_t> IndexOfTemplateURL(const TemplateURL* template_url);
+  std::optional<size_t> IndexOfTemplateURL(const TemplateURL* template_url);
 
   // Make the TemplateURL at |index| the default.  Returns the new index, or -1
   // if the index is invalid or it is already the default.

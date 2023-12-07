@@ -122,7 +122,7 @@ class CommerceUiTabHelper
   // Return the PriceInsightsInfo for the last fetched product URL. A reference
   // to this object should not be kept directly, if one is needed, a copy should
   // be made.
-  virtual const absl::optional<PriceInsightsInfo>& GetPriceInsightsInfo();
+  virtual const std::optional<PriceInsightsInfo>& GetPriceInsightsInfo();
 
   // Gets whether the page action with the provided |type| should expand. This
   // method will change the internal state of this class if the ID provided
@@ -139,7 +139,7 @@ class CommerceUiTabHelper
                           bookmarks::BookmarkModel* model,
                           image_fetcher::ImageFetcher* image_fetcher);
 
-  const absl::optional<bool>& GetPendingTrackingStateForTesting();
+  const std::optional<bool>& GetPendingTrackingStateForTesting();
 
   virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
 
@@ -150,13 +150,13 @@ class CommerceUiTabHelper
   void UpdateUiForShoppingServiceReady(ShoppingService* service);
 
   void HandleProductInfoResponse(const GURL& url,
-                                 const absl::optional<const ProductInfo>& info);
+                                 const std::optional<const ProductInfo>& info);
 
-  void MaybeDoProductImageFetch(const absl::optional<ProductInfo>& info);
+  void MaybeDoProductImageFetch(const std::optional<ProductInfo>& info);
 
   void HandlePriceInsightsInfoResponse(
       const GURL& url,
-      const absl::optional<PriceInsightsInfo>& info);
+      const std::optional<PriceInsightsInfo>& info);
 
   void HandleDiscountsResponse(const DiscountsMap& map);
 
@@ -224,10 +224,10 @@ class CommerceUiTabHelper
   bool is_cluster_id_tracked_by_user_{false};
 
   // The cluster ID for the current page, if applicable.
-  absl::optional<uint64_t> cluster_id_for_page_;
+  std::optional<uint64_t> cluster_id_for_page_;
 
   // The product info available for the current page if available.
-  absl::optional<ProductInfo> product_info_for_page_;
+  std::optional<ProductInfo> product_info_for_page_;
 
   // Whether the chip that should expand for the current page has been computed.
   bool is_page_action_expansion_computed_for_page_{false};
@@ -252,23 +252,23 @@ class CommerceUiTabHelper
   // This represents the desired state of the tracking icon prior to getting the
   // callback from the (un)subscribe event. If no value, there is no pending
   // state, otherwise true means "tracking" and false means "not tracking".
-  absl::optional<bool> pending_tracking_state_;
+  std::optional<bool> pending_tracking_state_;
 
   // The url from the previous successful main frame navigation. This will be
   // empty if this is the first navigation for this tab or post-restart.
   GURL previous_main_frame_url_;
 
   // The PriceInsightsInfo associated with the last committed URL.
-  absl::optional<PriceInsightsInfo> price_insights_info_;
+  std::optional<PriceInsightsInfo> price_insights_info_;
 
   // The page action that should expand for the current page. This optional will
   // be reset once the value is read by the UI.
-  absl::optional<PageActionIconType> page_action_to_expand_;
+  std::optional<PageActionIconType> page_action_to_expand_;
 
   // The page action that was expanded for the current page load, if any. This
   // indicates that |page_action_to_expand_| was read by the UI and lets us keep
   // track of which page action actually expanded.
-  absl::optional<PageActionIconType> page_action_expanded_;
+  std::optional<PageActionIconType> page_action_expanded_;
 
   // The price insights icon label type for the current page load.
   PriceInsightsIconView::PriceInsightsIconLabelType price_insights_label_type_ =

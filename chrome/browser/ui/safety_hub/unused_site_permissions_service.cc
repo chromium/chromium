@@ -379,8 +379,7 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
 
 void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
     const std::set<ContentSettingsType> permissions,
-    const absl::optional<content_settings::ContentSettingConstraints>
-        constraint,
+    const std::optional<content_settings::ContentSettingConstraints> constraint,
     const url::Origin origin) {
   for (const auto& permission : permissions) {
     hcsm()->SetContentSettingCustomScope(
@@ -598,7 +597,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
     // Store revoked permissions on HCSM.
     if (!revoked_permissions.empty()) {
       StorePermissionInRevokedPermissionSetting(revoked_permissions,
-                                                absl::nullopt, primary_pattern,
+                                                std::nullopt, primary_pattern,
                                                 secondary_pattern);
     }
 
@@ -622,8 +621,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
     const std::set<ContentSettingsType> permissions,
-    const absl::optional<content_settings::ContentSettingConstraints>
-        constraint,
+    const std::optional<content_settings::ContentSettingConstraints> constraint,
     const url::Origin origin) {
   // The |secondary_pattern| for
   // |ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS| is always wildcard.
@@ -635,8 +633,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
     const std::set<ContentSettingsType> permissions,
-    const absl::optional<content_settings::ContentSettingConstraints>
-        constraint,
+    const std::optional<content_settings::ContentSettingConstraints> constraint,
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
   GURL url = GURL(primary_pattern.ToString());

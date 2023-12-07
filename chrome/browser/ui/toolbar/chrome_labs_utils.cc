@@ -131,7 +131,7 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
 
   return base::ranges::any_of(
       all_labs.begin(), all_labs.end(), [&new_badge_prefs](const LabInfo& lab) {
-        absl::optional<int> new_badge_pref_value =
+        std::optional<int> new_badge_pref_value =
             new_badge_prefs.FindInt(lab.internal_name);
         // Show the dot indicator if new experiments have not been seen yet.
         return new_badge_pref_value ==

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -112,7 +112,7 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   // then we create a set of keys that does not include escape (we arbitrarily
   // chose the 'a' key) which means the user/test can just press escape to exit
   // fullscreen.
-  absl::optional<base::flat_set<ui::DomCode>> codes;
+  std::optional<base::flat_set<ui::DomCode>> codes;
   if (esc_key_locked)
     codes = base::flat_set<ui::DomCode>({ui::DomCode::ESCAPE});
   else

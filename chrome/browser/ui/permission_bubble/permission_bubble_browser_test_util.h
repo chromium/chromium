@@ -56,7 +56,7 @@ class TestPermissionBubbleViewDelegate
   void SetLearnMoreClicked() override {}
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
 
-  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+  std::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override;
   bool ShouldCurrentRequestUseQuietUI() const override;
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override;

@@ -48,11 +48,11 @@ const char kProductClusterTitle[] = "Product Cluster Title";
 //   * If the image URL is not specified, it is left empty in the info object.
 //   * If the cluster_title is not specified, it is left empty in the info
 //   object.
-absl::optional<ProductInfo> CreateProductInfo(
+std::optional<ProductInfo> CreateProductInfo(
     uint64_t cluster_id,
     const GURL& url = GURL(),
     const std::string cluster_title = std::string()) {
-  absl::optional<ProductInfo> info;
+  std::optional<ProductInfo> info;
   info.emplace();
   info->product_cluster_id = cluster_id;
   if (!url.is_empty()) {
@@ -123,12 +123,12 @@ class CommerceUiTabHelperTest : public testing::Test {
 
   // Passthrough to private methods in ShoppindListUiTabHelper:
   void HandleProductInfoResponse(const GURL& url,
-                                 const absl::optional<ProductInfo>& info) {
+                                 const std::optional<ProductInfo>& info) {
     tab_helper_->HandleProductInfoResponse(url, info);
   }
 
   // Passthrough methods for access to protected members.
-  const absl::optional<bool>& GetPendingTrackingStateForTesting() {
+  const std::optional<bool>& GetPendingTrackingStateForTesting() {
     return tab_helper_->GetPendingTrackingStateForTesting();
   }
 
@@ -155,7 +155,7 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionEventsUpdateState) {
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
                      kClusterId, true);
 
-  absl::optional<ProductInfo> info =
+  std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
@@ -189,7 +189,7 @@ TEST_F(CommerceUiTabHelperTest,
                      kClusterId, true);
 
   // Intentionally exclude the image here.
-  absl::optional<ProductInfo> info = CreateProductInfo(kClusterId);
+  std::optional<ProductInfo> info = CreateProductInfo(kClusterId);
   // We do the setup for the image fetcher, but it won't be used since the
   // shopping service doesn't return an image URL.
   SetupImageFetcherForSimpleImage();
@@ -214,7 +214,7 @@ TEST_F(CommerceUiTabHelperTest,
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
                      kClusterId, true);
 
-  absl::optional<ProductInfo> info =
+  std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
   SetupImageFetcherForSimpleImage();
 
@@ -236,7 +236,7 @@ TEST_F(CommerceUiTabHelperTest,
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
                      kClusterId, true);
 
-  absl::optional<ProductInfo> info =
+  std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
@@ -276,7 +276,7 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
                      GURL("https://example.com/different_url.html"), kClusterId,
                      true);
 
-  absl::optional<ProductInfo> info =
+  std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
@@ -306,11 +306,11 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
 
   shopping_service_->SetIsPriceInsightsEligible(true);
 
-  absl::optional<ProductInfo> product_info = CreateProductInfo(
+  std::optional<ProductInfo> product_info = CreateProductInfo(
       kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
   shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
 
-  absl::optional<PriceInsightsInfo> price_insights_info =
+  std::optional<PriceInsightsInfo> price_insights_info =
       CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
       price_insights_info);
@@ -329,7 +329,7 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
                    ->GetEntryForKey(SidePanelEntry::Key(
                        SidePanelEntry::Id::kShoppingInsights)));
 
-  shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
   shopping_service_->SetIsPriceInsightsEligible(true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
@@ -344,7 +344,7 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
 TEST_F(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfEmptyProductInfo) {
   shopping_service_->SetIsPriceInsightsEligible(true);
-  shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
   base::RunLoop().RunUntilIdle();
@@ -356,7 +356,7 @@ TEST_F(CommerceUiTabHelperTest,
        TestPriceInsightsIconNotAvailableIfNoProductClusterTitle) {
   shopping_service_->SetIsPriceInsightsEligible(true);
 
-  absl::optional<ProductInfo> info =
+  std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 

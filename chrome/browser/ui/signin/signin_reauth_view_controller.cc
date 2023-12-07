@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -34,7 +35,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -192,7 +192,7 @@ void SigninReauthViewController::OnGaiaReauthPageComplete(
 
   if (ui_state_ == UIState::kGaiaReauthDialog ||
       ui_state_ == UIState::kGaiaReauthTab) {
-    absl::optional<UserAction> action;
+    std::optional<UserAction> action;
     if (gaia_reauth_page_result_ == signin::ReauthResult::kSuccess) {
       action = UserAction::kPassGaiaReauth;
     }

@@ -365,7 +365,7 @@ void BrowserCommandController::ExtensionStateChanged() {
 }
 
 void BrowserCommandController::TabKeyboardFocusChangedTo(
-    absl::optional<int> index) {
+    std::optional<int> index) {
   UpdateCommandsForTabKeyboardFocus(index);
 }
 
@@ -928,7 +928,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ash::BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
           user->GetAccountId(), user->username_hash(),
           base::BindOnce(
-              [](bool result, const absl::optional<uint64_t>& required_size) {
+              [](bool result, const std::optional<uint64_t>& required_size) {
                 if (!result && required_size.has_value())
                   ash::OpenBrowserDataMigrationErrorDialog(*required_size);
               }));
@@ -1888,7 +1888,7 @@ void BrowserCommandController::UpdateCommandsForMediaRouter() {
 }
 
 void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
-    absl::optional<int> target_index) {
+    std::optional<int> target_index) {
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TARGET_TAB, !browser_->is_type_app() &&
                                     !browser_->is_type_app_popup() &&

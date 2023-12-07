@@ -25,11 +25,11 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
   if (!IsURLValidForSavedTabGroups(contents->GetVisibleURL())) {
     return SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"Unsavable tab",
                             saved_tab_group_id,
-                            /*position=*/absl::nullopt);
+                            /*position=*/std::nullopt);
   }
 
   SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
-                       saved_tab_group_id, /*position=*/absl::nullopt);
+                       saved_tab_group_id, /*position=*/std::nullopt);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
   return tab;
 }
@@ -39,8 +39,8 @@ content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
     Browser* browser,
     Profile* profile,
     WindowOpenDisposition disposition,
-    absl::optional<int> tabstrip_index,
-    absl::optional<tab_groups::TabGroupId> local_group_id) {
+    std::optional<int> tabstrip_index,
+    std::optional<tab_groups::TabGroupId> local_group_id) {
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = disposition;
   params.browser = browser;

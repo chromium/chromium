@@ -278,8 +278,8 @@ std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
           [](HoldingSpaceImage::PlaceholderImageSkiaResolver
                  placeholder_image_skia_resolver,
              const base::FilePath& file_path, const gfx::Size& size,
-             const absl::optional<bool>& dark_background,
-             const absl::optional<bool>& is_folder) {
+             const std::optional<bool>& dark_background,
+             const std::optional<bool>& is_folder) {
             // When the initial placeholder is being created during
             // construction, `dark_background` and `is_folder` will be absent.
             // In that case, don't show a placeholder to minimize jank.

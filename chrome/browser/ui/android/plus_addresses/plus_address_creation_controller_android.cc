@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
+
+#include <optional>
+
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plus_addresses {
 // static
@@ -39,9 +41,9 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
     // missing email case below.
     return;
   }
-  absl::optional<std::string> maybe_email =
+  std::optional<std::string> maybe_email =
       plus_address_service->GetPrimaryEmail();
-  if (maybe_email == absl::nullopt) {
+  if (maybe_email == std::nullopt) {
     return;
   }
 
@@ -98,7 +100,7 @@ void PlusAddressCreationControllerAndroid::set_suppress_ui_for_testing(
   suppress_ui_for_testing_ = should_suppress;
 }
 
-absl::optional<PlusProfile>
+std::optional<PlusProfile>
 PlusAddressCreationControllerAndroid::get_plus_profile_for_testing() {
   return plus_profile_;
 }

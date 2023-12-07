@@ -181,7 +181,7 @@ WebAppControllerBrowserTest::NavigateInNewWindowAndAwaitInstallabilityCheck(
   return new_browser;
 }
 
-absl::optional<webapps::AppId>
+std::optional<webapps::AppId>
 WebAppControllerBrowserTest::FindAppWithUrlInScope(const GURL& url) {
   return provider().registrar_unsafe().FindAppWithUrlInScope(url);
 }

@@ -58,9 +58,8 @@ CommandSource::CommandResults OpenURLCommandSource::GetCommands(
     auto item = std::make_unique<CommandItem>(title, score, ranges);
     // base::Unretained is safe because commands are reset when a browser is
     // closed.
-    item->command =
-        base::BindOnce(&chrome::AddTabAt, base::Unretained(browser),
-                       command_spec.second, -1, true, absl::nullopt);
+    item->command = base::BindOnce(&chrome::AddTabAt, base::Unretained(browser),
+                                   command_spec.second, -1, true, std::nullopt);
     results.push_back(std::move(item));
   }
   return results;

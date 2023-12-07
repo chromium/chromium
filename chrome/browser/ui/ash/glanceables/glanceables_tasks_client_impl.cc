@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash {
@@ -411,7 +411,7 @@ void TasksClientImpl::OnTaskAdded(
   const auto* const task = iter->second.AddAt(
       /*index=*/0,
       std::make_unique<api::Task>(result.value()->id(), result.value()->title(),
-                                  /*completed=*/false, /*due=*/absl::nullopt,
+                                  /*completed=*/false, /*due=*/std::nullopt,
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false, /*has_notes=*/false,
                                   result.value()->updated()));

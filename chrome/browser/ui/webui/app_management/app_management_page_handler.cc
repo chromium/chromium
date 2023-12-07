@@ -623,7 +623,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
   app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
-  // On other OS's, is_pinned defaults to absl::nullopt, which is used to
+  // On other OS's, is_pinned defaults to std::nullopt, which is used to
   // represent the fact that there is no concept of being pinned.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app->is_pinned = shelf_delegate_.IsPinned(update.AppId());

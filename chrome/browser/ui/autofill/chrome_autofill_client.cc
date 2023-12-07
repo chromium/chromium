@@ -919,7 +919,7 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   CHECK(controller);
 
-  absl::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
+  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents()->GetBrowserContext());
   CHECK(account);
   controller->OfferEdit(

@@ -67,8 +67,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   // Stores a RunLoop::QuitClosure(). Only set in tests.
-  absl::optional<base::OnceClosure> blocking_until_result_shown_ =
-      absl::nullopt;
+  std::optional<base::OnceClosure> blocking_until_result_shown_ = std::nullopt;
 };
 
 }  // namespace plus_addresses

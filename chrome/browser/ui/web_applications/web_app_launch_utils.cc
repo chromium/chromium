@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -70,7 +71,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/page_transition_types.h"
@@ -280,17 +280,17 @@ base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
 
 }  // namespace
 
-absl::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
+std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
   const WebAppProvider* const provider =
       WebAppProvider::GetForWebApps(browser->profile());
   if (!provider) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
@@ -319,7 +319,7 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 }
 
 Browser* ReparentWebAppForActiveTab(Browser* browser) {
-  absl::optional<webapps::AppId> app_id = GetWebAppForActiveTab(browser);
+  std::optional<webapps::AppId> app_id = GetWebAppForActiveTab(browser);
   if (!app_id) {
     return nullptr;
   }
@@ -346,7 +346,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   }
 
   if (registrar.IsInstalled(app_id)) {
-    absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
+    std::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope) {
       app_scope = registrar.GetAppStartUrl(app_id).GetWithoutFilename();
     }
@@ -460,7 +460,7 @@ void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile())
           ->registrar_unsafe();
-  absl::optional<GURL> pinned_home_tab_url =
+  std::optional<GURL> pinned_home_tab_url =
       registrar.GetAppPinnedHomeTabUrl(app_id);
 
   if (registrar.IsTabbedWindowModeEnabled(app_id) &&
@@ -544,7 +544,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Browser* browser = nav_params.browser;
-  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
+  const std::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
   if (capturing_system_app_type &&
       (!browser ||

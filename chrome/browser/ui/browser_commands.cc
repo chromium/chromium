@@ -1070,7 +1070,7 @@ bool CanMoveTabsToNewWindow(Browser* browser,
 
 void MoveTabsToNewWindow(Browser* browser,
                          const std::vector<int>& tab_indices,
-                         absl::optional<tab_groups::TabGroupId> group) {
+                         std::optional<tab_groups::TabGroupId> group) {
   if (tab_indices.empty()) {
     return;
   }
@@ -2122,8 +2122,8 @@ void ToggleCommander(Browser* browser) {
 }
 
 #if !defined(TOOLKIT_VIEWS)
-absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
-  return absl::nullopt;
+std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
+  return std::nullopt;
 }
 #endif
 

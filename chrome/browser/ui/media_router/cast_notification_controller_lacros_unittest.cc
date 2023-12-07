@@ -133,7 +133,7 @@ TEST_F(CastNotificationControllerLacrosTest, ClickOnStopButton) {
           WithArg<1>([](const message_center::Notification& notification) {
             // Clicking on the stop button should call TerminateRoute().
             notification.delegate()->Click(/*button_index=*/0,
-                                           /*reply=*/absl::nullopt);
+                                           /*reply=*/std::nullopt);
           }));
   notification_controller_->OnRoutesUpdated({CreateMediaRoute()});
 }
@@ -150,7 +150,7 @@ TEST_F(CastNotificationControllerLacrosTest, FreezeStream) {
           WithArg<1>([](const message_center::Notification& notification) {
             // Clicking on the pause button should call Freeze().
             notification.delegate()->Click(/*button_index=*/0,
-                                           /*reply=*/absl::nullopt);
+                                           /*reply=*/std::nullopt);
           }));
   notification_controller_->OnRoutesUpdated({CreateMediaRoute()});
 }
@@ -167,7 +167,7 @@ TEST_F(CastNotificationControllerLacrosTest, UnfreezeStream) {
           WithArg<1>([](const message_center::Notification& notification) {
             // Clicking on the resume button should call Unfreeze().
             notification.delegate()->Click(/*button_index=*/0,
-                                           /*reply=*/absl::nullopt);
+                                           /*reply=*/std::nullopt);
           }));
   notification_controller_->OnRoutesUpdated({CreateMediaRoute()});
 }

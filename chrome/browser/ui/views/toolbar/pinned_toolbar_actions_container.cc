@@ -459,7 +459,7 @@ int PinnedToolbarActionsContainer::OnDragUpdated(
 
   // Check if the action item for the dragged icon is pinned (e.g. an action
   // item could be unpinned through a sync update while dragging its icon).
-  absl::optional<actions::ActionId> action_id =
+  std::optional<actions::ActionId> action_id =
       actions::ActionIdMap::StringToActionId(data.id());
   if (!action_id.has_value() || !model_->Contains(*action_id)) {
     return ui::DragDropTypes::DRAG_NONE;

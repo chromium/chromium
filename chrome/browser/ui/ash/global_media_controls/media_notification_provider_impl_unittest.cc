@@ -115,7 +115,7 @@ class MediaTestShellDelegate : public TestShellDelegate {
 class TestMediaNotificationItem
     : public media_message_center::test::MockMediaNotificationItem {
  public:
-  absl::optional<base::UnguessableToken> GetSourceId() const override {
+  std::optional<base::UnguessableToken> GetSourceId() const override {
     return source_id_;
   }
 

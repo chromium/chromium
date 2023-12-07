@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/time/time.h"
 #include "chrome/browser/extensions/cws_info_service.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct MenuNotificationEntry {
   int command = 0;
@@ -79,9 +79,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   ~SafetyHubMenuNotificationService() override;
 
   // Returns the CommandID and notification string that should be shown in the
-  // three-dot menu. When no notification should be shown, absl::nullopt will be
+  // three-dot menu. When no notification should be shown, std::nullopt will be
   // returned.
-  absl::optional<MenuNotificationEntry> GetNotificationToShow();
+  std::optional<MenuNotificationEntry> GetNotificationToShow();
 
   // Dismisses all the active menu notifications.
   void DismissActiveNotification();
@@ -90,8 +90,8 @@ class SafetyHubMenuNotificationService : public KeyedService {
   void DismissPasswordNotification();
 
   // Returns the module of the notification that is currently active.
-  absl::optional<safety_hub::SafetyHubModuleType>
-  GetModuleOfActiveNotification() const;
+  std::optional<safety_hub::SafetyHubModuleType> GetModuleOfActiveNotification()
+      const;
 
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(
@@ -99,8 +99,8 @@ class SafetyHubMenuNotificationService : public KeyedService {
 
  private:
   // Gets the latest result from each Safety Hub service. Will return
-  // absl::nullopt when there is no result from one of the services.
-  absl::optional<ResultMap> GetResultsFromAllModules();
+  // std::nullopt when there is no result from one of the services.
+  std::optional<ResultMap> GetResultsFromAllModules();
 
   // Stores the notifications (which should have their results updated) as a
   // dict in the prefs.

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -18,7 +19,6 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -41,7 +41,7 @@ bool ShouldExtensionBeReviewed(
   if (warning_acked || !is_extension) {
     return false;
   }
-  absl::optional<extensions::CWSInfoService::CWSInfo> extension_info =
+  std::optional<extensions::CWSInfoService::CWSInfo> extension_info =
       extension_info_service->GetCWSInfo(extension);
   if (extension_info.has_value() && extension_info->is_present) {
     // When only considering extensions that have been unpublished for a long
@@ -94,7 +94,7 @@ SafetyHubExtensionsResult& SafetyHubExtensionsResult::operator=(
 SafetyHubExtensionsResult::~SafetyHubExtensionsResult() = default;
 
 // static
-absl::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubService::Result>>
 SafetyHubExtensionsResult::GetResult(
     const extensions::CWSInfoService* extension_info_service,
     Profile* profile,

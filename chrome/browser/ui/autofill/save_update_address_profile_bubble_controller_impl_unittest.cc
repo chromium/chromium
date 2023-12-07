@@ -210,7 +210,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
 
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
-  EXPECT_NE(controller()->GetHeaderImages(), absl::nullopt);
+  EXPECT_NE(controller()->GetHeaderImages(), std::nullopt);
   EXPECT_TRUE(controller()->GetBodyText().empty());
   EXPECT_EQ(controller()->GetAddressSummary(),
             GetEnvelopeStyleAddress(profile, app_locale(), true, true));
@@ -235,7 +235,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(
       controller()->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_EQ(controller()->GetHeaderImages(), absl::nullopt);
+  EXPECT_EQ(controller()->GetHeaderImages(), std::nullopt);
   EXPECT_TRUE(controller()->GetBodyText().empty());
   EXPECT_TRUE(controller()->GetAddressSummary().empty());
   EXPECT_TRUE(controller()->GetProfileEmail().empty());
@@ -260,7 +260,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest, SavingAccountAddress) {
 
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
-  EXPECT_NE(controller()->GetHeaderImages(), absl::nullopt);
+  EXPECT_NE(controller()->GetHeaderImages(), std::nullopt);
   EXPECT_TRUE(controller()->GetBodyText().empty());
   EXPECT_EQ(controller()->GetAddressSummary(),
             GetEnvelopeStyleAddress(profile, app_locale(), true, true));
@@ -294,7 +294,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(
       controller()->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_EQ(controller()->GetHeaderImages(), absl::nullopt);
+  EXPECT_EQ(controller()->GetHeaderImages(), std::nullopt);
   EXPECT_TRUE(controller()->GetBodyText().empty());
   EXPECT_TRUE(controller()->GetAddressSummary().empty());
   EXPECT_TRUE(controller()->GetProfileEmail().empty());
@@ -324,7 +324,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE));
-  EXPECT_NE(controller()->GetHeaderImages(), absl::nullopt);
+  EXPECT_NE(controller()->GetHeaderImages(), std::nullopt);
   EXPECT_EQ(controller()->GetBodyText(),
             l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE, email));

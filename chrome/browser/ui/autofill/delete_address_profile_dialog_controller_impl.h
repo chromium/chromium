@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_DELETE_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_DELETE_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -61,7 +61,7 @@ class DeleteAddressProfileDialogControllerImpl
   bool is_dialog_opened_ = false;
   bool is_account_address_profile_;
   AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback_;
-  absl::optional<bool> user_accepted_;
+  std::optional<bool> user_accepted_;
   DeleteAddressProfileDialogViewFactory view_factory_for_test_;
 
   base::WeakPtrFactory<DeleteAddressProfileDialogController> weak_ptr_factory_{

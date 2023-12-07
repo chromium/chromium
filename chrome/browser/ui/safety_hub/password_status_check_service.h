@@ -71,7 +71,7 @@ class PasswordStatusCheckService
 
   // Returns the latest PasswordStatusCheckResult that is available in memory.
   // TODO(crbug.com/1443466): This will be a SafetyHubService implementation.
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+  std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
 
   // Returns if there is any ongoing password check or insecure credential
   // check. Returns true if is_update_credential_count_pending() or

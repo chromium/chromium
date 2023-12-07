@@ -16,7 +16,7 @@ namespace high_efficiency {
 bool IsURLSupported(GURL url);
 
 // Returns the discard reason if |contents| has been discarded
-absl::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
+std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents);
 
 // Returns if the given site is in the discard exception list

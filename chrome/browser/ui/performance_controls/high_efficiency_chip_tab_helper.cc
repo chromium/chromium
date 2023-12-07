@@ -115,7 +115,7 @@ void HighEfficiencyChipTabHelper::ComputeChipState(
   // This high efficiency chip only appears for eligible sites that have been
   // proactively discarded.
   bool const was_discarded = navigation_handle->ExistingDocumentWasDiscarded();
-  absl::optional<mojom::LifecycleUnitDiscardReason> const discard_reason =
+  std::optional<mojom::LifecycleUnitDiscardReason> const discard_reason =
       high_efficiency::GetDiscardReason(navigation_handle->GetWebContents());
   bool const is_site_supported =
       high_efficiency::IsURLSupported(navigation_handle->GetURL());

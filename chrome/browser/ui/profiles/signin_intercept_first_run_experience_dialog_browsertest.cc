@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       CoreAccountId());
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
 
   EXPECT_TRUE(controller()->ShowsModalDialog());

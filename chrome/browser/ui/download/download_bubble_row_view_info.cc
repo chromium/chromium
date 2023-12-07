@@ -570,11 +570,11 @@ void DownloadBubbleRowViewInfo::PopulateDangerousUiPattern() {
 void DownloadBubbleRowViewInfo::Reset() {
   icon_override_ = nullptr;
   secondary_color_ = ui::kColorSecondaryForeground;
-  secondary_text_color_ = absl::nullopt;
+  secondary_text_color_ = std::nullopt;
   quick_actions_.clear();
   main_button_enabled_ = true;
   has_subpage_ = false;
-  primary_button_command_ = absl::nullopt;
+  primary_button_command_ = std::nullopt;
   has_progress_bar_ = false;
   is_progress_bar_looping_ = false;
 }

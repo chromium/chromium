@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_DISPLAY_H_
 #define CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_DISPLAY_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace offline_items_collection {
 struct ContentId;
@@ -44,9 +44,9 @@ class DownloadDisplay {
   // Describes updates to be made to the icon.
   struct IconUpdateInfo {
     // Nullopt indicates no change.
-    absl::optional<IconState> new_state = absl::nullopt;
-    absl::optional<IconActive> new_active = absl::nullopt;
-    absl::optional<ProgressInfo> new_progress = absl::nullopt;
+    std::optional<IconState> new_state = std::nullopt;
+    std::optional<IconActive> new_active = std::nullopt;
+    std::optional<ProgressInfo> new_progress = std::nullopt;
 
     // Whether an animated icon will be shown.
     bool show_animation = false;

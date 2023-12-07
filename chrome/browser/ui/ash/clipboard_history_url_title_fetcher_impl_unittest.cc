@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/clipboard_history_url_title_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -153,7 +153,7 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest,
        QueriedTitleReflectsBrowsingHistory) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl("https://www.url.com");
-  base::test::TestFuture<absl::optional<std::u16string>> title_future;
+  base::test::TestFuture<std::optional<std::u16string>> title_future;
 
   {
     SCOPED_TRACE("Query a title found in the browsing history.");
@@ -187,7 +187,7 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest, HistoryQueryFailsWithMultiProfile) {
   const GURL kTestUrl("https://www.url.com");
   EXPECT_CALL(*history_service(), QueryURL(kTestUrl, false, _, _))
       .WillRepeatedly(&RunHistoryEntryFoundCallback);
-  base::test::TestFuture<absl::optional<std::u16string>> title_future;
+  base::test::TestFuture<std::optional<std::u16string>> title_future;
 
   {
     SCOPED_TRACE("Query a title while the primary profile is active.");

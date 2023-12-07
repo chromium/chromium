@@ -201,7 +201,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
 // Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
 // available.
 std::u16string GetOpenPWALabel(const Browser* browser) {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::GetWebAppForActiveTab(browser);
   if (!app_id.has_value()) {
     return std::u16string();
@@ -439,7 +439,7 @@ bool ProfileSubMenuModel::BuildSyncSection() {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
-  const absl::optional<AvatarSyncErrorType> error =
+  const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile_);
   if (error.has_value()) {
     if (error == AvatarSyncErrorType::kSyncPaused) {
@@ -861,11 +861,11 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void AppMenuModel::LogSafetyHubInteractionMetrics(
-    absl::optional<safety_hub::SafetyHubModuleType> expected_module) {
+    std::optional<safety_hub::SafetyHubModuleType> expected_module) {
   auto const* safety_hub_menu_notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(
           browser_->profile());
-  absl::optional<safety_hub::SafetyHubModuleType> sh_module =
+  std::optional<safety_hub::SafetyHubModuleType> sh_module =
       safety_hub_menu_notification_service->GetModuleOfActiveNotification();
   if (sh_module.has_value() && (!expected_module.has_value() ||
                                 expected_module.value() == sh_module.value())) {
@@ -1543,7 +1543,7 @@ void AppMenuModel::Build() {
                   kDefaultIconSize)
             : ui::ImageModel::FromVectorIcon(
                   kBrowserToolsUpdateIcon,
-                  app_menu_icon_controller_->GetIconColor(absl::nullopt));
+                  app_menu_icon_controller_->GetIconColor(std::nullopt));
     if (browser_defaults::kShowUpgradeMenuItem) {
       AddItemWithIcon(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName(),
                       update_icon);
@@ -1562,7 +1562,7 @@ void AppMenuModel::Build() {
     auto* safety_hub_menu_notification_service =
         SafetyHubMenuNotificationServiceFactory::GetForProfile(
             browser_->profile());
-    absl::optional<MenuNotificationEntry> notification =
+    std::optional<MenuNotificationEntry> notification =
         safety_hub_menu_notification_service->GetNotificationToShow();
     if (notification.has_value()) {
       base::UmaHistogramEnumeration(
@@ -1571,7 +1571,7 @@ void AppMenuModel::Build() {
       base::UmaHistogramEnumeration(
           "Settings.SafetyHub.EntryPointImpression",
           safety_hub::SafetyHubEntryPoint::kMenuNotifications);
-      absl::optional<safety_hub::SafetyHubModuleType> sh_module =
+      std::optional<safety_hub::SafetyHubModuleType> sh_module =
           safety_hub_menu_notification_service->GetModuleOfActiveNotification();
       if (sh_module.has_value()) {
         base::UmaHistogramEnumeration(
@@ -1766,7 +1766,7 @@ void AppMenuModel::Build() {
     } else if (dom_distiller::ShowReaderModeOption(
                    browser_->profile()->GetPrefs())) {
       // Show the menu option if the page is distillable.
-      absl::optional<dom_distiller::DistillabilityResult> distillability =
+      std::optional<dom_distiller::DistillabilityResult> distillability =
           dom_distiller::GetLatestResult(
               browser()->tab_strip_model()->GetActiveWebContents());
       if (distillability && distillability.value().is_distillable)
@@ -1945,7 +1945,7 @@ void AppMenuModel::UpdateSettingsItemState() {
           policy::SystemFeature::kBrowserSettings,
           g_browser_process->local_state());
 
-  absl::optional<size_t> index = GetIndexOfCommandId(IDC_OPTIONS);
+  std::optional<size_t> index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index.has_value())
     SetEnabledAt(index.value(), !is_disabled);
 

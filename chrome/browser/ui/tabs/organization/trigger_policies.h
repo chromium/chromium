@@ -65,8 +65,8 @@ class UsageTickClock final : public base::TickClock,
   const base::TimeTicks start_time_;
 
   base::TimeDelta usage_time_in_completed_sessions_ = base::TimeDelta();
-  absl::optional<base::TimeTicks> current_usage_session_start_time_ =
-      absl::nullopt;
+  std::optional<base::TimeTicks> current_usage_session_start_time_ =
+      std::nullopt;
 };
 
 class BackoffLevelProvider {
@@ -119,7 +119,7 @@ class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
   const std::unique_ptr<BackoffLevelProvider> backoff_level_provider_;
 
   base::TimeTicks cycle_start_time_;
-  absl::optional<float> best_score = absl::nullopt;
+  std::optional<float> best_score = std::nullopt;
   bool has_triggered_ = false;
 };
 

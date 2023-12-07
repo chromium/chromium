@@ -138,7 +138,7 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* node = model->AddFolder(
       self.bookmarkNode, position,
       /*title=*/std::u16string(), /*meta_info=*/nullptr,
-      /*creation_time=*/absl::nullopt, bookmarkFolder.bookmarkGUID);
+      /*creation_time=*/std::nullopt, bookmarkFolder.bookmarkGUID);
   if (!node) {
     AppleScript::SetError(AppleScript::Error::kCreateBookmarkFolder);
     return;
@@ -187,7 +187,7 @@ using bookmarks::BookmarkNode;
 
   const BookmarkNode* node = model->AddURL(
       self.bookmarkNode, position, /*title=*/std::u16string(), url,
-      /*meta_info=*/nullptr, /*creation_time=*/absl::nullopt,
+      /*meta_info=*/nullptr, /*creation_time=*/std::nullopt,
       bookmarkItem.bookmarkGUID, /*added_by_user=*/true);
   if (!node) {
     AppleScript::SetError(AppleScript::Error::kCreateBookmarkItem);

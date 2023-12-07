@@ -148,7 +148,7 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
 std::vector<GroupMatch> GroupsMatchingInput(
     const Browser* browser,
     const std::u16string& input,
-    absl::optional<tab_groups::TabGroupId> group_to_exclude) {
+    std::optional<tab_groups::TabGroupId> group_to_exclude) {
   DCHECK(browser);
   std::vector<GroupMatch> results;
   FuzzyFinder finder(input);

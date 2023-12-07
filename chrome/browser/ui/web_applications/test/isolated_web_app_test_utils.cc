@@ -110,7 +110,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
       url_info, DevModeProxy{.proxy_url = proxy_origin},
-      /*expected_version=*/absl::nullopt,
+      /*expected_version=*/std::nullopt,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 

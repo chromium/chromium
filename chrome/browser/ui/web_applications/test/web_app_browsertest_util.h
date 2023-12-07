@@ -118,7 +118,7 @@ bool IsBrowserOpen(const Browser* test_browser);
 
 // Install a web policy app with |url|.
 // Returns a valid app ID of the installed app or nullopt.
-absl::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url);
+std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url);
 
 // Helper class that lets you await one Browser added and one Browser removed
 // event. Optionally filters to a specific Browser with |filter|. Useful for

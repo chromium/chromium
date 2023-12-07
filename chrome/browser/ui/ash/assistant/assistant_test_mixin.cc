@@ -150,7 +150,7 @@ class ResponseWaiter : private views::ViewObserver {
   }
 
   std::string GetResponseTextRecursive(views::View* view) const {
-    absl::optional<std::string> response_maybe = GetResponseTextOfView(view);
+    std::optional<std::string> response_maybe = GetResponseTextOfView(view);
     if (response_maybe) {
       return response_maybe.value() + "\n";
     } else {
@@ -161,7 +161,7 @@ class ResponseWaiter : private views::ViewObserver {
     }
   }
 
-  virtual absl::optional<std::string> GetResponseTextOfView(
+  virtual std::optional<std::string> GetResponseTextOfView(
       views::View* view) const = 0;
 
   raw_ptr<views::View, ExperimentalAsh> parent_view_;
@@ -219,12 +219,12 @@ class TypedResponseWaiter : public ResponseWaiter {
 
  private:
   // ResponseWaiter overrides:
-  absl::optional<std::string> GetResponseTextOfView(
+  std::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
     if (view->GetClassName() == class_name_) {
       return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string class_name_;
@@ -246,11 +246,11 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
 
  private:
   // ExpectedResponseWaiter overrides:
-  absl::optional<std::string> GetResponseTextOfView(
+  std::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
     if (view->GetClassName() == class_name_)
       return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string class_name_;
@@ -456,8 +456,8 @@ T AssistantTestMixin::SyncCall(
   return result;
 }
 
-template absl::optional<double> AssistantTestMixin::SyncCall(
-    base::OnceCallback<void(base::OnceCallback<void(absl::optional<double>)>)>
+template std::optional<double> AssistantTestMixin::SyncCall(
+    base::OnceCallback<void(base::OnceCallback<void(std::optional<double>)>)>
         func);
 
 void AssistantTestMixin::ExpectCardResponse(

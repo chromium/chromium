@@ -18,19 +18,19 @@
 
 namespace {
 
-absl::optional<web_app::SubAppsInstallDialogController::DialogActionForTesting>
+std::optional<web_app::SubAppsInstallDialogController::DialogActionForTesting>
     g_dialog_override_for_testing;
 
-}
+}  // namespace.
 
 namespace web_app {
 
 // static
 [[nodiscard]] base::AutoReset<
-    absl::optional<SubAppsInstallDialogController::DialogActionForTesting>>
+    std::optional<SubAppsInstallDialogController::DialogActionForTesting>>
 SubAppsInstallDialogController::SetAutomaticActionForTesting(
     DialogActionForTesting auto_accept) {
-  return base::AutoReset<absl::optional<DialogActionForTesting>>(
+  return base::AutoReset<std::optional<DialogActionForTesting>>(
       &g_dialog_override_for_testing, auto_accept);
 }
 

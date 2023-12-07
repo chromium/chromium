@@ -26,7 +26,7 @@ const int kCreateRouteTimeoutSecondsForDesktop = 120;
 const int kCreateRouteTimeoutSecondsForRemotePlayback = 60;
 
 #if BUILDFLAG(IS_MAC)
-absl::optional<bool> g_screen_capture_allowed_for_testing;
+std::optional<bool> g_screen_capture_allowed_for_testing;
 #endif
 
 }  // namespace

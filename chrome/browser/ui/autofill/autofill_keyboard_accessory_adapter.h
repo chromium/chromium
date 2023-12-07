@@ -86,7 +86,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
       const content::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged() override;
   void AxAnnounce(const std::u16string& text) override;
-  absl::optional<int32_t> GetAxUniqueId() override;
+  std::optional<int32_t> GetAxUniqueId() override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillPopupController> controller) override;
 
@@ -104,7 +104,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
                                   std::u16string* title,
                                   std::u16string* body) override;
   bool RemoveSuggestion(int index) override;
-  void SelectSuggestion(absl::optional<size_t> index) override;
+  void SelectSuggestion(std::optional<size_t> index) override;
   PopupType GetPopupType() const override;
   AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
       const override;
@@ -139,7 +139,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   // Position that the front element has in the suggestion list returned by
   // controller_. It is used to determine the offset suggestions.
-  absl::optional<int> front_element_;
+  std::optional<int> front_element_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryAdapter> weak_ptr_factory_{
       this};

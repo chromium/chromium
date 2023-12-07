@@ -71,7 +71,7 @@ class TabOrganizationTest : public testing::Test {
   }
 
   content::WebContents* AddTab(TabStripModel* tab_strip_model = nullptr,
-                               absl::optional<GURL> url = absl::nullopt) {
+                               std::optional<GURL> url = std::nullopt) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
     content::WebContentsTester::For(contents_unique_ptr.get())
@@ -98,7 +98,7 @@ class TabOrganizationTest : public testing::Test {
     std::unique_ptr<TabOrganization> organization =
         std::make_unique<TabOrganization>(
             std::vector<std::unique_ptr<TabData>>{},
-            std::vector<std::u16string>{name}, 0u, absl::nullopt);
+            std::vector<std::u16string>{name}, 0u, std::nullopt);
 
     organization->AddTabData(std::make_unique<TabData>(
         tab_strip_model(), AddTab(tab_strip_model())));
@@ -363,14 +363,14 @@ TEST_F(TabOrganizationTest, TabDataPinnedTabsNotValid) {
 // TabOrganization tests.
 
 TEST_F(TabOrganizationTest, TabOrganizationIDs) {
-  TabOrganization organization_1({}, {u"default_name"}, 0u, absl::nullopt);
-  TabOrganization organization_2({}, {u"default_name"}, 0u, absl::nullopt);
+  TabOrganization organization_1({}, {u"default_name"}, 0u, std::nullopt);
+  TabOrganization organization_2({}, {u"default_name"}, 0u, std::nullopt);
 
   EXPECT_NE(organization_1.organization_id(), organization_2.organization_id());
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
-  TabOrganization organization({}, {u"default_name"}, 0u, absl::nullopt);
+  TabOrganization organization({}, {u"default_name"}, 0u, std::nullopt);
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
   content::WebContents* web_contents = AddTab();
   std::unique_ptr<TabData> tab_data =
@@ -381,7 +381,7 @@ TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
-  TabOrganization organization({}, {u"default_name"}, 0u, absl::nullopt);
+  TabOrganization organization({}, {u"default_name"}, 0u, std::nullopt);
   content::WebContents* web_contents = AddTab();
   std::unique_ptr<TabData> tab_data =
       std::make_unique<TabData>(tab_strip_model(), web_contents);
@@ -396,7 +396,7 @@ TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
 TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
   std::u16string name_0 = u"name_0";
   std::u16string name_1 = u"name_1";
-  TabOrganization organization({}, {name_0, name_1}, 0u, absl::nullopt);
+  TabOrganization organization({}, {name_0, name_1}, 0u, std::nullopt);
   EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
   EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
             0);
@@ -418,7 +418,7 @@ TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationReject) {
-  TabOrganization reject_organization({}, {u"default_name"}, 0u, absl::nullopt);
+  TabOrganization reject_organization({}, {u"default_name"}, 0u, std::nullopt);
 
   reject_organization.Reject();
   EXPECT_EQ(reject_organization.choice(),
@@ -433,7 +433,7 @@ TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
-  TabOrganization organization({}, {u"default_name"}, 0u, absl::nullopt);
+  TabOrganization organization({}, {u"default_name"}, 0u, std::nullopt);
 
   content::WebContents* tab_1 = AddTab();
   std::unique_ptr<TabData> tab_data_1 =
@@ -470,7 +470,7 @@ TEST_F(TabOrganizationTest, TabOrganizationNoUniqueTabDatas) {
       std::make_unique<TabData>(tab_strip_model(), tab_1));
 
   TabOrganization organization(std::move(duplicated_tab_datas),
-                               {u"default_name"}, 0u, absl::nullopt);
+                               {u"default_name"}, 0u, std::nullopt);
   EXPECT_EQ(organization.tab_datas().size(), 1u);
 }
 
@@ -499,7 +499,7 @@ TEST_F(TabOrganizationTest,
   content::WebContents* grouped_tab = AddTab();
   tab_strip_model()->AddToNewGroup(
       {tab_strip_model()->GetIndexOfWebContents(grouped_tab)});
-  absl::optional<tab_groups::TabGroupId> non_organized_group_id =
+  std::optional<tab_groups::TabGroupId> non_organized_group_id =
       tab_strip_model()->GetTabGroupForTab(
           tab_strip_model()->GetIndexOfWebContents(grouped_tab));
 
@@ -999,19 +999,19 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
   const tab_groups::TabGroupId group_id =
       tab_strip_model()->group_model()->ListTabGroups().at(0);
 
-  absl::optional<tab_groups::TabGroupId> group_for_tab_1 =
+  std::optional<tab_groups::TabGroupId> group_for_tab_1 =
       tab_strip_model()->GetTabGroupForTab(
           tab_strip_model()->GetIndexOfWebContents(tab_to_group_1));
   EXPECT_TRUE(group_for_tab_1.has_value());
   EXPECT_EQ(group_for_tab_1.value(), group_id);
 
-  absl::optional<tab_groups::TabGroupId> group_for_tab_2 =
+  std::optional<tab_groups::TabGroupId> group_for_tab_2 =
       tab_strip_model()->GetTabGroupForTab(
           tab_strip_model()->GetIndexOfWebContents(tab_to_group_2));
   EXPECT_TRUE(group_for_tab_2.has_value());
   EXPECT_EQ(group_for_tab_2.value(), group_id);
 
-  absl::optional<tab_groups::TabGroupId> group_for_tab_to_not_group =
+  std::optional<tab_groups::TabGroupId> group_for_tab_to_not_group =
       tab_strip_model()->GetTabGroupForTab(
           tab_strip_model()->GetIndexOfWebContents(tab_to_not_group));
   EXPECT_FALSE(group_for_tab_to_not_group.has_value());

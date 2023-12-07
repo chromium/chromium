@@ -40,7 +40,7 @@ namespace {
 // TODO(crbug.com/1131266): Track alternative type in `HoldingSpaceItem`.
 // Returns a holding space item other than the one provided which is backed by
 // the same file path in the specified `model`.
-absl::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
+std::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
     const HoldingSpaceModel& model,
     const HoldingSpaceItem* item) {
   for (const auto& candidate_item : model.items()) {
@@ -50,7 +50,7 @@ absl::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
       return candidate_item.get();
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns the singleton profile manager for the browser process.
@@ -334,7 +334,7 @@ void HoldingSpaceKeyedService::RemoveItem(const std::string& id) {
   }
 }
 
-absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+std::optional<holding_space_metrics::ItemFailureToLaunchReason>
 HoldingSpaceKeyedService::OpenItemWhenComplete(const HoldingSpaceItem* item) {
   // Currently it is only possible to open download type items when complete.
   if (HoldingSpaceItem::IsDownloadType(item->type()) && downloads_delegate_) {

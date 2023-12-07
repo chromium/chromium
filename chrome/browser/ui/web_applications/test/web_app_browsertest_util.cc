@@ -362,7 +362,7 @@ bool IsBrowserOpen(const Browser* test_browser) {
   return false;
 }
 
-absl::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url) {
+std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url) {
   web_app::ExternalInstallOptions install_options(
       url, web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kExternalPolicy);
@@ -371,7 +371,7 @@ absl::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const auto& registrar =
       WebAppProvider::GetForTest(profile)->registrar_unsafe();
-  absl::optional<webapps::AppId> policy_app_id =
+  std::optional<webapps::AppId> policy_app_id =
       registrar.LookupExternalAppId(url);
   EXPECT_TRUE(policy_app_id.has_value());
   EXPECT_TRUE(

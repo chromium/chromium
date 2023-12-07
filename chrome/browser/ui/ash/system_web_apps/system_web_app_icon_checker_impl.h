@@ -28,7 +28,7 @@ class SystemWebAppIconCheckerImpl : public SystemWebAppIconChecker {
  private:
   void OnChecksDone(
       base::OnceCallback<void(IconState)> callback,
-      std::vector<absl::optional<web_app::WebAppIconDiagnostic::Result>>
+      std::vector<std::optional<web_app::WebAppIconDiagnostic::Result>>
           results);
 
   raw_ptr<Profile> profile_;

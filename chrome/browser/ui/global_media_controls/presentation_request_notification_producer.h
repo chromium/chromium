@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PRODUCER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/presentation_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // An object that creates and manages media notifications related to
 // presentation requests by delegating to the implementer of
@@ -129,7 +129,7 @@ class PresentationRequestNotificationProducer final
       test_presentation_manager_;
 
   // The notification managed by this producer, if there is one.
-  absl::optional<PresentationRequestNotificationItem> item_;
+  std::optional<PresentationRequestNotificationItem> item_;
 
   // False if |notification_service_| should hide |item_| because there are
   // active notifications on WebContents managed by this producer.

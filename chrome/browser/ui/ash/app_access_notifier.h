@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 class AppCapabilityAccessCache;
@@ -53,7 +53,7 @@ class AppAccessNotifier
   void ActiveUserChanged(user_manager::User* active_user) override;
 
   // Get the app short name of the app with `app_id`.
-  static absl::optional<std::u16string> GetAppShortNameFromAppId(
+  static std::optional<std::u16string> GetAppShortNameFromAppId(
       std::string app_id);
 
   // Launch the native settings page of the app with `app_id`.

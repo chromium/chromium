@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -109,7 +110,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -208,7 +208,7 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate(
   std::unique_ptr<ash::DeskTemplate> desk_template;
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindLambdaForTesting(
-          [&](absl::optional<DesksClient::DeskActionError> error,
+          [&](std::optional<DesksClient::DeskActionError> error,
               std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
             run_loop.Quit();
             ASSERT_TRUE(captured_desk_template);
@@ -224,7 +224,7 @@ std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
   std::vector<const ash::DeskTemplate*> templates;
 
   DesksClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
-      [&](absl::optional<DesksClient::DeskActionError> error,
+      [&](std::optional<DesksClient::DeskActionError> error,
           const std::vector<const ash::DeskTemplate*>& desk_templates) {
         templates = desk_templates;
         run_loop.Quit();
@@ -249,7 +249,7 @@ std::string GetTemplateJson(const base::Uuid& uuid, Profile* profile) {
   DesksClient::Get()->GetTemplateJson(
       uuid, profile,
       base::BindLambdaForTesting(
-          [&](absl::optional<DesksClient::DeskActionError> error,
+          [&](std::optional<DesksClient::DeskActionError> error,
               const base::Value& template_json) {
             base::JSONWriter::Write(template_json, &template_json_result);
             run_loop.Quit();
@@ -263,7 +263,7 @@ void DeleteDeskTemplate(const base::Uuid& uuid) {
   base::RunLoop run_loop;
   DesksClient::Get()->DeleteDeskTemplate(
       uuid, base::BindLambdaForTesting(
-                [&](absl::optional<DesksClient::DeskActionError> error) {
+                [&](std::optional<DesksClient::DeskActionError> error) {
                   run_loop.Quit();
                 }));
   run_loop.Run();
@@ -537,7 +537,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     base::RunLoop waiter;
     DesksClient::Get()->LaunchDeskTemplate(
         uuid, base::BindLambdaForTesting(
-                  [&](absl::optional<DesksClient::DeskActionError> error,
+                  [&](std::optional<DesksClient::DeskActionError> error,
                       const base::Uuid& desk_uuid) { waiter.Quit(); }));
     waiter.Run();
   }
@@ -550,7 +550,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
 
   Browser* CreateBrowser(
       const std::vector<GURL>& urls,
-      absl::optional<size_t> active_url_index = absl::nullopt) {
+      std::optional<size_t> active_url_index = std::nullopt) {
     Browser* browser = CreateBrowserImpl(urls, active_url_index);
     browser->window()->Show();
     return browser;
@@ -558,7 +558,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
 
   Browser* CreateBrowserWithPinnedTabs(const std::vector<GURL>& urls,
                                        int first_non_pinned_tab_index) {
-    Browser* browser = CreateBrowserImpl(urls, absl::nullopt);
+    Browser* browser = CreateBrowserImpl(urls, std::nullopt);
 
     chrome_desks_util::SetBrowserPinnedTabs(first_non_pinned_tab_index,
                                             browser);
@@ -569,7 +569,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
   Browser* CreateBrowserWithTabGroups(
       const std::vector<GURL>& urls,
       const std::vector<tab_groups::TabGroupInfo>& tab_groups) {
-    Browser* browser = CreateBrowserImpl(urls, absl::nullopt);
+    Browser* browser = CreateBrowserImpl(urls, std::nullopt);
 
     chrome_desks_util::AttachTabGroupsToBrowserInstance(tab_groups, browser);
     browser->window()->Show();
@@ -625,7 +625,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
 
  private:
   Browser* CreateBrowserImpl(const std::vector<GURL>& urls,
-                             absl::optional<size_t> active_url_index) {
+                             std::optional<size_t> active_url_index) {
     Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
                                  /*user_gesture=*/false);
     Browser* browser = Browser::Create(params);
@@ -2578,7 +2578,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
   // Launch one template, desk size should increase by 1.
   DesksClient::Get()->LaunchDeskTemplate(
       base::Uuid(), base::BindLambdaForTesting(
-                        [&](absl::optional<DesksClient::DeskActionError> error,
+                        [&](std::optional<DesksClient::DeskActionError> error,
                             const base::Uuid& desk_uuid) {
                           EXPECT_EQ(2u, desks_controller->desks().size());
                           desk_id = desk_uuid;
@@ -2884,9 +2884,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RecallSavedDesk) {
   DesksClient::Get()->LaunchDeskTemplate(
       desk_template->uuid(),
       base::BindLambdaForTesting(
-          [desk_model, &loop](
-              absl::optional<DesksClient::DeskActionError> error,
-              const base::Uuid& desk_uuid) {
+          [desk_model, &loop](std::optional<DesksClient::DeskActionError> error,
+                              const base::Uuid& desk_uuid) {
             EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 2);
             EXPECT_EQ(0u, desk_model->GetEntryCount());
             loop.Quit();
@@ -3598,8 +3597,8 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   struct AdminTemplateDefinition {
     struct WindowDefinition {
       std::vector<std::string> urls;
-      absl::optional<gfx::Rect> bounds;
-      absl::optional<int32_t> activation_index;
+      std::optional<gfx::Rect> bounds;
+      std::optional<int32_t> activation_index;
     };
 
     std::vector<WindowDefinition> windows;

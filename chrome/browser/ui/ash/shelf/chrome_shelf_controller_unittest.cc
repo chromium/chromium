@@ -463,7 +463,7 @@ void UpdateAppRegistryCache(Profile* profile,
                             const std::string& app_id,
                             bool block,
                             bool pause,
-                            absl::optional<bool> show_in_shelf) {
+                            std::optional<bool> show_in_shelf) {
   std::vector<apps::AppPtr> apps;
   apps::AppPtr app =
       std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
@@ -776,7 +776,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void StartPrefSyncService(const syncer::SyncDataList& init_sync_list) {
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         GetPrefSyncService()->MergeDataAndStartSyncing(
             syncer::OS_PREFERENCES, init_sync_list,
             std::make_unique<syncer::FakeSyncChangeProcessor>());
@@ -1153,8 +1153,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::string AddArcAppAndShortcut(const arc::mojom::AppInfo& app_info) {
     ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
 
-    absl::optional<uint64_t> app_size_in_bytes;
-    absl::optional<uint64_t> data_size_in_bytes;
+    std::optional<uint64_t> app_size_in_bytes;
+    std::optional<uint64_t> data_size_in_bytes;
 
     if (!app_info.app_storage.is_null()) {
       app_size_in_bytes = app_info.app_storage->app_size_in_bytes;
@@ -1254,12 +1254,12 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   webapps::AppId InstallExternalWebApp(
       const GURL& start_url,
-      const absl::optional<GURL>& install_url = {}) {
+      const std::optional<GURL>& install_url = {}) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
     const webapps::AppId expected_web_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/absl::nullopt, web_app_info->start_url);
+        /*manifest_id=*/std::nullopt, web_app_info->start_url);
     webapps::AppId web_app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields =*/false,
@@ -1270,10 +1270,10 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   webapps::AppId InstallExternalWebApp(
       const std::string& start_url,
-      const absl::optional<std::string>& install_url = {}) {
+      const std::optional<std::string>& install_url = {}) {
     return InstallExternalWebApp(GURL(start_url), install_url
                                                       ? GURL(*install_url)
-                                                      : absl::optional<GURL>());
+                                                      : std::optional<GURL>());
   }
 
   void RemoveWebApp(const char* web_app_id) {
@@ -3915,7 +3915,7 @@ TEST_F(ChromeShelfControllerTest, ChromeCannotBeUnpinnedByPolicy) {
               chrome_item.item_id(), chrome_item.item_name(),
               chrome_item.parent_id(), chrome_item.item_ordinal(),
               chrome_item.item_pin_ordinal(), chrome_item.item_type(),
-              /*is_user_pinned=*/absl::nullopt))});
+              /*is_user_pinned=*/std::nullopt))});
 
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
   UpdateSyncPinAssertion(app_constants::kChromeAppId,
@@ -5799,7 +5799,7 @@ TEST_F(ChromeShelfControllerTest, OsFlagsNotShowInShelfNotPinnable) {
   InstallSystemWebApp(std::move(delegate));
   InitShelfController();
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       ash::SystemWebAppManager::GetForTest(profile())->GetAppIdForSystemApp(
           app_type);
   ASSERT_TRUE(app_id);
@@ -5956,7 +5956,7 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
 
   // Set the app as paused
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
 
   InitShelfController();
 
@@ -5966,17 +5966,17 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
 
   // Set the app as blocked
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as ready, but still paused;
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
 
   // Set the app as ready, and not paused;
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
@@ -5987,7 +5987,7 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
 
   // Set the app as blocked
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
 
   InitShelfController();
 
@@ -5997,17 +5997,17 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
 
   // Set the app as paused
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as blocked, but un-paused
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as ready, and not paused
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 
   // Set the app as blocked and hidden
@@ -6023,7 +6023,7 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
 
   // Set the app as ready
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
@@ -6209,7 +6209,7 @@ class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest,
     iv->icon_type = apps::IconType::kUncompressed;
 
     base::test::TestFuture<apps::IconValuePtr> image_with_effects;
-    apps::ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt,
+    apps::ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/std::nullopt,
                            effects, bitmap.width(), std::move(iv),
                            image_with_effects.GetCallback());
 

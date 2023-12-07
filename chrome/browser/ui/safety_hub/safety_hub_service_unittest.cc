@@ -224,7 +224,7 @@ TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
 TEST_F(SafetyHubServiceTest, GetCachedResult) {
   // The mock service initializes the latest result on construction, so its
   // value should be those that we'd expect.
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   MockSafetyHubResult* result =

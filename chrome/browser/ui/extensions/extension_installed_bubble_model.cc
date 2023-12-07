@@ -21,13 +21,13 @@
 
 namespace {
 
-absl::optional<extensions::Command> CommandForExtensionAction(
+std::optional<extensions::Command> CommandForExtensionAction(
     const extensions::Extension* extension,
     Profile* profile) {
   const auto* info = extensions::ActionInfo::GetExtensionActionInfo(extension);
 
   if (!info)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto* service = extensions::CommandService::Get(profile);
   extensions::Command command;
@@ -38,11 +38,11 @@ absl::optional<extensions::Command> CommandForExtensionAction(
     return command;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string MakeHowToUseText(const extensions::ActionInfo* action,
-                                absl::optional<extensions::Command> command,
+                                std::optional<extensions::Command> command,
                                 const std::string& keyword) {
   std::u16string extra;
   if (command.has_value())
@@ -80,7 +80,7 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
       extension_id_(extension->id()),
       extension_name_(extension->name()) {
   const std::string& keyword = extensions::OmniboxInfo::GetKeyword(extension);
-  absl::optional<extensions::Command> command =
+  std::optional<extensions::Command> command =
       CommandForExtensionAction(extension, profile);
   const auto* action_info =
       extensions::ActionInfo::GetExtensionActionInfo(extension);

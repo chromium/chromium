@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 #define CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/callback_internal.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class Profile;
@@ -44,7 +45,7 @@ bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
                              chrome::startup::IsFirstRun is_first_run);
 
 // Final handling after a web app has been launched.
-void FinalizeWebAppLaunch(absl::optional<OpenMode> app_open_mode,
+void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
                           const base::CommandLine& command_line,
                           chrome::startup::IsFirstRun is_first_run,
                           Browser* browser,

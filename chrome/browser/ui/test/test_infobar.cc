@@ -65,15 +65,15 @@ const infobars::ContentInfoBarManager* TestInfoBar::GetInfoBarManager() const {
              : nullptr;
 }
 
-absl::optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
+std::optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
   const infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
   if (!infobar_manager)
-    return absl::nullopt;
+    return std::nullopt;
   const auto& infobars = infobar_manager->infobars();
   if ((infobars.size() < starting_infobars_.size()) ||
       !std::equal(starting_infobars_.begin(), starting_infobars_.end(),
                   infobars.begin())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return InfoBars(std::next(infobars.begin(), starting_infobars_.size()),
                   infobars.end());

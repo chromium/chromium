@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
@@ -63,14 +64,14 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     std::u16string text;
 
     // The optional image for an entry in the sub menu.
-    absl::optional<ui::ImageModel> image;
+    std::optional<ui::ImageModel> image;
 
     bool may_have_mnemonics = true;
 
     // The target index for this item. E.g. tab group index or browser
     // index. If this field is not provided then the entry for this item will be
     // a title and have no corresponding command.
-    absl::optional<size_t> target_index;
+    std::optional<size_t> target_index;
 
     // An optionally provided accessible name for this menu item. If
     // |accessible_name| is empty, then the default accessible name will be used

@@ -24,7 +24,7 @@ WebAppIconDiagnostic::WebAppIconDiagnostic(Profile* profile,
 WebAppIconDiagnostic::~WebAppIconDiagnostic() = default;
 
 void WebAppIconDiagnostic::Run(
-    base::OnceCallback<void(absl::optional<Result>)> result_callback) {
+    base::OnceCallback<void(std::optional<Result>)> result_callback) {
   result_callback_ = std::move(result_callback);
 
   if (!app_) {

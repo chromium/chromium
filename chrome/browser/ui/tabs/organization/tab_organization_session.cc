@@ -187,7 +187,7 @@ void TabOrganizationSession::PopulateOrganizations(
 
     std::unique_ptr<TabOrganization> organization =
         std::make_unique<TabOrganization>(std::move(tab_datas_for_org),
-                                          std::move(names), 0u, absl::nullopt);
+                                          std::move(names), 0u, std::nullopt);
 
     response_organization.organization_id = organization->organization_id();
 

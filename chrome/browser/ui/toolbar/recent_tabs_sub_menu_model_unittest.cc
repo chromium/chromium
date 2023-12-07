@@ -393,7 +393,7 @@ TEST_P(RecentTabsSubMenuModelTest,
   session_service->SetTabIndexInWindow(window_id, tab_id_1, 1);
   session_service->SetSelectedTabInWindow(window_id, 0);
   session_service->SetTabGroup(window_id, tab_id_1,
-                               absl::make_optional(tab_group_id));
+                               std::make_optional(tab_group_id));
   session_service->UpdateTabNavigation(
       window_id, tab_id_0,
       sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab0",

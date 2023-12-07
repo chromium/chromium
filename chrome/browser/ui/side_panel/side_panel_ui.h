@@ -36,13 +36,13 @@ class SidePanelUI : public base::SupportsUserData::Data {
 
   // Open side panel with entry_id.
   virtual void Show(
-      absl::optional<SidePanelEntryId> entry_id = absl::nullopt,
-      absl::optional<SidePanelOpenTrigger> open_trigger = absl::nullopt) = 0;
+      std::optional<SidePanelEntryId> entry_id = std::nullopt,
+      std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
 
   // Open side panel with entry key.
   virtual void Show(
       SidePanelEntryKey entry_key,
-      absl::optional<SidePanelOpenTrigger> open_trigger = absl::nullopt) = 0;
+      std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
 
   // Close the side panel.
   virtual void Close() = 0;
@@ -65,7 +65,7 @@ class SidePanelUI : public base::SupportsUserData::Data {
   virtual void UpdatePinState() = 0;
 
   // Get the current entry id if the side panel is open.
-  virtual absl::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
+  virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
 
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually

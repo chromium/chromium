@@ -26,7 +26,7 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 
 void IdentityDialogController::ShowAccountsDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
@@ -45,7 +45,7 @@ void IdentityDialogController::ShowAccountsDialog(
 
 void IdentityDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
@@ -66,11 +66,11 @@ void IdentityDialogController::ShowFailureDialog(
 
 void IdentityDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
-    const absl::optional<TokenError>& error,
+    const std::optional<TokenError>& error,
     DismissCallback dismiss_callback,
     MoreDetailsCallback more_details_callback) {
   on_dismiss_ = std::move(dismiss_callback);
@@ -101,7 +101,7 @@ std::string IdentityDialogController::GetTitle() const {
   return account_view_->GetTitle();
 }
 
-absl::optional<std::string> IdentityDialogController::GetSubtitle() const {
+std::optional<std::string> IdentityDialogController::GetSubtitle() const {
   return account_view_->GetSubtitle();
 }
 

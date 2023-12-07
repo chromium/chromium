@@ -389,7 +389,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
     std::u16string display_name = target.display_name;
     std::u16string secondary_display_name =
         target.secondary_display_name.value_or(std::u16string());
-    absl::optional<gfx::ImageSkia> icon = target.icon;
+    std::optional<gfx::ImageSkia> icon = target.icon;
 
     view_for_target->AddChildView(std::make_unique<SharesheetTargetButton>(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,

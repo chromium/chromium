@@ -129,7 +129,7 @@ void MaybeShowExtensionControlledSearchNotification(
   if (!browser)
     return;
 
-  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(browser->profile());
   if (!params)
     return;
@@ -174,7 +174,7 @@ void MaybeShowExtensionControlledNewTabPage(
 
   Profile* const profile = browser->profile();
 
-  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);
   if (!params)
     return;

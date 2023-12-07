@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TABSTRIP_H_
 #define CHROME_BROWSER_UI_BROWSER_TABSTRIP_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -36,14 +37,14 @@ content::WebContents* AddAndReturnTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
+    std::optional<tab_groups::TabGroupId> group = std::nullopt);
 
 // Same as above, but eats the return value to make Bind*() easier.
 void AddTabAt(Browser* browser,
               const GURL& url,
               int index,
               bool foreground,
-              absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
+              std::optional<tab_groups::TabGroupId> group = std::nullopt);
 
 // Adds a selected tab with the specified URL and transition, returns the
 // created WebContents.

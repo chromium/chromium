@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -18,7 +19,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "test_wallpaper_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -41,9 +41,9 @@ void TestWallpaperController::ClearCounts() {
   show_override_wallpaper_count_[/*always_on_top=*/true] = 0;
   remove_override_wallpaper_count_ = 0;
   remove_user_wallpaper_count_ = 0;
-  wallpaper_info_ = absl::nullopt;
+  wallpaper_info_ = std::nullopt;
   update_current_wallpaper_layout_count_ = 0;
-  update_current_wallpaper_layout_layout_ = absl::nullopt;
+  update_current_wallpaper_layout_layout_ = std::nullopt;
   update_daily_refresh_wallpaper_count_ = 0;
   one_shot_wallpaper_count_ = 0;
   sea_pen_wallpaper_count_ = 0;
@@ -344,7 +344,7 @@ bool TestWallpaperController::IsWallpaperControlledByPolicy(
   return false;
 }
 
-absl::optional<ash::WallpaperInfo>
+std::optional<ash::WallpaperInfo>
 TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_;
 }

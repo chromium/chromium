@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 
-#include <utility>
-
 #include <optional>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"

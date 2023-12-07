@@ -376,8 +376,8 @@ class DropSenderView : public views::WidgetDelegateView,
     widget->Init(std::move(params));
   }
 
-  absl::optional<std::vector<ui::FileInfo>> filenames_data_;
-  absl::optional<base::Pickle> file_system_sources_data_;
+  std::optional<std::vector<ui::FileInfo>> filenames_data_;
+  std::optional<base::Pickle> file_system_sources_data_;
 };
 
 // DropTargetView --------------------------------------------------------------

@@ -49,13 +49,13 @@ void SupplementalDevicePickerItem::UpdateViewWithMetadata(
 }
 
 void SupplementalDevicePickerItem::UpdateViewWithArtworkImage(
-    absl::optional<gfx::ImageSkia> artwork_image) {
+    std::optional<gfx::ImageSkia> artwork_image) {
   artwork_image_ = artwork_image;
   UpdateViewWithImages();
 }
 
 void SupplementalDevicePickerItem::UpdateViewWithFaviconImage(
-    absl::optional<gfx::ImageSkia> favicon_image) {
+    std::optional<gfx::ImageSkia> favicon_image) {
   favicon_image_ = favicon_image;
   UpdateViewWithImages();
 }
@@ -73,7 +73,7 @@ media_message_center::SourceType SupplementalDevicePickerItem::GetSourceType()
   return media_message_center::SourceType::kPresentationRequest;
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 SupplementalDevicePickerItem::GetSourceId() const {
   return source_id_;
 }

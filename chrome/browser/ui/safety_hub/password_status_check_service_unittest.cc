@@ -834,7 +834,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {
 
 TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
        ResultWhenChangingLeakedPassword) {
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_old_result =
+  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_old_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_old_result.has_value());
   PasswordStatusCheckResult* old_result =
@@ -845,7 +845,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
   password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
   RunUntilIdle();
 
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_new_result =
+  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_new_result =
       service()->GetCachedResult();
   EXPECT_TRUE(opt_new_result.has_value());
   PasswordStatusCheckResult* new_result =

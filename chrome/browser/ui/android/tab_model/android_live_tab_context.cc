@@ -80,10 +80,10 @@ AndroidLiveTabContext::GetExtraDataForWindow() const {
   return std::map<std::string, std::string>();
 }
 
-absl::optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
+std::optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
     int index) const {
   // Not applicable to android.
-  return absl::optional<tab_groups::TabGroupId>();
+  return std::optional<tab_groups::TabGroupId>();
 }
 
 const tab_groups::TabGroupVisualData*
@@ -131,7 +131,7 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
@@ -170,7 +170,7 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
 
 sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,

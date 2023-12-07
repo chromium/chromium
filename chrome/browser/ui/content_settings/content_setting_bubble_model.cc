@@ -130,7 +130,7 @@ const std::u16string& GetDefaultDisplayURLForTesting() {
 }
 
 // An override display URL in content setting bubble UI for testing.
-absl::optional<bool> g_display_url_override_for_testing = absl::nullopt;
+std::optional<bool> g_display_url_override_for_testing = std::nullopt;
 
 // Returns a boolean indicating whether the setting should be managed by the
 // user (i.e. it is not controlled by policy). Also takes a (nullable) out-param
@@ -224,9 +224,9 @@ std::u16string GetUrlForDisplay(Profile* profile, const GURL& url) {
 }  // namespace
 
 // static
-base::AutoReset<absl::optional<bool>>
+base::AutoReset<std::optional<bool>>
 ContentSettingBubbleModel::CreateScopedDisplayURLOverrideForTesting() {
-  return base::AutoReset<absl::optional<bool>>(
+  return base::AutoReset<std::optional<bool>>(
       &g_display_url_override_for_testing, true);
 }
 

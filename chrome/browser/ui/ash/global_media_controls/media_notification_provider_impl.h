@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "base/observer_list.h"
@@ -17,7 +19,6 @@
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/media_message_center/media_notification_view_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class CastMediaNotificationProducerKeyedService;
 class Profile;
@@ -137,9 +138,9 @@ class ASH_EXPORT MediaNotificationProviderImpl
   std::unique_ptr<SupplementalDevicePickerProducer>
       supplemental_device_picker_producer_;
 
-  absl::optional<media_message_center::NotificationTheme> color_theme_;
+  std::optional<media_message_center::NotificationTheme> color_theme_;
 
-  absl::optional<media_message_center::MediaColorTheme> media_color_theme_;
+  std::optional<media_message_center::MediaColorTheme> media_color_theme_;
 
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_{this};
 

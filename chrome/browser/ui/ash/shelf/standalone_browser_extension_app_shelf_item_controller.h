@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_STANDALONE_BROWSER_EXTENSION_APP_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -19,7 +20,6 @@
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -137,7 +137,7 @@ class StandaloneBrowserExtensionAppShelfItemController
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
 
   // Stores the icon.
-  absl::optional<gfx::ImageSkia> icon_;
+  std::optional<gfx::ImageSkia> icon_;
 
   // This class is responsible for displaying a single instance of a context
   // menu. If multiple context menus are requested, only the latest instance

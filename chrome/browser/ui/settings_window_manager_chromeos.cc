@@ -189,7 +189,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
 
     // TODO(calamity): Determine whether, during startup, we need to wait for
     // app install and then provide a valid answer here.
-    absl::optional<std::string> settings_app_id =
+    std::optional<std::string> settings_app_id =
         ash::GetAppIdForSystemWebApp(profile, ash::SystemWebAppType::SETTINGS);
     return settings_app_id &&
            browser->app_controller()->app_id() == settings_app_id.value();

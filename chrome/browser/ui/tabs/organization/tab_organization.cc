@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
@@ -22,7 +22,7 @@ TabOrganization::TabOrganization(
     TabDatas tab_datas,
     std::vector<std::u16string> names,
     absl::variant<size_t, std::u16string> current_name,
-    absl::optional<UserChoice> choice)
+    std::optional<UserChoice> choice)
     : names_(names),
       current_name_(current_name),
       choice_(choice),

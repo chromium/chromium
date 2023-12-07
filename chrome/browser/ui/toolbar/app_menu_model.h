@@ -253,8 +253,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // logged when the module matches the one for which there is an active menu
   // notification.
   void LogSafetyHubInteractionMetrics(
-      absl::optional<safety_hub::SafetyHubModuleType> expected_module =
-          absl::nullopt);
+      std::optional<safety_hub::SafetyHubModuleType> expected_module =
+          std::nullopt);
 
  private:
   // Adds actionable global error menu items to the menu.

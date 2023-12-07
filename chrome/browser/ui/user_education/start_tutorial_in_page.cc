@@ -69,11 +69,11 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
   }
 
  private:
-  absl::optional<ui::ElementContext> GetUiElementContext() {
+  std::optional<ui::ElementContext> GetUiElementContext() {
     if (browser_) {
       return browser_->window()->GetElementContext();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   user_education::TutorialService* GetTutorialService() {

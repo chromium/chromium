@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -28,7 +27,7 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
 
   // Selects the suggestion with `index`. For fillable items, this will trigger
   // preview. For other items, it does not do anything.
-  virtual void SelectSuggestion(absl::optional<size_t> index) = 0;
+  virtual void SelectSuggestion(std::optional<size_t> index) = 0;
 
   // Accepts the suggestion at `index`. The suggestion will only be accepted if
   // the popup has been shown for at least `show_threshold` compared to

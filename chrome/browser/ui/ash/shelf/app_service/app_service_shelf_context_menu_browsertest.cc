@@ -52,7 +52,7 @@ class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
     size_t command_index = 0;
   };
 
-  absl::optional<MenuSection> GetContextMenuSectionForAppCommand(
+  std::optional<MenuSection> GetContextMenuSectionForAppCommand(
       const webapps::AppId& app_id,
       int command_id) {
     MenuSection result;
@@ -74,7 +74,7 @@ class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
     result.command_index = 0;
     if (!ui::MenuModel::GetModelAndIndexForCommandId(
             command_id, &result.sub_model, &result.command_index)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return result;
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Activate open in window menu item.
-  absl::optional<MenuSection> menu_section =
+  std::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Set app to open in tabbed window.
-  absl::optional<MenuSection> menu_section = GetContextMenuSectionForAppCommand(
+  std::optional<MenuSection> menu_section = GetContextMenuSectionForAppCommand(
       app_id, ash::USE_LAUNCH_TYPE_TABBED_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Set app to open in browser tab.
-  absl::optional<MenuSection> menu_section =
+  std::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_REGULAR);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
-  absl::optional<MenuSection> menu_section =
+  std::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_NEW);
   ASSERT_TRUE(menu_section);
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Select the "Open in window" menu item.
-  absl::optional<MenuSection> menu_section =
+  std::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
   // Select the "Open in window" menu item.
-  absl::optional<MenuSection> menu_section =
+  std::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);

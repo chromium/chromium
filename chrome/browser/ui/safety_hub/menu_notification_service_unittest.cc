@@ -6,6 +6,7 @@
 
 #include <ctime>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -30,7 +31,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 class SafetyHubMenuNotificationServiceTest
@@ -124,7 +124,7 @@ class SafetyHubMenuNotificationServiceTest
   void ShowNotificationEnoughTimes(
       int remainingImpressionCount =
           kSafetyHubMenuNotificationMinImpressionCount) {
-    absl::optional<MenuNotificationEntry> notification;
+    std::optional<MenuNotificationEntry> notification;
     AdvanceClockBy(base::Days(90));
     for (int i = 0; i < remainingImpressionCount; ++i) {
       notification = menu_notification_service()->GetNotificationToShow();
@@ -177,7 +177,7 @@ class SafetyHubMenuNotificationServiceTest
 };
 
 TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {
-  absl::optional<MenuNotificationEntry> notification =
+  std::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
 }
@@ -187,7 +187,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SingleNotificationToShow) {
 
   // The notification to show should be the unused site permissions one with
   // one revoked permission. The relevant command should be to open Safety Hub.
-  absl::optional<MenuNotificationEntry> notification =
+  std::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
@@ -201,7 +201,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   // available.
   CreateMockUnusedSitePermissionsEntry();
 
-  absl::optional<MenuNotificationEntry> notification =
+  std::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   SafetyHubMenuNotification* old_notification =
@@ -250,7 +250,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
   CreateMockUnusedSitePermissionsEntry();
 
   // Show the notification sufficient days and times.
-  absl::optional<MenuNotificationEntry> notification;
+  std::optional<MenuNotificationEntry> notification;
   for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
@@ -275,7 +275,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   CreateMockUnusedSitePermissionsEntry();
 
   // Show the notification once.
-  absl::optional<MenuNotificationEntry> notification;
+  std::optional<MenuNotificationEntry> notification;
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
@@ -328,7 +328,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
 TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
   // Create a notification for a module that has low priority notifications.
   CreateMockUnusedSitePermissionsEntry();
-  absl::optional<MenuNotificationEntry> notification;
+  std::optional<MenuNotificationEntry> notification;
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
@@ -353,7 +353,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingTriggerLogic) {
-  absl::optional<MenuNotificationEntry> notification;
+  std::optional<MenuNotificationEntry> notification;
   // Disabling Safe Browsing should only trigger a menu notification after one
   // day.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -400,7 +400,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, ExtensionsMenuNotification) {
           prefs(), unused_site_permissions_service(),
           notification_permissions_service(), cws_info_service.get(),
           password_status_check_service(), profile());
-  absl::optional<MenuNotificationEntry> notification =
+  std::optional<MenuNotificationEntry> notification =
       mocked_service->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MENU_NOTIFICATION, 2,
@@ -409,7 +409,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, ExtensionsMenuNotification) {
 
 TEST_F(SafetyHubMenuNotificationServiceTest, PasswordOverride) {
   const std::string origin = "https://www.example.com";
-  absl::optional<MenuNotificationEntry> notification;
+  std::optional<MenuNotificationEntry> notification;
   // Disabling Safe Browsing should only trigger a menu notification after one
   // day.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -437,7 +437,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PasswordOverride) {
 TEST_F(SafetyHubMenuNotificationServiceTest, PasswordTrigger) {
   const std::string& origin = "https://www.example1.com";
   // A leaked password warning should create a password notification.
-  absl::optional<MenuNotificationEntry> notification;
+  std::optional<MenuNotificationEntry> notification;
   SetMockCredentialEntry(origin, true);
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
@@ -454,7 +454,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PasswordTrigger) {
 TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
   // Generate a mock notification for unused site permissions.
   CreateMockUnusedSitePermissionsEntry();
-  absl::optional<MenuNotificationEntry> notification =
+  std::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(

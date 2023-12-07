@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_ASH_AMBIENT_AMBIENT_CLIENT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 
@@ -55,7 +55,7 @@ class AmbientClientImpl : public ash::AmbientClient {
 
   std::map<base::UnguessableToken, std::unique_ptr<signin::AccessTokenFetcher>>
       token_fetchers_;
-  absl::optional<bool> is_allowed_for_testing_;
+  std::optional<bool> is_allowed_for_testing_;
   base::WeakPtrFactory<AmbientClientImpl> weak_factory_{this};
 };
 

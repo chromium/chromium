@@ -795,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
       std::make_unique<MockXhrSender>(
           base::BindLambdaForTesting(
               [&](const GURL& url, projector::mojom::RequestType method,
-                  const absl::optional<std::string>& request_body) {
+                  const std::optional<std::string>& request_body) {
                 EXPECT_EQ(
                     "{\"contentHints\":{\"indexableText\":\" metadata file. "
                     "another sentence.\"}}",

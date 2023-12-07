@@ -284,14 +284,14 @@ class MediaRouterUI : public CastDialogController,
 
   UIMediaSink ConvertToUISink(const MediaSinkWithCastModes& sink,
                               const MediaRoute* route,
-                              const absl::optional<Issue>& issue);
+                              const std::optional<Issue>& issue);
 
   void StopObservingMirroringMediaControllerHosts();
 
   // Returns the MediaRouter for this instance's BrowserContext.
   virtual MediaRouter* GetMediaRouter() const;
 
-  const absl::optional<RouteRequest> current_route_request() const {
+  const std::optional<RouteRequest> current_route_request() const {
     return current_route_request_;
   }
 
@@ -310,14 +310,14 @@ class MediaRouterUI : public CastDialogController,
       nullptr;
 
   // This value is set whenever there is an outstanding issue.
-  absl::optional<Issue> issue_;
+  std::optional<Issue> issue_;
 
   // Contains up-to-date data to show in the dialog.
   CastDialogModel model_;
 
   // This value is set when the UI requests a route to be terminated, and gets
   // reset when the route is removed.
-  absl::optional<MediaRoute::Id> terminating_route_id_;
+  std::optional<MediaRoute::Id> terminating_route_id_;
 
   // Observers for dialog model updates.
   // TODO(takumif): CastDialogModel should manage the observers.
@@ -328,7 +328,7 @@ class MediaRouterUI : public CastDialogController,
   std::unique_ptr<MediaRoutesObserver> routes_observer_;
 
   // This contains a value only when tracking a pending route request.
-  absl::optional<RouteRequest> current_route_request_;
+  std::optional<RouteRequest> current_route_request_;
 
   // Used for locale-aware sorting of sinks by name. Set during
   // Init() using the current locale.

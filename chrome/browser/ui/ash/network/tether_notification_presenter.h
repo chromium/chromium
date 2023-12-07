@@ -90,7 +90,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
   };
 
   void OnNotificationClicked(const std::string& notification_id,
-                             absl::optional<int> button_index);
+                             std::optional<int> button_index);
   NotificationInteractionType GetMetricValueForClickOnNotificationBody(
       const std::string& clicked_notification_id) const;
   void OnNotificationClosed(const std::string& notification_id);

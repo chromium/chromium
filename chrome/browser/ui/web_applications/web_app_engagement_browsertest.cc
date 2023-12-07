@@ -189,7 +189,7 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTest {
     CountUserInstalledApps();
   }
 
-  absl::optional<webapps::InstallResultCode> result_code_;
+  std::optional<webapps::InstallResultCode> result_code_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_DefaultApp) {
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
 
-  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
+  std::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   // TODO(ericwilligers): Assert app_id was installed by default.
 
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   auto result = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
+  std::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   auto result = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
+  std::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   auto result =
       ExternallyManagedAppManagerInstall(browser()->profile(), install_options);
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
+  std::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 

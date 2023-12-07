@@ -19,7 +19,7 @@ class MockCWSInfoService : public extensions::CWSInfoService {
   explicit MockCWSInfoService(Profile* profile);
   ~MockCWSInfoService() override;
 
-  MOCK_METHOD(absl::optional<CWSInfoServiceInterface::CWSInfo>,
+  MOCK_METHOD(std::optional<CWSInfoServiceInterface::CWSInfo>,
               GetCWSInfo,
               (const extensions::Extension&),
               (const, override));

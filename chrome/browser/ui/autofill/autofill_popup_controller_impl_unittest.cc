@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -50,7 +51,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_active_popup.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -160,7 +160,7 @@ class MockAutofillPopupView : public AutofillPopupView {
               (override));
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const override));
-  MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
+  MOCK_METHOD(std::optional<int32_t>, GetAxUniqueId, (), (override));
   MOCK_METHOD(void, AxAnnounce, (const std::u16string&), (override));
   MOCK_METHOD(base::WeakPtr<AutofillPopupView>,
               CreateSubPopupView,
@@ -190,8 +190,8 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
           Profile*,
           password_manager::metrics_util::PasswordMigrationWarningTriggers)>
           show_pwd_migration_warning_callback,
-      absl::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>>
-          parent = absl::nullopt)
+      std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent =
+          std::nullopt)
       : AutofillPopupControllerImpl(
             external_delegate,
             web_contents,
@@ -1187,7 +1187,7 @@ class AutofillPopupControllerImplTestAccessibility
     ON_CALL(mock_ax_platform_node_, GetDelegate)
         .WillByDefault(Return(&mock_ax_platform_node_delegate_));
     ON_CALL(client().popup_view(), GetAxUniqueId)
-        .WillByDefault(Return(absl::optional<int32_t>(kAxUniqueId)));
+        .WillByDefault(Return(std::optional<int32_t>(kAxUniqueId)));
     ON_CALL(mock_ax_platform_node_delegate_, GetFromTreeIDAndNodeID)
         .WillByDefault(Return(&mock_ax_platform_node_));
   }
@@ -1217,7 +1217,7 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   EXPECT_EQ(kAxUniqueId, ui::GetActivePopupAxUniqueId());
 
   client().popup_controller(manager()).DoHide();
-  EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
+  EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 
 // Test for attempting to fire controls changed event when ax tree manager
@@ -1232,7 +1232,7 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   // Manually fire the event for popup show since setting the test view results
   // in the fire controls changed event not being sent.
   client().popup_controller(manager()).FireControlsChangedEvent(true);
-  EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
+  EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 
 // Test for attempting to fire controls changed event when failing to retrieve
@@ -1241,13 +1241,13 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
 TEST_F(AutofillPopupControllerImplTestAccessibility,
        FireControlsChangedEventNoPopupAxUniqueId) {
   EXPECT_CALL(client().popup_view(), GetAxUniqueId)
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
 
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   // Manually fire the event for popup show since setting the test view results
   // in the fire controls changed event not being sent.
   client().popup_controller(manager()).FireControlsChangedEvent(true);
-  EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
+  EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
 }
 #endif
 

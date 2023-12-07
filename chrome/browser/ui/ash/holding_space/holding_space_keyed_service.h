@@ -139,9 +139,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   void RemoveItem(const std::string& id);
 
   // Attempts to mark the specified holding space `item` to open when complete.
-  // Returns `absl::nullopt` on success or the reason if the attempt was not
+  // Returns `std::nullopt` on success or the reason if the attempt was not
   // successful.
-  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  std::optional<holding_space_metrics::ItemFailureToLaunchReason>
   OpenItemWhenComplete(const HoldingSpaceItem* item);
 
   // Returns the `profile_` associated with this service.

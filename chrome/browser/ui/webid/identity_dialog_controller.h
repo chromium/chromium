@@ -41,7 +41,7 @@ class IdentityDialogController
   // content::IdentityRequestDialogController
   void ShowAccountsDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -49,24 +49,24 @@ class IdentityDialogController
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback) override;
   void ShowFailureDialog(const std::string& top_frame_for_display,
-                         const absl::optional<std::string>& iframe_for_display,
+                         const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
                          const blink::mojom::RpContext& rp_context,
                          const content::IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
                          LoginToIdPCallback login_callback) override;
   void ShowErrorDialog(const std::string& top_frame_for_display,
-                       const absl::optional<std::string>& iframe_for_display,
+                       const std::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
                        const blink::mojom::RpContext& rp_context,
                        const content::IdentityProviderMetadata& idp_metadata,
-                       const absl::optional<TokenError>& error,
+                       const std::optional<TokenError>& error,
                        DismissCallback dismiss_callback,
                        MoreDetailsCallback more_details_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
   std::string GetTitle() const override;
-  absl::optional<std::string> GetSubtitle() const override;
+  std::optional<std::string> GetSubtitle() const override;
 
   // Show a modal dialog that loads content from the IdP in a WebView.
   content::WebContents* ShowModalDialog(

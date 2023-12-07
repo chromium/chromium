@@ -236,7 +236,7 @@ class ContentSettingBubbleModel {
   virtual ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel();
 
   // Overrides the display URL used in the content bubble UI.
-  static base::AutoReset<absl::optional<bool>>
+  static base::AutoReset<std::optional<bool>>
   CreateScopedDisplayURLOverrideForTesting();
 
   bool is_UMA_for_test = false;

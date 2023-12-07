@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/url_identity.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_util.h"
@@ -14,7 +15,6 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -84,11 +84,11 @@ UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
                          base::UTF8ToUTF16(extension->name()), false)};
 }
 
-absl::optional<webapps::AppId> GetIsolatedWebAppIdFromUrl(const GURL& url) {
+std::optional<webapps::AppId> GetIsolatedWebAppIdFromUrl(const GURL& url) {
   base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
       web_app::IsolatedWebAppUrlInfo::Create(url);
-  return url_info.has_value() ? absl::make_optional(url_info.value().app_id())
-                              : absl::nullopt;
+  return url_info.has_value() ? std::make_optional(url_info.value().app_id())
+                              : std::nullopt;
 }
 
 UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
@@ -106,7 +106,7 @@ UrlIdentity CreateIsolatedWebAppIdentityFromUrl(Profile* profile,
     return CreateDefaultUrlIdentityFromUrl(url, options);
   }
 
-  absl::optional<webapps::AppId> app_id = GetIsolatedWebAppIdFromUrl(url);
+  std::optional<webapps::AppId> app_id = GetIsolatedWebAppIdFromUrl(url);
   if (!app_id.has_value()) {  // fallback to default
     return CreateDefaultUrlIdentityFromUrl(url, options);
   }

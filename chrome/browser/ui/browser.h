@@ -290,7 +290,7 @@ class Browser : public TabStripModelObserver,
 
     // If set, the browser should be created on the display given by
     // `display_id`.
-    absl::optional<int64_t> display_id;
+    std::optional<int64_t> display_id;
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -329,7 +329,7 @@ class Browser : public TabStripModelObserver,
     bool can_fullscreen = true;
 
     // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
-    absl::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
+    std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 
    private:
     friend class Browser;
@@ -692,7 +692,7 @@ class Browser : public TabStripModelObserver,
   void TabPinnedStateChanged(TabStripModel* tab_strip_model,
                              content::WebContents* contents,
                              int index) override;
-  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
+  void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
   void TabStripEmpty() override;

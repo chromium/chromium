@@ -40,7 +40,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
               CreateShoppingInsightsWebView,
               (),
               (override));
-  MOCK_METHOD(const absl::optional<commerce::PriceInsightsInfo>&,
+  MOCK_METHOD(const std::optional<commerce::PriceInsightsInfo>&,
               GetPriceInsightsInfo,
               ());
   MOCK_METHOD(bool, ShouldExpandPageActionIcon, (PageActionIconType type));

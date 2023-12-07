@@ -307,31 +307,31 @@ void HatsServiceDesktop::GetSurveyMetadataForTesting(
                               prefs::kHatsSurveyMetadata);
   base::Value::Dict& pref_data = update.Get();
 
-  absl::optional<int> last_major_version =
+  std::optional<int> last_major_version =
       pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value()) {
     metadata->last_major_version = last_major_version;
   }
 
-  absl::optional<base::Time> last_survey_started_time = base::ValueToTime(
+  std::optional<base::Time> last_survey_started_time = base::ValueToTime(
       pref_data.FindByDottedPath(GetLastSurveyStartedTime(trigger)));
   if (last_survey_started_time.has_value()) {
     metadata->last_survey_started_time = last_survey_started_time;
   }
 
-  absl::optional<base::Time> any_last_survey_started_time = base::ValueToTime(
+  std::optional<base::Time> any_last_survey_started_time = base::ValueToTime(
       pref_data.FindByDottedPath(kAnyLastSurveyStartedTimePath));
   if (any_last_survey_started_time.has_value()) {
     metadata->any_last_survey_started_time = any_last_survey_started_time;
   }
 
-  absl::optional<bool> is_survey_full =
+  std::optional<bool> is_survey_full =
       pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));
   if (is_survey_full.has_value()) {
     metadata->is_survey_full = is_survey_full;
   }
 
-  absl::optional<base::Time> last_survey_check_time = base::ValueToTime(
+  std::optional<base::Time> last_survey_check_time = base::ValueToTime(
       pref_data.FindByDottedPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value()) {
     metadata->last_survey_check_time = last_survey_check_time;
@@ -384,7 +384,7 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
 
   const base::Value::Dict& pref_data =
       profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
-  absl::optional<int> last_major_version =
+  std::optional<int> last_major_version =
       pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value() &&
       static_cast<uint32_t>(*last_major_version) ==
@@ -396,7 +396,7 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
   }
 
   if (!config.user_prompted) {
-    absl::optional<base::Time> last_survey_started_time = base::ValueToTime(
+    std::optional<base::Time> last_survey_started_time = base::ValueToTime(
         pref_data.FindByDottedPath(GetLastSurveyStartedTime(trigger)));
     if (last_survey_started_time.has_value()) {
       base::TimeDelta elapsed_time_since_last_start =
@@ -412,7 +412,7 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
 
   // If an attempt to check with the HaTS servers whether a survey should be
   // delivered was made too recently, another survey cannot be shown.
-  absl::optional<base::Time> last_survey_check_time = base::ValueToTime(
+  std::optional<base::Time> last_survey_check_time = base::ValueToTime(
       pref_data.FindByDottedPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value()) {
     base::TimeDelta elapsed_time_since_last_check =
@@ -472,7 +472,7 @@ bool HatsServiceDesktop::CanShowAnySurvey(bool user_prompted) const {
 
     // If a user has received any HaTS survey too recently, they are also
     // ineligible.
-    absl::optional<base::Time> last_any_started_time =
+    std::optional<base::Time> last_any_started_time =
         base::ValueToTime(pref_data.Find(kAnyLastSurveyStartedTimePath));
     if (last_any_started_time.has_value()) {
       base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
@@ -590,7 +590,7 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   // duplicated checks since the survey won't change once it is full.
   const base::Value::Dict& pref_data =
       profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
-  absl::optional<int> is_full =
+  std::optional<int> is_full =
       pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));
   if (is_full.has_value() && is_full) {
     if (!failure_callback.is_null()) {

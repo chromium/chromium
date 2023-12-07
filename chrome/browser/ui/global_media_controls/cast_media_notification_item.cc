@@ -212,9 +212,9 @@ media_message_center::SourceType CastMediaNotificationItem::GetSourceType()
   return media_message_center::SourceType::kCast;
 }
 
-absl::optional<base::UnguessableToken> CastMediaNotificationItem::GetSourceId()
+std::optional<base::UnguessableToken> CastMediaNotificationItem::GetSourceId()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CastMediaNotificationItem::OnMediaStatusUpdated(

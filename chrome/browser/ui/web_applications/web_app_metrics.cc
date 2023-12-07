@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -43,7 +44,6 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -296,8 +296,8 @@ void WebAppMetrics::OnSuspend() {
 
 void WebAppMetrics::NotifyOnAssociatedAppChanged(
     content::WebContents* web_contents,
-    const absl::optional<webapps::AppId>& previous_app_id,
-    const absl::optional<webapps::AppId>& new_app_id) {
+    const std::optional<webapps::AppId>& previous_app_id,
+    const std::optional<webapps::AppId>& new_app_id) {
   // Ensure we aren't counting closed app as still open.
   // TODO (crbug.com/1081187): If there were multiple app instances open, this
   // will prevent background time being counted until the app is next active.

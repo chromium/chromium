@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -28,7 +29,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -58,15 +58,15 @@ base::FilePath GetLocalAbsolutePath(const base::FilePath& drivefs_mounted_point,
 
 // Returns the Drive server side id from |url| e.g.
 // https://drive.google.com/open?id=[ID].
-absl::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
+std::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
   const std::string& spec = url.spec();
   if (!base::StartsWith(spec, kOpenUrlBase,
                         base::CompareCase::INSENSITIVE_ASCII)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::string id;
   if (!net::GetValueForKeyInQuery(url, "id", &id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return id;
 }
@@ -87,7 +87,7 @@ void ParseFileIdOnGetMetaData(
   } else {
     // TODO(b/221078840): Use the file id directly when it is available in
     // `metadata`.
-    absl::optional<std::string> parsed_file_id =
+    std::optional<std::string> parsed_file_id =
         GetIdFromDriveUrl(GURL(metadata->alternate_url));
     if (parsed_file_id.has_value()) {
       file_id = parsed_file_id.value();
@@ -146,7 +146,7 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
     return indexable_text;
   }
 
-  absl::optional<base::Value> value(base::JSONReader::Read(file_content));
+  std::optional<base::Value> value(base::JSONReader::Read(file_content));
   if (!value) {
     return indexable_text;
   }
@@ -204,7 +204,7 @@ const std::string BuildRequestBody(
 
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
 // screencast should have 1 media file and 1 metadata file.
-absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
+std::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
     const base::FilePath& container_dir,
     const base::FilePath& drivefs_mounted_point,
     bool upload_failed) {
@@ -212,7 +212,7 @@ absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
   const base::FilePath container_absolute_path =
       GetLocalAbsolutePath(drivefs_mounted_point, container_dir);
   if (!base::PathExists(container_absolute_path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int64_t total_size_in_bytes = 0;
@@ -244,13 +244,13 @@ absl::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
 
     // Return null if the screencast is not valid.
     if (media_file_count > 1 || metadata_file_count > 1) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
   // Return null if the screencast is not valid.
   if (media_file_count != 1 || metadata_file_count != 1) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ash::PendingScreencastContainer pending_screencast{container_dir};

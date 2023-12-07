@@ -85,7 +85,7 @@ struct SurveyConfig {
   SurveyConfig(
       const base::Feature* feature,
       const std::string& trigger,
-      const absl::optional<std::string>& presupplied_trigger_id = absl::nullopt,
+      const std::optional<std::string>& presupplied_trigger_id = std::nullopt,
       const std::vector<std::string>& product_specific_bits_data_fields = {},
       const std::vector<std::string>& product_specific_string_data_fields = {});
 

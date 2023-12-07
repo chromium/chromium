@@ -34,8 +34,8 @@ class QuitWithAppsController : public message_center::NotificationDelegate,
 
   // NotificationDelegate interface.
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // ProfileManagerObserver:
   void OnProfileManagerDestroying() override;

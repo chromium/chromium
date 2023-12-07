@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_INSTALL_DIALOG_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -37,7 +37,7 @@ class SubAppsInstallDialogController : public views::WidgetObserver {
     MANAGE_PERMISSIONS_LINK,
   };
 
-  static base::AutoReset<absl::optional<DialogActionForTesting>>
+  static base::AutoReset<std::optional<DialogActionForTesting>>
   SetAutomaticActionForTesting(DialogActionForTesting auto_accept);
 
   SubAppsInstallDialogController();

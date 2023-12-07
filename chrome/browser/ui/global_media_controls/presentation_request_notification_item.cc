@@ -26,19 +26,18 @@ content::WebContents* GetWebContentsFromPresentationRequest(
   return content::WebContents::FromRenderFrameHost(rfh);
 }
 
-absl::optional<gfx::ImageSkia> GetCorrectColorTypeImage(
-    const SkBitmap& bitmap) {
+std::optional<gfx::ImageSkia> GetCorrectColorTypeImage(const SkBitmap& bitmap) {
   if (bitmap.info().colorType() == kN32_SkColorType) {
     return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   }
   SkImageInfo color_type_info = bitmap.info().makeColorType(kN32_SkColorType);
   SkBitmap color_type_copy;
   if (!color_type_copy.tryAllocPixels(color_type_info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!bitmap.readPixels(color_type_info, color_type_copy.getPixels(),
                          color_type_copy.rowBytes(), 0, 0)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return gfx::ImageSkia::CreateFrom1xBitmap(color_type_copy);
 }
@@ -86,7 +85,7 @@ PresentationRequestNotificationItem::~PresentationRequestNotificationItem() {
 }
 
 void PresentationRequestNotificationItem::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   metadata_ = metadata;
   UpdatePickerWithMetadata();
 }
@@ -106,10 +105,10 @@ void PresentationRequestNotificationItem::MediaSessionImagesChanged(
       global_media_controls::kMediaItemArtworkDesiredSize);
   bool should_synchronously_update_picker = false;
 
-  absl::optional<media_session::MediaImage> artwork_image;
+  std::optional<media_session::MediaImage> artwork_image;
   auto it = images.find(media_session::mojom::MediaSessionImageType::kArtwork);
   if (it == images.end()) {
-    artwork_image = absl::nullopt;
+    artwork_image = std::nullopt;
   } else {
     artwork_image = manager.SelectImage(it->second);
   }
@@ -125,10 +124,10 @@ void PresentationRequestNotificationItem::MediaSessionImagesChanged(
     should_synchronously_update_picker = true;
   }
 
-  absl::optional<media_session::MediaImage> favicon_image;
+  std::optional<media_session::MediaImage> favicon_image;
   it = images.find(media_session::mojom::MediaSessionImageType::kSourceIcon);
   if (it == images.end()) {
-    favicon_image = absl::nullopt;
+    favicon_image = std::nullopt;
   } else {
     favicon_image = manager.SelectImage(it->second);
   }

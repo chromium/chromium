@@ -19,9 +19,9 @@
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
     safety_hub::SafetyHubModuleType type)
-    : first_impression_time_(absl::nullopt),
-      last_impression_time_(absl::nullopt),
-      show_only_after_(absl::nullopt),
+    : first_impression_time_(std::nullopt),
+      last_impression_time_(std::nullopt),
+      show_only_after_(std::nullopt),
       module_type_(type) {}
 
 SafetyHubMenuNotification::~SafetyHubMenuNotification() = default;
@@ -94,7 +94,7 @@ void SafetyHubMenuNotification::Show() {
 void SafetyHubMenuNotification::Dismiss() {
   is_currently_active_ = false;
   impression_count_ = 0;
-  first_impression_time_ = absl::nullopt;
+  first_impression_time_ = std::nullopt;
   ++all_time_notification_count_;
 }
 

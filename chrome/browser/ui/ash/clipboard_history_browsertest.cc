@@ -1408,7 +1408,7 @@ class FakeDataTransferPolicyController
   bool IsClipboardReadAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      const absl::optional<size_t> size) override {
+      const std::optional<size_t> size) override {
     // The multipaste menu should have access to any clipboard data.
     if (data_dst.has_value() &&
         data_dst->type() == ui::EndpointType::kClipboardHistory) {
@@ -1560,7 +1560,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
                                         ->GetPrimaryMainFrame(),
                                    context_menu_params);
     menu.Init();
-    absl::optional<size_t> found_index = menu.menu_model().GetIndexOfCommandId(
+    std::optional<size_t> found_index = menu.menu_model().GetIndexOfCommandId(
         is_refresh_enabled ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
                            : IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
     ASSERT_TRUE(found_index);
@@ -1581,7 +1581,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
                                    context_menu_params);
     menu.Init();
     const ui::SimpleMenuModel& menu_model = menu.menu_model();
-    absl::optional<size_t> found_index = menu_model.GetIndexOfCommandId(
+    std::optional<size_t> found_index = menu_model.GetIndexOfCommandId(
         is_refresh_enabled ? IDC_CONTENT_PASTE_FROM_CLIPBOARD
                            : IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
     ASSERT_TRUE(found_index);

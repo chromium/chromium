@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_P(NativeChromeColorMixerWinBrowsertest,
   // Ensure the accent color starts unset and we are not following device
   // colors.
   auto* accent_color_observer = ui::AccentColorObserver::Get();
-  accent_color_observer->SetAccentColorForTesting(absl::nullopt);
+  accent_color_observer->SetAccentColorForTesting(std::nullopt);
   accent_color_observer->SetUseDwmFrameColorForTesting(false);
   SetFollowDevice(false);
 
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(NativeChromeColorMixerWinBrowsertest,
 
   // Unset the accent color. The header color should revert to its initial value
   // even though the browser is still configured to follow the device theme.
-  accent_color_observer->SetAccentColorForTesting(absl::nullopt);
+  accent_color_observer->SetAccentColorForTesting(std::nullopt);
   accent_color_observer->SetUseDwmFrameColorForTesting(false);
   EXPECT_EQ(initial_header_color, get_header_color());
 }

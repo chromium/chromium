@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
@@ -35,7 +36,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"

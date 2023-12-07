@@ -210,7 +210,7 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
       content::WebContentsUserData<LoginTabHelper>(*web_contents) {}
 
 void LoginTabHelper::HandleCredentials(
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   login_handler_.reset();
 
   if (credentials.has_value()) {

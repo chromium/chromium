@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_ASH_DEVICE_SCHEDULED_REBOOT_REBOOT_NOTIFICATION_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -72,7 +72,7 @@ class RebootNotificationController {
       scoped_refptr<message_center::NotificationDelegate> delegate) const;
 
   // Button click callback.
-  void HandleNotificationClick(absl::optional<int> button_index) const;
+  void HandleNotificationClick(std::optional<int> button_index) const;
 
   // Dialog notifying the user about the pending reboot.
   std::unique_ptr<ScheduledRebootDialog> scheduled_reboot_dialog_;

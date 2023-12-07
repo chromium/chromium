@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(FeatureDiscoveryDurationReporterBrowserTest,
       primary_user_pref->GetDict("FeatureDiscoveryReporterObservedFeatures")
           .FindDict("kMockFeature")
           ->Find("cumulative_duration");
-  absl::optional<base::TimeDelta> duration =
+  std::optional<base::TimeDelta> duration =
       base::ValueToTimeDelta(duration_value);
   EXPECT_NE(base::TimeDelta(), *duration);
 

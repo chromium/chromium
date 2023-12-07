@@ -181,7 +181,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
       kHatsSurveyTriggerSettingsPrivacy,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
   survey_configs.emplace_back(
@@ -199,7 +199,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
 
@@ -209,22 +209,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
       kHatsSurveyTriggerM1AdPrivacyPage,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       ad_privacy_product_specific_bits_data);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopM1TopicsSubpage,
       kHatsSurveyTriggerM1TopicsSubpage,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       ad_privacy_product_specific_bits_data);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopM1FledgeSubpage,
       kHatsSurveyTriggerM1FledgeSubpage,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       ad_privacy_product_specific_bits_data);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
       kHatsSurveyTriggerM1AdMeasurementSubpage,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       ad_privacy_product_specific_bits_data);
 
   // NTP modules survey.
@@ -408,14 +408,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &performance_manager::features::kPerformanceControlsPerformanceSurvey,
       kHatsSurveyTriggerPerformanceControlsPerformance,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"high_efficiency_mode"},
       std::vector<std::string>{"battery_saver_mode"});
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsBatteryPerformanceSurvey,
       kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
-      /*presupplied_trigger_id=*/absl::nullopt,
+      /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"high_efficiency_mode"},
       std::vector<std::string>{"battery_saver_mode"});
   survey_configs.emplace_back(
@@ -464,7 +464,7 @@ SurveyConfig::~SurveyConfig() = default;
 SurveyConfig::SurveyConfig(
     const base::Feature* feature,
     const std::string& trigger,
-    const absl::optional<std::string>& presupplied_trigger_id,
+    const std::optional<std::string>& presupplied_trigger_id,
     const std::vector<std::string>& product_specific_bits_data_fields,
     const std::vector<std::string>& product_specific_string_data_fields)
     : trigger(trigger),

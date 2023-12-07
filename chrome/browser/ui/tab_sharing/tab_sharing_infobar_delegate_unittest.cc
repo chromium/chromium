@@ -43,7 +43,7 @@ class MockTabSharingUIViews : public TabSharingUI {
   }
 
   void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) override {}
+      const std::optional<gfx::Rect>& region_capture_rect) override {}
 };
 
 }  // namespace
@@ -58,7 +58,7 @@ class TabSharingInfoBarDelegateTest
     bool shared_tab;
     bool can_share_instead;
     int tab_index = 0;
-    absl::optional<FocusTarget> focus_target;
+    std::optional<FocusTarget> focus_target;
     TabSharingInfoBarDelegate::TabShareType capture_type =
         TabSharingInfoBarDelegate::TabShareType::CAPTURE;
   };

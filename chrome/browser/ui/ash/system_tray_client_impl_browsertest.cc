@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, NoEventUrl) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      absl::nullopt, date, opened_pwa, final_url);
+      std::nullopt, date, opened_pwa, final_url);
   EXPECT_FALSE(opened_pwa);
   EXPECT_EQ(final_url.spec(), GURL(kExpectedUrlStr).spec());
 
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, NoEventUrl) {
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      absl::nullopt, date, opened_pwa, final_url);
+      std::nullopt, date, opened_pwa, final_url);
   EXPECT_TRUE(opened_pwa);
   EXPECT_EQ(final_url.spec(), GURL(kExpectedUrlStr).spec());
 }

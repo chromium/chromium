@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TAB_HELPER_H_
 
+#include <optional>
+
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -56,8 +57,8 @@ class SearchEngineChoiceTabHelper
 // tests. Leaving it empty will make the dialog use a zoom of 1.;
 void ShowSearchEngineChoiceDialog(
     Browser& browser,
-    absl::optional<gfx::Size> boundary_dimensions_for_test = absl::nullopt,
-    absl::optional<double> zoom_factor_for_test_ = absl::nullopt);
+    std::optional<gfx::Size> boundary_dimensions_for_test = std::nullopt,
+    std::optional<double> zoom_factor_for_test_ = std::nullopt);
 
 // Implemented in
 // `chrome/browser/ui/views/search_engine_choice/search_engine_choice_dialog_view.cc`

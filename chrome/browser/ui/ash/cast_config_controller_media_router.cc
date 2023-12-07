@@ -35,7 +35,7 @@
 
 namespace {
 
-absl::optional<media_router::MediaRouter*> g_media_router_for_test;
+std::optional<media_router::MediaRouter*> g_media_router_for_test;
 
 Profile* GetProfile() {
   if (!user_manager::UserManager::IsInitialized())

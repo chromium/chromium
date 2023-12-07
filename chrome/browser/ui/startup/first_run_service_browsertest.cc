@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/startup/first_run_service.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
@@ -51,7 +53,6 @@
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -448,7 +449,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
   ProfilePicker::Hide();
   run_loop.Run();
 
-  absl::optional<std::u16string> expected_profile_name;
+  std::optional<std::u16string> expected_profile_name;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros we always have an account, the profile name will reflect it.
   signin::IdentityManager* identity_manager =

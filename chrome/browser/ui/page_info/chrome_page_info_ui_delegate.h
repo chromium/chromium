@@ -44,7 +44,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns "About this site" info for the active page.
-  absl::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
+  std::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
 
   // Handles opening the "More about this page" URL in a new tab.
   void OpenMoreAboutThisPageUrl(const GURL& url, const ui::Event& event);
@@ -68,7 +68,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 #endif  // !BUILDFLAG(IS_ANDROID)
   content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) override;
-  absl::optional<content::PermissionResult> GetEmbargoResult(
+  std::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) override;
 
   bool IsTrackingProtection3pcdEnabled() override;

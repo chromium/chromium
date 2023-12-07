@@ -246,7 +246,7 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
 
   GetIssueManager()->ClearAllIssues();
 
-  current_route_request_ = absl::make_optional(*params->request);
+  current_route_request_ = std::make_optional(*params->request);
 
   // Note that `route_result_callbacks` don't get called when MediaRoterUI is
   // destroyed before the route is created, e.g. when the Cast dialog is closed
@@ -536,7 +536,7 @@ void MediaRouterUI::OnIssue(const Issue& issue) {
 }
 
 void MediaRouterUI::OnIssueCleared() {
-  issue_ = absl::nullopt;
+  issue_ = std::nullopt;
   UpdateSinks();
 }
 
@@ -640,7 +640,7 @@ void MediaRouterUI::UpdateModelHeader(const std::u16string& source_name) {
 
 UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
                                            const MediaRoute* route,
-                                           const absl::optional<Issue>& issue) {
+                                           const std::optional<Issue>& issue) {
   UIMediaSink ui_sink{sink.sink.provider_id()};
   ui_sink.id = sink.sink.id();
   ui_sink.friendly_name = base::UTF8ToUTF16(sink.sink.name());

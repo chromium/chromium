@@ -167,8 +167,8 @@ void CommerceUiTabHelper::DidFinishNavigation(
   got_product_response_for_page_ = false;
   got_initial_subscription_status_for_page_ = false;
   page_has_discounts_ = false;
-  page_action_to_expand_ = absl::nullopt;
-  page_action_expanded_ = absl::nullopt;
+  page_action_to_expand_ = std::nullopt;
+  page_action_expanded_ = std::nullopt;
   pending_tracking_state_.reset();
   price_insights_info_.reset();
   icon_use_recorded_for_page_.clear();
@@ -298,7 +298,7 @@ bool CommerceUiTabHelper::ShouldShowPriceInsightsIconView() {
 
 void CommerceUiTabHelper::HandleProductInfoResponse(
     const GURL& url,
-    const absl::optional<const ProductInfo>& info) {
+    const std::optional<const ProductInfo>& info) {
   if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
     got_product_response_for_page_ = true;
     MaybeComputePageActionToExpand();
@@ -332,7 +332,7 @@ void CommerceUiTabHelper::HandleProductInfoResponse(
 }
 
 void CommerceUiTabHelper::MaybeDoProductImageFetch(
-    const absl::optional<ProductInfo>& info) {
+    const std::optional<ProductInfo>& info) {
   if (!shopping_service_->IsShoppingListEligible() || !CanTrackPrice(info) ||
       info->image_url.is_empty() || !this->last_fetched_image_.IsEmpty()) {
     return;
@@ -350,7 +350,7 @@ void CommerceUiTabHelper::MaybeDoProductImageFetch(
 
 void CommerceUiTabHelper::HandlePriceInsightsInfoResponse(
     const GURL& url,
-    const absl::optional<PriceInsightsInfo>& info) {
+    const std::optional<PriceInsightsInfo>& info) {
   got_insights_response_for_page_ = true;
 
   if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
@@ -458,7 +458,7 @@ void CommerceUiTabHelper::SetPriceTrackingState(
         std::move(wrapped_callback), enable && is_new_bookmark);
   } else {
     DCHECK(!enable);
-    absl::optional<commerce::ProductInfo> info =
+    std::optional<commerce::ProductInfo> info =
         shopping_service_->GetAvailableProductInfoForUrl(
             web_contents()->GetLastCommittedURL());
     if (info.has_value()) {
@@ -611,12 +611,12 @@ SidePanelUI* CommerceUiTabHelper::GetSidePanelUI() const {
   return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }
 
-const absl::optional<bool>&
+const std::optional<bool>&
 CommerceUiTabHelper::GetPendingTrackingStateForTesting() {
   return pending_tracking_state_;
 }
 
-const absl::optional<PriceInsightsInfo>&
+const std::optional<PriceInsightsInfo>&
 CommerceUiTabHelper::GetPriceInsightsInfo() {
   return price_insights_info_;
 }
@@ -644,10 +644,10 @@ bool CommerceUiTabHelper::IsShowingDiscountsIcon() {
 }
 
 void CommerceUiTabHelper::ComputePageActionToExpand() {
-  page_action_to_expand_ = absl::nullopt;
+  page_action_to_expand_ = std::nullopt;
 
   if (!web_contents() || !web_contents()->GetBrowserContext()) {
-    page_action_to_expand_ = absl::nullopt;
+    page_action_to_expand_ = std::nullopt;
     return;
   }
 
@@ -746,7 +746,7 @@ bool CommerceUiTabHelper::ShouldExpandPageActionIcon(
   if (page_action_to_expand_.has_value() &&
       type == page_action_to_expand_.value()) {
     page_action_expanded_ = page_action_to_expand_.value();
-    page_action_to_expand_ = absl::nullopt;
+    page_action_to_expand_ = std::nullopt;
     return true;
   }
   return false;

@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   EXPECT_TRUE(native_theme->InForcedColorsMode());
 
   EXPECT_TRUE(controller->GetThemeColor().has_value());
-  absl::optional<SkColor> hc_theme_color = native_theme->GetSystemThemeColor(
+  std::optional<SkColor> hc_theme_color = native_theme->GetSystemThemeColor(
       ui::NativeTheme::SystemThemeColor::kWindow);
   EXPECT_EQ(*controller->GetThemeColor(), hc_theme_color);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LOGIN_LOGIN_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -189,7 +189,7 @@ class LoginHandler : public content::LoginDelegate {
       const GURL& request_url,
       const content::GlobalRequestID& request_id,
       bool is_main_frame,
-      const absl::optional<net::AuthCredentials>& credentials,
+      const std::optional<net::AuthCredentials>& credentials,
       bool cancelled_by_extension);
 
   void ShowLoginPrompt(const GURL& request_url);

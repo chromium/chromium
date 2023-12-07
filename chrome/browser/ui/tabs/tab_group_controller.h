@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_GROUP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_GROUP_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tab_groups {
 class TabGroupId;
@@ -27,7 +27,7 @@ class TabGroupController {
   virtual std::u16string GetTitleAt(int index) const = 0;
 
   // Methods from TabStripModel that are exposed to TabGroup.
-  virtual absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  virtual std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const = 0;
   virtual int GetTabCount() const = 0;
 

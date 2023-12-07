@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -33,7 +34,6 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace {
@@ -67,7 +67,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
   base::RunLoop run_loop_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       login_ui_service_observation_{this};
-  absl::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
+  std::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
 };
 
 }  // namespace

@@ -263,8 +263,8 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
     EXPECT_FALSE(expected_contents);
     expected_contents = browser->tab_strip_model()->GetActiveWebContents();
   }
-  absl::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
-  absl::optional<content::LoadStopObserver> load_stop_observer;
+  std::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
+  std::optional<content::LoadStopObserver> load_stop_observer;
   if (wait_for_navigation) {
     if (expected_contents)
       load_stop_observer.emplace(expected_contents);
@@ -2069,7 +2069,7 @@ class MockScreen : public display::ScreenBase {
   }
 
  private:
-  absl::optional<display::Display> display_nearest_window_;
+  std::optional<display::Display> display_nearest_window_;
 };
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

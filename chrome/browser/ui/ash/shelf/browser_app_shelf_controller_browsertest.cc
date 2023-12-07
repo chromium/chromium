@@ -61,14 +61,14 @@ void UnpinApp(const std::string& app_id) {
   ash::ShelfModel::Get()->UnpinAppWithID(app_id);
 }
 
-absl::optional<ash::ShelfItemStatus> ShelfStatus(const std::string& app_id) {
+std::optional<ash::ShelfItemStatus> ShelfStatus(const std::string& app_id) {
   ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
   for (const ash::ShelfItem& item : model->items()) {
     if (item.id.app_id == app_id) {
       return item.status;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string WindowAppId(aura::Window* window) {
@@ -186,7 +186,7 @@ class BrowserAppShelfControllerBrowserTest
   const webapps::AppId kAppId_D = UrlToAppId(kURL_D);
 
   webapps::AppId UrlToAppId(const std::string& start_url) {
-    return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+    return web_app::GenerateAppId(/*manifest_id=*/std::nullopt,
                                   GURL(start_url));
   }
 
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
     Launch(kAppId_A);
 
     // App A is unpinned, so no new item.
-    EXPECT_EQ(ShelfStatus(kAppId_A), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_A), std::nullopt);
     // App ID of the window is now set to app A, but shelf ID maps to the
     // browser shelf item because there is no pinned item for app A.
     EXPECT_EQ(WindowAppId(lacros->window), kAppId_A);
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
     // Close just the app tab.
     Stop(kAppId_D);
 
-    EXPECT_EQ(ShelfStatus(kAppId_D), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_D), std::nullopt);
     EXPECT_EQ(WindowAppId(lacros->window), kLacrosAppId);
     EXPECT_EQ(WindowShelfId(lacros->window), ash::ShelfID(kLacrosAppId));
   }
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
     // Close the app window.
     Stop(kAppId_A);
 
-    EXPECT_EQ(ShelfStatus(kAppId_A), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_A), std::nullopt);
   }
 
   {
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
     // Close the app window.
     Stop(kAppId_D);
 
-    EXPECT_EQ(ShelfStatus(kAppId_D), absl::nullopt);
+    EXPECT_EQ(ShelfStatus(kAppId_D), std::nullopt);
   }
 }
 

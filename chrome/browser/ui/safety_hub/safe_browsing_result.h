@@ -23,7 +23,7 @@ class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
 
   ~SafetyHubSafeBrowsingResult() override;
 
-  static absl::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
+  static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
       const PrefService* pref_service);
 
   // SafetyHubService::Result implementation

@@ -45,9 +45,9 @@ std::unique_ptr<CommandItem> ItemForTitle(const std::u16string& title,
 // In practice, this is the tab group that *all* selected tabs belong to, if
 // any. In the common special case of single selection, this will return that
 // tab's group if it has one.
-absl::optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
+std::optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
     TabStripModel* tab_strip_model) {
-  absl::optional<tab_groups::TabGroupId> excluded_group = absl::nullopt;
+  std::optional<tab_groups::TabGroupId> excluded_group = std::nullopt;
   for (int index : tab_strip_model->selection_model().selected_indices()) {
     auto group = tab_strip_model->GetTabGroupForTab(index);
     if (group.has_value()) {
@@ -55,7 +55,7 @@ absl::optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
         excluded_group = group;
       } else if (group != excluded_group) {
         // More than one group in the selection, so don't exclude anything.
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
   }

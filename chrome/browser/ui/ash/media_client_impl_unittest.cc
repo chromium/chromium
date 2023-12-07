@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/media_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 // Gmock matchers and actions that are used below.
@@ -75,14 +75,14 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
     last_media_key_ = accelerator;
   }
 
-  absl::optional<ui::Accelerator> ConsumeLastMediaKey() {
-    absl::optional<ui::Accelerator> key = last_media_key_;
+  std::optional<ui::Accelerator> ConsumeLastMediaKey() {
+    std::optional<ui::Accelerator> key = last_media_key_;
     last_media_key_.reset();
     return key;
   }
 
  private:
-  absl::optional<ui::Accelerator> last_media_key_;
+  std::optional<ui::Accelerator> last_media_key_;
 };
 
 class FakeNotificationDisplayService : public NotificationDisplayService {
@@ -127,13 +127,13 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
 
   size_t show_called_times() const { return show_called_times_; }
 
-  void SimulateClick(const std::string& id, absl::optional<int> button_idx) {
+  void SimulateClick(const std::string& id, std::optional<int> button_idx) {
     auto notification_iter = active_notifications_.find(id);
     ASSERT_TRUE(notification_iter != active_notifications_.end());
 
     message_center::Notification notification = notification_iter->second;
 
-    notification.delegate()->Click(button_idx, absl::nullopt);
+    notification.delegate()->Click(button_idx, std::nullopt);
 
     if (notification.rich_notification_data().remove_on_click) {
       active_notifications_.erase(id);
@@ -187,7 +187,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
     BrowserList::SetLastActive(browser());
 
     ASSERT_FALSE(test_media_controller_->force_media_client_key_handling());
-    ASSERT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
+    ASSERT_EQ(std::nullopt, delegate()->ConsumeLastMediaKey());
   }
 
   void TearDown() override {
@@ -357,7 +357,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Simulate the media key and check that the delegate did not receive it.
     test.client_handler.Run();
-    EXPECT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
+    EXPECT_EQ(std::nullopt, delegate()->ConsumeLastMediaKey());
 
     // Change the active browser back and ensure the override was enabled.
     BrowserList::SetLastActive(browser());
@@ -374,7 +374,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Simulate the media key and check the delegate did not receive it.
     test.client_handler.Run();
-    EXPECT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
+    EXPECT_EQ(std::nullopt, delegate()->ConsumeLastMediaKey());
   }
 }
 

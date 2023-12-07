@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/clipboard_history_url_title_fetcher_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -68,7 +68,7 @@ void ClipboardHistoryUrlTitleFetcherImpl::QueryHistory(
     OnHistoryQueryCompleteCallback callback) {
   auto* const history_service = GetHistoryService();
   if (!history_service) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -90,5 +90,5 @@ void ClipboardHistoryUrlTitleFetcherImpl::OnHistoryQueryComplete(
   base::UmaHistogramBoolean("Ash.ClipboardHistory.UrlTitleFetcher.UrlFound",
                             result.success);
   std::move(callback).Run(
-      result.success ? absl::make_optional(result.row.title()) : absl::nullopt);
+      result.success ? std::make_optional(result.row.title()) : std::nullopt);
 }

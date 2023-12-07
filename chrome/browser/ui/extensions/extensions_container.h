@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ToolbarActionViewController;
 class ToolbarActionsBarBubbleDelegate;
@@ -28,7 +28,7 @@ class ExtensionsContainer {
   // Get the currently popped out action id, if any.
   // TODO(pbos): Consider supporting multiple popped out actions for bubbles
   // that relate to more than one extension.
-  virtual absl::optional<extensions::ExtensionId> GetPoppedOutActionId()
+  virtual std::optional<extensions::ExtensionId> GetPoppedOutActionId()
       const = 0;
 
   // Called when the context menu of a toolbar action with `action_id` is

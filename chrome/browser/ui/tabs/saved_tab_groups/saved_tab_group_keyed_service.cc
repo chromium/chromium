@@ -150,7 +150,7 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
       tab_strip_model_for_creation->group_model()->GetTabGroup(tab_group_id);
 
   // Activate the first tab in the tab group.
-  absl::optional<int> first_tab = tab_group->GetFirstTab();
+  std::optional<int> first_tab = tab_group->GetFirstTab();
   DCHECK(first_tab.has_value());
   tab_strip_model_for_creation->ActivateTabAt(first_tab.value());
 
@@ -180,7 +180,7 @@ void SavedTabGroupKeyedService::SaveGroup(
 
   SavedTabGroup saved_tab_group(tab_group->visual_data()->title(),
                                 tab_group->visual_data()->color(), {},
-                                absl::nullopt, absl::nullopt, tab_group->id());
+                                std::nullopt, std::nullopt, tab_group->id());
 
   // Build the SavedTabGroupTabs and add them to the SavedTabGroup.
   const gfx::Range tab_range = tab_group->ListTabs();
@@ -316,7 +316,7 @@ void SavedTabGroupKeyedService::SavedTabGroupRemovedFromSync(
 
 void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(
     const base::Uuid& group_guid,
-    const absl::optional<base::Uuid>& tab_guid) {
+    const std::optional<base::Uuid>& tab_guid) {
   const SavedTabGroup* const saved_group = model_.Get(group_guid);
   CHECK(saved_group);
 
@@ -455,8 +455,8 @@ void SavedTabGroupKeyedService::FocusFirstTabOrWindowInOpenGroup(
       browser_for_activation->tab_strip_model()->group_model()->GetTabGroup(
           local_group_id);
 
-  absl::optional<int> first_tab = tab_group->GetFirstTab();
-  absl::optional<int> last_tab = tab_group->GetLastTab();
+  std::optional<int> first_tab = tab_group->GetFirstTab();
+  std::optional<int> last_tab = tab_group->GetLastTab();
   int active_index = browser_for_activation->tab_strip_model()->active_index();
   DCHECK(first_tab.has_value());
   DCHECK(last_tab.has_value());

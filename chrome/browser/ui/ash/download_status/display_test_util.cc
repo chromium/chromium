@@ -12,8 +12,8 @@ namespace ash::download_status {
 crosapi::mojom::DownloadStatusPtr CreateDownloadStatus(
     Profile* profile,
     crosapi::mojom::DownloadState state,
-    const absl::optional<int64_t>& received_bytes,
-    const absl::optional<int64_t>& target_bytes) {
+    const std::optional<int64_t>& received_bytes,
+    const std::optional<int64_t>& target_bytes) {
   crosapi::mojom::DownloadStatusPtr download_status =
       crosapi::mojom::DownloadStatus::New();
   download_status->full_path = test::CreateFile(profile);
@@ -27,8 +27,8 @@ crosapi::mojom::DownloadStatusPtr CreateDownloadStatus(
 
 crosapi::mojom::DownloadStatusPtr CreateInProgressDownloadStatus(
     Profile* profile,
-    const absl::optional<int64_t>& received_bytes,
-    const absl::optional<int64_t>& target_bytes) {
+    const std::optional<int64_t>& received_bytes,
+    const std::optional<int64_t>& target_bytes) {
   return CreateDownloadStatus(profile,
                               crosapi::mojom::DownloadState::kInProgress,
                               received_bytes, target_bytes);

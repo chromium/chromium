@@ -37,7 +37,7 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
   // Gets a result containing all the extensions that should be reviewed. The
   // parameter only_unpublished_extensions indicates whether only extensions
   // that have been unpublished for a long time should be considered.
-  static absl::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
+  static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
       const extensions::CWSInfoService* extension_info_service,
       Profile* profile,
       bool only_unpublished_extensions);

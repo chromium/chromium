@@ -704,7 +704,7 @@ AuthenticatorClientPinEntrySheetModel::AuthenticatorClientPinEntrySheetModel(
           dialog_model->min_pin_length());
       break;
     case device::pin::PINEntryError::kWrongPIN:
-      absl::optional<int> attempts = dialog_model->pin_attempts();
+      std::optional<int> attempts = dialog_model->pin_attempts();
       error_ =
           attempts && *attempts <= 3
               ? l10n_util::GetPluralStringFUTF16(
@@ -1472,7 +1472,7 @@ AuthenticatorMultiSourcePickerSheetModel::
     return;
   }
 
-  const absl::optional<std::u16string>& phone_name =
+  const std::optional<std::u16string>& phone_name =
       dialog_model->GetPriorityPhoneName();
   if (phone_name) {
     primary_passkeys_label_ =

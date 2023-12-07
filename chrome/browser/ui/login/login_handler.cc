@@ -222,7 +222,7 @@ void LoginHandler::CancelAuth() {
 
   NotifyAuthCancelled();
   CloseContents();
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
@@ -270,7 +270,7 @@ void LoginHandler::StartInternal(
       FROM_HERE,
       base::BindOnce(&LoginHandler::MaybeSetUpLoginPromptBeforeCommit,
                      weak_factory_.GetWeakPtr(), request_url, request_id,
-                     is_main_frame, absl::nullopt, false /* should_cancel */));
+                     is_main_frame, std::nullopt, false /* should_cancel */));
 }
 
 void LoginHandler::NotifyAuthNeeded() {
@@ -498,7 +498,7 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
     const GURL& request_url,
     const content::GlobalRequestID& request_id,
     bool is_request_for_main_frame,
-    const absl::optional<net::AuthCredentials>& credentials,
+    const std::optional<net::AuthCredentials>& credentials,
     bool cancelled_by_extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

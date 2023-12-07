@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
@@ -46,7 +47,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -86,7 +86,7 @@ std::u16string ShelfControllerHelper::GetLabelForPromiseStatus(
 }
 
 std::u16string ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
-    absl::optional<std::string> name,
+    std::optional<std::string> name,
     apps::PromiseStatus status) {
   switch (status) {
     case apps::PromiseStatus::kUnknown:
@@ -149,7 +149,7 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
   }
 
   if (IsAppServiceShortcut(profile, app_id)) {
-    absl::optional<std::string> shortcut_name =
+    std::optional<std::string> shortcut_name =
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->ShortcutRegistryCache()
             ->GetShortcut(apps::ShortcutId(app_id))
@@ -213,7 +213,7 @@ std::string ShelfControllerHelper::GetAppPackageId(Profile* profile,
     }
   }
 
-  absl::optional<apps::PackageId> package_id;
+  std::optional<apps::PackageId> package_id;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&package_id, profile](const apps::AppUpdate& update) {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/managed_ui.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -31,7 +33,6 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -82,7 +83,7 @@ const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-absl::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
+std::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
   if (g_browser_process->profile_manager()) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
@@ -97,7 +98,7 @@ absl::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
       enterprise_util::GetDomainFromEmail(profile->GetProfileUserName());
   // Heuristic for most common consumer Google domains -- these are not managed.
   if (domain.empty() || domain == "gmail.com" || domain == "googlemail.com")
-    return absl::nullopt;
+    return std::nullopt;
   return domain;
 }
 
@@ -122,9 +123,9 @@ ManagementStringType GetManagementStringType(Profile* profile) {
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
-  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
   bool account_managed = management_service->IsAccountManaged();
@@ -227,9 +228,9 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
     CHECK(ShouldDisplayManagedByParentUi(profile));
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
-  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
   switch (GetManagementStringType(profile)) {
     case BROWSER_MANAGED:
       return l10n_util::GetStringUTF16(IDS_MANAGED);
@@ -253,9 +254,9 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
 
 std::u16string GetManagedUiMenuItemTooltip(Profile* profile) {
   CHECK(ShouldDisplayManagedUi(profile));
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
-  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
   switch (GetManagementStringType(profile)) {
     case BROWSER_PROFILE_DIFFERENT_MANAGED_BY:
       return l10n_util::GetStringFUTF16(
@@ -294,9 +295,9 @@ std::string GetManagedUiWebUIIcon(Profile* profile) {
 }
 
 std::u16string GetManagedUiWebUILabel(Profile* profile) {
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
-  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
 
   switch (GetManagementStringType(profile)) {
     case BROWSER_MANAGED:
@@ -349,7 +350,7 @@ std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
   return ManagementUI::GetManagementPageSubtitle(profile);
 #else
   if (enterprise_util::IsBrowserManaged(profile)) {
-    absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+    std::optional<std::string> manager = GetAccountManagerIdentity(profile);
     if (!manager &&
         base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
       manager = GetDeviceManagerIdentity();
@@ -378,7 +379,7 @@ std::u16string GetDeviceManagedUiWebUILabel() {
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
   replacements.push_back(ui::GetChromeOSDeviceName());
 
-  const absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  const std::optional<std::string> device_manager = GetDeviceManagerIdentity();
   if (device_manager && !device_manager->empty()) {
     string_id = IDS_DEVICE_MANAGED_BY_WITH_HYPERLINK;
     replacements.push_back(base::UTF8ToUTF16(*device_manager));
@@ -388,9 +389,9 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 }
 #else
 std::u16string GetManagementPageSubtitle(Profile* profile) {
-  absl::optional<std::string> account_manager =
+  std::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
-  absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
+  std::optional<std::string> device_manager = GetDeviceManagerIdentity();
 
   switch (GetManagementStringType(profile)) {
     case BROWSER_MANAGED:
@@ -424,13 +425,13 @@ std::u16string GetManagementPageSubtitle(Profile* profile) {
 }
 #endif
 
-absl::optional<std::string> GetDeviceManagerIdentity() {
+std::optional<std::string> GetDeviceManagerIdentity() {
   if (g_device_manager_for_testing) {
     return g_device_manager_for_testing;
   }
 
   if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -440,7 +441,7 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
 #else
   // The device is managed as
   // `policy::ManagementServiceFactory::GetForPlatform()->IsManaged()` returned
-  // true. `policy::GetManagedBy` might return `absl::nullopt` if
+  // true. `policy::GetManagedBy` might return `std::nullopt` if
   // `policy::CloudPolicyStore` hasn't fully initialized yet.
   return policy::GetManagedBy(g_browser_process->browser_policy_connector()
                                   ->machine_level_user_cloud_policy_manager())
@@ -449,20 +450,20 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-absl::optional<std::string> GetSessionManagerIdentity() {
+std::optional<std::string> GetSessionManagerIdentity() {
   if (!policy::PolicyLoaderLacros::IsMainUserManaged())
-    return absl::nullopt;
+    return std::nullopt;
   return policy::PolicyLoaderLacros::main_user_policy_data()->managed_by();
 }
 #endif
 
-absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
+std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (!policy::ManagementServiceFactory::GetForProfile(profile)
            ->HasManagementAuthority(
                policy::EnterpriseManagementAuthority::CLOUD))
-    return absl::nullopt;
+    return std::nullopt;
 
-  const absl::optional<std::string> managed_by =
+  const std::optional<std::string> managed_by =
       policy::GetManagedBy(GetUserCloudPolicyManager(profile));
   if (managed_by)
     return *managed_by;

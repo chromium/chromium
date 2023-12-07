@@ -59,7 +59,7 @@ bool IsConfigurationError(const std::string& shill_error) {
 }
 
 std::string GetStringFromDictionary(
-    const absl::optional<base::Value::Dict>& dict,
+    const std::optional<base::Value::Dict>& dict,
     const std::string& key) {
   const std::string* v = dict ? dict->FindString(key) : nullptr;
   return v ? *v : std::string();
@@ -417,7 +417,7 @@ void NetworkStateNotifier::ShowNetworkConnectErrorForGuid(
   if (!network) {
     ShowConnectErrorNotification(error_name,
                                  /*service_path=*/std::string(),
-                                 /*shill_properties=*/absl::nullopt);
+                                 /*shill_properties=*/std::nullopt);
     return;
   }
   // Get the up-to-date properties for the network and display the error.
@@ -466,7 +466,7 @@ void NetworkStateNotifier::RemoveCarrierUnlockNotification() {
 void NetworkStateNotifier::OnConnectErrorGetProperties(
     const std::string& error_name,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     ShowConnectErrorNotification(error_name, service_path,
                                  std::move(shill_properties));
@@ -489,7 +489,7 @@ void NetworkStateNotifier::OnConnectErrorGetProperties(
 void NetworkStateNotifier::ShowConnectErrorNotification(
     const std::string& error_name,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   std::u16string error = GetConnectErrorString(error_name);
   NET_LOG(DEBUG) << "Notify: " << NetworkPathId(service_path)
                  << ": Connect error: " << error_name << ": "
@@ -553,7 +553,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
       NetworkHandler::Get()->cellular_esim_profile_handler();
   std::string network_name;
   if (network) {
-    absl::optional<std::string> esim_name =
+    std::optional<std::string> esim_name =
         network_name_util::GetESimProfileName(cellular_esim_profile_handler,
                                               network);
     if (esim_name)

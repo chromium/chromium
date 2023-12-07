@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace infobars {
@@ -76,7 +76,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
       const std::u16string& capturer_name,
       bool shared_tab,
       ButtonState share_this_tab_instead_button_state,
-      absl::optional<FocusTarget> focus_target,
+      std::optional<FocusTarget> focus_target,
       TabSharingUI* ui,
       TabShareType capture_type,
       bool favicons_used_for_switch_to_tab_button = false);
@@ -88,7 +88,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
                             std::u16string capturer_name,
                             bool shared_tab,
                             ButtonState share_this_tab_instead_button_state,
-                            absl::optional<FocusTarget> focus_target,
+                            std::optional<FocusTarget> focus_target,
                             TabSharingUI* ui,
                             TabShareType capture_type,
                             bool favicons_used_for_switch_to_tab_button);

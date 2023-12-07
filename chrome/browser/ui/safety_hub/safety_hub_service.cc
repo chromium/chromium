@@ -92,14 +92,14 @@ bool SafetyHubService::IsUpdateRunning() {
   return pending_updates_ > 0;
 }
 
-absl::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubService::Result>>
 SafetyHubService::GetCachedResult() {
   if (latest_result_) {
     // Using the `Clone()` function here instead of the copy constructor as the
     // specific result class is unknown.
     return latest_result_->Clone();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SafetyHubService::InitializeLatestResult() {

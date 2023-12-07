@@ -60,7 +60,7 @@ class CastMediaNotificationItem
   bool RequestMediaRemoting() override;
   media_message_center::Source GetSource() const override;
   media_message_center::SourceType GetSourceType() const override;
-  absl::optional<base::UnguessableToken> GetSourceId() const override;
+  std::optional<base::UnguessableToken> GetSourceId() const override;
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(

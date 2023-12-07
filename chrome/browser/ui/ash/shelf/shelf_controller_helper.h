@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_SHELF_CONTROLLER_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ArcAppListPrefs;
 class ExtensionEnableFlow;
@@ -42,7 +42,7 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   // Get the accessible label that should be announced by the screenreader for
   // the specified promise app name and status.
   static std::u16string GetAccessibleLabelForPromiseStatus(
-      absl::optional<std::string> app_name,
+      std::optional<std::string> app_name,
       apps::PromiseStatus status);
 
   // Helper function to return the title associated with |app_id|.

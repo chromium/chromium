@@ -231,7 +231,7 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // If sequential Lens pinging is enabled, this stores the Lens search settings
   // if a Lens search is ready before the Lens ping response was received.
-  absl::optional<LensSearchSettings> stored_lens_search_settings_;
+  std::optional<LensSearchSettings> stored_lens_search_settings_;
 
   // The time that the last Lens ping request was initiated.
   base::TimeTicks lens_ping_start_time_;

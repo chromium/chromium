@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 

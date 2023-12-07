@@ -513,7 +513,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
 
   // Undoing the changes should add `url1` back to the list of revoked
   // permissions and reset its permissions.
-  service()->UndoRegrantPermissionsForOrigin({type}, absl::nullopt,
+  service()->UndoRegrantPermissionsForOrigin({type}, std::nullopt,
                                              url::Origin::Create(GURL(url1)));
 
   revoked_permissions_list = hcsm()->GetSettingsForOneType(
@@ -768,7 +768,7 @@ TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
   // of revoked permissions) should be immediately available.
   auto new_service = std::make_unique<UnusedSitePermissionsService>(
       profile(), profile()->GetPrefs());
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =

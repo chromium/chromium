@@ -213,7 +213,7 @@ class WebAppLinkCapturingBrowserTest
     }
   }
 
-  absl::optional<LaunchHandler> GetLaunchHandler(const webapps::AppId& app_id) {
+  std::optional<LaunchHandler> GetLaunchHandler(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id)->launch_handler();
   }
 

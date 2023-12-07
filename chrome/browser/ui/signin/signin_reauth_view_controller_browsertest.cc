@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -47,7 +48,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -209,7 +209,7 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
     reauth_result_loop_->Quit();
   }
 
-  absl::optional<signin::ReauthResult> WaitForReauthResult() {
+  std::optional<signin::ReauthResult> WaitForReauthResult() {
     reauth_result_loop_->Run();
     return reauth_result_;
   }
@@ -249,7 +249,7 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<SigninViewController::ReauthAbortHandle> abort_handle_;
 
   std::unique_ptr<base::RunLoop> reauth_result_loop_;
-  absl::optional<signin::ReauthResult> reauth_result_;
+  std::optional<signin::ReauthResult> reauth_result_;
 };
 
 // Tests that the abort handle cancels an ongoing reauth flow.

@@ -206,8 +206,8 @@ class AppAccessNotifierTest : public testing::Test,
 
   static apps::CapabilityAccessPtr MakeCapabilityAccess(
       const std::string app_id,
-      absl::optional<bool> camera,
-      absl::optional<bool> microphone) {
+      std::optional<bool> camera,
+      std::optional<bool> microphone) {
     auto access = std::make_unique<apps::CapabilityAccess>(app_id);
     access->camera = camera;
     access->microphone = microphone;

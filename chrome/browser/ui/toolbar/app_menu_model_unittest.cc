@@ -331,9 +331,9 @@ TEST_F(AppMenuModelTest, GlobalError) {
 
   AppMenuModel model(this, browser());
   model.Init();
-  absl::optional<size_t> index1 = model.GetIndexOfCommandId(command1);
+  std::optional<size_t> index1 = model.GetIndexOfCommandId(command1);
   ASSERT_TRUE(index1.has_value());
-  absl::optional<size_t> index2 = model.GetIndexOfCommandId(command2);
+  std::optional<size_t> index2 = model.GetIndexOfCommandId(command2);
   ASSERT_TRUE(index2.has_value());
 
   EXPECT_TRUE(model.IsEnabledAt(index1.value()));

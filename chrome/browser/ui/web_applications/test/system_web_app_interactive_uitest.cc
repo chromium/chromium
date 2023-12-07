@@ -555,7 +555,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   }
 
   webapps::AppId GetAppId(Profile* profile) {
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         ash::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
             installation_->GetType());
     CHECK(app_id.has_value());

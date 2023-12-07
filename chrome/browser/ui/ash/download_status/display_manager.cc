@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/download_status/display_manager.h"
 
 #include <functional>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -30,7 +30,7 @@ namespace {
 // Returns true if `download_status` provides sufficient data to display the
 // associated download update.
 bool CanDisplay(const crosapi::mojom::DownloadStatus& download_status) {
-  const absl::optional<base::FilePath>& file_path = download_status.full_path;
+  const std::optional<base::FilePath>& file_path = download_status.full_path;
   return file_path.has_value() && !file_path->empty();
 }
 
@@ -39,27 +39,26 @@ bool IsInProgress(const crosapi::mojom::DownloadStatus& download_status) {
   return download_status.state == crosapi::mojom::DownloadState::kInProgress;
 }
 
-// Returns the total number of bytes, or `absl::nullopt` if the
+// Returns the total number of bytes, or `std::nullopt` if the
 // `download_status` total bytes count is null or less than one.
-absl::optional<int64_t> GetTotalBytes(
+std::optional<int64_t> GetTotalBytes(
     const crosapi::mojom::DownloadStatus& download_status) {
-  const absl::optional<int64_t>& total_bytes = download_status.total_bytes;
-  return total_bytes > 0 ? total_bytes : absl::nullopt;
+  const std::optional<int64_t>& total_bytes = download_status.total_bytes;
+  return total_bytes > 0 ? total_bytes : std::nullopt;
 }
 
-// Returns the number of received bytes, or `absl::nullopt` if the
+// Returns the number of received bytes, or `std::nullopt` if the
 // `download_status` received bytes count is null or a negative value.
 // NOTE: This function ensures that the number of received bytes is less than
 // the number of total bytes if the download is not complete.
-absl::optional<int64_t> GetReceivedBytes(
+std::optional<int64_t> GetReceivedBytes(
     const crosapi::mojom::DownloadStatus& download_status) {
-  const absl::optional<int64_t>& received_bytes =
-      download_status.received_bytes;
+  const std::optional<int64_t>& received_bytes = download_status.received_bytes;
   if (received_bytes < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  if (const absl::optional<int64_t>& total_bytes =
+  if (const std::optional<int64_t>& total_bytes =
           GetTotalBytes(download_status);
       received_bytes == total_bytes &&
       download_status.state != crosapi::mojom::DownloadState::kComplete) {
@@ -71,16 +70,16 @@ absl::optional<int64_t> GetReceivedBytes(
 
 // Returns the secondary text for the download specified by `download_status`,
 // typically the received bytes count and the total bytes count.
-absl::optional<std::u16string> GetSecondaryText(
+std::optional<std::u16string> GetSecondaryText(
     const crosapi::mojom::DownloadStatus& download_status) {
   // Only in-progress downloads have secondary text.
   if (!IsInProgress(download_status)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const absl::optional<int64_t> received_bytes =
+  const std::optional<int64_t> received_bytes =
       GetReceivedBytes(download_status);
-  const absl::optional<int64_t> total_bytes = GetTotalBytes(download_status);
+  const std::optional<int64_t> total_bytes = GetTotalBytes(download_status);
 
   // If both `received_bytes` and `total_bytes` are known, the secondary text
   // will be something of the form "10/100 MB", where the first number is the
@@ -102,11 +101,11 @@ absl::optional<std::u16string> GetSecondaryText(
 
   // TODO(http://b/307347158): Update the secondary text if the underlying
   // download is paused.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns the text to display for the download specified by `download_status`.
-absl::optional<std::u16string> GetText(
+std::optional<std::u16string> GetText(
     const crosapi::mojom::DownloadStatus& download_status) {
   CHECK(CanDisplay(download_status));
 

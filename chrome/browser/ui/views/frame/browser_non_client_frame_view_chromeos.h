@@ -254,7 +254,7 @@ class BrowserNonClientFrameViewChromeOS
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observation_{this};
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   gfx::Size last_minimum_size_;
 

@@ -2599,7 +2599,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
   // Don't install the web app.
   GURL app_url = GURL("https://example.org/");
   webapps::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, app_url);
 
   // Set policy to pin the non existent web app.
   base::Value::Dict entry;

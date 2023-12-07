@@ -168,7 +168,7 @@ class SharesheetBubbleViewPolicyBrowserTest
   void AddAppServiceAppsForTesting(std::string app_id,
                                    apps::AppType app_type,
                                    std::string mime_type,
-                                   absl::optional<std::string> publisher_id) {
+                                   std::optional<std::string> publisher_id) {
     apps::AppServiceProxy* app_service_proxy =
         apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
 

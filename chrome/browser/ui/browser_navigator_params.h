@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/system_entropy.mojom.h"
@@ -106,7 +106,7 @@ struct NavigateParams {
   // drop), and the frame with the corresponding frame token may have been
   // deleted before the navigation begins. It is defined if and only if
   // |initiator_process_id| below is.
-  absl::optional<blink::LocalFrameToken> initiator_frame_token;
+  std::optional<blink::LocalFrameToken> initiator_frame_token;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token| above is, and it is
@@ -114,11 +114,11 @@ struct NavigateParams {
   int initiator_process_id = content::ChildProcessHost::kInvalidUniqueID;
 
   // The origin of the initiator of the navigation.
-  absl::optional<url::Origin> initiator_origin;
+  std::optional<url::Origin> initiator_origin;
 
   // The base url of the initiator of the navigation. This is only set if the
   // url is about:blank or about:srcdoc.
-  absl::optional<GURL> initiator_base_url;
+  std::optional<GURL> initiator_base_url;
 
   // The frame name to be used for the main frame.
   std::string frame_name;
@@ -270,7 +270,7 @@ struct NavigateParams {
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser = nullptr;
 
   // The group the caller would like the tab to be added to.
-  absl::optional<tab_groups::TabGroupId> group;
+  std::optional<tab_groups::TabGroupId> group;
 
   // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
   // determine where to insert a new tab and whether or not it should be
@@ -336,7 +336,7 @@ struct NavigateParams {
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  absl::optional<blink::Impression> impression;
+  std::optional<blink::Impression> impression;
 
   // True if the navigation was initiated by typing in the omnibox but the typed
   // text didn't have a scheme such as http or https (e.g. google.com), and

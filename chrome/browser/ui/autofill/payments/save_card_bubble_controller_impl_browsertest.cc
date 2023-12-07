@@ -37,7 +37,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
   }
 
   LegalMessageLines GetTestLegalMessage() {
-    absl::optional<base::Value> value(base::JSONReader::Read(
+    std::optional<base::Value> value(base::JSONReader::Read(
         "{"
         "  \"line\" : [ {"
         "     \"template\": \"The legal documents are: {0} and {1}.\","

@@ -239,7 +239,7 @@ struct StartupBrowserCreatorFlagTypeValue {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-typedef absl::optional<policy::PolicyLevel> PolicyVariant;
+typedef std::optional<policy::PolicyLevel> PolicyVariant;
 
 // This class waits until all browser windows are closed, and then runs
 // a quit closure.
@@ -3963,9 +3963,9 @@ struct ProfilePickerSetup {
   };
 
   bool expected_to_show;
-  absl::optional<std::string> switch_name;
-  absl::optional<std::string> switch_value_ascii;
-  absl::optional<GURL> url_arg;
+  std::optional<std::string> switch_name;
+  std::optional<std::string> switch_value_ascii;
+  std::optional<GURL> url_arg;
   ShutdownType shutdown_type = ShutdownType::kNormal;
 };
 
@@ -4101,24 +4101,24 @@ INSTANTIATE_TEST_SUITE_P(
         // OS when Chrome is the default web browser) and use the last used
         // profile, instead.
         ProfilePickerSetup{/*expected_to_show=*/false,
-                           /*switch_name=*/absl::nullopt,
-                           /*switch_value_ascii=*/absl::nullopt,
+                           /*switch_name=*/std::nullopt,
+                           /*switch_value_ascii=*/std::nullopt,
                            /*url_arg=*/GURL("https://www.foo.com/")},
         // Regression test for http://crbug.com/1166192
         // Picker should be shown after exit.
         ProfilePickerSetup{
             /*expected_to_show=*/true,
-            /*switch_name=*/absl::nullopt,
-            /*switch_value_ascii=*/absl::nullopt,
-            /*url_arg=*/absl::nullopt,
+            /*switch_name=*/std::nullopt,
+            /*switch_value_ascii=*/std::nullopt,
+            /*url_arg=*/std::nullopt,
             /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kExit},
         // Regression test for http://crbug.com/1245374
         // Picker should not be shown after restart.
         ProfilePickerSetup{
             /*expected_to_show=*/false,
-            /*switch_name=*/absl::nullopt,
-            /*switch_value_ascii=*/absl::nullopt,
-            /*url_arg=*/absl::nullopt,
+            /*switch_name=*/std::nullopt,
+            /*switch_value_ascii=*/std::nullopt,
+            /*url_arg=*/std::nullopt,
             /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kRestart}));
 
 class GuestStartupBrowserCreatorPickerTest

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_SHOW_PROMO_IN_PAGE_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_SHOW_PROMO_IN_PAGE_H_
 
+#include <optional>
 #include <string>
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "url/gurl.h"
 
@@ -68,7 +68,7 @@ class ShowPromoInPage {
     ~Params();
 
     // The page to open. If not specified, the current page will be used.
-    absl::optional<GURL> target_url = absl::nullopt;
+    std::optional<GURL> target_url = std::nullopt;
 
     // Whether the page should open in the current active tab. Default is false
     // and should not be set to true unless this action is triggered from the
@@ -95,7 +95,7 @@ class ShowPromoInPage {
     // The id of the text that should be used for the accessibility label of the
     // help bubble's close button. The localized string will be looked up using
     // this identifier.
-    absl::optional<int> close_button_alt_text_id;
+    std::optional<int> close_button_alt_text_id;
 
     // Callback that notifies whether the page loaded and the bubble was
     // displayed successfully. Typically used for testing or metrics collection.
@@ -105,7 +105,7 @@ class ShowPromoInPage {
 
     // Overrides the default timeout for the bubble to be shown; only use for
     // integration testing.
-    absl::optional<base::TimeDelta> timeout_override_for_testing;
+    std::optional<base::TimeDelta> timeout_override_for_testing;
   };
 
   ShowPromoInPage(const ShowPromoInPage&) = delete;

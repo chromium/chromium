@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/login/login_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 

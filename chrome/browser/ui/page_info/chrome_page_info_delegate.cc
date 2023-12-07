@@ -180,7 +180,7 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
 content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
     blink::PermissionType permission,
     const url::Origin& origin,
-    const absl::optional<url::Origin>& requesting_origin) {
+    const std::optional<url::Origin>& requesting_origin) {
   auto* controller = GetProfile()->GetPermissionController();
 
   if (requesting_origin.has_value()) {
@@ -198,7 +198,7 @@ void ChromePageInfoDelegate::FocusWebContents() {
   browser->ActivateContents(web_contents_);
 }
 
-absl::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
+std::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
     const GURL& site_url) {
   return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
       ->GetFirstPartySetOwnerForDisplay(site_url);

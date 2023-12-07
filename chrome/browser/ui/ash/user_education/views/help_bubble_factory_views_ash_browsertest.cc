@@ -5,6 +5,7 @@
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_types.h"
@@ -21,7 +22,6 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -55,10 +55,10 @@ HelpBubbleParams CreateHelpBubbleParams(ash::HelpBubbleId help_bubble_id) {
 // by help bubble context.
 class HelpBubbleFactoryViewsAshBrowserTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<absl::optional<HelpBubbleContext>> {
+      public testing::WithParamInterface<std::optional<HelpBubbleContext>> {
  public:
   // Returns the help bubble context to use given test parameterization.
-  absl::optional<HelpBubbleContext> GetHelpBubbleContext() const {
+  std::optional<HelpBubbleContext> GetHelpBubbleContext() const {
     return GetParam();
   }
 
@@ -73,9 +73,9 @@ class HelpBubbleFactoryViewsAshBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HelpBubbleFactoryViewsAshBrowserTest,
-    testing::Values(absl::make_optional(HelpBubbleContext::kDefault),
-                    absl::make_optional(HelpBubbleContext::kAsh),
-                    absl::nullopt));
+    testing::Values(std::make_optional(HelpBubbleContext::kDefault),
+                    std::make_optional(HelpBubbleContext::kAsh),
+                    std::nullopt));
 
 // Tests -----------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(HelpBubbleFactoryViewsAshBrowserTest, CreateBubble) {
   // Create an anchor `view` with parameterized help bubble `context`.
   auto view = std::make_unique<views::View>();
-  absl::optional<HelpBubbleContext> context = GetHelpBubbleContext();
+  std::optional<HelpBubbleContext> context = GetHelpBubbleContext();
   if (context.has_value()) {
     view->SetProperty(kHelpBubbleContextKey, context.value());
   }

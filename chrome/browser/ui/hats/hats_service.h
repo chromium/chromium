@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_HATS_HATS_SERVICE_H_
 #define CHROME_BROWSER_UI_HATS_HATS_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -43,13 +43,13 @@ class HatsService : public KeyedService {
     ~SurveyMetadata();
 
     // Trigger specific metadata.
-    absl::optional<int> last_major_version;
-    absl::optional<base::Time> last_survey_started_time;
-    absl::optional<bool> is_survey_full;
-    absl::optional<base::Time> last_survey_check_time;
+    std::optional<int> last_major_version;
+    std::optional<base::Time> last_survey_started_time;
+    std::optional<bool> is_survey_full;
+    std::optional<base::Time> last_survey_check_time;
 
     // Metadata affecting all triggers.
-    absl::optional<base::Time> any_last_survey_started_time;
+    std::optional<base::Time> any_last_survey_started_time;
   };
 
   explicit HatsService(Profile* profile);

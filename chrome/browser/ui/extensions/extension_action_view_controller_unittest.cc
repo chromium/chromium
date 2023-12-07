@@ -354,7 +354,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
     ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
         action->GetContextMenu(extensions::ExtensionContextMenuModel::
                                    ContextMenuSource::kToolbarAction));
-    absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
+    std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
         extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
     ASSERT_TRUE(visibility_index.has_value());
     std::u16string visibility_label =
