@@ -55,9 +55,6 @@ public interface SiteSettingsDelegate {
     /** @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled. */
     boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
-    /** @return true if the UserBypassUI feature is enabled. */
-    boolean isUserBypassUIEnabled();
-
     /** @return The id of the notification channel associated with the given origin. */
     // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.
     String getChannelIdForOrigin(String origin);

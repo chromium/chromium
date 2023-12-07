@@ -178,20 +178,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         .show();
     }
 
-    // Only used when UserBypassUI flag is off.
-    public void setCookieBlockingStatus(@CookieControlsStatus int status, boolean isEnforced) {
-        boolean visible = status != CookieControlsStatus.DISABLED;
-        boolean enabled = status == CookieControlsStatus.ENABLED;
-        mCookieSwitch.setVisible(visible);
-        if (visible) {
-            mCookieSwitch.setIcon(
-                    SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_eye_crossed));
-            mCookieSwitch.setChecked(enabled);
-            mCookieSwitch.setEnabled(!isEnforced);
-        }
-    }
-
-    // Only used when UserBypassUI flag is on.
     public void setCookieStatus(
             @CookieControlsStatus int status,
             @CookieControlsEnforcement int enforcement,
@@ -389,7 +375,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         : R.color.default_icon_color_disabled);
     }
 
-    // Only invoked when UserBypassUI is on.
     private void updateCookieSwitch() {
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {

@@ -8414,10 +8414,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
 #endif
 
-    {"user-bypass-ui", flag_descriptions::kUserBypassUIName,
-     flag_descriptions::kUserBypassUIDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(content_settings::features::kUserBypassUI)},
-
     {"preloading-on-performance-page",
      flag_descriptions::kPreloadingOnPerformancePageName,
      flag_descriptions::kPreloadingOnPerformancePageDescription, kOsDesktop,

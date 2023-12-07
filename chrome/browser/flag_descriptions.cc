@@ -3513,9 +3513,6 @@ const char kTrackingProtectionOnboardingRollbackName[] =
 const char kTrackingProtectionOnboardingRollbackDescription[] =
     "Enables the tracking protection rollback flow";
 
-const char kUserBypassUIName[] = "User Bypass UI";
-const char kUserBypassUIDescription[] = "Enables the User Bypass UI. ";
-
 const char kUserNotesSidePanelName[] = "User notes side panel";
 const char kUserNotesSidePanelDescription[] =
     "Enables the user notes feature in the side panel. "

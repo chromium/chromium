@@ -52,24 +52,21 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
         mCallback = callback;
 
         setTitle(site.getTitle());
-        if (mDelegate.getSiteSettingsDelegate(mContext).isUserBypassUIEnabled()) {
-            var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
-            if (exception != null && exception.hasExpiration()) {
-                var expirationInDays = exception.getExpirationInDays();
-                setSummary(
-                        (expirationInDays == 0)
-                                ? getContext()
-                                        .getString(R.string.tracking_protection_expires_today_label)
-                                : getContext()
-                                        .getResources()
-                                        .getQuantityString(
-                                                R.plurals.tracking_protection_expires_label,
-                                                expirationInDays,
-                                                expirationInDays));
-            } else {
-                setSummary(
-                        getContext().getString(R.string.tracking_protection_never_expires_label));
-            }
+        var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
+        if (exception != null && exception.hasExpiration()) {
+            var expirationInDays = exception.getExpirationInDays();
+            setSummary(
+                    (expirationInDays == 0)
+                            ? getContext()
+                                    .getString(R.string.tracking_protection_expires_today_label)
+                            : getContext()
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.tracking_protection_expires_label,
+                                            expirationInDays,
+                                            expirationInDays));
+        } else {
+            setSummary(getContext().getString(R.string.tracking_protection_never_expires_label));
         }
         setImageView(
                 R.drawable.ic_delete_white_24dp,

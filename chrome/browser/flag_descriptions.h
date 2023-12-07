@@ -2032,9 +2032,6 @@ extern const char kUIEnableSharedImageCacheForGpuDescription[];
 extern const char kUseNAT64ForIPv4LiteralName[];
 extern const char kUseNAT64ForIPv4LiteralDescription[];
 
-extern const char kUserBypassUIName[];
-extern const char kUserBypassUIDescription[];
-
 extern const char kUserNotesSidePanelName[];
 extern const char kUserNotesSidePanelDescription[];
 

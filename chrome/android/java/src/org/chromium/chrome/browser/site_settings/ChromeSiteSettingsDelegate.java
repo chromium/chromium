@@ -166,11 +166,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isUserBypassUIEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.USER_BYPASS_UI);
-    }
-
-    @Override
     public String getChannelIdForOrigin(String origin) {
         return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
     }

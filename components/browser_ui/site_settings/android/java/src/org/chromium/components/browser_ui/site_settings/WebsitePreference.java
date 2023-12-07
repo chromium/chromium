@@ -177,8 +177,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return null;
         }
 
-        if (mSiteSettingsDelegate.isUserBypassUIEnabled()
-                && mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.THIRD_PARTY_COOKIES) {
             var exception = mSite.getContentSettingException(ContentSettingsType.COOKIES);
             if (exception != null && exception.hasExpiration()) {
                 return buildExpirationSummary(exception);
