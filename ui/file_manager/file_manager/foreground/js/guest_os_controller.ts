@@ -6,38 +6,23 @@ import {listMountableGuests} from '../../common/js/api.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {getEntry, getStore} from '../../state/store.js';
 
-import {DirectoryModel} from './directory_model.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {DirectoryTree} from './ui/directory_tree.js';
-
 
 /**
  * GuestOsController handles the foreground UI relating to Guest OSs.
  */
 export class GuestOsController {
-  /**
-   * @param {!DirectoryModel} directoryModel DirectoryModel.
-   * @param {!DirectoryTree} directoryTree DirectoryTree.
-   * @param {!import('../../externs/volume_manager.js').VolumeManager}
-   *     volumeManager VolumeManager.
-   */
-  constructor(directoryModel, directoryTree, volumeManager) {
+  constructor(
+    private readonly directoryTree_: DirectoryTree,
+    private readonly volumeManager_: VolumeManager) {
     if (!isGuestOsEnabled()) {
       console.warn('Created a guest os controller when it\'s not enabled');
     }
-    /** @private @const */
-    this.directoryModel_ = directoryModel;
-
-    /** @private @const */
-    this.directoryTree_ = directoryTree;
-
-    /**
-     * @private @const @type {!import('../../externs/volume_manager.js').VolumeManager}
-     */
-    this.volumeManager_ = volumeManager;
 
     chrome.fileManagerPrivate.onMountableGuestsChanged.addListener(
         this.onMountableGuestsChanged.bind(this));
@@ -56,9 +41,9 @@ export class GuestOsController {
    * Updates the list of Guest OSs when we receive an event for the list of
    * registered guests changing, by adding them to the directory tree and
    * triggering a redraw.
-   * @param {!Array<!chrome.fileManagerPrivate.MountableGuest>} guests
    */
-  async onMountableGuestsChanged(guests) {
+  async onMountableGuestsChanged(
+      guests: chrome.fileManagerPrivate.MountableGuest[]) {
     const store = getStore();
     const newGuestIdSet = new Set(guests.map(guest => guest.id));
     const state = store.getState();
@@ -66,9 +51,7 @@ export class GuestOsController {
     for (const uiEntryKey of state.uiEntries) {
       const uiEntry = getEntry(state, uiEntryKey);
       if (uiEntry && 'guest_id' in uiEntry &&
-          // @ts-ignore: error TS2345: Argument of type 'unknown' is not
-          // assignable to parameter of type 'number'.
-          !newGuestIdSet.has(uiEntry.guest_id)) {
+          !newGuestIdSet.has((uiEntry as GuestOsPlaceholder).guest_id)) {
         store.dispatch(removeUiEntry({key: uiEntryKey}));
       }
     }

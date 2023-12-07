@@ -1494,9 +1494,6 @@ export class FileManager extends EventTarget {
 
     if (isGuestOsEnabled()) {
       this.guestOsController_ = new GuestOsController(
-          // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null'
-          // is not assignable to parameter of type 'DirectoryModel'.
-          assert(this.directoryModel_),
           // TODO(b/285977941): `DirectoryTree` is only used when
           // FileExperimental flag is off, remove it after the tree replacement.
           // @ts-ignore: error TS2531: Object is possibly 'null'.
