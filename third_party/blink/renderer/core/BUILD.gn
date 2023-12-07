@@ -1480,7 +1480,6 @@ source_set("unit_tests_v2") {
   sources = []
 
   sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
-  sources += rebase_path(blink_core_tests_animation, "", "animation")
   sources += rebase_path(blink_core_tests_annotation, "", "annotation")
   sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
   sources +=
@@ -1603,9 +1602,6 @@ source_set("perf_tests") {
 source_set("unit_test_support") {
   testonly = true
   sources = [
-    "css/css_test_helpers.cc",
-    "css/css_test_helpers.h",
-    "css/mock_css_paint_image_generator.h",
     "frame/frame_test_helpers.cc",
     "frame/frame_test_helpers.h",
     "html/media/html_media_test_helper.cc",

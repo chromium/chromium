@@ -29,16 +29,14 @@
  */
 
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
-
 #include "base/test/metrics/histogram_tester.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
+
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
 TEST(AnimationTimingCalculationsTest, ActiveTime) {
-  test::TaskEnvironment task_environment;
   Timing::NormalizedTiming normalized_timing;
 
   // calculateActiveTime(
@@ -100,7 +98,6 @@ TEST(AnimationTimingCalculationsTest, ActiveTime) {
 }
 
 TEST(AnimationTimingCalculationsTest, OffsetActiveTime) {
-  test::TaskEnvironment task_environment;
   // if the active time is null
   EXPECT_FALSE(TimingCalculations::CalculateOffsetActiveTime(
       ANIMATION_TIME_DELTA_FROM_SECONDS(4), absl::nullopt,
@@ -130,7 +127,6 @@ TEST(AnimationTimingCalculationsTest, OffsetActiveTime) {
 }
 
 TEST(AnimationTimingCalculationsTest, IterationTime) {
-  test::TaskEnvironment task_environment;
   Timing timing;
 
   // calculateIterationTime(
@@ -194,7 +190,6 @@ TEST(AnimationTimingCalculationsTest, IterationTime) {
 }
 
 TEST(AnimationTimingCalculationsTest, OverallProgress) {
-  test::TaskEnvironment task_environment;
   // If the active time is null.
   EXPECT_FALSE(TimingCalculations::CalculateOverallProgress(
       Timing::kPhaseAfter,
@@ -238,7 +233,6 @@ TEST(AnimationTimingCalculationsTest, OverallProgress) {
 }
 
 TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
-  test::TaskEnvironment task_environment;
   // If the overall progress is null.
   EXPECT_FALSE(TimingCalculations::CalculateSimpleIterationProgress(
       Timing::kPhaseAfter,
@@ -278,7 +272,6 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
 }
 
 TEST(AnimationTimingCalculationsTest, CurrentIteration) {
-  test::TaskEnvironment task_environment;
   // If the active time is null.
   EXPECT_FALSE(TimingCalculations::CalculateCurrentIteration(
       Timing::kPhaseAfter,
@@ -324,7 +317,6 @@ TEST(AnimationTimingCalculationsTest, CurrentIteration) {
 }
 
 TEST(AnimationTimingCalculationsTest, IsCurrentDirectionForwards) {
-  test::TaskEnvironment task_environment;
   // IsCurrentDirectionForwards(current_iteration,
   //                            direction);
 
@@ -348,7 +340,6 @@ TEST(AnimationTimingCalculationsTest, IsCurrentDirectionForwards) {
 }
 
 TEST(AnimationTimingCalculationsTest, CalculateDirectedProgress) {
-  test::TaskEnvironment task_environment;
   // CalculateDirectedProgress(simple_iteration_progress,
   //                           current_iteration,
   //                           direction);
@@ -395,7 +386,6 @@ TEST(AnimationTimingCalculationsTest, CalculateDirectedProgress) {
 }
 
 TEST(AnimationTimingCalculationsTest, TransformedProgress) {
-  test::TaskEnvironment task_environment;
   // CalculateTransformedProgress(
   //     phase, directed_progress,
   //     is_current_direction_forward, timing_function)
@@ -456,7 +446,6 @@ TEST(AnimationTimingCalculationsTest, TransformedProgress) {
 }
 
 TEST(AnimationTimingCalculationsTest, AlignmentHistogram) {
-  test::TaskEnvironment task_environment;
   Timing::NormalizedTiming normalized_timing;
   normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1);
   normalized_timing.end_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1);

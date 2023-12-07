@@ -3,15 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/interpolation_effect.h"
-
 #include <memory>
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -41,7 +38,6 @@ Interpolation* CreateInterpolation(int from, int to) {
 }  // namespace
 
 TEST(AnimationInterpolationEffectTest, SingleInterpolation) {
-  test::TaskEnvironment task_environment;
   Persistent<InterpolationEffect> interpolation_effect =
       MakeGarbageCollected<InterpolationEffect>();
   interpolation_effect->AddInterpolation(
@@ -71,7 +67,6 @@ TEST(AnimationInterpolationEffectTest, SingleInterpolation) {
 }
 
 TEST(AnimationInterpolationEffectTest, MultipleInterpolations) {
-  test::TaskEnvironment task_environment;
   Persistent<InterpolationEffect> interpolation_effect =
       MakeGarbageCollected<InterpolationEffect>();
   interpolation_effect->AddInterpolation(

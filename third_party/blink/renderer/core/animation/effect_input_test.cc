@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -27,7 +26,6 @@ Element* AppendElement(Document& document) {
 }
 
 TEST(AnimationEffectInputTest, SortedOffsets) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -54,7 +52,6 @@ TEST(AnimationEffectInputTest, SortedOffsets) {
 }
 
 TEST(AnimationEffectInputTest, UnsortedOffsets) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -81,7 +78,6 @@ TEST(AnimationEffectInputTest, UnsortedOffsets) {
 }
 
 TEST(AnimationEffectInputTest, LooslySorted) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -111,7 +107,6 @@ TEST(AnimationEffectInputTest, LooslySorted) {
 }
 
 TEST(AnimationEffectInputTest, OutOfOrderWithNullOffsets) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -143,7 +138,6 @@ TEST(AnimationEffectInputTest, OutOfOrderWithNullOffsets) {
 }
 
 TEST(AnimationEffectInputTest, Invalid) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 

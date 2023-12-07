@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -860,7 +859,6 @@ class KeyframeEffectModelTest : public testing::Test {
   static Vector<double> GetComputedOffsets(const KeyframeVector& keyframes) {
     return KeyframeEffectModelBase::GetComputedOffsets(keyframes);
   }
-  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(KeyframeEffectModelTest, EvenlyDistributed1) {
