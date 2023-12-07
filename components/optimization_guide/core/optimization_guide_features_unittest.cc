@@ -242,11 +242,11 @@ TEST(OptimizationGuideFeaturesTest, OptimizationGuidePersonalizedFetching) {
       });
 
   // Check contexts.
-  EXPECT_FALSE(features::ShouldEnablePersonalizedMetadata(
+  EXPECT_FALSE(features::IsAllowedContextForPersonalizedMetadata(
       optimization_guide::proto::CONTEXT_UNSPECIFIED));
-  EXPECT_TRUE(features::ShouldEnablePersonalizedMetadata(
+  EXPECT_TRUE(features::IsAllowedContextForPersonalizedMetadata(
       optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
-  EXPECT_TRUE(features::ShouldEnablePersonalizedMetadata(
+  EXPECT_TRUE(features::IsAllowedContextForPersonalizedMetadata(
       optimization_guide::proto::CONTEXT_BOOKMARKS));
 }
 
