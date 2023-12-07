@@ -20,7 +20,6 @@ namespace search_engines {
 extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
-extern const char kDefaultSearchEngineChoiceLocationHistogram[];
 extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
