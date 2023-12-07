@@ -49,7 +49,7 @@
 @end
 
 @implementation AutofillProfileEditCoordinator {
-  autofill::AutofillProfile _autofillProfile;
+  std::unique_ptr<autofill::AutofillProfile> _autofillProfile;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -64,7 +64,7 @@
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _autofillProfile = profile;
+    _autofillProfile = std::make_unique<autofill::AutofillProfile>(profile);
     _isCountrySelectorPresented = NO;
     _showMigrateToAccountButton = showMigrateToAccountButton;
   }
@@ -81,12 +81,12 @@
           self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
   std::string countryCode = autofill::data_util::GetCountryCodeWithFallback(
-      _autofillProfile, GetApplicationContext()->GetApplicationLocale());
+      *_autofillProfile, GetApplicationContext()->GetApplicationLocale());
 
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
-          autofillProfile:&_autofillProfile
+          autofillProfile:_autofillProfile.get()
               countryCode:base::SysUTF8ToNSString(countryCode)
         isMigrationPrompt:NO];
 
