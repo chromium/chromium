@@ -12,13 +12,10 @@
 #include <tuple>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/signatures.h"
@@ -131,10 +128,13 @@ class AutofillCrowdsourcingManager {
   // pair.
   static void ClearUploadHistory(PrefService* pref_service);
 
+  // Returns the maximum number of attempts for a given autofill server request.
+  static int GetMaxServerAttempts();
+
  protected:
   AutofillCrowdsourcingManager(AutofillClient* client,
-                          const std::string& api_key,
-                          LogManager* log_manager);
+                               const std::string& api_key,
+                               LogManager* log_manager);
 
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
@@ -142,17 +142,12 @@ class AutofillCrowdsourcingManager {
   virtual size_t GetPayloadLength(base::StringPiece payload) const;
 
  private:
-  friend class AutofillCrowdsourcingManagerTest;
+  friend class AutofillCrowdsourcingManagerTestApi;
   friend struct ScopedActiveAutofillExperiments;
-  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, QueryAndUploadTest);
-  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload);
-  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, BackoffLogic_Query);
-  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, RetryLimit_Upload);
-  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, RetryLimit_Query);
 
   struct FormRequestData;
-  typedef std::list<std::pair<std::vector<FormSignature>, std::string>>
-      QueryRequestCache;
+  using QueryRequestCache =
+      std::list<std::pair<std::vector<FormSignature>, std::string>>;
 
   // Returns the URL and request method to use when issuing the request
   // described by |request_data|. If the returned method is GET, the URL
@@ -167,13 +162,6 @@ class AutofillCrowdsourcingManager {
   // Note: |request_data| takes ownership of request_data, call with std::move.
   bool StartRequest(FormRequestData request_data);
 
-  // Each request is page visited. We store last |max_form_cache_size|
-  // request, to avoid going over the wire. Set to 16 in constructor. Warning:
-  // the search is linear (newest first), so do not make the constant very big.
-  void set_max_form_cache_size(size_t max_form_cache_size) {
-    max_form_cache_size_ = max_form_cache_size;
-  }
-
   // Caches query request. |forms_in_query| is a vector of form signatures in
   // the query. |query_data| is the successful data returned over the wire.
   void CacheQueryRequest(const std::vector<FormSignature>& forms_in_query,
@@ -186,9 +174,6 @@ class AutofillCrowdsourcingManager {
   // Concatenates |forms_in_query| into one signature.
   std::string GetCombinedSignature(
       const std::vector<std::string>& forms_in_query) const;
-
-  // Returns the maximum number of attempts for a given autofill server request.
-  static int GetMaxServerAttempts();
 
   void OnSimpleLoaderComplete(
       std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,

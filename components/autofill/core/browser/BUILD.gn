@@ -786,6 +786,7 @@ static_library("test_support") {
     "browser_autofill_manager_test_api.h",
     "browser_autofill_manager_test_delegate.cc",
     "browser_autofill_manager_test_delegate.h",
+    "crowdsourcing/autofill_crowdsourcing_manager_test_api.h",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.cc",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.h",
     "data_model/autofill_structured_address_test_utils.cc",
