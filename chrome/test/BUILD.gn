@@ -1109,6 +1109,10 @@ if (is_chromeos && is_chromeos_device) {
       ":test_support",
       "//components/app_constants",
     ]
+    data_deps = []
+    if (also_build_lacros_chrome_for_architecture != "") {
+      data_deps += [ "//chrome:chrome(//build/toolchain/cros:lacros_clang)" ]
+    }
     if (is_chromeos_ash) {
       sources += [
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
@@ -1152,7 +1156,7 @@ if (is_chromeos && is_chromeos_device) {
         "//chromeos/services/machine_learning/public/cpp",
       ]
 
-      data_deps = [
+      data_deps += [
         "//chrome/test/base/chromeos/crosier/helper",
         "//chrome/test/base/chromeos/crosier/helper:client",
         "//chrome/test/base/chromeos/crosier/helper/fake_chrome",

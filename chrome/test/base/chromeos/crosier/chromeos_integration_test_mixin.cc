@@ -10,6 +10,8 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -29,6 +31,24 @@ void ChromeOSIntegrationTestMixin::SetUpCommandLine(
   // and generating screenshots during test failures.
   command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
   command_line->AppendSwitch(switches::kUseGpuInTests);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For Ash testing, which Lacros version to use is different for Browser
+  // and OS side. The strategy need to comply with the production version skew
+  // guidelines.
+  // On browser side, all Ash builders need to compile Lacros using an
+  // alternate toolchain. Compiled Lacros is under //out/Default/lacros_clang.
+  // So there is no version skew between Ash and Lacros.
+  // On OS side, Ash tests should use the RootFS version packed in the
+  // OS image.
+  base::FilePath path = command_line->GetProgram();
+  path = path.DirName().Append("lacros_clang").Append("chrome");
+  if (base::PathExists(path)) {
+    command_line->AppendSwitchPath(ash::switches::kLacrosChromePath, path);
+    LOG(INFO) << "Testing with locally compiled Lacros.";
+  } else {
+    LOG(INFO) << "Testing with RootFS Lacros.";
+  }
+#endif
 }
 
 bool ChromeOSIntegrationTestMixin::SetUpUserDataDirectory() {
