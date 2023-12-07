@@ -75,7 +75,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
       snap_container.SetNeedsPaintPropertyUpdate();
       scrollable_area->SetSnapChangingTargetData(absl::nullopt);
       scrollable_area->SetSnappedTargetData(absl::nullopt);
-      if (RuntimeEnabledFeatures::CSSSnapChangingEventEnabled()) {
+      if (RuntimeEnabledFeatures::CSSSnapChangedEventEnabled()) {
         scrollable_area->EnqueueSnapChangedEvent();
       }
       scrollable_area->SetSnapContainerData(absl::nullopt);
