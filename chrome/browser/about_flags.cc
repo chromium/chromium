@@ -6999,10 +6999,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpTabResumptionModuleVariations,
                                     "NtpTabResumptionModules")},
 
-    {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
-     commerce::flag_descriptions::kPriceInsightsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kPriceInsights)},
-
     {"shopping-page-types", commerce::flag_descriptions::kShoppingPageTypesName,
      commerce::flag_descriptions::kShoppingPageTypesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kShoppingPageTypes)},
@@ -7281,6 +7277,10 @@ const FeatureEntry kFeatureEntries[] = {
          commerce::kCommercePriceTracking,
          commerce::kCommercePriceTrackingAndroidVariations,
          "CommercePriceTracking")},
+
+    {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
+     commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(commerce::kPriceInsights)},
 
     {"enable-start-surface-return-time",
      flag_descriptions::kStartSurfaceReturnTimeName,
