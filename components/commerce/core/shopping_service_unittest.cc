@@ -704,26 +704,6 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
                                       kEligibleLocale));
 }
 
-TEST_P(ShoppingServiceTest, TestShoppingListEligible_WAA) {
-  test_features_.InitWithFeatures(
-      {kShoppingList},
-      {kShoppingListRegionLaunched, kShoppingListWAARestrictionRemoval});
-
-  TestingPrefServiceSimple prefs;
-  RegisterPrefs(prefs.registry());
-  SetShoppingListEnterprisePolicyPref(&prefs, true);
-
-  MockAccountChecker checker;
-
-  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                     kEligibleLocale));
-
-  checker.SetWebAndAppActivityEnabled(false);
-
-  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
-                                      kEligibleLocale));
-}
-
 TEST_P(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
   test_features_.InitWithFeatures({kShoppingList},
                                   {kShoppingListRegionLaunched});

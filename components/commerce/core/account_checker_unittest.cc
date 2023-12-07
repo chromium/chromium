@@ -119,38 +119,6 @@ class AccountCheckerTest : public testing::Test {
 };
 
 TEST_F(AccountCheckerTest,
-       TestFetchWaaStatusOnSignin_ReplaceSyncPromosWithSignInPromosEnabled) {
-  base::test::ScopedFeatureList test_specific_features;
-  test_specific_features.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  const char waa_oauth_name[] = "web_history";
-  const char waa_query_url[] =
-      "https://history.google.com/history/api/lookup?client=web_app";
-  const char waa_oauth_scope[] = "https://www.googleapis.com/auth/chromesync";
-  const char waa_content_type[] = "application/json; charset=UTF-8";
-  const char waa_get_method[] = "GET";
-  const int64_t waa_timeout_ms = 30000;
-  const char waa_post_data[] = "";
-
-  EXPECT_CALL(*account_checker_,
-              CreateEndpointFetcher(waa_oauth_name, GURL(waa_query_url),
-                                    waa_get_method, waa_content_type,
-                                    std::vector<std::string>{waa_oauth_scope},
-                                    waa_timeout_ms, waa_post_data, _))
-      .Times(1);
-
-  ASSERT_EQ(true, account_checker_->IsWebAndAppActivityEnabled());
-  SetFetchResponse("{ \"history_recording_enabled\": false }");
-  identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
-                                                 signin::ConsentLevel::kSignin);
-  pref_service_.user_prefs_store()->WaitForValue(
-      kWebAndAppActivityEnabledForShopping, base::Value(false));
-  ASSERT_EQ(true, account_checker_->IsSignedIn());
-  ASSERT_EQ(false, account_checker_->IsWebAndAppActivityEnabled());
-}
-
-TEST_F(AccountCheckerTest,
        TestFetchWaaStatusOnSignin_ReplaceSyncPromosWithSignInPromosDisabled) {
   base::test::ScopedFeatureList test_specific_features;
   test_specific_features.InitAndDisableFeature(
@@ -179,40 +147,9 @@ TEST_F(AccountCheckerTest,
   ASSERT_EQ(false, account_checker_->IsSignedIn());
 }
 
-TEST_F(AccountCheckerTest, TestFetchWaaStatusOnSyncOptIn) {
-  const char waa_oauth_name[] = "web_history";
-  const char waa_query_url[] =
-      "https://history.google.com/history/api/lookup?client=web_app";
-  const char waa_oauth_scope[] = "https://www.googleapis.com/auth/chromesync";
-  const char waa_content_type[] = "application/json; charset=UTF-8";
-  const char waa_get_method[] = "GET";
-  const int64_t waa_timeout_ms = 30000;
-  const char waa_post_data[] = "";
-
-  // Opting into sync should trigger WAA request regardless of
-  // ReplaceSyncPromosWithSignInPromos state.
-  EXPECT_CALL(*account_checker_,
-              CreateEndpointFetcher(waa_oauth_name, GURL(waa_query_url),
-                                    waa_get_method, waa_content_type,
-                                    std::vector<std::string>{waa_oauth_scope},
-                                    waa_timeout_ms, waa_post_data, _))
-      .Times(1);
-
-  ASSERT_EQ(true, account_checker_->IsWebAndAppActivityEnabled());
-  SetFetchResponse("{ \"history_recording_enabled\": false }");
-  identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
-                                                 signin::ConsentLevel::kSync);
-  pref_service_.user_prefs_store()->WaitForValue(
-      kWebAndAppActivityEnabledForShopping, base::Value(false));
-  ASSERT_EQ(true, account_checker_->IsSignedIn());
-  ASSERT_EQ(false, account_checker_->IsWebAndAppActivityEnabled());
-}
-
 TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
   {
     InSequence s;
-    // Fetch Waa.
-    EXPECT_CALL(*account_checker_, CreateEndpointFetcher);
     // Fetch email pref.
     EXPECT_CALL(*account_checker_,
                 CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),
@@ -234,8 +171,6 @@ TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
 TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
   {
     InSequence s;
-    // Fetch Waa.
-    EXPECT_CALL(*account_checker_, CreateEndpointFetcher);
     // Send email pref.
     EXPECT_CALL(*account_checker_,
                 CreateEndpointFetcher(kOAuthName, GURL(kNotificationsPrefUrl),

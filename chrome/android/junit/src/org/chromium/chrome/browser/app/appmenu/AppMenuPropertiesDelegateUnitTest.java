@@ -260,8 +260,6 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setShoppingListItemRowEnabled(boolean enabled) {
         ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
-        when(mPrefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING))
-                .thenReturn(true);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
         FeatureList.setTestValues(mTestValues);
     }

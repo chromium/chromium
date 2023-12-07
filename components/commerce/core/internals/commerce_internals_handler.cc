@@ -82,8 +82,6 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
   detail->is_anonymized_url_data_collection_enabled = mojom::EligibleEntry::New(
       account_checker->IsAnonymizedUrlDataCollectionEnabled(),
       /*expected_value=*/true);
-  detail->is_web_and_app_activity_enabled = mojom::EligibleEntry::New(
-      account_checker->IsWebAndAppActivityEnabled(), /*expected_value=*/true);
   detail->is_subject_to_parental_controls = mojom::EligibleEntry::New(
       account_checker->IsSubjectToParentalControls(), /*expected_value=*/false);
 

@@ -133,11 +133,6 @@ void RecordShoppingListIneligibilityReasons(
                                   ShoppingFeatureIneligibilityReason::kMSBB);
   }
 
-  if (!account_checker->IsWebAndAppActivityEnabled()) {
-    base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
-                                  ShoppingFeatureIneligibilityReason::kWAA);
-  }
-
   if (account_checker->IsSubjectToParentalControls()) {
     base::UmaHistogramEnumeration(
         kShoppingListIneligibleHistogramName,

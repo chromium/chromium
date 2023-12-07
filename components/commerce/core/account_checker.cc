@@ -45,10 +45,6 @@ AccountChecker::AccountChecker(
       sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
       weak_ptr_factory_(this) {
-  if (identity_manager) {
-    FetchWaaStatus();
-    scoped_identity_manager_observation_.Observe(identity_manager);
-  }
   // TODO(crbug.com/1366165): Avoid pushing the fetched pref value to the server
   // again.
   if (pref_service) {
@@ -101,11 +97,6 @@ bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {
                  ->IsEnabled();
 }
 
-bool AccountChecker::IsWebAndAppActivityEnabled() {
-  return pref_service_ &&
-         pref_service_->GetBoolean(kWebAndAppActivityEnabledForShopping);
-}
-
 bool AccountChecker::IsSubjectToParentalControls() {
   if (!identity_manager_) {
     return false;
@@ -119,86 +110,6 @@ bool AccountChecker::IsSubjectToParentalControls() {
 
   return capabilities.is_subject_to_parental_controls() ==
          signin::Tribool::kTrue;
-}
-
-void AccountChecker::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event_details) {
-  FetchWaaStatus();
-}
-
-void AccountChecker::FetchWaaStatus() {
-  // For now we need to update users' consent status on web and app activity.
-  if (!IsSignedIn()) {
-    return;
-  }
-  // TODO(crbug.com/1311754): These parameters (url, oauth_scope, etc.) are
-  // copied from web_history_service.cc directly, it works now but we should
-  // figure out a better way to keep these parameters in sync.
-  const char waa_oauth_name[] = "web_history";
-  const char waa_query_url[] =
-      "https://history.google.com/history/api/lookup?client=web_app";
-  const char waa_oauth_scope[] = "https://www.googleapis.com/auth/chromesync";
-  const char waa_content_type[] = "application/json; charset=UTF-8";
-  const char waa_get_method[] = "GET";
-  const int64_t waa_timeout_ms = 30000;
-  const char waa_post_data[] = "";
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("chrome_commerce_waa_fetcher",
-                                          R"(
-        semantics {
-          sender: "Chrome Shopping"
-          description:
-            "Check whether Web & App Activity is paused in My Google Activity."
-            "If it is paused, some Chrome Shopping features such as Price "
-            "Tracking Notifications become disabled."
-          trigger:
-            "On account checker initialization or every time after the user "
-            "changes their primary account."
-          data:
-            "The request includes an OAuth2 token authenticating the user. The "
-            "response includes a boolean indicating whether the feature is "
-            "enabled."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This fetch is only enabled for signed-in users. There's no "
-            "direct Chromium's setting to disable this, but users can manage "
-            "their preferences by visiting myactivity.google.com."
-          chrome_policy {
-            BrowserSignin {
-              policy_options {mode: MANDATORY}
-              BrowserSignin: 0
-            }
-          }
-        })");
-  auto endpoint_fetcher = CreateEndpointFetcher(
-      waa_oauth_name, GURL(waa_query_url), waa_get_method, waa_content_type,
-      std::vector<std::string>{waa_oauth_scope}, waa_timeout_ms, waa_post_data,
-      traffic_annotation);
-  endpoint_fetcher.get()->Fetch(base::BindOnce(
-      &AccountChecker::HandleFetchWaaResponse, weak_ptr_factory_.GetWeakPtr(),
-      std::move(endpoint_fetcher)));
-}
-
-void AccountChecker::HandleFetchWaaResponse(
-    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-    std::unique_ptr<EndpointResponse> responses) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response, base::BindOnce(&AccountChecker::OnFetchWaaJsonParsed,
-                                          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AccountChecker::OnFetchWaaJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (pref_service_ && result.has_value() && result->is_dict()) {
-    const char waa_response_key[] = "history_recording_enabled";
-    if (auto waa_enabled = result->GetDict().FindBool(waa_response_key)) {
-      pref_service_->SetBoolean(kWebAndAppActivityEnabledForShopping,
-                                *waa_enabled);
-    }
-  }
 }
 
 void AccountChecker::FetchPriceEmailPref() {

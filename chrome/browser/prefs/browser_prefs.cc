@@ -990,6 +990,10 @@ constexpr char kImageSearchPrivacyNotice[] =
     "ash.launcher.image_search_privacy_notice";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 11/2023.
+constexpr char kWebAndAppActivityEnabledForShopping[] =
+    "web_and_app_activity_enabled_for_shopping";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1406,6 +1410,9 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kImageSearchPrivacyNotice);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 11/2023.
+  registry->RegisterBooleanPref(kWebAndAppActivityEnabledForShopping, true);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2650,6 +2657,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Deprecated 11/2023
   profile_prefs->ClearPref(kImageSearchPrivacyNotice);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 11/2023.
+  profile_prefs->ClearPref(kWebAndAppActivityEnabledForShopping);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

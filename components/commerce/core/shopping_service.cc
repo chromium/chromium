@@ -1515,18 +1515,12 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   if (!prefs || !IsShoppingListAllowedForEnterprise(prefs))
     return false;
 
-  bool blocked_by_waa =
-      !account_checker || !account_checker->IsWebAndAppActivityEnabled();
-  if (base::FeatureList::IsEnabled(kShoppingListWAARestrictionRemoval)) {
-    blocked_by_waa = false;
-  }
-
   // Make sure the user allows subscriptions to be made and that we can fetch
   // store data.
   if (!account_checker || !account_checker->IsSignedIn() ||
       !account_checker->IsSyncingBookmarks() ||
       !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
-      blocked_by_waa || account_checker->IsSubjectToParentalControls()) {
+      account_checker->IsSubjectToParentalControls()) {
     return false;
   }
 
