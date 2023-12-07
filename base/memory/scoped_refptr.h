@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <compare>
 #include <iosfwd>
 #include <type_traits>
 #include <utility>
@@ -309,18 +310,31 @@ class TRIVIAL_ABI scoped_refptr {
   explicit operator bool() const { return ptr_ != nullptr; }
 
   template <typename U>
-  bool operator==(const scoped_refptr<U>& rhs) const {
-    return ptr_ == rhs.get();
+  friend bool operator==(const scoped_refptr<T>& lhs,
+                         const scoped_refptr<U>& rhs) {
+    return lhs.ptr_ == rhs.ptr_;
+  }
+
+  // This operator is an optimization to avoid implicitly constructing a
+  // scoped_refptr<U> when comparing scoped_refptr against raw pointer. If the
+  // implicit conversion is ever removed this operator can also be removed.
+  template <typename U>
+  friend bool operator==(const scoped_refptr<T>& lhs, const U* rhs) {
+    return lhs.ptr_ == rhs;
+  }
+
+  friend bool operator==(const scoped_refptr<T>& lhs, std::nullptr_t null) {
+    return !static_cast<bool>(lhs);
   }
 
   template <typename U>
-  bool operator!=(const scoped_refptr<U>& rhs) const {
-    return !operator==(rhs);
+  friend auto operator<=>(const scoped_refptr<T>& lhs,
+                          const scoped_refptr<U>& rhs) {
+    return lhs.ptr_ <=> rhs.ptr_;
   }
 
-  template <typename U>
-  bool operator<(const scoped_refptr<U>& rhs) const {
-    return ptr_ < rhs.get();
+  friend auto operator<=>(const scoped_refptr<T>& lhs, std::nullptr_t null) {
+    return lhs.ptr_ <=> static_cast<T*>(nullptr);
   }
 
  protected:
@@ -366,46 +380,6 @@ template <typename T>
 void scoped_refptr<T>::Release(T* ptr) {
   base::subtle::AssertRefCountBaseMatches(ptr, ptr);
   ptr->Release();
-}
-
-template <typename T, typename U>
-bool operator==(const scoped_refptr<T>& lhs, const U* rhs) {
-  return lhs.get() == rhs;
-}
-
-template <typename T, typename U>
-bool operator==(const T* lhs, const scoped_refptr<U>& rhs) {
-  return lhs == rhs.get();
-}
-
-template <typename T>
-bool operator==(const scoped_refptr<T>& lhs, std::nullptr_t null) {
-  return !static_cast<bool>(lhs);
-}
-
-template <typename T>
-bool operator==(std::nullptr_t null, const scoped_refptr<T>& rhs) {
-  return !static_cast<bool>(rhs);
-}
-
-template <typename T, typename U>
-bool operator!=(const scoped_refptr<T>& lhs, const U* rhs) {
-  return !operator==(lhs, rhs);
-}
-
-template <typename T, typename U>
-bool operator!=(const T* lhs, const scoped_refptr<U>& rhs) {
-  return !operator==(lhs, rhs);
-}
-
-template <typename T>
-bool operator!=(const scoped_refptr<T>& lhs, std::nullptr_t null) {
-  return !operator==(lhs, null);
-}
-
-template <typename T>
-bool operator!=(std::nullptr_t null, const scoped_refptr<T>& rhs) {
-  return !operator==(null, rhs);
 }
 
 template <typename T>
