@@ -286,6 +286,7 @@ try_.builder(
     ],
     gn_args = "ci/Dawn Mac arm64 Release (Apple M2)",
     os = os.MAC_ANY,
+    cpu = None,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
