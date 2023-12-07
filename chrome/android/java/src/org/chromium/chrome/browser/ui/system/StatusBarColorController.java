@@ -487,6 +487,8 @@ public class StatusBarColorController
                     mTopUiThemeColor.getBackgroundColor(mCurrentTab),
                     mTopUiThemeColor.getThemeColor(),
                     mToolbarUrlExpansionPercentage);
+        } else if (mIsSurfacePolishEnabled && isStandardNtp()) {
+            return mPolishedHomeSurfaceBgColor;
         }
 
         // Return status bar color to match the toolbar.

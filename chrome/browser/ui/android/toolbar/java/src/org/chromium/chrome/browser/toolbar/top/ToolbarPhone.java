@@ -277,7 +277,8 @@ public class ToolbarPhone extends ToolbarLayout
         VisualState.NORMAL,
         VisualState.INCOGNITO,
         VisualState.BRAND_COLOR,
-        VisualState.NEW_TAB_NORMAL
+        VisualState.NEW_TAB_NORMAL,
+        VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface VisualState {
@@ -285,6 +286,7 @@ public class ToolbarPhone extends ToolbarLayout
         int INCOGNITO = 1;
         int BRAND_COLOR = 2;
         int NEW_TAB_NORMAL = 3;
+        int NEW_TAB_SEARCH_ENGINE_NO_LOGO = 4;
     }
 
     protected @VisualState int mVisualState = VisualState.NORMAL;
@@ -891,6 +893,8 @@ public class ToolbarPhone extends ToolbarLayout
                 // between the transition, we set a translucent default toolbar color based on
                 // the expansion progress of the toolbar.
                 return ColorUtils.setAlphaComponent(getToolbarColorOnNtp(), alpha);
+            case VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO:
+                return mHomeSurfaceToolbarBackgroundColor;
             case VisualState.NORMAL:
                 return ChromeColors.getDefaultThemeColor(getContext(), false);
             case VisualState.INCOGNITO:
@@ -1204,20 +1208,30 @@ public class ToolbarPhone extends ToolbarLayout
                     mStartSurfaceScrollFraction,
                     mUrlFocusChangeFraction);
 
-            // Only transition theme colors if in static tab mode that is not the NTP. In practice
-            // this only runs when you focus the omnibox on a web page.
-            // In NTP, toolbar and locationbar need to transition color only when the omnibox is
-            // focused. When the fake omnibox is scrolled, the color should not change.
+            // Only transition theme colors if in static tab mode that is not the NTP or while
+            // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when
+            // the omnibox is focused. When the fake omnibox is scrolled, the color should not
+            // change.
             if (((mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus())
-                            || (mIsSurfacePolishEnabled
-                                    ? (!isLocationBarShownInNtp && !mIsShowingStartSurfaceHomepage)
-                                    : !isLocationBarShownInNtp))
+                            || !isLocationBarShownInNtp)
                     && mTabSwitcherState == STATIC_TAB) {
-                @ColorInt int defaultColor = getToolbarDefaultColor();
+                boolean usePolishedLocationBar = isLocationBarShownInGeneralNtpOrStartSurface();
+                // Add a special case for general NTP and Start Surface to the defaultColor to
+                // ensure that the color is right and changes smoothly during the un-focus
+                // animation.
+                @ColorInt
+                int defaultColor =
+                        usePolishedLocationBar && mUrlFocusChangeInProgress
+                                ? mLocationBar.getDropdownBackgroundColor(isIncognito())
+                                : getToolbarDefaultColor();
                 @ColorInt
                 int defaultLocationBarColor =
                         getLocationBarDefaultColorForToolbarColor(defaultColor);
-                @ColorInt int primaryColor = getToolbarDataProvider().getPrimaryColor();
+                @ColorInt
+                int primaryColor =
+                        usePolishedLocationBar
+                                ? mHomeSurfaceToolbarBackgroundColor
+                                : getToolbarDataProvider().getPrimaryColor();
                 @ColorInt
                 int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
 
@@ -2500,7 +2514,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private static boolean isVisualStateValidForBrandColorTransition(@VisualState int state) {
-        return state == VisualState.NORMAL || state == VisualState.BRAND_COLOR;
+        return state == VisualState.NORMAL
+                || state == VisualState.BRAND_COLOR
+                || state == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO;
     }
 
     @Override
@@ -2509,7 +2525,10 @@ public class ToolbarPhone extends ToolbarLayout
         if (mBrandColorTransitionActive) mBrandColorTransitionAnimation.end();
 
         final @ColorInt int initialColor = mToolbarBackground.getColor();
-        final @ColorInt int finalColor = getToolbarDataProvider().getPrimaryColor();
+        final @ColorInt int finalColor =
+                isLocationBarShownInGeneralNtpOrStartSurface()
+                        ? mHomeSurfaceToolbarBackgroundColor
+                        : getToolbarDataProvider().getPrimaryColor();
         if (initialColor == finalColor) return;
 
         final @ColorInt int initialLocationBarColor =
@@ -2616,6 +2635,21 @@ public class ToolbarPhone extends ToolbarLayout
         return getToolbarDataProvider().getNewTabPageDelegate().isLocationBarShown();
     }
 
+    boolean isLocationBarShownInGeneralNtp() {
+        return !isIncognito()
+                && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl())
+                && !mIsShowingStartSurfaceHomepage;
+    }
+
+    /**
+     * Returns whether the location bar is shown in the NTP with or without single url bar mode or
+     * shown in Start Surface and should change its appearance due to surface polish enabled.
+     */
+    private boolean isLocationBarShownInGeneralNtpOrStartSurface() {
+        return mIsSurfacePolishEnabled
+                && (isLocationBarShownInGeneralNtp() || mIsShowingStartSurfaceHomepage);
+    }
+
     private boolean isLocationBarCurrentlyShown() {
         return !isLocationBarShownInNtp() || mUrlExpansionFraction > 0;
     }
@@ -2662,6 +2696,9 @@ public class ToolbarPhone extends ToolbarLayout
 
     private @VisualState int computeVisualState() {
         if (isLocationBarShownInNtp()) return VisualState.NEW_TAB_NORMAL;
+        if (mIsSurfacePolishEnabled && isLocationBarShownInGeneralNtp()) {
+            return VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO;
+        }
         if (isIncognito()) return VisualState.INCOGNITO;
         if (getToolbarDataProvider().isUsingBrandColor()) return VisualState.BRAND_COLOR;
         return VisualState.NORMAL;
@@ -2764,7 +2801,11 @@ public class ToolbarPhone extends ToolbarLayout
 
         boolean visualStateChanged = mVisualState != newVisualState;
 
-        @ColorInt int currentPrimaryColor = getToolbarDataProvider().getPrimaryColor();
+        @ColorInt
+        int currentPrimaryColor =
+                isLocationBarShownInGeneralNtpOrStartSurface()
+                        ? mHomeSurfaceToolbarBackgroundColor
+                        : getToolbarDataProvider().getPrimaryColor();
         @ColorInt int themeColorForProgressBar = getProgressBarColor();
 
         // If The page is native force the use of the standard theme for the progress bar.
