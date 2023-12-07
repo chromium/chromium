@@ -73,6 +73,11 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
       command_line->AppendSwitch(::switches::kNoErrorDialogs);
     }
 
+    // Disable first run user experience.
+    if (!command_line->HasSwitch(::switches::kNoFirstRun)) {
+      command_line->AppendSwitch(::switches::kNoFirstRun);
+    }
+
     // Excplicitely specify unique user data dir because if there is no one
     // provided, Chrome will fall back to the default one which will prevent
     // parallel headless processes execution, see https://crbug.com/1477376.
