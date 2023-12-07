@@ -10,17 +10,14 @@
 #include "build/build_config.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
+#include "ui/base/ozone_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
-#include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
-#include "ui/ozone/buildflags.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
-#endif
+#include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 
 void InitializeOzoneKeyboardEngineManager() {
   static std::unique_ptr<ui::StubKeyboardLayoutEngine> keyboard_layout_engine_ =
@@ -29,7 +26,7 @@ void InitializeOzoneKeyboardEngineManager() {
       keyboard_layout_engine_.get());
 }
 
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
 bool ConvertKeyCodeToTextOzone
 #else
 bool ConvertKeyCodeToText
@@ -71,7 +68,7 @@ bool ConvertKeyCodeToText
   return true;
 }
 
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
 bool ConvertCharToKeyCodeOzone
 #else
 bool ConvertCharToKeyCode

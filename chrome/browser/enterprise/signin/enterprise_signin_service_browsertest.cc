@@ -29,12 +29,9 @@
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/buildflags.h"
-#endif  // BUILDFLAG(IS_LINUX)
 
 namespace enterprise_signin {
 
@@ -202,18 +199,10 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
                   CheckTabs(browser(), {{example_url, ACTIVE}, {auth_url}}));
 }
 
-// The build flag OZONE_PLATFORM_WAYLAND is only available on
-// Linux or ChromeOS, so this simplifies the next set of ifdefs.
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#define OZONE_PLATFORM_WAYLAND
-#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 // TODO(nicolaso): Wayland doesn't support programmatically changing window
 // activation. This test relies on `browser2` having activation, so it doesn't
 // work on Wayland.
-#if !defined(OZONE_PLATFORM_WAYLAND)
+#if !BUILDFLAG(IS_OZONE_WAYLAND)
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
                        CurrentlyActiveTabIsAlreadyLoginPage) {
   GURL example_url(kExampleUrl);
@@ -241,6 +230,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
       CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
       CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}));
 }
-#endif  // !defined(OZONE_PLATFORM_WAYLAND)
+#endif  // !BUILDFLAG(IS_OZONE_WAYLAND)
 
 }  // namespace enterprise_signin

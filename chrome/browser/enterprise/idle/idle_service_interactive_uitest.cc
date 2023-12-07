@@ -48,11 +48,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/idle/idle_polling_service.h"
 #include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/idle_test_utils.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/buildflags.h"
-#endif  // BUILDFLAG(IS_LINUX)
 
 using base::TestMockTimeTaskRunner;
 using testing::_;
@@ -215,16 +212,12 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   void ActivateBrowser(Browser* browser) {
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
     // TODO(nicolaso): BrowserActivationWaiter times out on Wayland. Figure out
     // why.
 #else
     ActivateBrowserImpl(browser);
-#endif
-#else
-    ActivateBrowserImpl(browser);
-#endif
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
   }
 
   void ActivateBrowserImpl(Browser* browser) {
