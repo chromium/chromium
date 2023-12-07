@@ -6895,19 +6895,16 @@ bool ChromeContentBrowserClient::HandleWebUI(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kPerformanceSettingsPreloadingSubpage)) {
-    // Redirect from the preloading sub-page to the performance page.
-    if (url->SchemeIs(content::kChromeUIScheme) &&
-        url->host() == chrome::kChromeUISettingsHost &&
-        url->path() == chrome::kPreloadingSubPagePath) {
-      GURL::Replacements replacements;
-      replacements.SetPathStr(chrome::kPerformanceSubPagePath);
-      *url = url->ReplaceComponents(replacements);
-      UMA_HISTOGRAM_BOOLEAN("Settings.Preloading.DeprecatedRedirect", true);
-    } else if (url->path() == chrome::kPerformanceSubPagePath) {
-      UMA_HISTOGRAM_BOOLEAN("Settings.Preloading.DeprecatedRedirect", false);
-    }
+  // Redirect from the preloading sub-page to the performance page.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kPreloadingSubPagePath) {
+    GURL::Replacements replacements;
+    replacements.SetPathStr(chrome::kPerformanceSubPagePath);
+    *url = url->ReplaceComponents(replacements);
+    UMA_HISTOGRAM_BOOLEAN("Settings.Preloading.DeprecatedRedirect", true);
+  } else if (url->path() == chrome::kPerformanceSubPagePath) {
+    UMA_HISTOGRAM_BOOLEAN("Settings.Preloading.DeprecatedRedirect", false);
   }
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* tracking_protection_settings =

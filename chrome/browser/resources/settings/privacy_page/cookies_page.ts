@@ -33,7 +33,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {NetworkPredictionOptions} from '../performance_page/constants.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, CookieControlsMode} from '../site_settings/constants.js';
@@ -124,12 +123,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
       },
 
-      showPreloadingSubpage_: {
-        type: Boolean,
-        value: () => !loadTimeData.getBoolean(
-            'isPerformanceSettingsPreloadingSubpageEnabled'),
-      },
-
       is3pcdRedesignEnabled_: {
         type: Boolean,
         value: () =>
@@ -156,7 +149,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
-  private showPreloadingSubpage_: boolean;
   private is3pcdRedesignEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -178,18 +170,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       this.focusConfig.set(
           `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
           selectSiteDataLinkRow);
-    }
-
-    if (this.showPreloadingSubpage_) {
-      const selectPreloadingLinkRow = () => {
-        const toFocus =
-            this.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      };
-      this.focusConfig.set(
-          `${routes.PRELOADING.path}_${routes.COOKIES.path}`,
-          selectPreloadingLinkRow);
     }
   }
 
@@ -339,28 +319,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private onClearOnExitChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.COOKIES_SESSION);
-  }
-
-  private onPreloadingClick_() {
-    this.metricsBrowserProxy_.recordSettingsPageHistogram(
-        PrivacyElementInteractions.NETWORK_PREDICTION);
-    Router.getInstance().navigateTo(routes.PRELOADING);
-  }
-
-  private getNetworkPredictionsOptionsLabel_(
-      networkPredictionOption: NetworkPredictionOptions): string {
-    if (networkPredictionOption === NetworkPredictionOptions.DISABLED) {
-      return this.i18n('preloadingPageNoPreloadingTitle');
-    }
-
-    if (networkPredictionOption === NetworkPredictionOptions.EXTENDED) {
-      return this.i18n('preloadingPageExtendedPreloadingTitle');
-    }
-
-    // NetworkPredictionOptions.WIFI_ONLY_DEPRECATED is treated the same as
-    // NetworkPredictionOptions.STANDARD.
-    // See chrome/browser/preloading/preloading_prefs.h.
-    return this.i18n('preloadingPageStandardPreloadingTitle');
   }
 
   private onPrivacySandboxClick_() {

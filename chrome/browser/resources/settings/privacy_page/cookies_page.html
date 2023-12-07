@@ -248,17 +248,6 @@
         prefs="{{prefs}}"
         hidden="[[is3pcdRedesignEnabled_]]">
     </settings-do-not-track-toggle>
-    <template is="dom-if" if="[[showPreloadingSubpage_]]">
-      <cr-link-row id="preloadingLinkRow"
-          class="hr"
-          hidden="[[!pageVisibility.networkPrediction]]"
-          on-click="onPreloadingClick_"
-          label="$i18n{preloadingPageTitle}"
-          sub-label="[[getNetworkPredictionsOptionsLabel_(
-              prefs.net.network_prediction_options.value)]]"
-          role-description="$i18n{networkPredictionEnabledDescCookiesPage}">
-      </cr-link-row>
-    </template>
     <cr-link-row id="site-data-trigger" class="hr"
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">

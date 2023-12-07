@@ -547,11 +547,8 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
 class SettingsCookiesPageTest : public SettingsBrowserTest {
  protected:
   SettingsCookiesPageTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-        },
-        {features::kPerformanceSettingsPreloadingSubpage});
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
   }
 
  private:
@@ -577,12 +574,6 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ExceptionsList) {
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, FirstPartySetsUIDisabled) {
   RunTest("settings/cookies_page_test.js",
           "runMochaSuite('FirstPartySetsUIDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest,
-                       PreloadingSubpageMovedToPerformanceSettings) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('PreloadingSubpageMovedToPerformanceSettings')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {

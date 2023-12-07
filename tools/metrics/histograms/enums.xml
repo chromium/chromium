@@ -33468,7 +33468,6 @@ from previous Chrome versions.
   <int value="129458360" label="LiteVideo:disabled"/>
   <int value="130059719" label="ThreadedPreloadScanner:disabled"/>
   <int value="130939792" label="FilesJsModules:disabled"/>
-  <int value="131135725" label="PerformanceSettingsPreloadingSubpage:enabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
@@ -33940,7 +33939,6 @@ from previous Chrome versions.
   <int value="356453693" label="SystemNudgeV2:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="357165937" label="ShareToGoogleCollections:enabled"/>
-  <int value="357322724" label="PerformanceSettingsPreloadingSubpage:disabled"/>
   <int value="357832577" label="OmniboxSuggestionHoverFillShape:disabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
   <int value="358493847" label="BackgroundLoader:disabled"/>

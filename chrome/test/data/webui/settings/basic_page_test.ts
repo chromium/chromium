@@ -456,8 +456,6 @@ suite('Performance', () => {
   // TODO(crbug.com/1486635): Remove once preloading subpage in performance
   // settings is launched
   const defaultFeatureValues = {
-    isPerformanceSettingsPreloadingSubpageEnabled: loadTimeData.getBoolean(
-        'isPerformanceSettingsPreloadingSubpageEnabled'),
     isPerformanceSettingsPreloadingSubpageV2Enabled: loadTimeData.getBoolean(
         'isPerformanceSettingsPreloadingSubpageV2Enabled'),
   };
@@ -511,22 +509,6 @@ suite('Performance', () => {
     assertFalse(
         !!queryPerformanceSettingsSection(),
         'Performance section should not exist when visibility is false');
-  });
-
-  // TODO(crbug.com/1486635): Remove once preloading subpage in performance
-  // settings is launched
-  test('performanceVisibilityTestSpeedSectionNotEnabled', async function() {
-    loadTimeData.overrideValues({
-      isPerformanceSettingsPreloadingSubpageEnabled: false,
-    });
-    await createNewBasicPage();
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility;
-    flush();
-
-    assertFalse(
-        !!querySpeedSettingsSection(),
-        'Speed section should not be visible when feature flag is off');
   });
 
   // TODO(crbug.com/1486635): Remove once preloading subpage in performance

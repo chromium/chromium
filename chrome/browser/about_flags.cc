@@ -2796,15 +2796,6 @@ const FeatureEntry::FeatureVariation kBackForwardCacheVariations[] = {
      std::size(kBackForwardCache_ForceCaching), nullptr},
 };
 
-const FeatureEntry::FeatureParam kPerformanceSettingsPreloadingSubpage_V1[] = {
-    {"use_v2_preloading_subpage", "false"}};
-
-const FeatureEntry::FeatureVariation
-    kPerformanceSettingsPreloadingSubpageVariations[] = {
-        {"without toggle button", kPerformanceSettingsPreloadingSubpage_V1,
-         std::size(kPerformanceSettingsPreloadingSubpage_V1), nullptr},
-};
-
 const FeatureEntry::FeatureParam kRenderDocument_Subframe[] = {
     {"level", "subframe"}};
 const FeatureEntry::FeatureParam kRenderDocument_AllFrames[] = {
@@ -8410,14 +8401,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
 #endif
-
-    {"preloading-on-performance-page",
-     flag_descriptions::kPreloadingOnPerformancePageName,
-     flag_descriptions::kPreloadingOnPerformancePageDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kPerformanceSettingsPreloadingSubpage,
-         kPerformanceSettingsPreloadingSubpageVariations,
-         "PerformanceSettingsPreloadingSubpage")},
 
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,

@@ -5,8 +5,8 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookieControlsMode, ContentSetting, NetworkPredictionOptions, SettingsCollapseRadioButtonElement, ContentSettingsTypes, SettingsCookiesPageElement, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrLinkRowElement, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CookieControlsMode, ContentSetting, SettingsCollapseRadioButtonElement, ContentSettingsTypes, SettingsCookiesPageElement, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -79,70 +79,12 @@ suite('CookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#rollbackNotice'));
 
     assertTrue(isChildVisible(page, '#doNotTrack'));
-    // TODO(b/296212999): Remove after b/296212999 is launched.
-    assertTrue(isChildVisible(page, '#preloadingLinkRow'));
 
     assertTrue(isChildVisible(page, '#allowThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
     assertFalse(isChildVisible(page, '#allowAll'));
     assertFalse(isChildVisible(page, '#blockAll'));
-  });
-
-  // TODO(b/296212999): Remove after b/296212999 is launched.
-  test('PreloadingClickRecorded', async function() {
-    const linkRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
-    assertTrue(!!linkRow);
-    linkRow.click();
-    flush();
-
-    const result =
-        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
-    assertEquals(PrivacyElementInteractions.NETWORK_PREDICTION, result);
-    assertEquals(routes.PRELOADING, Router.getInstance().getCurrentRoute());
-  });
-
-  // TODO(b/296212999): Remove after b/296212999 is launched.
-  test('PreloadingSubLabel', async function() {
-    assertTrue(isChildVisible(page, '#preloadingLinkRow'));
-
-    const preloadingPageLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>('#preloadingLinkRow');
-    assertTrue(!!preloadingPageLinkRow);
-
-    page.setPrefValue(
-        'net.network_prediction_options', NetworkPredictionOptions.DISABLED);
-    flush();
-    assertEquals(
-        preloadingPageLinkRow.subLabel,
-        page.i18n('preloadingPageNoPreloadingTitle'));
-
-    page.setPrefValue(
-        'net.network_prediction_options', NetworkPredictionOptions.EXTENDED);
-    flush();
-    assertEquals(
-        preloadingPageLinkRow.subLabel,
-        page.i18n('preloadingPageExtendedPreloadingTitle'));
-
-    page.setPrefValue(
-        'net.network_prediction_options', NetworkPredictionOptions.STANDARD);
-    flush();
-    assertEquals(
-        preloadingPageLinkRow.subLabel,
-        page.i18n('preloadingPageStandardPreloadingTitle'));
-
-    // This value is deprecated, and users cannot change their prefs to this
-    // value, but it is still the default value for the pref. It is treated the
-    // as STANDARD and the "Standard preloading" sub label is applied for this
-    // case. See chrome/browser/preloading/preloading_prefs.h for more info.
-    page.setPrefValue(
-        'net.network_prediction_options',
-        NetworkPredictionOptions.WIFI_ONLY_DEPRECATED);
-    flush();
-    assertEquals(
-        preloadingPageLinkRow.subLabel,
-        page.i18n('preloadingPageStandardPreloadingTitle'));
   });
 
   test('ThirdPartyCookiesRadioClicksRecorded', async function() {
@@ -414,32 +356,6 @@ suite('FirstPartySetsUIDisabled', function() {
     assertEquals(
         loadTimeData.getString('thirdPartyCookiesPageBlockIncognitoBulTwo'),
         cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
-  });
-});
-
-// TODO(b/296212999): Remove after b/296212999 is launched.
-suite('PreloadingSubpageMovedToPerformanceSettings', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPerformanceSettingsPreloadingSubpageEnabled: true,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('PreloadingLinkRowNotShown', function() {
-    assertFalse(isChildVisible(page, '#preloadingLinkRow'));
   });
 });
 
