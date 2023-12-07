@@ -214,7 +214,8 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kEntryNotSelectable:
+    case PopupItemId::kAddressEntryNotSelectable:
+    case PopupItemId::kPaymentsEntryNotSelectable:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kTitle:
@@ -454,7 +455,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
-    case PopupItemId::kEntryNotSelectable:
+    case PopupItemId::kAddressEntryNotSelectable:
+    case PopupItemId::kPaymentsEntryNotSelectable:
       return;
     case PopupItemId::kTitle:
     case PopupItemId::kEditAddressProfile:
@@ -677,7 +679,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
       break;
-    case PopupItemId::kEntryNotSelectable:
+    case PopupItemId::kAddressEntryNotSelectable:
+    case PopupItemId::kPaymentsEntryNotSelectable:
       return;
     case PopupItemId::kAddressEntry:
       autofill_metrics::LogAutofillSuggestionAcceptedIndex(

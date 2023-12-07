@@ -1773,10 +1773,11 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackPayments);
     external_delegate()->CheckSuggestionCount(field.global_id(), 3);
-    base::ranges::all_of(
+    EXPECT_TRUE(base::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
-          return suggestion.popup_item_id == PopupItemId::kEntryNotSelectable;
-        });
+          return suggestion.popup_item_id ==
+                 PopupItemId::kPaymentsEntryNotSelectable;
+        }));
   }
 }
 
@@ -1800,10 +1801,10 @@ TEST_F(BrowserAutofillManagerTest,
       form, cc_name_field,
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
   external_delegate()->CheckSuggestionCount(cc_name_field.global_id(), 2);
-  base::ranges::all_of(
+  EXPECT_TRUE(base::ranges::all_of(
       external_delegate()->suggestions(), [](const Suggestion& suggestion) {
         return suggestion.popup_item_id == PopupItemId::kCreditCardEntry;
-      });
+      }));
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

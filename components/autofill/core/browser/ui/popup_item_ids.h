@@ -82,7 +82,8 @@ enum class PopupItemId : int {
 
   // Other suggestions.
   kFieldByFieldFilling,
-  kEntryNotSelectable,
+  kAddressEntryNotSelectable,
+  kPaymentsEntryNotSelectable,
   kSeparator,
   kClearForm,
   kMixedFormMessage,

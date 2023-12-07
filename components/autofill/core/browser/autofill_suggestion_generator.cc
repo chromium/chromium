@@ -1639,7 +1639,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
   suggestion.popup_item_id = is_manual_fallback
-                                 ? PopupItemId::kEntryNotSelectable
+                                 ? PopupItemId::kPaymentsEntryNotSelectable
                                  : PopupItemId::kCreditCardEntry;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
@@ -1692,7 +1692,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   }
 
   suggestion.acceptance_a11y_announcement =
-      suggestion.popup_item_id == PopupItemId::kEntryNotSelectable
+      suggestion.popup_item_id == PopupItemId::kPaymentsEntryNotSelectable
           ? l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY)
           : l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
