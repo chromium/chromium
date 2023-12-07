@@ -213,6 +213,8 @@ class KeyboardAccessoryIPHUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
                 return org.chromium.chrome.R.string
                         .autofill_iph_external_account_profile_suggestion;
+            case FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE:
+                return R.string.iph_keyboard_accessory_virtual_card_cvc_fill_feature;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;
