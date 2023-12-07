@@ -1372,113 +1372,6 @@ TEST_F(DlpFilesControllerAshTest, DoNotReportOnSystemApps) {
               base::BucketsAre(base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
-TEST_F(DlpFilesControllerAshTest, CheckIfPasteOrDropIsAllowed_ErrorResponse) {
-  ASSERT_TRUE(mount_points_->RegisterFileSystem(
-      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      my_files_dir_));
-
-  base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
-  ASSERT_TRUE(CreateDummyFile(file_path1));
-
-  // Set CheckFilesTransferResponse to return an error.
-  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
-  check_files_transfer_response.add_files_paths(file_path1.value());
-  check_files_transfer_response.set_error_message("Did not receive a reply.");
-  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
-  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
-      check_files_transfer_response);
-
-  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
-
-  base::test::TestFuture<bool> future;
-  ASSERT_TRUE(files_controller_);
-  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
-                                                 future.GetCallback());
-
-  ASSERT_TRUE(future.Take());
-
-  // Validate the request sent to the daemon.
-  ::dlp::CheckFilesTransferRequest request =
-      chromeos::DlpClient::Get()
-          ->GetTestInterface()
-          ->GetLastCheckFilesTransferRequest();
-  ASSERT_EQ(request.files_paths().size(), 1);
-  EXPECT_EQ(request.files_paths()[0], file_path1.value());
-  EXPECT_EQ(kExampleUrl1, request.destination_url());
-  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
-  EXPECT_FALSE(request.has_io_task_id());
-}
-
-// Tests pasting or dropping a mix of an external file and a local directory.
-TEST_F(DlpFilesControllerAshTest, CheckIfPasteOrDropIsAllowed) {
-  ASSERT_TRUE(mount_points_->RegisterFileSystem(
-      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      my_files_dir_));
-
-  base::ScopedTempDir external_dir;
-  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
-  base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
-  ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
-
-  base::ScopedTempDir sub_dir1;
-  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
-  base::FilePath file_path2 = sub_dir1.GetPath().AppendASCII(kFilePath2);
-  ASSERT_TRUE(CreateDummyFile(file_path2));
-  auto file_url2 = CreateFileSystemURL(kTestStorageKey, file_path2.value());
-
-  // Set CheckFilesTransfer response to restrict the local file.
-  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
-  check_files_transfer_response.add_files_paths(file_path2.value());
-  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
-  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
-      check_files_transfer_response);
-
-  EXPECT_CALL(*fpnm_,
-              ShowDlpBlockedFiles(/*task_id=*/{absl::nullopt},
-                                  std::vector<base::FilePath>{file_path2},
-                                  dlp::FileAction::kCopy));
-
-  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
-
-  base::test::TestFuture<bool> future;
-  ASSERT_TRUE(files_controller_);
-  files_controller_->CheckIfPasteOrDropIsAllowed(
-      {file_path1, sub_dir1.GetPath()}, &data_dst, future.GetCallback());
-  EXPECT_FALSE(future.Take());
-
-  // Validate that only the local file was sent to the daemon.
-  ::dlp::CheckFilesTransferRequest request =
-      chromeos::DlpClient::Get()
-          ->GetTestInterface()
-          ->GetLastCheckFilesTransferRequest();
-  ASSERT_EQ(request.files_paths().size(), 1);
-  EXPECT_EQ(request.files_paths()[0], file_path2.value());
-  EXPECT_EQ(kExampleUrl1, request.destination_url());
-  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
-  EXPECT_FALSE(request.has_io_task_id());
-}
-
-TEST_F(DlpFilesControllerAshTest,
-       CheckIfPasteOrDropIsAllowed_NoFileSystemContext) {
-  ASSERT_TRUE(mount_points_->RegisterFileSystem(
-      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      my_files_dir_));
-
-  base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
-  ASSERT_TRUE(CreateDummyFile(file_path1));
-  auto file_url1 = CreateFileSystemURL(kTestStorageKey, file_path1.value());
-
-  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
-
-  base::test::TestFuture<bool> future;
-  ASSERT_TRUE(files_controller_);
-  files_controller_->SetFileSystemContextForTesting(nullptr);
-  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
-                                                 future.GetCallback());
-  ASSERT_TRUE(future.Take());
-}
-
 TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
   const auto histogram_tester = base::HistogramTester();
 
@@ -2702,6 +2595,45 @@ TEST_P(DlpFilesControllerAshComponentsTest, MapFilePathToPolicyComponentTest) {
   EXPECT_EQ(files_controller_->MapFilePathToPolicyComponent(profile_.get(),
                                                             url.path()),
             expected_component);
+}
+
+class DlpFilesControllerAshBlockUITest
+    : public DlpFilesTestWithMounts,
+      public ::testing::WithParamInterface<dlp::FileAction> {
+ public:
+  DlpFilesControllerAshBlockUITest(const DlpFilesControllerAshBlockUITest&) =
+      delete;
+  DlpFilesControllerAshBlockUITest& operator=(
+      const DlpFilesControllerAshBlockUITest&) = delete;
+
+ protected:
+  DlpFilesControllerAshBlockUITest() = default;
+  ~DlpFilesControllerAshBlockUITest() = default;
+
+  void SetUp() override { DlpFilesTestWithMounts::SetUp(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(DlpBlockUI,
+                         DlpFilesControllerAshBlockUITest,
+                         ::testing::Values(dlp::FileAction::kDownload,
+                                           dlp::FileAction::kTransfer,
+                                           dlp::FileAction::kUpload,
+                                           dlp::FileAction::kCopy,
+                                           dlp::FileAction::kMove,
+                                           dlp::FileAction::kOpen,
+                                           dlp::FileAction::kShare));
+
+TEST_P(DlpFilesControllerAshBlockUITest, ShowDlpBlockedFiles) {
+  auto action = GetParam();
+
+  base::FilePath path(kFilePath1);
+
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
+                          std::vector<base::FilePath>{path}, action));
+
+  files_controller_->ShowDlpBlockedFiles(
+      /*task_id=*/absl::nullopt, {path}, action);
 }
 
 }  // namespace policy

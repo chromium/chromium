@@ -470,6 +470,13 @@ class MockDlpFilesController : public DlpFilesController {
               MapFilePathToPolicyComponent,
               (Profile * profile, const base::FilePath& file_path),
               (override));
+
+  MOCK_METHOD(void,
+              ShowDlpBlockedFiles,
+              (absl::optional<uint64_t> task_id,
+               std::vector<base::FilePath> blocked_files,
+               dlp::FileAction action),
+              (override));
 };
 
 class DlpFileSystemAccessMoveTest

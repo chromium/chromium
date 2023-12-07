@@ -29,7 +29,6 @@
 
 namespace storage {
 class FileSystemURL;
-class FileSystemContext;
 }  // namespace storage
 
 namespace views {
@@ -104,7 +103,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
   using GetFilesRestrictedByAnyRuleCallback = CheckIfTransferAllowedCallback;
   using FilterDisallowedUploadsCallback =
       base::OnceCallback<void(std::vector<ui::SelectedFileInfo>)>;
-  using CheckIfDlpAllowedCallback = base::OnceCallback<void(bool is_allowed)>;
   using GetDlpMetadataCallback =
       base::OnceCallback<void(std::vector<DlpFileMetadata>)>;
   using IsFilesTransferRestrictedCallback = base::OnceCallback<void(
@@ -184,30 +182,28 @@ class DlpFilesControllerAsh : public DlpFilesController,
   // Returns whether a dlp policy matches for the `file`.
   virtual bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
-  // Checks whether pasting or dropping the given `paths` to `data_dst` is
-  // allowed.
-  virtual void CheckIfPasteOrDropIsAllowed(
-      const std::vector<base::FilePath>& files,
-      const ui::DataTransferEndpoint* data_dst,
-      CheckIfDlpAllowedCallback result_callback);
-
   //  VolumeManagerObserver overrides:
   void OnShutdownStart(file_manager::VolumeManager* volume_manager) override;
 
   DlpFilesEventStorage* GetEventStorageForTesting();
 
-  void SetFileSystemContextForTesting(
-      storage::FileSystemContext* file_system_context);
-
  protected:
-  // Maps |file_path| to data_controls::Component if possible.
+  // DlpFilesController overrides:
   absl::optional<data_controls::Component> MapFilePathToPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) override;
 
+  void ShowDlpBlockedFiles(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
+      std::vector<base::FilePath> blocked_files,
+      dlp::FileAction action) override;
+
   // TODO(b/284122497): Cleanup friend for testing.
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerAshComponentsTest,
                            MapFilePathToPolicyComponentTest);
+
+  FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerAshBlockUITest,
+                           ShowDlpBlockedFiles);
 
  private:
   // Called back from warning dialog. Passes blocked files sources along
@@ -242,12 +238,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
 
-  // Runs `result_callback` with true if `action` is allowed. It runs
-  // `result_callback` with false and shows the required UI otherwise.
-  void ReturnIfActionAllowed(dlp::FileAction action,
-                             CheckIfDlpAllowedCallback result_callback,
-                             ::dlp::CheckFilesTransferResponse response);
-
   // Reports an event if a `DlpReportingManager` instance exists. When
   // `dst_pattern` is missing, we report `dst.component.value()` instead. When
   // `level` is missing, we report a warning proceeded event.
@@ -276,13 +266,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
       const DlpFileDestination& destination,
       FilterDisallowedUploadsCallback result_callback,
       std::vector<storage::FileSystemURL> uploaded_files);
-
-  // Called when `files` is ready.
-  // Constructs CheckFilesTransfer request and forwards it to the DLP daemon.
-  void ContinueCheckIfPasteOrDropIsAllowed(
-      const DlpFileDestination& destination,
-      CheckIfDlpAllowedCallback result_callback,
-      std::vector<storage::FileSystemURL> files);
 
   // The profile with which we are associated. Not owned. It's currently always
   // the main/primary profile.
