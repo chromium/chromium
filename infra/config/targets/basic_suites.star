@@ -4843,6 +4843,7 @@ targets.legacy_basic_suite(
         ),
         "midi_unittests": None,
         "mojo_unittests": None,
+        "native_theme_unittests": None,
         "net_unittests": None,
         "perfetto_unittests": None,
         "printing_unittests": None,

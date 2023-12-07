@@ -6708,6 +6708,54 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "name": "native_theme_unittests iPhone 14 17.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15c5042i",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_0",
+              "path": "Runtime-ios-17.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "native_theme_unittests",
+        "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/",
+        "variant_id": "iPhone 14 17.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15c5042i",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "name": "net_unittests iPhone 14 17.0",
         "resultdb": {
           "enable": true,
