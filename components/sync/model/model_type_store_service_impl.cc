@@ -14,10 +14,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
@@ -45,6 +47,8 @@ std::optional<ModelError> InitOnBackendSequence(
             READING_LIST, StorageType::kUnspecified),
         BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
             READING_LIST, StorageType::kAccount));
+    RecordSyncToSigninMigrationReadingListStep(
+        ReadingListMigrationStep::kMigrationStarted);
   }
   return store_backend->Init(level_db_path, prefixes_to_migrate);
 }
@@ -135,13 +139,26 @@ ModelTypeStoreServiceImpl::~ModelTypeStoreServiceImpl() {
 void ModelTypeStoreServiceImpl::BackendInitializationDone(
     std::optional<ModelError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  if (error) {
-    LOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
-               << error->ToString();
-    return;
+
+  // If the ReadingList local-to-account migration was performed (or attempted)
+  // as part of this initialization, record the outcome.
+  if (pref_service_->GetBoolean(
+          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount)) {
+    if (!error) {
+      pref_service_->ClearPref(
+          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+    }
+    RecordSyncToSigninMigrationReadingListStep(
+        error ? ReadingListMigrationStep::kMigrationFailed
+              : ReadingListMigrationStep::kMigrationFinishedAndPrefCleared);
   }
-  pref_service_->ClearPref(
-      syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+
+  base::UmaHistogramBoolean("Sync.ModelTypeStoreBackendInitializationSuccess",
+                            !error.has_value());
+  if (error) {
+    DLOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
+                << error->ToString();
+  }
 }
 
 const base::FilePath& ModelTypeStoreServiceImpl::GetSyncDataPath() const {

@@ -127,7 +127,10 @@ absl::optional<ModelError> ModelTypeStoreBackend::Init(
   // Note: It's the caller's responsibility to ensure that the prefix migration
   // is only triggered once.
   for (const auto& [from, to] : prefixes_to_update) {
-    UpdateDataPrefix(from, to);
+    absl::optional<ModelError> error = UpdateDataPrefix(from, to);
+    if (error) {
+      return error;
+    }
   }
 
   return absl::nullopt;

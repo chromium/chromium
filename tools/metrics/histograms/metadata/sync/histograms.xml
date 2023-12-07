@@ -999,7 +999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeStoreBackendError.{Operation}"
-    enum="LevelDBStatus" expires_after="2024-04-28">
+    enum="LevelDBStatus" expires_after="2024-09-30">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -1018,6 +1018,18 @@ chromium-metrics-reviews@google.com.
     <variant name="ReadRecords"/>
     <variant name="WriteModifications"/>
   </token>
+</histogram>
+
+<histogram name="Sync.ModelTypeStoreInitializationSuccess"
+    enum="BooleanSuccess" expires_after="2024-09-30">
+  <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the outcome of the initialization of the ModelTypeStoreBackend,
+    which typically happens once every browser startup (or more precisely,
+    profile initialization).
+  </summary>
 </histogram>
 
 <histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound2{SyncModelType}"
@@ -1562,6 +1574,21 @@ chromium-metrics-reviews@google.com.
     Whether a Sync stopped event URL fetch timed out or not. Note that this
     records true on timeout and false on success, but doesn't record anything if
     the fetch failed for any other reason.
+  </summary>
+</histogram>
+
+<histogram name="Sync.SyncToSigninMigration.ReadingListMigrationStep"
+    enum="SyncToSigninMigrationReadingListStep" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Within the wider Sync-to-Signin migration, this records various steps in the
+    ReadingList-specific migration. The migration is requested by the central
+    Sync-to-Signin migration on profile initialization, and happens at most once
+    per browser session (and typically exactly once per profile). &quot;Total
+    count&quot; and &quot;Bucket proportion&quot; are not really meaningful;
+    instead compare the absolute sizes of the various buckets.
   </summary>
 </histogram>
 

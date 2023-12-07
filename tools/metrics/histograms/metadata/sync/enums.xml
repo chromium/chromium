@@ -823,6 +823,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Don't migrate, migration feature flag disabled"/>
 </enum>
 
+<enum name="SyncToSigninMigrationReadingListStep">
+  <summary>
+    A step in the ReadingList migration process, within the wider Sync-to-Signin
+    migration.
+  </summary>
+  <int value="0" label="Decision to migrate was made"/>
+  <int value="1" label="Migration was started"/>
+  <int value="2" label="Migration failed (and will be retried)"/>
+  <int value="3" label="Migration finished successfully"/>
+</enum>
+
 <enum name="SyncTypedUrlDatabaseError">
   <int value="0" label="Error in MergeFullSyncData(): reading"/>
   <int value="1" label="Error in MergeFullSyncData(): writing data"/>

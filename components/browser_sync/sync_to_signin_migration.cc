@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
@@ -275,6 +276,8 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
       SyncToSigninMigrationDataTypeDecision::kMigrate) {
     pref_service->SetBoolean(
         syncer::prefs::internal::kMigrateReadingListFromLocalToAccount, true);
+    syncer::RecordSyncToSigninMigrationReadingListStep(
+        syncer::ReadingListMigrationStep::kMigrationRequested);
   }
 }
 
