@@ -926,26 +926,6 @@ record-time-chip {
   opacity: 0;
 }
 
-#tooltip {
-  background: var(--cros-sys-on_surface);
-  border-radius: 2px;
-  color: var(--cros-sys-inverse_on_surface);
-  font: var(--cros-annotation-1-font);
-  left: 0;
-  opacity: 0;
-  padding: 2px 8px;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  white-space: nowrap;
-  z-index: 100;
-}
-
-#tooltip.visible {
-  opacity: 1;
-  transition: opacity 350ms ease-out 1500ms;
-}
-
 #toast {
   background: var(--cros-sys-base_elevated);
   border-radius: 16px;
@@ -1327,7 +1307,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 body.hide-floating-ui-for-testing
-  :is(#nudge, #toast, #tooltip, .custom-toast, .no-document-toast) {
+  :is(#nudge, #toast, text-tooltip, .custom-toast, .no-document-toast) {
   /* TODO(b/289342383): Use CSS layering so we don't need to use !important. */
   display: none !important;
 }

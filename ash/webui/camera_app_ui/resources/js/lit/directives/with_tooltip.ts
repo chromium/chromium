@@ -11,7 +11,7 @@ import {
   PartType,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {assert} from '../../assert.js';
+import {assert, assertInstanceof} from '../../assert.js';
 import * as tooltip from '../../tooltip.js';
 
 
@@ -27,7 +27,7 @@ class WithTooltip extends Directive {
 
   override update(part: ElementPart) {
     if (this.firstUpdate) {
-      tooltip.setupElements([part.element]);
+      tooltip.setupElements([assertInstanceof(part.element, HTMLElement)]);
       this.firstUpdate = false;
     }
     return this.render();

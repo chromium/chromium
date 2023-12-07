@@ -7,3 +7,4 @@ import './mode-selector.js';
 import './record-time-chip.js';
 import './svg-wrapper.js';
 import './switch-device-button.js';
+import './text-tooltip.js';

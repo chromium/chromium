@@ -478,17 +478,21 @@
         </div>
         <div id="ptz-panel-container" class="panel">
           <button id="tilt-up" class="inkdrop" i18n-label="tilt_up_button"
-            tabindex="0" data-svg="ptz_tilt_up.svg"></button>
+            tabindex="0" data-svg="ptz_tilt_up.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <button id="pan-left" class="inkdrop" i18n-label="pan_left_button"
-            tabindex="0" data-svg="ptz_pan_left.svg"></button>
+            tabindex="0" data-svg="ptz_pan_left.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <button id="zoom-out" class="inkdrop" i18n-label="zoom_out_button"
             tabindex="0" data-svg="ptz_zoom_out.svg"></button>
           <button id="zoom-in" class="inkdrop" i18n-label="zoom_in_button"
             tabindex="0" data-svg="ptz_zoom_in.svg"></button>
           <button id="pan-right" class="inkdrop" i18n-label="pan_right_button"
-            tabindex="0" data-svg="ptz_pan_right.svg"></button>
+            tabindex="0" data-svg="ptz_pan_right.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <button id="tilt-down" class="inkdrop" i18n-label="tilt_down_button"
-            tabindex="0" data-svg="ptz_tilt_down.svg"></button>
+            tabindex="0" data-svg="ptz_tilt_down.svg"
+            data-tooltip-anchor="svg-wrapper"></button>
           <div id="ptz-divider1" class="ptz-divider"></div>
           <div id="ptz-divider2" class="ptz-divider"></div>
           <div id="ptz-divider3" class="ptz-divider"></div>
@@ -543,7 +547,7 @@
     </div>
     <div id="toast" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
-    <div id="tooltip" aria-hidden="true"></div>
+    <text-tooltip></text-tooltip>
     <template id="preview-video-template">
       <video id="preview-video" class="preview-content" aria-hidden="true"
         muted></video>
