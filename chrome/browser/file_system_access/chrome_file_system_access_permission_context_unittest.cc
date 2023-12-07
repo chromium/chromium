@@ -9,6 +9,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -614,6 +615,35 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
           base::FilePath(FILE_PATH_LITERAL("\\\\myhostname\\c$\\foo\\bar")),
           HandleType::kDirectory, UserAction::kOpen),
       SensitiveDirectoryResult::kAbort);
+}
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+// Test enabled on POSIX, as `base::CreateSymbolicLink()` is currently only
+// supported on POSIX. This should be enabled on Windows once supported.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_ResolveSymbolicLink) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessSymbolicLinkCheck)) {
+    return;
+  }
+
+  base::FilePath symlink1 = temp_dir_.GetPath().AppendASCII("symlink1");
+  base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
+  base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
+  ASSERT_TRUE(base::CreateSymbolicLink(app_dir, symlink1));
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, symlink1,
+                HandleType::kFile, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  base::FilePath symlink2 = temp_dir_.GetPath().AppendASCII("symlink2");
+  base::FilePath allowed_file = temp_dir_.GetPath().AppendASCII("foo");
+  ASSERT_TRUE(base::CreateSymbolicLink(allowed_file, symlink2));
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, symlink2,
+                HandleType::kFile, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
 }
 #endif
 

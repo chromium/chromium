@@ -12,6 +12,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -344,10 +345,23 @@ const struct {
     // XDG_CONFIG_HOME when it is not set ~/.config?
 };
 
-bool ShouldBlockAccessToPath(const base::FilePath& check_path,
+bool ShouldBlockAccessToPath(const base::FilePath& path,
                              HandleType handle_type) {
-  DCHECK(!check_path.empty());
-  DCHECK(check_path.IsAbsolute());
+  DCHECK(!path.empty());
+  DCHECK(path.IsAbsolute());
+
+  base::FilePath check_path;
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessSymbolicLinkCheck)) {
+    // `path` is expected to be absolute, but call `MakeAbsoluteFilePath()`
+    // in order to perform normalization, such as resolving any symbolic link.
+    check_path = base::MakeAbsoluteFilePath(path);
+    if (check_path.empty()) {
+      check_path = path;
+    }
+  } else {
+    check_path = path;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, local UNC paths are rejected, as UNC path can be written in a

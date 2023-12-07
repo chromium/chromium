@@ -18,7 +18,7 @@ namespace content::features {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessBFCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kFileSystemAccessDirectoryIterationSymbolicLinkCheck);
+    kFileSystemAccessDirectoryIterationBlocklistCheck);
 
 }  // namespace content::features
 
