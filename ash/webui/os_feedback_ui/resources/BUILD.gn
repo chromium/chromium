@@ -43,6 +43,7 @@ build_webui("build") {
 
   mojo_files_deps = [ "//ash/webui/os_feedback_ui/mojom:mojom_webui_js" ]
 
+  ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [
