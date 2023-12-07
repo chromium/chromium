@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -18,6 +19,7 @@ namespace blink {
 // delay duration is NOT recorded when the delay timer is started before the
 // start of the window onload event.
 TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   base::HistogramTester histogram_tester;
 
@@ -62,6 +64,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
 // delay duration is recorded when the delay timer is started after the start of
 // the window onload event.
 TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   base::HistogramTester histogram_tester;
 

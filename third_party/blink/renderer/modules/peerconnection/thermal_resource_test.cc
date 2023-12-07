@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/fake_resource_listener.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/webrtc/api/adaptation/resource.h"
 
@@ -28,6 +29,7 @@ class ThermalResourceTest : public ::testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   // Tasks run on the test thread with fake time, use FastForwardBy() to

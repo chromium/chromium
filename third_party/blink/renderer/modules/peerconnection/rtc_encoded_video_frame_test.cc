@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 
 using testing::_;
@@ -23,7 +24,9 @@ using webrtc::MockTransformableVideoFrame;
 
 namespace blink {
 
-class RTCEncodedVideoFrameTest : public testing::Test {};
+class RTCEncodedVideoFrameTest : public testing::Test {
+  test::TaskEnvironment task_environment_;
+};
 
 webrtc::VideoFrameMetadata MockVP9Metadata(MockTransformableVideoFrame* frame) {
   webrtc::VideoFrameMetadata webrtc_metadata;

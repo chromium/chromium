@@ -24,6 +24,8 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -94,6 +96,8 @@ class AudioContextAutoplayTest
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
+  void TearDown() override { MemoryCache::Get()->EvictResources(); }
+
   LocalDOMWindow& GetWindow() {
     return *helper_.LocalMainFrame()->GetFrame()->DomWindow();
   }
@@ -121,6 +125,8 @@ class AudioContextAutoplayTest
   }
 
  private:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   ScopedTestingPlatformSupport<AudioContextAutoplayTestPlatform> platform_;
   frame_test_helpers::WebViewHelper helper_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

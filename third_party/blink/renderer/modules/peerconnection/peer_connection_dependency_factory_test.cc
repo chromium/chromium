@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -10,9 +12,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
-#include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -42,6 +44,8 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   Persistent<PeerConnectionDependencyFactory> dependency_factory_;
   Persistent<MockRTCPeerConnectionHandlerClient> mock_client_;
 };

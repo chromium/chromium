@@ -56,6 +56,10 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   // instead.
   void RunUntilIdle() override;
 
+  const base::Clock* GetClock() const override;
+  const base::TickClock* GetTickClock() const override;
+  base::TimeTicks NowTicks() const override;
+
   // Runs for |seconds| the testing clock is advanced by |seconds|.  Note real
   // time elapsed will typically much less than |seconds| because delays between
   // timers are fast forwarded.
@@ -71,9 +75,6 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   // Controls the behavior of |m_mockTaskRunner| if true, then |m_clock| will
   // be advanced to the next timer when there's no more immediate work to do.
   void SetAutoAdvanceNowToPendingTasks(bool);
-
-  // Returns the current mock time.
-  base::TimeTicks NowTicks() const;
 
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;

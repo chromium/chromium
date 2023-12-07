@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -27,6 +28,7 @@ class BackgroundFetchManagerTest : public testing::Test {
     return BackgroundFetchManager::CreateFetchAPIRequestVector(
         scope.GetScriptState(), requests, scope.GetExceptionState());
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(BackgroundFetchManagerTest, SingleUSVString) {

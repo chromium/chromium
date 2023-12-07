@@ -154,7 +154,8 @@ class ContentCaptureTest : public PageTestBase,
                            public ::testing::WithParamInterface<
                                std::vector<base::test::FeatureRef>> {
  public:
-  ContentCaptureTest() {
+  ContentCaptureTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     EnablePlatform();
     feature_list_.InitWithFeatures(
         GetParam(),
@@ -180,7 +181,6 @@ class ContentCaptureTest : public PageTestBase,
         "<p id='p8'>8</p>"
         "<div id='d1'></div>"
         "<p id='invisible'>invisible</p>");
-    platform()->SetAutoAdvanceNowToPendingTasks(false);
     InitNodeHolders();
     // Setup captured content to ContentCaptureTask, it isn't necessary once
     // ContentCaptureManager is created by LocalFrame.
@@ -214,13 +214,12 @@ class ContentCaptureTest : public PageTestBase,
 
   void RunContentCaptureTask() {
     ResetResult();
-    platform()->RunForPeriod(
-        GetWebContentCaptureClient()->GetTaskInitialDelay());
+    FastForwardBy(GetWebContentCaptureClient()->GetTaskInitialDelay());
   }
 
   void RunNextContentCaptureTask() {
     ResetResult();
-    platform()->RunForPeriod(
+    FastForwardBy(
         GetContentCaptureTask()->GetTaskDelayForTesting().GetNextTaskDelay());
   }
 

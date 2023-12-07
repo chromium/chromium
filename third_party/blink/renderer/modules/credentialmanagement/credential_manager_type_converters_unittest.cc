@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace mojo {
@@ -42,6 +43,7 @@ static blink::V8UnionArrayBufferOrArrayBufferView* arrayBufferOrView(
 static Vector<uint8_t> vectorOf(const uint8_t* data, size_t size);
 
 TEST(CredentialManagerTypeConvertersTest, RpContextTest) {
+  blink::test::TaskEnvironment task_environment;
   EXPECT_EQ(RpContext::kSignIn,
             ConvertTo<RpContext>(V8Context(V8Context::Enum::kSignin)));
   EXPECT_EQ(RpContext::kSignUp,

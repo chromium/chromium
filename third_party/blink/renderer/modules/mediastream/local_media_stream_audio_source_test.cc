@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -37,6 +38,7 @@ std::unique_ptr<LocalMediaStreamAudioSource> CreateLocalMediaStreamAudioSource(
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, SupportsUnsupportedSystemAec) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kNotSupported,
                                         /*enable_system_aec*/ false);
@@ -52,6 +54,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, SupportsUnsupportedSystemAec) {
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanDisableSystemAec) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kSupported,
                                         /*enable_system_aec*/ false);
@@ -67,6 +70,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanDisableSystemAec) {
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanDisableExperimentalSystemAec) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kExperimentallySupported,
                                         /*enable_system_aec*/ false);
@@ -82,6 +86,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanDisableExperimentalSystemAec) {
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanEnableSystemAec) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kSupported,
                                         /*enable_system_aec*/ true);
@@ -97,6 +102,7 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanEnableSystemAec) {
 }
 
 TEST(LocalMediaStreamAudioSourceAecTest, CanEnableExperimentalSystemAec) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<LocalMediaStreamAudioSource> source =
       CreateLocalMediaStreamAudioSource(SystemAec::kExperimentallySupported,
                                         /*enable_system_aec*/ true);

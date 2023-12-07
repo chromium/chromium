@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -24,6 +25,7 @@ OffscreenCanvasRenderingContext2D* GetContext(V8TestingScope& scope,
 
 TEST(OffscreenCanvasHostTest,
      TransferToOffscreenThrowsErrorsProducedByContext) {
+  test::TaskEnvironment task_environment_;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/1,
@@ -42,6 +44,7 @@ TEST(OffscreenCanvasHostTest,
 }
 
 TEST(OffscreenCanvasHostTest, TransferToOffscreenThrowsUnknownErrorAsFallback) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   // Make `transferToImageBitmap` fail by creating the canvas that is too big.
@@ -58,6 +61,7 @@ TEST(OffscreenCanvasHostTest, TransferToOffscreenThrowsUnknownErrorAsFallback) {
 }
 
 TEST(OffscreenCanvasRenderingContext2DTest, TransferToOffscreenThrowsInLayers) {
+  test::TaskEnvironment task_environment;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* host = OffscreenCanvas::Create(scope.GetScriptState(), /*width=*/10,

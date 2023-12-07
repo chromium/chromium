@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -76,6 +77,7 @@ class MediaStreamConstraintsUtilVideoContentTest : public testing::Test {
                                              kDefaultScreenCastHeight);
   }
 
+  test::TaskEnvironment task_environment_;
   MockConstraintFactory constraint_factory_;
 };
 

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_running_status_enum.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_routersource_routersourceenum.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
 
@@ -73,6 +74,7 @@ blink::SafeUrlPattern DefaultURLPatternInitUrlPattern() {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "/fake";
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -111,6 +113,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeProtoPattern[] = "https";
   constexpr const char kFakeHostPattern[] = "example.com";
   constexpr const char kFakePathPattern[] = "/fake";
@@ -170,6 +173,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyProtocol) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeProtoPattern[] = "";
   constexpr const char kFakeHostPattern[] = "example.com";
   constexpr const char kFakePathPattern[] = "/test";
@@ -225,6 +229,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyProtocol) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeProtoPattern[] = "https";
   constexpr const char kFakeHostPattern[] = "example.com";
   constexpr const char kFakePathPattern[] = "";
@@ -289,6 +294,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
 
 TEST(ServiceWorkerRouterTypeConverterTest,
      EmptyUrlPatternShouldBeBaseURLPattern) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "";
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -320,6 +326,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 
 TEST(ServiceWorkerRouterTypeConverterTest,
      EmptyUrlPatternAndEmptyBaseURLShouldThrowException) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "";
   const KURL kFakeBaseUrl("");
   auto* idl_rule = blink::RouterRule::Create();
@@ -341,6 +348,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
+  test::TaskEnvironment task_environment;
   auto verify = [](const WTF::String& test_url_pattern) {
     auto* idl_rule = blink::RouterRule::Create();
     auto* idl_condition = blink::RouterCondition::Create();
@@ -366,6 +374,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, Race) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "/fake";
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -404,6 +413,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "/fake";
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -442,6 +452,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, Request) {
+  test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
   idl_condition->setRequestMethod("FakeRequestMethod");
@@ -476,6 +487,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
+  test::TaskEnvironment task_environment;
   auto validate_normalize = [](const WTF::String& input,
                                const std::string& expected) {
     auto* idl_rule = blink::RouterRule::Create();
@@ -515,6 +527,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
+  test::TaskEnvironment task_environment;
   auto verify =
       [](blink::V8RunningStatusEnum::Enum idl_status,
          blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum
@@ -556,6 +569,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, EmptyOrConditionShouldBeAllowed) {
+  test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
   HeapVector<Member<RouterCondition>> idl_or_conditions;
@@ -585,6 +599,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, EmptyOrConditionShouldBeAllowed) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, OrConditionWithMultipleElements) {
+  test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
   HeapVector<Member<RouterCondition>> idl_or_conditions;
@@ -646,6 +661,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, OrConditionWithMultipleElements) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, NestedOrCondition) {
+  test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
   HeapVector<Member<RouterCondition>> idl_outer_or;
@@ -687,6 +703,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, NestedOrCondition) {
 
 TEST(ServiceWorkerRouterTypeConverterTest,
      OrConditionCombinedWithOthersShouldThrowException) {
+  test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   const KURL kFakeBaseUrl("");
   auto* idl_condition = blink::RouterCondition::Create();
@@ -710,6 +727,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 // TODO(crbug.com/1490445): Add tests to limit depth of condition nests
 
 TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "/fake";
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -747,6 +765,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, CacheName) {
+  test::TaskEnvironment task_environment;
   constexpr const char kFakeUrlPattern[] = "/fake";
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();

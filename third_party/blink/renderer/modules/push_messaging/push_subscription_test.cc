@@ -7,12 +7,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 TEST(PushSubscriptionTest, SerializesToBase64URLWithoutPadding) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_testing_scope;
 
   // Byte value of a p256dh public key with the following base64 encoding:

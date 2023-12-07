@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -37,6 +38,7 @@ class WebServiceWorkerFetchContextImplTest : public testing::Test {
 
     void SetOnline(bool is_online) override { NOTREACHED(); }
   };
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {

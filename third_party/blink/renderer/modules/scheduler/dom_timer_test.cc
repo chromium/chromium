@@ -33,6 +33,8 @@ const double kThreshold = 0.006;
 
 class DOMTimerTest : public RenderingTest {
  public:
+  DOMTimerTest()
+      : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   // Expected time between each iterator for setInterval(..., 1) or nested
   // setTimeout(..., 1) are 1, 1, 1, 1, 4, 4, ... as a minimum clamp of 4ms
   // is applied from the 5th iteration onwards.
@@ -44,16 +46,13 @@ class DOMTimerTest : public RenderingTest {
 
   void SetUp() override {
     EnablePlatform();
-    platform()->SetAutoAdvanceNowToPendingTasks(true);
-    // Advance timer manually as RenderingTest expects the time to be non-zero.
-    platform()->AdvanceClockSeconds(1.);
+    AdvanceClock(base::Seconds(1));
     RenderingTest::SetUp();
     auto* window_performance =
         DOMWindowPerformance::performance(*GetDocument().domWindow());
-    auto test_task_runner = platform()->test_task_runner();
-    auto* mock_clock = test_task_runner->GetMockClock();
-    auto* mock_tick_clock = test_task_runner->GetMockTickClock();
-    auto now_ticks = test_task_runner->NowTicks();
+    auto* mock_clock = platform()->GetClock();
+    auto* mock_tick_clock = platform()->GetTickClock();
+    auto now_ticks = platform()->NowTicks();
     window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
     window_performance->ResetTimeOriginForTesting(now_ticks);
     GetDocument().GetSettings()->SetScriptEnabled(true);
@@ -85,7 +84,7 @@ class DOMTimerTest : public RenderingTest {
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
     ClassicScript::CreateUnspecifiedScript(String(script_text))
         ->RunScript(GetDocument().domWindow());
-    platform()->RunUntilIdle();
+    FastForwardUntilNoTasksRemain();
   }
 };
 

@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -28,6 +29,7 @@ class WebSocketMessageChunkAccumulatorTest : public testing::Test {
       WebSocketMessageChunkAccumulator::kSegmentSize;
   static constexpr auto kFreeDelay =
       WebSocketMessageChunkAccumulator::kFreeDelay;
+  test::TaskEnvironment task_environment_;
 };
 
 constexpr size_t WebSocketMessageChunkAccumulatorTest::kSegmentSize;

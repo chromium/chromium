@@ -12,6 +12,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::_;
 using ::testing::InSequence;
@@ -201,6 +202,8 @@ class MediaRecorderEncoderWrapperTest
                            media::SVCScalabilityMode::kL1T1))
         .WillByDefault(Return());
   }
+
+  test::TaskEnvironment task_environment_;
 
   const media::VideoCodecProfile profile_;
   const media::VideoCodec codec_;

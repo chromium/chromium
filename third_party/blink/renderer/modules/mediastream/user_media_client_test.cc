@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/display/screen_info.h"
@@ -777,6 +779,7 @@ class UserMediaClientTest : public ::testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       testing_platform_;
+  test::TaskEnvironment task_environment_;
   MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
   MockMojoMediaStreamDispatcherHost display_mock_dispatcher_host_;
   MockMediaDevicesDispatcherHost media_devices_dispatcher_;

@@ -19,10 +19,11 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -153,6 +154,7 @@ class CanvasCaptureHandlerTest
     }
   }
 
+  test::TaskEnvironment task_environment_;
   Persistent<MediaStreamComponent> component_;
   std::unique_ptr<StaticBitmapImageToVideoFrameCopier> copier_;
   // The Class under test. Needs to be scoped_ptr to force its destruction.
