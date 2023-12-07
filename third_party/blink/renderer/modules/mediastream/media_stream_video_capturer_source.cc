@@ -28,6 +28,7 @@ namespace blink {
 
 using mojom::blink::MediaStreamRequestResult;
 using mojom::blink::SendWheelResult;
+using mojom::blink::ZoomControlResult;
 
 namespace {
 
@@ -51,6 +52,30 @@ void OnSendWheelResult(base::OnceCallback<void(bool, const String&)> callback,
   }
 
   std::move(callback).Run(/*success=*/error_string.empty(),
+                          /*error=*/error_string);
+}
+
+void OnZoomControlResult(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback,
+    absl::optional<int> zoom_level,
+    ZoomControlResult result) {
+  String error_string;
+  switch (result) {
+    case ZoomControlResult::kSuccess:
+      break;
+    case ZoomControlResult::kUnknownError:
+      error_string = "Unknown error.";
+      break;
+    case ZoomControlResult::kNoPermissionError:
+      error_string = "No permission.";
+      break;
+    case ZoomControlResult::kCapturedSurfaceNotFoundError:
+      error_string =
+          "Captured surface not found (likely stopped asynchronously.)";
+      break;
+  }
+
+  std::move(callback).Run(/*zoom_level=*/zoom_level,
                           /*error=*/error_string);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -251,8 +276,18 @@ void MediaStreamVideoCapturerSource::SendWheel(
 
 void MediaStreamVideoCapturerSource::GetZoomLevel(
     base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
-  // TODO(crbug.com/1466247): Forward to GetMediaStreamDispatcherHost.
-  std::move(callback).Run(false, "Not implemented.");
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  const absl::optional<base::UnguessableToken>& session_id =
+      device().serializable_session_id();
+  if (!session_id.has_value()) {
+    std::move(callback).Run(false, "Missing session ID.");
+    return;
+  }
+
+  GetMediaStreamDispatcherHost()->GetZoomLevel(
+      session_id.value(),
+      WTF::BindOnce(&OnZoomControlResult, std::move(callback)));
 }
 
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(

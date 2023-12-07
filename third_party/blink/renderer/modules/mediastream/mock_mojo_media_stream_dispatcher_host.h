@@ -61,6 +61,8 @@ class MockMojoMediaStreamDispatcherHost
                void(const base::UnguessableToken&,
                     mojom::blink::CapturedWheelActionPtr,
                     SendWheelCallback));
+  MOCK_METHOD2(GetZoomLevel,
+               void(const base::UnguessableToken&, GetZoomLevelCallback));
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
   MOCK_METHOD5(ApplySubCaptureTarget,
                void(const base::UnguessableToken&,

@@ -474,6 +474,7 @@ Called by update_bad_message_reasons.py.-->
       label="OBSOLETE_RFH_RECEIVED_INVALID_AD_AUCTION_HEADERS_ATTRIBUTE"/>
   <int value="310" label="MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED"/>
   <int value="311" label="MSDH_SEND_WHEEL_INVALID_ACTION"/>
+  <int value="312" label="MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
