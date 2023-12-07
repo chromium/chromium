@@ -117,19 +117,6 @@ TEST(BitsTest, AlignDownPointer) {
             AlignDown(reinterpret_cast<uint8_t*>(1), kUintPtrTMax / 2 + 1));
 }
 
-TEST(BitsTest, PowerOfTwo) {
-  EXPECT_FALSE(IsPowerOfTwo(0u));
-  EXPECT_TRUE(IsPowerOfTwo(1u));
-  EXPECT_TRUE(IsPowerOfTwo(2u));
-  // Unsigned 64 bit cases.
-  for (uint32_t i = 2; i < 64; i++) {
-    const uint64_t val = uint64_t{1} << i;
-    EXPECT_FALSE(IsPowerOfTwo(val - 1));
-    EXPECT_TRUE(IsPowerOfTwo(val));
-    EXPECT_FALSE(IsPowerOfTwo(val + 1));
-  }
-}
-
 TEST(BitsTest, PowerOfTwoDeprecatedDoNotUse) {
   EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(-1));
   // Signed 64 bit cases.

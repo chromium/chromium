@@ -20,6 +20,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <bit>
+
 #include "base/base_export.h"
 #include "base/base_switches.h"
 #include "base/bits.h"
@@ -1035,8 +1037,7 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   stat_wrapper_t statbuf;
   if (File::Fstat(file->GetPlatformFile(), &statbuf) == 0 &&
       statbuf.st_blksize > 0 &&
-      base::bits::IsPowerOfTwo(
-          base::checked_cast<uint64_t>(statbuf.st_blksize))) {
+      std::has_single_bit(base::checked_cast<uint64_t>(statbuf.st_blksize))) {
     block_size = static_cast<blksize_t>(statbuf.st_blksize);
   }
 

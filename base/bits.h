@@ -31,16 +31,20 @@ concept UnsignedInteger =
 // versions of the functions, but until they are all moved over, create a
 // concept that captures all the types that must be supported for compatibility
 // but that we want to remove.
+//
+// TODO(https://crbug.com/1414634): Switch uses to supported functions and
+// remove.
 template <typename T>
 concept SignedIntegerDeprecatedDoNotUse =
     std::integral<T> && !UnsignedInteger<T>;
 
-// Returns true iff |value| is a power of 2.
+// Returns true iff |value| is a power of 2. DEPRECATED; use
+// std::has_single_bit() instead.
 //
-// TODO(https://crbug.com/1414634): Replace with std::has_single_bit().
+// TODO(https://crbug.com/1414634): Switch uses and remove.
 template <typename T>
-  requires UnsignedInteger<T>
-constexpr bool IsPowerOfTwo(T value) {
+  requires SignedIntegerDeprecatedDoNotUse<T>
+constexpr bool IsPowerOfTwoDeprecatedDoNotUse(T value) {
   // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
   //
   // Only positive integers with a single bit set are powers of two. If only one
@@ -50,20 +54,18 @@ constexpr bool IsPowerOfTwo(T value) {
   return value > 0 && (value & (value - 1)) == 0;
 }
 
-template <typename T>
-  requires SignedIntegerDeprecatedDoNotUse<T>
-constexpr bool IsPowerOfTwoDeprecatedDoNotUse(T value) {
-  return value > 0 && (value & (value - 1)) == 0;
-}
-
 // Round down |size| to a multiple of alignment, which must be a power of two.
 template <typename T>
   requires UnsignedInteger<T>
 inline constexpr T AlignDown(T size, T alignment) {
-  DCHECK(IsPowerOfTwo(alignment));
+  DCHECK(std::has_single_bit(alignment));
   return size & ~(alignment - 1);
 }
 
+// Round down |size| to a multiple of alignment, which must be a power of two.
+// DEPRECATED; use the UnsignedInteger version.
+//
+// TODO(https://crbug.com/1414634): Switch uses and remove.
 template <typename T>
   requires SignedIntegerDeprecatedDoNotUse<T>
 inline constexpr T AlignDownDeprecatedDoNotUse(T size, T alignment) {
@@ -84,10 +86,14 @@ inline T* AlignDown(T* ptr, uintptr_t alignment) {
 template <typename T>
   requires UnsignedInteger<T>
 inline constexpr T AlignUp(T size, T alignment) {
-  DCHECK(IsPowerOfTwo(alignment));
+  DCHECK(std::has_single_bit(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
 }
 
+// Round up |size| to a multiple of alignment, which must be a power of two.
+// DEPRECATED; use the UnsignedInteger version.
+//
+// TODO(https://crbug.com/1414634): Switch uses and remove.
 template <typename T>
   requires SignedIntegerDeprecatedDoNotUse<T>
 inline constexpr T AlignUpDeprecatedDoNotUse(T size, T alignment) {
@@ -111,7 +117,6 @@ inline T* AlignUp(T* ptr, uintptr_t alignment) {
 //
 // A common use for this function is to take its result and use it to left-shift
 // a bit; instead of doing so, use std::bit_floor().
-// TODO(https://crbug.com/1414634): Replace existing uses that do that.
 constexpr int Log2Floor(uint32_t n) {
   return 31 - std::countl_zero(n);
 }
@@ -123,7 +128,6 @@ constexpr int Log2Floor(uint32_t n) {
 //
 // A common use for this function is to take its result and use it to left-shift
 // a bit; instead of doing so, use std::bit_ceil().
-// TODO(https://crbug.com/1414634): Replace existing uses that do that.
 constexpr int Log2Ceiling(uint32_t n) {
   // When n == 0, we want the function to return -1.
   // When n == 0, (n - 1) will underflow to 0xFFFFFFFF, which is
