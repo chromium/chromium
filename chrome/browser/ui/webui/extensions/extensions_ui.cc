@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/extensions/extensions_hats_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -477,6 +478,10 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
 
   source = CreateAndAddExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);
+
+  auto safety_check_hats_handler =
+      std::make_unique<ExtensionsHatsHandler>(profile);
+  web_ui->AddMessageHandler(std::move(safety_check_hats_handler));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto kiosk_app_handler = std::make_unique<ash::KioskAppsHandler>(
