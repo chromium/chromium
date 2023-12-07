@@ -115,9 +115,7 @@ LoginHandler::~LoginHandler() {
     auth_required_callback_.Reset();
 
     // TODO(https://crbug.com/916315): Remove this line.
-    if (prompt_started_) {
-      NotifyAuthCancelled();
-    }
+    NotifyAuthCancelled();
   }
 }
 
@@ -210,9 +208,7 @@ void LoginHandler::SetAuth(const std::u16string& username,
   // call CloseContents() before us. Closing dialogs in the opposite order as
   // they were created avoids races where remaining dialogs in the same tab may
   // be briefly displayed to the user before they are removed.
-  if (web_contents_ && prompt_started_) {
-    NotifyAuthSupplied(username, password);
-  }
+  NotifyAuthSupplied(username, password);
   CloseContents();
   std::move(callback).Run(net::AuthCredentials(username, password));
 }
@@ -224,9 +220,7 @@ void LoginHandler::CancelAuth() {
   LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
   registrar_.RemoveAll();
 
-  if (prompt_started_) {
-    NotifyAuthCancelled();
-  }
+  NotifyAuthCancelled();
   CloseContents();
   std::move(callback).Run(std::nullopt);
 }
@@ -281,6 +275,8 @@ void LoginHandler::StartInternal(
 
 void LoginHandler::NotifyAuthNeeded() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (WasAuthHandled() || !prompt_started_)
+    return;
 
   content::NotificationService* service =
       content::NotificationService::current();
@@ -297,6 +293,9 @@ void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
                                       const std::u16string& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(WasAuthHandled());
+
+  if (!web_contents_ || !prompt_started_)
+    return;
 
   content::NotificationService* service =
       content::NotificationService::current();
@@ -321,6 +320,9 @@ void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
 void LoginHandler::NotifyAuthCancelled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(WasAuthHandled());
+
+  if (!prompt_started_)
+    return;
 
   // Intentionally make a copy to avoid issues with iterator invalidation.
   LoginHandlerVector vec = GetAllLoginHandlers();
@@ -611,7 +613,6 @@ void LoginHandler::BuildViewAndNotify(
   BuildViewImpl(authority, explanation, login_model_data);
   // BuildViewImpl may call Cancel, which may delete this object, so check a
   // WeakPtr before NotifyAuthNeeded.
-  if (guard && !WasAuthHandled() && prompt_started_) {
+  if (guard)
     NotifyAuthNeeded();
-  }
 }

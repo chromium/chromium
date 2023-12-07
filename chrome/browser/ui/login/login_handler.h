@@ -115,16 +115,6 @@ class LoginHandler : public content::LoginDelegate {
   // Closes the native dialog.
   virtual void CloseDialog() = 0;
 
-  // Notify observers that authentication is needed.
-  virtual void NotifyAuthNeeded();
-
-  // Notify observers that authentication is supplied.
-  virtual void NotifyAuthSupplied(const std::u16string& username,
-                                  const std::u16string& password);
-
-  // Notify observers that authentication is cancelled.
-  virtual void NotifyAuthCancelled();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(LoginHandlerTest, DialogStringsAndRealm);
 
@@ -132,6 +122,16 @@ class LoginHandler : public content::LoginDelegate {
                      bool is_main_frame,
                      const GURL& request_url,
                      scoped_refptr<net::HttpResponseHeaders> response_headers);
+
+  // Notify observers that authentication is needed.
+  void NotifyAuthNeeded();
+
+  // Notify observers that authentication is supplied.
+  void NotifyAuthSupplied(const std::u16string& username,
+                          const std::u16string& password);
+
+  // Notify observers that authentication is cancelled.
+  void NotifyAuthCancelled();
 
   // When any handler finishes, called on every other handler. |username| and
   // |password| are only valid if |supplied| is true. If |supplied| is false
