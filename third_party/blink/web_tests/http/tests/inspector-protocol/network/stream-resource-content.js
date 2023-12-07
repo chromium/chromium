@@ -12,8 +12,7 @@
   const serviceWorkers = response.result.targetInfos.filter(info => info.type === "service_worker");
   testRunner.log(`Number of discovered service workers: ${serviceWorkers.length}`);
   const [serviceWorker] = serviceWorkers;
-  const {result} = await target.attachToTarget({targetId: serviceWorker.targetId, flatten: true});
-  const swSession = session.createChild(result.sessionId);
+  const swSession = await session.attachChild(serviceWorker.targetId);
 
   async function runTest(script) {
     session.evaluate(script);

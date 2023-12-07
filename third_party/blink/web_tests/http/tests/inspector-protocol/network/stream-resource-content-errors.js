@@ -11,8 +11,7 @@
   const serviceWorkers = response.result.targetInfos.filter(info => info.type === "service_worker");
   testRunner.log(serviceWorkers.length, `Number of discovered service workers`);
   const [serviceWorker] = serviceWorkers;
-  const {result} = await target.attachToTarget({targetId: serviceWorker.targetId, flatten: true});
-  const swSession = session.createChild(result.sessionId);
+  const swSession = await session.attachChild(serviceWorker.targetId);
 
   session.evaluate('runFetch()');
   const request = (await dp.Network.onceRequestWillBeSent()).params;
