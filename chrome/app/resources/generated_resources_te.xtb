@@ -1881,6 +1881,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> కోసం బ్రౌజింగ్ కొనసాగించండి</translation>
 <translation id="2414886740292270097">ముదురు</translation>
+<translation id="2415117815770324983">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది. మీ Google ఖాతాకు సైన్ ఇన్ అయి ఉంటారు.</translation>
 <translation id="2416435988630956212">కీబోర్డ్ ఫంక్షన్ కీలు</translation>
 <translation id="2418307627282545839">ప్రకాశవంతంగా, చూడచక్కని రంగులతో అందంగా ఉంచుకోండి</translation>
 <translation id="2419131370336513030">ఇన్‌స్టాల్ చేసిన యాప్‌లను చూడండి</translation>
@@ -2401,6 +2402,7 @@
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించండి</translation>
 <translation id="2800309299477632167">అనుకూల కీమ్యాప్</translation>
 <translation id="2800760947029405028">చిత్రాన్ని అప్‌లోడ్ చేయండి</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" />‌కు సైన్ ఇన్ చేశారు</translation>
 <translation id="2801954693771979815">స్క్రీన్ సైజ్‌</translation>
 <translation id="2802557211515765772">ఇక్కడ మేనేజ్ చేయబడే ప్రింటర్‌లు ఏవీ లేవు.</translation>
 <translation id="2803313416453193357">ఫోల్డర్‌ను తెరవండి</translation>
@@ -4049,6 +4051,7 @@
 <translation id="4110485659976215879">హెచ్చరికను రీస్టోర్ చేయండి</translation>
 <translation id="4110490973560452005">డౌన్‌లోడ్ పూర్తయింది: <ph name="FILE_NAME" />. డౌన్‌లోడ్‌ల బార్ ప్రాంతంలోకి వెళ్లడం కోసం Shift+F6 నొక్కండి.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ఆఫ్‌లైన్)</translation>
+<translation id="4113483184628671608">మీరు బ్రౌజ్ చేసే సైట్‌ల పేర్లను ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="4113743276555482284">ఫైల్ పాస్‌వర్డ్</translation>
 <translation id="4114524937989710624">Google Driveలోని మీ అత్యంత ఇటీవలి యాక్టివిటీకి తిరిగి వెళ్లడంలో మీకు సహాయపడటానికి సూచించబడిన ఫైల్స్ మీకు కనిపిస్తున్నాయి.
         <ph name="BREAK" />
@@ -5780,6 +5783,7 @@
 <translation id="5517304475148761050">Play Storeను యాక్సెస్ చేయగలిగేలా ఈ యాప్‌ను అనుమతించాలి</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android ఫోన్‌తో సెటప్ చేయండి</translation>
+<translation id="5519053700692355541">మీరు పైన ఎగువున కుడి వైపున ఉన్న Chrome మెనూ ద్వారా చాలా సైడ్ ప్యానెల్ ఫీచర్‌లను తెరవవచ్చు</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">శక్తివంతమైన పాస్‌వర్డ్‌తో ఈ ఖాతాను మరింత సురక్షితంగా ఉంచండి. ఇది <ph name="EMAIL" /> కోసం <ph name="GOOGLE_PASSWORD_MANAGER" />‌కు సేవ్ చేయబడుతుంది.</translation>
 <translation id="5521078259930077036">మీరు ఆశిస్తున్న హోమ్ పేజీ ఇదేనా?</translation>
@@ -6745,6 +6749,7 @@
 <translation id="6294759976468837022">ఆటో-స్కాన్ వేగం</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
 <translation id="6295855836753816081">సేవ్ చేస్తోంది...</translation>
+<translation id="6298456705131259420">ఇక్కడ లిస్ట్ చేయబడిన సైట్‌లను ప్రభావితం చేస్తుంది. డొమైన్ నేమ్‌కు ముందు “[*.]” చేర్చడం వల్ల మొత్తం డొమైన్‌కు మినహాయింపు వర్తిస్తుంది. ఉదాహరణకు, “[*.]google.com”‌కు జోడించిన దేనికి అయినా వర్తిస్తుంది, అనగా థర్డ్-పార్టీ కుక్కీలు mail.google.com‌కు కూడా యాక్టివ్‌గా ఉండవచ్చు, ఎందుకంటే ఇది google.com‌లో భాగం.</translation>
 <translation id="6298962879096096191">Android యాప్‌లను ఇన్‌స్టాల్ చేయడానికి Google Play‌ను ఉపయోగిస్తుంది</translation>
 <translation id="6300177430812514606">డేటాను పంపడాన్ని లేదా అందుకోవడాన్ని పూర్తి చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="6300654006256345126">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
@@ -7168,6 +7173,7 @@
 <translation id="6651762277693024112">మీరు ఈ సైట్‌ను చూసిన ప్రతిసారీ ఆటోమేటిక్‌గా రన్ అవుతుంది</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> ఏకీకరణకు కేవలం x86_64 ప్లాట్‌ఫారమ్‌లలో మాత్రమే మద్దతు ఉంది. ఈ కార్య‌శీల‌త‌ ARM లేదా x86 ప్లాట్‌ఫారమ్ కంటే ఉన్నత స్థాయిలో రూపొందించబడిన Chromebookలకు పని చేయదు.</translation>
 <translation id="6654509035557065241">ప్రాధాన్య నెట్‌వర్క్</translation>
+<translation id="6654987855337442937">మీ ఇంటర్నెట్ ట్రాఫిక్‌కు యాక్సెస్ ఉన్న వ్యక్తులు మీరు బ్రౌజ్ చేసే సైట్‌లను చూడకుండా నిరోధించడానికి సురక్షిత డొమైన్ నేమ్ సిస్టమ్ (DNS)ని ఉపయోగించండి</translation>
 <translation id="6655190889273724601">డెవలపర్ మోడ్</translation>
 <translation id="6655458902729017087">ఖాతాలను దాచు</translation>
 <translation id="6657180931610302174">యూజర్‌నేమ్‌ను జోడించాలా?</translation>
@@ -9564,6 +9570,7 @@
 <translation id="8528074251912154910">భాషలను జోడించండి</translation>
 <translation id="8528479410903501741">IBANని సేవ్ చేయండి</translation>
 <translation id="8528962588711550376">సైన్ ఇన్ అవుతోంది.</translation>
+<translation id="8529578450330869579">మీ ఇంటర్నెట్ ట్రాఫిక్‌కు యాక్సెస్ ఉన్న వ్యక్తులు మీరు బ్రౌజ్ చేసే సైట్‌లను చూడకుండా నిరోధించడానికి సురక్షిత డొమైన్ నేమ్ సిస్టమ్ (DNS)ని ఉపయోగించండి. ఇది <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> లింక్‌లో మేనేజ్ చేసే సర్వీస్ ప్రొవైడర్‌ను ఉపయోగిస్తుంది</translation>
 <translation id="8529925957403338845">తక్షణ టెథెరింగ్ కనెక్షన్ విఫలమైంది</translation>
 <translation id="8531701051932785007">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది</translation>
 <translation id="8533670235862049797">సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>

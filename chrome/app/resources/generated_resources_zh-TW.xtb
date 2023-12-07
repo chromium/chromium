@@ -92,6 +92,7 @@
 <translation id="106855837688344862">觸控事件</translation>
 <translation id="1069104208554708737">這個密碼金鑰只會儲存在這部裝置中</translation>
 <translation id="1069355737714877171">移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>
+<translation id="1069778954840159202">自動從 Android 手機取得帳戶資訊</translation>
 <translation id="1069814191880976658">選擇其他畫面</translation>
 <translation id="1070377999570795893">電腦中的其他程式新增了一個擴充功能，可能會使 Chrome 的運作方式發生變更。
 
@@ -1867,6 +1868,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">繼續瀏覽<ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">深色</translation>
+<translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出，但 Google 帳戶會保持登入狀態。</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2418307627282545839">讓畫面色調保持明亮輕盈</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
@@ -2387,6 +2389,7 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2800309299477632167">自訂按鍵對應</translation>
 <translation id="2800760947029405028">上傳圖片</translation>
+<translation id="2801134910297796778">已登入 <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">螢幕大小</translation>
 <translation id="2802557211515765772">沒有受管理的印表機。</translation>
 <translation id="2803313416453193357">開啟資料夾</translation>
@@ -3005,6 +3008,10 @@
 <translation id="3305389145870741612">格式化程序可能需要幾秒鐘，請稍候。</translation>
 <translation id="3305661444342691068">在預覽中開啟 PDF</translation>
 <translation id="3307176291962384345">取得 <ph name="MERCHANT_NAME" /> 的折扣</translation>
+<translation id="3307283429759317478">系統現會顯示你在其他裝置中開啟的分頁，方便你輕鬆回到最近的活動。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="3308134619352333507">隱藏按鈕</translation>
 <translation id="3308852433423051161">正在載入 Google 助理…</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
@@ -3233,6 +3240,7 @@
 <translation id="3497560059572256875">分享 Doodle</translation>
 <translation id="3497915391670770295">傳送到你的裝置(&amp;D)</translation>
 <translation id="3500417806337761827">掛接檔案共用區時發生錯誤。已掛接過多 SMB 檔案共用區。</translation>
+<translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
 <translation id="3503995387997205657">你可以還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
 <translation id="3505602163050943406">當你使用部分功能時，網站可能會將已開啟網頁的部分內容、近期相關網頁和網頁的網址傳送給 Google</translation>
@@ -4029,6 +4037,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成：<ph name="FILE_NAME" />。按下 Shift+F6 即可回到下載內容列區域。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="4113483184628671608">加密造訪網站的名稱</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面上會顯示建議的檔案，方便你繼續執行最近在 Google 雲端硬碟中的活動。
         <ph name="BREAK" />
@@ -5759,6 +5768,7 @@
 <translation id="5517304475148761050">這個應用程式需要存取 Play 商店才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">使用 Android 手機設定</translation>
+<translation id="5519053700692355541">你可以使用右上方的 Chrome 選單開啟大部分的側邊面板功能</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">使用高強度密碼強化這個帳戶的安全性。系統會將這組密碼儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
@@ -6472,6 +6482,7 @@
 <translation id="6103681770816982672">警告：你即將切換為開發人員版</translation>
 <translation id="6104068876731806426">Google 帳戶</translation>
 <translation id="6104311680260824317">無法將這個裝置加入網域，伺服器不支援指定的 Kerberos 加密類型。請前往「更多選項」檢查加密設定。</translation>
+<translation id="6104667115274478616">管理 ChromeOS 音訊設定</translation>
 <translation id="6104796831253957966">印表機佇列已滿</translation>
 <translation id="610487644502954950">已取消固定側邊面板</translation>
 <translation id="6104929924898022309">使用搜尋鍵變更功能鍵的行為</translation>
@@ -6719,6 +6730,7 @@
 <translation id="6294759976468837022">自動掃描速度</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">儲存中...</translation>
+<translation id="6298456705131259420">這裡列出的網站會受到影響。在網域名稱前方插入「[*.]」，可將整個網域設為例外。舉例來說，如果新增「[*.]google.com」，mail.google.com 也就能使用第三方 Cookie，因為該網域屬於 google.com。</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
 <translation id="6300177430812514606">不得完成資料的傳送或接收</translation>
 <translation id="6300654006256345126">編輯密碼</translation>
@@ -7142,6 +7154,7 @@
 <translation id="6651762277693024112">自動在你每次造訪這個網站時執行</translation>
 <translation id="665355505818177700">只有 x86_64 平台支援 Chrome <ph name="MS_AD_NAME" /> 整合，採用 ARM 或 x86 平台的 Chromebook 不支援這項功能。</translation>
 <translation id="6654509035557065241">偏好網路</translation>
+<translation id="6654987855337442937">如果使用安全網域名稱系統 (DNS)，就能防止可存取你網際網路流量的人查看你造訪的網站</translation>
 <translation id="6655190889273724601">開發人員模式</translation>
 <translation id="6655458902729017087">隱藏帳戶</translation>
 <translation id="6657180931610302174">要新增使用者名稱嗎？</translation>
@@ -7991,6 +8004,7 @@
 <translation id="7340650977506865820">網站正在分享你的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告連同診斷與使用資料傳送給 Google</translation>
 <translation id="734088800888587319">網路指標</translation>
+<translation id="7341612916770129581">連接麥克風</translation>
 <translation id="7341834142292923918">需要這個網站的存取權限</translation>
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
@@ -8258,6 +8272,7 @@
 <translation id="7541773865713908457">使用「<ph name="APP_NAME" />」應用程式<ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">已與你帳戶中的其他裝置同步。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">EAP 網路驗證資訊</translation>
+<translation id="7542619176101025604"><ph name="ACTION_NAME" /> - 已固定</translation>
 <translation id="7543104066686362383">在這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能</translation>
 <translation id="7544227555407951270">註冊裝置</translation>
 <translation id="7544977292347272434">詢問家長是否允許使用擴充功能</translation>
@@ -8895,6 +8910,7 @@
 <translation id="8017679124341497925">已編輯捷徑</translation>
 <translation id="8018298733481692628">要刪除這個設定檔嗎？</translation>
 <translation id="8018313076035239964">控制網站可使用的資訊，以及可對你顯示的內容</translation>
+<translation id="8022466874160067884">輸入 Google 帳戶和密碼</translation>
 <translation id="8023133589013344428">在 ChromeOS Flex 設定中管理語言</translation>
 <translation id="8023801379949507775">立即更新擴充功能</translation>
 <translation id="8025151549289123443">螢幕鎖定和登入</translation>
@@ -9539,6 +9555,7 @@
 <translation id="8528074251912154910">新增語言</translation>
 <translation id="8528479410903501741">儲存 IBAN</translation>
 <translation id="8528962588711550376">登入中。</translation>
+<translation id="8529578450330869579">如果使用安全網域名稱系統 (DNS)，就能防止可存取你網際網路流量的人查看你造訪的網站。DNS 會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
 <translation id="8529925957403338845">即時網路共用連線失敗</translation>
 <translation id="8531701051932785007">已關閉安全瀏覽強化防護功能</translation>
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
@@ -9828,6 +9845,7 @@
 <translation id="8749863574775030885">存取製造商不明的 USB 裝置</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列埠連線</translation>
 <translation id="8750346984209549530">行動數據 APN</translation>
+<translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753948258138515839">「檔案」應用程式可以讓你快速存取自己存放在 Google 雲端硬碟、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行「<ph name="PRODUCT_NAME" />」時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;

@@ -624,6 +624,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3593646411856133110">Swipe omhoog en houd vast om apps te openen</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="3596012367874587041">App-instellingen</translation>
+<translation id="3598452309062311481">zoeken+h</translation>
 <translation id="3600061223661453002">Uit</translation>
 <translation id="3604801046548457007">Bureaublad <ph name="DESK_TITILE" /> gemaakt</translation>
 <translation id="3606978283550408104">Braillescherm gekoppeld.</translation>
@@ -659,6 +660,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="36813544980941320">Wifi-netwerken worden gedeeld tussen je telefoon en <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" /> en dan <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Websites</translation>
+<translation id="3697991387880191195">Druk op de snelkoppeling voor screenshots</translation>
 <translation id="3702809606464356667">Er worden vensters van het huidige bureau getoond, druk op de pijl-omhoog om vensters van alle bureaus te bekijken</translation>
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -774,6 +776,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4190780880566297084">Instellen van de weergave van recente foto's, media en apps van je telefoon sluiten</translation>
 <translation id="4192112279662688596">Of</translation>
 <translation id="4193857202545160520">Klikken en toetsen tonen</translation>
+<translation id="4193969623755915875">Open Hulp in de app Ontdekken met <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Huidige versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Doorgaan waar je gebleven was</translation>
 <translation id="4195877955194704651">Knop 'Automatische klikken'</translation>
@@ -834,6 +837,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Kan screencast niet opslaan</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> is verbonden en klaar voor gebruik. Je kunt je muis aanpassen in Instellingen.</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
@@ -955,6 +959,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4889868803215848840">Geef optionele feedback om suggesties te verbeteren:</translation>
 <translation id="4890187583552566966">De Google Assistent is uitgezet door je beheerder.</translation>
 <translation id="4890408602550914571">Zorg dat je telefoon in de buurt is en dat bluetooth aanstaat.</translation>
+<translation id="4892981359753171125">Gezichtsbediening</translation>
 <translation id="4895488851634969361">De batterij is vol.</translation>
 <translation id="490375751687810070">Verticaal</translation>
 <translation id="490788395437447240">Batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1293,6 +1298,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6199775032047436064">De huidige pagina opnieuw laden</translation>
 <translation id="6200515304866777730">Niet ondersteund door app</translation>
 <translation id="6210042900243040400">Verbinding maken met <ph name="NAME" /> (eerder opgeslagen in <ph name="EMAIL" />)</translation>
+<translation id="6212097153736801627">Je <ph name="PERIPHERAL_NAME" /> aanpassen</translation>
 <translation id="6213808132343683860">Gedeeltelijk screenshot of schermopname maken</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
@@ -1534,6 +1540,7 @@ Nieuwe installatie</translation>
 <translation id="726276584504105859">Sleep hier naartoe om het scherm te splitsen</translation>
 <translation id="7262906531272962081">Herinnering maken</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">Gebruik de tool Screenshot in Snelle instellingen om screenshots te maken</translation>
 <translation id="7302889331339392448">Live ondertiteling staat uit.</translation>
 <translation id="7303365578352795231">Je vraag wordt beantwoord op een ander apparaat.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1924,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="888982883502837004">Firmware-updates zijn beschikbaar voor je apparaat. Klik om te bekijken en te updaten.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> wordt definitief verwijderd</translation>
 <translation id="889790758758811533">Nog <ph name="PERCENTAGE" />% batterijlading (ongeveer <ph name="TIME_LEFT" />). Sluit je apparaat aan op een voeding.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> is verbonden en klaar voor gebruik. Je kunt je grafische tablet aanpassen in Instellingen.</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8905919797434099235">(Geen titel)</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>

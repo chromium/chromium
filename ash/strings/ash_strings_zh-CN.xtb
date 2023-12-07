@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">向上滑动并按住屏幕可查看已打开的应用</translation>
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="3596012367874587041">应用设置</translation>
+<translation id="3598452309062311481">搜索键 + h</translation>
 <translation id="3600061223661453002">关闭</translation>
 <translation id="3604801046548457007">已创建桌面“<ph name="DESK_TITILE" />”</translation>
 <translation id="3606978283550408104">已连接盲文显示屏。</translation>
@@ -774,6 +775,7 @@
 <translation id="4190780880566297084">取消设置查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4192112279662688596">或</translation>
 <translation id="4193857202545160520">显示点击操作和按键</translation>
+<translation id="4193969623755915875">使用“<ph name="NEW_SHORTCUT" />”在“探索”应用内打开“帮助”。</translation>
 <translation id="4195579532193195633">当前版本为 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4195877955194704651">“自动点击”按钮</translation>
@@ -956,6 +958,7 @@
 <translation id="4889868803215848840">（可选）提供反馈来帮助改进建议：</translation>
 <translation id="4890187583552566966">Google 助理已被您的管理员停用。</translation>
 <translation id="4890408602550914571">请确保您的手机就在附近且已开启蓝牙。</translation>
+<translation id="4892981359753171125">面部控制</translation>
 <translation id="4895488851634969361">电池电量已满。</translation>
 <translation id="490375751687810070">纵向</translation>
 <translation id="490788395437447240">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>

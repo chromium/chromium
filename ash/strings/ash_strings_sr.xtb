@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Превуците нагоре и задржите да бисте видели отворене апликације</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
 <translation id="3596012367874587041">Подешавања апликације</translation>
+<translation id="3598452309062311481">тастер за претрагу + h</translation>
 <translation id="3600061223661453002">Искључено</translation>
 <translation id="3604801046548457007">Радна површина <ph name="DESK_TITILE" /> је направљена</translation>
 <translation id="3606978283550408104">Повезан је екран са Брајевом азбуком.</translation>
@@ -776,6 +777,7 @@
 <translation id="4190780880566297084">Одбаците подешавање прегледа недавних слика, медија и апликација на телефону</translation>
 <translation id="4192112279662688596">или</translation>
 <translation id="4193857202545160520">Прикажи кликове и кључеве</translation>
+<translation id="4193969623755915875">Отворите одељак Помоћ у апликацији Истражите помоћу пречице <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Актуелна верзија <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Настави претходну сесију</translation>
 <translation id="4195877955194704651">Аутоматски кликови на дугмад</translation>
@@ -958,6 +960,7 @@
 <translation id="4889868803215848840">Пружите опционалне повратне информације ради побољшања предлога:</translation>
 <translation id="4890187583552566966">Администратор је онемогућио Google помоћник.</translation>
 <translation id="4890408602550914571">Уверите се да је телефон у близини и да је Bluetooth укључен.</translation>
+<translation id="4892981359753171125">Контрола лицем</translation>
 <translation id="4895488851634969361">Батерија је пуна.</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240">Ниво батерије је <ph name="BATTERY_PERCENTAGE" />%</translation>

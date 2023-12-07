@@ -659,6 +659,7 @@
 <translation id="36813544980941320">உங்கள் மொபைல், <ph name="DEVICE_NAME" /> சாதனம் ஆகியவற்றுக்கு இடையே வைஃபை நெட்வொர்க்குகள் பகிரப்படும்</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> அதன்பிறகு <ph name="KEY_TWO" /> அழுத்தவும்</translation>
 <translation id="3694122362646626770">இணையதளங்கள்</translation>
+<translation id="3697991387880191195">ஸ்கிரீன்ஷாட் ஷார்ட்கட்டை அழுத்துதல்</translation>
 <translation id="3702809606464356667">தற்போதைய டெஸ்க்கில் உள்ள சாளரங்களைக் காட்டுகிறது, அனைத்து டெஸ்க்குகளிலும் உள்ள சாளரங்களைக் காட்ட, மேல்நோக்கிய அம்புக்குறி விசையை அழுத்தவும்</translation>
 <translation id="3702846122927433391">நைஜீரியாவின் மக்கள் தொகை</translation>
 <translation id="3705722231355495246">-</translation>
@@ -834,6 +835,7 @@
 <translation id="4389184120735010762">டாக் செய்யப்பட்ட பெரிதாக்கியின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="439598569299422042">இடைநிறுத்தப்பட்டது, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ஸ்க்ரீன்காஸ்ட்டைச் சேமிக்க முடியவில்லை</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> இணைக்கப்பட்டு பயன்படுத்தத் தயாராக உள்ளது. அமைப்புகளில் உங்கள் மவுஸைப் பிரத்தியேகமாக்கலாம்.</translation>
 <translation id="4405151984121254935">இணைத்துள்ள இந்த வகையான சாதனத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> முடக்கப்பட்டுள்ளது.</translation>
@@ -1293,6 +1295,7 @@
 <translation id="6199775032047436064">நடப்புப் பக்கத்தை மீண்டும் ஏற்றுக</translation>
 <translation id="6200515304866777730">ஆப்ஸால் ஆதரிக்கப்படவில்லை</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> என்ற கணக்கில் இதற்குமுன்பு சேமிக்கப்பட்ட <ph name="NAME" /> சாதனத்தை இணைக்கவும்</translation>
+<translation id="6212097153736801627">உங்கள் <ph name="PERIPHERAL_NAME" /> ஐப் பிரத்தியேகமாக்குதல்</translation>
 <translation id="6213808132343683860">ஸ்கிரீன்ஷாட் அல்லது ஸ்கிரீன் ரெக்கார்டிங்கைப் பகுதியளவு எடு</translation>
 <translation id="6220928844947387476">இப்போது ஒரே சமயத்தில் உங்கள் வீடியோவையும் திரையையும் ரெக்கார்டு செய்யலாம்</translation>
 <translation id="622484624075952240">கீழ்</translation>
@@ -1534,6 +1537,7 @@
 <translation id="726276584504105859">திரைப் பிரிப்பைப் பயன்படுத்த, இங்கே இழுக்கவும்</translation>
 <translation id="7262906531272962081">நினைவூட்டலை உருவாக்கு</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7285232777292757180">ஸ்கிரீன்ஷாட்களை எடுக்க விரைவு அமைப்புகளில் உள்ள திரையைப் படமெடுத்தல் கருவியைப் பயன்படுத்தவும்</translation>
 <translation id="7302889331339392448">'உடனடி வசனம்' முடக்கப்பட்டது.</translation>
 <translation id="7303365578352795231">மற்றொரு சாதனத்தில் பதிலளிக்கப்படுகிறது.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1917,6 +1921,7 @@
 <translation id="888982883502837004">உங்கள் சாதனத்திற்கு நிலைபொருள் புதுப்பிப்புகள் கிடைக்கின்றன. பார்த்துவிட்டு புதுப்பிக்க, கிளிக் செய்யவும்.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> நிரந்தரமாக நீக்கப்படும்</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% பேட்டரி மீதமுள்ளது (<ph name="TIME_LEFT" /> நிமிடங்கள் நீடிக்கும்). உங்கள் சாதனத்தைச் சார்ஜ் செய்யவும்.</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> இணைக்கப்பட்டு பயன்படுத்தத் தயாராக உள்ளது. அமைப்புகளில் உங்கள் கிராஃபிக்ஸ் டேப்லெட்டைப் பிரத்தியேகமாக்கலாம்.</translation>
 <translation id="88986195241502842">பக்கத்தின் கீழே</translation>
 <translation id="8905919797434099235">(தலைப்பு இல்லை)</translation>
 <translation id="890616557918890486">மூலத்தை மாற்று</translation>

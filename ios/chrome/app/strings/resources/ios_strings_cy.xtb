@@ -175,6 +175,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="1883255238294161206">Crebachu'r rhestr</translation>
 <translation id="1889872080060107187">Byddwch yn mewngofnodi i <ph name="URL" /></translation>
 <translation id="1890237935065108104">Nid yw'r gosodiad hwn ar gael.</translation>
+<translation id="1891199774460536658">Olrhain Pecynnau sydd wedi'u Canfod yn Awtomatig</translation>
 <translation id="1894023287452300670">Dilyn y pris yma</translation>
 <translation id="189531189292803889">Cafodd eich iPad ei adfer yn ddiweddar, a allai fod wedi newid eich porwr diofyn</translation>
 <translation id="1910975740091000991">Chrome ar gyfer iOS</translation>
@@ -654,6 +655,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4493604894403585654">Rydych wedi'ch mewngofnodi fel <ph name="USER_EMAIL" />. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="4502566650163919158">Gwirio Nawr</translation>
 <translation id="4508750114462689118">Cau'r anogwr mewngofnodi</translation>
+<translation id="4509449376545878717">Peidio Byth â Chanfod Pecynnau yn Awtomatig</translation>
 <translation id="4514889972748124117">Awgrymu Cyfrinair Cryf...</translation>
 <translation id="4520798012560649652">Dysgu rhagor am y modd Anhysbys</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} nod tudalen}zero{{count} nod tudalen}two{{count} nod tudalen}few{{count} nod tudalen}many{{count} nod tudalen}other{{count} nod tudalen}}</translation>
@@ -836,6 +838,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5457226814769348910">Agor Fersiwn All-lein</translation>
 <translation id="5475069061743940393">Olrhain Pecyn</translation>
 <translation id="5478327362747197944">Creu digwyddiadau Calendar yn uniongyrchol trwy glicio ar ddyddiad mewn tudalen we.</translation>
+<translation id="5482922178977937393">Hoffech chi gael hysbysiadau ar gyfer newyddion, chwaraeon a rhagor yn seiliedig ar eich diddordebau?</translation>
 <translation id="5489208564673669003">I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau Cwcis<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Rhwystro Pob Cwci (Ni Argymhellir)</translation>
 <translation id="5497202150450073388">Ceisiwyd Danfon. Bydd yn rhoi cynnig arall arni</translation>
@@ -1338,6 +1341,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8023878949384262191">Yn ehangu'r adran.</translation>
 <translation id="8027581147000338959">Agor mewn Ffenestr Newydd</translation>
 <translation id="8032569120109842252">Yn dilyn</translation>
+<translation id="8040207962129315716">Gofyn i Mi Bob Tro</translation>
 <translation id="804225253087497565">Gall <ph name="BEGIN_LINK" />Hanes chwilio<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />mathau eraill o weithgarwch<ph name="END_LINK" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.</translation>
 <translation id="804427445359061970">Byddwch yn gweld eich tabiau o ddyfeisiau eraill yma</translation>
 <translation id="8044568254381073661">Cadw Heb Amgryptiad</translation>

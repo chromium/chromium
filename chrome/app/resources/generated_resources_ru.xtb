@@ -78,6 +78,7 @@
 <translation id="1060292118287751956">Определяет частоту, с которой обновляется экран</translation>
 <translation id="1060570945511946595">Управление билетами</translation>
 <translation id="1061130374843955397">Добро пожаловать в мир <ph name="DEVICE_TYPE" />!</translation>
+<translation id="1061309251982613260">Никогда не разрешать сайту <ph name="HOST" /> управлять MIDI-устройствами (SysEx) и перепрограммировать их</translation>
 <translation id="1061373870045429865">Создать QR-код для этой ссылки</translation>
 <translation id="1061904396131502319">Скоро перерыв</translation>
 <translation id="10619348099955377">Скопировать отображаемое название</translation>
@@ -91,6 +92,7 @@
 <translation id="106855837688344862">События касания</translation>
 <translation id="1069104208554708737">Ключ доступа будет сохранен только на этом устройстве.</translation>
 <translation id="1069355737714877171">Удалить профиль eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
+<translation id="1069778954840159202">Автоматически выбрать аккаунт с телефона Android</translation>
 <translation id="1069814191880976658">Выбрать другой экран</translation>
 <translation id="1070377999570795893">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.
 
@@ -278,6 +280,7 @@
 <translation id="1203559206734265703">Отладка Protected Audience включена.</translation>
 <translation id="120368089816228251">Ноты</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1206832039833782423">Защитный код можно найти на обратной стороне карты</translation>
 <translation id="1210678701920254279">Позволяет добавлять принтеры и просматривать информацию о них и активных заданиях печати</translation>
 <translation id="1211769675100312947">Ярлыки, выбранные вами</translation>
 <translation id="1213254615020057352">Отправка данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Эти данные не будут использоваться для того, чтобы установить личность ребенка. Они помогут нам повысить стабильность приложений и внести другие улучшения. Некоторые агрегированные данные пригодятся партнерам Google, например разработчикам Android. Эта настройка принудительно применяется владельцем. Он вправе разрешить автоматическую отправку в Google данных об использовании и диагностике устройства. Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте.</translation>
@@ -301,6 +304,7 @@
 <translation id="1223484782328004593">Требуется лицензия для <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Администратор рекомендует выбрать определенное значение для этого параметра.</translation>
 <translation id="1225177025209879837">Обработка запроса...</translation>
+<translation id="1227107020813934021">Поиск сканеров документов</translation>
 <translation id="1227660082540388410">Изменение ключа доступа</translation>
 <translation id="1227993798763400520">Не удалось начать трансляцию. Повторите попытку</translation>
 <translation id="1230417814058465809">Включена стандартная защита. Для большей безопасности используйте улучшенную защиту.</translation>
@@ -450,6 +454,7 @@
 <translation id="1347625331607114917">Подтвердите код на телефоне Android</translation>
 <translation id="1347975661240122359">Обновление начнется, когда заряд батареи достигнет <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Настройки специальных возможностей для мыши</translation>
+<translation id="1350962700620017446">Расширение "<ph name="EXTENSION_NAME" />" запрашивает разрешение на поиск сканеров документов и доступ к ним</translation>
 <translation id="1352834119074414157">Возможно, набор поврежден или взломан. Закройте это окно и скачайте набор снова.</translation>
 <translation id="1353275871123211385">Установить родительский контроль, например одобрять приложения и ограничивать время использования устройства, можно только в том случае, если у вашего ребенка есть аккаунт Google, управляемый родителем. Позже можно добавить учебный аккаунт, который подойдет для таких сервисов , как Google Класс.</translation>
 <translation id="135389172849514421">Доступен офлайн</translation>
@@ -624,6 +629,7 @@
 <translation id="1485015260175968628">Разрешения:</translation>
 <translation id="1485141095922496924">Версия <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Файлы Microsoft 365 должны храниться в сервисе OneDrive. Локальные файлы будут перемещены, а другие – скопированы. Вы найдете их в папке Microsoft OneDrive приложения "Файлы".</translation>
+<translation id="1486012259353794050">Когда вы обращаетесь к Google Ассистенту, он предоставляет персонализированные ответы в зависимости от контента на вашем экране</translation>
 <translation id="1486096554574027028">Поиск паролей</translation>
 <translation id="1486486872607808064">Отсканируйте этот QR-код с помощью камеры устройства, на котором вы хотите создать ключ доступа для <ph name="APP_NAME" />.</translation>
 <translation id="1487335504823219454">Вкл. – пользовательские настройки</translation>
@@ -689,6 +695,7 @@
 <translation id="1541346352678737112">Сеть не найдена</translation>
 <translation id="154198613844929213">{0,plural, =0{Данные удалены.}=1{Данные будут удалены через 1 секунду.}one{Данные будут удалены через # секунду.}few{Данные будут удалены через # секунды.}many{Данные будут удалены через # секунд.}other{Данные будут удалены через # секунды.}}</translation>
 <translation id="1542137295869176367">Не удалось обновить ваши учетные данные.</translation>
+<translation id="1542524755306892917">Это позволяет Google Ассистенту давать персонализированные ответы, когда <ph name="SUPERVISED_USER_NAME" /> задает вопросы.</translation>
 <translation id="1543284117603151572">Импортированные из Microsoft Edge</translation>
 <translation id="1543538514740974167">Быстрый доступ</translation>
 <translation id="1544588554445317666">Сократите название файла или сохраните его в другую папку.</translation>
@@ -1901,6 +1908,7 @@
 <translation id="2439152382014731627">Сбросить пароль <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Загрузка страницы <ph name="WINDOW_TITLE" />…</translation>
 <translation id="2440604414813129000">Просмотреть и&amp;сходный код</translation>
+<translation id="2440632898584211188">По-прежнему разрешать этому сайту управлять MIDI-устройствами и перепрограммировать их</translation>
 <translation id="2440823041667407902">Данные о местоположении</translation>
 <translation id="2441719842399509963">Восстановить значения по умолчанию</translation>
 <translation id="244231003699905658">Недопустимый адрес. Проверьте его и повторите попытку.</translation>
@@ -2141,6 +2149,7 @@
 <translation id="262154978979441594">Записать образец голоса для Ассистента</translation>
 <translation id="26224892172169984">Запретить обработку протоколов на всех сайтах</translation>
 <translation id="262373406453641243">Colemak</translation>
+<translation id="2624045385113367716">Управление MIDI-устройствами (SysEx) и их перепрограммирование разрешено</translation>
 <translation id="2624142942574147739">Этот сайт может использовать ваши камеру и микрофон</translation>
 <translation id="2626799779920242286">Повторите попытку позже.</translation>
 <translation id="2627424346328942291">Ошибка</translation>
@@ -2354,6 +2363,7 @@
 <translation id="2777251078198759550">Удалить этот контейнер</translation>
 <translation id="2777525873368474674">Вставьте ссылку на изображение</translation>
 <translation id="2778471504622896352">Добавление приложений с удаленным доступом на панель запуска Chrome OS</translation>
+<translation id="2779728796406650689">Это позволяет Google Ассистенту давать персонализированные ответы на ваши вопросы.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Расширения разрешены на этом сайте</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
@@ -2431,6 +2441,7 @@
 <translation id="2836269494620652131">Сбой</translation>
 <translation id="283669119850230892">Для использования сети <ph name="NETWORK_ID" /> предварительно подключитесь к Интернету.</translation>
 <translation id="2838379631617906747">Установка...</translation>
+<translation id="2838474726369447181">У этого сайта есть разрешение на управление вашими MIDI-устройствами (SysEx) и их перепрограммирование.</translation>
 <translation id="2839032553903800133">Уведомления заблокированы</translation>
 <translation id="2841013758207633010">Время</translation>
 <translation id="2841837950101800123">Поставщик</translation>
@@ -2454,6 +2465,7 @@
 <translation id="2856776373509145513">Создайте контейнер</translation>
 <translation id="2856907950922663165">Отключить шифрование URL?</translation>
 <translation id="2859741939921354763">Импортировать пароли в <ph name="BRAND" /></translation>
+<translation id="2861030231482411439">По-прежнему не разрешать этому сайту управлять MIDI-устройствами и перепрограммировать их</translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
 <translation id="2861402191395139055">Подписки Passpoint</translation>
 <translation id="2861941300086904918">Менеджер безопасности – Native Client</translation>
@@ -2996,6 +3008,10 @@
 <translation id="3305389145870741612">Форматирование займет несколько секунд. Подождите.</translation>
 <translation id="3305661444342691068">Открыть PDF для просмотра</translation>
 <translation id="3307176291962384345">Получайте скидки в магазине "<ph name="MERCHANT_NAME" />"</translation>
+<translation id="3307283429759317478">Вкладки с других устройств показаны, чтобы вам было проще возвращаться к недавним действиям.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+Вы можете изменить настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="3308134619352333507">Скрыть кнопку</translation>
 <translation id="3308852433423051161">Загрузка Google Ассистента…</translation>
 <translation id="3309330461362844500">Идентификатор сертификата</translation>
@@ -3224,6 +3240,7 @@
 <translation id="3497560059572256875">Поделиться дудлом</translation>
 <translation id="3497915391670770295">Отправить на &amp;свои устройства</translation>
 <translation id="3500417806337761827">Произошла ошибка. Подключено слишком много общих папок SMB.</translation>
+<translation id="350397915809787283">Если у вас нет аккаунта, создайте его, выбрав первый вариант.</translation>
 <translation id="3503995387997205657">Вы можете восстановить ранее использовавшиеся приложения.</translation>
 <translation id="3505100368357440862">Рекомендуемые товары</translation>
 <translation id="3505602163050943406">Некоторые функции могут отправлять в Google элементы открытых страниц, недавно просмотренных похожих страниц и их URL.</translation>
@@ -4874,6 +4891,7 @@
 <translation id="4811212958317149293">Автосканирование клавиатуры с помощью функции Switch Access</translation>
 <translation id="4811503964269049987">Добавить выбранную вкладку в группу</translation>
 <translation id="4813512666221746211">Ошибка сети</translation>
+<translation id="4813872509679988157">По-прежнему разрешать этому сайту использовать ваши MIDI-устройства</translation>
 <translation id="4814114628197290459">Удаление кода IBAN</translation>
 <translation id="4814327014588285482">Пропустить и напомнить позже</translation>
 <translation id="4814378367953456825">Введите название для этого отпечатка пальца.</translation>
@@ -5186,6 +5204,7 @@
 <translation id="5063480226653192405">Использование</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управление безопасным DNS-сервером в настройках Chrome OS</translation>
+<translation id="5066891009360243320">Этому сайту запрещено использовать ваши MIDI-устройства.</translation>
 <translation id="5067399438976153555">Всегда</translation>
 <translation id="5067867186035333991">Запрашивать разрешение на доступ к микрофону для сайта <ph name="HOST" /></translation>
 <translation id="5068553687099139861">показать пароли</translation>
@@ -5903,6 +5922,7 @@
 <translation id="5641608986289282154">Начните использовать <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Редактор скриншотов</translation>
 <translation id="5642508497713047">Сторона, подписавшая список отзыва сертификатов</translation>
+<translation id="5643191124441701136">Защитный код можно найти на лицевой стороне карты</translation>
 <translation id="5643321261065707929">Сеть с тарификацией</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
@@ -6179,6 +6199,7 @@
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
 <translation id="5870086504539785141">Закрыть меню специальных возможностей</translation>
 <translation id="5870155679953074650">Ошибки отсутствия страницы в памяти</translation>
+<translation id="5870901441418842049">Этому сайту запрещено управлять вашими MIDI-устройствами (SysEx) и перепрограммировать их.</translation>
 <translation id="5875534259258494936">Демонстрация экрана завершена</translation>
 <translation id="5876576639916258720">Выполняется проверка…</translation>
 <translation id="5876851302954717356">Новая вкладка справа</translation>
@@ -6464,6 +6485,7 @@
 <translation id="6103681770816982672">Внимание! Вы переходите на версию для разработчиков.</translation>
 <translation id="6104068876731806426">Аккаунты Google</translation>
 <translation id="6104311680260824317">Не удалось подключить устройство к домену. Сервер не поддерживает выбранные типы шифрования Kerberos. В настройках шифрования установите флажок "Другие параметры".</translation>
+<translation id="6104667115274478616">Управление настройками аудио в ChromeOS</translation>
 <translation id="6104796831253957966">Очередь печати заполнена.</translation>
 <translation id="610487644502954950">Боковая панель откреплена</translation>
 <translation id="6104929924898022309">Использовать клавишу поиска, чтобы изменять назначение функциональных клавиш</translation>
@@ -6557,6 +6579,7 @@
 <translation id="6171779718418683144">Всегда спрашивать</translation>
 <translation id="617213288191670920">Языки не добавлены</translation>
 <translation id="6173623053897475761">Введите PIN-код ещё раз</translation>
+<translation id="6174116123142608180">По-прежнему не разрешать этому сайту использовать ваши MIDI-устройства</translation>
 <translation id="6175314957787328458">Идентификатор GUID домена Microsoft</translation>
 <translation id="6175910054050815932">Получить ссылку</translation>
 <translation id="6176701216248282552">Контекстная помощь включена. Эти функции могут отправлять в Google открытые страницы.</translation>
@@ -7078,6 +7101,7 @@
 <translation id="6597324406048772521">Расширения на этом сайте запрещены</translation>
 <translation id="6597331566371766302">Администратор заблокировал следующие расширения:</translation>
 <translation id="659894938503552850">сначала новые</translation>
+<translation id="6599934330666882772">Этот сайт использует ваши MIDI-устройства.</translation>
 <translation id="6601262427770154296">Управление словарями пользователя</translation>
 <translation id="6601612474695404578">Некоторые сайты используют сторонние файлы cookie для загрузки своих страниц. Если сайт не работает, разрешите файлы cookie.</translation>
 <translation id="6602173570135186741">Автозаполнение и пароли</translation>
@@ -7642,6 +7666,7 @@
 <translation id="7036706669646341689">Для Linux рекомендуется <ph name="DISK_SIZE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
 <translation id="7037509989619051237">Образец голоса</translation>
 <translation id="7038632520572155338">Функция Switch Access</translation>
+<translation id="7038636380708661517">Никогда не разрешать сайту <ph name="HOST" /> использовать ваши MIDI-устройства</translation>
 <translation id="7038710352229712897">Добавление аккаунта Google для пользователя <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Доступ к USB-устройствам от <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Вход по смарт-карте Microsoft</translation>
@@ -7796,6 +7821,7 @@
 <translation id="7180865173735832675">Настроить</translation>
 <translation id="7181117767881540376">Скрыть панель закладок</translation>
 <translation id="7182063559013288142">Мгновенная точка доступа</translation>
+<translation id="718240920439497409">Использование MIDI-устройств запрещено</translation>
 <translation id="7182791023900310535">Перенести пароль</translation>
 <translation id="718427252411067142">Чтобы другие люди не могли использовать ваш пароль, измените его в приложении.</translation>
 <translation id="7186088072322679094">Сохранить на Панели инструментов</translation>
@@ -7885,6 +7911,7 @@
 <translation id="7255002516883565667">Сейчас вашу карту можно использовать только на этом устройстве</translation>
 <translation id="7255935316994522020">Применить</translation>
 <translation id="7256069762010468647">Сайт использует камеру</translation>
+<translation id="7256265230922801769">Всегда разрешать сайту <ph name="HOST" /> управлять MIDI-устройствами и перепрограммировать их</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="7256710573727326513">Открыть в новой вкладке</translation>
 <translation id="7257173066616499747">Сети Wi-Fi</translation>
@@ -7984,6 +8011,7 @@
 <translation id="7340650977506865820">Сайт открывает доступ к вашему экрану</translation>
 <translation id="7340757554212515731">Автоматически отправлять в Google отчеты о сбоях и данные об использовании и диагностике</translation>
 <translation id="734088800888587319">Показатели сети</translation>
+<translation id="7341612916770129581">Подключите микрофон</translation>
 <translation id="7341834142292923918">Расширение запрашивает доступ к этому сайту</translation>
 <translation id="7343372807593926528">Прежде чем отправить отзыв, опишите проблему.</translation>
 <translation id="7344585835349671209">Управление сертификатами HTTPS/SSL на устройстве</translation>
@@ -8250,6 +8278,7 @@
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="754207240458482646">Синхронизировано с другими устройствами в вашем аккаунте. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7542113656240799536">Информация для аутентификации сети по протоколу EAP</translation>
+<translation id="7542619176101025604">Действие "<ph name="ACTION_NAME" />" закреплено</translation>
 <translation id="7543104066686362383">Включите функции отладки на устройстве <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="7544227555407951270">Зарегистрировать устройство</translation>
 <translation id="7544977292347272434">Попроси родителя разрешить использовать расширения</translation>
@@ -8887,6 +8916,7 @@
 <translation id="8017679124341497925">Ярлык изменен</translation>
 <translation id="8018298733481692628">Удалить профиль?</translation>
 <translation id="8018313076035239964">Выбрать, какие данные отправлять сайтам и какой контент показывать на веб-страницах</translation>
+<translation id="8022466874160067884">Ввести имя пользователя и пароль аккаунта Google</translation>
 <translation id="8023133589013344428">Управление языковыми параметрами в настройках Chrome OS Flex</translation>
 <translation id="8023801379949507775">Обновить расширения</translation>
 <translation id="8025151549289123443">Блокировка экрана и вход</translation>
@@ -8915,6 +8945,7 @@
 <translation id="8041267120753677077">Транслировать приложения с телефона</translation>
 <translation id="8042142357103597104">Прозрачность текста</translation>
 <translation id="8042331986490021244">Ваши пароли шифруются на устройстве и только потом сохраняются в Google Менеджере паролей.</translation>
+<translation id="8044090981104134791">Использование MIDI-устройств разрешено</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не отвечает</translation>
 <translation id="8044899503464538266">Медленно</translation>
 <translation id="8045253504249021590">Синхронизация остановлена через Личный кабинет Google.</translation>
@@ -9108,6 +9139,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195265224453131880">Интенсивность</translation>
 <translation id="8195854162863398249">Выключить функцию "<ph name="FEATURE_NAME" />"</translation>
+<translation id="8197151971904389091">Всегда разрешать сайту <ph name="HOST" /> использовать ваши MIDI-устройства</translation>
 <translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8198457270656084773">Ищете журнал устройств системы? Перейдите на страницу <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -9391,6 +9423,7 @@
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">Примечания</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
+<translation id="8417065541337558100">Предварительный просмотр изображения с вашей камеры</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>
 <translation id="8418445294933751433">&amp;Показать как вкладку</translation>
 <translation id="8418675848396538775">Добавить <ph name="LANGUAGE_NAME" /></translation>
@@ -9817,6 +9850,7 @@
 <translation id="8749863574775030885">Доступ к USB-устройствам от неизвестного поставщика</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> запрашивает разрешение на подключение к последовательному порту</translation>
 <translation id="8750346984209549530">Мобильная точка доступа</translation>
+<translation id="8750786237117206586">Управление настройками аудио в ChromeOS Flex</translation>
 <translation id="8752451679755290210">Перемещайтесь между объектами автоматически</translation>
 <translation id="8753948258138515839">С помощью приложения "Файлы" можно быстро открывать документы, сохраненные на Google Диске, внешнем накопителе или устройстве с Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;При работе <ph name="PRODUCT_NAME" /> в поддерживаемой среде на компьютере используются системные настройки прокси-сервера. Однако либо ваша система не поддерживается, либо возникли неполадки при запуске системной конфигурации.&lt;/p&gt;
@@ -9888,6 +9922,7 @@
 <translation id="8811862054141704416">Доступ к микрофону в Crostini</translation>
 <translation id="8811923271770626905">Это расширение может работать в фоновом режиме</translation>
 <translation id="8812593354822910461">Также удалить данные о работе в браузере (<ph name="URL" />). При этом вы выйдете из аккаунта на сайте <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813199641941291474">Управление MIDI-устройствами (SysEx) и их перепрограммирование запрещено</translation>
 <translation id="8813698869395535039">Не удалось войти в аккаунт <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Для установки расширения "<ph name="EXTENSION_NAME" />" требуется одобрение одного из родителей</translation>
 <translation id="8813937837706331325">Средняя экономия</translation>
