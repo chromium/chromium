@@ -49,6 +49,16 @@ suite('WallpaperSearchTest', () => {
     });
   }
 
+  function updateCrFeedbackButtons(option: CrFeedbackOption) {
+    wallpaperSearchElement.$.feedbackButtons.selectedOption = option;
+    wallpaperSearchElement.$.feedbackButtons.dispatchEvent(
+        new CustomEvent('selected-option-changed', {
+          bubbles: true,
+          composed: true,
+          detail: {value: option},
+        }));
+  }
+
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
@@ -1035,16 +1045,6 @@ suite('WallpaperSearchTest', () => {
   });
 
   suite('Feedback', () => {
-    function updateCrFeedbackButtons(option: CrFeedbackOption) {
-      wallpaperSearchElement.$.feedbackButtons.selectedOption = option;
-      wallpaperSearchElement.$.feedbackButtons.dispatchEvent(
-          new CustomEvent('selected-option-changed', {
-            bubbles: true,
-            composed: true,
-            detail: {value: option},
-          }));
-    }
-
     test('shows feedback buttons and submits', async () => {
       handler.setResultFor(
           'getWallpaperSearchResults',
@@ -1162,6 +1162,37 @@ suite('WallpaperSearchTest', () => {
           metrics.count(
               'NewTabPage.CustomizeChromeSidePanelAction',
               CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED));
+    });
+
+    test('clicking feedback buttons sets metric', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // Set metric on thumbs down.
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
+      assertEquals(
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_DOWN_SELECTED));
+
+      // Set metric on thumbs up.
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
+      assertEquals(
+          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_UP_SELECTED));
     });
   });
 });

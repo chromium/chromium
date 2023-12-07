@@ -438,9 +438,13 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kUnspecified);
         return;
       case CrFeedbackOption.THUMBS_UP:
+        recordCustomizeChromeAction(
+            CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_UP_SELECTED);
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsUp);
         return;
       case CrFeedbackOption.THUMBS_DOWN:
+        recordCustomizeChromeAction(
+            CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_DOWN_SELECTED);
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsDown);
         return;
     }

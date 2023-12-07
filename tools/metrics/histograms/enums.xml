@@ -41040,6 +41040,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Wallpaper search recent theme selected as background."/>
   <int value="7" label="First party collection selected in categories."/>
   <int value="8" label="First party collection theme selected."/>
+  <int value="9" label="Wallpaper search thumbs up selected."/>
+  <int value="10" label="Wallpaper search thumbs down selected."/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">
