@@ -269,12 +269,17 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     // Add a subframe that navigates to kPersonalizedButtonFrameUrl.
-    iframe_render_frame_host_ = static_cast<TestRenderFrameHost*>(
+    TestRenderFrameHost* subframe = static_cast<TestRenderFrameHost*>(
         content::RenderFrameHostTester::For(main_rfh())
             ->AppendChild("subframe"));
     iframe_render_frame_host_ = static_cast<TestRenderFrameHost*>(
         NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kPersonalizedButtonFrameUrl), iframe_render_frame_host_));
+            GURL(kPersonalizedButtonFrameUrl), subframe));
+  }
+
+  void TearDown() override {
+    iframe_render_frame_host_ = nullptr;
+    RenderViewHostImplTestHarness::TearDown();
   }
 
   void RunUserInfoTest(
@@ -342,7 +347,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   }
 
  protected:
-  raw_ptr<TestRenderFrameHost, DanglingUntriaged> iframe_render_frame_host_;
+  raw_ptr<TestRenderFrameHost> iframe_render_frame_host_;
   base::WeakPtr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
