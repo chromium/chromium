@@ -51,6 +51,8 @@ class OptimizationGuideInternalsUI
       override;
   void RequestDownloadedModelsInfo(
       RequestDownloadedModelsInfoCallback callback) override;
+  void RequestLoggedModelQualityClientIds(
+      RequestLoggedModelQualityClientIdsCallback callback) override;
 
   std::unique_ptr<OptimizationGuideInternalsPageHandlerImpl>
       optimization_guide_internals_page_handler_;

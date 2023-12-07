@@ -21,6 +21,13 @@ struct DownloadedModelInfo {
   string file_path;
 };
 
+// Information of logged client_ids to allow users to opt-out of logging.
+// TODO(b/308642692): Add more fields as needed to be shown on the internals page.
+struct LoggedClientIds {
+  // Client id of the user, unique every day for each ModelExecutionFeature.
+  int64 client_id;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -29,6 +36,11 @@ interface PageHandlerFactory {
   // information of downloaded models for debugging purposes.
   RequestDownloadedModelsInfo() =>
       (array<DownloadedModelInfo> downloaded_models_info);
+
+  // The WebUI calls this method when the client id page is open, to retrieve
+  // information of all client ids for the past 28 days to allow users to opt-out of logs.
+  RequestLoggedModelQualityClientIds() =>
+      (array<LoggedClientIds> logged_client_ids);
 };
 
 // Renderer-side handler for internals WebUI page to process the updates from

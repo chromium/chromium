@@ -49,6 +49,11 @@ std::string_view GetStringNameForModelExecutionFeature(
 // host that is not supported by the remote optimization guide.
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 
+// Returns the hashed client id with the feature and day.
+int64_t GetHashedModelQualityClientId(proto::ModelExecutionFeature feature,
+                                      base::Time day,
+                                      int64_t client_id);
+
 // Creates a new client id if not persisted to prefs. Returns a different ID for
 // different `feature` for each day.
 int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,

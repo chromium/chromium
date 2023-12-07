@@ -93,3 +93,10 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
           prediction_manager->GetDownloadedModelsInfoForWebUI();
   std::move(callback).Run(std::move(downloaded_models_info));
 }
+
+void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
+    RequestLoggedModelQualityClientIdsCallback callback) {
+  // The features are not enabled on ios. There will be no client ids.
+  std::move(callback).Run({});
+  return;
+}
