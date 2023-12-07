@@ -132,6 +132,7 @@ void RegisterChromeHelpBubbleFactories(
 void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry) {
   using user_education::FeaturePromoSpecification;
+  using Metadata = user_education::FeaturePromoSpecification::Metadata;
   using user_education::HelpBubbleArrow;
 
   // This icon got updated, so select which is used based on whether refresh is
@@ -143,20 +144,22 @@ void MaybeRegisterChromeFeaturePromos(
           : &vector_icons::kLightbulbOutlineIcon;
 
   // Verify that we haven't already registered the expected features.
-  // TODO(dfried): figure out if we should do something more sophisticated here.
+  // Use a known test feature that is unlikely to change.
   if (registry.IsFeatureRegistered(
-          feature_engagement::kIPHDesktopPwaInstallFeature))
+          feature_engagement::kIPHWebUiHelpBubbleTestFeature)) {
     return;
+  }
 
   // TODO(1432894): Use toast or snooze instead of legacy promo.
   // kIPHAutofillExternalAccountProfileSuggestionFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
-                    &feature_engagement::
-                        kIPHAutofillExternalAccountProfileSuggestionFeature,
-                    kAutofillSuggestionElementId,
-                    IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
-                    .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::
+              kIPHAutofillExternalAccountProfileSuggestionFeature,
+          kAutofillSuggestionElementId,
+          IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(115, "vykochko@google.com", "Autofill popup appears.")));
 
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -166,7 +169,9 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL,
           IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(118, "alexandertekle@google.com",
+                       "Autofill popup appears.")));
 
   // kIPHAutofillVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -174,13 +179,17 @@ void MaybeRegisterChromeFeaturePromos(
           &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
           kAutofillCreditCardSuggestionEntryElementId,
           IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL)
-          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(100, "siyua@chromium.org", "Autofill popup appears.")));
 
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
-      user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-          &feature_engagement::kIPHDesktopPwaInstallFeature,
-          kInstallPwaElementId, IDS_DESKTOP_PWA_INSTALL_PROMO));
+      std::move(user_education::FeaturePromoSpecification::CreateForLegacyPromo(
+                    &feature_engagement::kIPHDesktopPwaInstallFeature,
+                    kInstallPwaElementId, IDS_DESKTOP_PWA_INSTALL_PROMO)
+                    .SetMetadata(Metadata(
+                        89, "phillis@chromium.org",
+                        "User navigates to a page with a promotable PWA."))));
 
   // kIPHDesktopTabGroupsNewGroupFeature:
   registry.RegisterFeature(

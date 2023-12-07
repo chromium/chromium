@@ -45,13 +45,13 @@ using ::testing::Return;
 
 namespace {
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo,
-             "FeaturePromoLifecycleTestPromo",
+             "TEST_FeaturePromoLifecycleTestPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo2,
-             "FeaturePromoLifecycleTestPromo2",
+             "TEST_FeaturePromoLifecycleTestPromo2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo3,
-             "FeaturePromoLifecycleTestPromo3",
+             "TEST_FeaturePromoLifecycleTestPromo3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 

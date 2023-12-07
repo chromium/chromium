@@ -37,13 +37,12 @@ class UserEducationInternalsCardElement extends PolymerElement {
         {bubbles: true, composed: true, detail: this.promo.internalName}));
   }
 
-  private showDescription_() {
-    return this.promo.displayDescription !== '';
+  private showMilestone_() {
+    return this.promo.addedMilestone > 0;
   }
 
-  private formatDate_() {
-    const date = new Date(Number(this.promo.addedTimestampMs));
-    return date.toDateString();
+  private showDescription_() {
+    return this.promo.displayDescription !== '';
   }
 
   private formatPlatforms_() {
@@ -52,6 +51,30 @@ class UserEducationInternalsCardElement extends PolymerElement {
 
   private showInstructions_() {
     return this.promo.instructions.length;
+  }
+
+  private showFollowedBy_() {
+    return this.promo.followedByInternalName;
+  }
+
+  private scrollToFollowedBy_() {
+    const parent = this.parentElement;
+    if (parent) {
+      const allCards = parent.querySelectorAll('user-education-internals-card');
+      for (const card of allCards) {
+        card.classList.remove('highlighted');
+      }
+      const anchor =
+          parent.querySelector(`[id="${this.promo.followedByInternalName}"]`);
+      if (anchor) {
+        anchor.classList.add('highlighted');
+        anchor.scrollIntoView();
+      }
+    }
+  }
+
+  private getFollowedByAnchor_() {
+    return encodeURIComponent(this.promo.followedByInternalName);
   }
 }
 

@@ -70,28 +70,28 @@ using ::testing::Return;
 
 namespace {
 BASE_FEATURE(kTestIPHFeature,
-             "TestIPHFeature",
+             "TEST_TestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOneOffIPHFeature,
-             "AnyContextIPHFeature",
+             "TEST_AnyContextIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSnoozeIPHFeature,
-             "SnoozeIPHFeature",
+             "TEST_SnoozeIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTutorialIPHFeature,
-             "TutorialTestIPHFeature",
+             "TEST_TutorialTestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomActionIPHFeature,
-             "CustomActionTestIPHFeature",
+             "TEST_CustomActionTestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultCustomActionIPHFeature,
-             "DefaultCustomActionTestIPHFeature",
+             "TEST_DefaultCustomActionTestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomActionIPHFeature2,
-             "CustomActionTestIPHFeature2",
+             "TEST_CustomActionTestIPHFeature2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kStringTestIPHFeature,
-             "StringTestIPHFeature",
+             "TEST_StringTestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);

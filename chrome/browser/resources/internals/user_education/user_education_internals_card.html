@@ -3,6 +3,7 @@
   border-top: 1px solid var(--cr-separator-color);
   display: flex;
   padding-block: var(--cr-section-vertical-padding);
+  padding-inline: var(--cr-section-padding);
 }
 
 .card-content {
@@ -14,10 +15,15 @@
   color: var(--cr-secondary-text-color);
 }
 
+.card-content .subtitle {
+  font-size: smaller;
+  color: var(--cr-secondary-text-color);
+  margin-inline-start: 1ex;
+}
+
 cr-button {
   flex: 0;
   margin-block-start: var(--cr-section-vertical-padding);
-  margin-inline-end: var(--cr-section-padding);
 }
 
 ol {
@@ -29,19 +35,26 @@ li {
 }
 </style>
 <div class="card-content">
-  <h3>[[promo.displayTitle]]</h3>
-  <p>Added on [[formatDate_()]]</p>
+  <h3>[[promo.displayTitle]]
+    <span hidden$="[[!showMilestone_()]]"
+        class="subtitle">[M[[promo.addedMilestone]]]</span></h3>
   <p hidden$="[[!showDescription_()]]">
     [[promo.displayDescription]]
   </p>
   <p><b>Type:</b> [[promo.type]]</p>
-  <p><b>OS: </b>[[formatPlatforms_()]]</p>
+  <p><b>Platforms: </b>[[formatPlatforms_()]]</p>
   <div hidden$="[[!showInstructions_()]]">
     <p><b>Instructions:</b></p>
     <ol>
     <template is="dom-repeat" items="[[promo.instructions]]">
       <li>[[item]]</li>
     </template>
+      <li hidden$="[[!showFollowedBy_()]]">
+        Followed by
+        <a href="#[[getFollowedByAnchor_()]]" on-click="scrollToFollowedBy_">
+          [[promo.followedByInternalName]]
+        </a>
+      </li>
     </ol>
   </div>
 </div>
