@@ -140,6 +140,8 @@ public class FullscreenTestUtils {
 
     private static boolean isFullscreenFlagSet(
             final Tab tab, final boolean state, Activity activity) {
+        // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
+        // UI flags are not set.
         if (BuildInfo.getInstance().isAutomotive) {
             return true;
         }
@@ -160,6 +162,11 @@ public class FullscreenTestUtils {
 
     private static boolean isHideNavigationFlagSet(
             final Tab tab, final boolean state, Activity activity) {
+        // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
+        // UI flags are not set.
+        if (BuildInfo.getInstance().isAutomotive) {
+            return true;
+        }
         View view = tab.getContentView();
         int visibility = view.getSystemUiVisibility();
 
