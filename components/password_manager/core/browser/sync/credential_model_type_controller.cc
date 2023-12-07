@@ -66,7 +66,6 @@ void CredentialModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
-  sync_service_observation_.Observe(sync_service_);
   syncer::ConfigureContext overridden_context = configure_context;
 #if BUILDFLAG(IS_ANDROID)
   if (local_upm_pref_) {
@@ -88,7 +87,6 @@ void CredentialModelTypeController::LoadModels(
 void CredentialModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                          StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  sync_service_observation_.Reset();
   ModelTypeController::Stop(fate, std::move(callback));
 }
 
@@ -116,11 +114,6 @@ bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
   }
 #endif  // !BUILDFLAG(IS_IOS)
   return true;
-}
-
-void CredentialModelTypeController::OnStateChanged(syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
 }
 
 void CredentialModelTypeController::OnAccountsInCookieUpdated(

@@ -14,7 +14,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/model_type_controller.h"
-#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
 
@@ -31,7 +30,6 @@ enum class UseUpmLocalAndSeparateStoresState;
 
 // A class that manages the startup and shutdown of password & passkey sync.
 class CredentialModelTypeController : public syncer::ModelTypeController,
-                                      public syncer::SyncServiceObserver,
                                       public signin::IdentityManager::Observer {
  public:
   // Note: Android might always be configured in transport mode if
@@ -59,9 +57,6 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
   bool ShouldRunInTransportOnlyMode() const override;
   PreconditionState GetPreconditionState() const override;
 
-  // SyncServiceObserver overrides.
-  void OnStateChanged(syncer::SyncService* sync) override;
-
   // IdentityManager::Observer overrides.
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
@@ -86,9 +81,6 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observation_{this};
 
   base::WeakPtrFactory<CredentialModelTypeController> weak_ptr_factory_{this};
 };
