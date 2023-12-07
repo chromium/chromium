@@ -81,6 +81,7 @@ config("skia_config") {
     "SK_SLUG_DISABLE_LEGACY_DESERIALIZE",
     "SK_DISABLE_LEGACY_VK_GRDIRECTCONTEXT_FACTORIES",
     "SK_DEFAULT_TYPEFACE_IS_EMPTY",
+    "SK_DISABLE_LEGACY_DEFAULT_TYPEFACE",
     "SK_DISABLE_LEGACY_VULKAN_BACKENDSEMAPHORE",
     "SK_DISABLE_LEGACY_CREATE_CHARACTERIZATION",
   ]
@@ -175,7 +176,10 @@ config("skia_library_config") {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
   }
   if (use_blink) {
-    defines += [ "SK_TYPEFACE_FACTORY_FREETYPE" ]
+    defines += [
+      "SK_TYPEFACE_FACTORY_FREETYPE",
+      "SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE",
+    ]
   }
   if (is_win) {
     defines += [ "SK_TYPEFACE_FACTORY_DIRECTWRITE" ]
@@ -290,16 +294,6 @@ component("skia") {
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
   ]
-  if (!is_apple) {
-    public += [ "ext/fontmgr_default.h" ]
-    sources += [ "ext/fontmgr_default.cc" ]
-  }
-  if (is_android) {
-    sources += [ "ext/fontmgr_default_android.cc" ]
-  }
-  if (is_linux || is_chromeos) {
-    sources += [ "ext/fontmgr_default_linux.cc" ]
-  }
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
     sources += [ "ext/skia_utils_ios.mm" ]
@@ -310,10 +304,7 @@ component("skia") {
   }
   if (is_win) {
     public += [ "ext/skia_utils_win.h" ]
-    sources += [
-      "ext/fontmgr_default_win.cc",
-      "ext/skia_utils_win.cc",
-    ]
+    sources += [ "ext/skia_utils_win.cc" ]
   }
 
   if (use_blink) {
@@ -459,7 +450,6 @@ component("skia") {
     sources += [
       "//third_party/skia/include/ports/SkFontMgr_mac_ct.h",
       "//third_party/skia/src/ports/SkFontMgr_mac_ct.cpp",
-      "//third_party/skia/src/ports/SkFontMgr_mac_ct_factory.cpp",
       "//third_party/skia/src/ports/SkScalerContext_mac_ct.cpp",
       "//third_party/skia/src/ports/SkScalerContext_mac_ct.h",
       "//third_party/skia/src/ports/SkTypeface_mac_ct.cpp",
@@ -487,10 +477,7 @@ component("skia") {
   }
 
   if (is_fuchsia) {
-    sources += [
-      "//third_party/skia/src/ports/SkFontMgr_fuchsia.cpp",
-      "ext/fontmgr_default_fuchsia.cc",
-    ]
+    sources += [ "//third_party/skia/src/ports/SkFontMgr_fuchsia.cpp" ]
 
     # This is already here if use_blink is set
     if (!use_blink) {
