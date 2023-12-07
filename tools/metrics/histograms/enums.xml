@@ -82814,6 +82814,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="11" label="Opened link via context menu"/>
 </enum>
 
+<enum name="OutdatedGMSDialogDismissalReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Rejected"/>
+</enum>
+
 <enum name="OutgoingPasswordSharingInvitationCommitError">
   <int value="0" label="Unknown"/>
   <int value="1" label="Public key version mismatch"/>

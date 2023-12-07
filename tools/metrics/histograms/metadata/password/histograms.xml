@@ -2184,6 +2184,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.OutdatedGMSDialogDismissalReason"
+    enum="OutdatedGMSDialogDismissalReason" expires_after="M123">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Recorded when the outdate GMS Core version dialog is dismissed. Records why
+    the dialog is dismissed. This UI is shown when the user tries to access the
+    Credential Manager in GMS Core from a Chrome entry point, but the GMS Core
+    version available on the device is lower than the min version needed for
+    UPM. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ParserDetectedOtpFieldWithRegex"
     enum="Boolean" expires_after="2024-03-10">
   <owner>kolos@chromium.org</owner>
