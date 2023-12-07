@@ -179,7 +179,9 @@ void PageTimelineCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   // Only measure renderers.
-  CHECK_EQ(process_node->GetProcessType(), content::PROCESS_TYPE_RENDERER);
+  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
+    return;
+  }
   const auto& [it, was_inserted] = cpu_measurement_map_.emplace(
       process_node,
       CPUMeasurement(

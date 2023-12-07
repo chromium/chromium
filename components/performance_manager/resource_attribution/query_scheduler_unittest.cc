@@ -138,8 +138,7 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   // Allow some time to pass to measure.
   task_env().FastForwardBy(base::Minutes(1));
 
-  // Only the kCPUTime queries should receive CPU results. `cpu_query` should
-  // only get results for `process`.
+  // Only the kCPUTime queries should receive CPU results.
   ExpectQueryResult(scheduler, no_resource_query.get(), IsEmpty());
   ExpectQueryResult(scheduler, memory_query.get(),
                     ElementsAre(ResultForContextMatches<MemorySummaryResult>(
@@ -154,9 +153,8 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
               mock_graph.process->GetResourceContext(), _, _),
           ResultForContextMatchesAll<CPUTimeResult, MemorySummaryResult>(
               mock_graph.other_process->GetResourceContext(), _, _),
-          // Only renderer processes get CPU measurements.
-          ResultForContextMatches<MemorySummaryResult>(
-              mock_graph.browser_process->GetResourceContext(), _)));
+          ResultForContextMatchesAll<CPUTimeResult, MemorySummaryResult>(
+              mock_graph.browser_process->GetResourceContext(), _, _)));
 
   // Removing non-CPU query should not affect CPU monitoring.
   scheduler->RemoveScopedQuery(std::move(no_resource_query));

@@ -64,8 +64,7 @@ bool SimulatedCPUMeasurementDelegateFactory::ShouldMeasureProcess(
     return CPUMeasurementDelegate::GetDefaultFactory()->ShouldMeasureProcess(
         process_node);
   }
-  // Measure only renderer processes, as in production.
-  return process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER;
+  return true;
 }
 
 std::unique_ptr<CPUMeasurementDelegate>

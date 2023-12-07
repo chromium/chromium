@@ -84,6 +84,21 @@ class ResourceAttrCPUMonitorTest : public GraphTestHarness {
     return process_node;
   }
 
+  // Creates a process of type `process_type` and starts mocking its CPU
+  // measurements. By default the process will use 100% CPU as long as it's
+  // alive.
+  TestNodeWrapper<ProcessNodeImpl> CreateMockCPUProcess(
+      content::ProcessType process_type) {
+    if (process_type == content::PROCESS_TYPE_RENDERER) {
+      return CreateMockCPURenderer();
+    }
+    auto process_node = (process_type == content::PROCESS_TYPE_BROWSER)
+                            ? CreateBrowserProcessNode()
+                            : CreateBrowserChildProcessNode(process_type);
+    SetProcessCPUUsage(process_node.get(), 1.0);
+    return process_node;
+  }
+
   void SetProcessId(ProcessNodeImpl* process_node) {
     // Assigns the current process object to the node, including its pid.
     process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
@@ -469,15 +484,52 @@ TEST_F(ResourceAttrCPUMonitorTest, VaryingMeasurements) {
                               kTimeBetweenMeasurements));
 }
 
+// Tests that CPU usage of non-renderers is measured.
+TEST_F(ResourceAttrCPUMonitorTest, AllProcessTypes) {
+  const std::vector<content::ProcessType> kProcessTypes{
+      content::PROCESS_TYPE_BROWSER,        content::PROCESS_TYPE_RENDERER,
+      content::PROCESS_TYPE_UTILITY,        content::PROCESS_TYPE_ZYGOTE,
+      content::PROCESS_TYPE_SANDBOX_HELPER, content::PROCESS_TYPE_GPU};
+
+  std::map<content::ProcessType, TestNodeWrapper<ProcessNodeImpl>>
+      process_nodes;
+  std::map<content::ProcessType, double> expected_cpu_percent;
+
+  double next_cpu_percent = 0.9;
+  for (const auto process_type : kProcessTypes) {
+    auto process = CreateMockCPUProcess(process_type);
+    SetProcessId(process.get());
+    SetProcessCPUUsage(process.get(), next_cpu_percent);
+    process_nodes[process_type] = std::move(process);
+    expected_cpu_percent[process_type] = next_cpu_percent;
+    next_cpu_percent -= 0.1;
+  }
+
+  StartMonitoring();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+  for (const auto process_type : kProcessTypes) {
+    const ProcessContext& process_context =
+        process_nodes.at(process_type)->GetResourceContext();
+    EXPECT_THAT(current_measurements_[process_context],
+                CPUDeltaMatches(process_context,
+                                kTimeBetweenMeasurements *
+                                    expected_cpu_percent.at(process_type)))
+        << "process type " << process_type;
+  }
+}
+
 // Tests that CPU usage of processes is correctly distributed between frames and
 // workers in those processes, and correctly aggregated to pages containing
 // frames and workers from multiple processes.
 TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
 
-  // Track CPU usage of the mock utility process to make sure that measuring it
-  // doesn't crash. Currently only measurements of renderer processes are
-  // stored anywhere, so there are no other expectations to verify.
+  // The mock browser and utility processes should be measured, but do not
+  // contain frames or workers so should not affect the distribution of
+  // measurements.
+  SetProcessCPUUsage(mock_graph.browser_process.get(), 0.8);
   SetProcessCPUUsage(mock_graph.utility_process.get(), 0.7);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
@@ -505,10 +557,23 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   const WorkerContext& worker_context = mock_graph.worker->GetResourceContext();
   const WorkerContext& other_worker_context =
       mock_graph.other_worker->GetResourceContext();
+  const ProcessContext& browser_process_context =
+      mock_graph.browser_process->GetResourceContext();
+  const ProcessContext& utility_process_context =
+      mock_graph.utility_process->GetResourceContext();
   const ProcessContext& process_context =
       mock_graph.process->GetResourceContext();
   const ProcessContext& other_process_context =
       mock_graph.other_process->GetResourceContext();
+
+  EXPECT_THAT(current_measurements_[browser_process_context],
+              AllOf(CPUDeltaMatches(browser_process_context,
+                                    kTimeBetweenMeasurements * 0.8),
+                    StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(current_measurements_[utility_process_context],
+              AllOf(CPUDeltaMatches(utility_process_context,
+                                    kTimeBetweenMeasurements * 0.7),
+                    StartTimeMatches(monitoring_start_time)));
 
   // `process` splits its 60% CPU usage evenly between `frame`, `other_frame`
   // and `worker`. `other_process` splits its 50% CPU usage evenly between
@@ -567,8 +632,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
                             MeasurementAlgorithm::kSum),
             StartTimeMatches(monitoring_start_time)));
 
-  // Modify the CPU usage of each process, ensure all frames and workers are
-  // updated.
+  // Modify the CPU usage of each renderer process, ensure all frames and
+  // workers are updated.
   SetProcessCPUUsage(mock_graph.process.get(), 0.3);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.8);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
@@ -1209,6 +1274,8 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
       FrameContext::FromRenderFrameHost(main_rfh()).value();
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
+  base::WeakPtr<ProcessNode> browser_process_node =
+      PerformanceManager::GetProcessNodeForBrowserProcess();
 
   // Since process() returns a MockRenderProcessHost, ProcessNode is created
   // but has no pid. (Equivalent to the time between OnProcessNodeAdded and
@@ -1218,11 +1285,17 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(process_node);
     EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
 
-    // Process can't be measured yet.
+    // "Browser" process is the test harness, which already has a pid.
+    ASSERT_TRUE(browser_process_node);
+    EXPECT_NE(browser_process_node->GetProcessId(), base::kNullProcessId);
+
+    // Renderer process can't be measured yet, browser can.
     const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
     EXPECT_FALSE(
         base::Contains(measurements, process_node->GetResourceContext()));
     EXPECT_FALSE(base::Contains(measurements, frame_context));
+    EXPECT_TRUE(base::Contains(measurements,
+                               browser_process_node->GetResourceContext()));
   });
 
   // Assign a real process to the ProcessNode. (Will call
@@ -1245,12 +1318,15 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   };
 
   base::TimeDelta cumulative_process_cpu;
+  base::TimeDelta cumulative_browser_process_cpu;
   base::TimeDelta cumulative_frame_cpu;
   RunInGraph([&] {
     ASSERT_TRUE(process_node);
+    ASSERT_TRUE(browser_process_node);
     EXPECT_TRUE(process_node->GetProcess().IsValid());
+    EXPECT_TRUE(browser_process_node->GetProcess().IsValid());
 
-    // Process can be measured now.
+    // Both processes can be measured now.
     const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
 
     ASSERT_TRUE(
@@ -1259,12 +1335,18 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
         get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_FALSE(cumulative_process_cpu.is_negative());
 
+    ASSERT_TRUE(base::Contains(measurements,
+                               browser_process_node->GetResourceContext()));
+    cumulative_browser_process_cpu = get_cumulative_cpu(
+        measurements, browser_process_node->GetResourceContext());
+    EXPECT_FALSE(cumulative_browser_process_cpu.is_negative());
+
     ASSERT_TRUE(base::Contains(measurements, frame_context));
     cumulative_frame_cpu = get_cumulative_cpu(measurements, frame_context);
     EXPECT_FALSE(cumulative_frame_cpu.is_negative());
   });
 
-  // Simulate that the process died.
+  // Simulate that the renderer process died.
   process()->SimulateRenderProcessExit(
       base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
   LetTimePass();

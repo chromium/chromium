@@ -62,10 +62,6 @@ class CPUMeasurementDelegateFactoryImpl final
 
 bool CPUMeasurementDelegateFactoryImpl::ShouldMeasureProcess(
     const ProcessNode* process_node) {
-  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
-    // TODO(crbug.com/1471683): Handle other process types.
-    return false;
-  }
   // The process start time is not available until the ProcessId is assigned.
   if (process_node->GetProcessId() == base::kNullProcessId) {
     return false;

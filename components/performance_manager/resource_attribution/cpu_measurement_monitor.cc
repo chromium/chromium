@@ -287,10 +287,6 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
 
 void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Only measure renderers.
-  // TODO(crbug.com/1471683): Measure other process types, just don't distribute
-  // the measurements to frames and workers.
-  CHECK_EQ(process_node->GetProcessType(), content::PROCESS_TYPE_RENDERER);
 
   // If a process crashes and is restarted, a new process can be assigned to the
   // same ProcessNode (and the same ProcessContext). When that happens
