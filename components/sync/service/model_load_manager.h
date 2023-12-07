@@ -106,6 +106,10 @@ class ModelLoadManager {
   // error) to controllers for all types which have not started till now.
   void OnLoadModelsTimeout();
 
+  // Loads model for a type using `dtc`. Ensures that LoadModels is only
+  // called for types which are not in a FAILED state.
+  void LoadModelsForType(DataTypeController* dtc);
+
   // Set of all registered controllers.
   const raw_ptr<const DataTypeController::TypeMap> controllers_;
 

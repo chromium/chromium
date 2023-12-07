@@ -691,4 +691,44 @@ TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
   task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
 }
 
+// Regression test for crbug.com/1506701.
+// Tests that if LoadModels is called for a failed type, it's a no-op.
+TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
+  // Create two controllers, one with delayed model load.
+  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet preferred_types = {APPS, BOOKMARKS};
+
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // Bring BOOKMARKS to a STOPPING state.
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
+
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // APPS is started right away.
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
+  // BOOKMARKS needs to finish stopping first before it can start again.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // Simulate model error while the type is stopping. ModelLoadManager should
+  // continue and not wait for the failed type.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Test error"));
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
+
+  // No crash from LoadModels.
+}
+
 }  // namespace syncer
