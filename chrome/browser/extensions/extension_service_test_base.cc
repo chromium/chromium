@@ -184,7 +184,9 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
       TrustedVaultServiceFactory::GetDefaultFactory());
   profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                     SyncServiceFactory::GetDefaultFactory());
-
+  profile_builder.AddTestingFactory(
+      ExtensionGarbageCollectorFactory::GetInstance(),
+      base::BindRepeating(&ExtensionGarbageCollectorFactory::BuildInstanceFor));
   profile_builder.SetPath(profile_dir);
   return profile_builder.Build();
 }
@@ -262,11 +264,6 @@ void ExtensionServiceTestBase::InitializeExtensionService(
 
   CreateExtensionService(params);
   registry_ = ExtensionRegistry::Get(profile());
-
-  // Garbage collector is typically NULL during tests, so give it a build.
-  ExtensionGarbageCollectorFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(),
-      base::BindRepeating(&ExtensionGarbageCollectorFactory::BuildInstanceFor));
 }
 
 void ExtensionServiceTestBase::InitializeEmptyExtensionService() {

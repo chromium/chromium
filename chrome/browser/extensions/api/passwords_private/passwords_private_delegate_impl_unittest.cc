@@ -310,8 +310,7 @@ void PasswordEventObserver::OnBroadcastEvent(const extensions::Event& event) {
 
 std::unique_ptr<KeyedService> BuildPasswordsPrivateEventRouter(
     content::BrowserContext* context) {
-  return std::unique_ptr<KeyedService>(
-      PasswordsPrivateEventRouter::Create(context));
+  return std::make_unique<PasswordsPrivateEventRouter>(context);
 }
 
 PasswordForm CreateSampleForm(

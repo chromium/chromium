@@ -91,6 +91,13 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
     profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestSyncService));
+    profile_builder.AddTestingFactory(
+        ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreInterface<
+                content::BrowserContext,
+                testing::StrictMock<
+                    password_manager::MockPasswordStoreInterface>>));
     profile_ = profile_builder.Build();
 
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -102,12 +109,6 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
         .WillByDefault(Return(&password_feature_manager_));
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(
-                       &password_manager::BuildPasswordStoreInterface<
-                           content::BrowserContext,
-                           testing::StrictMock<
-                               password_manager::MockPasswordStoreInterface>>));
     EXPECT_CALL(*GetStore(), GetSmartBubbleStatsStore)
         .WillRepeatedly(Return(&mock_smart_bubble_stats_store_));
     pending_password_.url = GURL(kSiteOrigin);

@@ -26,8 +26,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
@@ -118,50 +122,6 @@ using ::testing::UnorderedElementsAre;
 
 using MockStartPasswordCheckCallback =
     base::MockCallback<PasswordCheckDelegate::StartPasswordCheckCallback>;
-
-PasswordsPrivateEventRouter* CreateAndUsePasswordsPrivateEventRouter(
-    Profile* profile) {
-  return static_cast<PasswordsPrivateEventRouter*>(
-      PasswordsPrivateEventRouterFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              profile,
-              base::BindRepeating([](content::BrowserContext* context) {
-                return std::unique_ptr<KeyedService>(
-                    PasswordsPrivateEventRouter::Create(context));
-              })));
-}
-
-EventRouter* CreateAndUseEventRouter(Profile* profile) {
-  // The factory function only requires that T be a KeyedService. Ensure it is
-  // actually derived from EventRouter to avoid undefined behavior.
-  return static_cast<EventRouter*>(
-      extensions::EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile, base::BindRepeating([](content::BrowserContext* context) {
-            return std::unique_ptr<KeyedService>(
-                std::make_unique<EventRouter>(context, nullptr));
-          })));
-}
-
-BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
-    signin::IdentityManager* identity_manager,
-    Profile* profile) {
-  return static_cast<BulkLeakCheckService*>(
-      BulkLeakCheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile, base::BindLambdaForTesting([identity_manager](
-                                                  content::BrowserContext*) {
-            return std::unique_ptr<
-                KeyedService>(std::make_unique<BulkLeakCheckService>(
-                identity_manager,
-                base::MakeRefCounted<network::TestSharedURLLoaderFactory>()));
-          })));
-}
-
-syncer::TestSyncService* CreateAndUseSyncService(Profile* profile) {
-  return SyncServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-      profile, base::BindLambdaForTesting([](content::BrowserContext*) {
-        return std::make_unique<syncer::TestSyncService>();
-      }));
-}
 
 PasswordForm MakeSavedPassword(
     base::StringPiece signon_realm,
@@ -268,6 +228,55 @@ auto ExpectCompromisedCredential(
                                            compromise_types))));
 }
 
+std::unique_ptr<TestingProfile> CreateTestingProfile() {
+  TestingProfile::Builder builder;
+  builder.AddTestingFactory(
+      extensions::EventRouterFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<EventRouter>(context, nullptr);
+      }));
+  builder.AddTestingFactory(
+      PasswordsPrivateEventRouterFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<PasswordsPrivateEventRouter>(context);
+      }));
+  builder.AddTestingFactory(
+      BulkLeakCheckServiceFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<BulkLeakCheckService>(
+            IdentityManagerFactory::GetForProfile(
+                Profile::FromBrowserContext(context)),
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+      }));
+  builder.AddTestingFactory(
+      ProfilePasswordStoreFactory::GetInstance(),
+      base::BindRepeating(
+          &password_manager::BuildPasswordStore<content::BrowserContext,
+                                                TestPasswordStore>));
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage)) {
+    builder.AddTestingFactory(
+        AccountPasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreWithArgs<
+                content::BrowserContext, password_manager::TestPasswordStore,
+                password_manager::IsAccountStore>,
+            password_manager::IsAccountStore(true)));
+  }
+  builder.AddTestingFactory(
+      SyncServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<syncer::TestSyncService>();
+          }));
+  builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
+                                  GetIdentityTestEnvironmentFactories());
+  return builder.Build();
+}
+
 class PasswordCheckDelegateTest : public ::testing::Test {
  public:
   PasswordCheckDelegateTest() {
@@ -279,44 +288,57 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   TestEventRouterObserver& event_router_observer() {
     return event_router_observer_;
   }
-  IdentityTestEnvironment& identity_test_env() { return identity_test_env_; }
+  IdentityTestEnvironment& identity_test_env() {
+    return *identity_test_env_profile_adaptor_.identity_test_env();
+  }
   TestingPrefServiceSimple prefs_;
-  TestingProfile& profile() { return profile_; }
-  TestPasswordStore& store() { return *store_; }
-  TestPasswordStore& account_store() { return *account_store_; }
-  BulkLeakCheckService* service() { return bulk_leak_check_service_; }
-  syncer::TestSyncService& sync_service() { return *sync_service_; }
+  TestingProfile& profile() { return *profile_; }
+  TestPasswordStore& store() {
+    return *static_cast<TestPasswordStore*>(
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            .get());
+  }
+  TestPasswordStore& account_store() {
+    return *static_cast<TestPasswordStore*>(
+        AccountPasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            .get());
+  }
+  BulkLeakCheckService* service() {
+    return static_cast<BulkLeakCheckService*>(
+        BulkLeakCheckServiceFactory::GetForProfile(profile_.get()));
+  }
+  syncer::TestSyncService& sync_service() {
+    return *static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_.get()));
+  }
   SavedPasswordsPresenter& presenter() { return presenter_; }
   PasswordCheckDelegate& delegate() { return delegate_; }
 
   PasswordCheckDelegate CreateDelegate(SavedPasswordsPresenter* presenter) {
-    return PasswordCheckDelegate(&profile_, presenter,
+    return PasswordCheckDelegate(profile_.get(), presenter,
                                  &credential_id_generator_);
   }
 
  private:
   content::BrowserTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  signin::IdentityTestEnvironment identity_test_env_;
-  TestingProfile profile_;
-  raw_ptr<EventRouter> event_router_ = CreateAndUseEventRouter(&profile_);
-  raw_ptr<PasswordsPrivateEventRouter> password_router_ =
-      CreateAndUsePasswordsPrivateEventRouter(&profile_);
-  TestEventRouterObserver event_router_observer_{event_router_};
-  raw_ptr<BulkLeakCheckService> bulk_leak_check_service_ =
-      CreateAndUseBulkLeakCheckService(identity_test_env_.identity_manager(),
-                                       &profile_);
-  scoped_refptr<TestPasswordStore> store_ =
-      CreateAndUseTestPasswordStore(&profile_);
-  scoped_refptr<TestPasswordStore> account_store_ =
-      CreateAndUseTestAccountPasswordStore(&profile_);
-  raw_ptr<syncer::TestSyncService> sync_service_ =
-      CreateAndUseSyncService(&profile_);
+  const std::unique_ptr<TestingProfile> profile_ = CreateTestingProfile();
+  IdentityTestEnvironmentProfileAdaptor identity_test_env_profile_adaptor_{
+      profile_.get()};
+  TestEventRouterObserver event_router_observer_{
+      extensions::EventRouterFactory::GetForBrowserContext(profile_.get())};
   IdGenerator credential_id_generator_;
   password_manager::FakeAffiliationService affiliation_service_;
-  SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
-                                     account_store_};
-  PasswordCheckDelegate delegate_{&profile_, &presenter_,
+  SavedPasswordsPresenter presenter_{&affiliation_service_,
+                                     ProfilePasswordStoreFactory::GetForProfile(
+                                         profile_.get(),
+                                         ServiceAccessType::EXPLICIT_ACCESS),
+                                     AccountPasswordStoreFactory::GetForProfile(
+                                         profile_.get(),
+                                         ServiceAccessType::EXPLICIT_ACCESS)};
+  PasswordCheckDelegate delegate_{profile_.get(), &presenter_,
                                   &credential_id_generator_};
 };
 

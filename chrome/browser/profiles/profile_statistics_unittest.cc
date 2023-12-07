@@ -102,14 +102,13 @@ TEST_F(ProfileStatisticsTest, WaitOrCountBookmarks) {
        {HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory()},
        {WebDataServiceFactory::GetInstance(),
-        WebDataServiceFactory::GetDefaultFactory()}});
+        WebDataServiceFactory::GetDefaultFactory()},
+       {ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&password_manager::BuildPasswordStore<
+                            content::BrowserContext,
+                            password_manager::TestPasswordStore>)}});
 
   ASSERT_TRUE(profile);
-  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
-      profile,
-      base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              content::BrowserContext, password_manager::TestPasswordStore>));
 
   // Run ProfileStatisticsAggregator::WaitOrCountBookmarks.
   BookmarkStatHelper bookmark_stat_helper;
