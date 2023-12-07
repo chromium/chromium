@@ -582,8 +582,6 @@ crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/mov
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-065-print.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/flexbox/single-line-row-flex-fragmentation-045-print.html [ Failure ]
 crbug.com/626703 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy-attribute.https.html [ Crash ]
 crbug.com/626703 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy.https.html [ Crash ]
 crbug.com/626703 external/wpt/webmessaging/message-channels/close-event/garbage-collected.tentative.any.html [ Timeout ]
