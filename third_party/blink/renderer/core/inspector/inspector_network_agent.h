@@ -233,6 +233,9 @@ class CORE_EXPORT InspectorNetworkAgent final
   protocol::Response setBlockedURLs(
       std::unique_ptr<protocol::Array<String>> urls) override;
   protocol::Response replayXHR(const String& request_id) override;
+  protocol::Response streamResourceContent(
+      const String& request_id,
+      protocol::Binary* buffered_data) override;
   protocol::Response canClearBrowserCache(bool* result) override;
   protocol::Response canClearBrowserCookies(bool* result) override;
   protocol::Response emulateNetworkConditions(
@@ -306,6 +309,8 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   HashMap<String, std::unique_ptr<protocol::Network::Initiator>>
       frame_navigation_initiator_map_;
+
+  HashSet<String> streaming_request_ids_;
 
   HeapHashSet<Member<XMLHttpRequest>> replay_xhrs_;
   InspectorAgentState::Boolean enabled_;
