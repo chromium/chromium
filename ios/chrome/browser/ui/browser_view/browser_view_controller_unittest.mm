@@ -61,7 +61,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"

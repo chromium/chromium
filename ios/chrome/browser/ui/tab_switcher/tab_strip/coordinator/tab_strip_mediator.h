@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_mutator.h"
 
 @protocol TabStripConsumer;
 class WebStateList;
@@ -35,4 +35,4 @@ class ChromeBrowserState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_COORDINATOR_TAB_STRIP_MEDIATOR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/core/favicon_url.h"
@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_swift.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

@@ -200,7 +200,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"

@@ -439,7 +439,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations:unit_tests",
-    "//ios/chrome/browser/ui/tab_switcher/tab_strip:unit_tests",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/test:unit_tests",
     "//ios/chrome/browser/ui/tabs:unit_tests",
     "//ios/chrome/browser/ui/toolbar:unit_tests",
     "//ios/chrome/browser/ui/toolbar/fullscreen:unit_tests",
