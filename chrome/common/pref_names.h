@@ -2382,6 +2382,11 @@ inline constexpr char kWebAppsAppAgnosticIphState[] =
 inline constexpr char kWebAppsAppAgnosticMlState[] =
     "web_apps.app_agnostic_ml_state";
 
+// Dictionary that stores IPH state for link capturing not scoped to a
+// particular app
+inline constexpr char kWebAppsAppAgnosticIPHLinkCapturingState[] =
+    "web_apps.app_agnostic_iph_link_capturing_state";
+
 // A boolean value that stores information about whether error loaded policy
 // apps have been migrated for this profile.
 inline constexpr char kErrorLoadedPolicyAppMigrationCompleted[] =

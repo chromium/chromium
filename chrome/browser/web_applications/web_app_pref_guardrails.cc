@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -45,6 +46,15 @@ WebAppPrefGuardrails WebAppPrefGuardrails::GetForMlInstallPrompt(
   return WebAppPrefGuardrails(
       pref_service, web_app::kMlPromoGuardrails, web_app::kMlPromoPrefNames,
       webapps::features::kMaxDaysForMLPromotionGuardrailStorage.Get());
+}
+
+// static
+WebAppPrefGuardrails WebAppPrefGuardrails::GetForLinkCapturingIPH(
+    PrefService* pref_service) {
+  return WebAppPrefGuardrails(
+      pref_service, web_app::kIPHLinkCapturingGuardrails,
+      web_app::kIPHLinkCapturingPrefNames,
+      features::kLinkCapturingIPHGuardrailStorageDuration.Get());
 }
 
 WebAppPrefGuardrails::~WebAppPrefGuardrails() = default;

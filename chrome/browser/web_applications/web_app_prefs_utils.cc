@@ -95,39 +95,38 @@ void RemoveWebAppPref(PrefService* pref_service,
   web_app_prefs.RemoveByDottedPath(path);
 }
 
-// The stored preferences look like:
+// The time values are stored as a string-flavored base::value representing the
+// int64_t number of microseconds since the Windows epoch, using
+// base::TimeToValue(). The stored preferences look like:
 //   "web_app_ids": {
 //     "<app_id_1>": {
 //       "was_external_app_uninstalled_by_user": true,
 //       "IPH_num_of_consecutive_ignore": 2,
-//       A string-flavored base::value representing the int64_t number of
-//       microseconds since the Windows epoch, using base::TimeToValue().
-//       "IPH_last_ignore_time": "13249617864945580",
-//       A string-flavored base::value representing the int64_t number of
-//       microseconds since the Windows epoch, using base::TimeToValue().
-//       "ML_last_time_install_ignored": "13249617864945580",
-//       A string-flavored base::value representing the int64_t number of
-//       microseconds since the Windows epoch, using base::TimeToValue().
-//       "ML_last_time_install_dismissed": "13249617864945580",
+//       "IPH_link_capturing_consecutive_not_accepted_num": 2,
 //       "ML_num_of_consecutive_not_accepted": 2,
+//       "IPH_last_ignore_time": "13249617864945580",
+//       "ML_last_time_install_ignored": "13249617864945580",
+//       "ML_last_time_install_dismissed": "13249617864945580",
+//       "IPH_link_capturing_last_time_ignored": "13249617864945580",
 //       "error_loaded_policy_app_migrated": true
 //     },
 //   },
 //   "app_agnostic_ml_state": {
-//       A string-flavored base::value representing the int64_t number of
-//       microseconds since the Windows epoch, using base::TimeToValue().
 //       "ML_last_time_install_ignored": "13249617864945580",
-//       A string-flavored base::value representing the int64_t number of
-//       microseconds since the Windows epoch, using base::TimeToValue().
 //       "ML_last_time_install_dismissed": "13249617864945580",
 //       "ML_num_of_consecutive_not_accepted": 2,
 //       "ML_all_promos_blocked_date": "13249617864945580",
 //   },
 //   "app_agnostic_iph_state": {
 //     "IPH_num_of_consecutive_ignore": 3,
-//     A string-flavored base::Value representing int64_t number of microseconds
-//     since the Windows epoch, using base::TimeToValue().
 //     "IPH_last_ignore_time": "13249617864945500",
+//   },
+//   "app_agnostic_iph_link_capturing_state": {
+//     "IPH_link_capturing_consecutive_not_accepted_num": 3,
+//     "IPH_link_capturing_last_time_ignored": "13249617864945500",
+//     "IPH_link_capturing_blocked_date": "13249617864945500",
+//     The following field will only exist if the global guardrails exist.
+//     "IPH_link_capturing_block_reason": "app_specific_ignore_count_hit:app_id"
 //   },
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
@@ -135,6 +134,8 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
   registry->RegisterDictionaryPref(::prefs::kWebAppsPreferences);
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticIphState);
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticMlState);
+  registry->RegisterDictionaryPref(
+      ::prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
   registry->RegisterBooleanPref(::prefs::kShouldGarbageCollectStoragePartitions,
                                 false);
   registry->RegisterBooleanPref(

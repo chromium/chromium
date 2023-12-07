@@ -55,6 +55,10 @@ class WebAppPrefGuardrails {
   // ML triggered install prompt should be shown for web apps.
   static WebAppPrefGuardrails GetForMlInstallPrompt(PrefService* pref_service);
 
+  // Returns an instance of the WebAppPrefGuardrails built to handle when the
+  // IPH bubble for apps launched via link capturing should be shown.
+  static WebAppPrefGuardrails GetForLinkCapturingIPH(PrefService* pref_service);
+
   ~WebAppPrefGuardrails();
   WebAppPrefGuardrails(const WebAppPrefGuardrails& other) = delete;
   WebAppPrefGuardrails& operator=(const WebAppPrefGuardrails& other) = delete;
@@ -162,6 +166,30 @@ inline constexpr GuardrailPrefNames kMlPromoPrefNames{
     .block_reason_name = "ML_guardrail_blocked",
 };
 
+// -----------------------IPH Link Capturing guardrails-------------------
+inline constexpr GuardrailData kIPHLinkCapturingGuardrails{
+    // Number of times IPH bubble can show up for an app launched via link
+    // capturing before it's muted.
+    .app_specific_not_accept_count = 2,
+    // Number of days to mute IPH for link captured app launches after it's
+    // ignored for this app.
+    .app_specific_mute_after_ignore_days = 7,
+    // Number of times IPH bubble can show up for any apps launched via link
+    // capturing before it's muted.
+    .global_not_accept_count = 6,
+    // Number of days to mute IPH for link captured app launches after it's
+    // ignored for any app.
+    .global_mute_after_ignore_days = 1,
+};
+
+inline constexpr GuardrailPrefNames kIPHLinkCapturingPrefNames{
+    .last_ignore_time_name = "IPH_link_capturing_last_time_ignored",
+    .not_accepted_count_name =
+        "IPH_link_capturing_consecutive_not_accepted_num",
+    .all_blocked_time_name = "IPH_link_capturing_blocked_date",
+    .global_pref_name = ::prefs::kWebAppsAppAgnosticIPHLinkCapturingState,
+    .block_reason_name = "IPH_link_capturing_block_reason",
+};
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREF_GUARDRAILS_H_
