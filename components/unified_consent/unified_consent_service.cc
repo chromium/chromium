@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "components/compose/core/browser/compose_features.h"
+#include "components/compose/buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -194,9 +194,9 @@ void UnifiedConsentService::RegisterPrefs(
 #endif
   registry->RegisterBooleanPref(prefs::kPageContentCollectionEnabled, false);
 
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
-    registry->RegisterBooleanPref(prefs::kAutofillAssistanceEnabled, false);
-  }
+#if BUILDFLAG(ENABLE_COMPOSE)
+  registry->RegisterBooleanPref(prefs::kAutofillAssistanceEnabled, false);
+#endif
 }
 
 void UnifiedConsentService::SetUrlKeyedAnonymizedDataCollectionEnabled(

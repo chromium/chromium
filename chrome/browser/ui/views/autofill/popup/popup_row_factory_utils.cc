@@ -335,7 +335,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           controller->GetWebContents()->GetBrowserContext());
       const bool show_new_badge = tracker->TryShowNewBadge(
           feature_engagement::kIPHComposeNewBadgeFeature,
-          &compose::features::kEnableCompose);
+          &compose::features::kEnableComposeNudge);
       auto new_badge_tracker =
           PopupRowView::ScopedNewBadgeTrackerWithAcceptAction(
               std::move(tracker),
