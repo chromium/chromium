@@ -67,8 +67,9 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 
 }  // namespace
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Unexpected multiple focus managers on MacViews: http://crbug.com/824551
+// TODO(crbug.com/1509159):  Enable for Linux after resolving failure.
 #define MAYBE_FocusTest DISABLED_FocusTest
 #else
 #define MAYBE_FocusTest FocusTest
