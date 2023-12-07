@@ -401,7 +401,8 @@ enum class RequestStorageResult {
   REJECTED_CREDENTIALLESS_IFRAME = 11,
   APPROVED_NEW_OR_EXISTING_GRANT = 12,
   REJECTED_FENCED_FRAME = 13,
-  kMaxValue = REJECTED_FENCED_FRAME,
+  REJECTED_INVALID_ORIGIN = 14,
+  kMaxValue = REJECTED_INVALID_ORIGIN,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess2",
@@ -6468,6 +6469,17 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
   }
 
   KURL origin_as_kurl{origin};
+  if (!origin_as_kurl.IsValid()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
+        "requestStorageAccessFor: Invalid origin."));
+    FireRequestStorageAccessForHistogram(
+        RequestStorageResult::REJECTED_INVALID_ORIGIN);
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "Invalid origin"));
+    return promise;
+  }
+
   scoped_refptr<SecurityOrigin> supplied_origin =
       SecurityOrigin::Create(origin_as_kurl);
   if (supplied_origin->IsOpaque()) {

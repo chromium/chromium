@@ -142,6 +142,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Rejected due to credentialless iframe"/>
   <int value="12" label="Approved with a new or existing grant"/>
   <int value="13" label="Rejected due to fenced frame"/>
+  <int value="14" label="Rejected due to invalid origin"/>
 </enum>
 
 <enum name="SharedStorageWorkletDestroyedStatus">
