@@ -146,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
 // shown when its tab is selected again.
 // Flaky on ASAN builds (https://crbug.com/997634)
 // Flaky on Mac (https://crbug.com/1385896)
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC)
+// Fails on Linux (https://crbug.com/1509135)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TabSwitchTest DISABLED_TabSwitchTest
 #else
 #define MAYBE_TabSwitchTest TabSwitchTest
