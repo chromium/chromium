@@ -119,6 +119,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
 - (void)configureView:(ParcelTrackingItem*)config {
   _parcelTrackingURL = config.trackingURL;
   _iconImageView.image = [self iconImageForParcelType:config.parcelType];
+  _imageContainer.layer.borderWidth = [self iconBorderWidth];
 
   NSString* carrierName;
   switch (config.parcelType) {
@@ -217,7 +218,6 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
   _imageContainer = [[UIView alloc] init];
   _imageContainer.layer.cornerRadius = kIconContainerCornerRadius;
   _imageContainer.layer.masksToBounds = YES;
-  _imageContainer.layer.borderWidth = [self iconBorderWidth];
   _imageContainer.layer.borderColor =
       [UIColor colorNamed:kGrey200Color].CGColor;
   [_imageContainer addSubview:_iconImageView];
