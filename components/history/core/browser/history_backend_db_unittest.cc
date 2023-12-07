@@ -1887,76 +1887,80 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   const bool publicly_routable3 = true;
 
   // Open the db for manual manipulation.
-  sql::Database db;
-  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-
-  const char kInsertVisitStatement[] =
-      "INSERT INTO visits "
-      "(id, url, visit_time, publicly_routable) VALUES (?, ?, ?, ?)";
-
-  const char kInsertAnnotationsStatement[] =
-      "INSERT INTO content_annotations "
-      "(visit_id, floc_protected_score, categories, page_topics_model_version) "
-      "VALUES (?, ?, ?, ?)";
-
-  // Add the three entries to "visits" table.
   {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, visit_id1);
-    s.BindInt64(1, url_id1);
-    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    s.BindBool(3, publicly_routable1);
-    ASSERT_TRUE(s.Run());
-  }
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, visit_id2);
-    s.BindInt64(1, url_id2);
-    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    s.BindBool(3, publicly_routable2);
-    ASSERT_TRUE(s.Run());
-  }
+    const char kInsertVisitStatement[] =
+        "INSERT INTO visits "
+        "(id, url, visit_time, publicly_routable) VALUES (?, ?, ?, ?)";
 
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
-    s.BindInt64(0, visit_id3);
-    s.BindInt64(1, url_id3);
-    s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    s.BindBool(3, publicly_routable3);
-    ASSERT_TRUE(s.Run());
-  }
+    const char kInsertAnnotationsStatement[] =
+        "INSERT INTO content_annotations "
+        "(visit_id, floc_protected_score, categories, "
+        "page_topics_model_version) "
+        "VALUES (?, ?, ?, ?)";
 
-  // Add the two entries to "content_annotations" table
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
-    s.BindInt64(0, visit_id1);
-    s.BindDouble(1, -1);
-    s.BindString(2, "");
-    s.BindInt64(3, -1);
-    ASSERT_TRUE(s.Run());
-  }
+    // Add the three entries to "visits" table.
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, visit_id1);
+      s.BindInt64(1, url_id1);
+      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      s.BindBool(3, publicly_routable1);
+      ASSERT_TRUE(s.Run());
+    }
 
-  {
-    sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
-    s.BindInt64(0, visit_id2);
-    s.BindDouble(1, 0.5f);
-    s.BindString(2, "1:1");
-    s.BindInt64(3, 123);
-    ASSERT_TRUE(s.Run());
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, visit_id2);
+      s.BindInt64(1, url_id2);
+      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      s.BindBool(3, publicly_routable2);
+      ASSERT_TRUE(s.Run());
+    }
+
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertVisitStatement));
+      s.BindInt64(0, visit_id3);
+      s.BindInt64(1, url_id3);
+      s.BindInt64(2, visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      s.BindBool(3, publicly_routable3);
+      ASSERT_TRUE(s.Run());
+    }
+
+    // Add the two entries to "content_annotations" table
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+      s.BindInt64(0, visit_id1);
+      s.BindDouble(1, -1);
+      s.BindString(2, "");
+      s.BindInt64(3, -1);
+      ASSERT_TRUE(s.Run());
+    }
+
+    {
+      sql::Statement s(db.GetUniqueStatement(kInsertAnnotationsStatement));
+      s.BindInt64(0, visit_id2);
+      s.BindDouble(1, 0.5f);
+      s.BindString(2, "1:1");
+      s.BindInt64(3, 123);
+      ASSERT_TRUE(s.Run());
+    }
   }
 
   // Re-open the db, triggering migration.
   CreateBackendAndDatabase();
+  DeleteBackend();
 
   // The version should have been updated.
   ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
 
-  // Confirm that publicly_routable column still exists.
-  ASSERT_TRUE(db.DoesColumnExist("visits", "publicly_routable"));
-
-  // Check the entries in the content_annotations table.
   {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+    // Check the entries in the content_annotations table.
     sql::Statement s(db.GetUniqueStatement(
         "SELECT visit_id,visibility_score,"
         "categories,page_topics_model_version,annotation_flags "
