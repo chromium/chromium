@@ -510,6 +510,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [4340],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/set_time_dialog/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [4350],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [4360],

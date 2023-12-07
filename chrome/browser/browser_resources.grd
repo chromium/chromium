@@ -138,11 +138,6 @@
         <include name="IDR_DEVICE_EMULATOR_INPUT_DEVICE_SETTINGS_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\input_device_settings.js" use_base_dir="false"  type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_PAGES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\device_emulator_pages.js" use_base_dir="false"  type="BINDATA" />
         <include name="IDR_DEVICE_EMULATOR_SHARED_STYLES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\shared_styles.js" use_base_dir="false"  type="BINDATA" />
-        <include name="IDR_SET_TIME_HTML" file="resources\chromeos\set_time_dialog\set_time.html" type="BINDATA" />
-        <include name="IDR_SET_TIME_JS" file="resources\chromeos\set_time_dialog\set_time.js" type="BINDATA" />
-        <include name="IDR_SET_TIME_DIALOG_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\set_time_dialog\set_time_dialog.html.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_SET_TIME_DIALOG_JS" file="resources\chromeos\set_time_dialog\set_time_dialog.js" type="BINDATA" />
-        <include name="IDR_SET_TIME_BROWSER_PROXY_JS" file="resources\chromeos\set_time_dialog\set_time_browser_proxy.js" type="BINDATA" />
         <if expr="_google_chrome">
           <then>
             <include name="IDR_GOOGLE_XKB_MANIFEST" file="resources\chromeos\input_method\google_xkb_manifest.json" type="BINDATA" />

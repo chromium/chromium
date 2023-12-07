@@ -9,7 +9,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos_ash,
-       "Only Chrome OS Ash resources in //c/b/resources//chromeos.")
+       "Only ChromeOS Ash resources in //c/b/resources//chromeos.")
 
 group("resources") {
   public_deps = [
@@ -46,6 +46,7 @@ group("resources") {
     "password_change:resources",
     "remote_maintenance_curtain:resources",
     "sensor_info:resources",
+    "set_time_dialog:resources",
     "supervision:resources",
     "vc_tray_tester:resources",
   ]

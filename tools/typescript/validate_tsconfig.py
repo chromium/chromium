@@ -124,6 +124,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/sample_system_web_app_ui/',
       # TODO(b/267329383): Migrate A11y to TypeScript.
       'chrome/browser/resources/chromeos/accessibility',
+
+      # TODO(b/308829256): Remove this once chrome://set-time is fully in TS.
+      'chrome/browser/resources/chromeos/set_time_dialog',
       'ui/file_manager/',
   ]
   for directory in ash_directories:

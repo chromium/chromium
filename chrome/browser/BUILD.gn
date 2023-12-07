@@ -8168,7 +8168,6 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/emulator:web_components",
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
       "//chrome/browser/resources/chromeos/password_change:html_wrapper_files",
-      "//chrome/browser/resources/chromeos/set_time_dialog:html_wrapper_files",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/resources/chromeos/vm:web_components",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
