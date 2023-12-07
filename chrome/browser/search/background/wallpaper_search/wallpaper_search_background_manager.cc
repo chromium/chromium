@@ -61,19 +61,21 @@ void WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(
   if (!local_background_id.empty()) {
     const auto& history =
         pref_service->GetList(prefs::kNtpWallpaperSearchHistory);
-    // If it is in history, it should always be the first in history,
-    // since an image is moved up in history when it is picked.
     // If it is not in history, we delete its file. Otherwise, we leave
     // the file there for history to use.
-    if (history.empty()) {
-      DeleteWallpaperSearchImage(local_background_id, profile->GetPath());
-    } else {
-      const base::Value::Dict& history_dict = history.front().GetDict();
-      const std::string* id_string =
-          history_dict.FindString(kWallpaperSearchHistoryId);
-      if (!id_string || *id_string != local_background_id) {
-        DeleteWallpaperSearchImage(local_background_id, profile->GetPath());
+    bool found = false;
+    for (const base::Value& entry : history) {
+      if (entry.is_dict()) {
+        const std::string* id_string =
+            entry.GetDict().FindString(kWallpaperSearchHistoryId);
+        if (id_string && *id_string == local_background_id) {
+          found = true;
+          break;
+        }
       }
+    }
+    if (!found) {
+      DeleteWallpaperSearchImage(local_background_id, profile->GetPath());
     }
   }
 }
