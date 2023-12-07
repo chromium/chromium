@@ -46,10 +46,8 @@ namespace {
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
 
-// Max width for address profile suggestion text.
-constexpr int kAutofillPopupAddressProfileMaxWidth = 192;
-// Max width for address credit card suggestion text.
-constexpr int kAutofillPopupCreditCardMaxWidth = 192;
+// Max width for the Autofill suggestion text.
+constexpr int kAutofillSuggestionMaxWidth = 192;
 
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 22;
@@ -472,17 +470,27 @@ void AddSuggestionContentToView(
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
                  PopupType popup_type) {
-  if (popup_type == PopupType::kAddresses) {
-    label.SetMaximumWidthSingleLine(kAutofillPopupAddressProfileMaxWidth);
-  } else if (popup_type == PopupType::kCreditCards &&
-             text.should_truncate.value()) {
-    // should_truncate should only be set to true iff the experiments are
-    // enabled.
-    DCHECK(base::FeatureList::IsEnabled(
-        autofill::features::kAutofillEnableVirtualCardMetadata));
-    DCHECK(base::FeatureList::IsEnabled(
-        autofill::features::kAutofillEnableCardProductName));
-    label.SetMaximumWidthSingleLine(kAutofillPopupCreditCardMaxWidth);
+  switch (popup_type) {
+    case PopupType::kAddresses:
+    case PopupType::kAutocomplete:
+      label.SetMaximumWidthSingleLine(kAutofillSuggestionMaxWidth);
+      break;
+    case PopupType::kCreditCards:
+      if (text.should_truncate.value()) {
+        // should_truncate should only be set to true iff the experiments are
+        // enabled.
+        DCHECK(base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableVirtualCardMetadata));
+        DCHECK(base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableCardProductName));
+        label.SetMaximumWidthSingleLine(kAutofillSuggestionMaxWidth);
+      }
+      break;
+    case PopupType::kIbans:
+    case PopupType::kPasswords:
+    case PopupType::kPersonalInformation:
+    case PopupType::kUnspecified:
+      break;
   }
 }
 

@@ -1164,7 +1164,7 @@ std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {
     case PopupType::kPersonalInformation:
     case PopupType::kUnspecified:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE);
-
+    case PopupType::kAutocomplete:
     case PopupType::kPasswords:
       NOTREACHED();
       return std::u16string();

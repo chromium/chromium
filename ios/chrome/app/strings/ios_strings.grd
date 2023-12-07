@@ -5410,6 +5410,11 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
            =1 {{count} saved profile available above your keyboard.}
            other {{count} saved profiles available above your keyboard.}}
       </message>
+      <message name="IDS_IOS_AUTOFILL_AUTOCOMPLETE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of autocomplete suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that only has autocomplete suggestions available for autofill purposes. According to the number of available autocomplete suggestions, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+           =1 {{count} saved autocomplete suggestion available above your keyboard.}
+           other {{count} saved autocomplete suggestions available above your keyboard.}}
+      </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON" desc="Label for the button to open the passphrase dialog from the accounts table. [iOS only]">
         Enter Passphrase…
       </message>

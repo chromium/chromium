@@ -24,6 +24,7 @@ ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
       return ManageSuggestionType::kPaymentMethodsIbans;
     case PopupType::kPasswords:
       ABSL_FALLTHROUGH_INTENDED;
+    case PopupType::kAutocomplete:
     case PopupType::kUnspecified:
       return ManageSuggestionType::kOther;
   }
@@ -53,6 +54,7 @@ void LogAutofillSuggestionAcceptedIndex(int index,
                                uma_index);
       break;
     case PopupType::kIbans:
+    case PopupType::kAutocomplete:
       // It is NOTREACHED because it's a single field form fill type (the above
       // types are all multi fields main Autofill type), and thus the logging
       // will be handled separately by SingleFieldFormFiller.

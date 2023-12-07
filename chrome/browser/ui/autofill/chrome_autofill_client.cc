@@ -490,32 +490,34 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
   DCHECK(popup_type != PopupType::kPasswords);
 #if BUILDFLAG(IS_ANDROID)
   switch (popup_type) {
+    case PopupType::kAddresses:
+    case PopupType::kPersonalInformation:
+      ShowAutofillProfileSettings(web_contents());
+      return;
     case PopupType::kCreditCards:
       ShowAutofillCreditCardSettings(web_contents());
       return;
-    case PopupType::kPersonalInformation:
-    case PopupType::kAddresses:
-      ShowAutofillProfileSettings(web_contents());
-      return;
-    case PopupType::kUnspecified:
-    case PopupType::kPasswords:
+    case PopupType::kAutocomplete:
     case PopupType::kIbans:
+    case PopupType::kPasswords:
+    case PopupType::kUnspecified:
       NOTREACHED();
   }
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
     switch (popup_type) {
+      case PopupType::kAddresses:
+      case PopupType::kPersonalInformation:
+        chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
+        return;
       case PopupType::kCreditCards:
       case PopupType::kIbans:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
-      case PopupType::kPersonalInformation:
-      case PopupType::kAddresses:
-        chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
-        return;
-      case PopupType::kUnspecified:
+      case PopupType::kAutocomplete:
       case PopupType::kPasswords:
+      case PopupType::kUnspecified:
         NOTREACHED();
     }
   }
