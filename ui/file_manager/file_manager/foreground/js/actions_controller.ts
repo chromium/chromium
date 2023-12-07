@@ -10,7 +10,6 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 
 import {Action, ActionsModel} from './actions_model.js';
-import {DirectoryModel} from './directory_model.js';
 import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {MetadataSetEvent} from './metadata/metadata_cache_set.js';
@@ -34,7 +33,6 @@ export class ActionsController {
   constructor(
       private readonly volumeManager_: VolumeManager,
       private readonly metadataModel_: MetadataModel,
-      _directoryModel: DirectoryModel,
       private readonly shortcutsModel_: FolderShortcutsDataModel,
       private readonly selectionHandler_: FileSelectionHandler,
       private readonly ui_: FileManagerUI) {

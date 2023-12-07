@@ -753,7 +753,7 @@ export class FileManager extends EventTarget {
     this.actionsController_ = new ActionsController(
         // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
         // not assignable to parameter of type 'MetadataModel'.
-        this.volumeManager_, assert(this.metadataModel_), this.directoryModel_,
+        this.volumeManager_, assert(this.metadataModel_),
         assert(this.folderShortcutsModel_), this.selectionHandler_,
         assert(this.ui_));
     this.lastModifiedController_ = new LastModifiedController(
