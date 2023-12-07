@@ -285,7 +285,7 @@
   <sp-heading id="heading" on-back-button-click="onBackClick_"
       back-button-aria-label="$i18n{backButton}"
       back-button-title="$i18n{backButton}">
-    <h2 slot="heading">$i18n{wallpaperSearchHeader}</h2>
+    <h2 slot="heading">$i18n{wallpaperSearchPageHeader}</h2>
   </sp-heading>
   <div class="content" id="error" hidden$="[[!errorState_]]" tabindex="-1">
     <div id="errorTitle">[[errorState_.title]]</div>
@@ -380,7 +380,7 @@
           on-click="onSearchClick_"
           class="action-button">
         <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
-        [[submitBtnText_]]
+        $i18n{wallpaperSearchSubmitBtn}
       </cr-button>
     </div>
     <hr class="sp-hr">

@@ -150,11 +150,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: WallpaperSearchStatus.kOk,
         observer: 'onStatusChange_',
       },
-      submitBtnText_: {
-        type: String,
-        computed: 'computeSubmitBtnText_(results_)',
-        value: 'Search',
-      },
       theme_: {
         type: Object,
         value: undefined,
@@ -181,7 +176,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectedFeedbackOption_: CrFeedbackOption;
   private selectedHue_: number|undefined;
   private status_: WallpaperSearchStatus;
-  private submitBtnText_: string;
   private theme_: Theme|undefined;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
@@ -274,12 +268,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           callToAction: this.i18n('ok'),
         };
     }
-  }
-
-  private computeSubmitBtnText_() {
-    return this.results_ && this.results_.length > 0 ?
-        loadTimeData.getString('wallpaperSearchSubmitAgainBtn') :
-        loadTimeData.getString('wallpaperSearchSubmitBtn');
   }
 
   private expandCategoryForDescriptorA_(label: string) {

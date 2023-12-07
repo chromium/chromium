@@ -161,7 +161,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"requestThrottledTitle",
        IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE},
       {"tryAgain", IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA},
-      {"wallpaperSearchHeader", IDS_NTP_WALLPAPER_SEARCH_HEADER},
       {"wallpaperSearchHistoryHeader", IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER},
       {"wallpaperSearchHistoryTileTitle",
        IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE},
@@ -169,8 +168,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchStyleLabel", IDS_NTP_WALLPAPER_SEARCH_STYLE_LABEL},
       {"wallpaperSearchSubjectLabel", IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL},
       {"wallpaperSearchSubmitBtn", IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT},
-      {"wallpaperSearchSubmitAgainBtn",
-       IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT},
       {"wallpaperSearchResultLabel", IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL},
       {"wallpaperSearchResultLabelB",
        IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B},
@@ -184,6 +181,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
+      {"wallpaperSearchPageHeader", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
+      {"wallpaperSearchTileLabel", IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -7856,7 +7856,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE" desc="The title of the generic error displayed when wallpaper search fails.">
         Something went wrong.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HEADER" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
+      <message name="IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL" desc="Label for the wallpaper search tile in Customize Chrome Side Panel." >
+        Create with AI
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
         Create theme with AI
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" desc="Header for the wallpaper search section for showing past themes." >
@@ -7897,9 +7900,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
         You've reached your limit for today.
-      </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results when the user has already done it before." >
-        Recreate
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results." >
         Create
