@@ -339,9 +339,11 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
       net::CookieSettingOverrides());
 }
 
-bool CookieControlsController::HasCookieBlockingChangedForSite() {
+bool CookieControlsController::HasUserChangedCookieBlockingForSite() {
   auto current_status = GetStatus(GetWebContents());
-  return current_status.status != initial_page_cookie_controls_status_;
+  return current_status.status != initial_page_cookie_controls_status_ &&
+         current_status.enforcement ==
+             CookieControlsEnforcement::kNoEnforcement;
 }
 
 CookieControlsBreakageConfidenceLevel
@@ -458,7 +460,7 @@ void CookieControlsController::PresentBlockedCookieCounter() {
 }
 
 void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
-  if (HasCookieBlockingChangedForSite() && recent_reloads_count > 0) {
+  if (HasUserChangedCookieBlockingForSite() && recent_reloads_count > 0) {
     waiting_for_page_load_finish_ = true;
   }
 

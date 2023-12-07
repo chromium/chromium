@@ -65,8 +65,8 @@ class CookieControlsController
   bool FirstPartyCookiesBlocked();
 
   // Returns whether the cookie blocking setting for the current site is
-  // different than what it was when last reset.
-  bool HasCookieBlockingChangedForSite();
+  // different than what it was when last reset and user-controlled.
+  bool HasUserChangedCookieBlockingForSite();
 
   // Returns the current breakage confidence level.
   CookieControlsBreakageConfidenceLevel GetBreakageConfidenceLevel();

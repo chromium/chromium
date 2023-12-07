@@ -205,7 +205,8 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
     // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (!MaybeShowIPH() &&
-          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
+          confidence_ == CookieControlsBreakageConfidenceLevel::kHigh &&
+          status_ == CookieControlsStatus::kEnabled) {
         auto label = GetLabelForStatus();
         if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
             status_ == CookieControlsStatus::kEnabled) {

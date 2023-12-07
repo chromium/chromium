@@ -81,7 +81,7 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
-  if (!controller_->HasCookieBlockingChangedForSite()) {
+  if (!controller_->HasUserChangedCookieBlockingForSite()) {
     controller_observation_.Reset();
     bubble_view_->CloseWidget();
     return;

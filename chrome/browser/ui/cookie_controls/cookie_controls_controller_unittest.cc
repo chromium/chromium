@@ -220,31 +220,31 @@ TEST_P(CookieControlsUserBypassTest, CookieBlockingChanged) {
   // OnCookieBlockingEnabledForSite().
   cookie_controls()->Update(web_contents());
   NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Setting to the same effective value should not result in a change.
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // While a different one, should.
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  EXPECT_TRUE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Setting it back should clear it.
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Navigating to the same page should clear it.
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  EXPECT_TRUE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
   NavigateAndCommit(GURL("https://example.com"));
-  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 
   // Navigating to a different page should also clear it.
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
-  EXPECT_TRUE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_TRUE(cookie_controls()->HasUserChangedCookieBlockingForSite());
   NavigateAndCommit(GURL("https://thirdparty.com"));
-  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+  EXPECT_FALSE(cookie_controls()->HasUserChangedCookieBlockingForSite());
 }
 
 TEST_P(CookieControlsUserBypassTest, SiteCounts) {
@@ -1184,6 +1184,39 @@ TEST_P(CookieControlsUserBypassTest, FinishedPageReloadWithChangedSettings) {
   NavigateAndCommit(GURL("https://example2.com"));
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   NavigateAndCommit(GURL("https://example2.com"));
+}
+
+TEST_P(CookieControlsUserBypassTest,
+       DoesNotAnimateLabelWhenSettingNotChangeableInContext) {
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
+  cookie_controls()->Update(web_contents());
+  NavigateAndCommit(GURL("https://example.com"));
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(1);
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("https://example.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  NavigateAndCommit(GURL("https://example.com"));
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(1);
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("https://example.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
+  NavigateAndCommit(GURL("https://example.com"));
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  EXPECT_CALL(*mock(), OnFinishedPageReloadWithChangedSettings()).Times(0);
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]example.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  NavigateAndCommit(GURL("https://example.com"));
+  testing::Mock::VerifyAndClearExpectations(mock());
 }
 
 TEST_P(CookieControlsUserBypassTest, HighConfidenceAfterExpiration) {
