@@ -240,11 +240,6 @@ void AutofillPopupControllerImpl::Show(
   }
 }
 
-AutofillSuggestionTriggerSource
-AutofillPopupControllerImpl::GetAutofillSuggestionTriggerSource() const {
-  return trigger_source_;
-}
-
 bool AutofillPopupControllerImpl::
     ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
   return should_ignore_mouse_observed_outside_item_bounds_check_ ||

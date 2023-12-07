@@ -177,13 +177,6 @@ PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
   return controller_->GetPopupType();
 }
 
-AutofillSuggestionTriggerSource
-AutofillKeyboardAccessoryAdapter::GetAutofillSuggestionTriggerSource() const {
-  CHECK(controller_)
-      << "Call GetAutofillSuggestionTriggerSource only from its owner!";
-  return controller_->GetAutofillSuggestionTriggerSource();
-}
-
 bool AutofillKeyboardAccessoryAdapter::
     ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
   CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "

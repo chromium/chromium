@@ -106,8 +106,6 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   bool RemoveSuggestion(int index) override;
   void SelectSuggestion(std::optional<size_t> index) override;
   PopupType GetPopupType() const override;
-  AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
-      const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
   base::WeakPtr<AutofillPopupController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
