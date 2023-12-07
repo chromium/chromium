@@ -4,44 +4,48 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style>
-  :host {
-    height: 100%;
-    width: 100%;
-  }
-
+<style include="oobe-common-styles">
   #container {
+    background: white;
+    border: 1px solid var(--google-grey-200);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    overflow: hidden;
     position: relative;
     white-space: nowrap;
     width: 100%;
   }
+  :host-context(.jelly-enabled) #container {
+    background: var(--cros-sys-base_elevated);
+    border: none;
+    border-radius: 20px;
+  }
 
-  #slidesContainer {
-    background: white;
-    height: 100%;
-    position: relative;
-    width: 100%;
+  #scrollContainer {
+    /* Suppress top scroll indicator of oobe_scrollable_behavior, as the top
+        border of the scroll container is already recognizable by a different
+        background color. */
+    border-top: transparent;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     will-change: transform;
   }
-  #slidesContainer ::slotted(*) {
-    height: 100%;
-    overflow-x: hidden;
-    position: absolute;
-    width: 100%;
-  }
 
-  :host-context(.jelly-enabled) #slidesContainer {
-    background: var(--cros-sys-app_base);
+  #slidesContainer ::slotted(*) {
+    position: absolute;
   }
 
   #navigationContainer {
-    bottom: 8px;
+    background-color: white;
+    padding: 8px;
     display: flex;
-    left: 50%;
-    position: absolute;
-    transform: translateX(-50%);
+    justify-content: center;
+    width: 100%;
+  }
+  :host-context(.jelly-enabled) #navigationContainer {
+    background: var(--cros-sys-base_elevated);
   }
 
   #dotsContainer {
@@ -78,6 +82,10 @@ found in the LICENSE file.
     margin-inline-start: 0;
     width: 20px;
   }
+  :host-context(.jelly-enabled) .slider-dot {
+    margin-inline-end: 1px;
+    margin-inline-start: 1px;
+  }
 
   .slider-dot {
     background: var(--cros-color-primary-inverted);
@@ -93,15 +101,13 @@ found in the LICENSE file.
     background: var(--cros-icon-color-blue);
   }
   .slider-dot:focus {
-    /* TODO(https://crbug.com/1320715) Revise the color */
     box-shadow: 0 0 7px 1px rgba(var(--cros-icon-color-blue-rgb), .75);
     outline: none;
   }
-
   :host-context(.jelly-enabled) .slider-dot {
     height: 8px;
     width: 8px;
-    margin: 6px;
+    margin: 6px 7px;
     background: transparent;
     outline: 1px solid var(--cros-sys-primary);
     outline-offset: -1px;
@@ -117,17 +123,17 @@ found in the LICENSE file.
   }
 
   .arrow-button {
-    /* TODO(https://crbug.com/1320715) Revise the color */
     --cr-icon-button-fill-color: var(--cros-app-shield-color);
   }
-
   :host-context(.jelly-enabled) .arrow-button {
     --cr-icon-button-fill-color: var(--cros-sys-secondary);
   }
 </style>
 <div id="container">
-  <div id="slidesContainer">
-    <slot id="slot" name="slides"></slot>
+  <div id="scrollContainer" class="scrollable">
+    <div id="slidesContainer">
+      <slot id="slot" name="slides"></slot>
+    </div>
   </div>
   <div id="navigationContainer">
     <cr-icon-button id="left" class="buttons" iron-icon="cr:chevron-left"

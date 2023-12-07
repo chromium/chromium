@@ -238,9 +238,10 @@
       --oobe-welcome-subheader-line-height:
           var(--cros-display-6_regular-line-height);
 
-      --oobe-header-text-color: var(--cros-sys-on_surface);
-      --oobe-subheader-text-color: var(--cros-sys-on_surface_variant);
       --oobe-text-color: var(--cros-sys-on_surface);
+      --oobe-text-color-secondary: var(--cros-sys-on_surface_variant);
+      --oobe-header-text-color: var(--oobe-text-color);
+      --oobe-subheader-text-color: var(--oobe-text-color-secondary);
 
       --oobe-autolaunch-app-name-font-size: var(--cros-button-1-font-size);
 
