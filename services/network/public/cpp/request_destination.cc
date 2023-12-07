@@ -8,6 +8,9 @@ namespace network {
 
 // These strings are used in histograms, so do not change the values without
 // updating/deprecating histograms which use RequestDestination.
+//
+// When updating this, consider also updating RequestDestination in
+// third_party/blink/renderer/core/fetch/request.idl.
 
 const char* RequestDestinationToString(
     network::mojom::RequestDestination dest) {
