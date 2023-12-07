@@ -6312,22 +6312,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "variations_smoke_tests",
-    tests = {
-        "variations_smoke_tests": targets.legacy_test_config(
-            test = "variations_smoke_tests",
-            mixins = [
-                "skia_gold_test",
-            ],
-            resultdb = targets.resultdb(
-                enable = True,
-                result_format = "single",
-            ),
-        ),
-    },
-)
-
 # Not applicable for android x86 & x64 since the targets here assert
 # "enable_vr" in GN which is only true for android arm & arm64.
 # For details, see the following files:

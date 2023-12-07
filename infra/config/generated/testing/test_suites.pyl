@@ -5355,19 +5355,6 @@
       'upload_trace_processor': {},
     },
 
-    'variations_smoke_tests': {
-      'variations_smoke_tests': {
-        'test': 'variations_smoke_tests',
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'resultdb': {
-          'enable': True,
-          'result_format': 'single',
-        },
-      },
-    },
-
     'vr_android_specific_chromium_tests': {
       'chrome_public_test_vr_apk': {
         'args': [
