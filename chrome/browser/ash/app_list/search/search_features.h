@@ -38,6 +38,9 @@ BASE_DECLARE_FEATURE(kLauncherImageSearchOcr);
 
 BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 
+// Enable manatee for keyboard shortcuts
+BASE_DECLARE_FEATURE(kLauncherManateeForKeyboardShortcuts);
+
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
@@ -47,6 +50,7 @@ bool IsLauncherImageSearchOcrEnabled();
 bool IsLauncherFuzzyMatchAcrossProvidersEnabled();
 bool isLauncherFuzzyMatchForOmniboxEnabled();
 bool isLauncherSystemInfoAnswerCardsEnabled();
+bool isLauncherManateeForKeyboardShortcutsEnabled();
 
 }  // namespace search_features
 

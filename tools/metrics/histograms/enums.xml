@@ -32828,6 +32828,7 @@ from previous Chrome versions.
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
   <int value="-165756594" label="enable-touch-feedback"/>
   <int value="-165712979" label="AdaptiveChargingForTesting:enabled"/>
+  <int value="-165063145" label="LauncherManateeForKeyboardShortcuts:enabled"/>
   <int value="-165006916" label="EnableNeuralPalmDetectionFilter:enabled"/>
   <int value="-164673139" label="ForceShowContinueSection:disabled"/>
   <int value="-164539906"
@@ -35357,6 +35358,7 @@ from previous Chrome versions.
   <int value="1046878091" label="PasswordForceSaving:enabled"/>
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>
   <int value="1047110483" label="ShelfHotseat:disabled"/>
+  <int value="1048263286" label="LauncherManateeForKeyboardShortcuts:disabled"/>
   <int value="1049339770" label="AppMenuMobileSiteOption:enabled"/>
   <int value="1049346775" label="OmniboxDocumentProviderAso:disabled"/>
   <int value="1049885154" label="OfflinePagesPrefetching:disabled"/>

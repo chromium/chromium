@@ -5192,6 +5192,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "launcher-manatee-for-keyboard-shortcuts",
+    "owners": ["negeend@google.com", "laurencom@chromium.org", "amandadeacon@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "launcher-nudge-session-reset",
     "owners":["wcwang@chromium.org", "tbarzic@chromium.org"],
     "expiry_milestone": 124
