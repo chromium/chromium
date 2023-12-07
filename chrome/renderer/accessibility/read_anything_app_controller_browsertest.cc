@@ -638,7 +638,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
   update.nodes[3].role = ax::mojom::Role::kLink;
   update.nodes[4].role = ax::mojom::Role::kHeading;
   update.nodes[4].html_attributes.emplace_back("aria-level", "1");
-  update.nodes[4].SetName(
+  update.nodes[4].SetNameChecked(
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
       "tempor incididunt ut labore et dolore magna aliqua.");
   update.nodes[4].SetNameFrom(ax::mojom::NameFrom::kContents);
@@ -666,7 +666,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
   update.nodes[1].id = 2;
   update.nodes[0].role = ax::mojom::Role::kPdfRoot;
   update.nodes[1].role = ax::mojom::Role::kContentInfo;
-  update.nodes[1].SetName(string_constants::kPDFPageEnd);
+  update.nodes[1].SetNameChecked(string_constants::kPDFPageEnd);
   update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
   AccessibilityEventReceived({update});
 
@@ -677,7 +677,6 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string text_content = "Hello";
-  std::string missing_text_content = "";
   std::string more_text_content = " world";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -686,19 +685,19 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   update.nodes[1].id = 3;
   update.nodes[2].id = 4;
   update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetName(text_content);
+  update.nodes[0].SetNameChecked(text_content);
   update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetName(missing_text_content);
+  update.nodes[1].SetNameExplicitlyEmpty();
   update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
   update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName(more_text_content);
+  update.nodes[2].SetNameChecked(more_text_content);
   update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ("Hello world", GetTextContent(1));
   EXPECT_EQ(text_content, GetTextContent(2));
-  EXPECT_EQ(missing_text_content, GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(3));
   EXPECT_EQ(more_text_content, GetTextContent(4));
 }
 
@@ -713,13 +712,13 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
   update.nodes[1].id = 3;
   update.nodes[2].id = 4;
   update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetName(text_content_1);
+  update.nodes[0].SetNameChecked(text_content_1);
   update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetName(text_content_2);
+  update.nodes[1].SetNameChecked(text_content_2);
   update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
   update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName(text_content_3);
+  update.nodes[2].SetNameChecked(text_content_3);
   update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
   // Create selection from node 2-3.
   update.tree_data.sel_anchor_object_id = 2;
@@ -996,7 +995,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   update_1.nodes.resize(1);
   update_1.nodes[0].id = 2;
   update_1.nodes[0].role = ax::mojom::Role::kStaticText;
-  update_1.nodes[0].SetName("Hello world");
+  update_1.nodes[0].SetNameChecked("Hello world");
   update_1.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -1012,7 +1011,7 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
     update.nodes.resize(1);
     update.nodes[0].id = i;
     update.nodes[0].role = ax::mojom::Role::kStaticText;
-    update.nodes[0].SetName("Node " + base::NumberToString(i));
+    update.nodes[0].SetNameChecked("Node " + base::NumberToString(i));
     update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
     batch_updates.push_back(update);
   }
@@ -1047,7 +1046,7 @@ TEST_F(ReadAnythingAppControllerTest,
   update_1.nodes.resize(1);
   update_1.nodes[0].id = 2;
   update_1.nodes[0].role = ax::mojom::Role::kStaticText;
-  update_1.nodes[0].SetName("Hello world");
+  update_1.nodes[0].SetNameChecked("Hello world");
   update_1.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -1064,7 +1063,7 @@ TEST_F(ReadAnythingAppControllerTest,
     update.nodes.resize(1);
     update.nodes[0].id = i;
     update.nodes[0].role = ax::mojom::Role::kStaticText;
-    update.nodes[0].SetName("Node " + base::NumberToString(i));
+    update.nodes[0].SetNameChecked("Node " + base::NumberToString(i));
     update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
     batch_updates.push_back(update);
   }
@@ -1083,7 +1082,7 @@ TEST_F(ReadAnythingAppControllerTest,
   update_2.nodes.resize(1);
   update_2.nodes[0].id = 2;
   update_2.nodes[0].role = ax::mojom::Role::kStaticText;
-  update_2.nodes[0].SetName("Final update");
+  update_2.nodes[0].SetNameChecked("Final update");
   update_2.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   AccessibilityEventReceived({update_2});
 
@@ -1106,7 +1105,7 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
     update.nodes.resize(1);
     update.nodes[0].id = 1;
     update.nodes[0].role = ax::mojom::Role::kStaticText;
-    update.nodes[0].SetName("Tree " + base::NumberToString(i));
+    update.nodes[0].SetNameChecked("Tree " + base::NumberToString(i));
     update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -1226,7 +1225,7 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
     initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
   }
   // Since this update is just cosmetic (it changes the nodes' name but doesn't
@@ -1250,7 +1249,7 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -1286,7 +1285,7 @@ TEST_F(ReadAnythingAppControllerTest,
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
     initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
   }
   // No events we care about come about, so there's no distillation.
@@ -1308,7 +1307,7 @@ TEST_F(ReadAnythingAppControllerTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -1358,7 +1357,7 @@ TEST_F(ReadAnythingAppControllerTest,
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
     initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
   }
   // Since this update is just cosmetic (it changes the nodes' name but doesn't
@@ -1382,7 +1381,7 @@ TEST_F(ReadAnythingAppControllerTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
 
     updates.push_back(update);
@@ -1426,7 +1425,7 @@ TEST_F(ReadAnythingAppControllerTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -1498,7 +1497,7 @@ TEST_F(ReadAnythingAppControllerTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -1737,7 +1736,7 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
   update.nodes[0].id = 3;
   update.nodes[1].id = 4;
   update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetName("Hello");
+  update.nodes[0].SetNameChecked("Hello");
   update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   update.nodes[1].role = ax::mojom::Role::kNone;  // This node is ignored.
   AccessibilityEventReceived({update});

@@ -315,11 +315,11 @@ TEST_F(ReadAnythingAppModelTest,
   update.nodes[0].role = ax::mojom::Role::kPdfRoot;
   update.nodes[1].role = ax::mojom::Role::kBanner;
   update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName(string_constants::kPDFPageStart);
+  update.nodes[2].SetNameChecked(string_constants::kPDFPageStart);
   update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
   update.nodes[3].role = ax::mojom::Role::kContentInfo;
   update.nodes[4].role = ax::mojom::Role::kStaticText;
-  update.nodes[4].SetName(string_constants::kPDFPageEnd);
+  update.nodes[4].SetNameChecked(string_constants::kPDFPageEnd);
   update.nodes[4].SetNameFrom(ax::mojom::NameFrom::kContents);
 
   AccessibilityEventReceived({update});
@@ -436,7 +436,7 @@ TEST_F(ReadAnythingAppModelTest,
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
     initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
   }
   AccessibilityEventReceived({initial_update});
@@ -454,7 +454,7 @@ TEST_F(ReadAnythingAppModelTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -491,7 +491,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
     initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
   }
   AccessibilityEventReceived({initial_update});
@@ -509,7 +509,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -543,7 +543,7 @@ TEST_F(ReadAnythingAppModelTest,
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
     initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
   }
   AccessibilityEventReceived({initial_update});
@@ -561,7 +561,7 @@ TEST_F(ReadAnythingAppModelTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -606,7 +606,7 @@ TEST_F(ReadAnythingAppModelTest, ClearPendingUpdates_DeletesPendingUpdates) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -643,7 +643,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
     updates.push_back(update);
   }
@@ -1246,7 +1246,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   update.nodes.resize(1);
   update.nodes[0].id = 1;
   update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  update.nodes[0].SetName("example.pdf");
+  update.nodes[0].SetNameChecked("example.pdf");
   update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
   AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
