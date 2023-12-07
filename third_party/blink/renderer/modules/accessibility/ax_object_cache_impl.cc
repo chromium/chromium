@@ -2864,7 +2864,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
 #if DCHECK_IS_ON()
   // The following checks can make tests flaky if the tree being checked
   // is quite large. Therefore cap the number of objects we check.
-  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 10000;
+  constexpr int kMaxObjectsToCheckAfterTreeUpdate = 5000;
   if (objects_.size() > kMaxObjectsToCheckAfterTreeUpdate) {
     DLOG(INFO) << "AXObjectCacheImpl::CheckTreeIsUpdated: Only checking first "
                << kMaxObjectsToCheckAfterTreeUpdate
