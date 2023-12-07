@@ -4961,9 +4961,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrostiniVirtualKeyboardSupportName,
      flag_descriptions::kCrostiniVirtualKeyboardSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrostiniVirtualKeyboardSupport)},
-    {"crostini-use-lxd-5", flag_descriptions::kCrostiniUseLxd5Name,
-     flag_descriptions::kCrostiniUseLxd5Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kCrostiniUseLxd5)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
      BUILDFLAG(IS_ANDROID)) &&                        \

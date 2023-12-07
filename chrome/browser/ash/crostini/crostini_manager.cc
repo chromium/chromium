@@ -1510,9 +1510,6 @@ void CrostiniManager::StartTerminaVm(std::string name,
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
     request.set_enable_audio_capture(true);
   }
-  if (base::FeatureList::IsEnabled(ash::features::kCrostiniUseLxd5)) {
-    request.add_features(vm_tools::concierge::StartVmRequest::LXD_5_LTS);
-  }
   const int32_t cpus = base::SysInfo::NumberOfProcessors() - num_cores_disabled;
   DCHECK_LT(0, cpus);
   request.set_cpus(cpus);
@@ -3665,8 +3662,8 @@ void CrostiniManager::OnCancelExportLxdContainer(
 
   if (response->status() !=
       vm_tools::cicerone::CancelExportLxdContainerResponse::CANCEL_QUEUED) {
-    LOG(ERROR) << "Failed to cancel lxd container export:"
-               << " status=" << response->status()
+    LOG(ERROR) << "Failed to cancel lxd container export:" << " status="
+               << response->status()
                << ", failure_reason=" << response->failure_reason();
   }
 }
@@ -3688,8 +3685,8 @@ void CrostiniManager::OnCancelImportLxdContainer(
 
   if (response->status() !=
       vm_tools::cicerone::CancelImportLxdContainerResponse::CANCEL_QUEUED) {
-    LOG(ERROR) << "Failed to cancel lxd container import:"
-               << " status=" << response->status()
+    LOG(ERROR) << "Failed to cancel lxd container import:" << " status="
+               << response->status()
                << ", failure_reason=" << response->failure_reason();
   }
 }
