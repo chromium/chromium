@@ -299,6 +299,7 @@ BidderWorklet::BidderWorklet(
     const GURL& script_source_url,
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
+    const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     absl::optional<uint16_t> experiment_group_id)
@@ -325,8 +326,7 @@ BidderWorklet::BidderWorklet(
                      auction_network_events_handler_),
                  /*automatically_send_requests=*/false, top_window_origin,
                  *trusted_bidding_signals_url, experiment_group_id,
-                 /*trusted_bidding_signals_slot_size_param=*/std::string(),
-                 v8_helper_.get())
+                 trusted_bidding_signals_slot_size_param, v8_helper_.get())
            : nullptr);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(

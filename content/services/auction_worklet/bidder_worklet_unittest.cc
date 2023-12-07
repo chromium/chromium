@@ -658,8 +658,8 @@ class BidderWorkletTest : public testing::Test {
         auction_network_events_handler_.CreateRemote(),
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
-        top_window_origin_, permissions_policy_state_.Clone(),
-        experiment_group_id_);
+        /*trusted_bidding_signals_slot_size_param=*/"", top_window_origin_,
+        permissions_policy_state_.Clone(), experiment_group_id_);
     auto* bidder_worklet_ptr = bidder_worklet_impl.get();
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
     mojo::ReceiverId receiver_id =

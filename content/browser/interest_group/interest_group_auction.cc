@@ -19,6 +19,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -73,6 +74,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
@@ -3322,6 +3324,48 @@ absl::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(
   return config.all_buyer_experiment_group_id;
 }
 
+std::string InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
+    const blink::AuctionConfig& config,
+    blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+        trusted_bidding_signals_slot_size_mode) {
+  // If sending slot sizes to trusted bidding signals servers is not enabled,
+  // return an empty string to maximize worklet reuse.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedBiddingSignalsSlotSize)) {
+    return std::string();
+  }
+
+  switch (trusted_bidding_signals_slot_size_mode) {
+    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone:
+      return std::string();
+
+    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize:
+      if (!config.non_shared_params.requested_size) {
+        return std::string();
+      }
+      return "slot-size=" + blink::ConvertAdSizeToString(
+                                *config.non_shared_params.requested_size);
+
+    case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+        kAllSlotsRequestedSizes: {
+      if (!config.non_shared_params.all_slots_requested_sizes ||
+          config.non_shared_params.all_slots_requested_sizes->empty()) {
+        return std::string();
+      }
+
+      std::string all_ad_sizes;
+      for (const blink::AdSize& ad_size :
+           *config.non_shared_params.all_slots_requested_sizes) {
+        if (!all_ad_sizes.empty()) {
+          all_ad_sizes += ",";
+        }
+        all_ad_sizes += blink::ConvertAdSizeToString(ad_size);
+      }
+      return std::string("all-slots-requested-sizes=" + all_ad_sizes);
+    }
+  }
+}
+
 absl::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(
     const blink::AuctionConfig& config,
     const url::Origin& buyer) {
@@ -3523,7 +3567,8 @@ void InterestGroupAuction::OnOneLoadCompleted() {
       }
 
       // If the top-level seller either has interest groups itself, or any of
-      // the component auctions do, then the top-level seller also has bidders.
+      // the component auctions do, then the top-level seller also has
+      // bidders.
       if (num_interest_groups > 0) {
         ++num_sellers_with_bidders;
       }
@@ -3899,8 +3944,8 @@ void InterestGroupAuction::OnScoringDependencyDone() {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   --num_scoring_dependencies_;
 
-  // If we issued the final set of bids to a seller worklet, tell it to send any
-  // pending scoring signals request to complete the auction more quickly.
+  // If we issued the final set of bids to a seller worklet, tell it to send
+  // any pending scoring signals request to complete the auction more quickly.
   if (num_scoring_dependencies_ == 0 && ReadyToScoreBids()) {
     seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
   }
@@ -4096,8 +4141,8 @@ void InterestGroupAuction::OnScoreAdComplete(
           bid->bid_state->private_aggregation_requests[std::move(agg_key)];
       for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
            pa_requests) {
-        // A for-event private aggregation request with non-reserved event type
-        // from scoreAd() should be ignored and not reported.
+        // A for-event private aggregation request with non-reserved event
+        // type from scoreAd() should be ignored and not reported.
         if (request->contribution->is_for_event_contribution() &&
             !base::StartsWith(
                 request->contribution->get_for_event_contribution()->event_type,
@@ -4212,9 +4257,9 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     if (owner != leader_info.top_bid->bid->interest_group->owner) {
       leader_info.at_most_one_top_bid_owner = false;
     }
-    // If the top bid is being replaced, need to add the old top bid as a second
-    // highest bid. Otherwise, need to add the current bid as a second highest
-    // bid.
+    // If the top bid is being replaced, need to add the old top bid as a
+    // second highest bid. Otherwise, need to add the current bid as a second
+    // highest bid.
     double new_highest_scoring_other_bid =
         is_top_bid ? leader_info.top_bid->bid->bid : bid->bid;
     absl::optional<double> new_highest_scoring_other_bid_in_seller_currency =
@@ -4270,8 +4315,8 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
     leader_info.highest_scoring_other_bid_owner.reset();
   }
   ++leader_info.num_second_highest_bids;
-  // In case of a tie, randomly pick one. This is the select random value from a
-  // stream with fixed storage problem.
+  // In case of a tie, randomly pick one. This is the select random value from
+  // a stream with fixed storage problem.
   if (1 == base::RandInt(1, leader_info.num_second_highest_bids)) {
     leader_info.highest_scoring_other_bid = bid_value;
     leader_info.highest_scoring_other_bid_in_seller_currency =
@@ -4334,16 +4379,16 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
-  // If this is a component auction, have to unload the seller worklet handle to
-  // avoid deadlock. Otherwise, loading the top-level seller worklet may be
+  // If this is a component auction, have to unload the seller worklet handle
+  // to avoid deadlock. Otherwise, loading the top-level seller worklet may be
   // blocked by component seller worklets taking up all the quota.
   if (parent_) {
     seller_worklet_handle_.reset();
   }
 
-  // If the seller loaded callback hasn't been invoked yet, call it now. This is
-  // needed in the case the phase ended without receiving the seller worklet
-  // (e.g., in the case no bidder worklet bids).
+  // If the seller loaded callback hasn't been invoked yet, call it now. This
+  // is needed in the case the phase ended without receiving the seller
+  // worklet (e.g., in the case no bidder worklet bids).
   if (on_seller_receiver_callback_) {
     std::move(on_seller_receiver_callback_).Run();
   }
@@ -4361,17 +4406,18 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   } else {
     // If this is the top-level auction, mark it as a success (and the winning
     // component auction as well, if there is one). Component auction status
-    // depend on whether or not they won the top-level auction, so if this is a
-    // component auction, leave status as-is.
+    // depend on whether or not they won the top-level auction, so if this is
+    // a component auction, leave status as-is.
     if (!parent_) {
       final_auction_result_ = AuctionResult::kSuccess;
       // If there's a winning bid, set its auction result as well. If the
-      // winning bid came from a component auction, this will set that component
-      // auction's result as well. This is needed for auction result accessors.
+      // winning bid came from a component auction, this will set that
+      // component auction's result as well. This is needed for auction result
+      // accessors.
       //
-      // TODO(https://crbug.com/1394777): This is currently needed to correctly
-      // retrieve reporting information from the nested auction. Is there a
-      // cleaner way to do this?
+      // TODO(https://crbug.com/1394777): This is currently needed to
+      // correctly retrieve reporting information from the nested auction. Is
+      // there a cleaner way to do this?
       if (top_bid()) {
         top_bid()->bid->auction->final_auction_result_ =
             AuctionResult::kSuccess;
@@ -4380,8 +4426,8 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   }
 
   // If this is a top-level auction with component auction, update final state
-  // of all successfully completed component auctions with bids that did not win
-  // to reflect a loss.
+  // of all successfully completed component auctions with bids that did not
+  // win to reflect a loss.
   for (auto& component_auction_info : component_auctions_) {
     InterestGroupAuction* component_auction =
         component_auction_info.second.get();
@@ -4436,7 +4482,25 @@ AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
       interest_group.bidding_wasm_helper_url,
       interest_group.trusted_bidding_signals_url,
       /*needs_cors_for_additional_bid=*/false, experiment_group_id,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      GetTrustedBiddingSignalsSlotSizeParam(
+          interest_group.trusted_bidding_signals_slot_size_mode));
+}
+
+const std::string& InterestGroupAuction::GetTrustedBiddingSignalsSlotSizeParam(
+    blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+        trusted_bidding_signals_slot_size_mode) {
+  auto it = trusted_bidding_signals_size_mode_strings_.find(
+      trusted_bidding_signals_slot_size_mode);
+  if (it != trusted_bidding_signals_size_mode_strings_.end()) {
+    return it->second;
+  }
+
+  auto inserted = trusted_bidding_signals_size_mode_strings_.insert(
+      std::pair(trusted_bidding_signals_slot_size_mode,
+                CreateTrustedBiddingSignalsSlotSizeParam(
+                    *config_, trusted_bidding_signals_slot_size_mode)));
+  DCHECK(inserted.second);
+  return inserted.first->second;
 }
 
 void InterestGroupAuction::OnDecompressedServerResponse(
@@ -4458,13 +4522,14 @@ void InterestGroupAuction::OnDecompressedServerResponse(
           weak_ptr_factory_.GetWeakPtr(),
           // This use of unretained is safe since the request_context is owned
           // by a PageUserData and is only deleted when the page is destroyed.
-          // This auction is owned by the page through a DocumentService, so it
-          // will be destroyed before the decoder.
+          // This auction is owned by the page through a DocumentService, so
+          // it will be destroyed before the decoder.
           base::Unretained(request_context)));
 
-  // `result` falls out of scope, deallocating the buffer with the decompressed
-  // response. This is okay because `DataDecoder::ParseCbor` made a copy before
-  // it returned (via implicit construction of mojo_base::BigBuffer).
+  // `result` falls out of scope, deallocating the buffer with the
+  // decompressed response. This is okay because `DataDecoder::ParseCbor` made
+  // a copy before it returned (via implicit construction of
+  // mojo_base::BigBuffer).
 }
 
 void InterestGroupAuction::OnParsedServerResponse(

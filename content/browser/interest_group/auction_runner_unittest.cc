@@ -1686,6 +1686,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     auction_config.non_shared_params.auction_report_buyers =
         auction_report_buyers_;
 
+    auction_config.non_shared_params.requested_size = requested_size_;
+    auction_config.non_shared_params.all_slots_requested_sizes =
+        all_slots_requested_sizes_;
+
     auction_config.non_shared_params.auction_nonce = auction_nonce_;
 
     auction_config.expects_additional_bids = pass_promise_for_additional_bids_;
@@ -2154,6 +2158,57 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     }
 
     auction_run_loop_->Run();
+  }
+
+  // Creates 6 StorageInterestGroups, 2 with each type of
+  // TrustedBiddingSignalsSlotSizeMode. All are owned by kBidder1, and use the
+  // same script and signals URLs. Used to test BidderWorklet sharing and
+  // request batching.
+  std::vector<StorageInterestGroup>
+  CreateTrustedBiddingSignalsSlotSizeModeBidders() {
+    std::vector<StorageInterestGroup> bidders;
+
+    StorageInterestGroup interest_group1 = MakeInterestGroup(
+        kBidder1, "name1", kBidder1Url, kBidder1TrustedSignalsUrl, {"k1"},
+        GURL("https://ad1.com"));
+    bidders.emplace_back(std::move(interest_group1));
+
+    StorageInterestGroup interest_group2 = MakeInterestGroup(
+        kBidder1, "name2", kBidder1Url, kBidder1TrustedSignalsUrl, {"k2"},
+        GURL("https://ad1.com"));
+    interest_group2.interest_group.trusted_bidding_signals_slot_size_mode =
+        blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize;
+    bidders.emplace_back(std::move(interest_group2));
+
+    StorageInterestGroup interest_group3 = MakeInterestGroup(
+        kBidder1, "name3", kBidder1Url, kBidder1TrustedSignalsUrl, {"k3"},
+        GURL("https://ad1.com"));
+    interest_group3.interest_group.trusted_bidding_signals_slot_size_mode =
+        blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+            kAllSlotsRequestedSizes;
+    bidders.emplace_back(std::move(interest_group3));
+
+    StorageInterestGroup interest_group4 = MakeInterestGroup(
+        kBidder1, "name4", kBidder1Url, kBidder1TrustedSignalsUrl, {"k4"},
+        GURL("https://ad1.com"));
+    bidders.emplace_back(std::move(interest_group4));
+
+    StorageInterestGroup interest_group5 = MakeInterestGroup(
+        kBidder1, "name5", kBidder1Url, kBidder1TrustedSignalsUrl, {"k5"},
+        GURL("https://ad1.com"));
+    interest_group5.interest_group.trusted_bidding_signals_slot_size_mode =
+        blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize;
+    bidders.emplace_back(std::move(interest_group5));
+
+    StorageInterestGroup interest_group6 = MakeInterestGroup(
+        kBidder1, "name6", kBidder1Url, kBidder1TrustedSignalsUrl, {"k6"},
+        GURL("https://ad1.com"));
+    interest_group6.interest_group.trusted_bidding_signals_slot_size_mode =
+        blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+            kAllSlotsRequestedSizes;
+    bidders.emplace_back(std::move(interest_group6));
+
+    return bidders;
   }
 
   // AuctionWorkletManager::Delegate implementation:
@@ -2932,6 +2987,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   raw_ptr<AdAuctionPageData> ad_auction_page_data_ = nullptr;
 
   bool pass_promise_for_additional_bids_ = false;
+
+  absl::optional<blink::AdSize> requested_size_;
+  absl::optional<std::vector<blink::AdSize>> all_slots_requested_sizes_;
 
   absl::optional<base::Uuid> auction_nonce_;
 
@@ -20486,6 +20544,125 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
     hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
                             test_case.result, 1);
   }
+}
+
+TEST_F(AuctionRunnerTest,
+       TrustedBiddingSignalsAdSlotParamGroupingFeatureDisabled) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndDisableFeature(
+      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(1, "https://ad1.com/"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  requested_size_ = blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
+                                  blink::AdSize::LengthUnit::kPixels);
+  all_slots_requested_sizes_ = {
+      blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
+                    blink::AdSize::LengthUnit::kPixels),
+      blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 40,
+                    blink::AdSize::LengthUnit::kPixels)};
+
+  StartAuction(kSellerUrl, CreateTrustedBiddingSignalsSlotSizeModeBidders());
+
+  // Wait for bidding signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  // When kFledgeTrustedBiddingSignalsSlotSize is disabled, all requests should
+  // be merged, regardless of kFledgeTrustedBiddingSignalsSlotSize.
+  EXPECT_THAT(pending_request_urls,
+              testing::ElementsAre(GURL(
+                  kBidder1TrustedSignalsUrl.spec() +
+                  "?hostname=publisher1.com&keys=k1,k2,k3,k4,k5,k6"
+                  "&interestGroupNames=name1,name2,name3,name4,name5,name6")));
+
+  // No need to finish the auction.
+}
+
+TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGrouping) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(1, "https://ad1.com/"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  requested_size_ = blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
+                                  blink::AdSize::LengthUnit::kPixels);
+  all_slots_requested_sizes_ = {
+      blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
+                    blink::AdSize::LengthUnit::kPixels),
+      blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 40,
+                    blink::AdSize::LengthUnit::kPixels)};
+
+  StartAuction(kSellerUrl, CreateTrustedBiddingSignalsSlotSizeModeBidders());
+
+  // Wait for bidding signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  EXPECT_THAT(pending_request_urls,
+              testing::UnorderedElementsAre(
+                  GURL(kBidder1TrustedSignalsUrl.spec() +
+                       "?hostname=publisher1.com&keys=k1,k4"
+                       "&interestGroupNames=name1,name4"),
+                  GURL(kBidder1TrustedSignalsUrl.spec() +
+                       "?hostname=publisher1.com&keys=k2,k5"
+                       "&interestGroupNames=name2,name5"
+                       "&slot-size=10px,20px"),
+                  GURL(kBidder1TrustedSignalsUrl.spec() +
+                       "?hostname=publisher1.com&keys=k3,k6"
+                       "&interestGroupNames=name3,name6"
+                       "&all-slots-requested-sizes=10px,20px,30px,40px")));
+
+  // No need to finish the auction.
+}
+
+TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGroupingNoSizes) {
+  base::test::ScopedFeatureList debug_features;
+  debug_features.InitAndEnableFeature(
+      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(1, "https://ad1.com/"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kMinimumDecisionScript);
+
+  StartAuction(kSellerUrl, CreateTrustedBiddingSignalsSlotSizeModeBidders());
+
+  // Wait for bidding signals network requests to be made.
+  task_environment()->RunUntilIdle();
+
+  std::vector<GURL> pending_request_urls;
+  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
+    pending_request_urls.push_back(pending_request.request.url);
+  }
+
+  // When there's no `requested_size` or `all_slots_requested_sizes`, all
+  // requests should be merged.
+  EXPECT_THAT(pending_request_urls,
+              testing::ElementsAre(GURL(
+                  kBidder1TrustedSignalsUrl.spec() +
+                  "?hostname=publisher1.com&keys=k1,k2,k3,k4,k5,k6"
+                  "&interestGroupNames=name1,name2,name3,name4,name5,name6")));
+
+  // No need to finish the auction.
 }
 
 }  // namespace

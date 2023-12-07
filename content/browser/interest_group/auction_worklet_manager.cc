@@ -368,6 +368,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
           std::move(url_loader_factory),
           std::move(auction_network_events_handler), worklet_info_.script_url,
           worklet_info_.wasm_url, worklet_info_.signals_url,
+          worklet_info_.trusted_bidding_signals_slot_size_param,
           worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),

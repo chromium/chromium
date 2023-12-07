@@ -750,6 +750,17 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig& config,
       const url::Origin& buyer);
 
+  // Creates a query param that should be appended to the trusted bidding
+  // signals fetch based on the specified TrustedBiddingSignalsSlotSizeMode.
+  // Returns an empty string if no such query param should be appended, either
+  // based on the auction/InterestGroup configuration or due to the the
+  // associated feature not being enabled. Public so that
+  // InterestGroupAuctionReporter can use it.
+  static std::string CreateTrustedBiddingSignalsSlotSizeParam(
+      const blink::AuctionConfig& config,
+      blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+          trusted_bidding_signals_slot_size_mode);
+
   // Gets the buyer per-buyer-signals in `config` for buyer. Public so that
   // InterestGroupAuctionReporter can use it.
   static absl::optional<std::string> GetPerBuyerSignals(
@@ -1068,6 +1079,14 @@ class CONTENT_EXPORT InterestGroupAuction
   // Computes a key for a worklet associated with `bid_state`
   AuctionWorkletManager::WorkletKey BidderWorkletKey(BidState& bid_state);
 
+  // Returns the query string for the associated
+  // TrustedBiddingSignalsSlotSizeMode. Much like
+  // CreateTrustedBiddingSignalsSlotSizeParam(), but Caches strings that have
+  // previously been generated.
+  const std::string& GetTrustedBiddingSignalsSlotSizeParam(
+      blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
+          trusted_bidding_signals_slot_size_mode);
+
   // Determines if an extended private aggregation buyers request should be
   // made, and if so, issues the request. Otherwise, does nothing.
   //
@@ -1357,6 +1376,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Callback for checking who can participate in the auction.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
+
+  base::flat_map<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode,
+                 std::string>
+      trusted_bidding_signals_size_mode_strings_;
 
   // Callback for passing encountered PrivateAggregationRequests up in order to
   // maybe trigger Private Aggregation web features, as appropriate.

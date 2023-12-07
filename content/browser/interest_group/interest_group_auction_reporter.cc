@@ -666,6 +666,12 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   absl::optional<uint16_t> experiment_group_id =
       InterestGroupAuction::GetBuyerExperimentId(*bidder_auction.auction_config,
                                                  interest_group.owner);
+  // While this has no effect when calling reportWin(), it's best to set it to
+  // the same value to maximize the chance of finding a worklet to reuse.
+  std::string trusted_bidder_signals_slot_size_param =
+      InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
+          *bidder_auction.auction_config,
+          interest_group.trusted_bidding_signals_slot_size_mode);
 
   // base::Unretained is safe to use for these callbacks because destroying
   // `bidder_worklet_handle_` will prevent the callbacks from being invoked, if
@@ -676,7 +682,7 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
       interest_group.trusted_bidding_signals_url,
       /*needs_cors_for_additional_bid=*/
       winning_bid_info_.provided_as_additional_bid, experiment_group_id,
-      /*trusted_bidding_signals_slot_size_param=*/"",
+      trusted_bidder_signals_slot_size_param,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                      base::Unretained(this), signals_for_winner),
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletFatalError,

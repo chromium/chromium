@@ -76,6 +76,13 @@ interface AuctionWorkletService {
   //  for any any `trusted_bidding_signals_keys` provided to the BidderWorklet's
   //  GenerateBid() method.
   //
+  // `trusted_bidding_signals_slot_size_param` A string of either the form
+  //  "all-slots-requested-sizes=<width1>,<height1>,..." or
+  //  "slot-size=<width>,<height>", if the InterestGroup's
+  //  trustedBiddingSignalsSlotSizeMode and AuctionConfig indicate such a string
+  //  be appended to trusted bidding signals fetches. The empty string,
+  //  otherwise.
+  //
   // `top_window_origin` The origin of the top-level window running the
   //  auction(s) the BidderWorklet will be used in.
   //
@@ -93,6 +100,7 @@ interface AuctionWorkletService {
       url.mojom.Url script_source_url,
       url.mojom.Url? wasm_helper_url,
       url.mojom.Url? trusted_bidding_signals_url,
+      string trusted_bidding_signals_slot_size_param,
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,
       bool has_experiment_group_id,
