@@ -580,6 +580,10 @@ public final class ChromePreferenceKeys {
     public static final String PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS =
             "Chrome.PriceTracking.ChromeManagedNotificationsTimestamps";
 
+    /** Save the tab IDs of tabs that might have price drops now. */
+    public static final String PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP =
+            "Chrome.PriceTracking.IDsForTabsWithPriceDrop";
+
     /** Whether the PriceAlertsMessageCard is enabled. */
     public static final String PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD =
             "Chrome.PriceTracking.PriceAlerts";
@@ -1032,6 +1036,7 @@ public final class ChromePreferenceKeys {
                 PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
+                PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
