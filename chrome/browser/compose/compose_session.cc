@@ -179,14 +179,27 @@ ComposeSession::~ComposeSession() {
                                 consent_given_in_session_);
 
   // If we have a modeling quality log entry, upload it.
-  if (most_recent_ok_state_->modeling_log_entry()) {
+
+  // If the latest result was an error upload that state
+  if (most_recent_error_log_) {
+    most_recent_error_log_
+        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_final_status(final_status_);
+  } else if (most_recent_ok_state_->modeling_log_entry()) {
     most_recent_ok_state_->modeling_log_entry()
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_final_status(final_status_);
-    // Quality log would automatically be uploaded on the destruction of a
-    // modeling_log_entry_. However in order to more easily test the quality
-    // uploads we are calling upload directly here.
-    if (model_quality_logs_uploader_) {
+  }
+
+  // Quality log would automatically be uploaded on the destruction of
+  // a modeling_log_entry. However in order to more easily test the quality
+  // uploads we are calling upload directly here.
+  if (model_quality_logs_uploader_) {
+    if (most_recent_error_log_) {
+      model_quality_logs_uploader_->UploadModelQualityLogs(
+          std::move(most_recent_error_log_));
+    }
+    if (most_recent_ok_state_->modeling_log_entry()) {
       model_quality_logs_uploader_->UploadModelQualityLogs(
           most_recent_ok_state_->TakeModelingLogEntry());
     }
@@ -291,7 +304,8 @@ void ComposeSession::ModelExecutionCallback(
 
   // A new request has been issued, ignore this one.
   if (request_id != request_id_) {
-    SendQualityLogEntryUponError(std::move(log_entry), request_delta);
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
+                                was_input_edited);
     return;
   }
 
@@ -303,7 +317,8 @@ void ComposeSession::ModelExecutionCallback(
   if (status != compose::mojom::ComposeStatus::kOk) {
     compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
     ProcessError(status);
-    SendQualityLogEntryUponError(std::move(log_entry), request_delta);
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
+                                was_input_edited);
     return;
   }
 
@@ -313,7 +328,8 @@ void ComposeSession::ModelExecutionCallback(
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, /* is_valid */ false);
     ProcessError(compose::mojom::ComposeStatus::kTryAgain);
-    SendQualityLogEntryUponError(std::move(log_entry), request_delta);
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
+                                was_input_edited);
     return;
   }
   DCHECK(result->is_complete ||
@@ -349,6 +365,8 @@ void ComposeSession::ModelExecutionCallback(
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
     most_recent_ok_state_->SetModelingLogEntry(std::move(log_entry));
+    // if we have a valid most recent state we no longer need an error state.
+    most_recent_error_log_.reset();
   }
 }
 
@@ -611,12 +629,23 @@ void ComposeSession::SetCloseReason(
   }
 }
 
-void ComposeSession::SendQualityLogEntryUponError(
+void ComposeSession::SetQualityLogEntryUponError(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
-    base::TimeDelta request_time) {
-  if (log_entry && model_quality_logs_uploader_) {
+    base::TimeDelta request_time,
+    bool was_input_edited) {
+  if (log_entry) {
     log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_time.InMilliseconds());
-    model_quality_logs_uploader_->UploadModelQualityLogs(std::move(log_entry));
+    optimization_guide::proto::Int128* token =
+        log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+            ->mutable_session_id();
+
+    token->set_high(session_id_.high());
+    token->set_low(session_id_.low());
+
+    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        ->set_was_generated_via_edit(was_input_edited);
+
+    most_recent_error_log_ = std::move(log_entry);
   }
 }

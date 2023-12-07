@@ -519,7 +519,10 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
                             optimization_guide::
                                 OptimizationGuideModelExecutionError::
                                     ModelExecutionError::kGenericFailure)),
-                nullptr);
+
+                std::make_unique<optimization_guide::ModelQualityLogEntry>(
+                    std::make_unique<
+                        optimization_guide::proto::LogAiDataRequest>()));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -529,10 +532,38 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
             test_future.SetValue(std::move(response));
           }));
 
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
   page_handler()->Compose("a user typed this", false);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgainLater, result->status);
+  // Check that the quality modeling log is still correct
+
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> quality_result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(
+      kSessionIdHigh,
+      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->session_id()
+          .high());
+  EXPECT_EQ(
+      kSessionIdLow,
+      quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+          ->session_id()
+          .low());
 }
 
 // Tests that we return an error if Optimization Guide is unable to parse the
