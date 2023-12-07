@@ -1295,11 +1295,14 @@ BASE_FEATURE(kMemoryCacheStrongReferenceSingleUnload,
 // If kNavigationPredictor is enabled, then metrics of anchor elements
 // in the first viewport after the page load and the metrics of the clicked
 // anchor element will be extracted and recorded.
-// Note that the desktop roll out is being done separately from android. See
-// https://crbug.com/1419556
 BASE_FEATURE(kNavigationPredictor,
              "NavigationPredictor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kNewBaseUrlInheritanceBehavior,
              "NewBaseUrlInheritanceBehavior",
