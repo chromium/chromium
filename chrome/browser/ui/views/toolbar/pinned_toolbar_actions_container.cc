@@ -46,6 +46,8 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+const gfx::VectorIcon kEmptyIcon;
+
 void RecordPinnedActionsCount(int count) {
   base::UmaHistogramCounts100("Browser.Actions.PinnedActionsCount", count);
 }
@@ -145,10 +147,9 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
 void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     SetIconVisibility(bool visible) {
   if (action_item_->GetImage().IsVectorIcon()) {
-    const auto empty_icon = gfx::VectorIcon();
     SetVectorIcon(visible
                       ? *action_item_->GetImage().GetVectorIcon().vector_icon()
-                      : empty_icon);
+                      : kEmptyIcon);
   } else {
     SetImageModel(views::Button::STATE_NORMAL,
                   visible ? action_item_->GetImage() : ui::ImageModel());
