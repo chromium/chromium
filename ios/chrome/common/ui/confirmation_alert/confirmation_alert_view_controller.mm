@@ -376,16 +376,17 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (void)updateViewConstraints {
-  BOOL isVerticalCompact =
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  BOOL showImageView =
+      self.alwaysShowImage || (self.traitCollection.verticalSizeClass !=
+                               UIUserInterfaceSizeClassCompact);
 
   // Hiding the image causes the UIStackView to change the image's height to 0.
   // Because its width and height are related, if the aspect ratio constraint
   // is active, the image's width also goes to 0, which causes the stack view
   // width to become 0 too.
-  [self.imageView setHidden:isVerticalCompact];
-  [self.imageContainerView setHidden:isVerticalCompact];
-  self.imageViewAspectRatioConstraint.active = !isVerticalCompact;
+  [self.imageView setHidden:!showImageView];
+  [self.imageContainerView setHidden:!showImageView];
+  self.imageViewAspectRatioConstraint.active = showImageView;
 
   // Allow the navigation bar to update its height based on new layout.
   [self.navigationBar invalidateIntrinsicContentSize];

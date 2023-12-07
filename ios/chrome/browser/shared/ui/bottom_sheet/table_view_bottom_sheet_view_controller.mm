@@ -118,6 +118,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.imageHasFixedSize = YES;
+  self.alwaysShowImage = YES;
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
