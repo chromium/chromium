@@ -11,6 +11,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -60,7 +61,13 @@ class FormAutofillHistory {
     std::optional<ServerFieldType> autofilled_type;
   };
 
-  using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;
+  struct FormFillingEntry {
+    FormFillingEntry();
+    ~FormFillingEntry();
+
+    FillingProduct filling_product = FillingProduct::kNone;
+    std::map<FieldGlobalId, FieldFillingEntry> field_filling_entries = {};
+  };
 
   class FillOperation {
    public:
@@ -68,6 +75,10 @@ class FormAutofillHistory {
     // `field_id`. Assumes the underlying map contains a entry with key
     // `field_id`.
     const FieldFillingEntry& GetFieldFillingEntry(FieldGlobalId field_id) const;
+
+    FillingProduct get_filling_product() const {
+      return iterator_->filling_product;
+    }
 
     friend bool operator==(const FillOperation& lhs,
                            const FillOperation& rhs) = default;
@@ -96,6 +107,7 @@ class FormAutofillHistory {
   void AddFormFillEntry(
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields,
+      FillingProduct filling_product,
       bool is_refill);
 
   // Erases the history entry from the list represented by `fill_operation`.

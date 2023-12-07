@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
@@ -894,14 +895,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   void FormSubmitted(const FormData& form) {
     browser_autofill_manager_->OnFormSubmitted(
         form, false, SubmissionSource::FORM_SUBMISSION);
-  }
-
-  void AddFormFillHistoryEntry(
-      std::vector<const FormFieldData* const> filled_fields,
-      std::vector<const AutofillField* const> filled_autofill_fields,
-      bool is_refill) {
-    test_api(*browser_autofill_manager_)
-        .AddFormFillEntry(filled_fields, filled_autofill_fields, is_refill);
   }
 
   // TODO(crbug.com/1330108): Have separate functions for profile and credit
@@ -3055,9 +3048,13 @@ TEST_F(BrowserAutofillManagerTest, UndoResetsCachedAutofillState) {
   FormData form = CreateTestAddressFormData();
   AutofillField filled_autofill_field(form.fields.front());
 
+  FormFieldData* field_ptr = &form.fields.front();
+  AutofillField* autofill_field_ptr = &filled_autofill_field;
   form.fields.front().is_autofilled = false;
-  AddFormFillHistoryEntry({&form.fields.front()}, {&filled_autofill_field},
-                          /*is_refill=*/false);
+  test_api(*browser_autofill_manager_)
+      .AddFormFillEntry(base::make_span(&field_ptr, 1u),
+                        base::make_span(&autofill_field_ptr, 1u),
+                        FillingProduct::kAddressAutofill, /*is_refill=*/false);
   form.fields.front().is_autofilled = true;
   FormsSeen({form});
 

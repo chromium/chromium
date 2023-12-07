@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -132,9 +133,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   void AddFormFillEntry(
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields,
+      FillingProduct filling_product,
       bool is_refill) {
     manager_->form_autofill_history_.AddFormFillEntry(
-        filled_fields, filled_autofill_fields, is_refill);
+        filled_fields, filled_autofill_fields, filling_product, is_refill);
   }
 
  private:

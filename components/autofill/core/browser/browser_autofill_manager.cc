@@ -68,6 +68,7 @@
 #include "components/autofill/core/browser/field_filling_payments_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -1360,6 +1361,7 @@ void BrowserAutofillManager::FillOrPreviewField(
     form_autofill_history_.AddFormFillEntry(
         base::make_span(&filled_field, 1u),
         base::make_span(&autofill_field, 1u),
+        GetFillingProductFromPopupItemId(popup_item_id),
         /*is_refill=*/false);
     autofill_field->is_autofilled = true;
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
@@ -2509,9 +2511,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields.old_values,
-                                            safe_newly_filled_fields.cached,
-                                            is_refill);
+    form_autofill_history_.AddFormFillEntry(
+        safe_newly_filled_fields.old_values, safe_newly_filled_fields.cached,
+        is_credit_card ? FillingProduct::kPaymentsAutofill
+                       : FillingProduct::kAddressAutofill,
+        is_refill);
   }
 
   LOG_AF(buffer) << CTag{"table"};
