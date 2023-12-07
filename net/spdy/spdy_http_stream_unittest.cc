@@ -167,6 +167,7 @@ class SpdyHttpStreamTest : public testing::TestWithParam<bool>,
 
     ssl_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
+    ssl_.next_proto = NextProto::kProtoHTTP2;
     ASSERT_TRUE(ssl_.ssl_info.cert);
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_);
 
