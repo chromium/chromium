@@ -211,8 +211,9 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
       popup_cell_utils::CreateMainTextLabel(
           suggestion.main_text,
           GetMainTextStyleForPopupItemId(suggestion.popup_item_id));
-  popup_cell_utils::FormatLabel(*main_text_label, suggestion.main_text,
-                                popup_type);
+  popup_cell_utils::FormatLabel(
+      *main_text_label, suggestion.main_text, popup_type,
+      popup_cell_utils::GetMaxPopupAddressProfileWidth());
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label),
       popup_cell_utils::CreateMinorTextLabel(suggestion.minor_text),
@@ -236,8 +237,9 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       popup_cell_utils::CreateMainTextLabel(
           kSuggestion.main_text,
           GetMainTextStyleForPopupItemId(kSuggestion.popup_item_id));
-  popup_cell_utils::FormatLabel(*main_text_label, kSuggestion.main_text,
-                                controller->GetPopupType());
+  popup_cell_utils::FormatLabel(
+      *main_text_label, kSuggestion.main_text, controller->GetPopupType(),
+      popup_cell_utils::GetMaxPopupAddressProfileWidth());
   popup_cell_utils::AddSuggestionContentToView(
       kSuggestion, std::move(main_text_label),
       popup_cell_utils::CreateMinorTextLabel(kSuggestion.minor_text),

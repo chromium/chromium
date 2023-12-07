@@ -109,7 +109,8 @@ void AddSuggestionContentToView(
 
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
-                 PopupType popup_type);
+                 PopupType popup_type,
+                 int maximum_width_single_line);
 
 // Creates a label for the suggestion's main text.
 std::unique_ptr<views::Label> CreateMainTextLabel(
@@ -125,6 +126,8 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     const Suggestion& suggestion,
     PopupType popup_type,
     int text_style = views::style::STYLE_SECONDARY);
+
+int GetMaxPopupAddressProfileWidth();
 
 void AddSuggestionStrategyContentCellChildren(PopupRowContentView* view,
                                               const Suggestion& suggestion,
