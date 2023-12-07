@@ -102,6 +102,8 @@ export class FakePageHandler implements PageHandlerInterface {
     this.page_.onAppChanged(this.app_);
   }
 
+  setAppLocale(_appId: string, _localeTag: string): void {}
+
   setRunOnOsLoginMode(_appId: string, loginMode: RunOnOsLoginMode) {
     this.app_.runOnOsLogin!.loginMode = loginMode;
     this.page_.onAppChanged(this.app_);

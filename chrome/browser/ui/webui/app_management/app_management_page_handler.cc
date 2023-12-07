@@ -801,6 +801,16 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
 #endif
 }
 
+void AppManagementPageHandler::SetAppLocale(const std::string& app_id,
+                                            const std::string& locale_tag) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetAppLocale(
+      app_id, locale_tag);
+#else
+  NOTREACHED();
+#endif
+}
+
 void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
     if (update.ShowInManagement().value_or(false) &&

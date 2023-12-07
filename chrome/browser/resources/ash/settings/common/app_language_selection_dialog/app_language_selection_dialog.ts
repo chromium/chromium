@@ -23,6 +23,8 @@ import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_fie
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementBrowserProxy} from '../app_management/browser_proxy.js';
+
 import {getTemplate} from './app_language_selection_dialog.html.js';
 
 export interface AppLanguageSelectionDialogElement {
@@ -72,7 +74,10 @@ export class AppLanguageSelectionDialogElement extends
   }
 
   private onActionButtonClick_(): void {
-    // TODO(b/261200827): Sends `selectedLanguage_` data to ARC.
+    AppManagementBrowserProxy.getInstance().handler.setAppLocale(
+        this.app.id,
+        this.selectedLanguage_!.localeTag,
+    );
     this.$.dialog.close();
   }
 

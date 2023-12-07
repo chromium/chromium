@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppLanguageSelectionDialogElement, AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
 import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -30,6 +30,7 @@ suite('<app-language-selection-dialog>', () => {
   let appLanguageSelectionDialog: AppLanguageSelectionDialogElement;
   let fakeHandler: FakePageHandler;
   let searchField: CrSearchFieldElement;
+  let confirmButton: CrButtonElement;
 
   setup(async () => {
     appLanguageSelectionDialog =
@@ -60,6 +61,12 @@ suite('<app-language-selection-dialog>', () => {
             .querySelector<CrSearchFieldElement>('cr-search-field');
     assertTrue(!!searchFieldTemp);
     searchField = searchFieldTemp;
+
+    const confirmButtonTemp =
+        appLanguageSelectionDialog.shadowRoot!.querySelector<CrButtonElement>(
+            '.action-button');
+    assertTrue(!!confirmButtonTemp);
+    confirmButton = confirmButtonTemp;
   }
 
   function getSuggestedList(): IronListElement {
@@ -349,5 +356,36 @@ suite('<app-language-selection-dialog>', () => {
         setSearchQuery('abd');
         assertTrue(isHidden(getFilteredList()));
         assertTrue(isVisible(getNoSearchResultField()));
+      });
+
+  test(
+      'Confirm selection, selectedLocale should move to test locale',
+      async () => {
+        const appId = 'confirm-selection';
+        const testLocaleTag = 'testLocaleTag';
+        const testDisplayName = 'testDisplayName';
+        const arcOptions: AppConfig = {
+          type: AppType.kArc,
+          supportedLocales: [{
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          }],
+        };
+        await addDialog(arcOptions, appId);
+
+        const filteredItems = getFilteredItems();
+        assertEquals(1, filteredItems.length);
+        filteredItems[0]!.shadowRoot!.querySelector<HTMLDivElement>(
+                                         listItemId)!.click();
+        // Test language should be selected.
+        assertLanguageItem(
+            filteredItems, /* idx= */ 0, testDisplayName,
+            /* isSelected= */ true, ListType.FILTERED);
+        confirmButton.click();
+        await fakeHandler.flushPipesForTesting();
+
+        const app = AppManagementStore.getInstance().data.apps[appId];
+        assertEquals(testLocaleTag, app!.selectedLocale!.localeTag);
       });
 });

@@ -133,6 +133,7 @@ export class FakePageHandler implements PageHandlerInterface {
     this.resolverMap_ = new Map();
     this.resolverMap_.set('setPreferredApp', new PromiseResolver());
     this.resolverMap_.set('getOverlappingPreferredApps', new PromiseResolver());
+    this.resolverMap_.set('setAppLocale', new PromiseResolver());
   }
 
   private getResolver_(methodName: string): PromiseResolver<void> {
@@ -236,6 +237,18 @@ export class FakePageHandler implements PageHandlerInterface {
 
   setWindowMode(_appId: string, _windowMode: WindowMode): void {
     assertNotReached();
+  }
+
+  setAppLocale(appId: string, localeTag: string): void {
+    const app = AppManagementStore.getInstance().data.apps[appId];
+    assert(app);
+
+    const newApp = {
+      ...app,
+      selectedLocale: {localeTag, displayName: '', nativeDisplayName: ''},
+    };
+    this.page.onAppChanged(newApp);
+    this.methodCalled('setAppLocale');
   }
 
   setRunOnOsLoginMode(_appId: string, _runOnOsLoginMode: RunOnOsLoginMode):

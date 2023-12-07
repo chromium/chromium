@@ -88,6 +88,8 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
   void ShowDefaultAppAssociationsUi() override;
   void OpenStorePage(const std::string& app_id) override;
+  void SetAppLocale(const std::string& app_id,
+                    const std::string& locale_tag) override;
 
   // web_app::WebAppRegistrarObserver:
   void OnWebAppFileHandlerApprovalStateChanged(

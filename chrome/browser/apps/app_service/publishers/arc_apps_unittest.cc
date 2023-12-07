@@ -655,11 +655,6 @@ TEST_F(ArcAppsPublisherTest, SetAppLocale_SendsLocaleToArc) {
   std::vector<arc::mojom::AppInfoPtr> test_app_info_list;
   test_app_info_list.push_back(arc_test()->fake_apps()[4]->Clone());
   arc_test()->app_instance()->SendRefreshAppList(test_app_info_list);
-  std::vector<apps::AppPtr> test_apps;
-  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
-  test_apps.push_back(std::move(app));
-  app_service_proxy()->OnApps(std::move(test_apps), apps::AppType::kArc,
-                              /*should_notify_initialized=*/true);
   // Setup package.
   // Initially pref will be set with "en" as selectedLocale.
   std::vector<arc::mojom::ArcPackageInfoPtr> test_packages;

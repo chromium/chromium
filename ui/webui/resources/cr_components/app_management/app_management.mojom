@@ -241,6 +241,9 @@ interface PageHandler {
   ShowDefaultAppAssociationsUi();
   // Opens the store page for an app with the given |app_id|.
   OpenStorePage(string app_id);
+  // Sets app locale for an app with the given |app_id|. Empty |locale_tag|
+  // indicates system language being chosen.
+  SetAppLocale(string app_id, string locale_tag);
 };
 
 // Frontend interface.
