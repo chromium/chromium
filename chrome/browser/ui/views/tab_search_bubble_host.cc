@@ -123,6 +123,22 @@ void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
   pressed_lock_.reset();
 }
 
+void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
+  if (browser != GetBrowser()) {
+    return;
+  }
+  // Don't show IPH if the user already has other tab groups.
+  if (browser->tab_strip_model()->group_model()->ListTabGroups().size() > 1) {
+    return;
+  }
+  BrowserFeaturePromoController* const promo_controller =
+      BrowserFeaturePromoController::GetForView(button_);
+  if (promo_controller) {
+    promo_controller->MaybeShowPromo(
+        feature_engagement::kIPHTabOrganizationSuccessFeature);
+  }
+}
+
 void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
     profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex, 1);

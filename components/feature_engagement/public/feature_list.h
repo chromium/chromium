@@ -349,6 +349,8 @@ DEFINE_VARIATION_PARAM(kIPHSideSearchFeature, "IPH_SideSearch");
 DEFINE_VARIATION_PARAM(kIPHSideSearchPageActionLabelFeature,
                        "IPH_SideSearchPageActionLabel");
 DEFINE_VARIATION_PARAM(kIPHTabAudioMutingFeature, "IPH_TabAudioMuting");
+DEFINE_VARIATION_PARAM(kIPHTabOrganizationSuccessFeature,
+                       "IPH_TabOrganizationSuccess");
 DEFINE_VARIATION_PARAM(kIPHTabSearchFeature, "IPH_TabSearch");
 DEFINE_VARIATION_PARAM(kIPHTrackingProtectionOffboardingFeature,
                        "IPH_TrackingProtectionOffboarding");
@@ -632,6 +634,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSideSearchPageActionLabelFeature),
         VARIATION_ENTRY(kIPHTabAudioMutingFeature),
         VARIATION_ENTRY(kIPHTabSearchFeature),
+        VARIATION_ENTRY(kIPHTabOrganizationSuccessFeature),
         VARIATION_ENTRY(kIPHTrackingProtectionOnboardingFeature),
         VARIATION_ENTRY(kIPHWebUITabStripFeature),
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),

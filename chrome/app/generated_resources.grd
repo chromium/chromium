@@ -9097,6 +9097,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Organize tabs
         </message>
       </if>
+      <message name="IDS_TAB_ORGANIZATION_SUCCESS_IPH" desc="The body text of the IPH describing how to interact with a tab group resulting from tab organization." translateable="false">
+        Right-click on the tab group name to edit this group or click to collapse
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_SUCCESS_IPH_SCREENREADER" desc="The screen reader text of the IPH describing how to interact with a tab group resulting from tab organization." translateable="false">
+        Select the tab group and activate the context menu to edit, or select the tab group and press enter to collapse
+      </message>
 
       <!-- Strings for intent picker -->
       <if expr="not is_android">
