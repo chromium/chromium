@@ -84,11 +84,6 @@ class POLICY_EXPORT CloudPolicyClient {
   using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
       const std::vector<std::string>& user_affiliation_ids)>;
 
-  // Callback that processes response value received from the server,
-  // or nullopt, if there was a failure.
-  using ResponseCallback =
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
-
   using ClientCertProvisioningRequestCallback = base::OnceCallback<void(
       DeviceManagementStatus,
       const enterprise_management::ClientCertificateProvisioningResponse&
@@ -375,13 +370,6 @@ class POLICY_EXPORT CloudPolicyClient {
                                          base::Value::Dict report,
                                          ResultCallback callback);
 
-  // Uploads a report containing |merging_payload| (merged into the default
-  // payload of the job). The client must be in a registered state. The
-  // |callback| will be called when the operation completes.
-  virtual void UploadEncryptedReport(base::Value::Dict merging_payload,
-                                     absl::optional<base::Value::Dict> context,
-                                     ResponseCallback callback);
-
   // Uploads a report on the status of app push-installs. The client must be in
   // a registered state. The |callback| will be called when the operation
   // completes.
@@ -638,14 +626,6 @@ class POLICY_EXPORT CloudPolicyClient {
   // Callback for realtime report upload requests.
   void OnRealtimeReportUploadCompleted(
       ResultCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      absl::optional<base::Value::Dict> response);
-
-  // Callback for encrypted report upload requests.
-  void OnEncryptedReportUploadCompleted(
-      ResponseCallback callback,
       DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,

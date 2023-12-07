@@ -31,6 +31,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -133,9 +134,8 @@ base::Value::Dict ReportingServerConnector::TestEnvironment::request_body(
 
 void ReportingServerConnector::TestEnvironment::SimulateResponseForRequest(
     size_t index) {
-  absl::optional<base::Value::Dict> response =
-      ResponseBuilder(request_body(index)).Build();
-  CHECK(response);
+  auto response = ResponseBuilder(request_body(index)).Build();
+  CHECK_OK(response) << response.error();
   SimulateCustomResponseForRequest(index, std::move(*response));
 }
 

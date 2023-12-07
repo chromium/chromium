@@ -10,7 +10,10 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/statusor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
@@ -48,9 +51,10 @@ ResponseBuilder& ResponseBuilder::SetSuccess(bool success) {
   return *this;
 }
 
-absl::optional<base::Value::Dict> ResponseBuilder::Build() const {
+StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
   if (params_.null) {
-    return absl::nullopt;
+    return base::unexpected(
+        Status(error::FAILED_PRECONDITION, "No parameters set"));
   }
 
   base::Value::Dict response;
@@ -153,7 +157,7 @@ MakeUploadEncryptedReportAction::MakeUploadEncryptedReportAction(
 void MakeUploadEncryptedReportAction::operator()(
     base::Value::Dict request,
     absl::optional<base::Value::Dict> context,
-    ::policy::CloudPolicyClient::ResponseCallback callback) {
+    ReportingServerConnector::ResponseCallback callback) {
   response_builder_.SetRequest(std::move(request));
   std::move(callback).Run(response_builder_.Build());
 }

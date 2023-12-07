@@ -24,7 +24,6 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
-#include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/signing_service.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -774,36 +773,6 @@ void CloudPolicyClient::UploadSecurityEventReport(
       include_device_info, add_connector_url_params_, std::move(callback));
 }
 
-void CloudPolicyClient::UploadEncryptedReport(
-    base::Value::Dict merging_payload,
-    absl::optional<base::Value::Dict> context,
-    ResponseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_registered()) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  auto config = std::make_unique<EncryptedReportingJobConfiguration>(
-      GetURLLoaderFactory(), DMAuth::FromDMToken(dm_token()),
-      service()->configuration()->GetEncryptedReportingServerUrl(),
-      std::move(merging_payload), this,
-      base::BindOnce(&CloudPolicyClient::OnEncryptedReportUploadCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  if (context.has_value()) {
-    config->UpdateContext(std::move(context.value()));
-  }
-  const auto delay = config->WhenIsAllowedToProceed();
-  if (delay.is_positive()) {
-    // Reject upload.
-    config->CancelNotAllowedJob();  // Invokes callback to response back.
-    return;
-  }
-  // Accept upload.
-  config->AccountForAllowedJob();
-  request_jobs_.push_back(service_->CreateJob(std::move(config)));
-}
-
 void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
                                                ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1404,28 +1373,6 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
   }
 
   std::move(callback).Run(CloudPolicyClient::Result(status));
-  RemoveJob(job);
-}
-
-// |job| can be null if the owning EncryptedReportingJobConfiguration is
-// destroyed prior to calling OnUploadComplete. In that case, callback will be
-// called with nullopt value.
-void CloudPolicyClient::OnEncryptedReportUploadCompleted(
-    ResponseCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int reponse_code,
-    absl::optional<base::Value::Dict> response) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (job == nullptr) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  last_dm_status_ = status;
-  if (status != DM_STATUS_SUCCESS) {
-    NotifyClientError();
-  }
-  std::move(callback).Run(std::move(response));
   RemoveJob(job);
 }
 

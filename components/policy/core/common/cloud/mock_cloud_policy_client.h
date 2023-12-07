@@ -118,12 +118,6 @@ class MockCloudPolicyClient : public CloudPolicyClient {
       (content::BrowserContext*, bool, base::Value::Dict, ResultCallback),
       (override));
   MOCK_METHOD(void,
-              UploadEncryptedReport,
-              (base::Value::Dict,
-               absl::optional<base::Value::Dict>,
-               ResponseCallback),
-              (override));
-  MOCK_METHOD(void,
               UploadAppInstallReport,
               (base::Value::Dict value, ResultCallback callback),
               (override));
