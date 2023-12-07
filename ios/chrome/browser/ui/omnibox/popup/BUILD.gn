@@ -146,6 +146,8 @@ source_set("popup_ui") {
     "omnibox_popup_row_cell_experimental.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
+    "popup_table_view.h",
+    "popup_table_view.mm",
     "simple_omnibox_icon.h",
     "simple_omnibox_icon.mm",
   ]

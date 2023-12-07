@@ -97,15 +97,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
     if (IsIpadPopoutOmniboxEnabled()) {
-      _popupContainerView.clipsToBounds = YES;
-      _popupContainerView.layer.cornerRadius = 11.0f;
+      self.viewController.view.layer.masksToBounds = YES;
 
-      UIColor* borderColor =
-          incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                    : [UIColor.blackColor colorWithAlphaComponent:0.12];
-
-      _popupContainerView.layer.borderColor = borderColor.CGColor;
-      _popupContainerView.layer.borderWidth = 2.0f;
       AddSameConstraints(viewController.view, _popupContainerView);
     } else {
       AddSameConstraintsToSides(viewController.view, _popupContainerView,
@@ -114,27 +107,30 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
       _popupTopConstraint = [viewController.view.topAnchor
           constraintEqualToAnchor:_popupContainerView.topAnchor];
       _popupTopConstraint.active = YES;
+
+      // Add bottom separator. This will only be visible on iPad where
+      // the omnibox doesn't fill the whole screen.
+      _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
+      _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+      _bottomSeparator.backgroundColor =
+          [UIColor colorNamed:kToolbarShadowColor];
+
+      [_popupContainerView addSubview:self.bottomSeparator];
+
+      CGFloat separatorHeight =
+          ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+      [NSLayoutConstraint activateConstraints:@[
+        [self.bottomSeparator.heightAnchor
+            constraintEqualToConstant:separatorHeight],
+        [self.bottomSeparator.leadingAnchor
+            constraintEqualToAnchor:_popupContainerView.leadingAnchor],
+        [self.bottomSeparator.trailingAnchor
+            constraintEqualToAnchor:_popupContainerView.trailingAnchor],
+        [self.bottomSeparator.topAnchor
+            constraintEqualToAnchor:_popupContainerView.bottomAnchor],
+      ]];
     }
 
-    // Add bottom separator. This will only be visible on iPad where
-    // the omnibox doesn't fill the whole screen.
-    _bottomSeparator = [[UIView alloc] initWithFrame:CGRectZero];
-    _bottomSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-    _bottomSeparator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
-
-    [_popupContainerView addSubview:self.bottomSeparator];
-    CGFloat separatorHeight =
-        ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
-    [NSLayoutConstraint activateConstraints:@[
-      [self.bottomSeparator.heightAnchor
-          constraintEqualToConstant:separatorHeight],
-      [self.bottomSeparator.leadingAnchor
-          constraintEqualToAnchor:_popupContainerView.leadingAnchor],
-      [self.bottomSeparator.trailingAnchor
-          constraintEqualToAnchor:_popupContainerView.trailingAnchor],
-      [self.bottomSeparator.topAnchor
-          constraintEqualToAnchor:_popupContainerView.bottomAnchor],
-    ]];
   }
   return self;
 }
@@ -193,10 +189,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 - (void)updatePopupAfterTraitCollectionChange {
   DCHECK(IsIpadPopoutOmniboxEnabled());
 
-  if (!self.open) {
-    return;
-  }
-
   // Re-add the popup container to break any existing constraints.
   [self.popupContainerView removeFromSuperview];
   [[self.delegate popupParentViewForPresenter:self]
@@ -248,14 +240,46 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:topConstraint];
 
-  if (IsIpadPopoutOmniboxEnabled() &&
-      IsRegularXRegularSizeClass(self.popupContainerView)) {
-    [constraintsToActivate addObjectsFromArray:@[
-      [popup.leadingAnchor
-          constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor],
-      [popup.trailingAnchor
-          constraintEqualToAnchor:self.topOmniboxGuide.trailingAnchor],
-    ]];
+  if (IsIpadPopoutOmniboxEnabled()) {
+    if (IsRegularXRegularSizeClass(self.popupContainerView)) {
+      _popupContainerView.layer.cornerRadius = 16;
+      _popupContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
+      _popupContainerView.layer.shadowRadius = 30;
+      _popupContainerView.layer.shadowOffset = CGSizeMake(0, 10);
+      _popupContainerView.layer.masksToBounds = NO;
+      _popupContainerView.layer.shadowOpacity = 0.2;
+
+      self.viewController.view.layer.cornerRadius = 16.0f;
+
+      NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
+          constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor
+                         constant:-16];
+      leadingConstraint.priority = UILayoutPriorityDefaultHigh;
+
+      NSLayoutConstraint* trailingConstraint = [popup.trailingAnchor
+          constraintEqualToAnchor:self.topOmniboxGuide.trailingAnchor
+                         constant:16];
+      trailingConstraint.priority = UILayoutPriorityDefaultHigh;
+
+      NSLayoutConstraint* centerXConstraint = [popup.centerXAnchor
+          constraintEqualToAnchor:self.topOmniboxGuide.centerXAnchor];
+
+      [constraintsToActivate addObjectsFromArray:@[
+        leadingConstraint, trailingConstraint, centerXConstraint
+      ]];
+    } else {
+      _popupContainerView.layer.cornerRadius = 0;
+      _popupContainerView.layer.shadowColor = [UIColor clearColor].CGColor;
+      _popupContainerView.layer.masksToBounds = YES;
+      self.viewController.view.layer.cornerRadius = 0;
+
+      [constraintsToActivate addObjectsFromArray:@[
+        [popup.leadingAnchor
+            constraintEqualToAnchor:popup.superview.leadingAnchor],
+        [popup.trailingAnchor
+            constraintEqualToAnchor:popup.superview.trailingAnchor],
+      ]];
+    }
   } else {
     [constraintsToActivate addObjectsFromArray:@[
       [popup.leadingAnchor

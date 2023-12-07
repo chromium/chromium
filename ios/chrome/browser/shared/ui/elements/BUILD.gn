@@ -35,6 +35,7 @@ source_set("elements") {
     "//ios/chrome/browser/shared/ui/elements:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
