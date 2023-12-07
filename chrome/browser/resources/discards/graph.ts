@@ -2,13 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is loaded into a <webview> and cannot reference any chrome:
-// resources. The only communication to and from this implementation and the
-// WebUI is through postMessage.
-
-// Note that these imports are stripped by a build step before being packaged.
-// These are used for types only.
 import {FavIconInfo, FrameInfo, GraphChangeStreamInterface, PageInfo, ProcessInfo, WorkerInfo} from './discards.mojom-webui.js';
+import 'chrome://resources/d3/d3.min.js';
 
 // Radius of a node circle.
 const kNodeRadius: number = 6;
@@ -85,14 +80,16 @@ class ToolTip {
   x: number;
   y: number;
   node: GraphNode;
+  private graph_: Graph;
   private div_: d3.Selection<HTMLDivElement, unknown, null, undefined>;
   private descriptionJson_: string = '';
 
-  constructor(div: Element, node: GraphNode) {
+  constructor(div: Element, node: GraphNode, graph: Graph) {
     this.x = node.x;
     this.y = node.y - 28;
     this.node = node;
 
+    this.graph_ = graph;
     this.div_ = d3.select(div)
                     .append('div')
                     .attr('class', 'tooltip')
@@ -324,7 +321,7 @@ class ToolTip {
     this.y = d3.event.y;
     this.div_.style('left', `${this.x}px`).style('top', `${this.y}px`);
 
-    graph!.updateToolTipLinks();
+    this.graph_.updateToolTipLinks();
   }
 }
 
@@ -640,7 +637,7 @@ function boundingForce(graphHeight: number, graphWidth: number) {
   return force;
 }
 
-class Graph implements GraphChangeStreamInterface {
+export class Graph implements GraphChangeStreamInterface {
   private svg_: SVGElement;
   private div_: Element;
   private wasResized_: boolean = false;
@@ -679,13 +676,6 @@ class Graph implements GraphChangeStreamInterface {
   }
 
   initialize() {
-    // Set up a message listener to receive the graph data from the WebUI.
-    // This is hosted in a webview that is never navigated anywhere else,
-    // so these event handlers are never removed.
-    window.addEventListener('message', this.onMessage_.bind(this));
-
-    // Set up a resize listener to track the graph on resize.
-    window.addEventListener('resize', this.onResize_.bind(this));
 
     // Create the simulation and set up the permanent forces.
     const simulation =
@@ -741,23 +731,28 @@ class Graph implements GraphChangeStreamInterface {
 
   frameCreated(frame: FrameInfo) {
     this.addNode_(new FrameNode(frame));
+    this.render_();
   }
 
   pageCreated(page: PageInfo) {
     this.addNode_(new PageNode(page));
+    this.render_();
   }
 
   processCreated(process: ProcessInfo) {
     this.addNode_(new ProcessNode(process));
+    this.render_();
   }
 
   workerCreated(worker: WorkerInfo) {
     this.addNode_(new WorkerNode(worker));
+    this.render_();
   }
 
   frameChanged(frame: FrameInfo) {
     const frameNode = this.nodes_.get(frame.id) as FrameNode;
     frameNode.frame = frame;
+    this.render_();
   }
 
   pageChanged(page: PageInfo) {
@@ -767,11 +762,13 @@ class Graph implements GraphChangeStreamInterface {
     this.removeDashedNodeLinks_(pageNode);
     pageNode.page = page;
     this.addDashedNodeLinks_(pageNode);
+    this.render_();
   }
 
   processChanged(process: ProcessInfo) {
     const processNode = this.nodes_.get(process.id) as ProcessNode;
     processNode.process = process;
+    this.render_();
   }
 
   workerChanged(worker: WorkerInfo) {
@@ -781,6 +778,7 @@ class Graph implements GraphChangeStreamInterface {
     this.removeNodeLinks_(workerNode);
     workerNode.worker = worker;
     this.addNodeLinks_(workerNode);
+    this.render_();
   }
 
   favIconDataAvailable(iconInfo: FavIconInfo) {
@@ -788,6 +786,7 @@ class Graph implements GraphChangeStreamInterface {
     if (graphNode) {
       graphNode.iconUrl = 'data:image/png;base64,' + iconInfo.iconData;
     }
+    this.render_();
   }
 
   nodeDeleted(nodeId: bigint) {
@@ -797,6 +796,17 @@ class Graph implements GraphChangeStreamInterface {
     this.removeNodeLinks_(node);
     this.removeDashedNodeLinks_(node);
     this.nodes_.delete(nodeId);
+    this.render_();
+  }
+
+  nodeDescriptions(nodeDescriptions: {[key: string]: any}) {
+    for (const nodeId in nodeDescriptions) {
+      const node = this.nodes_.get(BigInt(nodeId));
+      if (node && node.tooltip) {
+        node.tooltip.onDescription(nodeDescriptions[nodeId]);
+      }
+    }
+    this.render_();
   }
 
   /** Updates floating tooltip positions as well as links to pinned tooltips */
@@ -853,15 +863,6 @@ class Graph implements GraphChangeStreamInterface {
         link => link.source !== node && link.target !== node);
   }
 
-  private nodeDescriptions_(nodeDescriptions: {[key: string]: any}) {
-    for (const nodeId in nodeDescriptions) {
-      const node = this.nodes_.get(BigInt(nodeId));
-      if (node && node.tooltip) {
-        node.tooltip.onDescription(nodeDescriptions[nodeId]);
-      }
-    }
-  }
-
   private pollForNodeDescriptions_() {
     const nodeIds: bigint[] = [];
     for (const node of this.nodes_.values()) {
@@ -871,8 +872,10 @@ class Graph implements GraphChangeStreamInterface {
     }
 
     if (nodeIds.length) {
-      this.hostWindow_!.postMessage(['requestNodeDescriptions', nodeIds], '*');
-
+      this.div_.dispatchEvent(new CustomEvent('request-node-descriptions',
+                                              { bubbles: true,
+                                                composed: true,
+                                                detail: nodeIds }));
       if (this.pollDescriptionsInterval_ === 0) {
         // Start polling if not already in progress.
         this.pollDescriptionsInterval_ =
@@ -885,61 +888,12 @@ class Graph implements GraphChangeStreamInterface {
     }
   }
 
-  /**
-   * @param event A graph update event posted from the WebUI.
-   */
-  private onMessage_(event: MessageEvent) {
-    if (!this.hostWindow_) {
-      this.hostWindow_ = event.source as Window;
-    }
-
-    const type = event.data[0] as string;
-    const data = event.data[1];
-    switch (type) {
-      case 'frameCreated':
-        this.frameCreated(data as FrameInfo);
-        break;
-      case 'pageCreated':
-        this.pageCreated(data as PageInfo);
-        break;
-      case 'processCreated':
-        this.processCreated(data as ProcessInfo);
-        break;
-      case 'workerCreated':
-        this.workerCreated(data as WorkerInfo);
-        break;
-      case 'frameChanged':
-        this.frameChanged(data as FrameInfo);
-        break;
-      case 'pageChanged':
-        this.pageChanged(data as PageInfo);
-        break;
-      case 'processChanged':
-        this.processChanged(data as ProcessInfo);
-        break;
-      case 'favIconDataAvailable':
-        this.favIconDataAvailable(data as FavIconInfo);
-        break;
-      case 'workerChanged':
-        this.workerChanged(data as WorkerInfo);
-        break;
-      case 'nodeDeleted':
-        this.nodeDeleted(data as bigint);
-        break;
-      case 'nodeDescriptions':
-        this.nodeDescriptions_(data as {[key: string]: any});
-        break;
-    }
-
-    this.render_();
-  }
-
   private onGraphNodeClick_(node: GraphNode) {
     if (node.tooltip) {
       node.tooltip.goAway();
       node.tooltip = null;
     } else {
-      node.tooltip = new ToolTip(this.div_, node);
+      node.tooltip = new ToolTip(this.div_, node, this);
 
       // Poll for all tooltip node descriptions immediately.
       this.pollForNodeDescriptions_();
@@ -1223,7 +1177,7 @@ class Graph implements GraphChangeStreamInterface {
   /**
    * Resizes and restarts the animation after a size change.
    */
-  private onResize_() {
+  onResize() {
     this.width_ = this.svg_.clientWidth;
     this.height_ = this.svg_.clientHeight;
 
@@ -1255,12 +1209,3 @@ class Graph implements GraphChangeStreamInterface {
     this.restartSimulation_();
   }
 }
-let graph: Graph|null = null;
-function onLoad() {
-  graph =
-      new Graph(document.querySelector('svg')!, document.querySelector('div')!);
-
-  graph!.initialize();
-}
-
-window.addEventListener('load', onLoad);
