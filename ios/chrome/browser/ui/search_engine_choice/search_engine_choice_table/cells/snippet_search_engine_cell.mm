@@ -8,16 +8,17 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
+constexpr CGFloat kFaviconContainerViewRadius = 7.;
+constexpr CGFloat kFaviconContainerViewSize = 32.;
 // The size of the radio button at the side of each cell.
 constexpr CGFloat kRadioButtonSize = 22.;
 // Vertical margin for the elements in SnippetSearchEngineCell.
@@ -35,7 +36,8 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 
 @implementation SnippetSearchEngineCell {
   // Container View for the faviconView.
-  FaviconContainerView* _faviconContainerView;
+  UIView* _faviconContainerView;
+  UIImageView* _faviconImageView;
   NSLayoutConstraint* _showSnippetConstraint;
   NSLayoutConstraint* _hiddenSnippetConstraint;
   SnippetState _snippetState;
@@ -50,12 +52,20 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
   if (self) {
     UIView* contentView = self.contentView;
     contentView.clipsToBounds = YES;
-    _faviconContainerView = [[FaviconContainerView alloc] init];
+    // Add the favicon container view and the favicon image view.
+    _faviconContainerView = [[UIView alloc] init];
     _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_faviconContainerView
-        setFaviconBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+    _faviconContainerView.backgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+    _faviconContainerView.layer.cornerRadius = kFaviconContainerViewRadius;
+    _faviconContainerView.layer.masksToBounds = YES;
     [contentView addSubview:_faviconContainerView];
-    [_faviconContainerView
+    _faviconImageView = [[UIImageView alloc] init];
+    _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _faviconImageView.layer.cornerRadius = kFaviconImageViewRadius;
+    _faviconImageView.clipsToBounds = YES;
+    [_faviconContainerView addSubview:_faviconImageView];
+    [_faviconImageView
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
@@ -119,6 +129,18 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
                          constant:kTableViewHorizontalSpacing],
       [_faviconContainerView.centerYAnchor
           constraintEqualToAnchor:_nameLabel.centerYAnchor],
+      [_faviconContainerView.widthAnchor
+          constraintEqualToConstant:kFaviconContainerViewSize],
+      [_faviconContainerView.heightAnchor
+          constraintEqualToConstant:kFaviconContainerViewSize],
+      [_faviconImageView.centerXAnchor
+          constraintEqualToAnchor:_faviconContainerView.centerXAnchor],
+      [_faviconImageView.centerYAnchor
+          constraintEqualToAnchor:_faviconContainerView.centerYAnchor],
+      [_faviconImageView.widthAnchor
+          constraintEqualToConstant:kFaviconImageViewSize],
+      [_faviconImageView.heightAnchor
+          constraintEqualToConstant:kFaviconImageViewSize],
       [_nameLabel.topAnchor constraintEqualToAnchor:contentView.topAnchor
                                            constant:kVerticalMargin],
       [_nameLabel.leadingAnchor
@@ -166,16 +188,23 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 
 #pragma mark - Properties
 
-- (FaviconView*)faviconView {
-  return _faviconContainerView.faviconView;
-}
-
 - (void)setChecked:(BOOL)checked {
   if (checked == _checked) {
     return;
   }
   _checked = checked;
   [self updateCircleImageView];
+}
+
+- (void)setFaviconImage:(UIImage*)faviconImage {
+  CGSize faviconImageSize =
+      CGSizeMake(kFaviconImageViewSize, kFaviconImageViewSize);
+  ResizeImage(faviconImage, faviconImageSize, ProjectionMode::kAspectFit);
+  _faviconImageView.image = faviconImage;
+}
+
+- (UIImage*)faviconImage {
+  return _faviconImageView.image;
 }
 
 #pragma mark - Private
@@ -263,7 +292,7 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  [self.faviconView configureWithAttributes:nil];
+  _faviconImageView.image = nil;
   self.chevronToggledBlock = nil;
 }
 
