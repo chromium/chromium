@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -24,6 +25,7 @@ v8::Local<v8::Value> Eval(V8TestingScope& scope, const char* source) {
 }  // namespace
 
 TEST(URLPatternTest, CompatibleFromString) {
+  test::TaskEnvironment task_environment;
   KURL base_url("https://urlpattern.example/foo/bar");
   V8TestingScope scope(base_url);
   v8::Local<v8::String> pattern_string =
@@ -38,6 +40,7 @@ TEST(URLPatternTest, CompatibleFromString) {
 }
 
 TEST(URLPatternTest, CompatibleFromStringInvalid) {
+  test::TaskEnvironment task_environment;
   KURL base_url("https://urlpattern.example/foo/bar");
   V8TestingScope scope(base_url);
   v8::Local<v8::String> pattern_string = V8String(scope.GetIsolate(), "{");
@@ -50,6 +53,7 @@ TEST(URLPatternTest, CompatibleFromStringInvalid) {
 }
 
 TEST(URLPatternTest, CompatibleFromInit) {
+  test::TaskEnvironment task_environment;
   KURL base_url("https://urlpattern.example/foo/bar");
   V8TestingScope scope(base_url);
   v8::Local<v8::Value> init = Eval(scope, "({search: 'a=42'})");
@@ -65,6 +69,7 @@ TEST(URLPatternTest, CompatibleFromInit) {
 }
 
 TEST(URLPatternTest, CompatibleFromInitWithBaseURL) {
+  test::TaskEnvironment task_environment;
   KURL base_url("https://urlpattern.example/foo/bar");
   V8TestingScope scope(base_url);
   v8::Local<v8::Value> init =
@@ -81,6 +86,7 @@ TEST(URLPatternTest, CompatibleFromInitWithBaseURL) {
 }
 
 TEST(URLPatternTest, CompatibleFromInitInvalid) {
+  test::TaskEnvironment task_environment;
   KURL base_url("https://urlpattern.example/foo/bar");
   V8TestingScope scope(base_url);
   v8::Local<v8::Value> init = Eval(scope, "({hash: '{'})");
@@ -94,6 +100,7 @@ TEST(URLPatternTest, CompatibleFromInitInvalid) {
 }
 
 TEST(URLPatternTest, CompatibleFromURLPattern) {
+  test::TaskEnvironment task_environment;
   KURL base_url("https://urlpattern.example/foo/bar");
   V8TestingScope scope(base_url);
   v8::Local<v8::Value> wrapper =
