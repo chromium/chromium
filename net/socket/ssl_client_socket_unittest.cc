@@ -6059,9 +6059,9 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
 
   base::test::ScopedFeatureList feature_list;
   if (client_use_new_alps_) {
-    feature_list.InitAndEnableFeature(features::kUseAlpsNewCodepoint);
+    feature_list.InitAndEnableFeature(features::kUseNewAlpsCodepointHttp2);
   } else {
-    feature_list.InitAndDisableFeature(features::kUseAlpsNewCodepoint);
+    feature_list.InitAndDisableFeature(features::kUseNewAlpsCodepointHttp2);
   }
 
   if (client_alps_enabled_) {

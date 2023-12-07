@@ -491,8 +491,8 @@ BASE_FEATURE(kNewCertPathBuilderIterationLimit,
              "NewCertPathBuilderIterationLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseAlpsNewCodepoint,
-             "UseAlpsNewCodepoint",
+BASE_FEATURE(kUseNewAlpsCodepointHttp2,
+             "UseNewAlpsCodepointHttp2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired,

@@ -486,8 +486,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
 
-// Enables using the new ALPS codepoint to negotiate application settings.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseAlpsNewCodepoint);
+// Enables using the new ALPS codepoint to negotiate application settings for
+// HTTP2.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointHttp2);
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.

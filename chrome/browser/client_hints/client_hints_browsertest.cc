@@ -116,7 +116,7 @@ constexpr unsigned expected_pre_merge_third_party_client_hints_number = 16u;
 constexpr char kDefaultFeatures[] =
     "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
     "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
-    "UseAlpsNewCodepoint";
+    "UseNewAlpsCodepointHttp2";
 
 // All of the status codes from HttpResponseHeaders::IsRedirectResponseCode.
 const net::HttpStatusCode kRedirectStatusCodes[] = {
@@ -3445,7 +3445,7 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     // sec-ch-dpr is not included.
     feature_list->InitFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame",
-        "ClientHintsDPR,UseAlpsNewCodepoint");
+        "ClientHintsDPR,UseNewAlpsCodepointHttp2");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -4036,7 +4036,7 @@ class ClientHintsBrowserTestWithEmulatedMedia
       : ClientHintsBrowserTestWithEmulatedMedia(
             "UserAgentClientHint,AcceptCHFrame,"
             "ClientHintsPrefersReducedTransparency,",
-            "UseAlpsNewCodepoint") {}
+            "UseNewAlpsCodepointHttp2") {}
 
   ClientHintsBrowserTestWithEmulatedMedia(const std::string& enable_features,
                                           const std::string& disable_features)
