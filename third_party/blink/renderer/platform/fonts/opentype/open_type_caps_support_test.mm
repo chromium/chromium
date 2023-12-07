@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/mac_util.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
@@ -20,8 +21,8 @@ namespace blink {
 class OpenTypeCapsSupportTest : public FontTestBase {};
 
 void ensureHasNativeSmallCaps(const String& font_family_name) {
-  sk_sp<SkTypeface> test_typeface =
-      SkTypeface::MakeFromName(font_family_name.Utf8().c_str(), SkFontStyle());
+  sk_sp<SkTypeface> test_typeface = skia::MakeTypefaceFromName(
+      font_family_name.Utf8().c_str(), SkFontStyle());
   FontPlatformData font_platform_data(
       test_typeface, font_family_name.Utf8(),
       /* text_size */ 16, /* synthetic_bold */ false,

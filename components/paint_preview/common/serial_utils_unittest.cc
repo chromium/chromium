@@ -140,7 +140,7 @@ TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
   PictureSerializationContext picture_ctx;
 
   // This is a system font serialization of the data will be skipped.
-  auto typeface = SkTypeface::MakeFromName("sans-serif", SkFontStyle::Bold());
+  auto typeface = skia::MakeTypefaceFromName("sans-serif", SkFontStyle::Bold());
   TypefaceUsageMap usage_map;
   std::unique_ptr<GlyphUsage> usage =
       std::make_unique<SparseGlyphUsage>(typeface->countGlyphs());

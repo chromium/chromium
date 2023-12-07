@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
 
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -14,8 +16,8 @@ namespace blink {
 TEST(VariableAxesNamesTest, TestVariableAxes) {
   String file_path = blink::test::BlinkWebTestsDir() +
                      "/third_party/Homecomputer/Sixtyfour.ttf";
-  sk_sp<SkTypeface> typeface =
-      SkTypeface::MakeFromFile(file_path.Utf8().c_str(), 0);
+  sk_sp<SkFontMgr> mgr = skia::DefaultFontMgr();
+  sk_sp<SkTypeface> typeface = mgr->makeFromFile(file_path.Utf8().c_str(), 0);
   Vector<VariationAxis> axes = VariableAxesNames::GetVariationAxes(typeface);
   EXPECT_EQ(axes.size(), (unsigned)2);
   VariationAxis axis1 = axes.at(0);

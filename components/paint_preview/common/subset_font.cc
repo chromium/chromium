@@ -18,6 +18,8 @@
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/crash/core/common/crash_key.h"
+#include "skia/ext/font_utils.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -134,7 +136,9 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
   // Ensure the data is in SkTypeface format so it will deserialize when
   // embedded in an SkPicture. This is *not* a validation/sanitation and the
   // inner workings may vary by platform.
-  auto sk_subset_typeface = SkTypeface::MakeFromData(sk_data, final_ttc_index);
+  sk_sp<SkFontMgr> mgr = skia::DefaultFontMgr();
+  sk_sp<SkTypeface> sk_subset_typeface =
+      mgr->makeFromData(sk_data, final_ttc_index);
   if (!sk_subset_typeface) {
     return nullptr;
   }

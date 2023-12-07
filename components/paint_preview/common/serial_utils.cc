@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/subset_font.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkBmpDecoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
@@ -92,7 +93,7 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
     // an alternative font if a system font doesn't match. As such, we can use
     // this to check if the SkTypeface is for a system font. If it is a system
     // font we don't need to subset/serialize it.
-    if (SkTypeface::MakeFromName(familyName.c_str(), typeface->fontStyle())) {
+    if (skia::MakeTypefaceFromName(familyName.c_str(), typeface->fontStyle())) {
       return typeface->serialize(
           SkTypeface::SerializeBehavior::kIncludeDataIfLocal);
     }

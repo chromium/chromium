@@ -9,8 +9,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "printing/buildflags/buildflags.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -324,7 +326,8 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
 
   // Typeface not encountered before, expect it to be present in the stream.
   DCHECK(data_included);
-  sk_sp<SkTypeface> typeface = SkTypeface::MakeDeserialize(stream);
+  sk_sp<SkTypeface> typeface =
+      SkTypeface::MakeDeserialize(stream, skia::DefaultFontMgr());
   context->emplace(id, typeface);
   return typeface;
 }

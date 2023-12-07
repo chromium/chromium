@@ -34,6 +34,7 @@
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
@@ -868,8 +869,7 @@ sk_sp<SkTypeface> CreateSkiaTypeface(const Font& font,
   SkFontStyle skia_style(
       static_cast<int>(weight), SkFontStyle::kNormal_Width,
       italic ? SkFontStyle::kItalic_Slant : SkFontStyle::kUpright_Slant);
-  return sk_sp<SkTypeface>(SkTypeface::MakeFromName(
-      font.GetFontName().c_str(), skia_style));
+  return skia::MakeTypefaceFromName(font.GetFontName().c_str(), skia_style);
 #endif
 }
 
@@ -942,13 +942,13 @@ bool TextRunHarfBuzz::FontParams::SetRenderParamsRematchFont(
     const Font& new_font,
     const FontRenderParams& new_render_params) {
   // This takes the font family name from new_font, and calls
-  // SkTypeface::makeFromName() with that family name and the style information
-  // internal to this text run. So it triggers a new font match and looks for
-  // adjacent fonts in the family. This works for styling, e.g. styling a run in
-  // bold, italic or underline, but breaks font fallback in certain scenarios,
-  // as the fallback font may be of a different weight and style than the run's
-  // own, so this can lead to a failure of instantiating the correct fallback
-  // font.
+  // skia::MakeTypefaceFromName() with that family name and the style
+  // information internal to this text run. So it triggers a new font match and
+  // looks for adjacent fonts in the family. This works for styling, e.g.
+  // styling a run in bold, italic or underline, but breaks font fallback in
+  // certain scenarios, as the fallback font may be of a different weight and
+  // style than the run's own, so this can lead to a failure of instantiating
+  // the correct fallback font.
   sk_sp<SkTypeface> new_skia_face(
       internal::CreateSkiaTypeface(new_font, italic, weight));
   if (!new_skia_face)
