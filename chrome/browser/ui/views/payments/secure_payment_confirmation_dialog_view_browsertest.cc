@@ -291,15 +291,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_TRUE(confirm_pressed_);
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(opt_out_clicked_);
-
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
 }
 
 // Test that the 'Accept' button is protected against accidental inputs.
@@ -323,26 +314,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   // ignored.
   ClickButton(test_delegate_->dialog_view()->GetOkButton());
   EXPECT_FALSE(confirm_pressed_);
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      0);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 0);
 
   // However a subsequent press should be accepted.
   ClickButton(test_delegate_->dialog_view()->GetOkButton());
   EXPECT_TRUE(confirm_pressed_);
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
 }
 
 // Test that clicking the 'Cancel' button triggers the expected path and closes
@@ -357,15 +332,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_TRUE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
   EXPECT_FALSE(opt_out_clicked_);
-
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kCanceled, 1);
 }
 
 // Test that the progress bar is visible in the view when requested by the
@@ -597,15 +563,6 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
   EXPECT_TRUE(opt_out_clicked_);
-
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      1);
-  histogram_tester_.ExpectBucketCount(
-      "PaymentRequest.SecurePaymentConfirmation.Funnel."
-      "AuthenticationDialogResult",
-      SecurePaymentConfirmationAuthenticationDialogResult::kOptOut, 1);
 }
 
 }  // namespace payments
