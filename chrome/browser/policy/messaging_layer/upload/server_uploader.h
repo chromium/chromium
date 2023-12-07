@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_DM_SERVER_UPLOADER_H_
-#define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_DM_SERVER_UPLOADER_H_
+#ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_SERVER_UPLOADER_H_
+#define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_SERVER_UPLOADER_H_
 
 #include <memory>
 #include <vector>
@@ -53,60 +53,58 @@ using CompletionResponse = StatusOr<SuccessfulUploadResponse>;
 
 using CompletionCallback = base::OnceCallback<void(CompletionResponse)>;
 
-// Interface class for handling records to be sent to the server.
-class RecordHandler {
- public:
-  virtual ~RecordHandler() = default;
-
-  // Will iterate over |records| and ensure they are in ascending sequence
-  // order, and within the same generation. Any out of order records will be
-  // discarded.
-  // |need_encryption_key| is set to `true` if the client needs to request
-  // the encryption key from the server (either because it does not have it
-  // or because the one it has is old and may be outdated). In that case
-  // it is ok for |records| to be empty (otherwise at least one record must
-  // be present). If response has the key info attached, it is decoded and
-  // handed over to |encryption_key_attached_cb|.
-  // Once the server has responded |upload_complete| is called with either the
-  // highest accepted SequenceInformation, or an error detailing the failure
-  // cause.
-  // Any errors will result in |upload_complete| being called with a Status.
-  virtual void HandleRecords(
-      bool need_encryption_key,
-      int config_file_version,
-      std::vector<EncryptedRecord> records,
-      ScopedReservation scoped_reservation,
-      CompletionCallback upload_complete,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb) = 0;
-
- protected:
-  RecordHandler() = default;
-};
-
-// `DmServerUploader` uploads events to the DMServer. It is provided with
-// `RecordHandler` instance owned by the caller, as well as with the flags and
-// records for upload. Results are passed via callbacks.
+// `ServerUploader` uploads events to the Reporting Server. It is provided with
+// `RecordHandler` instance, as well as with the flags and records for upload.
 // It processes records by verifying that they are parseable and sending them
 // to the appropriate handler. Called from the `UploadClient`, so we can reuse
 // the same sequence task runner.
-class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
+// Results are passed via callbacks.
+class ServerUploader : public TaskRunnerContext<CompletionResponse> {
  public:
-  DmServerUploader(
+  // Interface class for handling records to be sent to the server.
+  class RecordHandler {
+   public:
+    virtual ~RecordHandler() = default;
+
+    // Will iterate over `records` and ensure they are in ascending sequence
+    // order, and within the same generation. Any out of order records will be
+    // discarded. `need_encryption_key` is set to `true` if the client needs to
+    // request the encryption key from the server (either because it does not
+    // have it or because the one it has is old and may be outdated). In that
+    // case it is ok for `records` to be empty (otherwise at least one record
+    // must be present). If response has the key info attached, it is decoded
+    // and handed over to `encryption_key_attached_cb`. Once the server has
+    // responded `upload_complete` is called with either the highest accepted
+    // SequenceInformation, or an error detailing the failure cause. Any errors
+    // will result in `upload_complete` being called with a Status.
+    virtual void HandleRecords(
+        bool need_encryption_key,
+        int config_file_version,
+        std::vector<EncryptedRecord> records,
+        ScopedReservation scoped_reservation,
+        CompletionCallback upload_complete,
+        EncryptionKeyAttachedCallback encryption_key_attached_cb) = 0;
+
+   protected:
+    RecordHandler() = default;
+  };
+
+  ServerUploader(
       bool need_encryption_key,
       int config_file_version,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
-      RecordHandler* handler,  // Not owned!
+      std::unique_ptr<RecordHandler> handler,
       ReportSuccessfulUploadCallback report_success_upload_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       CompletionCallback completion_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
-  DmServerUploader(const DmServerUploader&) = delete;
-  DmServerUploader& operator=(const DmServerUploader&) = delete;
+  ServerUploader(const ServerUploader&) = delete;
+  ServerUploader& operator=(const ServerUploader&) = delete;
 
  private:
-  ~DmServerUploader() override;
+  ~ServerUploader() override;
 
   // OnStart checks to ensure that our record set isn't empty, and requests
   // handler size status from |handlers_|.
@@ -119,7 +117,7 @@ class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
   Status ProcessRecords();
 
   // HandleRecords sends the records to the |record_handlers_|, allowing them
-  // to upload to DmServer.
+  // to upload to Reporting Server.
   void HandleRecords();
 
   // Processes |completion_response| and calls |Response|.
@@ -137,14 +135,11 @@ class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
   const ReportSuccessfulUploadCallback report_success_upload_cb_;
   const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
-  // This dangling raw_ptr occurred in:
-  // unit_tests: NeedOrNoNeedKey/DmServerUploaderTest.ReprotWithZeroRecords/2
-  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425192/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Aunit_tests%2FDmServerUploaderTest.ReprotWithZeroRecords%2FNeedOrNoNeedKey.2+VHash%3A728d3f3a440b40c1
-  const raw_ptr<RecordHandler, FlakyDanglingUntriaged> handler_;
+  const std::unique_ptr<RecordHandler> handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_DM_SERVER_UPLOADER_H_
+#endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_SERVER_UPLOADER_H_

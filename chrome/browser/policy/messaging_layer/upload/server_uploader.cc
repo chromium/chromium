@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
+#include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 
 #include <memory>
 #include <utility>
@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/types/expected.h"
-#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -28,12 +27,12 @@
 
 namespace reporting {
 
-DmServerUploader::DmServerUploader(
+ServerUploader::ServerUploader(
     bool need_encryption_key,
     int config_file_version,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
-    RecordHandler* handler,
+    std::unique_ptr<RecordHandler> handler,
     ReportSuccessfulUploadCallback report_success_upload_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     CompletionCallback completion_cb,
@@ -46,15 +45,15 @@ DmServerUploader::DmServerUploader(
       scoped_reservation_(std::move(scoped_reservation)),
       report_success_upload_cb_(std::move(report_success_upload_cb)),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
-      handler_(handler) {
+      handler_(std::move(handler)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-DmServerUploader::~DmServerUploader() = default;
+ServerUploader::~ServerUploader() = default;
 
-void DmServerUploader::OnStart() {
+void ServerUploader::OnStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (handler_ == nullptr) {
+  if (!handler_) {
     Finalize(
         base::unexpected(Status(error::INVALID_ARGUMENT, "handler was null")));
     return;
@@ -77,7 +76,7 @@ void DmServerUploader::OnStart() {
   HandleRecords();
 }
 
-Status DmServerUploader::ProcessRecords() {
+Status ServerUploader::ProcessRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status process_status;
 
@@ -109,17 +108,17 @@ Status DmServerUploader::ProcessRecords() {
   return Status::StatusOK();
 }
 
-void DmServerUploader::HandleRecords() {
+void ServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   handler_->HandleRecords(
       need_encryption_key_, config_file_version_, std::move(encrypted_records_),
       std::move(scoped_reservation_),
       base::BindPostTaskToCurrentDefault(
-          base::BindOnce(&DmServerUploader::Finalize, base::Unretained(this))),
+          base::BindOnce(&ServerUploader::Finalize, base::Unretained(this))),
       std::move(encryption_key_attached_cb_));
 }
 
-void DmServerUploader::Finalize(CompletionResponse upload_result) {
+void ServerUploader::Finalize(CompletionResponse upload_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (upload_result.has_value()) {
     std::move(report_success_upload_cb_)
@@ -143,7 +142,7 @@ void DmServerUploader::Finalize(CompletionResponse upload_result) {
   Response(upload_result);
 }
 
-Status DmServerUploader::IsRecordValid(
+Status ServerUploader::IsRecordValid(
     const EncryptedRecord& encrypted_record,
     const int64_t expected_generation_id,
     const int64_t expected_sequencing_id) const {
