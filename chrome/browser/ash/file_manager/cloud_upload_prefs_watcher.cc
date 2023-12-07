@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
 
-#include "base/notreached.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -17,7 +18,55 @@ namespace chromeos::cloud_upload {
 
 namespace {
 
-// This class is responsible for watching the prefs for a particular profile.
+namespace fm_tasks = file_manager::file_tasks;
+
+// Associates all office-related file extensions & mime types with Microsoft
+// Office. Does not overwrite existing associations previously selected by the
+// user.
+void SetMicrosoftOfficeAsDefaultHandlerWithoutOverwriting(Profile* profile) {
+  fm_tasks::SetWordFileHandlerToFilesSWA(
+      profile, fm_tasks::kActionIdOpenInOffice, /*replace_existing=*/false);
+  fm_tasks::SetExcelFileHandlerToFilesSWA(
+      profile, fm_tasks::kActionIdOpenInOffice, /*replace_existing=*/false);
+  fm_tasks::SetPowerPointFileHandlerToFilesSWA(
+      profile, fm_tasks::kActionIdOpenInOffice, /*replace_existing=*/false);
+}
+
+// Associates all office-related file extensions & mime types with Google
+// Workspace. Does not overwrite existing associations previously selected by
+// the user.
+void SetGoogleWorkspaceAsDefaultHandlerWithoutOverwriting(Profile* profile) {
+  fm_tasks::SetWordFileHandlerToFilesSWA(profile,
+                                         fm_tasks::kActionIdWebDriveOfficeWord,
+                                         /*replace_existing=*/false);
+  fm_tasks::SetExcelFileHandlerToFilesSWA(
+      profile, fm_tasks::kActionIdWebDriveOfficeExcel,
+      /*replace_existing=*/false);
+  fm_tasks::SetPowerPointFileHandlerToFilesSWA(
+      profile, fm_tasks::kActionIdWebDriveOfficePowerPoint,
+      /*replace_existing=*/false);
+}
+
+// Clears file associations that are defaulted to Microsoft Office.
+void UnsetMicrosoftOfficeAsDefaultHandlerIfNecessary(Profile* profile) {
+  fm_tasks::RemoveFilesSWAWordFileHandler(profile,
+                                          fm_tasks::kActionIdOpenInOffice);
+  fm_tasks::RemoveFilesSWAExcelFileHandler(profile,
+                                           fm_tasks::kActionIdOpenInOffice);
+  fm_tasks::RemoveFilesSWAPowerPointFileHandler(
+      profile, fm_tasks::kActionIdOpenInOffice);
+}
+
+// Clears file associations that are defaulted to Google Workspace.
+void UnsetGoogleWorkspaceAsDefaultHandlerIfNecessary(Profile* profile) {
+  fm_tasks::RemoveFilesSWAWordFileHandler(
+      profile, fm_tasks::kActionIdWebDriveOfficeWord);
+  fm_tasks::RemoveFilesSWAExcelFileHandler(
+      profile, fm_tasks::kActionIdWebDriveOfficeExcel);
+  fm_tasks::RemoveFilesSWAPowerPointFileHandler(
+      profile, fm_tasks::kActionIdWebDriveOfficePowerPoint);
+}
+
 class CloudUploadPrefsWatcher : public KeyedService {
  public:
   ~CloudUploadPrefsWatcher() override;
@@ -75,8 +124,28 @@ void CloudUploadPrefsWatcher::Shutdown() {
 }
 
 void CloudUploadPrefsWatcher::OnCloudUploadPrefChanged() {
-  // TODO(b/296282654): Check pref values and update file handlers accordingly.
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (!IsMicrosoftOfficeCloudUploadAllowed(profile_)) {
+    UnsetMicrosoftOfficeAsDefaultHandlerIfNecessary(profile_);
+  }
+
+  if (!IsGoogleWorkspaceCloudUploadAllowed(profile_)) {
+    UnsetGoogleWorkspaceAsDefaultHandlerIfNecessary(profile_);
+  }
+
+  const bool google_workspace_automated =
+      IsGoogleWorkspaceCloudUploadAutomated(profile_);
+  const bool microsoft_office_automated =
+      IsMicrosoftOfficeCloudUploadAutomated(profile_);
+  // A special case that is not supposed to happen in production; the agreed
+  // decision is to ignore this setup and act as if both values were set to
+  // `allowed` instead of `automated`.
+  if (google_workspace_automated && microsoft_office_automated) {
+    return;
+  } else if (google_workspace_automated) {
+    SetGoogleWorkspaceAsDefaultHandlerWithoutOverwriting(profile_);
+  } else if (microsoft_office_automated) {
+    SetMicrosoftOfficeAsDefaultHandlerWithoutOverwriting(profile_);
+  }
 }
 
 }  // namespace
