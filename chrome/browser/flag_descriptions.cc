@@ -5527,12 +5527,6 @@ const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[] =
     "without specifying subject or domain match options which validate the "
     "identity of the server.";
 
-const char kAllowRepeatedUpdatesName[] =
-    "Continue checking for updates before reboot and after initial update.";
-const char kAllowRepeatedUpdatesDescription[] =
-    "Continues checking to see if there is a more recent update, even if user"
-    "has not rebooted to apply the previous update.";
-
 const char kAllowScrollSettingsName[] =
     "Allow changes to scroll acceleration/sensitivity for mice.";
 const char kAllowScrollSettingsDescription[] =

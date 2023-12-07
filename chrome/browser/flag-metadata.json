@@ -143,11 +143,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "allow-repeated-updates",
-    "owners": [ "kimjae@chromium.org", "chromeos-core-services@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "allow-scroll-settings",
     "owners": [ "zhangwenyu@chromium.org", "cros-peripherals@google.com" ],
     "expiry_milestone": 130

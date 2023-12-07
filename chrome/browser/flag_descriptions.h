@@ -3183,9 +3183,6 @@ extern const char kAllowDevtoolsInSystemUIDescription[];
 extern const char kAllowEapDefaultCasWithoutSubjectVerificationName[];
 extern const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[];
 
-extern const char kAllowRepeatedUpdatesName[];
-extern const char kAllowRepeatedUpdatesDescription[];
-
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 
