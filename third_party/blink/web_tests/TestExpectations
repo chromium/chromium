@@ -206,6 +206,20 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 # --- Skia roll test suppressions
 crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
+
+crbug.com/1497170 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.blending.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.composite.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.alpha.shadow.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.blending.w.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.composite.w.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.shadow.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.shadow.w.html [ Failure Pass ]
+crbug.com/1497170 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.alpha.w.html [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 

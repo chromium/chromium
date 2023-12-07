@@ -3451,7 +3451,7 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithoutImageAssets) {
   PlaybackParams playback_params(/*image_provider=*/nullptr);
   {
     NiceMock<MockCanvas> canvas;
-    EXPECT_CALL(canvas, onDrawImage2(_, _, _, _, _)).Times(0);
+    EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _)).Times(0);
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
   }
 }
@@ -3468,7 +3468,7 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithNullImages) {
   PlaybackParams playback_params(/*image_provider=*/nullptr);
   {
     NiceMock<MockCanvas> canvas;
-    EXPECT_CALL(canvas, onDrawImage2(_, _, _, _, _)).Times(0);
+    EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _)).Times(0);
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
   }
 }
@@ -3489,7 +3489,8 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithoutImageProvider) {
     // many "draw image" calls are made, and what the arguments are. But it's
     // fair to say that it has to make at least one "draw image" call for a
     // frame in the animation that renders one of the assets.
-    EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
+    EXPECT_CALL(canvas, onDrawImageRect2(NotNull(), _, _, _, _, _))
+        .Times(AtLeast(1));
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
   }
 }
@@ -3515,7 +3516,8 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
     DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.25, images_in,
                              SkottieColorMap(), SkottieTextPropertyValueMap());
     NiceMock<MockCanvas> canvas;
-    EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
+    EXPECT_CALL(canvas, onDrawImageRect2(NotNull(), _, _, _, _, _))
+        .Times(AtLeast(1));
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
     ASSERT_EQ(image_provider.decoded_images().size(), 1u);
     EXPECT_THAT(image_provider.decoded_images(),
@@ -3529,7 +3531,8 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
     DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.75, images_in,
                              SkottieColorMap(), SkottieTextPropertyValueMap());
     NiceMock<MockCanvas> canvas;
-    EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
+    EXPECT_CALL(canvas, onDrawImageRect2(NotNull(), _, _, _, _, _))
+        .Times(AtLeast(1));
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
     ASSERT_EQ(image_provider.decoded_images().size(), 2u);
     EXPECT_THAT(image_provider.decoded_images(),

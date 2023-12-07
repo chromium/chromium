@@ -153,7 +153,7 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/15, widget));
+      /*revision_number=*/16, widget));
 }
 
 }  // namespace ash
