@@ -102,9 +102,6 @@ class GpuMemoryBufferStrategy : public BufferStrategy {
     DCHECK(gmb_);
   }
 
-  uint8_t* data() { return static_cast<uint8_t*>(gmb_->memory(0)); }
-  size_t bytes_per_row() { return gmb_->stride(0); }
-
   // BufferStrategy:
   media::mojom::VideoBufferHandlePtr GetHandle() const override {
     return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
@@ -113,8 +110,10 @@ class GpuMemoryBufferStrategy : public BufferStrategy {
   void DrawFrameOnBuffer(const gfx::Size& frame_size) override {
     const gfx::Size buffer_size = gmb_->GetSize();
     gmb_->Map();
+    uint8_t* data = static_cast<uint8_t*>(gmb_->memory(0));
+
     // Clear all the buffer to 0.
-    memset(data(), 0, bytes_per_row() * buffer_size.height());
+    memset(data, 0, gmb_->stride(0) * buffer_size.height());
 
     SkBitmap bitmap;
     // Create an `SkImageInfo` with color type `kBGRA_8888_SkColorType` which
@@ -124,7 +123,7 @@ class GpuMemoryBufferStrategy : public BufferStrategy {
         SkImageInfo::Make(frame_size.width(), frame_size.height(),
                           kBGRA_8888_SkColorType, kPremul_SkAlphaType);
     bitmap.setInfo(info);
-    bitmap.setPixels(data());
+    bitmap.setPixels(data);
     DrawFrameOnCanvas(cc::SkiaPaintCanvas(bitmap), frame_size);
 
     gmb_->Unmap();
