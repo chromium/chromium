@@ -5563,6 +5563,35 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class PrerenderEmbedderHostBlocklistedBrowserTest
+    : public PrerenderSequentialPrerenderingBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrerenderEmbedderHostBlocklistedBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kPrerender2EmbedderBlockedHosts,
+            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kPrerender2,
+            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
+          {});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderEmbedderHostBlocklistedBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "New" : "Deprecated";
+                         });
+
 namespace {
 
 // Records all the navigation start and finish events until the navigation to
@@ -5944,7 +5973,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 }
 
 // Test that hosts in the embedder blocklist are not prerendered.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderEmbedderHostBlocklistedBrowserTest,
                        EmbedderHostBlocklisted) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");

@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -62,26 +63,30 @@ void AnalyzeCrossOriginRedirection(
   }
 }
 
+// This is deprecated in favor of kPrerender2EmbedderBlockedHosts. See
+// https://crbug.com/1509271.
+//
 // Prerender2 Embedders trigger based on rules decided by the browser. Prevent
 // the browser from triggering on the hosts listed.
 // Blocked hosts are expected to be passed as a comma separated string.
 // e.g. example1.test,example2.test
-const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHosts{
+const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsDeprecated{
     &blink::features::kPrerender2, "embedder_blocked_hosts", ""};
 
 bool ShouldSkipHostInBlockList(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
-    return false;
-  }
-
   // Keep this as static because the blocked origins are served via feature
   // parameters and are never changed until browser restart.
   const static base::NoDestructor<std::vector<std::string>>
-      embedder_blocked_hosts(
-          base::SplitString(kPrerender2EmbedderBlockedHosts.Get(), ",",
-                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+      embedder_blocked_hosts(base::SplitString(
+          features::kPrerender2EmbedderBlockedHostsParam.Get(), ",",
+          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  const static base::NoDestructor<std::vector<std::string>>
+      embedder_blocked_hosts_deprecated(base::SplitString(
+          kPrerender2EmbedderBlockedHostsDeprecated.Get(), ",",
+          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
-  return base::Contains(*embedder_blocked_hosts, url.host());
+  return base::Contains(*embedder_blocked_hosts, url.host()) ||
+         base::Contains(*embedder_blocked_hosts_deprecated, url.host());
 }
 
 }  // namespace
