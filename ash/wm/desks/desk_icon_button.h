@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_CROS_NEXT_DESK_ICON_BUTTON_H_
-#define ASH_WM_DESKS_CROS_NEXT_DESK_ICON_BUTTON_H_
+#ifndef ASH_WM_DESKS_DESK_ICON_BUTTON_H_
+#define ASH_WM_DESKS_DESK_ICON_BUTTON_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/desks/cros_next_desk_button_base.h"
+#include "ash/wm/desks/desk_button_base.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -118,4 +118,4 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_CROS_NEXT_DESK_ICON_BUTTON_H_
+#endif  // ASH_WM_DESKS_DESK_ICON_BUTTON_H_

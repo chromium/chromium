@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_BASE_H_
-#define ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_BASE_H_
+#ifndef ASH_WM_DESKS_DESK_BUTTON_BASE_H_
+#define ASH_WM_DESKS_DESK_BUTTON_BASE_H_
 
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "base/functional/callback_forward.h"
@@ -56,4 +56,4 @@ class CrOSNextDeskButtonBase : public views::LabelButton,
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_CROS_NEXT_DESK_BUTTON_BASE_H_
+#endif  // ASH_WM_DESKS_DESK_BUTTON_BASE_H_

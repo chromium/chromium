@@ -11,7 +11,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
@@ -280,9 +280,9 @@ void OverviewWindowDragController::Drag(const gfx::PointF& location_in_screen) {
       return;
     }
 
-    if (is_touch_dragging_ && std::abs(distance.x()) < std::abs(distance.y()))
+    if (is_touch_dragging_ && std::abs(distance.x()) < std::abs(distance.y())) {
       StartDragToCloseMode();
-    else if (is_eligible_for_drag_to_snap_ || virtual_desks_bar_enabled_) {
+    } else if (is_eligible_for_drag_to_snap_ || virtual_desks_bar_enabled_) {
       StartNormalDragMode(location_in_screen);
     } else {
       return;

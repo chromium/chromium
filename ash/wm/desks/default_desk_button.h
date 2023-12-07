@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_CROS_NEXT_DEFAULT_DESK_BUTTON_H_
-#define ASH_WM_DESKS_CROS_NEXT_DEFAULT_DESK_BUTTON_H_
+#ifndef ASH_WM_DESKS_DEFAULT_DESK_BUTTON_H_
+#define ASH_WM_DESKS_DEFAULT_DESK_BUTTON_H_
 
-#include "ash/wm/desks/cros_next_desk_button_base.h"
+#include "ash/wm/desks/desk_button_base.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
@@ -39,4 +39,4 @@ class CrOSNextDefaultDeskButton : public CrOSNextDeskButtonBase {
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_CROS_NEXT_DEFAULT_DESK_BUTTON_H_
+#endif  // ASH_WM_DESKS_DEFAULT_DESK_BUTTON_H_

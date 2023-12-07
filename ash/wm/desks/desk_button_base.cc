@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/cros_next_desk_button_base.h"
+#include "ash/wm/desks/desk_button_base.h"
 
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_constants.h"

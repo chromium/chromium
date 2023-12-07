@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/cros_next_default_desk_button.h"
+#include "ash/wm/desks/default_desk_button.h"
 
 #include <algorithm>
 
