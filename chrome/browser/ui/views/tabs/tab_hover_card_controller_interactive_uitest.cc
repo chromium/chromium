@@ -19,7 +19,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
+#include "chrome/browser/ui/views/tabs/fade_label_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
@@ -76,10 +78,11 @@ struct TabHoverCardTestFeatureConfig {
 
 std::vector<TabHoverCardTestFeatureConfig> GetTabHoverCardTestFeatureConfig() {
   return {
-      {{{features::kChromeRefresh2023, {}}},
+      {{{features::kChromeRefresh2023, {}},
+        {features::kTabHoverCardImages, {}}},
        {performance_manager::features::kDiscardedTabTreatment,
         performance_manager::features::kMemoryUsageInHovercards}},
-      {{},
+      {{{features::kTabHoverCardImages, {}}},
        {features::kChromeRefresh2023,
         performance_manager::features::kDiscardedTabTreatment,
         performance_manager::features::kMemoryUsageInHovercards}},
@@ -92,10 +95,12 @@ GetTabHoverCardFooterTestFeatureConfig() {
       {{{performance_manager::features::kDiscardedTabTreatment, {}},
         {performance_manager::features::kMemoryUsageInHovercards,
          {{"memory_update_trigger", "background"}}},
+        {features::kTabHoverCardImages, {}},
         {features::kChromeRefresh2023, {}}},
        {}},
       {{{performance_manager::features::kDiscardedTabTreatment, {}},
-        {performance_manager::features::kMemoryUsageInHovercards, {}}},
+        {performance_manager::features::kMemoryUsageInHovercards, {}},
+        {features::kTabHoverCardImages, {}}},
        {features::kChromeRefresh2023}},
   };
 }
@@ -282,6 +287,21 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, 0);
   tab->OnKeyPressed(key_event);
   EXPECT_TRUE(IsHoverCardVisible(tab_strip));
+}
+
+// Verify hover card thumbnail is not visible on active tabs.
+IN_PROC_BROWSER_TEST_P(TabHoverCardInteractiveUiTest,
+                       ThumbnailNotVisibileOnActiveTabs) {
+  TabStrip* const tab_strip = GetTabStrip(browser());
+  Tab* const tab = tab_strip->tab_at(0);
+  tab_strip->GetFocusManager()->SetFocusedView(tab);
+  WaitForHoverCardVisible(tab_strip);
+  views::View* const thumbnail_view_ =
+      tab_strip->hover_card_controller_for_testing()
+          ->hover_card_for_testing()
+          ->GetThumbnailViewForTesting();
+  CHECK(thumbnail_view_);
+  EXPECT_FALSE(thumbnail_view_->GetVisible());
 }
 
 // Verify hover card is not visible when tab is focused and the mouse is
@@ -782,6 +802,44 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
       AddInstrumentedTab(kSecondTabContents, GetTestingURL("b.com")),
       HoverTabAt(1), WaitForHide(FooterView::kHoverCardFooterElementId),
       HoverTabAt(0), WaitForShow(FooterView::kHoverCardFooterElementId));
+}
+
+IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
+                       BackgroundTabHoverCardContentsHaveCorrectDimensions) {
+  TabStrip* const tab_strip = GetTabStrip(browser());
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  Tab* const tab = tab_strip->tab_at(1);
+  TabRendererData data = tab->data();
+  data.alert_state = {TabAlertState::AUDIO_PLAYING};
+  tab->SetData(data);
+  tab_strip->GetFocusManager()->SetFocusedView(tab);
+  WaitForHoverCardVisible(tab_strip);
+
+  auto* const hover_card =
+      tab_strip->hover_card_controller_for_testing()->hover_card_for_testing();
+  gfx::Size hover_card_size = hover_card->size();
+
+  int total_children_height = 0;
+
+  // Verify that all children of the hovercard can fit within the hovercard
+  for (views::View* child : hover_card->children()) {
+    EXPECT_TRUE(child->GetVisible());
+    gfx::Size child_size = child->size();
+    EXPECT_GT(child_size.width(), 0);
+    EXPECT_LE(child_size.width(), hover_card_size.width());
+    EXPECT_GT(child_size.height(), 0);
+    EXPECT_LE(child_size.height(), hover_card_size.height());
+    total_children_height += child_size.height();
+  }
+
+  // Verify that stacking the children within the hovercard takes up the entire
+  // hover card space
+  total_children_height +=
+      hover_card->title_label_->GetProperty(views::kMarginsKey)->height() +
+      hover_card->domain_label_->GetProperty(views::kMarginsKey)->height();
+  EXPECT_EQ(hover_card_size.height(), total_children_height);
 }
 
 INSTANTIATE_TEST_SUITE_P(

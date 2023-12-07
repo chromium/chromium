@@ -65,6 +65,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // Accessors used by tests.
   std::u16string GetTitleTextForTesting() const;
   std::u16string GetDomainTextForTesting() const;
+  views::View* GetThumbnailViewForTesting();
 
   // Returns the percentage complete during transition animations when a
   // pre-emptive crossfade to a placeholder should start if a new image is not
@@ -80,6 +81,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
                            HoverCardFooterShowsDiscardStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
+                           BackgroundTabHoverCardContentsHaveCorrectDimensions);
   class ThumbnailView;
 
   // views::BubbleDialogDelegateView:

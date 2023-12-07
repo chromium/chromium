@@ -605,6 +605,10 @@ std::u16string TabHoverCardBubbleView::GetDomainTextForTesting() const {
   return domain_label_->GetText();
 }
 
+views::View* TabHoverCardBubbleView::GetThumbnailViewForTesting() {
+  return thumbnail_view_;
+}
+
 // static
 std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
   // For consistency, always bail out with a "don't crossfade" response if
