@@ -1876,6 +1876,11 @@ export class FileManager extends EventTarget {
     return this.directoryModel_ && this.directoryModel_.getCurrentDirEntry();
   }
 
+  /** Expose the unload method for integration tests. */
+  onUnloadForTest() {
+    this.onUnload_();
+  }
+
   /**
    * Unload handler for the page.
    * @private

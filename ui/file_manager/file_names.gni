@@ -14,9 +14,6 @@ image_loader_static_js_files = [
 image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
-  # Background:
-  "file_manager/background/js/test_util.js",
-
   # Files Common:
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/mock_entry.js",
@@ -270,6 +267,7 @@ ts_files = [
   "file_manager/foreground/js/path_component.ts",
   "file_manager/background/js/progress_center.ts",
   "file_manager/background/js/runtime_loaded_test_util.ts",
+  "file_manager/background/js/test_util.ts",
   "file_manager/background/js/test_util_base.ts",
   "file_manager/background/js/volume_info_impl.ts",
   "file_manager/background/js/volume_info_list_impl.ts",
@@ -607,6 +605,7 @@ other_dts_files = [
   "//tools/typescript/definitions/metrics_private.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
   "//tools/typescript/definitions/tabs.d.ts",
+  "//tools/typescript/definitions/webview_tag.d.ts",
 ]
 
 generated_js_files = [

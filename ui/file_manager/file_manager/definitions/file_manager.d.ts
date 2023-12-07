@@ -22,6 +22,9 @@ interface FileManager {
   directoryModel: DirectoryModel;
   directoryTreeNamingController: DirectoryTreeNamingController;
   ui: FileManagerUI;
+  getLastVisitedURL(): string;
+  getTranslatedString(id: string): string;
+  onUnloadForTest(): void;
 }
 
 interface AppState {
