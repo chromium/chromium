@@ -237,7 +237,9 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         mAdapter.registerType(
                 ItemType.MORE_PROGRESS,
                 this::buildMoreProgressView,
-                HistoryClustersViewBinder::bindMoreProgressView);
+                (propertyModel, view, key) ->
+                        HistoryClustersViewBinder.bindMoreProgressView(
+                                propertyModel, view, key, mRecyclerView));
 
         LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         mActivityContentView =
@@ -260,6 +262,7 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
                         mRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.addOnScrollListener(mMediator);
         mRecyclerView.addOnScrollListener(this);
+        HistoryClustersViewBinder.attachItemDecorations(mRecyclerView);
 
         mToolbar =
                 (HistoryClustersToolbar)

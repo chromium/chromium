@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.history_clusters;
 
+import android.graphics.Rect;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -18,6 +22,34 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 class HistoryClustersViewBinder {
+
+    static class VerticallyCenterItemDecoration extends ItemDecoration {
+        public void setViewToCenter(View viewToCenter) {
+            mViewToCenter = viewToCenter;
+        }
+
+        private View mViewToCenter;
+
+        @Override
+        public void getItemOffsets(
+                @NonNull Rect outRect,
+                @NonNull View view,
+                @NonNull RecyclerView parent,
+                @NonNull State state) {
+            if (view != mViewToCenter) return;
+
+            int height = parent.getHeight();
+            if (state.getItemCount() > 1) {
+                LayoutManager layoutManager = parent.getLayoutManager();
+                height -=
+                        layoutManager.getDecoratedBottom(
+                                parent.getChildAt(layoutManager.getPosition(mViewToCenter) - 1));
+            }
+
+            outRect.top = height / 2 - view.getHeight() / 2;
+        }
+    }
+
     public static void bindVisitView(PropertyModel model, View view, PropertyKey key) {
         HistoryClustersItemView itemView = (HistoryClustersItemView) view;
         if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
@@ -135,7 +167,7 @@ class HistoryClustersViewBinder {
     }
 
     public static void bindMoreProgressView(
-            PropertyModel propertyModel, View view, PropertyKey key) {
+            PropertyModel propertyModel, View view, PropertyKey key, RecyclerView recyclerView) {
         MoreProgressButton button = (MoreProgressButton) view;
         if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
             button.setOnClickRunnable(
@@ -148,12 +180,25 @@ class HistoryClustersViewBinder {
         } else if (key == HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED) {
             boolean showVerticallyCentered =
                     propertyModel.get(HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED);
-            RecyclerView.LayoutParams layoutParams = (LayoutParams) button.getLayoutParams();
+            VerticallyCenterItemDecoration itemDecoration = null;
+            for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
+                ItemDecoration decoration = recyclerView.getItemDecorationAt(i);
+                if (decoration instanceof VerticallyCenterItemDecoration) {
+                    itemDecoration = (VerticallyCenterItemDecoration) decoration;
+                    break;
+                }
+            }
+            assert itemDecoration != null;
+
             if (showVerticallyCentered) {
-                layoutParams.height = LayoutParams.MATCH_PARENT;
+                itemDecoration.setViewToCenter(view);
             } else {
-                layoutParams.height = LayoutParams.WRAP_CONTENT;
+                itemDecoration.setViewToCenter(null);
             }
         }
+    }
+
+    public static void attachItemDecorations(RecyclerView recyclerView) {
+        recyclerView.addItemDecoration(new VerticallyCenterItemDecoration());
     }
 }
