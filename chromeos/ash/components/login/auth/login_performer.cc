@@ -79,8 +79,15 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
                                         is_login_offline, is_ephemeral);
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
 
-  if (user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
-      user_context.GetUserType() == user_manager::USER_TYPE_CHILD) {
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  bool is_primary_user = !primary_user || primary_user->GetAccountId() ==
+                                              user_context.GetAccountId();
+  bool regular_or_child =
+      user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
+      user_context.GetUserType() == user_manager::USER_TYPE_CHILD;
+  // TODO(b/315279142): Remove `is_primary_user` check and run factor updates
+  // for all users.
+  if (regular_or_child && is_primary_user) {
     LoadAndApplyEarlyPrefs(std::make_unique<UserContext>(user_context),
                            base::BindOnce(&LoginPerformer::OnEarlyPrefsApplied,
                                           weak_factory_.GetWeakPtr()));
