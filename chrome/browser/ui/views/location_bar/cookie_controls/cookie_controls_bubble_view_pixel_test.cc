@@ -32,20 +32,67 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
+namespace {
+
+void ApplySetting(content_settings::CookieSettings* cookie_settings,
+                  HostContentSettingsMap* hcsm,
+                  const GURL& url,
+                  bool cookies_enabled,
+                  CookieControlsEnforcement enforcement) {
+  switch (enforcement) {
+    case (CookieControlsEnforcement::kEnforcedByTpcdGrant):
+    case (CookieControlsEnforcement::kNoEnforcement): {
+      if (cookies_enabled) {
+        cookie_settings->SetCookieSettingForUserBypass(url);
+      }
+      return;
+    }
+    case (CookieControlsEnforcement::kEnforcedByPolicy): {
+      auto provider = std::make_unique<content_settings::MockProvider>();
+      provider->SetWebsiteSetting(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::FromURL(url), ContentSettingsType::COOKIES,
+          base::Value(cookies_enabled ? ContentSetting::CONTENT_SETTING_ALLOW
+                                      : ContentSetting::CONTENT_SETTING_BLOCK));
+      content_settings::TestUtils::OverrideProvider(
+          hcsm, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
+      return;
+    }
+    case (CookieControlsEnforcement::kEnforcedByCookieSetting):
+      hcsm->SetContentSettingCustomScope(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::FromString("[*.]test"),
+          ContentSettingsType::COOKIES,
+          cookies_enabled ? ContentSetting::CONTENT_SETTING_ALLOW
+                          : ContentSetting::CONTENT_SETTING_BLOCK);
+      return;
+    case (CookieControlsEnforcement::kEnforcedByExtension):
+      auto provider = std::make_unique<content_settings::MockProvider>();
+      provider->SetWebsiteSetting(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::FromURL(url), ContentSettingsType::COOKIES,
+          base::Value(cookies_enabled ? ContentSetting::CONTENT_SETTING_ALLOW
+                                      : ContentSetting::CONTENT_SETTING_BLOCK));
+      content_settings::TestUtils::OverrideProvider(
+          hcsm, std::move(provider),
+          HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
+      return;
+  }
+}
+
+}  // namespace
+
 class CookieControlsBubbleViewPixelTest
     : public DialogBrowserTest,
-      public testing::WithParamInterface<std::tuple<CookieControlsStatus,
-                                                    CookieControlsEnforcement,
-                                                    CookieBlocking3pcdStatus,
-                                                    int>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, std::string, CookieControlsEnforcement>> {
  public:
   CookieControlsBubbleViewPixelTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{content_settings::features::kUserBypassUI,
-                               {{"expiration",
-                                 base::NumberToString(
-                                     testing::get<3>(GetParam()))}}}},
-        /*disabled_features=*/{});
+        {{content_settings::features::kUserBypassUI,
+          {{"expiration", std::get<1>(GetParam())}}}},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void TearDownOnMainThread() override {
@@ -96,31 +143,37 @@ class CookieControlsBubbleViewPixelTest
             ->toolbar_button_provider()
             ->GetPageActionIconView(PageActionIconType::kCookieControls));
     ASSERT_TRUE(cookie_controls_icon_);
-
-    controller_ = std::make_unique<content_settings::CookieControlsController>(
-        CookieSettingsFactory::GetForProfile(browser()->profile()),
-        /*original_cookie_settings=*/nullptr,
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
-
     cookie_controls_coordinator_ =
         cookie_controls_icon_->GetCoordinatorForTesting();
     cookie_controls_coordinator_->SetDisplayNameForTesting(u"example.com");
   }
 
-  void SetStatus(CookieControlsStatus status,
-                 CookieControlsEnforcement enforcement,
-                 CookieBlocking3pcdStatus blocking_status,
-                 int days_to_expiration) {
-    // ShowBubble will initialize the view controller.
-    cookie_controls_coordinator_->ShowBubble(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        controller_.get());
-    auto expiration = days_to_expiration
-                          ? base::Time::Now() + base::Days(days_to_expiration)
-                          : base::Time();
-    view_controller()->OnStatusChanged(status, enforcement, blocking_status,
-                                       expiration);
+  void ShowUi(const std::string& name) override {
+    auto cookies_enabled = std::get<0>(GetParam());
+    auto exception_duration = std::get<1>(GetParam());
+    auto enforcement = std::get<2>(GetParam());
+    SetThirdPartyCookieBlocking(true);
+
+    // Name is not considered when determining test state.
+    ApplySetting(cookie_settings().get(), host_content_settings_map(),
+                 third_party_cookie_page_url(), cookies_enabled, enforcement);
+
+    NavigateToUrlWithThirdPartyCookies();
+
+    ASSERT_TRUE(cookie_controls_icon()->GetVisible());
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "CookieControlsBubbleViewImpl");
+
+    cookie_controls_icon()->ExecuteForTesting();
+    waiter.WaitIfNeededAndGet();
+
+    // Even with the waiter, it's possible that the toggle is in the process
+    // of animating into the appropriate position. Include a small delay here
+    // to let that animation complete.
+    base::RunLoop run_loop;
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+    run_loop.Run();
   }
 
   static base::Time GetReferenceTime() {
@@ -139,27 +192,12 @@ class CookieControlsBubbleViewPixelTest
     observer.Wait();
   }
 
-  void ShowUi(const std::string& name) override {
-    NavigateToUrlWithThirdPartyCookies();
-
-    ASSERT_TRUE(cookie_controls_icon()->GetVisible());
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "CookieControlsBubbleViewImpl");
-
-    cookie_controls_icon()->ExecuteForTesting();
-    SetStatus(/*status=*/testing::get<0>(GetParam()),
-              /*enforcement=*/testing::get<1>(GetParam()),
-              /*blocking_status=*/testing::get<2>(GetParam()),
-              /*days_to_expiration=*/testing::get<3>(GetParam()));
-    waiter.WaitIfNeededAndGet();
-
-    // Even with the waiter, it's possible that the toggle is in the process
-    // of animating into the appropriate position. Include a small delay here
-    // to let that animation complete.
-    base::RunLoop run_loop;
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
-    run_loop.Run();
+  void SetThirdPartyCookieBlocking(bool enabled) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            enabled ? content_settings::CookieControlsMode::kBlockThirdParty
+                    : content_settings::CookieControlsMode::kOff));
   }
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings() {
@@ -176,11 +214,7 @@ class CookieControlsBubbleViewPixelTest
   PageActionIconView* cookie_controls_icon() { return cookie_controls_icon_; }
   net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
 
-  CookieControlsBubbleViewController* view_controller() {
-    return cookie_controls_coordinator_->GetViewControllerForTesting();
-  }
-
- protected:
+ private:
   // Overriding `base::Time::Now()` to obtain a consistent X days until
   // exception expiration calculation regardless of the time the test runs.
   base::subtle::ScopedTimeClockOverrides time_override_{
@@ -190,7 +224,6 @@ class CookieControlsBubbleViewPixelTest
   content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<CookieControlsIconView> cookie_controls_icon_;
-  std::unique_ptr<content_settings::CookieControlsController> controller_;
   raw_ptr<CookieControlsBubbleCoordinator> cookie_controls_coordinator_;
 };
 
@@ -202,35 +235,22 @@ INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     CookieControlsBubbleViewPixelTest,
     testing::Combine(
-        testing::ValuesIn({CookieControlsStatus::kEnabled,
-                           CookieControlsStatus::kDisabledForSite}),
+        testing::Bool(),
+        testing::ValuesIn({std::string("0d"), std::string("30d"),
+                           std::string("90d")}),
         testing::ValuesIn(
             {CookieControlsEnforcement::kNoEnforcement,
              CookieControlsEnforcement::kEnforcedByPolicy,
              CookieControlsEnforcement::kEnforcedByExtension,
-             CookieControlsEnforcement::kEnforcedByCookieSetting}),
-        testing::ValuesIn({CookieBlocking3pcdStatus::kNotIn3pcd,
-                           CookieBlocking3pcdStatus::kLimited,
-                           CookieBlocking3pcdStatus::kAll}),
-        testing::ValuesIn({0, 30, 90})),
+             CookieControlsEnforcement::kEnforcedByCookieSetting})),
     [](const testing::TestParamInfo<
         CookieControlsBubbleViewPixelTest::ParamType>& info) {
       std::stringstream name;
-      name << "cookie_blocking_";
-      switch (testing::get<0>(info.param)) {
-        case CookieControlsStatus::kUninitialized:
-        case CookieControlsStatus::kDisabled:
-          NOTREACHED();
-          break;
-        case CookieControlsStatus::kEnabled:
-          name << "enabled";
-          break;
-        case CookieControlsStatus::kDisabledForSite:
-          name << "disabled";
-          break;
-      }
+      name << "cookies_enabled_"
+           << (std::get<0>(info.param) ? "true" : "false");
+      name << "_exception_duration_" << std::get<1>(info.param);
       name << "_enforcement_";
-      switch (testing::get<1>(info.param)) {
+      switch (std::get<2>(info.param)) {
         case (CookieControlsEnforcement::kNoEnforcement):
           name << "none";
           break;
@@ -247,18 +267,5 @@ INSTANTIATE_TEST_SUITE_P(
           name << "settings";
           break;
       }
-      name << "_3pcd_";
-      switch (testing::get<2>(info.param)) {
-        case CookieBlocking3pcdStatus::kNotIn3pcd:
-          name << "disabled";
-          break;
-        case CookieBlocking3pcdStatus::kLimited:
-          name << "enabled";
-          break;
-        case CookieBlocking3pcdStatus::kAll:
-          name << "enabled_3pc_blocked";
-          break;
-      }
-      name << "_duration_" << testing::get<3>(info.param) << "d";
       return name.str();
     });
