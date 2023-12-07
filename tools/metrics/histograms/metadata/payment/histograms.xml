@@ -206,26 +206,6 @@ chromium-metrics-reviews@google.com.
   <summary>True when a service worker times out 5 mins after request.</summary>
 </histogram>
 
-<histogram name="PaymentRequest.TransactionAmount.Completed"
-    enum="PaymentRequestTransactionSize" expires_after="2023-07-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the transaction amounts completed using payment request API after
-    converting to USD.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.TransactionAmount.Triggered"
-    enum="PaymentRequestTransactionSize" expires_after="2023-07-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the transaction amounts triggered using payment request API after
-    converting to USD.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
