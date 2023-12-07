@@ -24,7 +24,7 @@ build_webui("build") {
     "feedback_flow.ts",
     "file_attachment.ts",
     "help_content.js",
-    "search_page.js",
+    "search_page.ts",
     "share_data_page.ts",
   ]
 

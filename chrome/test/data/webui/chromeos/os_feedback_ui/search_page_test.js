@@ -50,7 +50,7 @@ suite('searchPageTestSuite', () => {
     document.body.appendChild(page);
 
     // Fire search immediately for input change.
-    page.searchTimoutInMs_ = 0;
+    page.searchTimoutInMs = 0;
 
     return flushTasks();
   }
@@ -132,7 +132,7 @@ suite('searchPageTestSuite', () => {
         'Share your feedback or describe your issue. ' +
             'If possible, include steps to reproduce your issue.',
         textAreaElement.placeholder);
-    assertTrue(page.getIsPopularContentForTesting_());
+    assertTrue(page.getIsPopularContentForTesting());
 
     // Enter three chars.
     textAreaElement.value = 'abc';
@@ -143,7 +143,7 @@ suite('searchPageTestSuite', () => {
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc'.
     assertEquals('abc', provider.lastQuery);
-    assertFalse(page.getIsPopularContentForTesting_());
+    assertFalse(page.getIsPopularContentForTesting());
 
     // Enter 2 more characters. This should trigger another search.
     textAreaElement.value = 'abc12';
@@ -155,7 +155,7 @@ suite('searchPageTestSuite', () => {
     assertEquals('abc12', provider.lastQuery);
 
     // Fire search after pausing typing for 10 seconds.
-    page.searchTimoutInMs_ = 10000;
+    page.searchTimoutInMs = 10000;
     // Remove some chars. This should NOT trigger another search.
     textAreaElement.value = 'a';
     textAreaElement.dispatchEvent(new Event('input'));
@@ -166,7 +166,7 @@ suite('searchPageTestSuite', () => {
     assertNotEquals('a', provider.lastQuery);
 
     // Fire search immediately for input change.
-    page.searchTimoutInMs_ = 0;
+    page.searchTimoutInMs = 0;
 
     // Enter one more characters. This should trigger another search.
     textAreaElement.value = 'abc123';
@@ -175,7 +175,7 @@ suite('searchPageTestSuite', () => {
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc123'.
     assertEquals('abc123', provider.lastQuery);
-    assertFalse(page.getIsPopularContentForTesting_());
+    assertFalse(page.getIsPopularContentForTesting());
 
     // Remove all the text area characters. This should NOT trigger
     // getHelpContent().
@@ -186,7 +186,7 @@ suite('searchPageTestSuite', () => {
     // Verify that getHelpContent() is not called, and the help content
     // is the default popular content.
     assertNotEquals('', provider.lastQuery);
-    assertTrue(page.getIsPopularContentForTesting_());
+    assertTrue(page.getIsPopularContentForTesting());
   });
 
   test('searchNotFired_on_oobeOrLogin', async () => {
@@ -255,7 +255,7 @@ suite('searchPageTestSuite', () => {
     // Search result count should be 0.
     assertEquals(0, page.getSearchResultCountForTesting());
     // Popular content should be displayed (i.e. isPopularContent = true).
-    assertTrue(page.getIsPopularContentForTesting_());
+    assertTrue(page.getIsPopularContentForTesting());
   });
 
   /**
@@ -286,7 +286,7 @@ suite('searchPageTestSuite', () => {
     // Search result count should be 0.
     assertEquals(0, page.getSearchResultCountForTesting());
     // Popular content should be displayed (i.e. isPopularContent = true).
-    assertTrue(page.getIsPopularContentForTesting_());
+    assertTrue(page.getIsPopularContentForTesting());
   });
 
   /**
