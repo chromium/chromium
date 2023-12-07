@@ -2912,6 +2912,9 @@ extern const char kNtpRealboxCr23ExpandedStateIconsDescription[];
 extern const char kNtpRealboxCr23ExpandedStateLayoutName[];
 extern const char kNtpRealboxCr23ExpandedStateLayoutDescription[];
 
+extern const char kNtpRealboxCr23HoverFillShapeName[];
+extern const char kNtpRealboxCr23HoverFillShapeDescription[];
+
 extern const char kNtpRealboxCr23ThemingName[];
 extern const char kNtpRealboxCr23ThemingDescription[];
 

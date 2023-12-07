@@ -31580,6 +31580,7 @@ from previous Chrome versions.
   <int value="-762687134" label="ExperimentalCrostiniUI:enabled"/>
   <int value="-762541013" label="enable-bluetooth-spp-in-serial-api"/>
   <int value="-761870200" label="CaptureModeDemoTools:disabled"/>
+  <int value="-761814801" label="NtpRealboxCr23HoverFillShape:disabled"/>
   <int value="-760729135"
       label="AutofillEnableCardArtServerSideStretching:disabled"/>
   <int value="-759830869" label="enable-tab-discarding"/>
@@ -35401,6 +35402,7 @@ from previous Chrome versions.
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
+  <int value="1067488139" label="NtpRealboxCr23HoverFillShape:enabled"/>
   <int value="1067618884" label="enable-experimental-input-view-features"/>
   <int value="1067990299" label="enable-ui-devtools"/>
   <int value="1069325321" label="CrostiniGpuSupport:enabled"/>

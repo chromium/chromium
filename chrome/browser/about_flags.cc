@@ -6953,6 +6953,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23ExpandedStateLayout)},
 
+    {"ntp-realbox-cr23-hover-fill-shape",
+     flag_descriptions::kNtpRealboxCr23HoverFillShapeName,
+     flag_descriptions::kNtpRealboxCr23HoverFillShapeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23HoverFillShape)},
+
     {"ntp-realbox-cr23-theming", flag_descriptions::kNtpRealboxCr23ThemingName,
      flag_descriptions::kNtpRealboxCr23ThemingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxCr23Theming)},

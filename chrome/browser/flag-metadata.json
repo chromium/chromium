@@ -5685,6 +5685,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ntp-realbox-cr23-hover-fill-shape",
+    "owners": [ "niharm@google.com", "mahmadi@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ntp-realbox-cr23-theming",
     "owners": [ "niharm@google.com", "mahmadi@google.com"],
     "expiry_milestone": 130

@@ -5039,6 +5039,11 @@ const char kNtpRealboxCr23ExpandedStateLayoutName[] =
 const char kNtpRealboxCr23ExpandedStateLayoutDescription[] =
     "CR23 layout for Realbox in expanded state";
 
+const char kNtpRealboxCr23HoverFillShapeName[] =
+    "Realbox Chrome Refresh Hover Fill Shape";
+const char kNtpRealboxCr23HoverFillShapeDescription[] =
+    "CR23 hover fill shape in realbox";
+
 const char kNtpRealboxCr23ThemingName[] = "Chrome Refresh Themed Realbox";
 const char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
