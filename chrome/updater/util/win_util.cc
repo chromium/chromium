@@ -520,8 +520,8 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 
   // Allow the spawned process to show windows in the foreground.
   if (!::AllowSetForegroundWindow(pid)) {
-    LOG(WARNING) << __func__
-                 << ": ::AllowSetForegroundWindow failed: " << ::GetLastError();
+    VLOG(1) << __func__
+            << ": ::AllowSetForegroundWindow failed: " << ::GetLastError();
   }
 
   int ret_val = 0;
