@@ -22,7 +22,7 @@ namespace mojo {
 class ScopedInterfaceEndpointHandle::State
     : public base::RefCountedThreadSafe<State> {
  public:
-  State() = default;
+  State() : lock_("ScopedInterfaceEndpointHandle::State.lock_") {}
 
   State(InterfaceId id,
         scoped_refptr<AssociatedGroupController> group_controller)
