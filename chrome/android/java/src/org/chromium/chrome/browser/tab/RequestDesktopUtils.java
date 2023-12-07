@@ -98,7 +98,7 @@ public class RequestDesktopUtils {
 
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
             "default_on_display_size_threshold_inches";
-    static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 12.0;
+    static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 10.0;
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES =
             "default_on_on_low_end_devices";
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES =
@@ -109,7 +109,7 @@ public class RequestDesktopUtils {
             "default_on_smallest_screen_width";
     static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT = "default_on_memory_limit";
-    static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB = 0;
+    static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB = 6500;
     static final String PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON =
             "show_message_on_default_on";
     static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST =
@@ -329,7 +329,7 @@ public class RequestDesktopUtils {
 
         // Check whether default-on for x86 devices is disabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, true)
+                        feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_X86_DEVICES, false)
                 && !isCpuArchitectureArm()) {
             updateNoLongerInCohort();
             return false;
@@ -434,9 +434,10 @@ public class RequestDesktopUtils {
                 String.format(
                         Locale.US,
                         message
-                                + ", silently reporting crashes for debugging, displaySizeInInches: %.1f "
-                                + "displayWidth: %d displayHeight: %d xdpi: %.1f ydpi: %.1f densityDpi: %d "
-                                + "screenWidthDp: %d screenHeightDp: %d onExternalDisplay: %b",
+                                + ", silently reporting crashes for debugging, displaySizeInInches:"
+                                + " %.1f displayWidth: %d displayHeight: %d xdpi: %.1f ydpi: %.1f"
+                                + " densityDpi: %d screenWidthDp: %d screenHeightDp: %d"
+                                + " onExternalDisplay: %b",
                         displaySizeInInches,
                         display.getDisplayWidth(),
                         display.getDisplayHeight(),
@@ -468,9 +469,9 @@ public class RequestDesktopUtils {
         String displaySpec =
                 String.format(
                         Locale.US,
-                        "lastDisplaySizeInInches: %.1f lastDisplayWidth: %d lastDisplayHeight: %d "
-                                + "lastXdpi: %.1f lastYdpi: %.1f lastDensityDpi: %d "
-                                + "lastScreenWidthDp: %d lastScreenHeightDp: %d lastOnExternalDisplay: %b",
+                        "lastDisplaySizeInInches: %.1f lastDisplayWidth: %d lastDisplayHeight: %d"
+                            + " lastXdpi: %.1f lastYdpi: %.1f lastDensityDpi: %d lastScreenWidthDp:"
+                            + " %d lastScreenHeightDp: %d lastOnExternalDisplay: %b",
                         displaySizeInInches,
                         display.getDisplayWidth(),
                         display.getDisplayHeight(),
