@@ -4331,17 +4331,14 @@
   </message>
 
   <!-- Experimental settings strings -->
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental settings" translateable="false">
-    Advanced
-  </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_SECTION_TITLE" desc="Title of section holding experimental settings" translateable="false">
-    Additional settings
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental AI settings" translateable="false">
+    Experimental AI
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_LABEL" desc="Toggle primary description" translateable="false">
-    Show additional settings
+    Try out experimental AI features
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Show additional settings
+    These features use AI, are in early development, and won’t always get it right.
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_LABEL" desc="Toggle primary description" translateable="false">
     Autofill helper
