@@ -135,8 +135,14 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
   previewParameters.backgroundColor = UIColor.clearColor;
 
-  return [[UITargetedPreview alloc] initWithView:self.screenshotView
-                                      parameters:previewParameters];
+  // If the preview view is not attached to the view hierarchy, fallback to nil
+  // to prevent app crashing. See crbug.com/1351669.
+  UITargetedPreview* targetPreview =
+      self.screenshotView.window
+          ? [[UITargetedPreview alloc] initWithView:self.screenshotView
+                                         parameters:previewParameters]
+          : nil;
+  return targetPreview;
 }
 
 - (UITargetedPreview*)contextMenuInteraction:
