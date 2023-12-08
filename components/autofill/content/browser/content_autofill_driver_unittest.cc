@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -747,7 +748,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
     field.value = u"dummy_value";
   }
   ASSERT_TRUE(base::ranges::all_of(address_form().fields,
-                                   base::not_fn(&std::u16string::empty),
+                                   std::not_fn(&std::u16string::empty),
                                    &FormFieldData::value));
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 
+#include <functional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -1347,7 +1348,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   // Set `should_display_gpay_logo` to true if all cards are server cards, and
   // to false if any of the card is a local card.
   should_display_gpay_logo = base::ranges::all_of(
-      cards_to_suggest, base::not_fn([](const CreditCard& card) {
+      cards_to_suggest, std::not_fn([](const CreditCard& card) {
         return CreditCard::IsLocalCard(&card);
       }));
 

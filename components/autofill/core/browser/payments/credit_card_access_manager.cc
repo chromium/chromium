@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/not_fn.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -127,7 +127,7 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
 #if !BUILDFLAG(IS_IOS)
   // No need to fetch details if there are no server cards.
   if (!base::ranges::any_of(personal_data_manager_->GetCreditCardsToSuggest(),
-                            base::not_fn(&CreditCard::IsLocalCard))) {
+                            std::not_fn(&CreditCard::IsLocalCard))) {
     return;
   }
 

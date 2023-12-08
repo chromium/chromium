@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/form_cache.h"
 
 #include <algorithm>
+#include <functional>
 #include <set>
 #include <string>
 #include <utility>
@@ -86,8 +87,8 @@ bool IsFormInteresting(
     base::span<const WebFormControlElement> control_elements) {
   return !form.child_frames.empty() ||
          base::ranges::any_of(control_elements,
-                              base::not_fn(&form_util::IsCheckableElement)) ||
-         base::ranges::any_of(form.fields, base::not_fn(&std::string::empty),
+                              std::not_fn(&form_util::IsCheckableElement)) ||
+         base::ranges::any_of(form.fields, std::not_fn(&std::string::empty),
                               &FormFieldData::autocomplete_attribute);
 }
 
