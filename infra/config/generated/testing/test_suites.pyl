@@ -608,9 +608,6 @@
 
     'chromeos_device_only_gtests': {
       'base_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.base_unittests.filter',
-        ],
       },
     },
 

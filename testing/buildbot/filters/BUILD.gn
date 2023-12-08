@@ -110,7 +110,6 @@ source_set("chrome_public_unit_test_apk_filters") {
 
 source_set("chromeos_filters") {
   data = [
-    "//testing/buildbot/filters/chromeos.base_unittests.filter",
     "//testing/buildbot/filters/chromeos.browser_tests.filter",
     "//testing/buildbot/filters/chromeos.amd64-generic.gl_tests_validating.filter",
     "//testing/buildbot/filters/chromeos.kevin.gl_tests_validating.filter",

@@ -766,11 +766,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chromeos_device_only_gtests",
     tests = {
-        "base_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.base_unittests.filter",
-            ],
-        ),
+        "base_unittests": targets.legacy_test_config(),
     },
 )
 

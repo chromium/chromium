@@ -1173,9 +1173,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.base_unittests.filter"
-        ],
         "autotest_name": "chromium",
         "cros_board": "brya",
         "dut_pool": "chrome",
@@ -1249,9 +1246,6 @@
     ],
     "gtest_tests": [
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.base_unittests.filter"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1334,9 +1328,6 @@
     ],
     "gtest_tests": [
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.base_unittests.filter"
-        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
