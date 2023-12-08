@@ -321,19 +321,22 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         this::isPageInsightsHubEnabled,
                         this::getPageInsightsConfig);
 
-        mContextualSearchObserver = new ContextualSearchObserver() {
-            @Override
-            public void onShowContextualSearch(
-                    @Nullable GSAContextDisplaySelection selectionContext) {
-                mPageInsightsCoordinator.onBottomUiStateChanged(true);
-            }
+        if (mContextualSearchManagerSupplier.get() != null) {
+            mContextualSearchObserver =
+                    new ContextualSearchObserver() {
+                        @Override
+                        public void onShowContextualSearch(
+                                @Nullable GSAContextDisplaySelection selectionContext) {
+                            mPageInsightsCoordinator.onBottomUiStateChanged(true);
+                        }
 
-            @Override
-            public void onHideContextualSearch() {
-                mPageInsightsCoordinator.onBottomUiStateChanged(false);
-            }
-        };
-        mContextualSearchManagerSupplier.get().addObserver(mContextualSearchObserver);
+                        @Override
+                        public void onHideContextualSearch() {
+                            mPageInsightsCoordinator.onBottomUiStateChanged(false);
+                        }
+                    };
+            mContextualSearchManagerSupplier.get().addObserver(mContextualSearchObserver);
+        }
     }
 
     boolean isPageInsightsHubEnabled() {

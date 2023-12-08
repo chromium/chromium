@@ -302,12 +302,15 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                         PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
                         false);
-        tabObservable.addObserver(
-                tab -> {
-                    if (tab == null) return;
-                    delayStartAutoTrigger(mAutoTriggerDelayMs);
-                    tab.addObserver(this);
-                });
+        if (tabObservable.get() != null) {
+            onTab(tabObservable.get());
+        } else {
+            tabObservable.addObserver(
+                    tab -> {
+                        if (tab == null) return;
+                        onTab(tab);
+                    });
+        }
         if (BackPressManager.isEnabled()) {
             BackPressHandler backPressHandler =
                     bottomSheetController.getBottomSheetBackPressHandler();
@@ -342,6 +345,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mSheetController.requestShowContent(mSheetContent, true);
             mShouldRestore = false;
         }
+    }
+
+    private void onTab(Tab tab) {
+        delayStartAutoTrigger(mAutoTriggerDelayMs);
+        tab.addObserver(this);
     }
 
     private boolean shouldHideContent() {
