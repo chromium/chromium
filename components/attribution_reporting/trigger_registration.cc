@@ -11,7 +11,6 @@
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -72,7 +71,7 @@ ParseAggregationCoordinator(const base::Value* value) {
 
 template <typename T>
 void SerializeListIfNotEmpty(base::Value::Dict& dict,
-                             base::StringPiece key,
+                             std::string_view key,
                              const std::vector<T>& vec) {
   if (vec.empty()) {
     return;
@@ -159,7 +158,7 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
 
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
-TriggerRegistration::Parse(base::StringPiece json) {
+TriggerRegistration::Parse(std::string_view json) {
   base::expected<TriggerRegistration, TriggerRegistrationError> trigger =
       base::unexpected(TriggerRegistrationError::kInvalidJson);
 

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "components/attribution_reporting/is_origin_suitable.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "net/base/schemeful_site.h"
@@ -43,7 +42,7 @@ absl::optional<SuitableOrigin> SuitableOrigin::Create(const GURL& url) {
 
 // static
 absl::optional<SuitableOrigin> SuitableOrigin::Deserialize(
-    base::StringPiece str) {
+    std::string_view str) {
   return Create(GURL(str));
 }
 

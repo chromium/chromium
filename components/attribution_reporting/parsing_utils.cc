@@ -13,7 +13,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -57,7 +56,7 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
 }
 
 bool ParseUint64(const base::Value::Dict& dict,
-                 base::StringPiece key,
+                 std::string_view key,
                  absl::optional<uint64_t>& out) {
   const base::Value* value = dict.Find(key);
   if (!value) {
@@ -79,7 +78,7 @@ bool ParseUint64(const base::Value::Dict& dict,
 }
 
 bool ParseInt64(const base::Value::Dict& dict,
-                base::StringPiece key,
+                std::string_view key,
                 absl::optional<int64_t>& out) {
   const base::Value* value = dict.Find(key);
   if (!value) {
@@ -147,13 +146,13 @@ ParseLegacyDuration(const base::Value& value,
 }
 
 void SerializeUint64(base::Value::Dict& dict,
-                     base::StringPiece key,
+                     std::string_view key,
                      uint64_t value) {
   dict.Set(key, base::NumberToString(value));
 }
 
 void SerializeInt64(base::Value::Dict& dict,
-                    base::StringPiece key,
+                    std::string_view key,
                     int64_t value) {
   dict.Set(key, base::NumberToString(value));
 }
@@ -181,7 +180,7 @@ void SerializeDeduplicationKey(base::Value::Dict& dict,
 }
 
 void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
-                                 base::StringPiece key,
+                                 std::string_view key,
                                  base::TimeDelta value) {
   int64_t seconds = value.InSeconds();
   if (base::IsValueInRangeForNumericType<int>(seconds)) {

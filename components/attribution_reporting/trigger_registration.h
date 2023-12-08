@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
@@ -34,7 +34,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   // Logs metric on parsing failures.
   static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>
-  Parse(base::StringPiece json);
+  Parse(std::string_view json);
 
   TriggerRegistration();
 

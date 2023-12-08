@@ -4,7 +4,6 @@
 
 #include "components/attribution_reporting/suitable_origin.h"
 
-#include "base/strings/string_piece.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,7 +64,7 @@ TEST(SuitableOriginTest, Create) {
 
 TEST(SuitableOriginTest, Deserialize_Serialize) {
   const struct {
-    base::StringPiece str;
+    std::string_view str;
     absl::optional<url::Origin> expected;
     const char* expected_serialization;
   } kTestCases[] = {

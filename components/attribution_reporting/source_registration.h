@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -37,7 +38,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   // Logs metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-  Parse(base::StringPiece json, mojom::SourceType);
+  Parse(std::string_view json, mojom::SourceType);
 
   explicit SourceRegistration(DestinationSet);
 
