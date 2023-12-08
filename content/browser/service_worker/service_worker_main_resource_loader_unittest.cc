@@ -21,6 +21,7 @@
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -48,6 +49,24 @@
 
 namespace content {
 namespace service_worker_main_resource_loader_unittest {
+
+class ScopedOverrideToDisableHighPriorityFetchResponseCallback {
+ public:
+  ScopedOverrideToDisableHighPriorityFetchResponseCallback() {
+    ServiceWorkerFetchDispatcher::
+        ForceDisableHighPriorityFetchResponseCallbackForTesting(
+            /*force_disable=*/true);
+  }
+  ScopedOverrideToDisableHighPriorityFetchResponseCallback(
+      const ScopedOverrideToDisableHighPriorityFetchResponseCallback&) = delete;
+  ScopedOverrideToDisableHighPriorityFetchResponseCallback& operator=(
+      const ScopedOverrideToDisableHighPriorityFetchResponseCallback&) = delete;
+  ~ScopedOverrideToDisableHighPriorityFetchResponseCallback() {
+    ServiceWorkerFetchDispatcher::
+        ForceDisableHighPriorityFetchResponseCallbackForTesting(
+            /*force_disable=*/false);
+  }
+};
 
 void ReceiveRequestHandler(
     network::SingleRequestURLLoaderFactory::RequestHandler* out_handler,
@@ -998,6 +1017,15 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, ErrorResponse) {
 
 // Test when dispatching the fetch event to the service worker failed.
 TEST_F(ServiceWorkerMainResourceLoaderTest, FailFetchDispatch) {
+  // This test simulates failure to dispatch the fetch event to the
+  // service worker by calling
+  // `service_worker_->FailToDispatchFetchEvent()`. But without
+  // disabling high priority fetch response callback, request processing
+  // comes earlier, and doesn't fail to fetch dispatch.  This test is
+  // still valid after introducing HighPriorityFetchResponseCallback.
+  ScopedOverrideToDisableHighPriorityFetchResponseCallback
+      disable_high_priority_fetch_response_callback;
+
   base::HistogramTester histogram_tester;
   service_worker_->FailToDispatchFetchEvent();
 
@@ -1108,6 +1136,16 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, ConnectionErrorDuringFetchEvent) {
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, CancelNavigationDuringFetchEvent) {
+  // This test simulates failure by resetting
+  // ServiceWorkerContainerHost.  But without disabling
+  // HighPriorityFetchResponseCallback,
+  // `container_endpoints_.host_remote()->reset()` comes later than
+  // request processing, and doesn't cancel navigation during the fetch
+  // event.  This test is still valid after introducing
+  // HighPriorityFetchResponseCallback.
+  ScopedOverrideToDisableHighPriorityFetchResponseCallback
+      disable_high_priority_fetch_response_callback;
+
   StartRequest(CreateRequest());
 
   // Delete the container host during the request. The load should abort without

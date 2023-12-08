@@ -60,7 +60,9 @@ namespace {
 // ServiceWorkerFetchDispatcher::ResponseCallback in a high priority task queue.
 BASE_FEATURE(kServiceWorkerFetchResponseCallbackUseHighPriority,
              "ServiceWorkerFetchResponseCallbackUseHighPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool g_force_disable_high_priority_fetch_response_callback = false;
 
 void NotifyNavigationPreloadRequestSent(const network::ResourceRequest& request,
                                         const std::pair<int, int>& worker_id,
@@ -373,8 +375,9 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
       : receiver_(
             this,
             std::move(receiver),
-            (base::FeatureList::IsEnabled(
-                 kServiceWorkerFetchResponseCallbackUseHighPriority)
+            (!g_force_disable_high_priority_fetch_response_callback &&
+                     base::FeatureList::IsEnabled(
+                         kServiceWorkerFetchResponseCallbackUseHighPriority)
                  ? GetUIThreadTaskRunner(
                        {BrowserTaskType::kServiceWorkerStorageControlResponse})
                  : base::SequencedTaskRunner::GetCurrentDefault())),
@@ -895,6 +898,13 @@ void ServiceWorkerFetchDispatcher::OnFetchEventFinished(
   version->FinishRequest(
       event_finish_id,
       status != blink::mojom::ServiceWorkerEventStatus::ABORTED);
+}
+
+// static
+void ServiceWorkerFetchDispatcher::
+    ForceDisableHighPriorityFetchResponseCallbackForTesting(
+        bool force_disable) {
+  g_force_disable_high_priority_fetch_response_callback = force_disable;
 }
 
 }  // namespace content
