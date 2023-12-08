@@ -5787,6 +5787,9 @@ crbug.com/1479108 virtual/threaded-no-composited-antialiasing/animations/composi
 crbug.com/1430215 [ Mac10.15 ] external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure ]
 crbug.com/1492172 [ Win ] external/wpt/soft-navigation-heuristics/softnav-before-lcp-paint.tentative.html [ Failure ]
 crbug.com/1491472 [ Mac ] virtual/shared-storage-fenced-frame-mparch/http/tests/inspector-protocol/shared-storage/debugger-pause-on-first-script.js [ Skip Timeout ]
+crbug.com/1462683 [ Mac13-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/1462683 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/1462683 [ Mac11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
