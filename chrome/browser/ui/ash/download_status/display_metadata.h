@@ -23,7 +23,6 @@ namespace ash::download_status {
 // TODO(http://b/307353486): Implement all commands.
 enum class CommandType {
   kCancel,
-  kPause,
 };
 
 // The metadata to display a download command.
