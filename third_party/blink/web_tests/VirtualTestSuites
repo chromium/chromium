@@ -801,13 +801,6 @@
     "expires": "never"
   },
   {
-    "prefix": "fsa-locking-scheme",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/fs"],
-    "args": ["--enable-features=FileSystemAccessLockingScheme"],
-    "expires": "never"
-  },
-  {
     "prefix": "controls-refresh-hc",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme"],

@@ -1748,6 +1748,7 @@
     },
     {
       name: "FileSystemAccessLockingScheme",
+      status: "stable",
     },
     {
       // OPFS File System Access API.

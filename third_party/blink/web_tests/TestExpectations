@@ -2825,7 +2825,6 @@ crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-integer-005.html [ 
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-005.html [ Failure ]
-crbug.com/626703 [ Mac13 ] virtual/fsa-locking-scheme/external/wpt/fs/FileSystemBaseHandle-IndexedDB.https.any.worker.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-explicit-commit.any.worker.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-margin-root-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-break-content-020.html [ Failure ]
@@ -6957,14 +6956,6 @@ crbug.com/1481694 [ Win11 ] accessibility/selection-change-notification-on-selec
 crbug.com/1486616 [ Linux ] fast/sub-pixel/sub-pixel-composited-layers.html [ Failure Pass ]
 crbug.com/1487886 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-trusted-types.html [ Pass Timeout ]
 crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
-
-# TODO(crbug.com/1399685): These tests should be added to exclusive_tests in
-# VirtualTestSuites fsa-locking-scheme but linting prevents this.
-external/wpt/fs/FileSystemFileHandle-cross-primitive-locking.https.tentative.worker.html [ Failure Skip ]
-external/wpt/fs/FileSystemFileHandle-sync-access-handle-lock-modes.https.tentative.worker.html [ Failure Skip ]
-external/wpt/fs/FileSystemFileHandle-writable-file-stream-lock-modes.https.tentative.worker.html [ Failure Skip ]
-external/wpt/fs/FileSystemFileHandle-sync-access-handle-back-forward-cache.https.tentative.window.html [ Failure Skip ]
-external/wpt/fs/FileSystemFileHandle-writable-file-stream-back-forward-cache.https.tentative.window.html [ Failure Skip ]
 
 # Gardener 2023-10-02
 crbug.com/1481694 [ Win10.20h2 ] accessibility/selection-change-notification-on-selection-removed.html [ Failure ]
