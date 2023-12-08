@@ -2233,6 +2233,14 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   EXPECT_EQ(0u, pdf_action_data.selection_end_index.page_index);
   EXPECT_EQ(20u, pdf_action_data.selection_end_index.char_index);
 
+  // Verify selection offsets in tree data.
+  ui::AXTreeData tree_data;
+  pdf_accessibility_tree_->GetTreeData(&tree_data);
+  EXPECT_EQ(9, tree_data.sel_anchor_object_id);
+  EXPECT_EQ(0, tree_data.sel_anchor_offset);
+  EXPECT_EQ(9, tree_data.sel_focus_object_id);
+  EXPECT_EQ(0, tree_data.sel_focus_offset);
+
   pdf_anchor_action_target =
       pdf_accessibility_tree_->CreateActionTarget(*static_text_nodes1[0]);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf,
