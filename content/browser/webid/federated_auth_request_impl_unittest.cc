@@ -239,6 +239,7 @@ struct RequestExpectations {
   FederatedAuthRequestResult devtools_issue_status;
   absl::optional<std::string> standalone_console_message;
   absl::optional<std::string> selected_idp_config_url;
+  bool is_auto_selected{false};
 };
 
 // Mock configuration values for test.
@@ -314,6 +315,7 @@ struct MockConfiguration {
       TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
   absl::optional<ErrorDialogType> error_dialog_type;
   absl::optional<ErrorUrlType> error_url_type;
+  blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -1012,8 +1014,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
       // FetchedEndpoint::CLIENT_METADATA is optional.
 
-      EXPECT_TRUE(did_show_accounts_dialog());
+      EXPECT_EQ(did_show_accounts_dialog(),
+                !expectation.is_auto_selected ||
+                    configuration.rp_mode != blink::mojom::RpMode::kButton);
     }
+
+    EXPECT_EQ(expectation.is_auto_selected, auth_helper_.is_auto_selected());
 
     EXPECT_EQ(expectation.selected_idp_config_url,
               auth_helper_.selected_idp_config_url());
@@ -1828,8 +1834,9 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .WillOnce(Return(false));
 
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
-              kConfigurationValid);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+  RunAuthTest(kDefaultRequestParameters, expectation, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
@@ -1868,8 +1875,10 @@ TEST_F(FederatedAuthRequestImplTest,
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
-              kConfigurationValid);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+
+  RunAuthTest(kDefaultRequestParameters, expectation, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
@@ -1921,7 +1930,9 @@ TEST_F(FederatedAuthRequestImplTest,
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+  RunAuthTest(kDefaultRequestParameters, expectation, configuration);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].id, kAccountIdPeter);
@@ -2201,8 +2212,9 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts[0].login_state =
       LoginState::kSignIn;
-
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+  RunAuthTest(kDefaultRequestParameters, expectation, configuration);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
@@ -3239,6 +3251,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   MockConfiguration config = kConfigurationValid;
   config.mediation_requirement = MediationRequirement::kRequired;
+
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
 }
 
@@ -3272,7 +3285,10 @@ TEST_F(FederatedAuthRequestImplTest,
 
   MockConfiguration config = kConfigurationValid;
   config.mediation_requirement = MediationRequirement::kOptional;
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+
+  RunAuthTest(kDefaultRequestParameters, expectation, config);
 }
 
 // Test that the is_auto_selected value in the token post
@@ -5912,6 +5928,64 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintAddAccount) {
 
   // The `login_url` used when invoking AddAccounts should not include hints.
   EXPECT_EQ(login_url, kIdpLoginUrl);
+}
+
+// Test that auto re-authn in button mode does not show any UI.
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull),
+                           Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  for (const auto& idp_info : kConfigurationValid.idp_info) {
+    ASSERT_EQ(idp_info.second.accounts.size(), 1u);
+  }
+
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  checker->SetExpectedTokenPostData(
+      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
+      "&account_id=" + std::string(kAccountId) +
+      "&disclosure_text_shown=false" + "&is_auto_selected=true");
+  SetNetworkRequestManager(std::move(checker));
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  MockConfiguration config = kConfigurationValid;
+  config.rp_mode = blink::mojom::RpMode::kButton;
+
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+
+  RunAuthTest(parameters, expectation, config);
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     0);
+
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+                           /*expected_succeeded=*/true,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 }  // namespace content

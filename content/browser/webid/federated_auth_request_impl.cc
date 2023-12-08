@@ -1374,39 +1374,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     return;
   }
 
-  // The RenderFrameHost may be alive but not visible in the following
-  // situations:
-  // Situation #1: User switched tabs
-  // Situation #2: User navigated the page. The RenderFrameHost is still
-  //   alive thanks to the BFCache.
-  //
-  // - If this fetch is as a result of an IdP sign-in status change, the FedCM
-  // dialog is either visible or temporarily hidden. Update the contents of
-  // the dialog.
-  // - If the FedCM dialog has not already been shown, do not show the dialog
-  // if the RenderFrameHost is hidden because the user does not seem interested
-  // in the contents of the current page.
-  if (!fetch_data_.for_idp_signin) {
-    bool is_visible = IsFrameVisible(render_frame_host().GetMainFrame());
-    fedcm_metrics_->RecordWebContentsVisibilityUponReadyToShowDialog(
-        is_visible);
-
-    if (!is_visible) {
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorRpPageNotVisible,
-          TokenStatus::kRpPageNotVisible,
-          /*token_error=*/absl::nullopt,
-          /*should_delay_callback=*/true);
-      return;
-    }
-
-    show_accounts_dialog_time_ = base::TimeTicks::Now();
-    fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
-                                                 start_time_);
-  }
-
-  fetch_data_ = FetchData();
-
   if (IsFedCmAddAccountEnabled()) {
     // This map may have contents already if we came here through the "Add
     // Account" flow.
@@ -1415,15 +1382,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     CHECK(idp_data_for_display_.empty());
   }
 
+  blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
       idp_data_for_display_.push_back(*idp_info_it->second->data);
+      // TODO(crbug.com/1307709): handle button mode with multiple IdP.
+      if (IsFedCmButtonModeEnabled() &&
+          render_frame_host().HasTransientUserActivation()) {
+        rp_mode = idp_info_it->second->rp_mode;
+      }
     }
   }
-
-  // RenderFrameHost should be in the primary page (ex not in the BFCache).
-  DCHECK(render_frame_host().GetPage().IsPrimary());
 
   // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
@@ -1501,6 +1471,64 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
 
+  if (dialog_type_ != kAutoReauth) {
+    identity_selection_type_ = kExplicit;
+  } else if (!IsFedCmButtonModeEnabled() ||
+             rp_mode == blink::mojom::RpMode::kWidget) {
+    identity_selection_type_ = kAutoWidget;
+  } else {
+    identity_selection_type_ = kAutoButton;
+  }
+
+  if (auto_reauthn_enabled) {
+    fedcm_metrics_->RecordAutoReauthnMetrics(
+        has_single_returning_account, auto_reauthn_account,
+        dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
+        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
+  }
+
+  if (identity_selection_type_ == kAutoButton) {
+    OnAccountSelected(auto_reauthn_idp->idp_metadata.config_url,
+                      auto_reauthn_account->id, /*is_sign_in=*/true);
+    return;
+  }
+
+  // The RenderFrameHost may be alive but not visible in the following
+  // situations:
+  // Situation #1: User switched tabs
+  // Situation #2: User navigated the page. The RenderFrameHost is still
+  //   alive thanks to the BFCache.
+  //
+  // - If this fetch is as a result of an IdP sign-in status change, the FedCM
+  // dialog is either visible or temporarily hidden. Update the contents of
+  // the dialog.
+  // - If the FedCM dialog has not already been shown, do not show the dialog
+  // if the RenderFrameHost is hidden because the user does not seem interested
+  // in the contents of the current page.
+  if (!fetch_data_.for_idp_signin) {
+    bool is_visible = IsFrameVisible(render_frame_host().GetMainFrame());
+    fedcm_metrics_->RecordWebContentsVisibilityUponReadyToShowDialog(
+        is_visible);
+
+    if (!is_visible) {
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorRpPageNotVisible,
+          TokenStatus::kRpPageNotVisible,
+          /*token_error=*/absl::nullopt,
+          /*should_delay_callback=*/true);
+      return;
+    }
+
+    show_accounts_dialog_time_ = base::TimeTicks::Now();
+    fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
+                                                 start_time_);
+  }
+
+  fetch_data_ = FetchData();
+
+  // RenderFrameHost should be in the primary page (ex not in the BFCache).
+  DCHECK(render_frame_host().GetPage().IsPrimary());
+
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
   // trial. Should revisit based on the OT feedback.
   bool show_auto_reauthn_checkbox = false;
@@ -1526,8 +1554,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  identity_selection_type_ =
-      dialog_type_ == kAutoReauth ? kAutoWidget : kExplicit;
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
@@ -1557,13 +1583,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Although not useful for catching malicious IDPs, it should only be a very
   // small percentage of the samples recorded.
   fedcm_metrics_->RecordAccountsDialogShown();
-
-  if (auto_reauthn_enabled) {
-    fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account,
-        dialog_type_ == kAutoReauth, !is_auto_reauthn_setting_enabled,
-        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
-  }
 }
 
 void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
@@ -1862,7 +1881,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
           idp_info.provider->config->client_id, idp_info.provider->nonce,
-          account_id, is_sign_in, identity_selection_type_ == kAutoWidget,
+          account_id, is_sign_in, identity_selection_type_ != kExplicit,
           idp_info.provider->scope, idp_info.provider->responseType,
           idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,

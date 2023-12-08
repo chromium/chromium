@@ -167,7 +167,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   };
   DialogType GetDialogType() const { return dialog_type_; }
 
-  enum IdentitySelectionType { kExplicit, kAutoWidget };
+  enum IdentitySelectionType { kExplicit, kAutoWidget, kAutoButton };
 
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);

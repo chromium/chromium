@@ -36,6 +36,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
     return selected_idp_config_url_;
   }
   absl::optional<std::string> token() const { return token_; }
+  bool is_auto_selected() const { return is_auto_selected_; }
 
   // Returns base::OnceClosure which quits base::RunLoop started by
   // WaitForCallback().
