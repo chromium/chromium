@@ -409,6 +409,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mCurrentMetadata = null;
         mCurrentConfig = null;
         cancelAutoTrigger();
+        if (mPageInsightsDataLoader != null) {
+            mPageInsightsDataLoader.cancelCallback();
+        }
         if (mSheetContent == mSheetController.getCurrentSheetContent()) {
             mSheetController.hideContent(mSheetContent, true);
         }
@@ -557,13 +560,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             Log.e(TAG, "Can't launch Page Insights because Tab is null.");
             return;
         }
-        mCurrentConfig = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
+        PageInsightsConfig config = mPageInsightsConfigProvider.apply(mCurrentNavigationHandle);
         mPageInsightsDataLoader.loadInsightsData(
                 mTabObservable.get().getUrl(),
-                mCurrentConfig.getShouldAttachGaiaToRequest(),
+                config.getShouldAttachGaiaToRequest(),
                 metadata -> {
                     mCurrentMetadata = metadata;
-                    if (mCurrentConfig.getShouldXsurfaceLog()) {
+                    mCurrentConfig = config;
+                    if (config.getShouldXsurfaceLog()) {
                         getSurfaceRenderer()
                                 .onSurfaceCreated(
                                         PageInsightsLoggingParametersImpl.create(
@@ -571,7 +575,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                     }
                     initSheetContent(
                             metadata,
-                            /* isPrivacyNoticeRequired= */ mCurrentConfig.getShouldXsurfaceLog(),
+                            /* isPrivacyNoticeRequired= */ config.getShouldXsurfaceLog(),
                             /* shouldHavePeekState= */ false);
                     setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ 1.0f);
                     setCornerRadiusPx(mMaxCornerRadiusPx);
@@ -773,7 +777,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mBackPressManager.removeHandler(mBackPressHandler);
         }
         if (mPageInsightsDataLoader != null) {
-            mPageInsightsDataLoader.destroy();
+            mPageInsightsDataLoader.cancelCallback();
         }
     }
 

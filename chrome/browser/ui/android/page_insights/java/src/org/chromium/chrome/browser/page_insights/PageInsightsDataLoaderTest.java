@@ -60,6 +60,8 @@ public class PageInsightsDataLoaderTest {
 
     private final GURL mUrl2 = JUnitTestGURLs.GOOGLE_URL;
 
+    private OptimizationGuideBridge.OnDemandOptimizationGuideCallback mOptimizationGuideCallback;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -84,16 +86,26 @@ public class PageInsightsDataLoaderTest {
     }
 
     @Test
-    public void testLoadInsightsData_destroyed_callbackNotExecuted() {
+    public void testLoadInsightsData_cancelCallback_callbackNotExecuted() {
+        mockOptimizationGuideResponse(
+                mUrl,
+                anyPageInsights(mPageInsightsMetadata),
+                OptimizationGuideDecision.TRUE,
+                /* shouldRunCallbackImmediately= */ false);
         mPageInsightsDataLoader.clearCacheForTesting();
 
-        mPageInsightsDataLoader.destroy();
         mPageInsightsDataLoader.loadInsightsData(
                 mUrl,
                 /* shouldAttachGaiaToRequest= */ true,
                 (data) -> {
-                    fail("Callback should not have been called after loader destroyed.");
+                    fail("Callback should not have been called after cancelled.");
                 });
+        mPageInsightsDataLoader.cancelCallback();
+        mOptimizationGuideCallback.onOnDemandOptimizationGuideDecision(
+                mUrl,
+                HintsProto.OptimizationType.PAGE_INSIGHTS,
+                OptimizationGuideDecision.TRUE,
+                anyPageInsights(mPageInsightsMetadata));
     }
 
     @Test
@@ -201,18 +213,29 @@ public class PageInsightsDataLoaderTest {
 
     private void mockOptimizationGuideResponse(
             GURL url, CommonTypesProto.Any metadata, int decision) {
+        mockOptimizationGuideResponse(
+                url, metadata, decision, /* shouldRunCallbackImmediately= */ true);
+    }
+
+    private void mockOptimizationGuideResponse(
+            GURL url,
+            CommonTypesProto.Any metadata,
+            int decision,
+            boolean shouldRunCallbackImmediately) {
         doAnswer(
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
-                                OptimizationGuideBridge.OnDemandOptimizationGuideCallback callback =
+                                mOptimizationGuideCallback =
                                         (OptimizationGuideBridge.OnDemandOptimizationGuideCallback)
                                                 invocation.getArguments()[4];
-                                callback.onOnDemandOptimizationGuideDecision(
-                                        url,
-                                        HintsProto.OptimizationType.PAGE_INSIGHTS,
-                                        decision,
-                                        metadata);
+                                if (shouldRunCallbackImmediately) {
+                                    mOptimizationGuideCallback.onOnDemandOptimizationGuideDecision(
+                                            url,
+                                            HintsProto.OptimizationType.PAGE_INSIGHTS,
+                                            decision,
+                                            metadata);
+                                }
                                 return null;
                             }
                         })

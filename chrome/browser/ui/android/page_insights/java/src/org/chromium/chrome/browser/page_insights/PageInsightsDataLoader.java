@@ -30,7 +30,6 @@ class PageInsightsDataLoader {
     private static final int LRU_CACHE_SIZE = 10;
     private LruCache<GURL, PageInsightsMetadata> mCache =
             new LruCache<GURL, PageInsightsMetadata>(LRU_CACHE_SIZE);
-    private boolean mIsDestroyed;
     @Nullable private Callback<PageInsightsMetadata> mCurrentCallback;
 
     PageInsightsDataLoader() {}
@@ -61,7 +60,6 @@ class PageInsightsDataLoader {
                                 ? RequestContext.CONTEXT_PAGE_INSIGHTS_HUB
                                 : RequestContext.CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB,
                         (gurl, optimizationType, decision, metadata) -> {
-                            if (mIsDestroyed) return;
                             try {
                                 if (decision != OptimizationGuideDecision.TRUE) {
                                     return;
@@ -94,8 +92,8 @@ class PageInsightsDataLoader {
         mCache = new LruCache<GURL, PageInsightsMetadata>(LRU_CACHE_SIZE);
     }
 
-    void destroy() {
-        mIsDestroyed = true;
+    void cancelCallback() {
+        mCurrentCallback = null;
     }
 
     // Lazy initialization of OptimizationGuideBridgeFactory
