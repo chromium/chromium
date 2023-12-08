@@ -263,9 +263,17 @@ bool IsPasscodeSettingsAvailable() {
   [_delegate willPushReauthenticationViewController];
 
   // Dismiss any presented state.
-  [_baseNavigationController.topViewController.presentedViewController
-      dismissViewControllerAnimated:NO
-                         completion:nil];
+  UIViewController* topViewController =
+      _baseNavigationController.topViewController;
+  UIViewController* presentedViewController =
+      topViewController.presentedViewController;
+  // Do not dismiss the Search Controller, otherwise pushViewController does not
+  // add a the new view controller to the top of the navigation stack.
+  if (![presentedViewController isKindOfClass:[UISearchController class]]) {
+    [presentedViewController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
+  }
 
   _reauthViewController = [[ReauthenticationViewController alloc]
       initWithReauthenticationModule:_reauthModule
