@@ -104,18 +104,20 @@ TEST_P(StabilityReportUserStreamDataSourceTest, ReadProcess) {
   ASSERT_TRUE(process_state.memory_state().has_windows_memory());
   const ProcessState::MemoryState::WindowsMemory& process_memory =
       process_state.memory_state().windows_memory();
+  const ProcessState::FileSystemState::WindowsFileSystemState& process_fs =
+      process_state.file_system_state().windows_file_system_state();
 
   // Memory stats are only filled in if the process could be queried.
   if (is_valid_process_) {
     EXPECT_GT(process_memory.process_private_usage(), 0U);
     EXPECT_GT(process_memory.process_peak_workingset_size(), 0U);
     EXPECT_GT(process_memory.process_peak_pagefile_usage(), 0U);
-    EXPECT_GT(process_memory.process_handle_count(), 0U);
+    EXPECT_GT(process_fs.process_handle_count(), 0U);
   } else {
     EXPECT_FALSE(process_memory.has_process_private_usage());
     EXPECT_FALSE(process_memory.has_process_peak_workingset_size());
     EXPECT_FALSE(process_memory.has_process_peak_pagefile_usage());
-    EXPECT_FALSE(process_memory.has_process_handle_count());
+    EXPECT_FALSE(process_fs.has_process_handle_count());
   }
 
   // Allocation attempt is only set on OOM when all info is available.

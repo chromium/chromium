@@ -25,6 +25,8 @@ message ProcessState {
   // Next id: 6
   message MemoryState {
     message WindowsMemory {
+      // Fields that were removed.
+      reserved 5;
       // The private byte usage of the process. Unit is 4K pages.
       optional uint32 process_private_usage = 1;
       // The peak working set usage of the process. Unit is 4K pages.
@@ -33,8 +35,6 @@ message ProcessState {
       optional uint32 process_peak_pagefile_usage = 3;
       // The allocation request that caused OOM, bytes.
       optional uint32 process_allocation_attempt = 4;
-      // The number of opened handles in the process.
-      optional uint32 process_handle_count = 5;
     }
 
     optional WindowsMemory windows_memory = 1;
@@ -43,14 +43,21 @@ message ProcessState {
   optional MemoryState memory_state = 4;
 
   // Records the state of the file system at the time of crash.
-  // Next id: 2
+  // Next id: 3
   message FileSystemState {
     message PosixFileSystemState {
       // The number of open file descriptors in the crashing process.
-      optional uint32 crashing_open_file_descriptors = 1;
+      optional uint32 open_file_descriptors = 1;
     }
 
     optional PosixFileSystemState posix_file_system_state = 1;
+
+    message WindowsFileSystemState {
+      // The number of open handles in the process.
+      optional uint32 process_handle_count = 1;
+    }
+
+    optional WindowsFileSystemState windows_file_system_state = 2;
   }
 
   optional FileSystemState file_system_state = 7;

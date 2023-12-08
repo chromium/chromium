@@ -24,8 +24,7 @@ void CollectFileDescriptorInfo(ProcessState& process_state,
   ProcessState::FileSystemState::PosixFileSystemState* file_system_state =
       process_state.mutable_file_system_state()
           ->mutable_posix_file_system_state();
-  file_system_state->set_crashing_open_file_descriptors(
-      metrics->GetOpenFdCount());
+  file_system_state->set_open_file_descriptors(metrics->GetOpenFdCount());
 }
 
 }  // namespace

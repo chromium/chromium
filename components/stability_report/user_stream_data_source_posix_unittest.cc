@@ -55,7 +55,7 @@ TEST(StabilityReportUserStreamDataSourceTest, GetOpenFDs) {
   EXPECT_TRUE(process_state.file_system_state().has_posix_file_system_state());
   EXPECT_EQ(process_state.file_system_state()
                 .posix_file_system_state()
-                .crashing_open_file_descriptors(),
+                .open_file_descriptors(),
             base::checked_cast<unsigned int>(fd_count + 1));
 }
 
