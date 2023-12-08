@@ -5646,7 +5646,6 @@ crbug.com/1340167 fast/loader/iframe-navigation-stealing-focus.html [ Pass Timeo
 crbug.com/1354433 [ Mac ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]
 
 # Failures with FractionalScrollOffsets disabled for web tests by default.
-crbug.com/1358383 virtual/compositor_threaded_scrollbar_scrolling/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar-thumb.html [ Failure ]
 crbug.com/1358383 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar-thumb.html [ Failure ]
 
 # Sheriff 2022-08-30
@@ -6514,7 +6513,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/button/button-pressed-state.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/webappapis/dynamic-markup-insertion/html-unsafe-methods/Document-parseHTMLUnsafe-url-base.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/profiler/heap-snapshot-comparison-sorting.js [ Skip Timeout ]
-[ Debug Mac13 ] virtual/compositor_threaded_scrollbar_scrolling/fast/scrolling/scrollbars/thumb-drag-mousemove-no-button.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/interpolation/text-decoration-color-interpolation.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/stability/pseudo-element-animation-with-marker-crash.html [ Skip Timeout ]

@@ -1557,7 +1557,6 @@ transforms/transform-on-inline.html
 transforms/transformed-document-element.html
 virtual/android/fullscreen/video-controls-timeline.html
 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
-virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html

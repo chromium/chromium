@@ -504,16 +504,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "compositor_threaded_scrollbar_scrolling",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/scrolling/scrollbars",
-              "paint/invalidation/scroll/sticky"],
-    "args": ["--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text",
-             "--disable-smooth-scrolling"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "percent-based-scrolling",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
@@ -554,31 +544,12 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "smooth_compositor_threaded_scrollbar_scrolling",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/scrolling/scrollbars/scroll-chaining-for-gesture-based-scrolling.html"],
-    "args": ["--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text",
-             "--enable-smooth-scrolling"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "hidpi",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/scrolling/scrollbars/dsf-ready"],
     "args": ["--disable-smooth-scrolling",
              "--force-device-scale-factor=2",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
-    "prefix": "compositor_threaded_scrollbar_scrolling_hidpi",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/scrolling/scrollbars/dsf-ready"],
-    "args": ["--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text",
-             "--disable-smooth-scrolling",
-             "--force-device-scale-factor=2"],
     "expires": "Jul 1, 2023"
   },
   {
