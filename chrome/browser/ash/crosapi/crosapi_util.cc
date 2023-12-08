@@ -197,6 +197,9 @@ constexpr char kAshExtensionKeeplistCmdlineSwitchCapability[] = "crbug/1409199";
 // Capability to accept a package ID for installation without a parsing bug.
 // Once Ash and Lacros are both past M124, then we can remove this capability.
 constexpr char kAshAppInstallServicePackageIdFix[] = "b/304680258";
+// Bug fix to launch tabbed web app windows in new windows when requested.
+// We can remove this capability once Ash and Lacros are both past M122.
+constexpr char kAshShelfNewWindowFix[] = "crbug/1490336";
 
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
@@ -616,6 +619,7 @@ void InjectBrowserInitParams(
       kExtensionControlledPrefObserversCapability,
       kAshExtensionKeeplistCmdlineSwitchCapability,
       kAshAppInstallServicePackageIdFix,
+      kAshShelfNewWindowFix,
   };
   params->ash_capabilities = {std::move(ash_capabilities)};
 

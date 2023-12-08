@@ -491,8 +491,10 @@ bool ChromeShelfController::IsOpen(const ash::ShelfID& id) const {
 void ChromeShelfController::LaunchApp(const ash::ShelfID& id,
                                       ash::ShelfLaunchSource source,
                                       int event_flags,
-                                      int64_t display_id) {
-  shelf_controller_helper_->LaunchApp(id, source, event_flags, display_id);
+                                      int64_t display_id,
+                                      bool new_window) {
+  shelf_controller_helper_->LaunchApp(id, source, event_flags, display_id,
+                                      new_window);
 }
 
 void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,

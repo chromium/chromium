@@ -298,6 +298,10 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
         &profile_.get(), /*match_original_profiles=*/false, display_id);
   }
 
+  if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {
+    return nullptr;
+  }
+
   // In the case of prevent-close, we do not want to create a new browser, but
   // instead continue to find the existing browser window.
   if (!registrar_->IsTabbedWindowModeEnabled(params_->app_id) &&

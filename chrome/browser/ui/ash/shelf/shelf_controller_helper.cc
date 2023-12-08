@@ -349,7 +349,8 @@ bool ShelfControllerHelper::IsValidIDForCurrentUser(
 void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
                                       ash::ShelfLaunchSource source,
                                       int event_flags,
-                                      int64_t display_id) {
+                                      int64_t display_id,
+                                      bool new_window) {
   // Handle recording app launch source from the Shelf in Demo Mode.
   if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
     ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
@@ -362,6 +363,32 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
 
   // Launch apps with AppServiceProxy.Launch.
   if (proxy->AppRegistryCache().GetAppType(app_id) != apps::AppType::kUnknown) {
+    if (new_window) {
+      apps::LaunchContainer container =
+          apps::LaunchContainer::kLaunchContainerNone;
+      proxy->AppRegistryCache().ForOneApp(
+          app_id, [&](const apps::AppUpdate& update) {
+            container = apps::ConvertWindowModeToAppLaunchContainer(
+                update.WindowMode());
+          });
+      // TODO(b/310775293): Make this CHECK(launches_in_window), currently this
+      // could be false due to the ash::LAUNCH_NEW shelf command being used for
+      // both "New window" and "New tab".
+      switch (container) {
+        case apps::LaunchContainer::kLaunchContainerWindow:
+          // TODO(b/310775293): Add test for this behaviour.
+          // event_flags are ignored here because they control the disposition
+          // which in this case has been overridden to always open a new window.
+          proxy->LaunchAppWithParams(apps::AppLaunchParams(
+              app_id, container, WindowOpenDisposition::NEW_WINDOW,
+              ShelfLaunchSourceToAppsLaunchSource(source), display_id));
+          return;
+        case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
+        case apps::LaunchContainer::kLaunchContainerTab:
+        case apps::LaunchContainer::kLaunchContainerNone:
+          break;
+      }
+    }
     proxy->Launch(app_id, event_flags,
                   ShelfLaunchSourceToAppsLaunchSource(source),
                   std::make_unique<apps::WindowInfo>(display_id));
@@ -419,7 +446,8 @@ ArcAppListPrefs* ShelfControllerHelper::GetArcAppListPrefs() const {
 
 void ShelfControllerHelper::ExtensionEnableFlowFinished() {
   LaunchApp(ash::ShelfID(extension_enable_flow_->extension_id()),
-            ash::LAUNCH_FROM_UNKNOWN, ui::EF_NONE, display::kInvalidDisplayId);
+            ash::LAUNCH_FROM_UNKNOWN, ui::EF_NONE, display::kInvalidDisplayId,
+            /*new_window=*/false);
   extension_enable_flow_.reset();
 }
 

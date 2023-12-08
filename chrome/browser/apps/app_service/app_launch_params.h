@@ -68,6 +68,7 @@ struct AppLaunchParams {
   LaunchContainer container;
 
   // If container is TAB, this field controls how the tab is opened.
+  // If container is WINDOW, NEW_WINDOW will force a new window to be opened.
   WindowOpenDisposition disposition;
 
   // If non-empty, use override_url in place of the application's launch url.

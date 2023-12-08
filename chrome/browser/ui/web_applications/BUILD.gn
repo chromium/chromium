@@ -177,6 +177,7 @@ source_set("app_service_browser_tests") {
       "//chromeos/constants",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
     ]
   }
 }

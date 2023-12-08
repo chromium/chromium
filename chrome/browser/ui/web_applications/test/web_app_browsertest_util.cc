@@ -227,9 +227,10 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile,
 Browser* LaunchWebAppToURL(Profile* profile,
                            const webapps::AppId& app_id,
                            const GURL& url) {
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               apps::LaunchSource::kFromCommandLine);
   params.override_url = url;
   content::WebContents* const web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)

@@ -139,23 +139,22 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
   NOTREACHED();
 }
 
-apps::LaunchContainer ConvertWindowModeToAppLaunchContainer(
-    apps::WindowMode window_mode) {
-  switch (window_mode) {
-    case apps::WindowMode::kBrowser:
-      return apps::LaunchContainer::kLaunchContainerTab;
-    case apps::WindowMode::kWindow:
-    case apps::WindowMode::kTabbedWindow:
-      return apps::LaunchContainer::kLaunchContainerWindow;
-    case apps::WindowMode::kUnknown:
-      return apps::LaunchContainer::kLaunchContainerNone;
-  }
-}
-
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
+
+LaunchContainer ConvertWindowModeToAppLaunchContainer(WindowMode window_mode) {
+  switch (window_mode) {
+    case WindowMode::kBrowser:
+      return LaunchContainer::kLaunchContainerTab;
+    case WindowMode::kWindow:
+    case WindowMode::kTabbedWindow:
+      return LaunchContainer::kLaunchContainerWindow;
+    case WindowMode::kUnknown:
+      return LaunchContainer::kLaunchContainerNone;
+  }
+}
 
 std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     const base::CommandLine& command_line) {

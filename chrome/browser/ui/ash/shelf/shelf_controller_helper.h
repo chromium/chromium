@@ -100,7 +100,8 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   void LaunchApp(const ash::ShelfID& id,
                  ash::ShelfLaunchSource source,
                  int event_flags,
-                 int64_t display_id);
+                 int64_t display_id,
+                 bool new_window);
 
   virtual ArcAppListPrefs* GetArcAppListPrefs() const;
 
