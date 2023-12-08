@@ -358,6 +358,7 @@ manta::proto::Request CreateMantaRequest(
   }
   request_config.set_num_outputs(num_output);
   request_config.set_image_resolution(target_resolution);
+  request_config.set_aspect_ratio(manta::proto::AspectRatio::ASPECT_RATIO_16_9);
   manta::proto::InputData& input_data = *request.add_input_data();
   if (query->is_text_query()) {
     input_data.set_text(query->get_text_query());
