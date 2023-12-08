@@ -21,9 +21,9 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
                            gpu::SharedImageInterface*);
   ~GpuMemoryBufferImageCopy();
 
-  // SyncToken will be completed after GpuMemoryBuffer access is finished by
+  // SyncToken will be completed after access to the buffer is finished by
   // GPU process.
-  std::pair<gfx::GpuMemoryBuffer*, gpu::SyncToken> CopyImage(Image*);
+  std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(Image*);
 
  private:
   bool EnsureDestImage(const gfx::Size&);

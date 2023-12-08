@@ -58,7 +58,7 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
   return true;
 }
 
-std::pair<gfx::GpuMemoryBuffer*, gpu::SyncToken>
+std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
 GpuMemoryBufferImageCopy::CopyImage(Image* image) {
   if (!image)
     return {};
@@ -116,7 +116,9 @@ GpuMemoryBufferImageCopy::CopyImage(Image* image) {
 
   static_image->UpdateSyncToken(sync_token);
 
-  return std::make_pair(gpu_memory_buffer_.get(), sync_token);
+  return std::make_pair(gpu_memory_buffer_ ? gpu_memory_buffer_->CloneHandle()
+                                           : gfx::GpuMemoryBufferHandle(),
+                        sync_token);
 }
 
 void GpuMemoryBufferImageCopy::CleanupDestImage() {
