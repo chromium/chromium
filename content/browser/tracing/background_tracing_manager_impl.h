@@ -113,6 +113,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   bool OnScenarioIdle(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
   void SaveTrace(TracingScenario* scenario,
+                 base::Token trace_uuid,
                  const BackgroundTracingRule* triggered_rule,
                  std::string&& serialized_trace) override;
 

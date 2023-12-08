@@ -156,6 +156,7 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
     // Called when a trace was collected.
     virtual void SaveTrace(TracingScenario* scenario,
+                           base::Token trace_uuid,
                            const BackgroundTracingRule* triggered_rule,
                            std::string&& serialized_trace) = 0;
 
@@ -215,7 +216,8 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
   void OnTracingError(perfetto::TracingError error);
   void OnTracingStop();
   void OnTracingStart();
-  void OnFinalizingDone(std::string&& serialized_trace,
+  void OnFinalizingDone(base::Token trace_uuid,
+                        std::string&& serialized_trace,
                         TracingSession tracing_session,
                         const BackgroundTracingRule* triggered_rule);
   void DisableNestedScenarios();

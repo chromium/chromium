@@ -81,6 +81,7 @@ class TestTracingScenarioDelegate : public TracingScenario::Delegate {
   MOCK_METHOD(void,
               SaveTrace,
               (TracingScenario * scenario,
+               base::Token trace_uuid,
                const BackgroundTracingRule* triggered_rule,
                std::string&& trace_data),
               (override));
@@ -511,8 +512,9 @@ TEST_F(TracingScenarioTest, SetupUpload) {
       "setup_trigger"));
   EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
 
+  base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, SaveTrace(_, _, _)).Times(0);
+  EXPECT_CALL(delegate, SaveTrace(_, trace_uuid, _, _)).Times(0);
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce([&run_loop]() {
         run_loop.Quit();
@@ -634,9 +636,10 @@ TEST_F(TracingScenarioTest, Upload) {
   EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
       "start_trigger"));
 
+  base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate,
-              SaveTrace(&tracing_scenario, _, std::string("this is a trace")))
+  EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, trace_uuid, _,
+                                  std::string("this is a trace")))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(testing::Return(true));
@@ -659,9 +662,10 @@ TEST_F(TracingScenarioTest, StopUpload) {
   EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
       "start_trigger"));
 
+  base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate,
-              SaveTrace(&tracing_scenario, _, std::string("this is a trace")))
+  EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, trace_uuid, _,
+                                  std::string("this is a trace")))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(testing::Return(true));
@@ -688,9 +692,10 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
       "nested_start_trigger"));
 
+  base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate,
-              SaveTrace(&tracing_scenario, _, std::string("this is a trace")))
+  EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, trace_uuid, _,
+                                  std::string("this is a trace")))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(testing::Return(true));
