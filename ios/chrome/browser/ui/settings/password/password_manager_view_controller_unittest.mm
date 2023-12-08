@@ -799,6 +799,49 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
   [passwords_controller settingsWillBeDismissed];
 }
 
+// Tests filtering of items when group with multiple password entries is
+// present.
+TEST_F(PasswordManagerViewControllerTest, FilterGroupsOfPasswords) {
+  GURL mUrl = GURL("http://www.m.me");
+  GURL facebookUrl = GURL("http://www.facebook.com");
+  {
+    auto form = CreateForm(u"username1");
+    form->url = mUrl;
+    form->action = facebookUrl;
+    form->signon_realm = "http://www.facebook.com";
+    AddPasswordForm(std::move(form));
+  }
+  {
+    auto form = CreateForm(u"username2");
+    form->url = facebookUrl;
+    form->action = facebookUrl;
+    form->signon_realm = "http://www.facebook.com";
+    AddPasswordForm(std::move(form));
+  }
+
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
+
+  PasswordManagerViewController* passwords_controller =
+      GetPasswordManagerViewController();
+  UISearchBar* bar =
+      passwords_controller.navigationItem.searchController.searchBar;
+
+  // Force the initial data to be rendered into view first, before doing any
+  // new filtering (avoids mismatch when reloadSections is called).
+  [passwords_controller searchBar:bar textDidChange:@""];
+  // Password entries are groups as one item.
+  EXPECT_EQ(1, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierSavedPasswords)));
+
+  // Search using on of the urls of the group.
+  [passwords_controller searchBar:bar textDidChange:@"facebook.com"];
+  // Password entries are groups as one item.
+  EXPECT_EQ(1, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierSavedPasswords)));
+
+  [passwords_controller settingsWillBeDismissed];
+}
+
 // Test verifies disabled state of password check cell.
 TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateDisabled) {
   AddSavedForm1();
