@@ -454,7 +454,7 @@ void ImageService::OnOptimizationGuideImageFetched(
   for (const auto& thumbnail : salient_image_metadata.thumbnails()) {
     if (thumbnail.has_image_url()) {
       GURL image_url(thumbnail.image_url());
-      if (image_url.is_valid()) {
+      if (image_url.is_valid() && image_url.SchemeIs(url::kHttpsScheme)) {
         UmaHistogramEnumerationForClient(
             kBackendOptimizationGuideResultHistogramName,
             PageImageServiceResult::kSuccess, client_id);
