@@ -142,6 +142,7 @@ class BenchmarkConfig(object):
     self.benchmark = benchmark
     self.abridged = abridged
     self._stories = None
+    self._exhaustive_stories = None
     self.is_telemetry = True
 
   @property
@@ -164,6 +165,20 @@ class BenchmarkConfig(object):
     stories = story_filter_obj.FilterStories(story_set)
     self._stories = [story.name for story in stories]
     return self._stories
+
+  @property
+  def exhaustive_stories(self):
+    if self._exhaustive_stories is not None:
+      return self._exhaustive_stories
+    story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark(),
+                                                     exhaustive=True)
+    abridged_story_set_tag = (story_set.GetAbridgedStorySetTagFilter()
+                              if self.abridged else None)
+    story_filter_obj = story_filter.StoryFilter(
+        abridged_story_set_tag=abridged_story_set_tag)
+    stories = story_filter_obj.FilterStories(story_set)
+    self._exhaustive_stories = [story.name for story in stories]
+    return self._exhaustive_stories
 
 
 class ExecutableConfig(object):

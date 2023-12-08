@@ -198,7 +198,7 @@ def _FilterTimingData(builder, output_path=None):
     timing_dataset = json.load(f)
   story_full_names = set()
   for benchmark_config in builder.benchmark_configs:
-    for story in benchmark_config.stories:
+    for story in benchmark_config.exhaustive_stories:
       story_full_names.add('/'.join([benchmark_config.name, story]))
   # When benchmarks are abridged or stories are removed, we want that
   # to be reflected in the timing data right away.
