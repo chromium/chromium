@@ -146,6 +146,21 @@ BASE_FEATURE(kSidePanelCompanionDefaultPinned,
 BASE_FEATURE(kSidePanelPinning,
              "SidePanelPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSidePanelMinimumWidth,
+             "SidePanelMinimumWidth",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kSidePanelMinimumWidthParameter{
+    &kSidePanelMinimumWidth, "minPanelWidth", 360};
+int GetSidePanelMinimumWidth() {
+  if (base::FeatureList::IsEnabled(kSidePanelMinimumWidth)) {
+    return kSidePanelMinimumWidthParameter.Get();
+  }
+
+  // This is the default value used without this feature.
+  return 320;
+}
+
 #endif
 
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
