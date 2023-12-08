@@ -6,11 +6,7 @@ def main(request, response):
   purpose = request.headers.get("Purpose", b"").decode("utf-8")
   sec_purpose = request.headers.get("Sec-Purpose", b"").decode("utf-8")
 
-  headers = [
-    (b"Content-Type", b"text/html"),
-    (b'WWW-Authenticate', b'Basic'),
-    (b'Cache-Control', b'no-store')
-  ]
+  headers = [(b"Content-Type", b"text/html"), (b'WWW-Authenticate', 'Basic')]
   status = 200 if request.auth.username is not None or sec_purpose.startswith(
       "prefetch") else 401
 

@@ -1217,14 +1217,9 @@ void PrefetchContainer::MakeResourceRequest(
   request->referrer_policy =
       Referrer::ReferrerPolicyForUrlRequest(GetReferrer().policy);
   request->enable_load_timing = true;
-  // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a
-  // separate network context, which means responses cached before the prefetch
-  // are not visible to the prefetch, and anything cached by this request will
-  // not be visible outside of the network context.
-  request->load_flags =
-      base::FeatureList::IsEnabled(features::kPrefetchUsesHTTPCache)
-          ? net::LOAD_PREFETCH
-          : net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
+  // TODO(https://crbug.com/1317756): Investigate if we need to include the
+  // net::LOAD_DISABLE_CACHE flag.
+  request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->headers.MergeFrom(additional_headers);
   request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");

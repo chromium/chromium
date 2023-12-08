@@ -17,7 +17,7 @@ def main(request, response):
   response.set_cookie(
       "type", "prefetch" if sec_purpose.startswith("prefetch") else "navigate")
 
-  headers = [(b"Content-Type", b"text/html"), (b"Cache-Control", b"no-store")]
+  headers = [(b"Content-Type", b"text/html")]
 
   content = f'''
   <!DOCTYPE html>
