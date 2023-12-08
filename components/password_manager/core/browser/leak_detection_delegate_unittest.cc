@@ -65,7 +65,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               NotifyUserCredentialsWereLeaked,
               (password_manager::CredentialLeakType,
                const GURL&,
-               const std::u16string&),
+               const std::u16string&,
+               bool in_account_store),
               (override));
   MOCK_METHOD(PasswordStoreInterface*,
               GetAccountPasswordStore,
@@ -336,11 +337,12 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(
-                  password_manager::CreateLeakType(
-                      IsSaved(false), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value));
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(false), IsReused(false),
+                                           IsSyncing(false)),
+          form.url, form.username_value, /* in_account_store = */ false));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
   WaitForPasswordStore();
@@ -362,11 +364,12 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(
-                  password_manager::CreateLeakType(
-                      IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value));
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(true), IsReused(false),
+                                           IsSyncing(true)),
+          form.url, form.username_value, /* in_account_store = */ false));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 
@@ -392,11 +395,12 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(
-                  password_manager::CreateLeakType(
-                      IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value));
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(true), IsReused(false),
+                                           IsSyncing(true)),
+          form.url, form.username_value, /* in_account_store = */ true));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 
@@ -425,11 +429,12 @@ TEST_F(LeakDetectionDelegateTest,
 
   // The credential is not saved in a store that is synced remotely - therefore
   // `IsSyncing` is false.
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(
-                  password_manager::CreateLeakType(
-                      IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value));
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(true), IsReused(false),
+                                           IsSyncing(false)),
+          form.url, form.username_value, /* in_account_store = */ false));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 
@@ -449,11 +454,12 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(
-                  password_manager::CreateLeakType(
-                      IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value));
+  EXPECT_CALL(
+      client(),
+      NotifyUserCredentialsWereLeaked(
+          password_manager::CreateLeakType(IsSaved(true), IsReused(false),
+                                           IsSyncing(false)),
+          form.url, form.username_value, /* in_account_store = */ false));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
 

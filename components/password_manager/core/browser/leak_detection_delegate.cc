@@ -113,13 +113,14 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   // A credential is marked as syncing if either the profile store is synced
   // or it is in the account store.
   IsSyncing is_syncing{false};
+  bool in_account_store = (in_stores & PasswordForm::Store::kAccountStore) ==
+                          PasswordForm::Store::kAccountStore;
   switch (client_->GetPasswordSyncState()) {
     case SyncState::kNotSyncing:
       break;
     case SyncState::kAccountPasswordsActiveNormalEncryption:
     case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
-      is_syncing = IsSyncing((in_stores & PasswordForm::Store::kAccountStore) ==
-                             PasswordForm::Store::kAccountStore);
+      is_syncing = IsSyncing(in_account_store);
       break;
     case SyncState::kSyncingWithCustomPassphrase:
     case SyncState::kSyncingNormalEncryption:
@@ -130,7 +131,8 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   CredentialLeakType leak_type =
       CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
                      is_reused, is_syncing);
-  client_->NotifyUserCredentialsWereLeaked(leak_type, url, username);
+  client_->NotifyUserCredentialsWereLeaked(leak_type, url, username,
+                                           in_account_store);
 }
 
 void LeakDetectionDelegate::OnError(LeakDetectionError error) {

@@ -633,7 +633,8 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& url,
-    const std::u16string& username) {
+    const std::u16string& username,
+    bool in_account_store) {
 #if BUILDFLAG(IS_ANDROID)
   auto metrics_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
@@ -641,8 +642,17 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
       password_manager::GetLeakDialogType(leak_type));
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  std::string account = password_manager::sync_util::
-      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service);
+  // If the leaked credential is stored in the account store, the user should be
+  // able to access password check for the account from the leak detection
+  // dialog that is about to be shown. If the leaked credential is stored only
+  // in the local store, password check for local should be accessible from the
+  // dialog.
+  std::string account =
+      in_account_store
+          ? password_manager::sync_util::
+                GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+                    sync_service)
+          : "";
   (new CredentialLeakControllerAndroid(
        leak_type, url, username, web_contents()->GetTopLevelNativeWindow(),
        std::make_unique<PasswordCheckupLauncherHelperImpl>(),

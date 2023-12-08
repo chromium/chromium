@@ -192,7 +192,8 @@ class ChromePasswordManagerClient
   void NotifyUserCredentialsWereLeaked(
       password_manager::CredentialLeakType leak_type,
       const GURL& url,
-      const std::u16string& username) override;
+      const std::u16string& username,
+      bool in_account_store) override;
   void NotifyKeychainError() override;
   void TriggerReauthForPrimaryAccount(
       signin_metrics::ReauthAccessPoint access_point,

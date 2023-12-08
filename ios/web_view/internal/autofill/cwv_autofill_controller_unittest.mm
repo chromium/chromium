@@ -435,7 +435,8 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
                                 username:@"fake-username"]);
 
   password_manager_client_->NotifyUserCredentialsWereLeaked(
-      leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"));
+      leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"),
+      /* in_account_store = */ false);
 
   [delegate verify];
 }
