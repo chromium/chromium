@@ -1922,6 +1922,9 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
       web_contents, first_party_url));
   EndRedirectChain();
 
+  // Wait on async tasks for the grants to be created.
+  WaitOnStorage(GetDipsService(web_contents));
+
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
                 aba_current_interaction_url, first_party_url,
@@ -1979,6 +1982,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, first_party_url));
   EndRedirectChain();
+
+  // Wait on async tasks for the grants to be created.
+  WaitOnStorage(GetDipsService(web_contents));
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
