@@ -235,15 +235,14 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
         std::make_unique<AutofillVCNEnrollBottomSheetBridge>();
     autofill_vcn_enroll_bottom_sheet_bridge_->RequestShowContent(
         web_contents(), std::move(delegate_mobile));
-    return;
+  } else {
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents());
+    DCHECK(infobar_manager);
+    infobar_manager->RemoveAllInfoBars(true);
+    infobar_manager->AddInfoBar(
+        CreateVirtualCardEnrollmentInfoBarMobile(std::move(delegate_mobile)));
   }
-
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents());
-  DCHECK(infobar_manager);
-  infobar_manager->RemoveAllInfoBars(true);
-  infobar_manager->AddInfoBar(
-      CreateVirtualCardEnrollmentInfoBarMobile(std::move(delegate_mobile)));
 #else
   // If bubble is already showing for another card, close it.
   if (bubble_view()) {
