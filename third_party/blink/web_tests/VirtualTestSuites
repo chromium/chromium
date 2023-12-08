@@ -738,16 +738,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "passive-fingerprinting",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/navigation/frozen-useragent.html",
-              "http/tests/navigation/useragent.php"],
-    "exclusive_tests": ["http/tests/navigation/frozen-useragent.html"],
-    "args": ["--enable-features=ReduceUserAgent",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "fsa-incognito",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/file-system-access", "external/wpt/fs"],
