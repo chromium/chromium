@@ -315,7 +315,7 @@ public class RequestDesktopUtilsUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         disableGlobalDefaultsExperimentFeatures();
 
-        ShadowSysUtils.setMemoryInMB(2048);
+        ShadowSysUtils.setMemoryInMB(7000);
         ShadowDisplayAndroid.setDisplayAndroid(mDisplayAndroid);
         when(mDisplayAndroid.getDisplayWidth()).thenReturn(1600);
         when(mDisplayAndroid.getDisplayHeight()).thenReturn(2560);
@@ -760,7 +760,7 @@ public class RequestDesktopUtilsUnitTest {
     @Test
     public void testShouldDefaultEnableGlobalSetting_MemoryThreshold() {
         Map<String, String> params = new HashMap<>();
-        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "4000");
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "8000");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
@@ -775,11 +775,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldDefaultEnableGlobalSetting_CustomScreenSizeThreshold() {
-        Map<String, String> params = new HashMap<>();
-        params.put(
-                RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                "10.0");
-        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0, mActivity);
         Assert.assertTrue(
@@ -789,8 +785,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldDefaultEnableGlobalSetting_ExternalDisplay() {
-        Map<String, String> params = new HashMap<>();
-        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         when(mDisplay.getDisplayId()).thenReturn(/*non built-in display*/ 2);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
@@ -814,11 +809,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldDefaultEnableGlobalSetting_WithLogging() {
-        Map<String, String> params = new HashMap<>();
-        params.put(
-                RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                "10.0");
-        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         enableFeatureWithParams(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, true);
         boolean shouldDefaultEnable =
@@ -1227,7 +1218,6 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeDisableGlobalSetting_FinchParamChanged_Memory() {
         // Default-enable the global setting.
         Map<String, String> params = new HashMap<>();
-        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "1000");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
@@ -1235,7 +1225,7 @@ public class RequestDesktopUtilsUnitTest {
                 mActivity);
 
         // Update finch param and initiate downgrade.
-        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "4000");
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT, "8000");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
@@ -1316,9 +1306,6 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeDisableGlobalSetting_FinchParamChanged_ScreenSizeInches() {
         // Default-enable the global setting.
         Map<String, String> params = new HashMap<>();
-        params.put(
-                RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                "10.0");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 /* displaySizeInInches= */ 10.5, mProfile, mActivity);
@@ -1506,7 +1493,7 @@ public class RequestDesktopUtilsUnitTest {
                 .thenReturn(true);
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
-        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT, "4000");
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT, "8000");
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
 
         boolean shown =
