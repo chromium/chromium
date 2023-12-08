@@ -131,10 +131,16 @@ interface ConnectionListenerV3 {
   // device), call Core::AcceptConnectionV3() when you're ready to talk, or
   // Core::RejectConnectionV3() to close the connection.
   //
-  // remote_device - The identifier for the remote device.
+  // remote_device - The object for the remote device.
   // info          - Other relevant information about the connection.
   OnConnectionInitiated(ash.nearby.presence.mojom.PresenceDevice remote_device,
                         InitialConnectionInfoV3 info);
+
+  // Called when a remote device is disconnected or has become unreachable.
+  // At this point service (re-)discovery may start again.
+  //
+  // remote_device - The object for the remote device.
+  OnDisconnected(ash.nearby.presence.mojom.PresenceDevice remote_device);
 };
 
 // Listener for payload status, used by the V3 APIs. Methods in this interface

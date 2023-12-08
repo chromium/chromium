@@ -310,6 +310,10 @@ class FakeConnectionListenerV3 : public mojom::ConnectionListenerV3 {
     initiated_cb.Run(std::move(remote_device), std::move(info));
   }
 
+  void OnDisconnected(PresenceDevicePtr remote_device) override {
+    disconnected_cb.Run(std::move(remote_device));
+  }
+
   // TODO(b/287336280): Introduce functions when callback implementation begins.
 
   mojo::Receiver<mojom::ConnectionListenerV3> receiver{this};

@@ -189,6 +189,11 @@ class NearbyConnectionsManager {
                          DataUsage data_usage,
                          NearbyConnectionCallback callback) = 0;
 
+  // Disconnects from a |remote_presence_device| through Nearby Connections.
+  // TODO(b/306188252): Once ConnectionsDevice is implemented, change to take in
+  // the NearbyDevice base class instead of PresenceDevice.
+  virtual void DisconnectV3(PresenceDevice remote_presence_device) = 0;
+
   virtual base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() = 0;
 };
 

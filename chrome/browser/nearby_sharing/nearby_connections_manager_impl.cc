@@ -389,9 +389,13 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
 void NearbyConnectionsManagerImpl::OnConnectionRequestedV3(
     NearbyPresenceService::PresenceDevice remote_device,
     ConnectionsStatus status) {
-  // TODO(b/287336323): Call DisconnectFromDeviceV3() when it's implemented.
-  // The call to DisconnectFromDeviceV3() should only occur during failures.
-  NOTIMPLEMENTED();
+  if (status != ConnectionsStatus::kSuccess) {
+    CD_LOG(ERROR, Feature::NC)
+        << "Failed to connect (v3) to remote device with result: "
+        << ConnectionsStatusToString(status);
+    DisconnectV3(std::move(remote_device));
+    return;
+  }
 }
 
 void NearbyConnectionsManagerImpl::Disconnect(const std::string& endpoint_id) {
@@ -636,6 +640,30 @@ void NearbyConnectionsManagerImpl::ConnectV3(
       std::move(connection_listener_v3),
       base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionRequestedV3,
                      weak_ptr_factory_.GetWeakPtr(), remote_presence_device));
+}
+
+void NearbyConnectionsManagerImpl::DisconnectV3(
+    NearbyPresenceService::PresenceDevice remote_presence_device) {
+  if (!process_reference_) {
+    return;
+  }
+
+  ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
+      BuildPresenceMojomFromServiceDevice(remote_presence_device);
+
+  process_reference_->GetNearbyConnections()->DisconnectFromDeviceV3(
+      service_id_, presence_device_mojom.Clone(),
+      base::BindOnce([](ConnectionsStatus status) {
+        CD_LOG(VERBOSE, Feature::NC)
+            << __func__ << ": Disconnect (V3) from device "
+            << "attempted over Nearby Connections with result: "
+            << ConnectionsStatusToString(status);
+      }));
+
+  // `OnDisconnected()` is called because if the remote_presence_device hasn't
+  // been connected yet, ConnectionListenerV3 is not notified of the
+  // disconnection event. Directly calling here will ensure the cleanup.
+  OnDisconnected(std::move(presence_device_mojom));
 }
 
 base::WeakPtr<NearbyConnectionsManager>
@@ -943,6 +971,15 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
               << ConnectionsStatusToString(status);
         }));
   }
+}
+
+void NearbyConnectionsManagerImpl::OnDisconnected(
+    PresenceDevicePtr remote_device) {
+  // TODO(b/311263430): Implement when the `OnResult()` callback is implemented
+  // and the appropriate |NearbyConnection| is created upon
+  // ConnectionsStatus::kSuccess. This function will then tear down the
+  // established |NearbyConnection|.
+  NOTIMPLEMENTED();
 }
 
 nearby::connections::mojom::NearbyConnections*

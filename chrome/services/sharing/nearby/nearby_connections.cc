@@ -135,7 +135,10 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            NOTIMPLEMENTED();
+            remote->OnDisconnected(
+                ash::nearby::presence::BuildPresenceMojomDevice(
+                    static_cast<const ::nearby::presence::PresenceDevice&>(
+                        remote_device)));
           },
       .bandwidth_changed_cb =
           [remote](const NearbyDevice& remote_device,

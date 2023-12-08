@@ -82,6 +82,8 @@ class NearbyConnectionsManagerImpl
                      remote_presence_device,
                  DataUsage data_usage,
                  NearbyConnectionCallback callback) override;
+  void DisconnectV3(ash::nearby::presence::NearbyPresenceService::PresenceDevice
+                        remote_presence_device) override;
 
  private:
   using AdvertisingOptions = nearby::connections::mojom::AdvertisingOptions;
@@ -137,6 +139,7 @@ class NearbyConnectionsManagerImpl
   // ConnectionListenerV3:
   void OnConnectionInitiated(PresenceDevicePtr remote_device,
                              InitialConnectionInfoV3Ptr info) override;
+  void OnDisconnected(PresenceDevicePtr remote_device) override;
 
   void OnConnectionTimedOut(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
