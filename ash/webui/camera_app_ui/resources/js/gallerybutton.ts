@@ -5,7 +5,6 @@
 import {assert, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
-import {AsyncIntervalRunner} from './models/async_interval.js';
 import {Filenamer} from './models/file_namer.js';
 import * as filesystem from './models/file_system.js';
 import {
@@ -24,7 +23,7 @@ import {
   MimeType,
   VideoType,
 } from './type.js';
-import {WaitableEvent} from './waitable_event.js';
+import {sleep} from './util.js';
 
 /**
  * Cover photo of gallery button.
@@ -209,20 +208,14 @@ export class GalleryButton implements ResultSaver {
 
   private async waitUntilCameraFolderStable(): Promise<void> {
     let prevFileCount = (await filesystem.getEntries()).length;
-    const cameraFolderStable = new WaitableEvent();
-
-    async function checkFileCount() {
+    while (true) {
+      await sleep(500);
       const newFileCount = (await filesystem.getEntries()).length;
       if (prevFileCount === newFileCount) {
-        runner.stop();
-        cameraFolderStable.signal();
-      } else {
-        prevFileCount = newFileCount;
+        return;
       }
+      prevFileCount = newFileCount;
     }
-
-    const runner = new AsyncIntervalRunner(checkFileCount, 500);
-    return cameraFolderStable.wait();
   }
 
   async savePhoto(
