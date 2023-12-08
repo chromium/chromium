@@ -258,6 +258,11 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
     return;
   }
 
+  // This check enrolls the client into "RemoveUPMUnenrollment" study allowing us
+  // to understand the impact of removing unenrollemnt and percentage of user
+  // left without Password Manager / unenrolled from UPM.
+  PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment();
+
   if (password_manager_upm_eviction::IsCurrentUserEvicted(prefs)) {
     base::UmaHistogramEnumeration(
         kUPMActiveHistogram,
