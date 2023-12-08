@@ -381,23 +381,20 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
               requestElementsInRect:(CGRect)rect
                          completion:
                              (void (^)(NSArray<UIScribbleElementIdentifier>*
-                                           elements))completion
-    API_AVAILABLE(ios(14.0)) {
+                                           elements))completion {
   completion(@[ kScribbleOmniboxElementId ]);
 }
 
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
                    isElementFocused:
-                       (UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                       (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleOmniboxElementId);
   return self.delegate.omniboxScribbleForwardingTarget.isFirstResponder;
 }
 
 - (CGRect)
     indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                frameForElement:(UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleOmniboxElementId);
 
   // Imitate the entire location bar being scribblable.
@@ -410,7 +407,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                      referencePoint:(CGPoint)focusReferencePoint
                          completion:
                              (void (^)(UIResponder<UITextInput>* focusedInput))
-                                 completion API_AVAILABLE(ios(14.0)) {
+                                 completion {
   if (!self.delegate.omniboxScribbleForwardingTarget.isFirstResponder) {
     [self.delegate locationBarRequestScribbleTargetFocus];
   }
