@@ -312,7 +312,7 @@ TEST_P(CaretDisplayItemClientTest, UpdatePreviousLayoutBlock) {
   EXPECT_FALSE(ShouldPaintCursorCaret(*block1));
   EXPECT_FALSE(PreviousCaretLayoutBlock());
 
-  // Move caret into block1. Should set previousCaretLayoutBlock to block2.
+  // Move caret into block1. Should set PreviousCaretLayoutBlock to block2.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
           .Collapse(Position(block_element1, 0))
@@ -325,7 +325,7 @@ TEST_P(CaretDisplayItemClientTest, UpdatePreviousLayoutBlock) {
   EXPECT_EQ(block2, PreviousCaretLayoutBlock());
 
   // Move caret into block2. Partial update should not change
-  // previousCaretLayoutBlock.
+  // PreviousCaretLayoutBlock.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
           .Collapse(Position(block_element2, 0))
@@ -337,7 +337,7 @@ TEST_P(CaretDisplayItemClientTest, UpdatePreviousLayoutBlock) {
   EXPECT_FALSE(ShouldPaintCursorCaret(*block1));
   EXPECT_EQ(block2, PreviousCaretLayoutBlock());
 
-  // Remove block2. Should clear caretLayoutBlock and previousCaretLayoutBlock.
+  // Remove block2. Should clear caretLayoutBlock and PreviousCaretLayoutBlock.
   block_element2->parentNode()->RemoveChild(block_element2);
   EXPECT_FALSE(CaretLayoutBlock());
   EXPECT_FALSE(PreviousCaretLayoutBlock());
@@ -353,6 +353,71 @@ TEST_P(CaretDisplayItemClientTest, UpdatePreviousLayoutBlock) {
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_EQ(block1, PreviousCaretLayoutBlock());
+}
+
+TEST_P(CaretDisplayItemClientTest, EnsureInvalidatePreviousLayoutBlock) {
+  SetBodyInnerHTML(
+      "<style>"
+      "  .canvas {"
+      "    width: 600px;"
+      "  }"
+      "  .page {"
+      "    content-visibility: auto;"
+      "    contain-intrinsic-size: auto 300px; "
+      "  }"
+      "  .paragraph {"
+      "    position: relative;"
+      "    left: 20px;"
+      "  }"
+      "  .high {"
+      "    height: 10000px;"
+      "  }"
+      "</style>"
+
+      "<div class='canvas' contenteditable='true'>"
+      "  <div id='div1' class='page'>"
+      "    <p id='p1' class='paragraph'>some text</p>"
+      "  </div>"
+      "  <div id='div2' class='high'></div>"
+      "  <div id='div3' class='page'>"
+      "    <p id='p3' class='paragraph'>some text</p>"
+      "  </div>"
+      "</div>");
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  UpdateAllLifecyclePhasesForCaretTest();
+  auto* p1 = GetDocument().getElementById(AtomicString("p1"));
+  auto* p1_block = To<LayoutBlock>(p1->GetLayoutObject());
+
+  // Set caret into p1.
+  GetDocument().body()->Focus();
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(p1, 0)).Build());
+
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(PreviousCaretLayoutBlock());
+
+  UpdateAllLifecyclePhasesForCaretTest();
+  EXPECT_EQ(p1_block, PreviousCaretLayoutBlock());
+
+  // Scroll the page all the way to bottom. p1 will be display locked.
+  GetDocument().documentElement()->setScrollTop(1000000000);
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  auto* p3 = GetDocument().getElementById(AtomicString("p3"));
+  // Set caret into p3. Should set PreviousCaretLayoutBlock to p1.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(p3, 0)).Build());
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(p1_block, PreviousCaretLayoutBlock());
+
+  // PreviousCaretLayoutBlock should be invalidated and cleared after paint
+  // invalidation.
+  UpdateAllLifecyclePhasesForCaretTest();
+  EXPECT_NE(p1_block, PreviousCaretLayoutBlock());
 }
 
 TEST_P(CaretDisplayItemClientTest, CaretHideMoveAndShow) {

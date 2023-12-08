@@ -581,6 +581,10 @@ void FrameSelection::InvalidatePaint(const LayoutBlock& block,
   frame_caret_->InvalidatePaint(block, context);
 }
 
+void FrameSelection::EnsureInvalidationOfPreviousLayoutBlock() {
+  frame_caret_->EnsureInvalidationOfPreviousLayoutBlock();
+}
+
 bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);

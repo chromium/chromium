@@ -66,6 +66,9 @@ class CORE_EXPORT CaretDisplayItemClient final
   // Called during LayoutBlock paint invalidation.
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
 
+  // Called during pre-paint tree walk to invalidate |previous_layout_block_|.
+  void EnsureInvalidationOfPreviousLayoutBlock();
+
   bool ShouldPaintCaret(const LayoutBlock& block) const {
     return &block == layout_block_;
   }

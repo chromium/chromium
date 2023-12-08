@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -211,6 +212,16 @@ void CaretDisplayItemClient::SetActive(bool active) {
     return;
   is_active_ = active;
   needs_paint_invalidation_ = true;
+}
+
+void CaretDisplayItemClient::EnsureInvalidationOfPreviousLayoutBlock() {
+  if (!previous_layout_block_ || previous_layout_block_ == layout_block_) {
+    return;
+  }
+
+  PaintInvalidatorContext context;
+  context.painting_layer = previous_layout_block_->PaintingLayer();
+  InvalidatePaintInPreviousLayoutBlock(context);
 }
 
 void CaretDisplayItemClient::InvalidatePaint(

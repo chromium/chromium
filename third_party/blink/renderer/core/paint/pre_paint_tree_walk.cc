@@ -6,6 +6,7 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -149,6 +150,10 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
     view->AssertSubtreeClearedPaintInvalidationFlags();
 #endif
   }
+
+  // Ensure the cached previous layout block in CaretDisplayItemClient is
+  // invalidated and cleared even if the layout block is display locked.
+  frame_view.GetFrame().Selection().EnsureInvalidationOfPreviousLayoutBlock();
 
   frame_view.GetLayoutShiftTracker().NotifyPrePaintFinished();
 }

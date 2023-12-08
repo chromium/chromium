@@ -232,6 +232,7 @@ class CORE_EXPORT FrameSelection final
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);
   void UpdateStyleAndLayoutIfNeeded();
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
+  void EnsureInvalidationOfPreviousLayoutBlock();
 
   void PaintCaret(GraphicsContext&, const PhysicalOffset&);
 
