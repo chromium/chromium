@@ -556,4 +556,33 @@ TEST_F(SelectionAdjusterTest, AdjustShadowWithRootAndHost) {
   EXPECT_EQ(Position(shadow_root, 0), result.Extent());
 }
 
+// http://crbug.com/1371268
+TEST_F(SelectionAdjusterTest, AdjustSelectionWithNextNonEditableNode) {
+  SetBodyContent(R"HTML(
+    <div contenteditable=true>
+      <div id="one">Paragraph 1</div>
+      <div id="two" contenteditable=false>
+        <div contenteditable=true>Paragraph 2</div>
+      </div>
+    </div>)HTML");
+
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* two = GetDocument().getElementById(AtomicString("two"));
+  const SelectionInDOMTree& selection = SelectionInDOMTree::Builder()
+                                            .Collapse(Position(one, 0))
+                                            .Extend(Position(two, 0))
+                                            .Build();
+  const SelectionInDOMTree& editing_selection =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+  EXPECT_EQ(editing_selection.Base(), selection.Base());
+  EXPECT_EQ(editing_selection.Extent(), Position::BeforeNode(*two));
+
+  const SelectionInDOMTree& adjusted_selection =
+      SelectionAdjuster::AdjustSelectionType(editing_selection);
+  EXPECT_EQ(adjusted_selection.Base(),
+            Position::FirstPositionInNode(*one->firstChild()));
+  EXPECT_EQ(adjusted_selection.Extent(), editing_selection.Extent());
+}
+
 }  // namespace blink

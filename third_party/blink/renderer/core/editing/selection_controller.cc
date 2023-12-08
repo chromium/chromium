@@ -240,12 +240,16 @@ SelectionInFlatTree AdjustSelectionByUserSelect(
     }
   }
 
-  return SelectionInFlatTree::Builder()
-      .Collapse(
-          MostBackwardCaretPosition(new_start_pos, kCannotCrossEditingBoundary))
-      .Extend(
-          MostForwardCaretPosition(new_end_pos, kCannotCrossEditingBoundary))
-      .Build();
+  if (RuntimeEnabledFeatures::AvoidCaretVisibleSelectionAdjusterEnabled()) {
+    return SelectionInFlatTree::Builder()
+        .SetBaseAndExtent(new_start_pos, new_end_pos)
+        .Build();
+  } else {
+    return SelectionInFlatTree::Builder()
+        .SetBaseAndExtent(MostBackwardCaretPosition(new_start_pos),
+                          MostForwardCaretPosition(new_end_pos))
+        .Build();
+  }
 }
 
 SelectionController::~SelectionController() = default;

@@ -407,6 +407,10 @@
       status: "experimental",
     },
     {
+      name: "AvoidCaretVisibleSelectionAdjuster",
+      status: "stable",
+    },
+    {
       name: "BackdropInheritOriginating",
       status: "experimental",
     },

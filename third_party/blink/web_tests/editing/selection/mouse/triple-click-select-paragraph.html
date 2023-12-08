@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+
+function tripleClick(x, y) {
+  return new Promise((resolve, reject) => {
+    assert_own_property(window, 'chrome');
+    assert_own_property(window.chrome, 'gpuBenchmarking');
+
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+      actions: [
+        { name: 'pointerMove', x: x, y: y },
+        { name: "pointerDown", x: x, y: y },
+        { name: 'pointerUp' },
+        { name: "pointerDown", x: x, y: y },
+        { name: 'pointerUp' },
+        { name: "pointerDown", x: x, y: y },
+        { name: 'pointerUp' },
+      ],
+    }], resolve);
+  });
+}
+
+selection_test(
+  [
+    '<div contenteditable>',
+      '<div id="div">crbug.com/1371268</div>',
+      '<div contenteditable="false">',
+        '<div contenteditable>Paragraph 2</div>',
+      '</div>',
+    '</div>',
+  ],
+  async (selection) => {
+    const div = selection.document.getElementById('div');
+    const x = selection.computeLeft(div) + div.offsetWidth / 2;
+    const y = selection.computeTop(div) + div.offsetHeight / 2;
+    await tripleClick(x, y);
+  },
+  [
+    '<div contenteditable>',
+      '<div id="div">^crbug.com/1371268|</div>',
+      '<div contenteditable="false">',
+        '<div contenteditable>Paragraph 2</div>',
+      '</div>',
+    '</div>',
+  ],
+  'Triple-click an editable element which has a non-editable sibling node.');
+
+selection_test(
+  [
+    '<div>',
+      '<span id="span">crbug.com/1487484</span>',
+      '<b>before unrendered</b>',
+      '<span style="display: none;">1</span>',
+      '<span>after unrendered</span>',
+    '</div>',
+  ],
+  async (selection) => {
+    const span = selection.document.getElementById('span');
+    const x = selection.computeLeft(span) + span.offsetWidth / 2;
+    const y = selection.computeTop(span) + span.offsetHeight / 2;
+    await tripleClick(x, y);
+  },
+  [
+    '<div>',
+      '<span id="span">^crbug.com/1487484</span>',
+      '<b>before unrendered</b>',
+      '<span style="display: none;">1</span>',
+      '<span>after unrendered|</span>',
+    '</div>',
+  ],
+  'Triple-click an element which has unrendered nodes.');
+
+selection_test(
+  [
+    '<div style="user-select: none;">',
+      '<div id="div" style="user-select: text;">crbug.com/1372847</div>',
+      '<input type="text" value="input">',
+    '</div>'
+  ],
+  async (selection) => {
+    const div = selection.document.getElementById('div');
+    const x = selection.computeLeft(div) + div.offsetWidth / 2;
+    const y = selection.computeTop(div) + div.offsetHeight / 2;
+    await tripleClick(x, y);
+  },
+  [
+    '<div style="user-select: none;">',
+      '<div id="div" style="user-select: text;">^crbug.com/1372847|</div>',
+      '<input type="text" value="input">',
+    '</div>'
+  ],
+  'Triple-click not selection elements that are non-selectable.');
+
+</script>

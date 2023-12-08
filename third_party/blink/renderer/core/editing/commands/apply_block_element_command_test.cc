@@ -165,11 +165,10 @@ TEST_F(ApplyBlockElementCommandTest,
       SetSelectionOptions());
   auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
                                                            html_names::kPreTag);
-  // Shouldn't crash here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<table>^</table>"
-      "<kbd style=\"-webkit-user-modify:read-only\"><button>|</button></kbd>",
+      "<pre><table>|</table></pre>"
+      "<kbd style=\"-webkit-user-modify:read-only\"><button></button></kbd>",
       GetSelectionTextFromBody());
 }
 
