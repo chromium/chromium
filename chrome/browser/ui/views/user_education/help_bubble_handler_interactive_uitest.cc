@@ -30,14 +30,15 @@ constexpr char kUserEducationInternalsUrl[] =
 
 class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  HelpBubbleHandlerInteractiveUiTest() = default;
+  HelpBubbleHandlerInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSidePanelPinning, features::kChromeRefresh2023}, {});
+  }
   ~HelpBubbleHandlerInteractiveUiTest() override = default;
 
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.
   auto OpenReadingListSidePanel() {
-    if (features::IsChromeRefresh2023() &&
-        base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
       return Steps(
           // Remove delays in switching side panels to prevent possible race
           // conditions when selecting items from the side panel dropdown.
@@ -54,33 +55,24 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
           // Ensure that the Reading List side panel loads properly.
           InstrumentNonTabWebView(kReadLaterWebContentsElementId,
                                   kReadLaterSidePanelWebViewElementId));
-    }
+  }
 
+  auto OpenBookmarksSidePanel() {
     return Steps(
-        // Remove delays in switching side panels to prevent possible race
-        // conditions when selecting items from the side panel dropdown.
-        Do([this]() {
-          SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
-              ->SetNoDelaysForTesting(true);
-        }),
-        // Click the Side Panel button and wait for the side panel to appear.
-        PressButton(kToolbarSidePanelButtonElementId),
-        WaitForShow(kSidePanelElementId), FlushEvents(),
-        // Select the Reading List side panel and wait for the WebView to
-        // appear.
-        SelectDropdownItem(kSidePanelComboboxElementId,
-                           static_cast<int>(SidePanelEntry::Id::kReadingList)),
-        WaitForShow(kReadLaterSidePanelWebViewElementId),
-        // Ensure that the Reading List side panel loads properly.
-        InstrumentNonTabWebView(kReadLaterWebContentsElementId,
-                                kReadLaterSidePanelWebViewElementId));
+        PressButton(kToolbarAppMenuButtonElementId),
+        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+        WaitForShow(kSidePanelElementId), FlushEvents());
   }
 
   auto CloseSidePanel() {
     return Steps(EnsurePresent(kSidePanelElementId),
-                 PressButton(kToolbarSidePanelButtonElementId),
+                 PressButton(kSidePanelCloseButtonElementId),
                  WaitForHide(kSidePanelElementId));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleHandlerInteractiveUiTest,
@@ -123,7 +115,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleHandlerInteractiveUiTest,
   RunTestSequence(
       OpenReadingListSidePanel(),
       InAnyContext(WaitForShow(kAddCurrentTabToReadingListElementId)),
-      SelectDropdownItem(kSidePanelComboboxElementId,
-                         static_cast<int>(SidePanelEntry::Id::kBookmarks)),
+      OpenBookmarksSidePanel(),
       InAnyContext(WaitForHide(kAddCurrentTabToReadingListElementId)));
 }
