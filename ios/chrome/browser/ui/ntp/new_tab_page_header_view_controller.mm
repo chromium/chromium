@@ -576,23 +576,20 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
               requestElementsInRect:(CGRect)rect
                          completion:
                              (void (^)(NSArray<UIScribbleElementIdentifier>*
-                                           elements))completion
-    API_AVAILABLE(ios(14.0)) {
+                                           elements))completion {
   completion(@[ kScribbleFakeboxElementId ]);
 }
 
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
                    isElementFocused:
-                       (UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                       (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder;
 }
 
 - (CGRect)
     indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                frameForElement:(UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
 
   // Imitate the entire location bar being scribblable.
@@ -605,7 +602,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
                      referencePoint:(CGPoint)focusReferencePoint
                          completion:
                              (void (^)(UIResponder<UITextInput>* focusedInput))
-                                 completion API_AVAILABLE(ios(14.0)) {
+                                 completion {
   if (!self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder) {
     [self.toolbarDelegate.fakeboxScribbleForwardingTarget becomeFirstResponder];
   }
@@ -615,8 +612,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
          shouldDelayFocusForElement:
-             (UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+             (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return YES;
 }
