@@ -1776,7 +1776,14 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   UpdateTopInset();
 
   aura::Window* window = widget_->GetNativeWindow();
-  window->AddChild(host_window());
+  {
+    // AddChild involves propagating a non-1 device_scale_factor to
+    // `host_window()`. Changing device_scale_factor this way does not send
+    // configure events. So suppress allocation of its LocalSurfaceId.
+    viz::ScopedSurfaceIdAllocator scoped_suppression =
+        host_window()->GetSurfaceIdAllocator(base::NullCallback());
+    window->AddChild(host_window());
+  }
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   if (is_menu_) {
@@ -1787,6 +1794,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   }
   InstallCustomWindowTargeter();
 
+  // TODO(fangzhoug): Consider performing the first shell_surface configure here
+  // s.t. there's no gap between the first configure to the point we start
+  // observing states of the window. crbug.com/1505583
   // Start tracking changes to window bounds and window state.
   window->AddObserver(this);
   ash::WindowState* window_state = ash::WindowState::Get(window);
