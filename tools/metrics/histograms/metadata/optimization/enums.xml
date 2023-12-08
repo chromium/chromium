@@ -223,6 +223,22 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OptimizationGuideModelExecutionError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="The request was invalid"/>
+  <int value="2" label="The request was throttled"/>
+  <int value="3"
+      label="User permission errors such as not signed-in or not allowed to
+             execute model"/>
+  <int value="4" label="Other generic failures"/>
+  <int value="5" label="Retryable error occurred in server"/>
+  <int value="6" label="Non-retryable error occurred in server"/>
+  <int value="7" label="Unsupported language"/>
+  <int value="8" label="Request was filtered"/>
+  <int value="9" label="Response was disabled"/>
+  <int value="10" label="The request was cancelled"/>
+</enum>
+
 <enum name="OptimizationGuideOnDeviceAddContextResult">
   <int value="0" label="Used Server"/>
   <int value="1" label="Used on-device">

@@ -99,6 +99,7 @@ class ModelExecutionManagerTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
+  base::HistogramTester histogram_tester;
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   base::RunLoop run_loop;
@@ -115,9 +116,12 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
           },
           &run_loop));
   run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
+  base::HistogramTester histogram_tester;
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   base::RunLoop run_loop;
@@ -152,6 +156,51 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
       "access_token", base::Time::Max());
   EXPECT_TRUE(SimulateSuccessfulResponse());
   run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
+}
+
+TEST_F(ModelExecutionManagerTest, ExecuteModelWithServerError) {
+  base::HistogramTester histogram_tester;
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+  session->ExecuteModel(
+      request, base::BindRepeating(
+                   [](base::RunLoop* run_loop,
+                      OptimizationGuideModelStreamingExecutionResult result,
+                      std::unique_ptr<ModelQualityLogEntry> log_entry) {
+                     EXPECT_FALSE(result.has_value());
+                     EXPECT_EQ(OptimizationGuideModelExecutionError::
+                                   ModelExecutionError::kRetryableError,
+                               result.error().error());
+                     EXPECT_EQ(log_entry, nullptr);
+                     run_loop->Quit();
+                   },
+                   &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+
+  std::string serialized_response;
+  proto::ExecuteResponse execute_response;
+  execute_response.mutable_error_response()->set_error_state(
+      proto::ErrorState::ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY);
+  execute_response.SerializeToString(&serialized_response);
+  EXPECT_TRUE(SimulateResponse(serialized_response, net::HTTP_OK));
+
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.ServerError.Compose",
+      OptimizationGuideModelExecutionError::ModelExecutionError::
+          kRetryableError,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
@@ -193,6 +242,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
       true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
 }
 
 TEST_F(ModelExecutionManagerTest, LogsContextToExecutionTimeHistogram) {
