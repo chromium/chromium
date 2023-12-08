@@ -13,6 +13,8 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -182,10 +184,14 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 - (void)chevronToggleAction:(id)sender {
   switch (_snippetState) {
     case SnippetState::kShown:
+      // Need to hide the snippet.
       [self updateCellWithSnippetSate:SnippetState::kHidden animate:YES];
       break;
     case SnippetState::kHidden:
+      // Need to show the snippet.
       [self updateCellWithSnippetSate:SnippetState::kShown animate:YES];
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                      self.snippetLabel.text);
       break;
   }
   if (self.chevronToggledBlock) {
@@ -284,6 +290,26 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 
 - (BOOL)isAccessibilityElement {
   return YES;
+}
+
+- (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
+  NSString* actionName = nil;
+  switch (_snippetState) {
+    case SnippetState::kHidden:
+      actionName = l10n_util::GetNSString(
+          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET);
+      break;
+    case SnippetState::kShown:
+      actionName = l10n_util::GetNSString(
+          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET);
+      break;
+  }
+  UIAccessibilityCustomAction* action = [[UIAccessibilityCustomAction alloc]
+      initWithName:actionName
+            target:self
+          selector:@selector(chevronToggleAction:)];
+  NSArray<UIAccessibilityCustomAction*>* actions = @[ action ];
+  return actions;
 }
 
 @end
