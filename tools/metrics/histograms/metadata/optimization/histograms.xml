@@ -88,6 +88,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
   <variant name="TextEmbedder" summary="Generic Text Embedding"/>
+  <variant name="TextSafety" summary="Classifies safety of the text"/>
   <variant name="VisualSearchClassification"
       summary="Classifies images on the page"/>
   <variant name="WebAppInstallationPromo"

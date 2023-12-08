@@ -206,6 +206,8 @@ enum OptimizationTarget {
   // Target for predicting candidate links for speculation-rule based
   // preloading.
   OPTIMIZATION_TARGET_PRELOADING_HEURISTICS = 39;
+  // Target for determining text safety.
+  OPTIMIZATION_TARGET_TEXT_SAFETY = 40;
 }
 
 // The model engine versions that can be used to do model inference.
