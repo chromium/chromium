@@ -56,6 +56,27 @@ std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
   return os;
 }
 
+// Returns true when `task_result` represents the cloud open/upload flow ending
+// at the office fallback stage.
+bool DidEndAtFallback(OfficeTaskResult task_result) {
+  switch (task_result) {
+    case OfficeTaskResult::kFallbackQuickOffice:
+    case OfficeTaskResult::kFallbackOther:
+    case OfficeTaskResult::kCancelledAtFallback:
+      return true;
+    case OfficeTaskResult::kOpened:
+    case OfficeTaskResult::kMoved:
+    case OfficeTaskResult::kCancelledAtConfirmation:
+    case OfficeTaskResult::kFailedToUpload:
+    case OfficeTaskResult::kFailedToOpen:
+    case OfficeTaskResult::kCopied:
+    case OfficeTaskResult::kCancelledAtSetup:
+    case OfficeTaskResult::kLocalFileTask:
+    case OfficeTaskResult::kFileAlreadyBeingUploaded:
+      return false;
+  }
+}
+
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider,
                                    size_t file_count)
     : multiple_files_(file_count > 1),
@@ -102,16 +123,14 @@ void CloudOpenMetrics::CheckForInconsistencies(
   // Task result should always be logged.
   ExpectLogged(task_result);
   if (task_result.logged()) {
-    if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
-        task_result.value == OfficeTaskResult::kCancelledAtFallback ||
+    if (DidEndAtFallback(task_result.value) ||
         task_result.value == OfficeTaskResult::kCancelledAtSetup ||
         task_result.value == OfficeTaskResult::kLocalFileTask) {
       // The cloud open/upload flow was exited at the Fallback Dialog or Setup
       // flow.
       ExpectNotLogged(transfer_required);
       ExpectNotLogged(upload_result);
-      if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
-          task_result.value == OfficeTaskResult::kCancelledAtFallback) {
+      if (DidEndAtFallback(task_result.value)) {
         // The cloud open/upload flow was exited at the Fallback Dialog.
         // OpenErrors should give a fallback reason.
         if (google_drive) {
