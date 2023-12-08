@@ -62,7 +62,7 @@ using side_panel::customize_chrome::mojom::UserFeedback;
 namespace {
 
 const char kDescriptorsBaseUrl[] =
-    "https://static.corp.google.com/chrome-wallpaper-search/";
+    "https://www.gstatic.com/chrome-wallpaper-search/";
 // Calculate new dimensions given the width and height that will make the
 // smaller dimension equal to goal_size but keep the current aspect ratio.
 // The first value in the pair is the width and the second is the height.

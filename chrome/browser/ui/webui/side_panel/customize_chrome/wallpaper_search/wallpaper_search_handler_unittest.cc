@@ -152,7 +152,7 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   const std::string kDescriptorsBaseURL =
-      "https://static.corp.google.com/chrome-wallpaper-search/";
+      "https://www.gstatic.com/chrome-wallpaper-search/";
   const std::string kDescriptorsLoadURL =
       base::StrCat({kDescriptorsBaseURL, "descriptors_en-US.json"});
   void SetUpDescriptorsResponseWithData(const std::string& response) {
