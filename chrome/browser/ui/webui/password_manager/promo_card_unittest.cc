@@ -46,6 +46,12 @@ namespace password_manager {
 
 namespace {
 
+#if BUILDFLAG(IS_LINUX)
+std::unique_ptr<KeyStorageLinux> GetNullKeyStorage() {
+  return nullptr;
+}
+#endif
+
 struct PrefInfo {
   std::string id;
   int number_of_times_shown = 0;
@@ -495,4 +501,5 @@ TEST_F(PromoCardAccessAnyDeviceTest, PromoNotShownAfterDismiss) {
   histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Dismissed", 3,
                                       1);
 }
+
 }  // namespace password_manager

@@ -133,7 +133,7 @@ BASE_FEATURE(kPasswordManagerLogToTerminal,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables "Needs access to keychain, restart chrome" bubble and banner.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,
              "RestartToGainAccessToKeychain",
              base::FEATURE_DISABLED_BY_DEFAULT);

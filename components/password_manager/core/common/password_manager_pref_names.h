@@ -279,7 +279,7 @@ extern const char kPasswordManagerPromoCardsList[];
 // sending and receiving passwords.
 extern const char kPasswordSharingEnabled[];
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Integer pref indicating how many times relaunch Chrome bubble was dismissed.
 extern const char kRelaunchChromeBubbleDismissedCounter[];
 #endif

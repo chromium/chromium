@@ -4421,8 +4421,6 @@ static_library("ui") {
       "find_bar/find_bar_platform_helper_mac.mm",
       "fullscreen_util_mac.cc",
       "fullscreen_util_mac.h",
-      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.cc",
-      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.h",
       "views/apps/chrome_app_window_client_views_mac.mm",
       "views/certificate_viewer_mac_views.mm",
       "views/dropdown_bar_host_mac.mm",
@@ -4436,14 +4434,10 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_mac.h",
       "views/frame/immersive_mode_controller_mac.mm",
       "views/frame/native_browser_frame_factory_mac.mm",
-      "views/passwords/password_relaunch_chrome_view.cc",
-      "views/passwords/password_relaunch_chrome_view.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm",
       "webui/help/version_updater_mac.h",
       "webui/help/version_updater_mac.mm",
-      "webui/password_manager/promo_cards/relaunch_chrome_promo.cc",
-      "webui/password_manager/promo_cards/relaunch_chrome_promo.h",
       "webui/settings/mac_system_settings_handler.cc",
       "webui/settings/mac_system_settings_handler.h",
       "webui/settings/settings_utils_mac.mm",
@@ -4465,7 +4459,6 @@ static_library("ui") {
       "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
-      "//components/os_crypt/sync:os_crypt",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//extensions/components/native_app_window",
@@ -4594,11 +4587,19 @@ static_library("ui") {
   }
 
   if (is_linux || is_mac) {
-    # The first run dialog shows only on Linux and macOS.
     sources += [
+      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.cc",
+      "passwords/bubble_controllers/relaunch_chrome_bubble_controller.h",
+      "webui/password_manager/promo_cards/relaunch_chrome_promo.cc",
+      "webui/password_manager/promo_cards/relaunch_chrome_promo.h",
+
+      # The first run dialog shows only on Linux and macOS.
       "views/first_run_dialog.cc",
       "views/first_run_dialog.h",
+      "views/passwords/password_relaunch_chrome_view.cc",
+      "views/passwords/password_relaunch_chrome_view.h",
     ]
+    deps += [ "//components/os_crypt/sync:os_crypt" ]
   }
 
   if (is_linux) {

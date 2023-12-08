@@ -5415,12 +5415,6 @@ const char kMacSyscallSandboxName[] = "Mac Syscall Filtering Sandbox";
 const char kMacSyscallSandboxDescription[] =
     "Controls whether the macOS sandbox filters syscalls.";
 
-const char kRestartToGainAccessToKeychainName[] =
-    "Prompt to restart Chrome to gain access to the Keychain";
-const char kRestartToGainAccessToKeychainDescription[] =
-    "Controls whether the Chrome shows bubbles and banner, prompting the user "
-    "to restart Chrome to gain access to the Keychain.";
-
 const char kRetryGetVideoCaptureDeviceInfosName[] =
     "Retry capture device enumeration on crash";
 const char kRetryGetVideoCaptureDeviceInfosDescription[] =
@@ -7706,6 +7700,12 @@ const char kForcePasswordInitialSyncWhenDecryptionFailsName[] =
 const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[] =
     "During startup checks if there are undecryptable passwords in the local "
     "storage and requests initial sync.";
+
+const char kRestartToGainAccessToKeychainName[] =
+    "Prompt to restart Chrome to gain access to computer's password manager";
+const char kRestartToGainAccessToKeychainDescription[] =
+    "Controls whether the Chrome shows bubbles and banner, prompting the user "
+    "to restart Chrome to gain access to computer's password manager.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

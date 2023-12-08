@@ -15,9 +15,26 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/sync/os_crypt_mocker_linux.h"
+#endif
+
 using testing::IsEmpty;
 
 namespace password_manager {
+
+#if BUILDFLAG(IS_LINUX)
+namespace {
+std::unique_ptr<KeyStorageLinux> GetNullKeyStorage() {
+  return nullptr;
+}
+void MockLockedKeychain() {
+  OSCrypt::ClearCacheForTesting();
+  OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(&GetNullKeyStorage));
+}
+}  // namespace
+#endif
 
 class PromoCardRelaunchChromeTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -25,6 +42,9 @@ class PromoCardRelaunchChromeTest : public ChromeRenderViewHostTestHarness {
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     OSCryptMocker::SetUp();
+#if BUILDFLAG(IS_LINUX)
+    OSCryptMockerLinux::SetUp();
+#endif
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kRestartToGainAccessToKeychain);
   }
@@ -37,6 +57,7 @@ class PromoCardRelaunchChromeTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_MAC)
 TEST_F(PromoCardRelaunchChromeTest, ShouldShow) {
   std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<RelaunchChromePromo>(pref_service());
@@ -60,4 +81,29 @@ TEST_F(PromoCardRelaunchChromeTest, ShouldShowAfterDismiss) {
   promo->OnPromoCardDismissed();
   EXPECT_TRUE(promo->ShouldShowPromo());
 }
+#elif BUILDFLAG(IS_LINUX)
+TEST_F(PromoCardRelaunchChromeTest, ShouldShow) {
+  std::unique_ptr<PasswordPromoCardBase> promo =
+      std::make_unique<RelaunchChromePromo>(pref_service());
+
+  MockLockedKeychain();
+  EXPECT_TRUE(promo->ShouldShowPromo());
+
+  OSCrypt::SetEncryptionPasswordForTesting("something");
+  EXPECT_FALSE(promo->ShouldShowPromo());
+}
+
+TEST_F(PromoCardRelaunchChromeTest, ShouldShowAfterDismiss) {
+  MockLockedKeychain();
+  ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
+              IsEmpty());
+
+  std::unique_ptr<PasswordPromoCardBase> promo =
+      std::make_unique<RelaunchChromePromo>(pref_service());
+  EXPECT_TRUE(promo->ShouldShowPromo());
+
+  promo->OnPromoCardDismissed();
+  EXPECT_TRUE(promo->ShouldShowPromo());
+}
+#endif
 }  // namespace password_manager

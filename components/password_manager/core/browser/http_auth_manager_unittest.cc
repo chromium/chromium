@@ -35,7 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #endif
 
@@ -125,7 +125,7 @@ class HttpAuthManagerTest : public testing::Test {
               WithArg<1>(InvokeEmptyConsumerWithForms(account_store_.get())));
     }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     OSCryptMocker::SetUp();
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);

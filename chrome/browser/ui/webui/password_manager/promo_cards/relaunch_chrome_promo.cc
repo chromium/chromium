@@ -35,12 +35,22 @@ bool RelaunchChromePromo::ShouldShowPromo() const {
 
 std::u16string RelaunchChromePromo::GetTitle() const {
   return l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_TITLE);
+#if BUILDFLAG(IS_MAC)
+      IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_TITLE
+#elif BUILDFLAG(IS_LINUX)
+      IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_TITLE_LINUX
+#endif
+  );
 }
 
 std::u16string RelaunchChromePromo::GetDescription() const {
   return l10n_util::GetStringUTF16(
-      IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_DESCRIPTION);
+#if BUILDFLAG(IS_MAC)
+      IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_DESCRIPTION
+#elif BUILDFLAG(IS_LINUX)
+      IDS_PASSWORD_MANAGER_UI_RELAUNCH_CHROME_PROMO_CARD_DESCRIPTION_LINUX
+#endif
+  );
 }
 
 std::u16string RelaunchChromePromo::GetActionButtonText() const {

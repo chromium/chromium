@@ -11223,10 +11223,11 @@ const FeatureEntry kFeatureEntries[] = {
          trusted_vault::kTrustedVaultFrequentDegradedRecoverabilityPolling)},
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"restart-to-gain-access-to-keychain",
      flag_descriptions::kRestartToGainAccessToKeychainName,
-     flag_descriptions::kRestartToGainAccessToKeychainDescription, kOsMac,
+     flag_descriptions::kRestartToGainAccessToKeychainDescription,
+     kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(
          password_manager::features::kRestartToGainAccessToKeychain)},
 #endif

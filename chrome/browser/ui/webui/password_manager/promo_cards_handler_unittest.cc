@@ -159,7 +159,7 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
 #endif
   };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   promo_cards.emplace_back("relaunch_chrome_promo");
 #endif
 

@@ -8067,10 +8067,8 @@ test("unit_tests") {
     }
 
     if (is_mac) {
-      sources += [
-        "../browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo_unittest.cc",
-        "../browser/webauthn/local_credential_management_mac_unittest.mm",
-      ]
+      sources +=
+          [ "../browser/webauthn/local_credential_management_mac_unittest.mm" ]
     }
 
     if (is_win) {
@@ -10080,9 +10078,14 @@ test("unit_tests") {
     if (is_mac) {
       sources += [
         "../browser/media_galleries/mac/mtp_device_delegate_impl_mac_unittest.mm",
-        "../browser/ui/passwords/bubble_controllers/relaunch_chrome_bubble_controller_unittest.cc",
         "../browser/ui/views/accelerator_table_unittest_mac.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_unittest.mm",
+      ]
+    }
+    if (is_mac || is_linux) {
+      sources += [
+        "../browser/ui/passwords/bubble_controllers/relaunch_chrome_bubble_controller_unittest.cc",
+        "../browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo_unittest.cc",
       ]
     }
     if (!is_chromeos_ash) {
@@ -10851,6 +10854,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
       "//components/metrics:content",
+      "//components/os_crypt/sync:test_support",
       "//components/password_manager/content/browser",
       "//components/privacy_sandbox:privacy_sandbox",
       "//components/privacy_sandbox:privacy_sandbox_prefs",

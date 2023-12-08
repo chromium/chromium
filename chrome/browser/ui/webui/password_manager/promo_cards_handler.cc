@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
 #endif
 
@@ -64,7 +64,8 @@ std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
   promo_cards.push_back(
       std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
 #endif
-#if BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   promo_cards.push_back(
       std::make_unique<RelaunchChromePromo>(profile->GetPrefs()));
 #endif

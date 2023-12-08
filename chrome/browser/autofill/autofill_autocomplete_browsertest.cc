@@ -67,6 +67,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
     content::WebContents* web_contents =
         active_browser_->tab_strip_model()->GetActiveWebContents();

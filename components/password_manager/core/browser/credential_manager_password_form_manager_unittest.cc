@@ -17,7 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #endif
 
@@ -78,7 +78,7 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
     form_to_save_.type = PasswordForm::Type::kApi;
     form_to_save_.in_store = PasswordForm::Store::kProfileStore;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     OSCryptMocker::SetUp();
 #endif
   }

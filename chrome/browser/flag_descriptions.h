@@ -3121,9 +3121,6 @@ extern const char kMacPWAsNotificationAttributionDescription[];
 extern const char kMacSyscallSandboxName[];
 extern const char kMacSyscallSandboxDescription[];
 
-extern const char kRestartToGainAccessToKeychainName[];
-extern const char kRestartToGainAccessToKeychainDescription[];
-
 extern const char kRetryGetVideoCaptureDeviceInfosName[];
 extern const char kRetryGetVideoCaptureDeviceInfosDescription[];
 
@@ -4415,6 +4412,9 @@ extern const char kSkipUndecryptablePasswordsDescription[];
 
 extern const char kForcePasswordInitialSyncWhenDecryptionFailsName[];
 extern const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[];
+
+extern const char kRestartToGainAccessToKeychainName[];
+extern const char kRestartToGainAccessToKeychainDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

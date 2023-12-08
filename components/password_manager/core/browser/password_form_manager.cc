@@ -56,7 +56,7 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/os_crypt/sync/os_crypt.h"
 #endif
 
@@ -220,7 +220,7 @@ bool UsernameOutsideOfFormHasHigherPriority(
               FormDataParser::UsernameDetectionMethod::kServerSidePrediction);
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool ShouldShowKeychainErrorBubble(
     absl::optional<PasswordStoreBackendError> backend_error) {
   if (!backend_error.has_value()) {
@@ -768,7 +768,8 @@ void PasswordFormManager::OnFetchCompleted() {
             : password_manager::ErrorMessageFlowType::kFillFlow,
         error_type);
   }
-#elif BUILDFLAG(IS_MAC)
+
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (ShouldShowKeychainErrorBubble(
           form_fetcher_->GetProfileStoreBackendError())) {
     client_->NotifyKeychainError();

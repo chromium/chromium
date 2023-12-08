@@ -215,6 +215,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Prevent the Keychain from coming up on Mac.
     test::DisableSystemServices(browser()->profile()->GetPrefs());
+
     // Set up the HTTPS (!) server (embedded_test_server() is an HTTP server).
     // Every hostname is handled by that server.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -240,6 +241,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
     main_autofill_manager().client().HideAutofillPopup(
         PopupHidingReason::kTabGone);
