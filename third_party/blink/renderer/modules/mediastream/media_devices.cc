@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/uuid.h"
@@ -64,6 +65,15 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+BASE_FEATURE(kEnumerateDevicesRequestAudioCapabilities,
+             "EnumerateDevicesRequestAudioCapabilities",
+#if BUILDFLAG(IS_MAC)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 namespace {
 
@@ -409,7 +419,8 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
       /*request_audio_input=*/true, /*request_video_input=*/true,
       /*request_audio_output=*/true,
       /*request_video_input_capabilities=*/true,
-      /*request_audio_input_capabilities=*/true,
+      /*request_audio_input_capabilities=*/
+      base::FeatureList::IsEnabled(kEnumerateDevicesRequestAudioCapabilities),
       WTF::BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
                     WrapPersistent(result_tracker)));
   return promise;
