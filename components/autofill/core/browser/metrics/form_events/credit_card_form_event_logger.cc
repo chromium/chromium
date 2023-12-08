@@ -313,6 +313,10 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
         form);
   }
 
+  if (has_logged_undo_after_fill_) {
+    has_logged_fill_after_undo_ = true;
+  }
+
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
@@ -322,6 +326,11 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     ++form_interaction_counts_.autofill_fills;
   }
   UpdateFlowId();
+}
+
+void CreditCardFormEventLogger::OnDidUndoAutofill() {
+  has_logged_undo_after_fill_ = true;
+  base::RecordAction(base::UserMetricsAction("Autofill_UndoPaymentsAutofill"));
 }
 
 void CreditCardFormEventLogger::Log(FormEvent event,

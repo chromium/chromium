@@ -4340,12 +4340,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Autofill_UndoFilling">
-  <owner>battre@chromium.org</owner>
+<action name="Autofill_UndoAddressAutofill">
   <owner>jihadghanna@google.com</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when a user uses Undo to revert a previous
-    autofill operation.
+    autofill operation on a form filled with Address data.
+  </description>
+</action>
+
+<action name="Autofill_UndoPaymentsAutofill">
+  <owner>jihadghanna@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <description>
+    This user action is logged when a user uses Undo to revert a previous
+    autofill operation on a form filled with Payments data.
   </description>
 </action>
 

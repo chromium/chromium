@@ -1876,7 +1876,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
         Suggestion(PopupItemId::kClearForm),
         AutofillPopupDelegate::SuggestionPosition{.row = 0});
 
-    EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_UndoFilling"));
+    EXPECT_EQ(
+        1, user_action_tester.GetActionCount("Autofill_UndoPaymentsAutofill"));
   }
 
   // Simulate showing a credit card suggestion polled from "Credit card number"

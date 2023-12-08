@@ -49,6 +49,10 @@ void AddressFormEventLogger::OnDidFillSuggestion(
     Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
   }
 
+  if (has_logged_undo_after_fill_) {
+    has_logged_fill_after_undo_ = true;
+  }
+
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledProfileSuggestion"));
 
@@ -58,6 +62,11 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   UpdateFlowId();
 
   profile_categories_filled_.insert(GetCategoryOfProfile(profile));
+}
+
+void AddressFormEventLogger::OnDidUndoAutofill() {
+  has_logged_undo_after_fill_ = true;
+  base::RecordAction(base::UserMetricsAction("Autofill_UndoAddressAutofill"));
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(

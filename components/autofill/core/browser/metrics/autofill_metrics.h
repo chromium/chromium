@@ -1114,9 +1114,6 @@ class AutofillMetrics {
   // Logs that the user cleared the form.
   static void LogAutofillFormCleared();
 
-  // Logs that the user used Undo to revert some autofill operation.
-  static void LogAutofillUndo();
-
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
 

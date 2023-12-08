@@ -133,7 +133,7 @@ class FormEventLoggerBase {
   void RecordFillAfterSuggestion(LogBuffer& logs) const;
   void RecordSubmissionAfterFill(LogBuffer& logs) const;
 
-  // Records UMA metrics on keym etrics and writes logs to autofill-internals.
+  // Records UMA metrics on key metrics and writes logs to autofill-internals.
   // Similar to the funnel metrics, a separate function for each key metric is
   // defined below.
   void RecordKeyMetrics() const;
@@ -161,6 +161,9 @@ class FormEventLoggerBase {
   // called in the destructor.
   void RecordAblationMetrics() const;
 
+  // Records UMA metrics related to the Undo Autofill feature.
+  void RecordUndoMetrics() const;
+
   void UpdateFlowId();
 
   // Returns whether the logger was notified that any data to fill is available.
@@ -177,6 +180,8 @@ class FormEventLoggerBase {
   bool has_logged_user_hide_suggestions_ = false;
   bool has_logged_suggestions_shown_ = false;
   bool has_logged_suggestion_filled_ = false;
+  bool has_logged_undo_after_fill_ = false;
+  bool has_logged_fill_after_undo_ = false;
   bool has_logged_autocomplete_off_ = false;
   bool has_logged_will_submit_ = false;
   bool has_logged_submitted_ = false;

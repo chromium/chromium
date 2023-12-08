@@ -106,6 +106,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 
+  void OnDidUndoAutofill();
+
   void Log(FormEvent event, const FormStructure& form) override;
 
   // Logging what type of authentication flow was prompted.

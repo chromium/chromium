@@ -1392,31 +1392,34 @@ void BrowserAutofillManager::UndoAutofill(
       form_autofill_history_.GetLastFillingOperationForField(
           trigger_field.global_id());
 
-  // Only process fields whose last autofill operation is the one being undone
-  // on `field`. And among those fields, skip the ones that have been modified
-  // since that operation. Remove the ones to be skipped so that we only pass
-  // fields to be undone by the renderer.
-  std::erase_if(form.fields, [this, &operation](const FormFieldData& field) {
-    return !field.is_autofilled ||
-           form_autofill_history_.GetLastFillingOperationForField(
-               field.global_id()) != operation;
-  });
+  // Remove the fields to be skipped so that we only pass fields to be modified
+  // by the renderer.
+  std::erase_if(
+      form.fields, [this, &operation, &form](const FormFieldData& field) {
+        // Skip not-autofilled fields as undo only acts on autofilled fields.
+        return !field.is_autofilled ||
+               // Skip fields whose last autofill operations is different than
+               // the one of the trigger field.
+               form_autofill_history_.GetLastFillingOperationForField(
+                   field.global_id()) != operation ||
+               // Skip fields that are not cached to avoid unexpected outcomes.
+               GetAutofillField(form, field) == nullptr;
+      });
 
   for (FormFieldData& field : form.fields) {
+    AutofillField& autofill_field = CHECK_DEREF(GetAutofillField(form, field));
     const FormAutofillHistory::FieldFillingEntry& previous_state =
         operation.GetFieldFillingEntry(field.global_id());
-    // Update `field` to send for the renderer.
+    // Update the FormFieldData to be sent for the renderer.
     field.value = previous_state.value;
     field.is_autofilled = previous_state.is_autofilled;
 
-    // If the field is cached update the cached autofill state in the browser.
+    // Update the cached AutofillField in the browser.
     // TODO(crbug.com/1345089): Consider updating the value too.
-    if (AutofillField* autofill_field = GetAutofillField(form, field)) {
-      autofill_field->is_autofilled = previous_state.is_autofilled;
-      autofill_field->set_autofill_source_profile_guid(
-          previous_state.autofill_source_profile_guid);
-      autofill_field->set_autofilled_type(previous_state.autofilled_type);
-    }
+    autofill_field.is_autofilled = previous_state.is_autofilled;
+    autofill_field.set_autofill_source_profile_guid(
+        previous_state.autofill_source_profile_guid);
+    autofill_field.set_autofilled_type(previous_state.autofilled_type);
   }
 
   // Do not attempt a refill after an Undo operation.
@@ -1431,11 +1434,21 @@ void BrowserAutofillManager::UndoAutofill(
   driver().ApplyFormAction(mojom::ActionType::kUndo, action_persistence, form,
                            url::Origin(),
                            /*field_type_map=*/{});
-  // Do not clear history on previews as it might be used for future previews or
-  // for the filling.
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    form_autofill_history_.EraseFormFillEntry(operation);
+
+  // The remaining logic is only relevant for filling.
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
+    return;
   }
+
+  if (operation.get_filling_product() == FillingProduct::kAddressAutofill) {
+    address_form_event_logger_->OnDidUndoAutofill();
+  } else if (operation.get_filling_product() ==
+             FillingProduct::kPaymentsAutofill) {
+    credit_card_form_event_logger_->OnDidUndoAutofill();
+  }
+  // History is not cleared on previews as it might be used for future previews
+  // or for the filling.
+  form_autofill_history_.EraseFormFillEntry(operation);
 }
 
 void BrowserAutofillManager::FillCreditCardForm(
