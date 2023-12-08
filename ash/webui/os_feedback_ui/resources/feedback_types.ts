@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {HelpContent} from './os_feedback_ui.mojom-webui.js';
+
 /**
  * @fileoverview
- * Type aliases for the mojo API.
+ * Type aliases for the app.
  */
 
-
-/**
- * Type alias for an array of HelpContent.
- * typedef !Array<!HelpContent>
- */
-export let HelpContentList;
+/** Type alias for an array of HelpContent.*/
+export type HelpContentList = HelpContent[];
+export const HelpContentList = Array<HelpContent>;
 
 /**
  * Type alias for search result. When isPopularContent is true, the contentList
@@ -20,10 +19,9 @@ export let HelpContentList;
  * empty. The isQueryEmpty is true when the current query is empty. The
  * isPopularContent is true when the current query is not empty and no matches
  * are found.
- * typedef {{
- *   contentList: HelpContentList,
- *   isQueryEmpty: boolean,
- *   isPopularContent: boolean
- * }}
  */
-export let SearchResult;
+export interface SearchResult {
+  contentList: HelpContentList;
+  isQueryEmpty: boolean;
+  isPopularContent: boolean;
+}

@@ -23,7 +23,7 @@ build_webui("build") {
     "confirmation_page.ts",
     "feedback_flow.ts",
     "file_attachment.ts",
-    "help_content.js",
+    "help_content.ts",
     "search_page.ts",
     "share_data_page.ts",
   ]
@@ -32,11 +32,11 @@ build_webui("build") {
     "fake_data.js",
     "fake_help_content_provider.js",
     "fake_feedback_service_provider.js",
-    "feedback_constants.js",
-    "feedback_types.js",
+    "feedback_constants.ts",
+    "feedback_types.ts",
     "feedback_utils.ts",
     "mojo_interface_provider.js",
-    "questionnaire.js",
+    "questionnaire.ts",
   ]
 
   mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-webui.js" ]
