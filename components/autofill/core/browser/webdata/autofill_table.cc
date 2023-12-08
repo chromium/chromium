@@ -1105,66 +1105,33 @@ bool AutofillTable::AddFormFieldValues(
 bool AutofillTable::GetFormValuesForElementName(
     const std::u16string& name,
     const std::u16string& prefix,
-    std::vector<AutocompleteEntry>* entries,
-    int limit) {
-  DCHECK(entries);
-  bool succeeded = false;
+    int limit,
+    std::vector<AutocompleteEntry>& entries) {
+  sql::Statement s;
+  SelectBuilder(db_, s, kAutofillTable,
+                {kName, kValue, kDateCreated, kDateLastUsed},
+                "WHERE name = ? AND value_lower LIKE ? "
+                "ORDER BY count DESC LIMIT ?");
+  s.BindString16(0, name);
+  s.BindString16(1, base::i18n::ToLower(prefix) + u"%");
+  s.BindInt(2, limit);
 
-  if (prefix.empty()) {
-    sql::Statement s;
-    SelectBuilder(db_, s, kAutofillTable,
-                  {kName, kValue, kDateCreated, kDateLastUsed},
-                  "WHERE name = ? ORDER BY count DESC LIMIT ?");
-    s.BindString16(0, name);
-    s.BindInt(1, limit);
-
-    entries->clear();
-    while (s.Step()) {
-      entries->push_back(AutocompleteEntry(
-          AutocompleteKey(/*name=*/s.ColumnString16(0),
-                          /*value=*/s.ColumnString16(1)),
-          /*date_created=*/base::Time::FromTimeT(s.ColumnInt64(2)),
-          /*date_last_used=*/base::Time::FromTimeT(s.ColumnInt64(3))));
-    }
-
-    succeeded = s.Succeeded();
-  } else {
-    std::u16string prefix_lower = base::i18n::ToLower(prefix);
-    std::u16string next_prefix = prefix_lower;
-    next_prefix.back()++;
-
-    sql::Statement s1;
-    SelectBuilder(db_, s1, kAutofillTable,
-                  {kName, kValue, kDateCreated, kDateLastUsed},
-                  "WHERE name = ? AND "
-                  "value_lower >= ? AND "
-                  "value_lower < ? "
-                  "ORDER BY count DESC "
-                  "LIMIT ?");
-    s1.BindString16(0, name);
-    s1.BindString16(1, prefix_lower);
-    s1.BindString16(2, next_prefix);
-    s1.BindInt(3, limit);
-
-    entries->clear();
-    while (s1.Step()) {
-      entries->push_back(AutocompleteEntry(
-          AutocompleteKey(/*name=*/s1.ColumnString16(0),
-                          /*value=*/s1.ColumnString16(1)),
-          /*date_created=*/base::Time::FromTimeT(s1.ColumnInt64(2)),
-          /*date_last_used=*/base::Time::FromTimeT(s1.ColumnInt64(3))));
-    }
-
-    succeeded = s1.Succeeded();
+  entries.clear();
+  while (s.Step()) {
+    entries.emplace_back(
+        AutocompleteKey(/*name=*/s.ColumnString16(0),
+                        /*value=*/s.ColumnString16(1)),
+        /*date_created=*/base::Time::FromTimeT(s.ColumnInt64(2)),
+        /*date_last_used=*/base::Time::FromTimeT(s.ColumnInt64(3)));
   }
 
-  return succeeded;
+  return s.Succeeded();
 }
 
 bool AutofillTable::RemoveFormElementsAddedBetween(
     const base::Time& delete_begin,
     const base::Time& delete_end,
-    std::vector<AutocompleteChange>* changes) {
+    std::vector<AutocompleteChange>& changes) {
   const time_t delete_begin_time_t = delete_begin.ToTimeT();
   const time_t delete_end_time_t = GetEndTime(delete_end);
 
@@ -1264,12 +1231,12 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
   if (!transaction.Commit())
     return false;
 
-  *changes = tentative_changes;
+  changes = std::move(tentative_changes);
   return true;
 }
 
 bool AutofillTable::RemoveExpiredFormElements(
-    std::vector<AutocompleteChange>* changes) {
+    std::vector<AutocompleteChange>& changes) {
   const auto change_type = AutocompleteChange::EXPIRE;
 
   base::Time expiration_time =
@@ -1298,7 +1265,7 @@ bool AutofillTable::RemoveExpiredFormElements(
   if (!delete_data_statement.Run())
     return false;
 
-  *changes = tentative_changes;
+  changes = std::move(tentative_changes);
   return true;
 }
 
@@ -1311,8 +1278,8 @@ bool AutofillTable::RemoveFormElement(const std::u16string& name,
   return s.Run();
 }
 
-int AutofillTable::GetCountOfValuesContainedBetween(const base::Time& begin,
-                                                    const base::Time& end) {
+int AutofillTable::GetCountOfValuesContainedBetween(base::Time begin,
+                                                    base::Time end) {
   const time_t begin_time_t = begin.ToTimeT();
   const time_t end_time_t = GetEndTime(end);
 
@@ -1344,30 +1311,29 @@ bool AutofillTable::GetAllAutocompleteEntries(
     std::u16string value = s.ColumnString16(1);
     base::Time date_created = base::Time::FromTimeT(s.ColumnInt64(2));
     base::Time date_last_used = base::Time::FromTimeT(s.ColumnInt64(3));
-    entries->push_back(AutocompleteEntry(AutocompleteKey(name, value),
-                                         date_created, date_last_used));
+    entries->emplace_back(AutocompleteKey(name, value), date_created,
+                          date_last_used);
   }
 
   return s.Succeeded();
 }
 
-bool AutofillTable::GetAutofillTimestamps(const std::u16string& name,
-                                          const std::u16string& value,
-                                          base::Time* date_created,
-                                          base::Time* date_last_used) {
+std::optional<AutocompleteEntry> AutofillTable::GetAutocompleteEntry(
+    const std::u16string& name,
+    const std::u16string& value) {
   sql::Statement s;
   SelectBuilder(db_, s, kAutofillTable, {kDateCreated, kDateLastUsed},
                 "WHERE name = ? AND value = ?");
   s.BindString16(0, name);
   s.BindString16(1, value);
-  if (!s.Step())
-    return false;
-
-  *date_created = base::Time::FromTimeT(s.ColumnInt64(0));
-  *date_last_used = base::Time::FromTimeT(s.ColumnInt64(1));
-
+  if (!s.Step()) {
+    return std::nullopt;
+  }
+  AutocompleteEntry entry({name, value},
+                          base::Time::FromTimeT(s.ColumnInt64(0)),
+                          base::Time::FromTimeT(s.ColumnInt64(1)));
   DCHECK(!s.Step());
-  return true;
+  return entry;
 }
 
 bool AutofillTable::UpdateAutocompleteEntries(
@@ -3567,17 +3533,9 @@ bool AutofillTable::AddFormFieldValueTime(
     return base::StrCat(message_parts);
   };
 
-  sql::Statement s_exists(db_->GetUniqueStatement(
-      "SELECT COUNT(*) FROM autofill WHERE name = ? AND value = ?"));
-  s_exists.BindString16(0, element.name);
-  s_exists.BindString16(1, element.value);
-  if (!s_exists.Step()) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("SELECT");
-    return false;
-  }
-
-  bool already_exists = s_exists.ColumnInt(0) > 0;
-  if (already_exists) {
+  AutocompleteChange::Type change_type;
+  if (GetAutocompleteEntry(element.name, element.value).has_value()) {
+    change_type = AutocompleteChange::UPDATE;
     sql::Statement s(db_->GetUniqueStatement(
         "UPDATE autofill SET date_last_used = ?, count = count + 1 "
         "WHERE name = ? AND value = ?"));
@@ -3589,6 +3547,7 @@ bool AutofillTable::AddFormFieldValueTime(
       return false;
     }
   } else {
+    change_type = AutocompleteChange::ADD;
     if (!InsertAutocompleteEntry({{element.name, element.value},
                                   /*date_created=*/time,
                                   /*date_last_used=*/time})) {
@@ -3597,8 +3556,6 @@ bool AutofillTable::AddFormFieldValueTime(
     }
   }
 
-  AutocompleteChange::Type change_type =
-      already_exists ? AutocompleteChange::UPDATE : AutocompleteChange::ADD;
   changes->emplace_back(change_type,
                         AutocompleteKey(element.name, element.value));
   return true;

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -649,8 +650,8 @@ class AutofillTable : public WebDatabaseTable,
   // |prefix|. The comparison of the prefix is case insensitive.
   bool GetFormValuesForElementName(const std::u16string& name,
                                    const std::u16string& prefix,
-                                   std::vector<AutocompleteEntry>* entries,
-                                   int limit);
+                                   int limit,
+                                   std::vector<AutocompleteEntry>& entries);
 
   // Removes rows from the autofill table if they were created on or after
   // |delete_begin| and last used strictly before |delete_end|. For rows where
@@ -662,36 +663,32 @@ class AutofillTable : public WebDatabaseTable,
   // each was updater or removed is returned in the changes out parameter.
   bool RemoveFormElementsAddedBetween(const base::Time& delete_begin,
                                       const base::Time& delete_end,
-                                      std::vector<AutocompleteChange>* changes);
+                                      std::vector<AutocompleteChange>& changes);
 
   // Removes rows from the autofill table if they were last accessed strictly
   // before |AutocompleteEntry::ExpirationTime()|.
-  bool RemoveExpiredFormElements(std::vector<AutocompleteChange>* changes);
+  bool RemoveExpiredFormElements(std::vector<AutocompleteChange>& changes);
 
   // Removes the row from the autofill table for the given |name| |value| pair.
-  virtual bool RemoveFormElement(const std::u16string& name,
-                                 const std::u16string& value);
+  bool RemoveFormElement(const std::u16string& name,
+                         const std::u16string& value);
 
-  // Returns the number of unique values such that for all autofill entries with
-  // that value, the interval between creation date and last usage is entirely
-  // contained between [|begin|, |end|).
-  virtual int GetCountOfValuesContainedBetween(const base::Time& begin,
-                                               const base::Time& end);
+  // Returns the number of unique values such that for all autocomplete entries
+  // with that value, the interval between creation date and last usage is
+  // entirely contained between [|begin|, |end|).
+  int GetCountOfValuesContainedBetween(base::Time begin, base::Time end);
 
   // Retrieves all of the entries in the autofill table.
-  virtual bool GetAllAutocompleteEntries(
-      std::vector<AutocompleteEntry>* entries);
+  bool GetAllAutocompleteEntries(std::vector<AutocompleteEntry>* entries);
 
   // Retrieves a single entry from the autofill table.
-  virtual bool GetAutofillTimestamps(const std::u16string& name,
-                                     const std::u16string& value,
-                                     base::Time* date_created,
-                                     base::Time* date_last_used);
+  std::optional<AutocompleteEntry> GetAutocompleteEntry(
+      const std::u16string& name,
+      const std::u16string& value);
 
   // Replaces existing autocomplete entries with the entries supplied in
   // the argument. If the entry does not already exist, it will be added.
-  virtual bool UpdateAutocompleteEntries(
-      const std::vector<AutocompleteEntry>& entries);
+  bool UpdateAutocompleteEntries(const std::vector<AutocompleteEntry>& entries);
 
   // Records a single Autofill profile in the autofill_profiles table.
   virtual bool AddAutofillProfile(const AutofillProfile& profile);

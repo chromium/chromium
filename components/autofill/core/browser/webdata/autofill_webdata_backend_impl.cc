@@ -174,8 +174,7 @@ std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-
-  if (AutofillTable::FromWebDatabase(db)->RemoveExpiredFormElements(&changes)) {
+  if (AutofillTable::FromWebDatabase(db)->RemoveExpiredFormElements(changes)) {
     if (!changes.empty()) {
       // Post the notifications including the list of affected keys.
       // This is sent here so that work resulting from this notification
@@ -267,7 +266,7 @@ AutofillWebDataBackendImpl::GetFormValuesForElementName(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<AutocompleteEntry> entries;
   AutofillTable::FromWebDatabase(db)->GetFormValuesForElementName(
-      name, prefix, &entries, limit);
+      name, prefix, limit, entries);
   return std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
       AUTOFILL_VALUE_RESULT, entries);
 }
@@ -278,9 +277,8 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-
   if (AutofillTable::FromWebDatabase(db)->RemoveFormElementsAddedBetween(
-          delete_begin, delete_end, &changes)) {
+          delete_begin, delete_end, changes)) {
     if (!changes.empty()) {
       // Post the notifications including the list of affected keys.
       // This is sent here so that work resulting from this notification
