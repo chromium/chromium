@@ -258,6 +258,9 @@ class MessageServiceFactory
       public MessageServiceApi {
  public:
   MessageServiceFactory() { MessageServiceApi::SetMessageService(this); }
+  ~MessageServiceFactory() override {
+    MessageServiceApi::SetMessageService(nullptr);
+  }
 
   void OpenChannelToExtension(
       content::BrowserContext* context,
