@@ -100,6 +100,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
     return vk_physical_device_driver_properties_;
   }
 
+  uint64_t drm_device_id() const { return drm_device_id_; }
+
   VkDevice GetVulkanDevice() const {
     DCHECK_NE(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
     return vk_device_;
@@ -149,6 +151,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
   VkPhysicalDevice vk_physical_device_ = VK_NULL_HANDLE;
   VkPhysicalDeviceProperties vk_physical_device_properties_;
   VkPhysicalDeviceDriverProperties vk_physical_device_driver_properties_;
+  uint64_t drm_device_id_ = 0;
   VkDevice owned_vk_device_ = VK_NULL_HANDLE;
   VkDevice vk_device_ = VK_NULL_HANDLE;
   VkQueue vk_queue_ = VK_NULL_HANDLE;
