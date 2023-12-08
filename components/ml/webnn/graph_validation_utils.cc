@@ -301,6 +301,33 @@ base::expected<Operand, std::string> ValidateConv2dBiasAndCreateOutputOperand(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+// Validate the axes and infer output for reduce operations.
+base::expected<std::vector<uint32_t>, std::string>
+ValidateReduceAxesAndInferOutput(base::span<const uint32_t> input_dimensions,
+                                 base::span<const uint32_t> axes,
+                                 bool keep_dimensions) {
+  auto input_rank = input_dimensions.size();
+  auto validation_result = ValidateAxes(axes, input_rank);
+  if (!validation_result.has_value()) {
+    return base::unexpected(validation_result.error());
+  }
+
+  std::vector<uint32_t> output_shape;
+  if (keep_dimensions) {
+    output_shape.assign(input_dimensions.begin(), input_dimensions.end());
+    for (auto axis : axes) {
+      output_shape[axis] = 1;
+    }
+  } else {
+    for (size_t i = 0; i < input_rank; i++) {
+      if (!base::Contains(axes, i)) {
+        output_shape.push_back(input_dimensions[i]);
+      }
+    }
+  }
+  return output_shape;
+}
+
 }  // namespace
 
 Operand::Operand(DataType data_type, std::vector<uint32_t> dimensions) {
@@ -373,6 +400,20 @@ base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
   }
   // The output tensor of softmax is the same shape as the input tensor.
   return Operand(input.data_type, std::move(input.dimensions));
+}
+
+base::expected<Operand, std::string> ValidateArgMinMaxAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> axes,
+    bool keep_dimensions) {
+  auto validated_output_shape =
+      ValidateReduceAxesAndInferOutput(input.dimensions, axes, keep_dimensions);
+  if (!validated_output_shape.has_value()) {
+    return base::unexpected(validated_output_shape.error());
+  }
+
+  return Operand(Operand::DataType::kInt64,
+                 std::move(validated_output_shape.value()));
 }
 
 base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
@@ -1418,13 +1459,6 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> axes,
     bool keep_dimensions) {
-  auto input_dimensions = input.dimensions;
-  auto input_rank = input_dimensions.size();
-  auto validation_result = ValidateAxes(axes, input_rank);
-  if (!validation_result.has_value()) {
-    return base::unexpected(validation_result.error());
-  }
-
   if (kind == ReduceKind::kL2 || kind == ReduceKind::kMean ||
       kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
     if (!IsFloatingPointType(input.data_type)) {
@@ -1433,20 +1467,13 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     }
   }
 
-  std::vector<uint32_t> output_shape;
-  if (keep_dimensions) {
-    output_shape = input_dimensions;
-    for (auto axis : axes) {
-      output_shape[axis] = 1;
-    }
-  } else {
-    for (size_t i = 0; i < input_rank; i++) {
-      if (!base::Contains(axes, i)) {
-        output_shape.push_back(input_dimensions[i]);
-      }
-    }
+  auto validated_output_shape =
+      ValidateReduceAxesAndInferOutput(input.dimensions, axes, keep_dimensions);
+  if (!validated_output_shape.has_value()) {
+    return base::unexpected(validated_output_shape.error());
   }
-  return Operand(input.data_type, std::move(output_shape));
+
+  return Operand(input.data_type, std::move(validated_output_shape.value()));
 }
 
 base::expected<Operand, std::string> ValidateWhereAndInferOutput(

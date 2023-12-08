@@ -32,6 +32,31 @@ struct Operand {
   string? name;
 };
 
+// Computes the indices of the max or min elements of the input tensor's
+// element along the provided axis.
+struct ArgMinMax {
+  enum Kind {
+    kMin,
+    kMax,
+  };
+
+  // The kind of operation.
+  Kind kind;
+  // The input operand referenced by the input id must be distinct from the
+  // output operand referenced by the output id and the output sizes must be
+  // the same as the input sizes, except for the reduced axis.
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // Axes indicates the dimensions to reduce. The values in the sequence must
+  // be in the range [0, N-1] where N is the rank of the input tensor.
+  array<uint32> axes;
+  // True is to retain reduced dimensions with size 1.
+  bool keep_dimensions = false;
+  // True is to select the last index rather than the first find along axis.
+  bool select_last_index = false;
+};
+
 // Represents normalizing the tensor values of input features across
 // the batch dimension.
 //
@@ -687,6 +712,7 @@ union Activation {
 // Holds one of operator.
 union Operation {
   // Keep the order as the same as build methods of `MLGraphBuilder`.
+  ArgMinMax arg_min_max;
   BatchNormalization batch_normalization;
   Clamp clamp;
   Concat concat;

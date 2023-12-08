@@ -177,6 +177,119 @@ struct OperandInfo {
   std::vector<uint32_t> dimensions;
 };
 
+struct ArgMinMaxTester {
+  mojom::ArgMinMax::Kind kind;
+  OperandInfo input;
+  std::vector<uint32_t> axes;
+  bool keep_dimensions = false;
+  bool select_last_index = false;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildArgMinMax(kind, input_operand_id, output_operand_id, axes,
+                           keep_dimensions, select_last_index);
+
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
+  const auto ArgMinMaxKinds = {mojom::ArgMinMax_Kind::kMin,
+                               mojom::ArgMinMax_Kind::kMax};
+  for (const auto kind : ArgMinMaxKinds) {
+    {
+      // Test argMinMax operator with axis = {0} and keep_dimensions = true.
+      ArgMinMaxTester{.kind = kind,
+                      .input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4, 5}},
+                      .axes = {0},
+                      .keep_dimensions = true,
+                      .output = {.type = mojom::Operand::DataType::kInt64,
+                                 .dimensions = {1, 3, 4, 5}},
+                      .expected = true}
+          .Test();
+    }
+    {
+      // Test argMinMax operator with axis = {0, 1} and keep_dimensions = false.
+      ArgMinMaxTester{.kind = kind,
+                      .input = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {2, 3, 4, 5}},
+                      .axes = {0, 1},
+                      .keep_dimensions = false,
+                      .output = {.type = mojom::Operand::DataType::kInt64,
+                                 .dimensions = {4, 5}},
+                      .expected = true}
+          .Test();
+    }
+    {
+      // Test the invalid graph when value in the axes sequence is greater than
+      // or equal to input rank.
+      ArgMinMaxTester{.kind = kind,
+                      .input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4, 5}},
+                      .axes = {4},
+                      .keep_dimensions = true,
+                      .output = {.type = mojom::Operand::DataType::kInt64,
+                                 .dimensions = {2, 3, 4, 1}},
+                      .expected = false}
+          .Test();
+    }
+    {
+      // Test the invalid graph when two or more values are same in the axes
+      // sequence.
+      ArgMinMaxTester{.kind = mojom::ArgMinMax::Kind::kMax,
+                      .input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4, 5}},
+                      .axes = {1, 1},
+                      .keep_dimensions = true,
+                      .output = {.type = mojom::Operand::DataType::kInt64,
+                                 .dimensions = {1, 3, 4, 5}},
+                      .expected = false}
+          .Test();
+    }
+    {
+      // Test the invalid graph when the output data type is not support.
+      ArgMinMaxTester{.kind = kind,
+                      .input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4, 5}},
+                      .axes = {0},
+                      .keep_dimensions = true,
+                      .output = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {1, 3, 4, 5}},
+                      .expected = false}
+          .Test();
+    }
+    {
+      // Test the invalid graph when the output shape is incorrect.
+      ArgMinMaxTester{.kind = kind,
+                      .input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4, 5}},
+                      .axes = {0},
+                      .keep_dimensions = false,
+                      .output = {.type = mojom::Operand::DataType::kInt64,
+                                 .dimensions = {1, 3, 4, 5}},
+                      .expected = false}
+          .Test();
+    }
+    {
+      // Test the invalid graph when the input and output are same operand.
+      GraphInfoBuilder builder;
+      uint64_t input_operand_id = builder.BuildInput(
+          "input", {2, 3, 4, 5}, mojom::Operand::DataType::kInt64);
+      builder.BuildArgMinMax(kind, input_operand_id, input_operand_id, {0},
+                             true, false);
+      EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
+    }
+  }
+}
+
 struct ClampTester {
   OperandInfo input;
   struct ClampAttributes {

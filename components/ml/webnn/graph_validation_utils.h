@@ -301,6 +301,14 @@ struct SliceAttributes {
   std::vector<uint32_t> sizes;
 };
 
+// Validate and infer output information of argMin and argMax operator defined
+// in
+// https://pr-preview.s3.amazonaws.com/webmachinelearning/webnn/pull/478.html#api-mlgraphbuilder-argminmax
+base::expected<Operand, std::string> ValidateArgMinMaxAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> axes,
+    bool keep_dimensions = false);
+
 // Validate softmax operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(

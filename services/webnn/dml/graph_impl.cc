@@ -71,6 +71,16 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
   }
 }
 
+std::string ArgMinMaxOpKindToString(mojom::ArgMinMax::Kind kind) {
+  switch (kind) {
+    case mojom::ArgMinMax::Kind::kMin:
+      return "ArgMin";
+    case mojom::ArgMinMax::Kind::kMax:
+      return "ArgMax";
+  }
+  NOTREACHED_NORETURN();
+}
+
 std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
   switch (kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
@@ -154,6 +164,8 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
 }
 std::string OpTagToString(Operation::Tag tag) {
   switch (tag) {
+    case Operation::Tag::kArgMinMax:
+      return "argMin/Max";
     case Operation::Tag::kBatchNormalization:
       return "batchNormalization";
     case Operation::Tag::kClamp:
@@ -331,81 +343,63 @@ const TensorDesc CreateOutputTensorDesc(const IdToOperandMap& id_to_operand_map,
                     output_operand->dimensions);
 }
 
-base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::ClampPtr& clamp,
+    const mojom::ArgMinMaxPtr& arg_min_max,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
-  const NodeOutput* input =
-      GetNodeOutputForOperand(id_to_node_output_map, clamp->input_operand_id);
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, arg_min_max->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
-
-  uint64_t output_id = clamp->output_operand_id;
-  auto output_tensor_desc =
+  const uint64_t output_id = arg_min_max->output_operand_id;
+  const auto& output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
+  const auto axes = arg_min_max->axes;
+  // Determine output sizes. Ignore output_desc->dimensions for the dimensions,
+  // since DirectML expects the output dimensions to have the same rank as the
+  // input, and output_desc->dimensions may have removed dimensions if
+  // keepDimensions was false.
+  std::vector<uint32_t> output_dimensions = input_tensor_desc.GetDimensions();
+  for (uint32_t axis : axes) {
+    CHECK_LT(axis, output_dimensions.size());
+    output_dimensions[axis] = 1u;
+  }
 
-  DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
-      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-      // No scale or bias applies to the input.
-      .ScaleBias = nullptr,
-      .Min = clamp->min_value,
-      .Max = clamp->max_value};
+  TensorDesc new_output_tensor_desc(output_tensor_desc.GetDataType(),
+                                    std::move(output_dimensions));
+
   std::array<const NodeOutput*, 1> inputs = {input};
-  const OperatorNode* clamp_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs);
-  if (!clamp_node) {
-    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create clamp operator."));
+  DML_ARGMAX_OPERATOR_DESC operator_desc = {};
+  operator_desc.InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+  operator_desc.OutputTensor = &new_output_tensor_desc.GetDMLTensorDesc(),
+  operator_desc.AxisCount = axes.size();
+  operator_desc.Axes = axes.data();
+  operator_desc.AxisDirection =
+      arg_min_max->select_last_index
+          ? DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_DECREASING
+          : DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_INCREASING;
+  DML_OPERATOR_TYPE operator_type;
+  switch (arg_min_max->kind) {
+    case mojom::ArgMinMax_Kind::kMin: {
+      operator_type = DML_OPERATOR_ARGMIN;
+      break;
+    }
+    case mojom::ArgMinMax_Kind::kMax: {
+      operator_type = DML_OPERATOR_ARGMAX;
+      break;
+    }
+  }
+  const OperatorNode* arg_min_max_node =
+      graph_builder.CreateOperatorNode(operator_type, &operator_desc, inputs);
+  if (!arg_min_max_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create " + ArgMinMaxOpKindToString(arg_min_max->kind) +
+            " operator."));
   }
 
-  const NodeOutput* output = graph_builder.CreateNodeOutput(
-      clamp_node, std::move(output_tensor_desc), 0);
-  // The output id must be unique in the map.
-  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
-
-  return base::ok();
-}
-
-base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
-    const IdToOperandMap& id_to_operand_map,
-    const mojom::ConcatPtr& concat,
-    GraphBuilder& graph_builder,
-    IdToNodeOutputMap& id_to_node_output_map) {
-  const auto& input_operand_ids = concat->input_operand_ids;
-  size_t input_num = input_operand_ids.size();
-
-  std::vector<const NodeOutput*> inputs;
-  std::vector<DML_TENSOR_DESC> input_dml_tensor_descs;
-  inputs.reserve(input_num);
-  input_dml_tensor_descs.reserve(input_num);
-
-  for (const auto& input_operand_id : input_operand_ids) {
-    const NodeOutput* input =
-        GetNodeOutputForOperand(id_to_node_output_map, input_operand_id);
-    inputs.push_back(input);
-    input_dml_tensor_descs.push_back(input->GetTensorDesc().GetDMLTensorDesc());
-  }
-
-  uint64_t output_id = concat->output_operand_id;
-  auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
-
-  DML_JOIN_OPERATOR_DESC concat_operator_desc{
-      .InputCount = base::checked_cast<uint32_t>(input_dml_tensor_descs.size()),
-      .InputTensors = input_dml_tensor_descs.data(),
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-      .Axis = concat->axis};
-
-  const OperatorNode* concat_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_JOIN, &concat_operator_desc, inputs);
-  if (!concat_node) {
-    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create concat operator."));
-  }
-
-  const NodeOutput* output = graph_builder.CreateNodeOutput(
-      concat_node, std::move(output_tensor_desc), 0);
+  const NodeOutput* output =
+      graph_builder.CreateNodeOutput(arg_min_max_node, output_tensor_desc);
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
@@ -603,6 +597,87 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
       batch_normalization_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ClampPtr& clamp,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, clamp->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = clamp->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      // No scale or bias applies to the input.
+      .ScaleBias = nullptr,
+      .Min = clamp->min_value,
+      .Max = clamp->max_value};
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* clamp_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs);
+  if (!clamp_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create clamp operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      clamp_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::ConcatPtr& concat,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& input_operand_ids = concat->input_operand_ids;
+  size_t input_num = input_operand_ids.size();
+
+  std::vector<const NodeOutput*> inputs;
+  std::vector<DML_TENSOR_DESC> input_dml_tensor_descs;
+  inputs.reserve(input_num);
+  input_dml_tensor_descs.reserve(input_num);
+
+  for (const auto& input_operand_id : input_operand_ids) {
+    const NodeOutput* input =
+        GetNodeOutputForOperand(id_to_node_output_map, input_operand_id);
+    inputs.push_back(input);
+    input_dml_tensor_descs.push_back(input->GetTensorDesc().GetDMLTensorDesc());
+  }
+
+  uint64_t output_id = concat->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_JOIN_OPERATOR_DESC concat_operator_desc{
+      .InputCount = base::checked_cast<uint32_t>(input_dml_tensor_descs.size()),
+      .InputTensors = input_dml_tensor_descs.data(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Axis = concat->axis};
+
+  const OperatorNode* concat_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_JOIN, &concat_operator_desc, inputs);
+  if (!concat_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create concat operator."));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      concat_node, std::move(output_tensor_desc), 0);
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
@@ -2419,6 +2494,12 @@ void GraphImpl::CreateAndBuild(
     // message.
     base::expected<void, mojom::ErrorPtr> create_operator_result;
     switch (operation->which()) {
+      case Operation::Tag::kArgMinMax: {
+        create_operator_result = CreateOperatorNodeForArgMinMax(
+            id_to_operand_map, operation->get_arg_min_max(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
       case mojom::Operation::Tag::kBatchNormalization: {
         create_operator_result = CreateOperatorNodeForBatchNormalization(
             id_to_operand_map, operation->get_batch_normalization(),

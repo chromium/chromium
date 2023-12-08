@@ -238,6 +238,158 @@ void WebNNGraphDMLImplTest::SetUp() {
   SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
 }
 
+template <typename T>
+struct ArgMinMaxTester {
+  OperandInfo<T> input;
+  std::vector<uint32_t> axes;
+  bool keep_dimensions = false;
+  bool select_last_index = false;
+  mojom::ArgMinMax::Kind kind;
+  OperandInfo<int64_t> output;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildArgMinMax(kind, input_operand_id, output_operand_id, axes,
+                           keep_dimensions, select_last_index);
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyIsEqual<int64_t>(std::move(named_outputs["output"]), output);
+  }
+};
+
+// Test building and computing a DML graph with single operator ArgMinMax.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorArgMinMax) {
+  // Test argMax with axes = {0} and select_last_index = false.
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {2, 3},
+                                     .values = {1, 2, 3, 4, 5, 6}},
+                           .axes = {0},
+                           .keep_dimensions = true,
+                           .select_last_index = false,
+                           .kind = mojom::ArgMinMax::Kind::kMax,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {1, 3},
+                                      .values = {1, 1, 1}}}
+        .Test();
+  }
+  // Test argMax with axes = {0, 1} and select_last_index = false. The index is
+  // into the flattened array: [1, 2, 3, 4, 5, 6].
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {2, 3},
+                                     .values = {1, 2, 3, 4, 5, 6}},
+                           .axes = {0, 1},
+                           .keep_dimensions = true,
+                           .select_last_index = false,
+                           .kind = mojom::ArgMinMax::Kind::kMax,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {1, 1},
+                                      .values = {5}}}
+        .Test();
+  }
+  // Test argMax with axes = {1} and select_last_index = false.
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {3, 3},
+                                     .values = {1, 2, 3, 4, 3, 4, 3, 2, 1}},
+                           .axes = {1},
+                           .keep_dimensions = true,
+                           .select_last_index = false,
+                           .kind = mojom::ArgMinMax::Kind::kMax,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {3, 1},
+                                      .values = {2, 0, 0}}}
+        .Test();
+  }
+  // Test argMax with axes = {1}, keep_dimensions = false and select_last_index
+  // = true.
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {3, 3},
+                                     .values = {1, 2, 3, 4, 3, 4, 3, 2, 1}},
+                           .axes = {1},
+                           .keep_dimensions = false,
+                           .select_last_index = true,
+                           .kind = mojom::ArgMinMax::Kind::kMax,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {3},
+                                      .values = {2, 2, 0}}}
+        .Test();
+  }
+  // Test argMin with axes = {1} and select_last_index = false.
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {3, 3},
+                                     .values = {1, 2, 3, 4, 3, 4, 3, 2, 1}},
+                           .axes = {1},
+                           .keep_dimensions = true,
+                           .select_last_index = false,
+                           .kind = mojom::ArgMinMax::Kind::kMin,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {3, 1},
+                                      .values = {0, 1, 2}}}
+        .Test();
+  }
+  // Test argMin with axes = {1, 2} and select_last_index = false. The indexes
+  // are into the partially flattened array: [[ 1, 2, 3, 4] ], [1, 2, 3, 4]].
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {2, 2, 2},
+                                     .values = {1, 2, 3, 4, 1, 2, 3, 4}},
+                           .axes = {1, 2},
+                           .keep_dimensions = true,
+                           .select_last_index = false,
+                           .kind = mojom::ArgMinMax::Kind::kMin,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {2, 1, 1},
+                                      .values = {0, 0}}}
+        .Test();
+  }
+  // Test argMin with axes = {0, 2} and select_last_index = true. The indexes
+  // are into the partially flattened array: [[1, 2, 1, 2], [3, 4, 3, 4]].
+  {
+    ArgMinMaxTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                     .dimensions = {2, 2, 2},
+                                     .values = {1, 2, 3, 4, 1, 2, 3, 4}},
+                           .axes = {0, 2},
+                           .keep_dimensions = false,
+                           .select_last_index = true,
+                           .kind = mojom::ArgMinMax::Kind::kMin,
+                           .output = {.type = mojom::Operand::DataType::kInt64,
+                                      .dimensions = {2},
+                                      .values = {2, 2}}}
+        .Test();
+  }
+  // Test argMin with axes = {0}, keep_dimensions = false and select_last_index
+  // = true.
+  {
+    ArgMinMaxTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {3, 3},
+                  .values = {1, 2, 3, 4, 3, 4, 3, 2, 1}},
+        .axes = {0},
+        .keep_dimensions = false,
+        .select_last_index = true,
+        .kind = mojom::ArgMinMax::Kind::kMin,
+        .output = {.type = mojom::Operand::DataType::kInt64,
+                   .dimensions = {3},
+                   .values = {0, 2, 2}}}
+        .Test();
+  }
+}
+
 struct ClampAttributes {
   float min_value;
   float max_value;

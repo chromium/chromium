@@ -438,6 +438,30 @@ bool ValidateBatchNormalization(
   return true;
 }
 
+bool ValidateArgMinMax(const IdToOperandMap& id_to_operand_map,
+                       const mojom::ArgMinMaxPtr& arg_min_max) {
+  const auto* input =
+      GetMojoOperand(id_to_operand_map, arg_min_max->input_operand_id);
+  const auto* output =
+      GetMojoOperand(id_to_operand_map, arg_min_max->output_operand_id);
+  if (!input || !output || output == input) {
+    // The argMinMax operator is invalid.
+    return false;
+  }
+
+  const auto validated_output = ValidateArgMinMaxAndInferOutput(
+      ConvertToComponentOperand(input), arg_min_max->axes,
+      arg_min_max->keep_dimensions);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
                    const mojom::ClampPtr& clamp) {
   if (!ValidateUnaryOperation(id_to_operand_map, clamp,
@@ -1118,6 +1142,8 @@ base::flat_map<std::string, size_t> CreateByteLengthMap(
 bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                        const mojom::OperationPtr& operation) {
   switch (operation->which()) {
+    case mojom::Operation::Tag::kArgMinMax:
+      return ValidateArgMinMax(id_to_operand_map, operation->get_arg_min_max());
     case mojom::Operation::Tag::kBatchNormalization:
       return ValidateBatchNormalization(id_to_operand_map,
                                         operation->get_batch_normalization());
