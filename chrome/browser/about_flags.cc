@@ -333,10 +333,6 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/promos/promos_features.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/win/titlebar_config.h"
@@ -3122,43 +3118,6 @@ const FeatureEntry::FeatureVariation kRestoreTabsOnFREVariations[] = {
      std::size(kRestoreTabsOnFRE_skipFeatureEngagement), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr FeatureEntry::FeatureParam kIOSPromoPasswordBubbleContextualDirect[] =
-    {{"activation", "contextual-direct"}};
-constexpr FeatureEntry::FeatureParam
-    kIOSPromoPasswordBubbleContextualIndirect[] = {
-        {"activation", "contextual-indirect"}};
-constexpr FeatureEntry::FeatureParam
-    kIOSPromoPasswordBubbleNonContextualDirect[] = {
-        {"activation", "non-contextual-direct"}};
-constexpr FeatureEntry::FeatureParam
-    kIOSPromoPasswordBubbleNonContextualIndirect[] = {
-        {"activation", "non-contextual-indirect"}};
-constexpr FeatureEntry::FeatureParam kIOSPromoPasswordBubbleAlwaysShowDirect[] =
-    {{"activation", "always-show-direct"}};
-constexpr FeatureEntry::FeatureParam
-    kIOSPromoPasswordBubbleAlwaysShowIndirect[] = {
-        {"activation", "always-show-indirect"}};
-
-constexpr FeatureEntry::FeatureVariation kIOSPromoPasswordBubbleVariations[] = {
-    {"contextual & direct activation", kIOSPromoPasswordBubbleContextualDirect,
-     std::size(kIOSPromoPasswordBubbleContextualDirect), nullptr},
-    {"contextual & indirect activation",
-     kIOSPromoPasswordBubbleContextualIndirect,
-     std::size(kIOSPromoPasswordBubbleContextualIndirect), nullptr},
-    {"non-contextual & direct activation",
-     kIOSPromoPasswordBubbleNonContextualDirect,
-     std::size(kIOSPromoPasswordBubbleNonContextualDirect), nullptr},
-    {"non-contextual & indirect activation",
-     kIOSPromoPasswordBubbleNonContextualIndirect,
-     std::size(kIOSPromoPasswordBubbleNonContextualIndirect), nullptr},
-    {"always show direct activation", kIOSPromoPasswordBubbleAlwaysShowDirect,
-     std::size(kIOSPromoPasswordBubbleAlwaysShowDirect), nullptr},
-    {"always show indirect activation",
-     kIOSPromoPasswordBubbleAlwaysShowIndirect,
-     std::size(kIOSPromoPasswordBubbleAlwaysShowIndirect), nullptr}};
-#endif
 
 const FeatureEntry::FeatureParam kUnthrottledNestedTimeout_NestingLevel = {
     "nesting", "15"};
@@ -9231,15 +9190,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBiometricReauthForPasswordFillingDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kBiometricTouchToFill)},
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"ios-promo-password-bubble",
-     flag_descriptions::kIOSPromoPasswordBubbleName,
-     flag_descriptions::kIOSPromoPasswordBubbleDecription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(promos_features::kIOSPromoPasswordBubble,
-                                    kIOSPromoPasswordBubbleVariations,
-                                    "IOSPromoPasswordBubble")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

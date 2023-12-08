@@ -2743,11 +2743,6 @@ void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
     return;
   }
 
-  if (promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
-    ShowIOSPasswordPromoBubble();
-    return;
-  }
-
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(browser_->profile());
 
@@ -2805,20 +2800,11 @@ void BrowserView::ShowIOSPasswordPromoBubble() {
       BrowserView::GetBrowserViewForBrowser(browser_.get())
           ->toolbar_button_provider();
 
-  IOSPromoPasswordBubble::PromoVariant variant;
-  if (promos_utils::IsDirectVariantIOSPasswordPromo()) {
-    variant = IOSPromoPasswordBubble::PromoVariant::QR_CODE_VARIANT;
-  } else if (promos_utils::IsIndirectVariantIOSPasswordPromo()) {
-    variant = IOSPromoPasswordBubble::PromoVariant::GET_STARTED_BUTTON_VARIANT;
-  } else {
-    NOTREACHED_NORETURN();
-  }
-
   IOSPromoPasswordBubble::ShowBubble(
       button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
       button_provider->GetPageActionIconView(
           PageActionIconType::kManagePasswords),
-      variant, browser_.get());
+      browser_.get());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

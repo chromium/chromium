@@ -4850,14 +4850,6 @@ const char kHighEfficiencySavingsReportingImprovementsDescription[] =
     "When enabled, the Memory Saver page action chip and dialog will be used "
     "to highlight memory savings.";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kIOSPromoPasswordBubbleName[] =
-    "Contextual Chrome for iOS promo in the password save/update bubble.";
-const char kIOSPromoPasswordBubbleDecription[] =
-    "When enabled, a contextual Chrome for iOS promo will be shown to eligible "
-    "users. The different flag options are for the promo's activation.";
-#endif
-
 const char kModalMemorySaverName[] = "Multi mode memory saver.";
 const char kModalMemorySaverDescription[] =
     "Configures which underlying Memory Saver mode is active. The mode "

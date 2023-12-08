@@ -43,21 +43,11 @@ class IOSPromoPasswordBubbleTest : public DialogBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider();
 
-    if (name == "qr_code") {
-      IOSPromoPasswordBubble::ShowBubble(
-          button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-          button_provider->GetPageActionIconView(
-              PageActionIconType::kManagePasswords),
-          IOSPromoPasswordBubble::PromoVariant::QR_CODE_VARIANT, browser());
-    } else {
-      // default
-      IOSPromoPasswordBubble::ShowBubble(
-          button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-          button_provider->GetPageActionIconView(
-              PageActionIconType::kManagePasswords),
-          IOSPromoPasswordBubble::PromoVariant::GET_STARTED_BUTTON_VARIANT,
-          browser());
-    }
+    IOSPromoPasswordBubble::ShowBubble(
+        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
+        button_provider->GetPageActionIconView(
+            PageActionIconType::kManagePasswords),
+        browser());
   }
 
  private:
@@ -65,9 +55,5 @@ class IOSPromoPasswordBubbleTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IOSPromoPasswordBubbleTest, InvokeUi_default) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(IOSPromoPasswordBubbleTest, InvokeUi_qr_code) {
   ShowAndVerifyUi();
 }
