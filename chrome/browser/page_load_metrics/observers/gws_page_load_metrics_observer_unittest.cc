@@ -56,8 +56,6 @@ class GWSPageLoadMetricsObserverTest
   raw_ptr<GWSPageLoadMetricsObserver, DanglingUntriaged> observer_ = nullptr;
 };
 
-class GWSPageLoadMetricsLoggerTest : public testing::Test {};
-
 TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
@@ -74,6 +72,18 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
 
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstRequestStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSNavigationStartToFirstRequestStart, 1, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart, 1, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(
@@ -105,6 +115,12 @@ TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   tester()->NavigateToUntrackedUrl();
 
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstRequestStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 0);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 0);
@@ -129,6 +145,12 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
 
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstRequestStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -157,6 +179,18 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
   // Navigate again to force logging.
   tester()->NavigateToUntrackedUrl();
 
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstRequestStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSNavigationStartToFirstRequestStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSNavigationStartToFirstResponseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(

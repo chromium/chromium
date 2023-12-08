@@ -798,6 +798,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFirstLoaderCallback"
+    units="ms" expires_after="2024-03-19">
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that a callback for the navigation
+    loader is first invoked for the main resource of a main frame navigation,
+    for Google Search page loads. Only recorded for Search navigations that
+    happen entirely in the foreground. The metric is emitted when the navigation
+    is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFirstRequestStart"
+    units="ms" expires_after="2024-03-19">
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the first HTTP request is sent
+    for the main resource of a main frame navigation, for Google Search page
+    loads. Only recorded for Search navigations that happen entirely in the
+    foreground. The metric is emitted when the navigation is completed or the
+    app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFirstResponseStart"
+    units="ms" expires_after="2024-03-19">
+  <owner>kouhei@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the headers of the first HTTP
+    response is received for the main resource of a main frame navigation, for
+    Google Search page loads. Only recorded for Search navigations that happen
+    entirely in the foreground. The metric is emitted when the navigation is
+    completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2024-05-19">
   <owner>spelchat@chromium.org</owner>
