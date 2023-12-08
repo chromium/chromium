@@ -263,7 +263,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       base::StringPiece stapled_leaf_ocsp_response,
       const EVRootCAMetadata* ev_metadata,
       bool* checked_revocation_for_some_path,
-      base::TimeTicks deadline)
+      base::TimeTicks deadline,
+      const NetLogWithSource& net_log)
       : bssl::SimplePathBuilderDelegate(1024, digest_policy),
         crl_set_(crl_set),
         net_fetcher_(net_fetcher),
@@ -273,7 +274,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         stapled_leaf_ocsp_response_(stapled_leaf_ocsp_response),
         ev_metadata_(ev_metadata),
         checked_revocation_for_some_path_(checked_revocation_for_some_path),
-        deadline_(deadline) {}
+        deadline_(deadline),
+        net_log_(net_log) {}
 
   // This is called for each built chain, including ones which failed. It is
   // responsible for adding errors to the built chain if it is not acceptable.
@@ -409,6 +411,13 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     return !deadline_.is_null() && base::TimeTicks::Now() > deadline_;
   }
 
+  bool IsDebugLogEnabled() override { return net_log_->IsCapturing(); }
+
+  void DebugLog(std::string_view msg) override {
+    net_log_->AddEventWithStringParams(
+        NetLogEventType::CERT_VERIFY_PROC_PATH_BUILDER_DEBUG, "debug", msg);
+  }
+
   raw_ptr<const CRLSet> crl_set_;
   raw_ptr<CertNetFetcher> net_fetcher_;
   const VerificationType verification_type_;
@@ -418,6 +427,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   raw_ptr<const EVRootCAMetadata> ev_metadata_;
   raw_ptr<bool> checked_revocation_for_some_path_;
   base::TimeTicks deadline_;
+  raw_ref<const NetLogWithSource> net_log_;
 };
 
 std::shared_ptr<const bssl::ParsedCertificate> ParseCertificateFromBuffer(
@@ -645,7 +655,8 @@ bssl::CertPathBuilder::Result TryBuildPath(
     const CRLSet* crl_set,
     CertNetFetcher* net_fetcher,
     const EVRootCAMetadata* ev_metadata,
-    bool* checked_revocation) {
+    bool* checked_revocation,
+    const NetLogWithSource& net_log) {
   // Path building will require candidate paths to conform to at least one of
   // the policies in |user_initial_policy_set|.
   std::set<bssl::der::Input> user_initial_policy_set;
@@ -659,7 +670,8 @@ bssl::CertPathBuilder::Result TryBuildPath(
 
   PathBuilderDelegateImpl path_builder_delegate(
       crl_set, net_fetcher, verification_type, digest_policy, flags,
-      trust_store, ocsp_response, ev_metadata, checked_revocation, deadline);
+      trust_store, ocsp_response, ev_metadata, checked_revocation, deadline,
+      net_log);
 
   absl::optional<CertIssuerSourceAia> aia_cert_issuer_source;
 
@@ -900,7 +912,7 @@ int CertVerifyProcBuiltin::VerifyInternal(
         target, &intermediates, &trust_store, der_verification_time, deadline,
         cur_attempt.verification_type, cur_attempt.digest_policy, flags,
         ocsp_response, crl_set(), net_fetcher_.get(), ev_metadata,
-        &checked_revocation_for_some_path);
+        &checked_revocation_for_some_path, net_log);
 
     base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
                                   result.iteration_count);

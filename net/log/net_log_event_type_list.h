@@ -3360,6 +3360,14 @@ EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT)
 //   }
 EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILT)
 
+// This event is created whenever a debugging message is sent from the path
+// builder.
+// parameters:
+// {
+//    "path_builder_debug": <String - message sent from the path builder>
+// }
+EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILDER_DEBUG)
+
 // -----------------------------------------------------------------------------
 // FTP events.
 // -----------------------------------------------------------------------------
