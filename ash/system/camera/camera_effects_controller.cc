@@ -376,7 +376,7 @@ void CameraEffectsController::RemoveBackgroundImage(
   if (basename == current_effects_->background_filepath) {
     cros::mojom::EffectsConfigPtr new_effects = GetCameraEffects();
     new_effects->replace_enabled = false;
-    new_effects->background_filepath = base::FilePath();
+    new_effects->background_filepath.reset();
 
     SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
   }
@@ -484,7 +484,7 @@ void CameraEffectsController::OnEffectControlActivated(
         // background replace should be disabled since background blur is
         // enabled.
         new_effects->replace_enabled = false;
-        new_effects->background_filepath = base::FilePath();
+        new_effects->background_filepath.reset();
       }
       break;
     }
@@ -658,7 +658,7 @@ void CameraEffectsController::OnCopyBackgroundImageFileComplete(
   // due to the failure of copying the new image file.
   if (is_initialization) {
     new_config->replace_enabled = false;
-    new_config->background_filepath = base::FilePath();
+    new_config->background_filepath.reset();
     SetCameraEffectsInCameraHalDispatcherImpl(std::move(new_config));
   }
 }
@@ -717,7 +717,8 @@ void CameraEffectsController::SetEffectsConfigToPref(
   if (new_config->background_filepath !=
       current_effects_->background_filepath) {
     pref_change_registrar_->prefs()->SetFilePath(
-        prefs::kBackgroundImagePath, new_config->background_filepath.value());
+        prefs::kBackgroundImagePath,
+        new_config->background_filepath.value_or(base::FilePath()));
   }
 
   if (new_config->relight_enabled != current_effects_->relight_enabled) {

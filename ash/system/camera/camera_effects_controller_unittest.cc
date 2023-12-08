@@ -536,6 +536,12 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
 
   // Background replace should be turned off.
   EXPECT_THAT(GetBackgroundReplacePref(), testing::Pair(false, ""));
+
+  // When background replace is turned off, we want the background_filepath to
+  // be empty.
+  EXPECT_FALSE(camera_effects_controller()
+                   ->GetCameraEffects()
+                   ->background_filepath.has_value());
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
