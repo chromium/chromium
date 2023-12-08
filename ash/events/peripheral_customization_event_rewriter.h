@@ -79,7 +79,9 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   // Starts observing and blocking graphics tablet events for `device_id`.
   // Notifies observers via `OnGraphicsTabletButtonPressed` whenever an event is
   // received.
-  void StartObservingGraphicsTablet(int device_id);
+  void StartObservingGraphicsTablet(
+      int device_id,
+      mojom::CustomizationRestriction customization_restriction);
 
   // Stops observing for all devices of every type.
   void StopObserving();
@@ -93,7 +95,8 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   mice_to_observe() {
     return mice_to_observe_;
   }
-  const base::flat_set<int>& graphics_tablets_to_observe() {
+  const base::flat_map<int, mojom::CustomizationRestriction>&
+  graphics_tablets_to_observe() {
     return graphics_tablets_to_observe_;
   }
 
@@ -140,7 +143,8 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   std::unique_ptr<ui::Event> CloneEvent(const ui::Event& event);
 
   base::flat_map<int, mojom::CustomizationRestriction> mice_to_observe_;
-  base::flat_set<int> graphics_tablets_to_observe_;
+  base::flat_map<int, mojom::CustomizationRestriction>
+      graphics_tablets_to_observe_;
 
   // Maintains a list of currently pressed buttons and the flags that should
   // be applied to other events processed.

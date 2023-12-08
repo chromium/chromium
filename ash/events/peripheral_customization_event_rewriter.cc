@@ -446,8 +446,10 @@ void PeripheralCustomizationEventRewriter::StartObservingMouse(
 }
 
 void PeripheralCustomizationEventRewriter::StartObservingGraphicsTablet(
-    int device_id) {
-  graphics_tablets_to_observe_.insert(device_id);
+    int device_id,
+    mojom::CustomizationRestriction customization_restriction) {
+  graphics_tablets_to_observe_.insert_or_assign(device_id,
+                                                customization_restriction);
 }
 
 void PeripheralCustomizationEventRewriter::StopObserving() {

@@ -947,7 +947,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(GraphicsTabletButtonObserverTest, RewriteEvent) {
   auto data = GetParam();
 
-  rewriter_->StartObservingGraphicsTablet(kGraphicsTabletDeviceId);
+  rewriter_->StartObservingGraphicsTablet(
+      kGraphicsTabletDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   auto& event = GetEventFromVariant(data.incoming_event);
   event.set_source_device_id(kGraphicsTabletDeviceId);

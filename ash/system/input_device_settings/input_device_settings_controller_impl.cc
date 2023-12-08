@@ -1783,7 +1783,8 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
         duplicate_id_finder_->GetDuplicateDeviceIds(graphics_tablet->id);
     CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
-      rewriter->StartObservingGraphicsTablet(duplicate_id);
+      rewriter->StartObservingGraphicsTablet(
+          duplicate_id, mojom::CustomizationRestriction::kAllowCustomizations);
     }
     return;
   }
