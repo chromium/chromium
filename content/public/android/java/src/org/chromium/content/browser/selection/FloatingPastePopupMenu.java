@@ -132,7 +132,7 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
                     };
             SortedSet<SelectionMenuGroup> nonSelectionMenuItems =
                     SelectActionMenuHelper.getNonSelectionMenuItems(
-                            actionMenuDelegate, mAdditionalItemProvider);
+                            mContext, actionMenuDelegate, mAdditionalItemProvider);
             SelectionPopupControllerImpl.initializeActionMenu(
                     mContext, nonSelectionMenuItems, menu, mCustomMenuItemClickListeners, null);
         }

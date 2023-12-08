@@ -22,6 +22,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -136,10 +137,11 @@ public class SelectActionMenuHelper {
      * editable input field).
      */
     public static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
+            @Nullable Context context,
             SelectActionMenuDelegate delegate,
             @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider) {
         SortedSet<SelectionMenuGroup> pasteMenuItems = new TreeSet<>();
-        pasteMenuItems.add(getDefaultItems(delegate));
+        pasteMenuItems.add(getDefaultItems(context, delegate));
 
         if (nonSelectionAdditionalItemProvider != null
                 && !nonSelectionAdditionalItemProvider.getItems().isEmpty()) {
@@ -167,7 +169,7 @@ public class SelectActionMenuHelper {
             boolean isSelectionReadOnly,
             @Nullable TextProcessingIntentHandler textProcessingIntentHandler) {
         SortedSet<SelectionMenuGroup> itemGroups = new TreeSet<>();
-        itemGroups.add(getDefaultItems(delegate));
+        itemGroups.add(getDefaultItems(context, delegate));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             SelectionMenuGroup primaryAssistItem =
                     getPrimaryAssistItems(context, classificationResult);
@@ -219,7 +221,8 @@ public class SelectActionMenuHelper {
         return primaryAssistGroup;
     }
 
-    private static SelectionMenuGroup getDefaultItems(SelectActionMenuDelegate delegate) {
+    private static SelectionMenuGroup getDefaultItems(
+            @Nullable Context context, SelectActionMenuDelegate delegate) {
         SelectionMenuGroup defaultGroup =
                 new SelectionMenuGroup(
                         R.id.select_action_menu_default_items, GroupItemOrder.DEFAULT_ITEMS);
@@ -230,7 +233,7 @@ public class SelectActionMenuHelper {
         defaultGroup.addItem(selectAll(delegate.canSelectAll()));
         defaultGroup.addItem(webSearch(delegate.canWebSearch()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            defaultGroup.addItem(pasteAsPlainText(delegate.canPasteAsPlainText()));
+            defaultGroup.addItem(pasteAsPlainText(context, delegate.canPasteAsPlainText()));
         }
         return defaultGroup;
     }
@@ -435,14 +438,21 @@ public class SelectActionMenuHelper {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private static SelectionMenuItem pasteAsPlainText(boolean isEnabled) {
-        return new SelectionMenuItem.Builder(android.R.string.paste_as_plain_text)
-                .setId(R.id.select_action_menu_paste_as_plain_text)
-                .setOrderInCategory(DefaultItemOrder.PASTE_AS_PLAIN_TEXT)
-                .setShowAsActionFlags(
-                        MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                .setIsEnabled(isEnabled)
-                .build();
+    private static SelectionMenuItem pasteAsPlainText(
+            @Nullable Context context, boolean isEnabled) {
+        SelectionMenuItem.Builder builder =
+                new SelectionMenuItem.Builder(android.R.string.paste_as_plain_text)
+                        .setId(R.id.select_action_menu_paste_as_plain_text)
+                        .setOrderInCategory(DefaultItemOrder.PASTE_AS_PLAIN_TEXT)
+                        .setShowAsActionFlags(
+                                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
+                        .setIsEnabled(isEnabled);
+
+        if (context != null) {
+            builder.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_paste_as_plain_text))
+                    .setIsIconTintable(true);
+        }
+        return builder.build();
     }
 
     private static SelectionMenuItem webSearch(boolean isEnabled) {
