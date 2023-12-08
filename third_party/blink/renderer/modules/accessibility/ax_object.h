@@ -701,8 +701,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Load inline text boxes for just this node, even if
   // AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes) is
-  // false. Can be called even when layout is not clean, but in that case
-  // it will force clean layout.
+  // false. Must be called with clean layout.
   virtual void LoadInlineTextBoxes();
   virtual void LoadInlineTextBoxesHelper();
   // When adding children to this node, consider inline textboxes.
