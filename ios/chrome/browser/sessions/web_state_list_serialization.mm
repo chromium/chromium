@@ -8,7 +8,6 @@
 
 #import <algorithm>
 #import <memory>
-#import <unordered_map>
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -272,7 +271,8 @@ std::unique_ptr<web::WebState> DeserializeFromProto::RestoreTabAt(
   DCHECK_LT(index, storage_.items_size());
   const auto& item_storage = storage_.items(index);
   return factory_.Run(
-      web::WebStateID::FromSerializedValue(item_storage.identifier()));
+      web::WebStateID::FromSerializedValue(item_storage.identifier()),
+      item_storage.metadata());
 }
 
 // Returns the flags used to insert a WebState at `index`, possibly marking

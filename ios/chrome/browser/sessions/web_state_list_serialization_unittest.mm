@@ -108,6 +108,13 @@ std::unique_ptr<web::WebState> CreateWebStateWithWebStateID(
                                        GURL(kChromeUIVersionURL), web_state_id);
 }
 
+// Creates a fake WebState from serialized data.
+std::unique_ptr<web::WebState> CreateWebStateFromProto(
+    web::WebStateID web_state_id,
+    web::proto::WebStateMetadataStorage metadata) {
+  return CreateWebState();
+}
+
 }  // namespace
 
 // Comparison operators for testing.
@@ -695,10 +702,9 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled) {
   // Deserialize `storage` into a new empty WebStateList.
   WebStateList web_state_list(&delegate);
   const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &web_state_list, std::move(storage),
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ true,
+                              base::BindRepeating(&CreateWebStateFromProto));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(web_state_list.count(), 4);
@@ -754,10 +760,9 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled) {
   // Deserialize `storage` into a new empty WebStateList.
   WebStateList web_state_list(&delegate);
   const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &web_state_list, std::move(storage),
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ false,
+                              base::BindRepeating(&CreateWebStateFromProto));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
   ASSERT_EQ(web_state_list.count(), 4);

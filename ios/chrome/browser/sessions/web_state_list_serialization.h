@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -17,6 +18,9 @@
 class WebStateList;
 
 namespace web {
+namespace proto {
+class WebStateMetadataStorage;
+}  // namespace proto
 class WebState;
 class WebStateID;
 }  // namespace web
@@ -30,8 +34,8 @@ using WebStateFactory =
     base::RepeatingCallback<std::unique_ptr<web::WebState>(CRWSessionStorage*)>;
 
 // Factory for creating WebStates from proto.
-using WebStateFactoryFromProto =
-    base::RepeatingCallback<std::unique_ptr<web::WebState>(web::WebStateID)>;
+using WebStateFactoryFromProto = base::RepeatingCallback<std::unique_ptr<
+    web::WebState>(web::WebStateID, web::proto::WebStateMetadataStorage)>;
 
 // Serializes `web_state_list` to a SessionWindowIOS instance.
 SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list);

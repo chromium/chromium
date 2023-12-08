@@ -217,18 +217,17 @@ TEST_F(SessionLoadingTest, LoadSessionStorage) {
   ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
 
   // Load the session and check it is correct.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata, session);
+  EXPECT_EQ(loaded, session);
 
-  for (const auto& item : loaded.session_metadata.items()) {
+  for (const auto& item : loaded.items()) {
     const web::WebStateID item_id =
         web::WebStateID::FromSerializedValue(item.identifier());
 
     // Check that the item has been correctly loaded.
-    auto iterator = loaded.web_state_storage_map.find(item_id);
-    ASSERT_TRUE(iterator != loaded.web_state_storage_map.end());
-    EXPECT_EQ(iterator->second.active_page().page_url(),
+    ASSERT_TRUE(item.has_metadata());
+    ASSERT_EQ(item.metadata().active_page().page_url(),
               TestUrlForIdentifier(item_id));
   }
 
@@ -250,19 +249,18 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterEmptyItems) {
   ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{0, 2}));
 
   // Load the session and check it is correct.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata,
+  EXPECT_EQ(loaded,
             ios::sessions::FilterItems(session, RemovingIndexes({0, 2})));
 
-  for (const auto& item : loaded.session_metadata.items()) {
+  for (const auto& item : loaded.items()) {
     const web::WebStateID item_id =
         web::WebStateID::FromSerializedValue(item.identifier());
 
     // Check that the item has been correctly loaded.
-    auto iterator = loaded.web_state_storage_map.find(item_id);
-    ASSERT_TRUE(iterator != loaded.web_state_storage_map.end());
-    EXPECT_EQ(iterator->second.active_page().page_url(),
+    ASSERT_TRUE(item.has_metadata());
+    EXPECT_EQ(item.metadata().active_page().page_url(),
               TestUrlForIdentifier(item_id));
   }
 
@@ -295,20 +293,18 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_FilterDuplicateItems) {
   ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
 
   // Load the session and check it is correct.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
   // Check that the duplicate tab (the second occurrence) is dropped.
-  EXPECT_EQ(loaded.session_metadata,
-            ios::sessions::FilterItems(session, RemovingIndexes({1})));
+  EXPECT_EQ(loaded, ios::sessions::FilterItems(session, RemovingIndexes({1})));
 
-  for (const auto& item : loaded.session_metadata.items()) {
+  for (const auto& item : loaded.items()) {
     const web::WebStateID item_id =
         web::WebStateID::FromSerializedValue(item.identifier());
 
     // Check that the item has been correctly loaded.
-    auto iterator = loaded.web_state_storage_map.find(item_id);
-    ASSERT_TRUE(iterator != loaded.web_state_storage_map.end());
-    EXPECT_EQ(iterator->second.active_page().page_url(),
+    ASSERT_TRUE(item.has_metadata());
+    EXPECT_EQ(item.metadata().active_page().page_url(),
               TestUrlForIdentifier(item_id));
   }
 
@@ -329,10 +325,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_EmptySession) {
   ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
 
   // Load the session and check it is correct.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata, session);
-  EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+  EXPECT_EQ(loaded, session);
+  EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect a log of 0 duplicate.
   histogram_tester_.ExpectUniqueSample(
@@ -347,10 +343,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingSession) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Load the session and check it is empty.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
-  EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was no session. We never got to complete the
   // filtering stage.
@@ -382,10 +378,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemMetadata) {
   ASSERT_TRUE(ios::sessions::DeleteRecursively(item_metadata_path));
 
   // Load the session and check it is empty.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
-  EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was no item metadata. We never got to complete the
   // filtering stage.
@@ -417,10 +413,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
   ASSERT_TRUE(ios::sessions::DeleteRecursively(item_metadata_path));
 
   // Load the session and check it is empty.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
-  EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was a missing item storage. We never got to complete
   // the filtering stage.
@@ -447,10 +443,10 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_InvalidIdentifiers) {
   ASSERT_TRUE(WriteSessionStorage(root, session, RemovingIndexes{}));
 
   // Load the session and check it is correct.
-  const ios::sessions::SessionStorage loaded =
+  const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded.session_metadata, StorageFromSessionInfo(SessionInfo{}));
-  EXPECT_EQ(loaded.session_metadata.items_size(), 0);
+  EXPECT_EQ(loaded, StorageFromSessionInfo(SessionInfo{}));
+  EXPECT_EQ(loaded.items_size(), 0);
 
   // Expect no log as there was an invalid identifier. We never got to complete
   // the filtering stage.

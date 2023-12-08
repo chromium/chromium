@@ -28,9 +28,6 @@
 
 namespace {
 
-using WebStateMetadataStorageMap =
-    ios::sessions::SessionStorage::WebStateMetadataStorageMap;
-
 // Maximum size of session state NSData objects.
 const int kMaxSessionState = 5 * 1024 * 1024;
 
@@ -69,11 +66,8 @@ NSData* LoadWebStateSession(const base::FilePath& path) {
 std::unique_ptr<web::WebState> CreateWebState(
     const base::FilePath& session_dir,
     ChromeBrowserState* browser_state,
-    const WebStateMetadataStorageMap& mapping,
-    web::WebStateID web_state_id) {
-  auto iter = mapping.find(web_state_id);
-  DCHECK(iter != mapping.end());
-
+    web::WebStateID web_state_id,
+    web::proto::WebStateMetadataStorage metadata) {
   const base::FilePath web_state_dir =
       ios::sessions::WebStateDirectory(session_dir, web_state_id);
 
@@ -84,7 +78,7 @@ std::unique_ptr<web::WebState> CreateWebState(
       web_state_dir.Append(kWebStateSessionFilename);
 
   auto web_state = web::WebState::CreateWithStorage(
-      browser_state, web_state_id, iter->second,
+      browser_state, web_state_id, std::move(metadata),
       base::BindOnce(&LoadWebStateStorage, web_state_storage_path),
       base::BindOnce(&LoadWebStateSession, web_state_session_path));
 
@@ -335,14 +329,14 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
 
   // Load the session for the Browser.
   const base::FilePath session_dir = storage_path_.Append(info.identifier());
-  ios::sessions::SessionStorage session =
+  ios::proto::WebStateListStorage session =
       ios::sessions::LoadSessionStorage(session_dir);
 
   // Since this is the first session load, it is safe to delete any
   // unreferenced files from the Browser's storage path.
   std::set<base::FilePath> files_to_keep;
   files_to_keep.insert(session_dir.Append(kSessionMetadataFilename));
-  for (const auto& item : session.session_metadata.items()) {
+  for (const auto& item : session.items()) {
     files_to_keep.insert(ios::sessions::WebStateDirectory(
         session_dir, web::WebStateID::FromSerializedValue(item.identifier())));
   }
@@ -353,12 +347,10 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
 
   // Deserialize the session from storage.
   const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          browser->GetWebStateList(), std::move(session.session_metadata),
-          enable_pinned_web_states_,
-          base::BindRepeating(&CreateWebState, session_dir,
-                              browser->GetBrowserState(),
-                              std::move(session.web_state_storage_map)));
+      DeserializeWebStateList(browser->GetWebStateList(), std::move(session),
+                              enable_pinned_web_states_,
+                              base::BindRepeating(&CreateWebState, session_dir,
+                                                  browser->GetBrowserState()));
 
   // Loading the session may have marked the Browser as dirty (unless the
   // session was empty). There is no need to serialize the WebStates that
