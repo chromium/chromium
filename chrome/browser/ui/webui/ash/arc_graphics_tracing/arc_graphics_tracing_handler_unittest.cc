@@ -59,6 +59,11 @@ class TestHandler : public ArcGraphicsTracingHandler {
     downloads_folder_ = downloads_folder;
   }
 
+  void VerifyNoUnrespondedCallback() {
+    DCHECK(after_start_.is_null());
+    DCHECK(after_stop_.is_null());
+  }
+
   void set_now(base::Time now) { now_ = now; }
   base::Time Now() override { return now_; }
   base::TimeTicks SystemTicksNow() override {
@@ -379,6 +384,51 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
   const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
   EXPECT_EQ(*dict.FindStringByDottedPath("information.title"), "the first app");
   EXPECT_TRUE(handler_->GetWebUIWindow()->HasFocus());
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowBeforeTraceStart) {
+  handler_->set_now(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
+  handler_->set_trace_time_base(
+      base::Time::FromMillisecondsSinceUnixEpoch(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s1, s2;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s1)
+                        .BuildOwnsNativeWidget();
+
+  auto other_arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetTaskId(88)
+                              .SetPackageName("net.differentapp")
+                              .SetTitle("i will be traced")
+                              .SetShellRootSurface(&s2)
+                              .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  other_arc_widget->ShowInactive();
+  SendStartStopKey();
+  other_arc_widget->Activate();
+
+  handler_->StartTracingOnControllerRespond();
+  FastForwardClockAndTaskQueue(base::Seconds(6));
+  handler_->VerifyNoUnrespondedCallback();
+
+  // We should be able to do a trace now - no trace state should be lingering.
+  // The web UI will be active - switch back to an ARC app.
+  other_arc_widget->Activate();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+  FastForwardClockAndTaskQueue(base::Seconds(6));
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
+  task_environment()->RunUntilIdle();
+
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+  EXPECT_EQ(*dict.FindStringByDottedPath("information.title"),
+            "i will be traced");
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {

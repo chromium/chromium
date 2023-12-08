@@ -473,7 +473,12 @@ void ArcGraphicsTracingHandler::StartTracing() {
 void ArcGraphicsTracingHandler::StopTracing() {
   SetStatus("Building model...");
 
-  active_trace_->stop_timer->Stop();
+  // |stop_timer| will already be nullopt in the case that the window was or
+  // deactivated before OnTracingStarted was invoked.
+  if (!active_trace_->stop_timer) {
+    active_trace_.reset();
+    return;
+  }
   active_trace_->stop_timer.reset();
 
   active_trace_->time_max = SystemTicksNow();
