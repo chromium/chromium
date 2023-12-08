@@ -548,7 +548,21 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
         }
         break;
       case NearbyNotificationManager::ReceivedContentType::kSingleUrl:
-        OpenTextLink();
+        if (!action_index.has_value()) {
+          OpenTextLink();
+          break;
+        }
+        switch (*action_index) {
+          case 0:
+            OpenTextLink();
+            break;
+          case 1:
+            CopyTextToClipboard();
+            break;
+          default:
+            NOTREACHED();
+            break;
+        }
         break;
       case NearbyNotificationManager::ReceivedContentType::kSingleImage:
         if (!action_index.has_value()) {
@@ -1126,6 +1140,8 @@ void NearbyNotificationManager::ShowIncomingSuccess(
     case ReceivedContentType::kSingleUrl:
       notification_actions.emplace_back(
           l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL));
+      notification_actions.emplace_back(l10n_util::GetStringUTF16(
+          IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD));
       break;
     case ReceivedContentType::kSingleImage:
       notification_actions.emplace_back(l10n_util::GetStringUTF16(

@@ -1836,7 +1836,8 @@ TEST_P(NearbyNotificationManagerTest, SuccessNotificationClicked_TextReceived) {
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
-TEST_P(NearbyNotificationManagerTest, SuccessNotificationClicked_UrlReceived) {
+TEST_P(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_UrlReceived_OpenUrl) {
   base::RunLoop run_loop;
   manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
       [&](NearbyNotificationManager::SuccessNotificationAction action) {
@@ -1855,9 +1856,12 @@ TEST_P(NearbyNotificationManagerTest, SuccessNotificationClicked_UrlReceived) {
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
   const message_center::Notification& notification = notifications[0];
-  ASSERT_EQ(1u, notification.buttons().size());
+  ASSERT_EQ(2u, notification.buttons().size());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL),
             notification.buttons()[0].title);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
+            notification.buttons()[1].title);
 
   EXPECT_CALL(*nearby_service_, OpenURL(testing::_)).Times(1);
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
@@ -1866,6 +1870,47 @@ TEST_P(NearbyNotificationManagerTest, SuccessNotificationClicked_UrlReceived) {
                                       /*reply=*/absl::nullopt);
 
   run_loop.Run();
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_P(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_UrlReceived_CopyToClipboard) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(
+            NearbyNotificationManager::SuccessNotificationAction::kCopyText,
+            action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target = CreateIncomingShareTarget(
+      /*text_attachments=*/0, /*url_attachments=*/1, /*image_attachments=*/0,
+      /*other_file_attachments=*/0, /*wifi_credentials_attachments=*/false);
+  manager()->ShowSuccess(share_target);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  ASSERT_EQ(2u, notification.buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL),
+            notification.buttons()[0].title);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
+            notification.buttons()[1].title);
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notification.id(),
+                                      /*action_index=*/1,
+                                      /*reply=*/absl::nullopt);
+
+  run_loop.Run();
+
+  // Expected behaviour is to copy to clipboard.
+  EXPECT_EQ(kTextUrl, GetClipboardText());
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
