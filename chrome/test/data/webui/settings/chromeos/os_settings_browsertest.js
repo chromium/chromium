@@ -168,8 +168,7 @@ var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-// TODO(crbug.com/1504815): This test is flaky.
-TEST_F('OSSettingsCrostiniPageTest', 'DISABLED_AllJsTests', () => {
+TEST_F('OSSettingsCrostiniPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
