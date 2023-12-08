@@ -100,6 +100,24 @@ Design doc [here](https://docs.google.com/document/d/1EJOdFesZKspvrU7uWtGl-8ab2j
 
 Tutorial [here](block_fragmentation_tutorial.md).
 
+### Printing and hit-testing ###
+
+We'll paint and hit-test by traversing the physical fragment tree, rather than
+traversing the `LayoutObject` tree. This is important for block fragmentation,
+where a CSS layout box (`LayoutObject`) may be split into multiple fragments,
+and it's the relationship between the fragments (not the layout objects) that
+determines the offsets. In LayoutNG, there are also fragments that have no
+corresponding layout object - e.g. a column (or other types of [fragmentainer]s
+too).
+
+Traditionally, when doing block fragmentation (multicol) in legacy layout, we
+had to perform some complicated calculations, where we mapped and sliced layout
+objects into fragments during pre-paint. In LayoutNG this job is now as a
+natural part of layout. So, all we have to do for painting and hit-testing, is
+traverse the fragments. A fragment holds a list of child fragments and their
+offsets. The offsets are relative to the parent fragment. As such, it's a rather
+straight-forward job for pre-paint to calculate the offsets and bounding box.
+
 ### Code coverage ###
 
 The latest code coverage (from Feb 14 2017) can be found [here](https://glebl.users.x20web.corp.google.com/www/layout_ng_code_coverage/index.html).
@@ -142,3 +160,6 @@ stderr. Fragments in the subtree are not required to be marked as placed
 A fragment tree may also be dumped to a String, by calling
 PhysicalFragment::DumpFragmentTree(). It takes a flag parameter, so that the
 output can be customized to only contain what's relevant for a given purpose.
+
+
+[fragmentainer]: https://drafts.csswg.org/css-break/#fragmentation-container
