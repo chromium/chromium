@@ -19,6 +19,7 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
  public:
   // Instantiates a full featured blink::MainThreadScheduler as opposed to a
   // simple Thread scheduler.
+  // TODO(crbug.com/1315595): Remove this once all callsites are updated.
   struct RealMainThreadScheduler {};
 
   struct ValidTraits {
@@ -29,19 +30,12 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
   template <typename... Traits>
     requires base::trait_helpers::AreValidTraits<ValidTraits, Traits...>
   explicit TaskEnvironmentImpl(Traits... traits)
-      : TaskEnvironmentImpl(
-            CreateTaskEnvironmentWithPriorities(
-                blink::scheduler::CreatePrioritySettings(),
-                std::conditional_t<
-                    base::trait_helpers::HasTrait<RealMainThreadScheduler,
-                                                  Traits...>::value,
-                    SubclassCreatesDefaultTaskRunner,
-                    base::trait_helpers::EmptyTrait>{},
-                base::trait_helpers::
-                    Exclude<MainThreadType, RealMainThreadScheduler>::Filter(
-                        traits)...),
-            base::trait_helpers::HasTrait<RealMainThreadScheduler,
-                                          Traits...>()) {}
+      : TaskEnvironmentImpl(CreateTaskEnvironmentWithPriorities(
+            blink::scheduler::CreatePrioritySettings(),
+            SubclassCreatesDefaultTaskRunner{},
+            base::trait_helpers::
+                Exclude<MainThreadType, RealMainThreadScheduler>::Filter(
+                    traits)...)) {}
 
   ~TaskEnvironmentImpl() override;
 
@@ -57,8 +51,7 @@ class TaskEnvironmentImpl : public base::test::TaskEnvironment {
  private:
   // When |real_main_thread_scheduler|, instantiate a full featured
   // blink::MainThreadScheduler as opposed to a simple Thread scheduler.
-  TaskEnvironmentImpl(base::test::TaskEnvironment&& scoped_task_environment,
-                      bool real_main_thread_scheduler);
+  TaskEnvironmentImpl(base::test::TaskEnvironment&& scoped_task_environment);
 
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
   absl::optional<MainThreadIsolate> main_thread_isolate_;
