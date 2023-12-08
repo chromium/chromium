@@ -16,7 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/proto/event_storage.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

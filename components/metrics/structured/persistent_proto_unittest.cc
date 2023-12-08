@@ -13,11 +13,11 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured//lib/proto/key.pb.h"
+#include "components/metrics/structured/proto/event_storage.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 namespace {
 
 // Populate |proto| with some test data.
@@ -220,18 +220,19 @@ TEST_F(PersistentProtoTest, QueueWrites) {
 
   // Three successive StartWrite calls result in three writes.
   write_count_ = 0;
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     pproto.StartWrite();
+  }
   Wait();
   EXPECT_EQ(write_count_, 3);
 
   // Three successive QueueWrite calls results in one write.
   write_count_ = 0;
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     pproto.QueueWrite();
+  }
   Wait();
   EXPECT_EQ(write_count_, 1);
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

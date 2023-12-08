@@ -14,7 +14,7 @@
 #include "chrome/browser/metrics/structured/ash_event_storage.h"
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

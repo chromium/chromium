@@ -18,7 +18,7 @@
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/project_validator.h"
-#include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

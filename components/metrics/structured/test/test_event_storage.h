@@ -6,7 +6,7 @@
 #define COMPONENTS_METRICS_STRUCTURED_TEST_TEST_EVENT_STORAGE_H_
 
 #include "components/metrics/structured/event_storage.h"
-#include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/proto/event_storage.pb.h"
 
 namespace metrics::structured {
 

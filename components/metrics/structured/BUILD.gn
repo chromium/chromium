@@ -39,7 +39,7 @@ static_library("structured") {
   public_deps = [
     ":common",
     ":events",
-    ":storage",
+    ":proto",
     "//third_party/metrics_proto",
   ]
 
@@ -48,6 +48,7 @@ static_library("structured") {
     ":structured_metrics_validator",
     "//base",
     "//components/metrics",
+    "//components/metrics/structured/lib:proto",
     "//components/metrics/structured/mojom",
     "//components/prefs",
     "//crypto",
@@ -62,7 +63,7 @@ if (is_chromeos_ash) {
     ]
     deps = [
       ":common",
-      ":storage",
+      ":proto",
       ":structured_events",
       "//base",
     ]
@@ -86,13 +87,13 @@ static_library("events") {
   ]
 }
 
-proto_library("storage") {
+proto_library("proto") {
   # These protos are only used internally, so make them visible only to
   # subdirectories.
   visibility = [ "./*" ]
   proto_in_dir = "//"
   generate_python = false
-  sources = [ "storage.proto" ]
+  sources = [ "proto/event_storage.proto" ]
 
   # This is required because metrics_proto/BUILD.gn sets proto_in_dir as ".",
   # which means protos can't be referred to by absolute paths from within other
@@ -117,7 +118,7 @@ source_set("common") {
   ]
 
   deps = [
-    ":storage",
+    ":proto",
     ":structured_metrics_validator",
     "//base",
     "//components/prefs",
@@ -247,7 +248,7 @@ source_set("unit_tests") {
 
   deps = [
     ":events",
-    ":storage",
+    ":proto",
     ":structured",
     ":structured_events",
     ":structured_metrics_validator",
@@ -256,6 +257,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/metrics:test_support",
+    "//components/metrics/structured/lib:proto",
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gtest",

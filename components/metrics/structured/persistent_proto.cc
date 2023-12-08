@@ -15,7 +15,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/lib/proto/key.pb.h"
+#include "components/metrics/structured/proto/event_storage.pb.h"
 
 namespace metrics {
 namespace structured {

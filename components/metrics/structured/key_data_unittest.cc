@@ -20,8 +20,8 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/lib/proto/key.pb.h"
 #include "components/metrics/structured/recorder.h"
-#include "components/metrics/structured/storage.pb.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

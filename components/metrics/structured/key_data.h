@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/metrics/structured/lib/proto/key.pb.h"
 #include "components/metrics/structured/persistent_proto.h"
-#include "components/metrics/structured/storage.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
