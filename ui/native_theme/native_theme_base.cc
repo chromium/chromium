@@ -357,8 +357,9 @@ gfx::Rect NativeThemeBase::GetNinePatchAperture(Part part) const {
 NativeThemeBase::NativeThemeBase() : NativeThemeBase(false) {}
 
 NativeThemeBase::NativeThemeBase(bool should_only_use_dark_colors,
-                                 ui::SystemTheme system_theme)
-    : NativeTheme(should_only_use_dark_colors, system_theme) {}
+                                 ui::SystemTheme system_theme,
+                                 NativeTheme* theme_to_update)
+    : NativeTheme(should_only_use_dark_colors, system_theme, theme_to_update) {}
 
 NativeThemeBase::~NativeThemeBase() = default;
 

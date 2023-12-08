@@ -179,14 +179,21 @@ float NativeTheme::AdjustBorderRadiusByZoom(Part part,
 }
 
 NativeTheme::NativeTheme(bool should_use_dark_colors,
-                         ui::SystemTheme system_theme)
-    : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
+                         ui::SystemTheme system_theme,
+                         NativeTheme* theme_to_update)
+    : color_scheme_observer_(theme_to_update),
+      should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
       system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
       prefers_reduced_transparency_(false),
       inverted_colors_(false),
       preferred_color_scheme_(CalculatePreferredColorScheme()),
-      preferred_contrast_(CalculatePreferredContrast()) {}
+      preferred_contrast_(CalculatePreferredContrast()) {
+  if (theme_to_update && !IsForcedDarkMode() && !IsForcedHighContrast() &&
+      base::SequencedTaskRunner::HasCurrentDefault()) {
+    theme_observation_.Observe(this);
+  }
+}
 
 NativeTheme::~NativeTheme() = default;
 

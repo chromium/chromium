@@ -89,9 +89,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   friend class base::NoDestructor<NativeThemeWin>;
 
   // NativeTheme:
-  void ConfigureWebInstance() override;
 
-  NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
+  NativeThemeWin(bool should_only_use_dark_colors,
+                 NativeTheme* theme_to_update = nullptr);
   ~NativeThemeWin() override;
 
  private:
@@ -224,11 +224,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // The system color change listener and the updated cache of system colors.
   gfx::ScopedSysColorChangeListener color_change_listener_;
-
-  // Used to notify the web native theme of changes to dark mode, high
-  // contrast, preferred color scheme, and preferred contrast.
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 };
 
 }  // namespace ui

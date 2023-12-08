@@ -6,7 +6,10 @@
 
 namespace ui {
 
-TestNativeTheme::TestNativeTheme() : NativeTheme(false) {}
+TestNativeTheme::TestNativeTheme()
+    : NativeTheme(/*should_only_use_dark_colors=*/false,
+                  /*system_theme=*/ui::SystemTheme::kDefault,
+                  /*theme_to_update=*/nullptr) {}
 TestNativeTheme::~TestNativeTheme() = default;
 
 gfx::Size TestNativeTheme::GetPartSize(Part part,
