@@ -63,7 +63,8 @@ public class ImprovedBookmarkRowCoordinator {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.TITLE,
                     String.format(
-                            bookmarkItem.getTitle() + " (%s)",
+                            "%s (%s)",
+                            bookmarkItem.getTitle(),
                             BookmarkUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel)));
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.TITLE, bookmarkItem.getTitle());
