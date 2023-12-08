@@ -7771,6 +7771,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPair)},
 
+    {"fast-pair-debug-metadata", flag_descriptions::kFastPairDebugMetadataName,
+     flag_descriptions::kFastPairDebugMetadataDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairDebugMetadata)},
+
     {"fast-pair-devices-bluetooth-settings",
      flag_descriptions::kFastPairDevicesBluetoothSettingsName,
      flag_descriptions::kFastPairDevicesBluetoothSettingsDescription, kOsCrOS,

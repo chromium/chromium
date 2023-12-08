@@ -3491,6 +3491,9 @@ extern const char kFasterSplitScreenSetupDescription[];
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 
+extern const char kFastPairDebugMetadataName[];
+extern const char kFastPairDebugMetadataDescription[];
+
 extern const char kFastPairHandshakeLongTermRefactorName[];
 extern const char kFastPairHandshakeLongTermRefactorDescription[];
 
