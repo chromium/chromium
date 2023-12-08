@@ -16,6 +16,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/drag_drop_controller_test_api.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -30,6 +31,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -44,6 +46,9 @@ class AppListItemViewPixelTest
                      /*is_new_install=*/bool,
                      /*has_notification=*/bool>> {
  public:
+  AppListItemViewPixelTest() = default;
+  explicit AppListItemViewPixelTest(bool enable_promise_icons)
+      : enable_promise_icons_(enable_promise_icons) {}
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
@@ -55,7 +60,8 @@ class AppListItemViewPixelTest
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()}});
+        {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
+         {ash::features::kPromiseIcons, enable_promise_icons_}});
 
     AshTestBase::SetUp();
 
@@ -150,6 +156,7 @@ class AppListItemViewPixelTest
   bool has_notification() const { return std::get<6>(GetParam()); }
 
  private:
+  bool enable_promise_icons_ = false;
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -319,6 +326,77 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
     MaybeRunDragAndDropSequenceForAppList(&tasks,
                                           /*is_touch=*/use_tablet_mode());
   }
+}
+
+class AppListViewPromiseAppPixelTest : public AppListItemViewPixelTest {
+ public:
+  AppListViewPromiseAppPixelTest()
+      : AppListItemViewPixelTest(/*enable_promise_icons=*/true) {}
+
+  AppListItem* CreateAppListPromiseItem(const std::string& name) {
+    return GetAppListTestHelper()->model()->CreateAndAddPromiseItem(name +
+                                                                    "_id");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppListViewPromiseAppPixelTest,
+    testing::Combine(/*use_drag_drop_refactor=*/testing::Values(false),
+                     /*use_folder_icon_refresh=*/testing::Values(false),
+                     /*use_tablet_mode=*/testing::Bool(),
+                     /*use_dense_ui=*/testing::Bool(),
+                     /*use_rtl=*/testing::Bool(),
+                     /*is_new_install=*/testing::Values(false),
+                     /*has_notification=*/testing::Values(false)));
+
+TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
+  CreateAppListPromiseItem("PromiseApp");
+  AppListItem* placeholder = CreateAppListPromiseItem("PromiseApp_placeholder");
+  placeholder->SetDefaultIconAndColor(placeholder->GetDefaultIcon(),
+                                      placeholder->GetDefaultIconColor(),
+                                      /*is_placeholder_icon=*/true);
+  ShowAppList();
+  EXPECT_EQ(GetItemViewAt(0)->item()->progress(), -1.0f);
+  EXPECT_EQ(GetItemViewAt(0)->item()->app_status(), AppStatus::kPending);
+  EXPECT_EQ(GetItemViewAt(1)->item()->progress(), -1.0f);
+  EXPECT_EQ(GetItemViewAt(1)->item()->app_status(), AppStatus::kPending);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      base::JoinString({"promise_app_waiting", GenerateScreenshotName()}, "."),
+      /*revision_number=*/0, GetItemViewAt(0), GetItemViewAt(1)));
+}
+
+TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
+  AppListItem* item = CreateAppListPromiseItem("PromiseApp");
+  AppListItem* placeholder = CreateAppListPromiseItem("PromiseApp_placeholder");
+  placeholder->SetDefaultIconAndColor(placeholder->GetDefaultIcon(),
+                                      placeholder->GetDefaultIconColor(),
+                                      /*is_placeholder_icon=*/true);
+
+  // Start install progress bar.
+  item->SetAppStatus(AppStatus::kInstalling);
+  item->SetProgress(0.8f);
+  placeholder->SetAppStatus(AppStatus::kInstalling);
+  placeholder->SetProgress(0.8f);
+  ShowAppList();
+
+  EXPECT_EQ(GetItemViewAt(0)->item()->progress(), 0.8f);
+  EXPECT_EQ(GetItemViewAt(0)->item()->app_status(), AppStatus::kInstalling);
+  EXPECT_EQ(GetItemViewAt(1)->item()->progress(), 0.8f);
+  EXPECT_EQ(GetItemViewAt(1)->item()->app_status(), AppStatus::kInstalling);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      base::JoinString({"promise_app_installing", GenerateScreenshotName()},
+                       "."),
+      /*revision_number=*/0, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 }  // namespace ash
