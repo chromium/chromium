@@ -166,13 +166,6 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   ui::AXNode* end_node = GetAXNode(end_node_id_);
   DCHECK(end_node);
 
-  if (!start_node || !end_node) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Selection is invalid. Start node existed? " << !!start_node
-        << " End node existed? " << !!end_node;
-    return;
-  }
-
   // If start node or end node is ignored, the selection was invalid.
   if (start_node->IsIgnored() || end_node->IsIgnored()) {
     return;

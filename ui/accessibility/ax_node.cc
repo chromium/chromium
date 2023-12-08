@@ -41,7 +41,6 @@ AXNode::AXNode(AXTree* tree,
       index_in_parent_(index_in_parent),
       unignored_index_in_parent_(unignored_index_in_parent),
       parent_(parent) {
-  CHECK(tree_);
   data_.id = id;
 }
 
