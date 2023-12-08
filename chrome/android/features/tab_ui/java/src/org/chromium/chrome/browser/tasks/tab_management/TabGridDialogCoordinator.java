@@ -15,11 +15,13 @@ import androidx.annotation.Nullable;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -44,7 +46,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Activity mActivity;
-    private TabModelSelector mTabModelSelector;
+    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final Supplier<TabModel> mRegularTabModelSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private TabContentManager mTabContentManager;
     private TabListEditorCoordinator mTabListEditorCoordinator;
@@ -54,7 +57,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     TabGridDialogCoordinator(
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
-            TabModelSelector tabModelSelector,
+            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
+            @NonNull Supplier<TabModel> regularTabModelSupplier,
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
@@ -71,7 +75,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             ? "TabGridDialogFromStrip"
                             : "TabGridDialogInSwitcher";
             mBrowserControlsStateProvider = browserControlsStateProvider;
-            mTabModelSelector = tabModelSelector;
+            mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+            mRegularTabModelSupplier = regularTabModelSupplier;
             mTabContentManager = tabContentManager;
 
             mModel =
@@ -97,7 +102,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             this,
                             mModel,
-                            tabModelSelector,
+                            currentTabModelFilterSupplier,
                             tabCreatorManager,
                             resetHandler,
                             this::getRecyclerViewPosition,
@@ -107,8 +112,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
-            var currentTabModelFilterSupplier =
-                    tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
             mTabListCoordinator =
                     new TabListCoordinator(
                             TabUiFeatureUtilities.shouldUseListMode(mActivity)
@@ -117,7 +120,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             mBrowserControlsStateProvider,
                             currentTabModelFilterSupplier,
-                            () -> tabModelSelector.getModel(false),
+                            regularTabModelSupplier,
                             (tabId,
                                     thumbnailSize,
                                     callback,
@@ -176,17 +179,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     TabUiFeatureUtilities.shouldUseListMode(mActivity)
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID;
-            var currentTabModelFilterSupplier =
-                    mTabModelSelector
-                            .getTabModelFilterProvider()
-                            .getCurrentTabModelFilterSupplier();
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
                             mDialogView.findViewById(R.id.dialog_container_view),
                             mBrowserControlsStateProvider,
-                            currentTabModelFilterSupplier,
-                            () -> mTabModelSelector.getModel(false),
+                            mCurrentTabModelFilterSupplier,
+                            mRegularTabModelSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mode,

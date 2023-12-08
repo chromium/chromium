@@ -387,11 +387,14 @@ public class TabSwitcherCoordinator
     }
 
     private void initTabGridDialogCoordinator() {
+        var currentTabModelFilterSupplier =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
                         mBrowserControlsStateProvider,
-                        mTabModelSelector,
+                        currentTabModelFilterSupplier,
+                        () -> mTabModelSelector.getModel(false),
                         mTabContentManager,
                         mTabCreatorManager,
                         mCoordinatorView,

@@ -17,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -26,8 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -107,8 +107,8 @@ public class TabGridDialogMediator
 
     private final Context mContext;
     private final PropertyModel mModel;
-    private final TabModelSelector mTabModelSelector;
-    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final Callback<TabModelFilter> mOnTabModelFilterChanged = this::onTabModelFilterChanged;
     private final TabModelObserver mTabModelObserver;
     private final TabCreatorManager mTabCreatorManager;
     private final DialogController mDialogController;
@@ -117,8 +117,10 @@ public class TabGridDialogMediator
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
     private final Runnable mScrimClickRunnable;
+    private final SnackbarManager mSnackbarManager;
     private final String mComponentName;
 
+    private TabModelFilter mCurrentTabModelFilter;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
@@ -133,7 +135,7 @@ public class TabGridDialogMediator
             Activity activity,
             DialogController dialogController,
             PropertyModel model,
-            TabModelSelector tabModelSelector,
+            ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             TabCreatorManager tabCreatorManager,
             TabSwitcherMediator.ResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
@@ -142,13 +144,14 @@ public class TabGridDialogMediator
             String componentName) {
         mContext = activity;
         mModel = model;
-        mTabModelSelector = tabModelSelector;
+        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabCreatorManager = tabCreatorManager;
         mDialogController = dialogController;
         mTabSwitcherResetHandler = tabSwitcherResetHandler;
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
         mAnimationSourceViewProvider = animationSourceViewProvider;
         mTabGridDialogHandler = new DialogHandler();
+        mSnackbarManager = snackbarManager;
         mComponentName = componentName;
         mActivity = activity;
 
@@ -161,7 +164,8 @@ public class TabGridDialogMediator
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
-                        if (!mTabModelSelector.isTabStateInitialized()) {
+                        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+                        if (filter == null || !filter.isTabModelRestored()) {
                             return;
                         }
                         hideDialog(false);
@@ -269,15 +273,8 @@ public class TabGridDialogMediator
                     }
                 };
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        updateColorProperties(mContext, newModel.isIncognito());
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
-        updateColorProperties(mContext, mTabModelSelector.isIncognitoSelected());
+        onTabModelFilterChanged(
+                mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         // Setup ScrimView click Runnable.
         mScrimClickRunnable =
@@ -296,10 +293,8 @@ public class TabGridDialogMediator
             TabGroupTitleEditor tabGroupTitleEditor) {
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mTabGroupTitleEditor = tabGroupTitleEditor;
-        mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
 
-        assert mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
+        assert mCurrentTabModelFilterSupplier.get() instanceof TabGroupModelFilter;
 
         mToolbarMenuCallback =
                 result -> {
@@ -324,6 +319,8 @@ public class TabGridDialogMediator
 
     void hideDialog(boolean showAnimation) {
         if (!mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) return;
+
+        mSnackbarManager.dismissSnackbars(TabGridDialogMediator.this);
 
         // Save the title first so that the animation has the correct title.
         saveCurrentGroupModifiedTitle();
@@ -372,11 +369,10 @@ public class TabGridDialogMediator
     }
 
     void onReset(@Nullable List<Tab> tabs) {
+        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         if (tabs == null) {
             mCurrentTabId = Tab.INVALID_TAB_ID;
         } else {
-            TabModelFilter filter =
-                    mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
             mCurrentTabId = filter.getTabAt(filter.indexOf(tabs.get(0))).getId();
         }
 
@@ -405,12 +401,8 @@ public class TabGridDialogMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        if (mTabModelObserver != null) {
-            mTabModelSelector
-                    .getTabModelFilterProvider()
-                    .removeTabModelFilterObserver(mTabModelObserver);
-        }
-        mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        removeCurrentTabModelFilterObservers();
+        mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
         KeyboardVisibilityDelegate.getInstance()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
     }
@@ -421,9 +413,7 @@ public class TabGridDialogMediator
 
     private void updateGridTabSwitcher() {
         if (!isVisible() || mTabSwitcherResetHandler == null) return;
-        mTabSwitcherResetHandler.resetWithTabList(
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                false);
+        mTabSwitcherResetHandler.resetWithTabList(mCurrentTabModelFilterSupplier.get(), false);
     }
 
     private void updateDialog() {
@@ -433,7 +423,9 @@ public class TabGridDialogMediator
             return;
         }
         if (mTabGroupTitleEditor != null) {
-            Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
+            Tab currentTab =
+                    TabModelUtils.getTabById(
+                            mCurrentTabModelFilterSupplier.get().getTabModel(), mCurrentTabId);
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(getRootId(currentTab));
             if (storedTitle != null && tabsCount > 1) {
                 mModel.set(
@@ -495,14 +487,18 @@ public class TabGridDialogMediator
         return tab.getRootId();
     }
 
+    private int getIdForTab(@Nullable Tab tab) {
+        return tab == null ? Tab.INVALID_TAB_ID : tab.getId();
+    }
+
     private void updateDialogScrollPosition() {
         // If current selected tab is not within this dialog, always scroll to the top.
-        if (mCurrentTabId != mTabModelSelector.getCurrentTabId()) {
+        Tab currentTab = TabModelUtils.getCurrentTab(mCurrentTabModelFilterSupplier.get());
+        if (mCurrentTabId != getIdForTab(currentTab)) {
             mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 0);
             return;
         }
         List<Tab> relatedTabs = getRelatedTabs(mCurrentTabId);
-        Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
         int initialPosition = relatedTabs.indexOf(currentTab);
         mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, initialPosition);
     }
@@ -595,7 +591,8 @@ public class TabGridDialogMediator
         return view -> {
             // Get the current Tab first since hideDialog causes mCurrentTabId to be
             // Tab.INVALID_TAB_ID.
-            Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
+            TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+            Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
             hideDialog(false);
 
             // Reset the list of tabs so the new tab doesn't appear on the dialog before the
@@ -605,9 +602,7 @@ public class TabGridDialogMediator
             }
 
             if (currentTab == null) {
-                mTabCreatorManager
-                        .getTabCreator(mTabModelSelector.isIncognitoSelected())
-                        .launchNtp();
+                mTabCreatorManager.getTabCreator(filter.isIncognito()).launchNtp();
                 return;
             }
             List<Tab> relatedTabs = getRelatedTabs(currentTab.getId());
@@ -632,10 +627,7 @@ public class TabGridDialogMediator
     }
 
     private List<Tab> getRelatedTabs(int tabId) {
-        return mTabModelSelector
-                .getTabModelFilterProvider()
-                .getCurrentTabModelFilter()
-                .getRelatedTabList(tabId);
+        return mCurrentTabModelFilterSupplier.get().getRelatedTabList(tabId);
     }
 
     private void saveCurrentGroupModifiedTitle() {
@@ -649,7 +641,9 @@ public class TabGridDialogMediator
         }
         assert mTabGroupTitleEditor != null;
 
-        Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
+        Tab currentTab =
+                TabModelUtils.getTabById(
+                        mCurrentTabModelFilterSupplier.get().getTabModel(), mCurrentTabId);
         int tabsCount = getRelatedTabs(mCurrentTabId).size();
         assert tabsCount >= 2;
         if (mCurrentGroupModifiedTitle.length() == 0
@@ -696,16 +690,13 @@ public class TabGridDialogMediator
     public void onAction(Object actionData) {
         if (actionData instanceof Integer) {
             int tabId = (Integer) actionData;
-            TabModel model = mTabModelSelector.getModelForTabId(tabId);
-            if (model == null) return;
+            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
 
             model.cancelTabClosure(tabId);
         } else {
             List<Tab> tabs = (List<Tab>) actionData;
             if (tabs.isEmpty()) return;
-
-            TabModel model = mTabModelSelector.getModelForTabId(tabs.get(0).getId());
-            if (model == null) return;
+            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
 
             for (Tab tab : tabs) {
                 model.cancelTabClosure(tab.getId());
@@ -717,16 +708,14 @@ public class TabGridDialogMediator
     public void onDismissNoAction(Object actionData) {
         if (actionData instanceof Integer) {
             int tabId = (Integer) actionData;
-            TabModel model = mTabModelSelector.getModelForTabId(tabId);
-            if (model == null) return;
+            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
 
             model.commitTabClosure(tabId);
         } else {
             List<Tab> tabs = (List<Tab>) actionData;
             if (tabs.isEmpty()) return;
 
-            TabModel model = mTabModelSelector.getModelForTabId(tabs.get(0).getId());
-            if (model == null) return;
+            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
 
             for (Tab tab : tabs) {
                 model.commitTabClosure(tab.getId());
@@ -752,6 +741,23 @@ public class TabGridDialogMediator
                 .get()
                 .show(tabs, /* preSelectedTabCount= */ 0, mRecyclerViewPositionSupplier.get());
         return true;
+    }
+
+    private void onTabModelFilterChanged(TabModelFilter filter) {
+        if (mCurrentTabModelFilter == filter) return;
+
+        updateColorProperties(mContext, filter.isIncognito());
+
+        removeCurrentTabModelFilterObservers();
+
+        filter.addObserver(mTabModelObserver);
+        mCurrentTabModelFilter = filter;
+    }
+
+    private void removeCurrentTabModelFilterObservers() {
+        if (mCurrentTabModelFilter != null) {
+            mCurrentTabModelFilter.removeObserver(mTabModelObserver);
+        }
     }
 
     /**

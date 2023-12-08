@@ -131,11 +131,14 @@ public class TabGroupUiCoordinator
         assert mTabGridDialogControllerSupplier != null;
         if (mTabGridDialogCoordinator != null) return;
 
+        var currentTabModelFilterSupplier =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
                         mBrowserControlsStateProvider,
-                        mTabModelSelector,
+                        currentTabModelFilterSupplier,
+                        () -> mTabModelSelector.getModel(false),
                         mTabContentManager,
                         mTabCreatorManager,
                         mActivity.findViewById(R.id.coordinator),
