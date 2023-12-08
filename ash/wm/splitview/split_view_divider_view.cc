@@ -136,6 +136,12 @@ void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
+  if (event->IsSynthesized()) {
+    // When `divider_` is destroyed, closing the widget can cause a window
+    // visibility change which will cancel active touches and dispatch a
+    // synthetic touch event.
+    return;
+  }
   gfx::Point location(event->location());
   views::View::ConvertPointToScreen(this, &location);
   switch (event->type()) {
@@ -187,13 +193,12 @@ void SplitViewDividerView::SwapWindows() {
 void SplitViewDividerView::OnResizeStatusChanged() {
   // It's possible that when this function is called, split view mode has
   // been ended, and the divider widget is to be deleted soon. In this case
-  // no need to update the divider layout and do the animation. Also no need to
-  // update if the divider is not resizing, which can happen if during
-  // mid-gesture we do tablet <-> clamshell transition.
+  // no need to update the divider layout and do the animation.
+  // `divider_` can also be destroyed while resizing if during mid-gesture we do
+  // tablet <-> clamshell transition.
   // TODO(b/314018158): Remove `split_view_controller_` from
   // `SplitViewDividerView`.
-  if (!split_view_controller_->InSplitViewMode() ||
-      !split_view_controller_->IsResizingWithDivider()) {
+  if (!divider_ || !split_view_controller_->InSplitViewMode()) {
     return;
   }
 
