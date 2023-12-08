@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -106,6 +107,7 @@ class ConsoleCapturingChromeClient : public EmptyChromeClient {
 };
 
 TEST(SpeculationRulesHeaderTest, NoMetricsWithoutHeader) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -127,6 +129,7 @@ TEST(SpeculationRulesHeaderTest, NoMetricsWithoutHeader) {
 }
 
 TEST(SpeculationRulesHeaderTest, UnparseableHeader) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -152,6 +155,7 @@ TEST(SpeculationRulesHeaderTest, UnparseableHeader) {
 }
 
 TEST(SpeculationRulesHeaderTest, EmptyHeader) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   DummyPageHolder page_holder;
@@ -173,6 +177,7 @@ TEST(SpeculationRulesHeaderTest, EmptyHeader) {
 }
 
 TEST(SpeculationRulesHeaderTest, InvalidItem) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -200,6 +205,7 @@ TEST(SpeculationRulesHeaderTest, InvalidItem) {
 }
 
 TEST(SpeculationRulesHeaderTest, ValidURL) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -229,6 +235,7 @@ TEST(SpeculationRulesHeaderTest, ValidURL) {
 }
 
 TEST(SpeculationRulesHeaderTest, InvalidNvsHintError) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
@@ -264,6 +271,7 @@ TEST(SpeculationRulesHeaderTest, InvalidNvsHintError) {
 }
 
 TEST(SpeculationRulesHeaderTest, InvalidNvsHintWarning) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
@@ -298,6 +306,7 @@ TEST(SpeculationRulesHeaderTest, InvalidNvsHintWarning) {
 }
 
 TEST(SpeculationRulesHeaderTest, UsesResponseURLAsBaseURL) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -336,6 +345,7 @@ TEST(SpeculationRulesHeaderTest, UsesResponseURLAsBaseURL) {
 }
 
 TEST(SpeculationRulesHeaderTest, InvalidStatusCode) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -370,6 +380,7 @@ TEST(SpeculationRulesHeaderTest, InvalidStatusCode) {
 }
 
 TEST(SpeculationRulesHeaderTest, NetError) {
+  test::TaskEnvironment task_environment;
   ScopedSpeculationRulesFetchFromHeaderForTest enable_fetch_from_header(true);
   base::HistogramTester histogram_tester;
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();

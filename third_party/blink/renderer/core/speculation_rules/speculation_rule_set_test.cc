@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -208,6 +209,7 @@ class SpeculationRuleSetTest : public ::testing::Test {
  private:
   ScopedSpeculationRulesRelativeToDocumentForTest enable_relative_to_{true};
   ScopedPrerender2ForTest enable_prerender2_{true};
+  test::TaskEnvironment task_environment_;
   Persistent<ExecutionContext> execution_context_;
 };
 

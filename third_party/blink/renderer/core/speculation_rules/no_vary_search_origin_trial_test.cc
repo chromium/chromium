@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -70,6 +71,7 @@ HTMLScriptElement* InsertSpeculationRules(Document& document,
     "jogMTk4NTgzMDkyM30=";
 
 TEST(PrefetchNoVarySearchOriginTrialTest, CanEnableFromToken) {
+  test::TaskEnvironment task_environment;
   ScopedTestOriginTrialPolicy using_test_keys;
   DummyPageHolder page_holder;
   LocalFrame& frame = page_holder.GetFrame();
@@ -87,6 +89,7 @@ TEST(PrefetchNoVarySearchOriginTrialTest, CanEnableFromToken) {
 }
 
 TEST(PrefetchNoVarySearchOriginTrialTest, DoesNotEnableWithoutToken) {
+  test::TaskEnvironment task_environment;
   ScopedTestOriginTrialPolicy using_test_keys;
   DummyPageHolder page_holder;
   LocalFrame& frame = page_holder.GetFrame();
@@ -134,6 +137,7 @@ void NoVarySearchPrefetchEnabledTest(StubSpeculationHost& speculation_host) {
 
 TEST(PrefetchNoVarySearchOriginTrialTest,
      EnabledNoVarySearchPrefetchInBrowser) {
+  test::TaskEnvironment task_environment;
   ScopedNoVarySearchPrefetchForTest enable_no_vary_search_prefetch_{true};
   StubSpeculationHost speculation_host;
   NoVarySearchPrefetchEnabledTest(speculation_host);
@@ -142,6 +146,7 @@ TEST(PrefetchNoVarySearchOriginTrialTest,
 
 TEST(PrefetchNoVarySearchOriginTrialTest,
      DoNotEnableNoVarySearchPrefetchInBrowser) {
+  test::TaskEnvironment task_environment;
   ScopedNoVarySearchPrefetchForTest enable_no_vary_search_prefetch_{false};
   StubSpeculationHost speculation_host;
   NoVarySearchPrefetchEnabledTest(speculation_host);

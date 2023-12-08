@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -100,6 +101,7 @@ class ImageBitmapTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   sk_sp<SkImage> image_, image2_;
   Persistent<MemoryCache> global_memory_cache_;

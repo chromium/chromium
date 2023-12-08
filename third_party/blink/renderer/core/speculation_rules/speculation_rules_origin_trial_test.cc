@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -207,6 +208,7 @@ void CommitTestNavigation(
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      CanEnableFromThirdPartyToken) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {// Allow a third-party origin trial to be enabled if it's linked to the
@@ -238,6 +240,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      CannotEnableTrialNotInAllowList) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {// Allow a third-party origin trial to be enabled if it's linked to the
@@ -262,6 +265,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      CannotEnableOriginTrialWhenFeatureIsDisabled) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {
@@ -302,6 +306,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      FirstPartyTrialTokenStillWorks) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {
@@ -335,6 +340,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      FirstPartyTrialTokenDoesNotRequireSpecialSupport) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {
