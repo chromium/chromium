@@ -384,6 +384,30 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Add google.com tabs on startup</string>
+			<key>Key</key>
+			<string>AddLotsOfTabs</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>100</integer>
+				<integer>1000</integer>
+				<integer>10000</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>100</string>
+				<string>1000</string>
+				<string>10000 (this can OOM debug builds)</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Enterprise Settings</string>

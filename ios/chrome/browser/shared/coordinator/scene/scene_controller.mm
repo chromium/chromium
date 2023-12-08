@@ -70,6 +70,8 @@
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
@@ -167,6 +169,8 @@
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -212,6 +216,49 @@ bool IsSigninForcedByPolicy() {
           prefs::kBrowserSigninPolicy));
   return policy_mode == BrowserSigninMode::kForced;
 }
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+NSString* const kAddLotsOfTabs = @"AddLotsOfTabs";
+
+void InjectUnrealizedWebStates(Browser* browser, int count) {
+  WebStateList* web_state_list = browser->GetWebStateList();
+
+  SessionRestorationService* service =
+      SessionRestorationServiceFactory::GetForBrowserState(
+          browser->GetBrowserState());
+
+  auto scoped_lock = web_state_list->StartBatchOperation();
+  for (int i = 0; i < count; ++i) {
+    std::string string_url = base::StringPrintf("http://google.com/%d", i);
+
+    // Create the serialized representation of a WebState
+    // with one navigation to `string_url` (defaulting the
+    // title to the URL).
+    web::proto::WebStateStorage storage = web::CreateWebStateStorage(
+        web::NavigationManager::WebLoadParams(GURL(string_url)),
+        base::UTF8ToUTF16(string_url.c_str()),
+        /*created_with_opener=*/false, web::UserAgentType::MOBILE,
+        base::Time::Now());
+
+    // Ask the SessionService to create an unrealized WebState
+    // and to prepare itself for it to be added to `browser`.
+    std::unique_ptr<web::WebState> web_state =
+        service->CreateUnrealizedWebState(browser, std::move(storage));
+
+    // Insert the new unrealized WebState in `browser`.
+    // Need to activate one WebState otherwise the session
+    // will not be saved with the legacy session storage.
+    int index = browser->GetWebStateList()->count();
+    web_state_list->InsertWebState(
+        index, std::move(web_state),
+        (index == 0 && !web_state_list->GetActiveWebState())
+            ? WebStateList::INSERT_ACTIVATE
+            : WebStateList::INSERT_NO_FLAGS,
+        WebStateOpener());
+  }
+}
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void InjectNTP(Browser* browser) {
   // Don't inject an NTP for an empty web state list.
@@ -1051,6 +1098,22 @@ void InjectNTP(Browser* browser) {
       PostCrashAction::kShowNTPWithReturnToTab) {
     InjectNTP(browser);
   }
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  int tabCountToAdd =
+      [[NSUserDefaults standardUserDefaults] integerForKey:kAddLotsOfTabs];
+  // Also check an environment variable for some other test environments which
+  // expect a minimum number of tabs.
+  if (tabCountToAdd == 0) {
+    tabCountToAdd = [[NSProcessInfo.processInfo.environment
+        objectForKey:@"MINIMUM_TAB_COUNT"] intValue];
+    tabCountToAdd -= browser->GetWebStateList()->count();
+  }
+  if (tabCountToAdd > 0) {
+    [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:kAddLotsOfTabs];
+    InjectUnrealizedWebStates(browser, tabCountToAdd);
+  }
+#endif
 
   if (launchMode == ApplicationMode::INCOGNITO) {
     [self setCurrentInterfaceForMode:ApplicationMode::INCOGNITO];
