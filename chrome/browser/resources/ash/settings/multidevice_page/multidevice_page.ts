@@ -28,6 +28,7 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
@@ -128,6 +129,7 @@ export class SettingsMultidevicePageElement extends
           Setting.kSetUpMultiDevice,
           Setting.kVerifyMultiDeviceSetup,
           Setting.kMultiDeviceOnOff,
+          Setting.kNearbyShareDeviceVisibility,
           Setting.kNearbyShareOnOff,
         ]),
       },
@@ -567,6 +569,31 @@ export class SettingsMultidevicePageElement extends
     return this.pageContentData.isNearbyShareDisallowedByPolicy;
   }
 
+  private getNearbyShareDescription_(
+      state: boolean, visibility: Visibility|undefined): string|undefined {
+    if (!state) {
+      return this.i18n('nearbyShareDescriptionOff');
+    }
+
+    if (visibility === undefined) {
+      return this.i18n('nearbyShareDescriptionHidden');
+    }
+
+    switch (visibility) {
+      case Visibility.kAllContacts:
+        return this.i18n('nearbyShareDescriptionVisibleToAllContacts');
+      case Visibility.kSelectedContacts:
+        return this.i18n('nearbyShareDescriptionVisibleToSelectedContacts');
+      case Visibility.kYourDevices:
+        return this.i18n('nearbyShareDescriptionVisibleToYourDevices');
+      case Visibility.kNoOne:
+      case Visibility.kUnknown:
+        return this.i18n('nearbyShareDescriptionHidden');
+      default:
+        assertNotReached();
+    }
+  }
+
   private getOnOffString_(state: boolean, onstr: string, offstr: string):
       string {
     return state ? onstr : offstr;
@@ -584,7 +611,8 @@ export class SettingsMultidevicePageElement extends
     return isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_();
   }
 
-  private showNearbyShareDescription_(isOnboardingComplete: boolean): boolean {
+  private showNearbyShareSetUpDescription_(isOnboardingComplete: boolean):
+      boolean {
     return !isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_();
   }
 

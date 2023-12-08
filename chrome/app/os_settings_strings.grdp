@@ -76,7 +76,7 @@
   <message name="IDS_OS_SETTINGS_ABOUT_DEVELOPER_MODE" desc="The title label for developer mode.">
     Developer Mode
   </message>
-    <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
+  <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
     Restart
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_POWERWASH" desc="The label for the button that relaunches and powerwashes the browser once update is complete">
@@ -4674,6 +4674,21 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_DISABLED" desc="Text to tell user multidevice features are turned off">
     Disabled
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_ALL_CONTACTS" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to all contacts.">
+    Visible to all contacts
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_SELECTED_CONTACTS" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to selected contacts only.">
+    Visible to some contacts
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_VISIBLE_TO_YOUR_DEVICES" desc="Description for the nearby share settings row when nearby share is enabled and selected to be visible to your devices.">
+    Visible to your devices
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_HIDDEN" desc="Description for the nearby share settings row when nearby share is enabled and selected to be hidden.">
+    Hidden
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_NEARBY_SHARE_DESCRIPTION_OFF" desc="Description for the nearby share settings row when nearby share setting is disabled.">
+    Share files and more with nearby devices
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL" desc="Label for the top level toggle button on the Connected Devices details subpage">
     Connect to your phone
