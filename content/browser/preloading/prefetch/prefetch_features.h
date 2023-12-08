@@ -37,6 +37,10 @@ BASE_DECLARE_FEATURE(kPrefetchNIKScope);
 // skipped. See crbug.com/1503003 for details.
 BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
 
+// If enabled, a will retrieve and store responses from/to the HTTP cache
+// whenever possible.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUsesHTTPCache);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
