@@ -18108,36 +18108,6 @@
             ]
         }
     ],
-    "ThirdPartyCookieHeuristics": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "TpcdBackfillPopupHeuristicsGrants": "30d",
-                        "TpcdPopupHeuristicEnableForIframeInitiator": "all",
-                        "TpcdReadHeuristicsGrants": "true",
-                        "TpcdRedirectHeuristicRequireABAFlow": "true",
-                        "TpcdRedirectHeuristicRequireCurrentInteraction": "true",
-                        "TpcdWritePopupCurrentInteractionHeuristicsGrants": "30d",
-                        "TpcdWriteRedirectHeuristicGrants": "15m"
-                    },
-                    "enable_features": [
-                        "TpcdHeuristicsGrants"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThreadCacheMinCachedMemoryForPurging": [
         {
             "platforms": [

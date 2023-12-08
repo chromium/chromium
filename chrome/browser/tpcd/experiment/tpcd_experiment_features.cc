@@ -130,8 +130,7 @@ const char kTpcdRedirectHeuristicRequireCurrentInteractionName[] =
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupCurrentInteractionHeuristicsGrants{
         &content_settings::features::kTpcdHeuristicsGrants,
-        kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-        base::TimeDelta()};
+        kTpcdWritePopupCurrentInteractionHeuristicsGrantsName, base::Days(30)};
 
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants{
@@ -140,7 +139,7 @@ const base::FeatureParam<base::TimeDelta>
 
 const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    kTpcdBackfillPopupHeuristicsGrantsName, base::TimeDelta()};
+    kTpcdBackfillPopupHeuristicsGrantsName, base::Days(30)};
 
 const base::FeatureParam<bool> kTpcdPopupHeuristicDisableForAdTaggedPopups{
     &content_settings::features::kTpcdHeuristicsGrants,
@@ -150,11 +149,11 @@ const base::FeatureParam<EnableForIframeTypes>
     kTpcdPopupHeuristicEnableForIframeInitiator{
         &content_settings::features::kTpcdHeuristicsGrants,
         kTpcdPopupHeuristicEnableForIframeInitiatorName,
-        EnableForIframeTypes::kNone, &kEnableForIframeTypesOptions};
+        EnableForIframeTypes::kAll, &kEnableForIframeTypesOptions};
 
 const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    kTpcdWriteRedirectHeuristicGrantsName, base::TimeDelta()};
+    kTpcdWriteRedirectHeuristicGrantsName, base::Minutes(30)};
 
 const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow{
     &content_settings::features::kTpcdHeuristicsGrants,

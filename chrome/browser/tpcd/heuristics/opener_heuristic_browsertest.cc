@@ -571,10 +571,10 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
 // TODO(crbug.com/1506932) Flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
-    DISABLED_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
+  DISABLED_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
 #else
 #define MAYBE_AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant \
-    AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
+  AdTaggedPopupPastInteractionIsReported_WithStorageAccessGrant
 #endif
 IN_PROC_BROWSER_TEST_P(
     OpenerHeuristicPastInteractionGrantBrowserTest,
@@ -1342,6 +1342,8 @@ class OpenerHeuristicBackfillGrantBrowserTest
   OpenerHeuristicBackfillGrantBrowserTest() {
     tpcd_heuristics_grants_params_["TpcdBackfillPopupHeuristicsGrants"] =
         GetParam() ? "10m" : "0s";
+    tpcd_heuristics_grants_params_
+        ["TpcdWritePopupCurrentInteractionHeuristicsGrants"] = "0s";
   }
 
   void SetUpOnMainThread() override {

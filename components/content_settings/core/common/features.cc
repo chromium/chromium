@@ -82,10 +82,10 @@ const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
 
 BASE_FEATURE(kTpcdHeuristicsGrants,
              "TpcdHeuristicsGrants",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
-    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, false};
+    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, true};
 
 BASE_FEATURE(kContentSettingsPartitioning,
              "ContentSettingsPartitioning",
