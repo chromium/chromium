@@ -161,7 +161,7 @@ struct OverflowMenuActionRow: View {
   }
 
   private var name: some View {
-    Text(action.name).lineLimit(1)
+    Text(action.name).lineLimit(2)
   }
 
   @ViewBuilder
