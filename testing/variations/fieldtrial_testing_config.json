@@ -13471,6 +13471,28 @@
             ]
         }
     ],
+    "Prerender2EmbedderBlockedHosts": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "embedder_blocked_hosts": ""
+                    },
+                    "enable_features": [
+                        "Prerender2EmbedderBlockedHosts"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2NewTabPageTrigger": [
         {
             "platforms": [
