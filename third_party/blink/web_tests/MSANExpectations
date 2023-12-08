@@ -18,8 +18,6 @@ crbug.com/420606 [ Linux ] external/wpt/workers/constructors/Worker/Worker-const
 # Flaky under MSan (hang forever).
 crbug.com/422982 [ Linux ] virtual/threaded/* [ Skip ]
 
-crbug.com/700795 [ Linux ] http/tests/devtools/animation/animation-transition-setTiming-crash.js [ Skip ]
-
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.html [ Timeout ]
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Timeout ]
 
