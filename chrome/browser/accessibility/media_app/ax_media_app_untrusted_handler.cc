@@ -59,19 +59,11 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
         ScreenAIInstallState::GetInstance());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-    // `BrowserAccessibilityState` needs to be constructed for `AXModeObserver`s
-    // to work.
-    auto* ax_state = content::BrowserAccessibilityState::GetInstance();
-    if (!ax_state) {
-      NOTREACHED_NORETURN();
-    }
-    ui::AXPlatformNode::AddAXModeObserver(this);
+    ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   }
 }
 
-AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
-}
+AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() = default;
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
   if (!features::IsBacklightOcrEnabled()) {

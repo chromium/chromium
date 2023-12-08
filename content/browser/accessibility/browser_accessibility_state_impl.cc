@@ -130,7 +130,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   }
 
   // Hook ourselves up to observe ax mode changes.
-  ui::AXPlatformNode::AddAXModeObserver(this);
+  ax_mode_observation_.Observe(&ax_platform_);
 
   if (disallow_changes) {
     DisallowAXModeChanges();
@@ -163,9 +163,6 @@ void BrowserAccessibilityStateImpl::InitBackgroundTasks() {
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
-
-  // Remove ourselves from the AXMode global observer list.
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
 }
 
 void BrowserAccessibilityStateImpl::OnScreenReaderDetected() {

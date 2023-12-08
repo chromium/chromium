@@ -143,11 +143,10 @@ AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
   DCHECK(state);
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  ui::AXPlatformNode::AddAXModeObserver(this);
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 AccessibilityLabelsService::~AccessibilityLabelsService() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
 }
 #endif
 

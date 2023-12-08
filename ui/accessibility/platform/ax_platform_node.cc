@@ -77,16 +77,6 @@ std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node) {
 }
 
 // static
-void AXPlatformNode::AddAXModeObserver(AXModeObserver* observer) {
-  AXPlatform::GetInstance().AddModeObserver(observer);
-}
-
-// static
-void AXPlatformNode::RemoveAXModeObserver(AXModeObserver* observer) {
-  AXPlatform::GetInstance().RemoveModeObserver(observer);
-}
-
-// static
 AXMode AXPlatformNode::GetAccessibilityMode() {
   return AXPlatform::GetInstance().GetMode();
 }

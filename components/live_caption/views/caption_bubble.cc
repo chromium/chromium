@@ -77,6 +77,8 @@
 #endif
 
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
+#include "base/scoped_observation.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #endif
 
@@ -447,12 +449,10 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
  public:
   explicit CaptionBubbleLabelAXModeObserver(CaptionBubbleLabel* owner)
       : owner_(owner) {
-    ui::AXPlatformNode::AddAXModeObserver(this);
+    ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   }
 
-  ~CaptionBubbleLabelAXModeObserver() override {
-    ui::AXPlatformNode::RemoveAXModeObserver(this);
-  }
+  ~CaptionBubbleLabelAXModeObserver() override = default;
 
   CaptionBubbleLabelAXModeObserver(const CaptionBubbleLabelAXModeObserver&) =
       delete;
@@ -465,6 +465,8 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 
  private:
   raw_ptr<CaptionBubbleLabel> owner_;
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
 };
 #endif
 

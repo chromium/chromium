@@ -18,7 +18,6 @@
 
 namespace ui {
 
-class AXModeObserver;
 class AXPlatformNodeDelegate;
 
 // AXPlatformNode is the abstract base class for an implementation of
@@ -56,11 +55,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // Disallow any updates to the AXMode when needing to force a certain AXMode,
   // like during testing.
   static void DisallowAXModeChanges();
-
-  // Register and unregister to receive notifications about AXMode changes
-  // for this node.
-  static void AddAXModeObserver(AXModeObserver* observer);
-  static void RemoveAXModeObserver(AXModeObserver* observer);
 
   // Convenience method to get the current accessibility mode.
   // Note: new callers should use AXPlatform::GetMode.

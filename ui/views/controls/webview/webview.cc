@@ -69,12 +69,11 @@ WebView::ScopedWebContentsCreatorForTesting::
 
 WebView::WebView(content::BrowserContext* browser_context) {
   set_suppress_default_focus_handling();
-  ui::AXPlatformNode::AddAXModeObserver(this);
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   SetBrowserContext(browser_context);
 }
 
 WebView::~WebView() {
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
   SetWebContents(nullptr);  // Make sure all necessary tear-down takes place.
   browser_context_ = nullptr;
 }

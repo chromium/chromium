@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
@@ -157,6 +158,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
+
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
 
   base::TimeDelta histogram_delay_;
 

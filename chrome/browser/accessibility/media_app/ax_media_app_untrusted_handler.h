@@ -20,7 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -108,6 +108,9 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
   void OnPageOcred(uint64_t dirty_page_index,
                    const ui::AXTreeUpdate& tree_update);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
 
   std::vector<gfx::Insets> page_locations_;
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
