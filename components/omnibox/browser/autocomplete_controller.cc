@@ -439,12 +439,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // logged yet, will log them now.
   metrics_.OnStart();
 
-  const std::u16string old_input_text(input_.text());
-  const bool old_allow_exact_keyword_match = input_.allow_exact_keyword_match();
-  const bool old_omit_asynchronous_matches = input_.omit_asynchronous_matches();
-  const metrics::OmniboxFocusType old_focus_type = input_.focus_type();
-  input_ = input;
-
   // See if we can avoid rerunning autocomplete when the query hasn't changed
   // much.  When the user presses or releases the ctrl key, the desired_tld
   // changes, and when the user finishes an IME composition, inline autocomplete
@@ -454,11 +448,13 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   //
   // NOTE: This comes after constructing |input_| above since that construction
   // can change the text string (e.g. by stripping off a leading '?').
-  const bool minimal_changes =
-      (input_.text() == old_input_text) &&
-      (input_.allow_exact_keyword_match() == old_allow_exact_keyword_match) &&
-      (input_.omit_asynchronous_matches() == old_omit_asynchronous_matches) &&
-      (input_.focus_type() == old_focus_type);
+  const bool minimal_changes = (input_.text() == input.text()) &&
+                               (input_.allow_exact_keyword_match() ==
+                                input.allow_exact_keyword_match()) &&
+                               (input_.omit_asynchronous_matches() ==
+                                input.omit_asynchronous_matches()) &&
+                               (input_.focus_type() == input.focus_type());
+  input_ = input;
 
   expire_timer_.Stop();
   stop_timer_.Stop();
@@ -576,8 +572,36 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteController::Stop(bool clear_result) {
-  StopHelper(clear_result, false);
+void AutocompleteController::Stop(bool clear_result,
+                                  bool due_to_user_inactivity) {
+  // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
+  // modifying `AutocompleteProvider::done_` below. If the current request has
+  // not completed, and therefore has not been logged yet, will log it now.
+  // Likewise, if the providers have not completed, and therefore have not been
+  // logged yet, will log them now.
+  metrics_.OnStop();
+
+  for (const auto& provider : providers_) {
+    if (!ShouldRunProvider(provider.get()))
+      continue;
+    provider->Stop(clear_result, due_to_user_inactivity);
+  }
+
+  expire_timer_.Stop();
+  stop_timer_.Stop();
+  done_ = true;
+
+  // Cancel any pending requests that may update the results. Otherwise, e.g.,
+  // the user's suggestion selection may be reset.
+  CancelDelayedNotifyChanged();
+
+  if (clear_result && !internal_result_.empty()) {
+    internal_result_.Reset();
+
+    // Pass false to clear only the popup and not the edit. Passing true would,
+    // e.g., discard the selected suggestion when closing the omnibox.
+    DelayedNotifyChanged(false);
+  }
 }
 
 void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
@@ -1535,40 +1559,8 @@ void AutocompleteController::StartExpireTimer() {
 
 void AutocompleteController::StartStopTimer() {
   stop_timer_.Start(FROM_HERE, stop_timer_duration_,
-                    base::BindOnce(&AutocompleteController::StopHelper,
+                    base::BindOnce(&AutocompleteController::Stop,
                                    base::Unretained(this), false, true));
-}
-
-void AutocompleteController::StopHelper(bool clear_result,
-                                        bool due_to_user_inactivity) {
-  // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
-  // modifying `AutocompleteProvider::done_` below. If the current request has
-  // not completed, and therefore has not been logged yet, will log it now.
-  // Likewise, if the providers have not completed, and therefore have not been
-  // logged yet, will log them now.
-  metrics_.OnStop();
-
-  for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
-      continue;
-    provider->Stop(clear_result, due_to_user_inactivity);
-  }
-
-  expire_timer_.Stop();
-  stop_timer_.Stop();
-  done_ = true;
-
-  // Cancel any pending requests that may update the results. Otherwise, e.g.,
-  // the user's suggestion selection may be reset.
-  CancelDelayedNotifyChanged();
-
-  if (clear_result && !internal_result_.empty()) {
-    internal_result_.Reset();
-
-    // Pass false to clear only the popup and not the edit. Passing true would,
-    // e.g., discard the selected suggestion when closing the omnibox.
-    DelayedNotifyChanged(false);
-  }
 }
 
 bool AutocompleteController::OnMemoryDump(

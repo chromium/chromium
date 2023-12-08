@@ -151,10 +151,10 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Cancels the current query, ensuring there will be no future notifications
   // fired.  If new matches have come in since the most recent notification was
-  // fired, they will be discarded.
-  //
-  // If |clear_result| is true, the controller will also erase the result set.
-  void Stop(bool clear_result);
+  // fired, they will be discarded. If `clear_result` is true, the controller
+  // will also erase the result set. `due_to_user_inactivity` means this call
+  // was triggered by a user's idleness, i.e., not an explicit user action.
+  void Stop(bool clear_result, bool due_to_user_inactivity = false);
 
   // Asks the relevant provider to delete |match|, and ensures observers are
   // notified of resulting changes immediately.  This should only be called when
@@ -378,10 +378,6 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Starts |stop_timer_|.
   void StartStopTimer();
-
-  // Helper function for Stop().  |due_to_user_inactivity| means this call was
-  // triggered by a user's idleness, i.e., not an explicit user action.
-  void StopHelper(bool clear_result, bool due_to_user_inactivity);
 
   // MemoryDumpProvider:
   bool OnMemoryDump(
