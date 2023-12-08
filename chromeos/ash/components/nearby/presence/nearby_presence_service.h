@@ -85,6 +85,7 @@ class NearbyPresenceService {
     PresenceDevice& operator=(const PresenceDevice&);
     ~PresenceDevice();
 
+    ::nearby::internal::Metadata GetMetadata() const { return metadata_; }
     ::nearby::internal::DeviceType GetType() const {
       return metadata_.device_type();
     }

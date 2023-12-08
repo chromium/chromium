@@ -9,21 +9,6 @@ namespace ash::nearby::presence {
 NearbyPresenceService::NearbyPresenceService() = default;
 NearbyPresenceService::~NearbyPresenceService() = default;
 
-NearbyPresenceService::ScanFilter::ScanFilter(
-    IdentityType identity_type,
-    const std::vector<Action>& actions)
-    : identity_type_(identity_type), actions_(actions) {}
-
-NearbyPresenceService::ScanFilter::~ScanFilter() = default;
-
-NearbyPresenceService::ScanFilter::ScanFilter(const ScanFilter& scan_filter) {
-  identity_type_ = scan_filter.identity_type_;
-  actions_ = scan_filter.actions_;
-}
-
-NearbyPresenceService::ScanDelegate::ScanDelegate() = default;
-NearbyPresenceService::ScanDelegate::~ScanDelegate() = default;
-
 NearbyPresenceService::PresenceDevice::PresenceDevice(
     ::nearby::internal::Metadata metadata,
     std::optional<std::string> stable_device_id,
@@ -42,6 +27,21 @@ NearbyPresenceService::PresenceDevice&
 NearbyPresenceService::PresenceDevice::operator=(
     const PresenceDevice& presence_device) = default;
 NearbyPresenceService::PresenceDevice::~PresenceDevice() = default;
+
+NearbyPresenceService::ScanFilter::ScanFilter(
+    IdentityType identity_type,
+    const std::vector<Action>& actions)
+    : identity_type_(identity_type), actions_(actions) {}
+
+NearbyPresenceService::ScanFilter::~ScanFilter() = default;
+
+NearbyPresenceService::ScanFilter::ScanFilter(const ScanFilter& scan_filter) {
+  identity_type_ = scan_filter.identity_type_;
+  actions_ = scan_filter.actions_;
+}
+
+NearbyPresenceService::ScanDelegate::ScanDelegate() = default;
+NearbyPresenceService::ScanDelegate::~ScanDelegate() = default;
 
 NearbyPresenceService::ScanSession::ScanSession(
     mojo::PendingRemote<ash::nearby::presence::mojom::ScanSession>

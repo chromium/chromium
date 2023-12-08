@@ -17,6 +17,7 @@ static_library("cpp") {
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/common",
+    "//chromeos/ash/components/nearby/presence:presence",
     "//chromeos/ash/services/nearby/public/mojom",
     "//third_party/abseil-cpp:absl",
   ]

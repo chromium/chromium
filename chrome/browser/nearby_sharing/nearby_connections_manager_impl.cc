@@ -13,13 +13,17 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/cross_device/logging/logging.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"
 
 namespace {
+
+using NearbyPresenceService = ash::nearby::presence::NearbyPresenceService;
 
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
@@ -103,6 +107,56 @@ std::string MediumSelectionToString(
   ss << "}";
 
   return ss.str();
+}
+
+// TODO(b/311040986): Migrate these to a conversions class. This requires moving
+// NearbyPresenceService::PresenceDevice and NearbyPresenceService::Action out
+// of NearbyPresenceService to avoid a dependency cycle.
+ash::nearby::presence::mojom::ActionType ConvertPresenceServiceActionToMojom(
+    NearbyPresenceService::Action action) {
+  switch (action) {
+    case NearbyPresenceService::Action::kActiveUnlock:
+      return ash::nearby::presence::mojom::ActionType::kActiveUnlockAction;
+    case NearbyPresenceService::Action::kNearbyShare:
+      return ash::nearby::presence::mojom::ActionType::kNearbyShareAction;
+    case NearbyPresenceService::Action::kInstantTethering:
+      return ash::nearby::presence::mojom::ActionType::kInstantTetheringAction;
+    case NearbyPresenceService::Action::kPhoneHub:
+      return ash::nearby::presence::mojom::ActionType::kPhoneHubAction;
+    case NearbyPresenceService::Action::kPresenceManager:
+      return ash::nearby::presence::mojom::ActionType::kPresenceManagerAction;
+    case NearbyPresenceService::Action::kFinder:
+      return ash::nearby::presence::mojom::ActionType::kFinderAction;
+    case NearbyPresenceService::Action::kFastPairSass:
+      return ash::nearby::presence::mojom::ActionType::kFastPairSassAction;
+    case NearbyPresenceService::Action::kTapToTransfer:
+      return ash::nearby::presence::mojom::ActionType::kTapToTransferAction;
+    case NearbyPresenceService::Action::kLast:
+      return ash::nearby::presence::mojom::ActionType::kLastAction;
+  }
+}
+
+ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
+    ::nearby::internal::Metadata metadata) {
+  return ash::nearby::presence::mojom::Metadata::New(
+      ash::nearby::presence::proto::DeviceTypeToMojom(metadata.device_type()),
+      metadata.account_name(), metadata.device_name(), metadata.user_name(),
+      metadata.device_profile_url(),
+      std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
+                           metadata.bluetooth_mac_address().end()));
+}
+
+ash::nearby::presence::mojom::PresenceDevicePtr
+BuildPresenceMojomFromServiceDevice(
+    NearbyPresenceService::PresenceDevice device) {
+  std::vector<ash::nearby::presence::mojom::ActionType> actions;
+  for (auto action : device.GetActions()) {
+    actions.push_back(ConvertPresenceServiceActionToMojom(action));
+  }
+
+  return ash::nearby::presence::mojom::PresenceDevice::New(
+      device.GetEndpointId(), std::move(actions), device.GetStableId(),
+      MetadataToMojom(device.GetMetadata()));
 }
 
 }  // namespace
@@ -332,6 +386,14 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
   // TODO(crbug/1111458): Support TransferManager.
 }
 
+void NearbyConnectionsManagerImpl::OnConnectionRequestedV3(
+    NearbyPresenceService::PresenceDevice remote_device,
+    ConnectionsStatus status) {
+  // TODO(b/287336323): Call DisconnectFromDeviceV3() when it's implemented.
+  // The call to DisconnectFromDeviceV3() should only occur during failures.
+  NOTIMPLEMENTED();
+}
+
 void NearbyConnectionsManagerImpl::Disconnect(const std::string& endpoint_id) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
@@ -495,6 +557,7 @@ NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
 
   return it->second->raw_authentication_token;
 }
+
 void NearbyConnectionsManagerImpl::RegisterBandwidthUpgradeListener(
     base::WeakPtr<BandwidthUpgradeListener> listener) {
   CHECK(!bandwidth_upgrade_listener_);
@@ -529,6 +592,50 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
                 status == ConnectionsStatus::kSuccess);
           },
           endpoint_id));
+}
+
+void NearbyConnectionsManagerImpl::ConnectV3(
+    NearbyPresenceService::PresenceDevice remote_presence_device,
+    DataUsage data_usage,
+    NearbyConnectionCallback callback) {
+  nearby::connections::mojom::NearbyConnections* nearby_connections =
+      GetNearbyConnections();
+  CHECK(nearby_connections);
+
+  // TODO(b/287340241): Enable BLE connections as an allowed medium.
+  auto allowed_mediums = MediumSelection::New(
+      /*bluetooth=*/true,
+      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower));
+  CD_LOG(VERBOSE, Feature::NC)
+      << __func__ << ": " << "data_usage=" << data_usage
+      << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
+
+  mojo::PendingRemote<ConnectionListenerV3> connection_listener_v3;
+  connection_listener_v3s_.Add(
+      this, connection_listener_v3.InitWithNewPipeAndPassReceiver());
+
+  pending_outgoing_connections_.emplace(remote_presence_device.GetEndpointId(),
+                                        std::move(callback));
+
+  auto timeout_timer = std::make_unique<base::OneShotTimer>();
+  timeout_timer->Start(
+      FROM_HERE, kInitiateNearbyConnectionTimeout,
+      base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionTimedOut,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     remote_presence_device.GetEndpointId()));
+  connect_timeout_timers_.emplace(remote_presence_device.GetEndpointId(),
+                                  std::move(timeout_timer));
+
+  nearby_connections->RequestConnectionV3(
+      service_id_, BuildPresenceMojomFromServiceDevice(remote_presence_device),
+      ConnectionOptions::New(std::move(allowed_mediums),
+                             /*bluetooth_mac_address=*/std::nullopt,
+                             /*keep_alive_interval_millis=*/std::nullopt,
+                             /*keep_alive_timeout_millis=*/std::nullopt),
+      std::move(connection_listener_v3),
+      base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionRequestedV3,
+                     weak_ptr_factory_.GetWeakPtr(), remote_presence_device));
 }
 
 base::WeakPtr<NearbyConnectionsManager>
@@ -803,6 +910,39 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
       << "Writing incoming byte message to NearbyConnection.";
   connections_it->second->WriteMessage(
       payload_it->second->content->get_bytes()->bytes);
+}
+
+void NearbyConnectionsManagerImpl::OnConnectionInitiated(
+    PresenceDevicePtr remote_device,
+    InitialConnectionInfoV3Ptr info) {
+  if (!process_reference_) {
+    return;
+  }
+
+  if (info->authentication_status ==
+      nearby::connections::mojom::AuthenticationStatus::kSuccess) {
+    mojo::PendingRemote<PayloadListenerV3> payload_listener;
+    payload_listener_v3s_.Add(
+        this, payload_listener.InitWithNewPipeAndPassReceiver());
+
+    process_reference_->GetNearbyConnections()->AcceptConnectionV3(
+        service_id_, std::move(remote_device), std::move(payload_listener),
+        base::BindOnce([](ConnectionsStatus status) {
+          CD_LOG(VERBOSE, Feature::NC)
+              << __func__ << ": Accept connection (V3) attempted to device "
+              << " over Nearby Connections with result: "
+              << ConnectionsStatusToString(status);
+        }));
+  } else {
+    process_reference_->GetNearbyConnections()->RejectConnectionV3(
+        service_id_, std::move(remote_device),
+        base::BindOnce([](ConnectionsStatus status) {
+          CD_LOG(VERBOSE, Feature::NC)
+              << __func__ << ": Reject connection (V3) attempted to device "
+              << " over Nearby Connections with result: "
+              << ConnectionsStatusToString(status);
+        }));
+  }
 }
 
 nearby::connections::mojom::NearbyConnections*

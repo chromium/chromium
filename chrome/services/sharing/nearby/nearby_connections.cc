@@ -109,7 +109,16 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            NOTIMPLEMENTED();
+            remote->OnConnectionInitiated(
+                ash::nearby::presence::BuildPresenceMojomDevice(
+                    static_cast<const ::nearby::presence::PresenceDevice&>(
+                        remote_device)),
+                mojom::InitialConnectionInfoV3::New(
+                    info.authentication_digits, info.raw_authentication_token,
+                    info.is_incoming_connection,
+                    // TODO(b/314197753): Change to info.authentication_status
+                    // when implemented in the Nearby library.
+                    mojom::AuthenticationStatus::kSuccess));
           },
       .result_cb =
           [remote](const NearbyDevice& remote_device,
@@ -541,7 +550,7 @@ void NearbyConnections::RequestConnectionV3(
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
     mojom::ConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionListenerV3> listener,
-    RequestConnectionCallback callback) {
+    RequestConnectionV3Callback callback) {
   int keep_alive_interval_millis =
       options->keep_alive_interval
           ? options->keep_alive_interval->InMilliseconds()
@@ -574,7 +583,7 @@ void NearbyConnections::AcceptConnectionV3(
     const std::string& service_id,
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
     mojo::PendingRemote<mojom::PayloadListenerV3> listener,
-    AcceptConnectionCallback callback) {
+    AcceptConnectionV3Callback callback) {
   mojo::SharedRemote<mojom::PayloadListenerV3> remote(std::move(listener));
 
   v3::PayloadListener payload_listener_v3 = {
@@ -665,7 +674,7 @@ void NearbyConnections::AcceptConnectionV3(
 void NearbyConnections::RejectConnectionV3(
     const std::string& service_id,
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-    RejectConnectionCallback callback) {
+    RejectConnectionV3Callback callback) {
   GetCore(service_id)
       ->RejectConnectionV3(
           presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(

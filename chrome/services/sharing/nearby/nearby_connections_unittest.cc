@@ -305,11 +305,16 @@ class FakePayloadListener : public mojom::PayloadListener {
 
 class FakeConnectionListenerV3 : public mojom::ConnectionListenerV3 {
  public:
+  void OnConnectionInitiated(PresenceDevicePtr remote_device,
+                             mojom::InitialConnectionInfoV3Ptr info) override {
+    initiated_cb.Run(std::move(remote_device), std::move(info));
+  }
+
   // TODO(b/287336280): Introduce functions when callback implementation begins.
 
   mojo::Receiver<mojom::ConnectionListenerV3> receiver{this};
   base::RepeatingCallback<void(PresenceDevicePtr,
-                               mojom::InitialConnectionInfoV3)>
+                               mojom::InitialConnectionInfoV3Ptr)>
       initiated_cb = base::DoNothing();
   base::RepeatingCallback<void(PresenceDevicePtr, mojom::Status)> result_cb =
       base::DoNothing();
@@ -1592,15 +1597,28 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
   EXPECT_EQ(presence_device_mojom->endpoint_id,
             presence_device.GetEndpointId());
 
+  base::RunLoop initiated_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
+  fake_connection_listener_v3.initiated_cb =
+      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+                                     mojom::InitialConnectionInfoV3Ptr info) {
+        EXPECT_EQ(remote_device->metadata->device_name,
+                  presence_device.GetMetadata().device_name());
+        EXPECT_EQ(remote_device->metadata->account_name,
+                  presence_device.GetMetadata().account_name());
+        EXPECT_EQ(remote_device->metadata->user_name,
+                  presence_device.GetMetadata().user_name());
+        EXPECT_EQ(remote_device->metadata->device_profile_url,
+                  presence_device.GetMetadata().device_profile_url());
+        EXPECT_EQ(info->authentication_status,
+                  mojom::AuthenticationStatus::kSuccess);
 
-  // TODO(b/287336280): When callback functions are reintroduced, introduce an
-  // `initiated_run_loop` to check for the initiated_cb in
-  // `fake_connection_listener_v3` and run more assertions outside of the ones
-  // in `RequestConnectionV3()`.
+        initiated_run_loop.Quit();
+      });
 
   RequestConnectionV3(fake_connection_listener_v3,
                       std::move(presence_device_mojom));
+  initiated_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {

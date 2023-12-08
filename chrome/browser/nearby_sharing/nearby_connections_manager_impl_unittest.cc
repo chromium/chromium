@@ -28,6 +28,8 @@
 
 namespace {
 
+using NearbyPresenceService = ash::nearby::presence::NearbyPresenceService;
+
 const char kServiceId[] = "NearbySharing";
 const nearby::connections::mojom::Strategy kStrategy =
     nearby::connections::mojom::Strategy::kP2pPointToPoint;
@@ -39,6 +41,12 @@ const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
 const char kBytePayload[] = {0x08, 0x09, 0x06, 0x04, 0x0f};
 const char kBytePayload2[] = {0x0a, 0x0b, 0x0c, 0x0d, 0x0e};
+const char kAccountName[] = "criscros@gmail.com";
+const char kUserName[] = "CrisCrOS";
+const char kDeviceName[] = "Cris Cros's Pixel";
+const char kDeviceProfileUrl[] = "cris_cros_url";
+const char kStableDeviceId[] = "00000002";
+const int64_t kRssi = -65;
 const int64_t kPayloadId = 689777;
 const int64_t kPayloadId2 = 777689;
 const int64_t kPayloadId3 = 986777;
@@ -78,6 +86,75 @@ base::FilePath InitializeTemporaryFile(base::File& file) {
       /*offset=*/0, base::make_span(kPayload, sizeof(kPayload))));
   EXPECT_TRUE(file.Flush());
   return path;
+}
+
+ash::nearby::presence::mojom::ActionType ConvertPresenceServiceActionToMojom(
+    NearbyPresenceService::Action action) {
+  switch (action) {
+    case NearbyPresenceService::Action::kActiveUnlock:
+      return ash::nearby::presence::mojom::ActionType::kActiveUnlockAction;
+    case NearbyPresenceService::Action::kNearbyShare:
+      return ash::nearby::presence::mojom::ActionType::kNearbyShareAction;
+    case NearbyPresenceService::Action::kInstantTethering:
+      return ash::nearby::presence::mojom::ActionType::kInstantTetheringAction;
+    case NearbyPresenceService::Action::kPhoneHub:
+      return ash::nearby::presence::mojom::ActionType::kPhoneHubAction;
+    case NearbyPresenceService::Action::kPresenceManager:
+      return ash::nearby::presence::mojom::ActionType::kPresenceManagerAction;
+    case NearbyPresenceService::Action::kFinder:
+      return ash::nearby::presence::mojom::ActionType::kFinderAction;
+    case NearbyPresenceService::Action::kFastPairSass:
+      return ash::nearby::presence::mojom::ActionType::kFastPairSassAction;
+    case NearbyPresenceService::Action::kTapToTransfer:
+      return ash::nearby::presence::mojom::ActionType::kTapToTransferAction;
+    case NearbyPresenceService::Action::kLast:
+      return ash::nearby::presence::mojom::ActionType::kLastAction;
+  }
+}
+
+ash::nearby::presence::mojom::PresenceDeviceType DeviceTypeToMojom(
+    ::nearby::internal::DeviceType device_type) {
+  switch (device_type) {
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_UNKNOWN:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kUnknown;
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_PHONE:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kPhone;
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_TABLET:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kTablet;
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_DISPLAY:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kDisplay;
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_TV:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kTv;
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_WATCH:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kWatch;
+    case ::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kChromeos;
+    default:
+      return ash::nearby::presence::mojom::PresenceDeviceType::kUnknown;
+  }
+}
+
+ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
+    ::nearby::internal::Metadata metadata) {
+  return ash::nearby::presence::mojom::Metadata::New(
+      DeviceTypeToMojom(metadata.device_type()), metadata.account_name(),
+      metadata.device_name(), metadata.user_name(),
+      metadata.device_profile_url(),
+      std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
+                           metadata.bluetooth_mac_address().end()));
+}
+
+ash::nearby::presence::mojom::PresenceDevicePtr
+BuildPresenceMojomFromServiceDevice(
+    ash::nearby::presence::NearbyPresenceService::PresenceDevice device) {
+  std::vector<ash::nearby::presence::mojom::ActionType> actions;
+  for (auto action : device.GetActions()) {
+    actions.push_back(ConvertPresenceServiceActionToMojom(action));
+  }
+
+  return ash::nearby::presence::mojom::PresenceDevice::New(
+      device.GetEndpointId(), std::move(actions), device.GetStableId(),
+      MetadataToMojom(device.GetMetadata()));
 }
 
 }  // namespace
@@ -165,6 +242,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
       testing::NiceMock<MockDiscoveryListener>& discovery_listener) {
     StartDiscovery(listener_remote, default_data_usage_, discovery_listener);
   }
+
   void StartDiscovery(
       mojo::Remote<EndpointDiscoveryListener>& listener_remote,
       DataUsage data_usage,
@@ -405,6 +483,74 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
                                      FilePayload::New(std::move(file)))),
         payload_listener.GetWeakPtr());
     run_loop.Run();
+  }
+
+  void ConnectV3(
+      NearbyPresenceService::PresenceDevice remote_presence_device,
+      mojo::Remote<ConnectionListenerV3>& connection_listener_v3_remote,
+      mojo::Remote<PayloadListenerV3>& payload_listener_v3_remote,
+      nearby::connections::mojom::InitialConnectionInfoV3Ptr info_v3) {
+    ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
+        BuildPresenceMojomFromServiceDevice(remote_presence_device);
+
+    base::RunLoop request_connection_run_loop;
+    EXPECT_CALL(nearby_connections_, RequestConnectionV3)
+        .WillOnce(
+            [&](const std::string& service_id,
+                ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+                ConnectionOptionsPtr options,
+                mojo::PendingRemote<ConnectionListenerV3> listener,
+                NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
+              EXPECT_EQ(kServiceId, service_id);
+              EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+              connection_listener_v3_remote.Bind(std::move(listener));
+              std::move(callback).Run(Status::kSuccess);
+              request_connection_run_loop.Quit();
+            });
+
+    base::RunLoop accept_or_reject_run_loop;
+    NearbyConnection* nearby_connection;
+    nearby_connections_manager_->ConnectV3(
+        remote_presence_device, DataUsage::kOffline,
+        base::BindLambdaForTesting([&](NearbyConnection* connection) {
+          nearby_connection = connection;
+          EXPECT_TRUE(nearby_connection);
+        }));
+
+    request_connection_run_loop.Run();
+    if (info_v3->authentication_status ==
+        nearby::connections::mojom::AuthenticationStatus::kSuccess) {
+      EXPECT_CALL(nearby_connections_, AcceptConnectionV3)
+          .WillOnce(
+              [&](const std::string& service_id,
+                  ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+                  mojo::PendingRemote<PayloadListenerV3> listener,
+                  NearbyConnectionsMojom::AcceptConnectionV3Callback callback) {
+                EXPECT_EQ(kServiceId, service_id);
+                EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+                payload_listener_v3_remote.Bind(std::move(listener));
+                std::move(callback).Run(Status::kSuccess);
+                accept_or_reject_run_loop.Quit();
+              });
+    } else {
+      EXPECT_CALL(nearby_connections_, RejectConnectionV3)
+          .WillOnce(
+              [&](const std::string& service_id,
+                  ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+                  NearbyConnectionsMojom::RejectConnectionV3Callback callback) {
+                EXPECT_EQ(kServiceId, service_id);
+                EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+                std::move(callback).Run(Status::kSuccess);
+                accept_or_reject_run_loop.Quit();
+              });
+    }
+
+    connection_listener_v3_remote->OnConnectionInitiated(
+        std::move(presence_device_mojom), std::move(info_v3));
+    accept_or_reject_run_loop.Run();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1798,4 +1944,91 @@ TEST_F(NearbyConnectionsManagerImplTest,
 
   nearby_connection->Close();
   EXPECT_EQ(nullptr, nearby_connections_manager_);
+}
+
+TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Initiated) {
+  nearby::internal::Metadata metadata;
+  metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
+  metadata.set_account_name(kAccountName);
+  metadata.set_user_name(kUserName);
+  metadata.set_device_name(kDeviceName);
+  metadata.set_device_profile_url(kDeviceProfileUrl);
+  metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
+
+  std::vector<NearbyPresenceService::Action> actions;
+  actions.push_back(NearbyPresenceService::Action::kPresenceManager);
+
+  NearbyPresenceService::PresenceDevice presence_device(
+      metadata, kStableDeviceId, kRemoteEndpointId, std::move(actions), kRssi);
+
+  base::RunLoop request_connection_run_loop;
+  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
+      .WillOnce(
+          [&](const std::string& service_id,
+              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+              ConnectionOptionsPtr options,
+              mojo::PendingRemote<ConnectionListenerV3> listener,
+              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
+            EXPECT_EQ(kServiceId, service_id);
+            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+            std::move(callback).Run(Status::kSuccess);
+            request_connection_run_loop.Quit();
+          });
+
+  nearby_connections_manager_->ConnectV3(presence_device, DataUsage::kOffline,
+                                         base::DoNothing());
+  request_connection_run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Accept) {
+  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
+  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
+
+  nearby::internal::Metadata metadata;
+  metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
+  metadata.set_account_name(kAccountName);
+  metadata.set_user_name(kUserName);
+  metadata.set_device_name(kDeviceName);
+  metadata.set_device_profile_url(kDeviceProfileUrl);
+  metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
+
+  std::vector<NearbyPresenceService::Action> actions;
+  actions.push_back(NearbyPresenceService::Action::kPresenceManager);
+
+  NearbyPresenceService::PresenceDevice presence_device(
+      metadata, kStableDeviceId, kRemoteEndpointId, std::move(actions), kRssi);
+
+  ConnectV3(presence_device, connection_listener_v3_remote,
+            payload_listener_v3_remote,
+            nearby::connections::mojom::InitialConnectionInfoV3::New(
+                kAuthenticationToken, kRawAuthenticationToken,
+                /*is_incoming_connection=*/false,
+                nearby::connections::mojom::AuthenticationStatus::kSuccess));
+}
+
+TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Reject) {
+  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
+  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
+
+  nearby::internal::Metadata metadata;
+  metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
+  metadata.set_account_name(kAccountName);
+  metadata.set_user_name(kUserName);
+  metadata.set_device_name(kDeviceName);
+  metadata.set_device_profile_url(kDeviceProfileUrl);
+  metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
+
+  std::vector<NearbyPresenceService::Action> actions;
+  actions.push_back(NearbyPresenceService::Action::kPresenceManager);
+
+  NearbyPresenceService::PresenceDevice presence_device(
+      metadata, kStableDeviceId, kRemoteEndpointId, std::move(actions), kRssi);
+
+  ConnectV3(presence_device, connection_listener_v3_remote,
+            payload_listener_v3_remote,
+            nearby::connections::mojom::InitialConnectionInfoV3::New(
+                kAuthenticationToken, kRawAuthenticationToken,
+                /*is_incoming_connection=*/false,
+                nearby::connections::mojom::AuthenticationStatus::kFailure));
 }

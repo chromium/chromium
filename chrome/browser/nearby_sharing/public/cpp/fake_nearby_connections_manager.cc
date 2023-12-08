@@ -200,6 +200,15 @@ void FakeNearbyConnectionsManager::UpgradeBandwidth(
   upgrade_bandwidth_endpoint_ids_.insert(endpoint_id);
 }
 
+void FakeNearbyConnectionsManager::ConnectV3(
+    PresenceDevice remote_presence_device,
+    DataUsage data_usage,
+    NearbyConnectionCallback callback) {
+  CHECK(!is_shutdown());
+  connected_data_usage_ = data_usage;
+  std::move(callback).Run(connection_.get());
+}
+
 base::WeakPtr<NearbyConnectionsManager>
 FakeNearbyConnectionsManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

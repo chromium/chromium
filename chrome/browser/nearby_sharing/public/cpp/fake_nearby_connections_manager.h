@@ -65,6 +65,9 @@ class FakeNearbyConnectionsManager
   void RegisterBandwidthUpgradeListener(
       base::WeakPtr<BandwidthUpgradeListener> listener) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
+  void ConnectV3(PresenceDevice remote_presence_device,
+                 DataUsage data_usage,
+                 NearbyConnectionCallback callback) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
 
   void SetAuthenticationToken(const std::string& endpoint_id,
