@@ -353,8 +353,7 @@ void AttributionHost::RegisterDataHost(
       root_frame_host->GetGlobalId(), render_frame_host->navigation_id());
 }
 
-void AttributionHost::RegisterNavigationDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+void AttributionHost::NotifyNavigationWithBackgroundRegistrationsWillStart(
     const blink::AttributionSrcToken& attribution_src_token,
     uint32_t expected_registrations) {
   if (!TopFrameOriginForSecureContext()) {
@@ -365,12 +364,33 @@ void AttributionHost::RegisterNavigationDataHost(
       AttributionManager::FromWebContents(web_contents());
   DCHECK(attribution_manager);
 
+  if (!attribution_manager->GetDataHostManager()
+           ->NotifyNavigationWithBackgroundRegistrationsWillStart(
+               attribution_src_token, expected_registrations)) {
+    mojo::ReportBadMessage(
+        "Renderer attempted to notify of expected registrations with a "
+        "duplicate AttributionSrcToken or an invalid number of expected "
+        "registrations.");
+    return;
+  }
+}
+
+void AttributionHost::RegisterNavigationDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    const blink::AttributionSrcToken& attribution_src_token) {
+  if (!TopFrameOriginForSecureContext()) {
+    return;
+  }
+
+  AttributionManager* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
   if (!attribution_manager->GetDataHostManager()->RegisterNavigationDataHost(
-          std::move(data_host), attribution_src_token,
-          expected_registrations)) {
+          std::move(data_host), attribution_src_token)) {
     mojo::ReportBadMessage(
         "Renderer attempted to register a data host with a duplicate "
-        "AttribtionSrcToken.");
+        "AttributionSrcToken.");
     return;
   }
 }

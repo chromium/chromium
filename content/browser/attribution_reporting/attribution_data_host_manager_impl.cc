@@ -805,35 +805,17 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 
 bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    const blink::AttributionSrcToken& attribution_src_token,
-    size_t expected_registrations) {
+    const blink::AttributionSrcToken& attribution_src_token) {
+  // Should only be possible with a misbehaving renderer.
+  if (BackgroundRegistrationsEnabled()) {
+    return false;
+  }
+
   auto [it, inserted] = navigation_data_host_map_.try_emplace(
       attribution_src_token, std::move(data_host));
   // Should only be possible with a misbehaving renderer.
   if (!inserted) {
     return false;
-  }
-
-  if (BackgroundRegistrationsEnabled()) {
-    // Should only be possible with a misbehaving renderer.
-    if (expected_registrations == 0) {
-      return false;
-    }
-    // When the `kKeepAliveInBrowserMigration` and
-    // `kAttributionReportingInBrowserMigration` features are enabled, we expect
-    // to receive background registrations through
-    // `NotifyBackgroundRegistrations...` calls. We use the field below to keep
-    // the navigation context available until we've received all expected
-    // background registrations. When using the datahost, it is not necessary,
-    // as the navigation context is kept on the datahost context.
-    auto [it_unused, waiting_inserted] =
-        navigations_waiting_on_background_registrations_.try_emplace(
-            attribution_src_token,
-            NavigationContextForPendingRegistration(expected_registrations));
-    if (!waiting_inserted) {
-      // Should only be possible with a misbehaving renderer.
-      return false;
-    }
   }
 
   RecordNavigationDataHostStatus(NavigationDataHostStatus::kRegistered);
@@ -943,6 +925,29 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
                      pending_decode.GetType()));
 }
 
+bool AttributionDataHostManagerImpl::
+    NotifyNavigationWithBackgroundRegistrationsWillStart(
+        const blink::AttributionSrcToken& attribution_src_token,
+        size_t expected_registrations) {
+  // Should only be possible with a misbehaving renderer.
+  if (!BackgroundRegistrationsEnabled() || expected_registrations == 0) {
+    return false;
+  }
+
+  // We use the field below to keep the navigation context available until we've
+  // received all expected background registrations.
+  auto [it_unused, waiting_inserted] =
+      navigations_waiting_on_background_registrations_.try_emplace(
+          attribution_src_token,
+          NavigationContextForPendingRegistration(expected_registrations));
+  if (!waiting_inserted) {
+    // Should only be possible with a misbehaving renderer.
+    return false;
+  }
+
+  return true;
+}
+
 void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     const blink::AttributionSrcToken& attribution_src_token,
     AttributionInputEvent input_event,
@@ -968,31 +973,36 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
 
   MaybeSetupDeferredReceivers(navigation_id);
 
-  // A navigation-associated interface is used for
-  // `blink::mojom::ConversionHost` and an `AssociatedReceiver` is used on the
-  // browser side, therefore it's guaranteed that
-  // `AttributionHost::RegisterNavigationHost()` is called before
-  // `AttributionHost::DidStartNavigation()`.
-  if (auto it = navigation_data_host_map_.find(attribution_src_token);
-      it != navigation_data_host_map_.end()) {
-    // We defer trigger registrations until background registrations complete;
-    // when the navigation data host disconnects.
-    auto [__, inserted] =
-        ongoing_background_datahost_registrations_.emplace(navigation_id);
-    DCHECK(inserted);
+  // When background registrations are enabled, we don't use a data host. The
+  // registrations will be received via `NotifyBackgroundRegistration...`.
+  if (!BackgroundRegistrationsEnabled()) {
+    // A navigation-associated interface is used for
+    // `blink::mojom::ConversionHost` and an `AssociatedReceiver` is used on the
+    // browser side, therefore it's guaranteed that
+    // `AttributionHost::RegisterNavigationHost()` is called before
+    // `AttributionHost::DidStartNavigation()`.
+    if (auto it = navigation_data_host_map_.find(attribution_src_token);
+        it != navigation_data_host_map_.end()) {
+      // We defer trigger registrations until background registrations complete;
+      // when the navigation data host disconnects.
+      auto [__, inserted] =
+          ongoing_background_datahost_registrations_.emplace(navigation_id);
+      DCHECK(inserted);
 
-    receivers_.Add(
-        this, std::move(it->second),
-        RegistrationContext(
-            /*context_origin=*/source_origin, RegistrationEligibility::kSource,
-            is_within_fenced_frame, render_frame_id,
-            /*devtools_request_id=*/absl::nullopt,
-            RegistrationNavigationContext(navigation_id, input_event)));
+      receivers_.Add(
+          this, std::move(it->second),
+          RegistrationContext(
+              /*context_origin=*/source_origin,
+              RegistrationEligibility::kSource, is_within_fenced_frame,
+              render_frame_id,
+              /*devtools_request_id=*/absl::nullopt,
+              RegistrationNavigationContext(navigation_id, input_event)));
 
-    navigation_data_host_map_.erase(it);
-    RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
-  } else {
-    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
+      navigation_data_host_map_.erase(it);
+      RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
+    } else {
+      RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
+    }
   }
 
   if (auto waiting_ids_it =

@@ -33,7 +33,12 @@ class MockAttributionHost : public AttributionHost {
   MOCK_METHOD(void,
               RegisterNavigationDataHost,
               (mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
-               const blink::AttributionSrcToken&,
+               const blink::AttributionSrcToken&),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationWithBackgroundRegistrationsWillStart,
+              (const blink::AttributionSrcToken&,
                uint32_t expected_registrations),
               (override));
 

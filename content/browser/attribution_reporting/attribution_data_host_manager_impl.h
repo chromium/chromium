@@ -84,6 +84,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       int64_t last_navigation_id) override;
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      const blink::AttributionSrcToken& attribution_src_token) override;
+  bool NotifyNavigationWithBackgroundRegistrationsWillStart(
       const blink::AttributionSrcToken& attribution_src_token,
       size_t expected_registrations) override;
 

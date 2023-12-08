@@ -63,14 +63,23 @@ class AttributionDataHostManager
   // Registers a new data host which is associated with a navigation. The
   // context origin will be provided at a later time in
   // `NotifyNavigationRegistrationStarted()` called with the same
-  // `attribution_src_token`. `expected_registrations` indicates the number of
-  // background registrations requests which will be sent alongside to the
-  // navigation. Returns `false` if `attribution_src_token` was already
-  // registered or if `expected_registrations` is invalid.
+  // `attribution_src_token`. Returns `false` if `attribution_src_token` was
+  // already registered.
   virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      const blink::AttributionSrcToken& attribution_src_token) = 0;
+
+  // Notifies the manager that an attribution-enabled navigation associated to
+  // the token `attribution_src_token` will start. Alongside the navigation,
+  // `background_registrations_count` requests are sent. This method is only
+  // called when background requests are sent alongside the navigation. It is
+  // guaranteed to be called before `NotifyNavigationRegistrationStarted` with
+  // the same `attribution_src_token`. Returns `false` if
+  // `attribution_src_token` was already registered or if
+  // `expected_registrations` is invalid.
+  virtual bool NotifyNavigationWithBackgroundRegistrationsWillStart(
       const blink::AttributionSrcToken& attribution_src_token,
-      size_t expected_registrations) = 0;
+      size_t background_registrations_count) = 0;
 
   // Notifies the manager that an attribution-enabled navigation has started.
   // This may arrive before or after the attribution configuration is available

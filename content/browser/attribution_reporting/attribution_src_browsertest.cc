@@ -1511,4 +1511,47 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(data_host->os_triggers(), test_case.expected_os_triggers);
 }
 
+class AttributionSrcInBrowserMigrationEnabledBrowserTest
+    : public AttributionSrcBrowserTest {
+ public:
+  AttributionSrcInBrowserMigrationEnabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kKeepAliveInBrowserMigration,
+         blink::features::kAttributionReportingInBrowserMigration},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcInBrowserMigrationEnabledBrowserTest,
+                       BackgroundSourceRegistrationRequestSent) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // There should be no attempt to register a data host as it won't be needed.
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost).Times(0);
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  ASSERT_TRUE(register_response->has_received_request());
+  EXPECT_TRUE(register_response->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+}
+
 }  // namespace content

@@ -86,13 +86,15 @@ class CONTENT_EXPORT AttributionHost
   friend class WebContentsUserData<AttributionHost>;
 
   // blink::mojom::AttributionHost:
+  void NotifyNavigationWithBackgroundRegistrationsWillStart(
+      const blink::AttributionSrcToken& attribution_src_token,
+      uint32_t expected_registrations) override;
   void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
       attribution_reporting::mojom::RegistrationEligibility) override;
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token,
-      uint32_t expected_registrations) override;
+      const blink::AttributionSrcToken& attribution_src_token) override;
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

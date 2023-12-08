@@ -212,6 +212,9 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
 
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
+      const blink::AttributionSrcToken& attribution_src_token) override {}
+
+  void NotifyNavigationWithBackgroundRegistrationsWillStart(
       const blink::AttributionSrcToken& attribution_src_token,
       uint32_t expected_registrations) override {}
 
@@ -759,6 +762,39 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
       request, response, resource));
   histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterOsSource",
                                 os_registration.length(), 1);
+}
+
+class AttributionSrcLoaderInBrowserMigrationEnabledTest
+    : public AttributionSrcLoaderTest {
+ public:
+  AttributionSrcLoaderInBrowserMigrationEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kKeepAliveInBrowserMigration,
+         blink::features::kAttributionReportingInBrowserMigration},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AttributionSrcLoaderInBrowserMigrationEnabledTest,
+       MaybeRegisterAttributionHeaders_ResponseIgnored) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  request.SetKeepalive(true);
+  request.SetAttributionReportingEligibility(
+      AttributionReportingEligibility::kTrigger);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
+
+  EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
 }
 
 }  // namespace
