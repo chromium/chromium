@@ -202,9 +202,6 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
-    # TODO(crbug.com/1476736): AppBannerSettingsHelperTest are failing on iOS
-    # port.
-    sources -= [ "banners/app_banner_settings_helper_unittest.cc" ]
     deps += [ "//components/test:webapps_test_bundle_data" ]
   }
 
