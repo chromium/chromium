@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -883,6 +884,22 @@ void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
 
   is_changing_focused_frame_ = true;
 
+  // Fenced frames will try to pass focus to a dummy frame that represents the
+  // inner frame tree. We instead want to give focus to the outer
+  // HTMLFencedFrameElement. This will allow methods like document.activeElement
+  // and document.hasFocus() to properly handle when a fenced frame has focus.
+  if (frame && IsA<HTMLFrameOwnerElement>(frame->Owner())) {
+    auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
+        To<HTMLFrameOwnerElement>(frame->Owner()));
+    if (fenced_frame) {
+      // SetFocusedElement will call back to FocusController::SetFocusedFrame.
+      // However, `is_changing_focused_frame_` will be true when it is called,
+      // causing the function to early return, so we still need the rest of this
+      // invocation of the function to run.
+      SetFocusedElement(fenced_frame, frame);
+    }
+  }
+
   auto* old_frame = DynamicTo<LocalFrame>(focused_frame_.Get());
   auto* new_frame = DynamicTo<LocalFrame>(frame);
 
@@ -982,11 +999,28 @@ HTMLFrameOwnerElement* FocusController::FocusedFrameOwnerElement(
 }
 
 bool FocusController::IsDocumentFocused(const Document& document) const {
-  if (!IsActive() || !IsFocused())
+  if (!IsActive()) {
     return false;
+  }
 
-  return focused_frame_ &&
-         focused_frame_->Tree().IsDescendantOf(document.GetFrame());
+  if (!focused_frame_) {
+    return false;
+  }
+
+  if (IsA<HTMLFrameOwnerElement>(focused_frame_->Owner())) {
+    auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
+        To<HTMLFrameOwnerElement>(focused_frame_->Owner()));
+    if (fenced_frame == document.ActiveElement()) {
+      return fenced_frame->GetDocument().GetFrame()->Tree().IsDescendantOf(
+          document.GetFrame());
+    }
+  }
+
+  if (!IsFocused()) {
+    return false;
+  }
+
+  return focused_frame_->Tree().IsDescendantOf(document.GetFrame());
 }
 
 void FocusController::FocusHasChanged() {
