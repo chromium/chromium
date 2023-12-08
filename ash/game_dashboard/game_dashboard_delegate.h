@@ -9,7 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
-#include "ui/aura/window.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -31,6 +34,10 @@ class ASH_EXPORT GameDashboardDelegate {
 
   // Records `ScalableIph::kGameWindowOpened` event.
   virtual void RecordGameWindowOpenedEvent(aura::Window* window) = 0;
+
+  // Shows the compat mode resize toggle menu, which requires the app `window`
+  // param when creating the `ResizeToggleMenu` object.
+  virtual void ShowResizeToggleMenu(aura::Window* window) = 0;
 };
 
 }  // namespace ash

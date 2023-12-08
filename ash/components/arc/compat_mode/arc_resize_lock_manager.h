@@ -41,6 +41,10 @@ class ArcResizeLockManager : public KeyedService,
   ArcResizeLockManager& operator=(const ArcResizeLockManager&) = delete;
   ~ArcResizeLockManager() override;
 
+  CompatModeButtonController* compat_mode_button_controller() {
+    return compat_mode_button_controller_.get();
+  }
+
   // KeyedService:
   void Shutdown() override;
 

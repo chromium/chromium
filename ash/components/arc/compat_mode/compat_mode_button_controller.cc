@@ -119,7 +119,7 @@ void CompatModeButtonController::SetPrefDelegate(
 }
 
 std::optional<CompatModeButtonController::ButtonState>
-CompatModeButtonController::GetButtonState(aura::Window* window) {
+CompatModeButtonController::GetButtonState(const aura::Window* window) const {
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
   switch (resize_lock_type) {
     case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
@@ -155,6 +155,21 @@ void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
     compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
   }
   compat_mode_button->SchedulePaint();
+}
+
+void CompatModeButtonController::ShowResizeToggleMenu(
+    aura::Window* window,
+    base::OnceClosure on_bubble_widget_closing_callback) {
+  DCHECK(window) << "Invalid window. Unable to display resize toggle menu.";
+  DCHECK(ash::IsArcWindow(window))
+      << "Cannot display resize toggle menu on a non-ARC window.";
+
+  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
+  DCHECK(frame_view)
+      << "Invalid frame view. Unable to display resize toggle menu.";
+  resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
+      std::move(on_bubble_widget_closing_callback), frame_view->frame(),
+      pref_delegate_);
 }
 
 base::WeakPtr<CompatModeButtonController>
@@ -205,12 +220,10 @@ void CompatModeButtonController::ToggleResizeToggleMenu(aura::Window* window) {
     return;
   if (visible_when_button_pressed_)
     return;
-  resize_toggle_menu_.reset();
-  resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
-      base::BindOnce(&CompatModeButtonController::UpdateArrowIcon,
-                     base::Unretained(this), window,
-                     /*widget_visibility=*/false),
-      frame_view->frame(), pref_delegate_);
+  ShowResizeToggleMenu(
+      window, base::BindOnce(&CompatModeButtonController::UpdateArrowIcon,
+                             base::Unretained(this), window,
+                             /*widget_visibility=*/false));
   UpdateArrowIcon(window, /*widget_visibility=*/true);
 }
 

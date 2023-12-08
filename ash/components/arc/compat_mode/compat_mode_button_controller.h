@@ -66,9 +66,16 @@ class CompatModeButtonController {
   // Using the `window`'s `ash::kArcResizeLockTypeKey` window property, returns
   // the updated `ButtonState` for the `CompatModeButton`, or a similar view. If
   // the button should not be updated, then it returns `std::nullopt`.
-  std::optional<ButtonState> GetButtonState(aura::Window* window);
+  std::optional<ButtonState> GetButtonState(const aura::Window* window) const;
 
   void UpdateArrowIcon(aura::Window* window, bool widget_visibility);
+
+  // Displays the resize toggle menu using the given `window`'s frame view as
+  // the widget. The given `on_bubble_widget_closing_callback` handles any
+  // special logic needed when the resize toggle menu closes.
+  void ShowResizeToggleMenu(
+      aura::Window* window,
+      base::OnceClosure on_bubble_widget_closing_callback);
 
   base::WeakPtr<CompatModeButtonController> GetWeakPtr();
 

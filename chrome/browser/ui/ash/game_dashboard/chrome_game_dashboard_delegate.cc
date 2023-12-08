@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
+#include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
+#include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -89,6 +91,31 @@ void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
     scalable_iph->RecordEvent(
         scalable_iph::ScalableIph::Event::kGameWindowOpened);
   }
+}
+
+void ChromeGameDashboardDelegate::ShowResizeToggleMenu(aura::Window* window) {
+  DCHECK(window) << "Window needed to show compat mode toggle menu.";
+  GetCompatModeButtonController()->ShowResizeToggleMenu(
+      window,
+      /*callback=*/base::DoNothing());
+}
+
+arc::CompatModeButtonController*
+ChromeGameDashboardDelegate::GetCompatModeButtonController() {
+  if (!compat_mode_button_controller_) {
+    auto* profile = ProfileManager::GetPrimaryUserProfile();
+    CHECK(profile) << "Cannot retrieve the CompatModeButtonController without "
+                      "a valid user profile.";
+    auto* resize_lock_manager =
+        arc::ArcResizeLockManager::GetForBrowserContext(profile);
+    CHECK(resize_lock_manager) << "Received a null ArcResizeLockManager.";
+    compat_mode_button_controller_ =
+        resize_lock_manager->compat_mode_button_controller()->GetWeakPtr();
+    CHECK(compat_mode_button_controller_)
+        << "Received a null CompatModeButtonController from "
+           "ArcResizeLockManager.";
+  }
+  return compat_mode_button_controller_.get();
 }
 
 void ChromeGameDashboardDelegate::OnReceiveAppCategory(

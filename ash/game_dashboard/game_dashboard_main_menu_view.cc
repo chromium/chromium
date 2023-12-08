@@ -16,6 +16,7 @@
 #include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
+#include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -35,6 +36,7 @@
 #include "ash/system/unified/feature_tile.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -421,7 +423,8 @@ void GameDashboardMainMenuView::CacheAppName() {
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
-  // TODO(b/283988495): Add support when screen size setting is pressed.
+  context_->CloseMainMenu();
+  GameDashboardController::Get()->ShowResizeToggleMenu(context_->game_window());
 }
 
 void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
@@ -625,9 +628,26 @@ void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow(
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE),
       /*sub_label=*/compat_mode_util::GetText(resize_mode)));
-  // TODO(b/303351905): Investigate why drill in arrow isn't placed in correct
-  // location.
-  screen_size_row->CreateDecorativeDrillInArrow();
+
+  const ArcResizeLockType resize_lock_type =
+      game_window->GetProperty(ash::kArcResizeLockTypeKey);
+  switch (resize_lock_type) {
+    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
+    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
+      screen_size_row->SetEnabled(true);
+      // TODO(b/303351905): Investigate why drill in arrow isn't placed in
+      // correct location.
+      screen_size_row->CreateDecorativeDrillInArrow();
+      break;
+    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
+      screen_size_row->SetEnabled(false);
+      screen_size_row->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
+      break;
+    case ash::ArcResizeLockType::NONE:
+      screen_size_row->SetEnabled(false);
+      break;
+  }
 }
 
 void GameDashboardMainMenuView::AddUtilityClusterRow() {

@@ -98,6 +98,10 @@ void GameDashboardController::StartCaptureSession(
   }
 }
 
+void GameDashboardController::ShowResizeToggleMenu(aura::Window* window) {
+  delegate_->ShowResizeToggleMenu(window);
+}
+
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
   auto* top_level_window = new_window->GetToplevelWindow();
   if (!top_level_window ||
