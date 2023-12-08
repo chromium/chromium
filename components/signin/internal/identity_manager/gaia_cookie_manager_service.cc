@@ -19,6 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -529,7 +530,13 @@ bool GaiaCookieManagerService::ListAccounts(
   }
 
   if (list_accounts_stale_) {
-    TriggerListAccounts();
+    // `ListAccounts()` doesn't mean a change has happened that requires adding
+    // a new /ListAccounts request even if there is one in-flight.
+    // Only trigger a request, if none is ongoing.
+    if (!base::Contains(requests_, LIST_ACCOUNTS,
+                        &GaiaCookieRequest::request_type)) {
+      TriggerListAccounts();
+    }
     return false;
   }
 
@@ -537,16 +544,20 @@ bool GaiaCookieManagerService::ListAccounts(
 }
 
 void GaiaCookieManagerService::TriggerListAccounts() {
-  if (requests_.empty()) {
+  // Callers suspect that a check to Gaia needs to be done, don't rely on the
+  // in progress request, conditions might have changed while the request is
+  // in-flight.
+  // Note: /ListAccounts requests is optimized in `OptimizeListAccounts()`
+  // called in `HandleNextRequest()`. Only if there are no other requests in the
+  // queue that `HandleNextRequest()` won't be called before executing
+  // /ListAccounts.
+  requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
+  if (requests_.size() == 1) {
     fetcher_retries_ = 0;
     listAccountsUnexpectedServerResponseRetried_ = false;
-    requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
     signin_client_->DelayNetworkCall(
         base::BindOnce(&GaiaCookieManagerService::StartFetchingListAccounts,
                        weak_ptr_factory_.GetWeakPtr()));
-  } else if (!base::Contains(requests_, LIST_ACCOUNTS,
-                             &GaiaCookieRequest::request_type)) {
-    requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
   }
 }
 
@@ -659,30 +670,8 @@ void GaiaCookieManagerService::OnCookieChange(
       gaia_cookie_deleted_by_user_action_callback_.Run();
     }
   }
-
-  if (requests_.empty()) {
-    requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
-    fetcher_retries_ = 0;
-    listAccountsUnexpectedServerResponseRetried_ = false;
-    signin_client_->DelayNetworkCall(
-        base::BindOnce(&GaiaCookieManagerService::StartFetchingListAccounts,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-// TODO(https://crbug.com/1051864): Re-enable this codepath for Dice, once the
-// reconcilor has a loop-prevention mechanism.
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
-    // Remove all /ListAccounts requests except the very first request because
-    // it is currently executing.
-    requests_.erase(std::remove_if(requests_.begin() + 1, requests_.end(),
-                                   [](const GaiaCookieRequest& request) {
-                                     return request.request_type() ==
-                                            LIST_ACCOUNTS;
-                                   }),
-                    requests_.end());
-    // Add a new /ListAccounts request at the end.
-    requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
-#endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
-  }
+  // Cookie changed, force a check to Gaia.
+  TriggerListAccounts();
 }
 
 void GaiaCookieManagerService::OnCookieListenerConnectionError() {
@@ -891,17 +880,9 @@ void GaiaCookieManagerService::OnSetAccountsFinished(
 
 void GaiaCookieManagerService::HandleNextRequest() {
   VLOG(1) << "GaiaCookieManagerService::HandleNextRequest";
-  if (requests_.front().request_type() ==
-      GaiaCookieRequestType::LIST_ACCOUNTS) {
-    // This and any directly subsequent list accounts would return the same.
-    while (!requests_.empty() && requests_.front().request_type() ==
-                                     GaiaCookieRequestType::LIST_ACCOUNTS) {
-      requests_.pop_front();
-    }
-  } else {
-    // Pop the completed request.
-    requests_.pop_front();
-  }
+  // Pop the completed request.
+  requests_.pop_front();
+  OptimizeListAccounts();
 
   gaia_auth_fetcher_.reset();
   fetcher_retries_ = 0;
@@ -923,5 +904,34 @@ void GaiaCookieManagerService::HandleNextRequest() {
                            weak_ptr_factory_.GetWeakPtr()));
         break;
     }
+  }
+}
+
+void GaiaCookieManagerService::OptimizeListAccounts() {
+  if (requests_.empty() || requests_.front().request_type() !=
+                               GaiaCookieRequestType::LIST_ACCOUNTS) {
+    return;
+  }
+  // Next request is /ListAccounts.
+  // Remove duplicate list accounts requests.
+  requests_.erase(std::remove_if(requests_.begin() + 1, requests_.end(),
+                                 [](const GaiaCookieRequest& request) {
+                                   return request.request_type() ==
+                                          LIST_ACCOUNTS;
+                                 }),
+                  requests_.end());
+
+  // Logout or set accounts will impact the result of list accounts.
+  // Handle those requests first.
+  bool should_delay_list_accounts =
+      base::ranges::any_of(requests_, [](const auto& request) {
+        return request.request_type() == GaiaCookieRequestType::LOG_OUT ||
+               request.request_type() == GaiaCookieRequestType::SET_ACCOUNTS;
+      });
+
+  if (should_delay_list_accounts) {
+    // Move list accounts request to the end of the queue.
+    requests_.pop_front();
+    requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
   }
 }
