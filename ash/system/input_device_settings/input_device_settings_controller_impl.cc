@@ -1771,10 +1771,8 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
         duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
     CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
-      rewriter->StartObservingMouse(
-          duplicate_id,
-          /*can_rewrite_key_event=*/mouse->customization_restriction ==
-              ash::mojom::CustomizationRestriction::kAllowCustomizations);
+      rewriter->StartObservingMouse(duplicate_id,
+                                    mouse->customization_restriction);
     }
     return;
   }

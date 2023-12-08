@@ -441,11 +441,8 @@ PeripheralCustomizationEventRewriter::GetDeviceTypeToObserve(int device_id) {
 
 void PeripheralCustomizationEventRewriter::StartObservingMouse(
     int device_id,
-    bool can_rewrite_key_event) {
-  if (can_rewrite_key_event) {
-    mice_to_observe_key_events_.insert(device_id);
-  }
-  mice_to_observe_.insert(device_id);
+    mojom::CustomizationRestriction customization_restriction) {
+  mice_to_observe_.insert_or_assign(device_id, customization_restriction);
 }
 
 void PeripheralCustomizationEventRewriter::StartObservingGraphicsTablet(
@@ -456,7 +453,6 @@ void PeripheralCustomizationEventRewriter::StartObservingGraphicsTablet(
 void PeripheralCustomizationEventRewriter::StopObserving() {
   graphics_tablets_to_observe_.clear();
   mice_to_observe_.clear();
-  mice_to_observe_key_events_.clear();
 }
 
 bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
@@ -503,11 +499,14 @@ bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
 bool PeripheralCustomizationEventRewriter::NotifyKeyEventObserving(
     const ui::KeyEvent& key_event,
     DeviceType device_type) {
-  // Only mice that are in the mice_to_observe_key_events_ set should be allowed
+  // Only mice that have kAllowCustomizations restriction should be allowed
   // to observe key events.
-  if (device_type == DeviceType::kMouse &&
-      !mice_to_observe_key_events_.contains(key_event.source_device_id())) {
-    return false;
+  if (device_type == DeviceType::kMouse) {
+    const auto iter = mice_to_observe_.find(key_event.source_device_id());
+    if (iter == mice_to_observe().end() ||
+        iter->second != mojom::CustomizationRestriction::kAllowCustomizations) {
+      return false;
+    }
   }
 
   // Observers should only be notified on key presses.

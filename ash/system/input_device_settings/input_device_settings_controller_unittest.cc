@@ -800,7 +800,6 @@ TEST_F(InputDeviceSettingsControllerTest,
                        ->event_rewriter_controller()
                        ->peripheral_customization_event_rewriter();
   EXPECT_EQ(1u, rewriter->mice_to_observe().size());
-  EXPECT_EQ(1u, rewriter->mice_to_observe_key_events().size());
 
   fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal2,
                                         kKbdTopRowLayout1Tag);
@@ -808,7 +807,6 @@ TEST_F(InputDeviceSettingsControllerTest,
             controller_->GetConnectedMice()[0]->customization_restriction);
 
   EXPECT_EQ(1u, rewriter->mice_to_observe().size());
-  EXPECT_EQ(0u, rewriter->mice_to_observe_key_events().size());
 }
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {

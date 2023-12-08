@@ -335,8 +335,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
        InvalidEventTypeMouseObserving) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent event =
       CreateMouseButtonEvent(ui::ET_MOUSE_DRAGGED, ui::EF_NONE, ui::EF_NONE);
@@ -404,8 +406,10 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
 TEST_F(PeripheralCustomizationEventRewriterTest, MouseWheelDuringObserving) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   gfx::Vector2d expected_offset(/*x=*/100, /*y=*/50);
   ui::MouseWheelEvent event =
@@ -593,8 +597,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MouseButtonObserverTest, EventRewriting) {
   auto data = GetParam();
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   TestEventRewriterContinuation continuation;
   rewriter_->RewriteEvent(GetEventFromVariant(data.incoming_event),
@@ -626,8 +632,10 @@ TEST_P(MouseButtonObserverTest, EventRewriting) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseBackButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event = CreateMouseButtonEvent(
       ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
@@ -646,8 +654,10 @@ TEST_F(MouseButtonObserverTest, MouseBackButtonRecognition) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseSideButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event = CreateMouseButtonEvent(
       ui::ET_MOUSE_PRESSED, ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
@@ -666,8 +676,10 @@ TEST_F(MouseButtonObserverTest, MouseSideButtonRecognition) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseForwardButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event =
       CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
@@ -687,8 +699,10 @@ TEST_F(MouseButtonObserverTest, MouseForwardButtonRecognition) {
 }
 
 TEST_F(MouseButtonObserverTest, MouseExtraButtonRecognition) {
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::MouseEvent incoming_event =
       CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
@@ -710,8 +724,10 @@ TEST_F(MouseButtonObserverTest, MouseExtraButtonRecognition) {
 TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {
   TestEventRewriterContinuation continuation;
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/false);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kDisallowCustomizations);
 
   ui::KeyEvent key_event =
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
@@ -740,8 +756,10 @@ TEST_F(MouseButtonObserverTest, BlockEventRewritingForKeyEvent) {
   rewriter_->StopObserving();
   continuation.reset();
 
-  rewriter_->StartObservingMouse(kMouseDeviceId,
-                                 /*can_rewrite_key_event=*/true);
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowCustomizations);
 
   ui::KeyEvent new_key_event =
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
