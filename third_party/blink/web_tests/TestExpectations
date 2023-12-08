@@ -7088,3 +7088,7 @@ crbug.com/1509073 external/wpt/clipboard-apis/async-navigator-clipboard-write-mu
 # b:315306014 Link Preview hides alt+click and tests fail iff Link Preview is enabled.
 fast/events/download-on-alt-click.html [ Timeout Pass ]
 fast/events/simulated-click-by-alt-enter.html [ Failure Pass ]
+
+# Failing on WebKit Linux MSAN
+crbug.com/1510005 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
+crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
