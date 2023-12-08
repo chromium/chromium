@@ -14,7 +14,6 @@ component("privacy_budget") {
   configs += [ "//third_party/blink/common:blink_common_implementation" ]
 
   sources = [
-    "active_sampling.cc",
     "aggregating_sample_collector.cc",
     "aggregating_sample_collector.h",
     "identifiability_metric_builder.cc",
@@ -43,7 +42,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "active_sampling_unittest.cc",
     "aggregating_sample_collector_unittest.cc",
     "identifiability_internal_templates_unittest.cc",
     "identifiability_metric_builder_unittest.cc",

@@ -15,7 +15,6 @@ source_set("internal") {
 
 source_set("privacy_budget") {
   sources = [
-    "active_sampling.h",
     "identifiability_metric_builder.h",
     "identifiability_metrics.h",
     "identifiability_sample_collector.h",

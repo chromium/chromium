@@ -65,11 +65,6 @@ std::string FromNativeString(const std::string& string) {
 
 }  // namespace
 
-// This switch is passed from the browser to the first renderer process it
-// creates. Useful for performing some actions only once, from one renderer
-// process.
-const char kFirstRendererProcess[] = "first-renderer-process";
-
 bool IsPinchToZoomEnabled() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
