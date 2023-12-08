@@ -202,7 +202,8 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
 
  private:
   const wgpu::Device device_;
-  const gfx::ScopedIOSurface io_surface_;
+  gfx::ScopedIOSurface io_surface_;
+  wgpu::SharedTextureMemory shared_texture_memory_;
   const gfx::Size io_surface_size_;
   const wgpu::TextureFormat wgpu_format_;
   const std::vector<wgpu::TextureFormat> view_formats_;

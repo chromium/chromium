@@ -218,6 +218,12 @@ class IOSurfaceImageBackingFactoryDawnTest
       features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
     }
 
+    if (adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface)) {
+      CHECK(adapter.HasFeature(wgpu::FeatureName::SharedFenceMTLSharedEvent));
+      features.push_back(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+      features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
+    }
+
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
     features.push_back(wgpu::FeatureName::DawnInternalUsages);

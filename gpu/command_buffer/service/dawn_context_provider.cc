@@ -337,6 +337,12 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::MultiPlanarFormatNv12a,
       wgpu::FeatureName::MultiPlanarRenderTargets,
       wgpu::FeatureName::Norm16TextureFormats,
+
+      // The following features are always supported when running on the
+      // Metal backend.
+      wgpu::FeatureName::SharedTextureMemoryIOSurface,
+      wgpu::FeatureName::SharedFenceMTLSharedEvent,
+
       wgpu::FeatureName::TransientAttachments,
   };
 
