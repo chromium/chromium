@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view.h"
 
 namespace views {
 class DialogDelegate;
@@ -32,7 +32,7 @@ class SignedWebBundleMetadata;
 // Close/accept buttons and window controls are NOT drawn by this View, nor
 // are any nested dialogs that show up during the installation flow. Those are
 // all handled by the ViewController.
-class IsolatedWebAppInstallerView : public views::BoxLayoutView {
+class IsolatedWebAppInstallerView : public views::View {
  public:
   class Delegate {
    public:

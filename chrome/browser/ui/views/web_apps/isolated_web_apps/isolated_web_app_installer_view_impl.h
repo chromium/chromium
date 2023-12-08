@@ -12,13 +12,13 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace views {
-class ProgressBar;
-}  // namespace views
-
 namespace web_app {
 
-class InstallerDialogView;
+class DisabledView;
+class GetMetadataView;
+class InstallView;
+class InstallSuccessView;
+class ShowMetadataView;
 class SignedWebBundleMetadata;
 
 class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
@@ -47,13 +47,20 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
                       dialog_content) override;
 
  private:
-  void ShowScreen(std::unique_ptr<InstallerDialogView> screen,
-                  views::ProgressBar* progress_bar = nullptr);
+  template <class T, class... Args>
+  T* MakeAndAddChildView(Args&&... args) {
+    return AddChildView(std::make_unique<T>(std::forward<Args>(args)...));
+  }
 
-  raw_ptr<Delegate> delegate_;
-  raw_ptr<InstallerDialogView> dialog_view_;
-  raw_ptr<views::ProgressBar> progress_bar_;
-  bool initialized_ = false;
+  void ShowChildView(views::View* view);
+
+  raw_ptr<IsolatedWebAppInstallerView::Delegate> delegate_;
+
+  raw_ptr<DisabledView> disabled_view_;
+  raw_ptr<GetMetadataView> get_metadata_view_;
+  raw_ptr<ShowMetadataView> show_metadata_view_;
+  raw_ptr<InstallView> install_view_;
+  raw_ptr<InstallSuccessView> install_success_view_;
 };
 
 }  // namespace web_app
