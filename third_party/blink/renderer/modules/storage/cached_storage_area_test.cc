@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -148,6 +149,7 @@ class CachedStorageAreaTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   MockStorageArea mock_storage_area_;
   Persistent<FakeAreaSource> source_area_;
   Persistent<FakeAreaSource> source_area2_;
