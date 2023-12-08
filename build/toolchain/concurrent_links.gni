@@ -86,6 +86,9 @@ if (concurrent_links == -1) {
     # crbug.com/1505350 - CrOS MSan builder consumes more memory and crushes.
     # Max 25.2GB, Avg: 9.4GB, Median: 7.9GB
     _args = [ "--mem_per_link_gb=12" ]
+  } else if (is_chromeos && is_debug) {
+    # b/315102033, b/312072730: Large links use 9GB-13.5GB.
+    _args = [ "--mem_per_link_gb=10" ]
   } else {
     _args = []
   }
