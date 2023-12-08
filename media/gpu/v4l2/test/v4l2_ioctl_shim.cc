@@ -367,6 +367,11 @@ V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
   LOG(INFO) << "Driver=\"" << cap.driver << "\" bus_info=\"" << cap.bus_info
             << "\" card=\"" << cap.card;
 
+  if (!(cap.capabilities & V4L2_CAP_VIDEO_M2M_MPLANE)) {
+    LOG(FATAL)
+        << "Multi planar format required, but not supported by the driver.";
+  }
+
   if (!FindMediaDevice(&cap)) {
     LOG(FATAL) << "Failed to find available media device.";
   }
