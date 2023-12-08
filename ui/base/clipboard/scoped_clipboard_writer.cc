@@ -190,7 +190,7 @@ void ScopedClipboardWriter::WritePickledData(
     const ClipboardFormatType& format) {
   RecordWrite(ClipboardFormatMetric::kCustomData);
   Clipboard::RawData raw_data;
-  raw_data.format = format.Serialize();
+  raw_data.format = format;
   raw_data.data = std::vector<uint8_t>(
       reinterpret_cast<const uint8_t*>(pickle.data()),
       reinterpret_cast<const uint8_t*>(pickle.data()) + pickle.size());

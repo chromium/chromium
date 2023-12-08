@@ -149,7 +149,7 @@ class ClipboardHistoryTest : public AshTestBase {
 
     std::optional<std::unordered_map<std::u16string, std::u16string>>
         actual_data = ui::ReadCustomDataIntoMap(base::as_bytes(
-            base::span(items.front().data().custom_data_data())));
+            base::span(items.front().data().GetWebCustomData())));
 
     EXPECT_EQ(expected_data, actual_data);
   }

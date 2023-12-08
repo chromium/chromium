@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/ref_counted_memory.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace ui {
@@ -78,8 +79,9 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   ClipboardHistoryItemBuilder& ClearPng();
 
   // Sets/clears `custom_format_` and `custom_data_` data.
-  ClipboardHistoryItemBuilder& SetCustomData(const std::string& custom_format,
-                                             const std::string& custom_data);
+  ClipboardHistoryItemBuilder& SetCustomData(
+      const ui::ClipboardFormatType& custom_format,
+      const std::string& custom_data);
   ClipboardHistoryItemBuilder& ClearCustomData();
 
   // Sets/clears file system data.
@@ -100,7 +102,7 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   std::vector<ui::FileInfo> filenames_;
   std::optional<std::string> bookmark_title_;
   std::optional<std::vector<uint8_t>> png_;
-  std::optional<std::string> custom_format_;
+  std::optional<ui::ClipboardFormatType> custom_format_;
   std::optional<std::string> custom_data_;
   std::optional<bool> web_smart_paste_;
 };

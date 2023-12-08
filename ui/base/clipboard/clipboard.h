@@ -338,8 +338,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     RawData(RawData&&);
     RawData& operator=(RawData&&);
 
-    // Used with `ClipboardFormatType::Deserialize()`.
-    std::string format;
+    ClipboardFormatType format;
     std::vector<uint8_t> data;
   };
   struct SvgData {

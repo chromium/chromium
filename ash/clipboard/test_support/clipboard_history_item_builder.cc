@@ -10,7 +10,6 @@
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -39,7 +38,7 @@ ui::ClipboardData ClipboardHistoryItemBuilder::BuildData() const {
   if (png_.has_value())
     data.SetPngData(png_.value());
   if (custom_format_.has_value() && custom_data_.has_value())
-    data.SetCustomData(custom_format_.value(), custom_data_.value());
+    data.SetCustomData(*custom_format_, custom_data_.value());
   if (web_smart_paste_.has_value())
     data.set_web_smart_paste(web_smart_paste_.value());
   return data;
@@ -77,7 +76,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFormat(
     case ui::ClipboardInternalFormat::kPng:
       return SetPng(gfx::test::CreatePNGBytes(10));
     case ui::ClipboardInternalFormat::kCustom:
-      return SetCustomData("Custom Format", "Custom Data");
+      return SetCustomData(
+          ui::ClipboardFormatType::Deserialize("Custom Format"), "Custom Data");
     case ui::ClipboardInternalFormat::kWeb:
       return SetWebSmartPaste(true);
   }
@@ -194,7 +194,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearPng() {
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetCustomData(
-    const std::string& custom_format,
+    const ui::ClipboardFormatType& custom_format,
     const std::string& custom_data) {
   custom_format_ = custom_format;
   custom_data_ = custom_data;
@@ -218,7 +218,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
       &custom_data);
 
   return SetCustomData(
-      ui::ClipboardFormatType::WebCustomDataType().GetName(),
+      ui::ClipboardFormatType::WebCustomDataType(),
       std::string(custom_data.data_as_char(), custom_data.size()));
 }
 
