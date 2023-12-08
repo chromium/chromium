@@ -87,9 +87,19 @@ table UrlRuleMetadata {
 // flatbuffer must use `kEmbedderConditionsBufferIdentifier` as the file
 // identifier.
 table EmbedderConditions {
-  // Sorted list of tab IDs to include/exclude.
-  tab_ids_included : [int];
-  tab_ids_excluded : [int];
+  /// Sorted list of tab IDs to include/exclude.
+  tab_ids_included: [int];
+  tab_ids_excluded: [int];
+
+  /// Headers to include/exclude. Note that `excluded_response_headers` will
+  /// only match on header names.
+  /// TODO(crbug.com/1510018): Consider relocating these header conditions as
+  /// they apply to requests and what "embeds" the requests (such as the
+  /// browser). One potentially suitable place would be a new table in the
+  /// UrlPatternIndex for more complex conditions from requests and responses,
+  /// especially if future components may reuse these conditions.
+  response_headers: [HeaderCondition];
+  excluded_response_headers: [string];
 }
 
 /// This provides a mapping from an index type to its index within
@@ -130,6 +140,16 @@ table ModifyHeaderInfo {
   value: string;
 }
 
+/// Describes the matching condition for a header, Corresponds to
+/// extensions::api::declarative_net_request::HeaderInfo.
+table HeaderCondition {
+  /// The name of the header to be matched on.
+  header: string;
+  /// Header values to include or exclude for matching, if non-empty.
+  values: [string];
+  excluded_values: [string];
+}
+
 /// Completely represents a rule with a regex filter.
 table RegexRule {
   /// The underlying UrlRule.
@@ -148,13 +168,23 @@ table RegexRule {
 /// The top-level data structure used to store extensions URL rules for the
 /// Declarative Net Request API.
 table ExtensionIndexedRuleset {
-  /// Vector of UrlPatternIndex. This will consist of IndexType_count
-  /// indices.
-  index_list : [url_pattern_index.flat.UrlPatternIndex];
+  /// Vector of UrlPatternIndex. This will consist of `IndexType_count` indices.
+  /// This index list is for rules that can be matched before a request is
+  /// initiated.
+  before_request_index_list : [url_pattern_index.flat.UrlPatternIndex];
 
-  // Regex rules are not matched by UrlPatternIndex and so we don't build an
-  // index for them.
-  regex_rules: [RegexRule];
+  /// An index list of `IndexType_count` indices for rules that are matched
+  /// after response headers have been received from a request.
+  headers_received_index_list : [url_pattern_index.flat.UrlPatternIndex];
+
+  /// Regex rules are not matched by UrlPatternIndex and so we don't build an
+  /// index for them. This list is for rules that can be matched before a
+  /// request is initiated.
+  before_request_regex_rules: [RegexRule];
+
+  /// List of regex rules that are matched after response headers have been
+  /// received from a request.
+  headers_received_regex_rules: [RegexRule];
 
   /// Extension related metadata. Sorted by id, to support fast lookup.
   extension_metadata : [UrlRuleMetadata];

@@ -50,11 +50,11 @@ RulesetMatcher::RulesetMatcher(std::string ruleset_data,
       id_(id),
       url_pattern_index_matcher_(extension_id,
                                  id,
-                                 root_->index_list(),
+                                 root_->before_request_index_list(),
                                  root_->extension_metadata()),
       regex_matcher_(extension_id,
                      id,
-                     root_->regex_rules(),
+                     root_->before_request_regex_rules(),
                      root_->extension_metadata()) {
   if (!IsRulesetStatic(id)) {
     unsafe_rule_count_ = ComputeUnsafeRuleCount(root_->extension_metadata());

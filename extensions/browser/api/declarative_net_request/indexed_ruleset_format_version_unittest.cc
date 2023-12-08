@@ -61,6 +61,8 @@ table UrlRuleMetadata {
 table EmbedderConditions {
   tab_ids_included : [int];
   tab_ids_excluded : [int];
+  response_headers: [HeaderCondition];
+  excluded_response_headers: [string];
 }
 enum IndexType : ubyte {
   before_request_except_allow_all_requests = 0,
@@ -78,14 +80,21 @@ table ModifyHeaderInfo {
   header: string;
   value: string;
 }
+table HeaderCondition {
+  header: string;
+  values: [string];
+  excluded_values: [string];
+}
 table RegexRule {
   url_rule: url_pattern_index.flat.UrlRule;
   action_type: ActionType;
   regex_substitution: string;
 }
 table ExtensionIndexedRuleset {
-  index_list : [url_pattern_index.flat.UrlPatternIndex];
-  regex_rules: [RegexRule];
+  before_request_index_list : [url_pattern_index.flat.UrlPatternIndex];
+  headers_received_index_list : [url_pattern_index.flat.UrlPatternIndex];
+  before_request_regex_rules: [RegexRule];
+  headers_received_regex_rules: [RegexRule];
   extension_metadata : [UrlRuleMetadata];
 }
 root_type ExtensionIndexedRuleset;
@@ -155,7 +164,7 @@ TEST_F(IndexedRulesetFormatVersionTest, CheckVersionUpdated) {
   EXPECT_EQ(StripCommentsAndWhitespace(kFlatbufferSchemaExpected),
             StripCommentsAndWhitespace(flatbuffer_schema))
       << "Schema change detected; update this test and the schema version.";
-  EXPECT_EQ(29, GetIndexedRulesetFormatVersionForTesting())
+  EXPECT_EQ(30, GetIndexedRulesetFormatVersionForTesting())
       << "Update this test if you update the schema version.";
 }
 

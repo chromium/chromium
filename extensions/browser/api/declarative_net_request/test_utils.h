@@ -92,6 +92,11 @@ bool EqualsForTesting(
     const api::declarative_net_request::ModifyHeaderInfo& lhs,
     const api::declarative_net_request::ModifyHeaderInfo& rhs);
 
+api::declarative_net_request::HeaderInfo CreateHeaderInfo(
+    std::string header,
+    std::optional<std::vector<std::string>> values,
+    std::optional<std::vector<std::string>> excluded_values);
+
 // Test observer for RulesetManager. This is a multi-use observer i.e.
 // WaitForExtensionsWithRulesetsCount can be called multiple times per lifetime
 // of an observer.
