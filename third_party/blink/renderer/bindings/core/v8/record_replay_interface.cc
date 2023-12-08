@@ -232,7 +232,7 @@ function isObject(val) {
   return !!val && (typeof val === "object" || typeof val === "function")
 }
 
-function typeofMaybeNull(value: any) {
+function typeofMaybeNull(value) {
   if (value === null) {
     return "null";
   }
