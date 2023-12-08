@@ -5,6 +5,7 @@
 #define MEDIA_GPU_V4L2_TEST_H264_DPB_H_
 
 #include "media/video/h264_parser.h"
+#include "ui/gfx/geometry/rect.h"
 
 #include <map>
 #include <set>
@@ -40,6 +41,7 @@ struct H264SliceMetadata {
   int long_term_pic_num = 0;
   // The CAPTURE queue index this slice is queued in.
   int capture_queue_buffer_id = -1;
+  gfx::Rect visible_rect_;
 };
 
 // H264DPB is a class representing a Decoded Picture Buffer (DPB).
