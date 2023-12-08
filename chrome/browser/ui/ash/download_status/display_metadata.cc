@@ -4,28 +4,7 @@
 
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 
-#include <utility>
-
 namespace ash::download_status {
-
-// CommandInfo -----------------------------------------------------------------
-
-CommandInfo::CommandInfo(base::RepeatingClosure command_callback,
-                         const gfx::VectorIcon* icon,
-                         int text_id,
-                         CommandType type)
-    : command_callback(std::move(command_callback)),
-      icon(icon),
-      text_id(text_id),
-      type(type) {}
-
-CommandInfo::CommandInfo(CommandInfo&&) = default;
-
-CommandInfo& CommandInfo::operator=(CommandInfo&&) = default;
-
-CommandInfo::~CommandInfo() = default;
-
-// DisplayMetadata -------------------------------------------------------------
 
 DisplayMetadata::DisplayMetadata() = default;
 

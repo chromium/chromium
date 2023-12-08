@@ -8,12 +8,8 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
@@ -124,14 +120,29 @@ std::optional<std::u16string> GetText(
   return file_path.get().BaseName().LossyDisplayName();
 }
 
+// Calculates the metadata to display the download update specified by
+// `download_status`. This function should be called only when the specified
+// download can be displayed.
+download_status::DisplayMetadata CalculateDisplayMetadata(
+    const crosapi::mojom::DownloadStatus& download_status) {
+  // TODO(http://b/307347158): Fill `display_metadata`.
+
+  CHECK(CanDisplay(download_status));
+
+  download_status::DisplayMetadata display_metadata;
+  display_metadata.file_path = *download_status.full_path;
+  display_metadata.received_bytes = GetReceivedBytes(download_status);
+  display_metadata.secondary_text = GetSecondaryText(download_status);
+  display_metadata.text = GetText(download_status);
+  display_metadata.total_bytes = GetTotalBytes(download_status);
+
+  return display_metadata;
+}
+
 }  // namespace
 
-DisplayManager::DisplayManager(
-    Profile* profile,
-    crosapi::DownloadStatusUpdaterAsh* download_status_updater)
-    : download_status_updater_(download_status_updater) {
+DisplayManager::DisplayManager(Profile* profile) {
   CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
-  CHECK(download_status_updater_);
 
   clients_.push_back(std::make_unique<HoldingSpaceDisplayClient>(profile));
   clients_.push_back(std::make_unique<NotificationDisplayClient>(profile));
@@ -164,36 +175,6 @@ void DisplayManager::Update(
     case crosapi::mojom::DownloadState::kUnknown:
       return;
   }
-}
-
-// TODO(http://b/307347158): Fill `display_metadata`.
-DisplayMetadata DisplayManager::CalculateDisplayMetadata(
-    const crosapi::mojom::DownloadStatus& download_status) {
-  CHECK(CanDisplay(download_status));
-
-  DisplayMetadata display_metadata;
-
-  std::vector<CommandInfo> command_infos;
-  if (download_status.cancellable.value_or(false)) {
-    // NOTE: Since `download_status_updater_` owns `DisplayManager`, using
-    // `base::Unretained()` is safe here.
-    command_infos.emplace_back(
-        base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Cancel,
-                            base::Unretained(download_status_updater_),
-                            download_status.guid,
-                            /*callback=*/base::DoNothing()),
-        &kCancelIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL,
-        CommandType::kCancel);
-  }
-  display_metadata.command_infos = std::move(command_infos);
-
-  display_metadata.file_path = *download_status.full_path;
-  display_metadata.received_bytes = GetReceivedBytes(download_status);
-  display_metadata.secondary_text = GetSecondaryText(download_status);
-  display_metadata.text = GetText(download_status);
-  display_metadata.total_bytes = GetTotalBytes(download_status);
-
-  return display_metadata;
 }
 
 void DisplayManager::Remove(const std::string& guid) {

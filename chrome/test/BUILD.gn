@@ -4958,7 +4958,6 @@ if (!is_android) {
         "//ash/constants:constants",
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
-        "//ash/public/cpp/holding_space:test_support",
         "//ash/style:style",
         "//ash/webui/common:trusted_types_util",
         "//ash/webui/demo_mode_app_ui",
