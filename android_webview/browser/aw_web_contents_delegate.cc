@@ -267,11 +267,15 @@ void AwWebContentsDelegate::RequestMediaAccessPermission(
         nullptr);
     return;
   }
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  bool allow_file_access_from_file_urls =
+      aw_settings->GetAllowFileAccessFromFileURLs();
   aw_contents->GetPermissionRequestHandler()->SendRequest(
       std::make_unique<MediaAccessPermissionRequest>(
           request, std::move(callback),
           *AwBrowserContext::FromWebContents(web_contents)
-               ->GetPermissionControllerDelegate()));
+               ->GetPermissionControllerDelegate(),
+          allow_file_access_from_file_urls));
 }
 
 bool AwWebContentsDelegate::CheckMediaAccessPermission(
@@ -286,14 +290,18 @@ bool AwWebContentsDelegate::CheckMediaAccessPermission(
   if (!web_contents) {
     return false;
   }
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  if (!aw_settings->GetAllowFileAccessFromFileURLs() &&
+      security_origin.scheme() == url::kFileScheme) {
+    return false;
+  }
   AwPermissionManager* pm = AwBrowserContext::FromWebContents(web_contents)
                                 ->GetPermissionControllerDelegate();
-  const GURL& origin_gurl = security_origin.GetURL();
   switch (type) {
     case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return pm->ShouldShowEnumerateDevicesAudioLabels(origin_gurl);
+      return pm->ShouldShowEnumerateDevicesAudioLabels(security_origin);
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return pm->ShouldShowEnumerateDevicesVideoLabels(origin_gurl);
+      return pm->ShouldShowEnumerateDevicesVideoLabels(security_origin);
     default:
       return false;
   }

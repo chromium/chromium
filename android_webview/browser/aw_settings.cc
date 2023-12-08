@@ -529,8 +529,10 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->allow_universal_access_from_file_urls =
       Java_AwSettings_getAllowUniversalAccessFromFileURLsLocked(env, obj);
 
-  web_prefs->allow_file_access_from_file_urls =
+  allow_file_access_from_file_urls_ =
       Java_AwSettings_getAllowFileAccessFromFileURLsLocked(env, obj);
+  web_prefs->allow_file_access_from_file_urls =
+      allow_file_access_from_file_urls_;
 
   javascript_can_open_windows_automatically_ =
       Java_AwSettings_getJavaScriptCanOpenWindowsAutomaticallyLocked(env, obj);
@@ -682,6 +684,10 @@ bool AwSettings::GetEnterpriseAuthenticationAppLinkPolicyEnabled(
 
 bool AwSettings::GetAllowFileAccess() {
   return allow_file_access_;
+}
+
+bool AwSettings::GetAllowFileAccessFromFileURLs() {
+  return allow_file_access_from_file_urls_;
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>

@@ -24,10 +24,12 @@ class TestMediaAccessPermissionRequest : public MediaAccessPermissionRequest {
       content::MediaResponseCallback callback,
       const blink::MediaStreamDevices& audio_devices,
       const blink::MediaStreamDevices& video_devices,
-      AwPermissionManager& aw_permission_manager_)
+      AwPermissionManager& aw_permission_manager_,
+      bool can_cache_file_url_permissions_)
       : MediaAccessPermissionRequest(request,
                                      std::move(callback),
-                                     aw_permission_manager_) {
+                                     aw_permission_manager_,
+                                     can_cache_file_url_permissions_) {
     audio_test_devices_ = audio_devices;
     video_test_devices_ = video_devices;
   }
@@ -75,7 +77,7 @@ class MediaAccessPermissionRequestTest : public testing::Test {
         request,
         base::BindOnce(&MediaAccessPermissionRequestTest::Callback,
                        base::Unretained(this)),
-        audio_devices, video_devices, aw_permission_manager_);
+        audio_devices, video_devices, aw_permission_manager_, false);
     return permission_request;
   }
 
@@ -155,7 +157,7 @@ TEST_F(MediaAccessPermissionRequestTest, TestDenyPermissionRequest) {
 
 TEST_F(MediaAccessPermissionRequestTest,
        TestGrantedPermissionRequestCachesResult) {
-  GURL origin("https://www.google.com");
+  url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
   EXPECT_FALSE(
       aw_permission_manager_.ShouldShowEnumerateDevicesAudioLabels(origin));
   EXPECT_FALSE(
@@ -172,7 +174,7 @@ TEST_F(MediaAccessPermissionRequestTest,
 TEST_F(MediaAccessPermissionRequestTest,
        TestGrantedPermissionRequestWithoutCacheFailsEnumerateDevices) {
   feature_list_.InitAndDisableFeature(features::kWebViewEnumerateDevicesCache);
-  GURL origin("https://www.google.com");
+  url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
   EXPECT_FALSE(
       aw_permission_manager_.ShouldShowEnumerateDevicesAudioLabels(origin));
   EXPECT_FALSE(
