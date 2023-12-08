@@ -268,25 +268,8 @@ void RenderAccessibilityImpl::HitTest(
   ax_context_->UpdateAXForAllDocuments();
 
   WebAXObject ax_object;
-  // 1. Now that layout has been updated for the entire document, try to run
-  // the hit test operation on the popup root element, if there's a popup
-  // opened. This is needed to allow hit testing within web content popups.
-  absl::optional<gfx::RectF> popup_bounds = GetPopupBounds();
-  if (popup_bounds.has_value()) {
-    auto popup_root_obj = WebAXObject::FromWebDocument(GetPopupDocument());
-    // WebAXObject::HitTest expects the point passed by parameter to be
-    // relative to the instance we call it from.
-    ax_object = popup_root_obj.HitTest(
-        point - ToRoundedVector2d(popup_bounds->OffsetFromOrigin()));
-  }
-
-  // 2. If running the hit test operation on the popup didn't returned any
-  // result (or if there was no popup), run the hit test operation from the
-  // main element.
-  if (ax_object.IsNull()) {
-    auto root_obj = WebAXObject::FromWebDocument(document);
-    ax_object = root_obj.HitTest(point);
-  }
+  auto root_obj = WebAXObject::FromWebDocument(document);
+  ax_object = root_obj.HitTest(point);
 
   // Return if no attached accessibility object was found for the main document.
   if (ax_object.IsDetached()) {
@@ -1583,25 +1566,6 @@ blink::WebDocument RenderAccessibilityImpl::GetPopupDocument() {
   if (popup)
     return popup->GetDocument();
   return WebDocument();
-}
-
-absl::optional<gfx::RectF> RenderAccessibilityImpl::GetPopupBounds() {
-  const WebDocument& popup_document = GetPopupDocument();
-  if (popup_document.IsNull())
-    return absl::nullopt;
-
-  auto obj = WebAXObject::FromWebDocument(popup_document);
-
-  gfx::RectF popup_bounds;
-  WebAXObject popup_container;
-  gfx::Transform transform;
-  obj.GetRelativeBounds(popup_container, popup_bounds, transform);
-
-  // The |popup_container| will never be set for a popup element. See
-  // `AXObject::GetRelativeBounds`.
-  DCHECK(popup_container.IsNull());
-
-  return popup_bounds;
 }
 
 blink::WebAXObject RenderAccessibilityImpl::GetPluginRoot() {

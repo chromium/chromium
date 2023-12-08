@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_popup.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -401,8 +402,36 @@ int WebAXObject::HierarchicalLevel() const {
 // point has the VisualViewport scale applied, but not the VisualViewport
 // offset. crbug.com/459591.
 WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
-  if (IsDetached())
+  if (IsDetached()) {
     return WebAXObject();
+  }
+
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
+
+  // If there's a popup document, hit test on that first.
+  // TODO(kschmi) - move this logic to `AXObject` once crbug.com/459591
+  // is fixed.
+  Document* popup_document =
+      private_->AXObjectCache().GetPopupDocumentIfShowing();
+  if (popup_document && popup_document != private_->GetDocument()) {
+    auto popup_root_obj = WebAXObject::FromWebDocument(popup_document);
+    gfx::RectF popup_bounds;
+    WebAXObject popup_container;
+    gfx::Transform transform;
+    popup_root_obj.GetRelativeBounds(popup_container, popup_bounds, transform);
+
+    // The |popup_container| will never be set for a popup element. See
+    // `AXObject::GetRelativeBounds`.
+    DCHECK(popup_container.IsNull());
+
+    WebAXObject hit_object = popup_root_obj.HitTest(
+        point - ToRoundedVector2d(popup_bounds.OffsetFromOrigin()));
+
+    // If the popup hit test succeeded, return that result.
+    if (!hit_object.IsDetached()) {
+      return hit_object;
+    }
+  }
 
   private_->GetDocument()->View()->CheckDoesNotNeedLayout();
 
@@ -412,10 +441,9 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
           point);
 
-  AXObject* hit = private_->AccessibilityHitTest(contents_point);
-
-  if (hit)
+  if (AXObject* hit = private_->AccessibilityHitTest(contents_point)) {
     return WebAXObject(hit);
+  }
 
   if (private_->GetBoundsInFrameCoordinates().Contains(
           PhysicalOffset(contents_point))) {

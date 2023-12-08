@@ -715,6 +715,59 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   EXPECT_TRUE(found_button_update);
 }
 
+// Web popups don't exist on Android, so this test doesn't have to be run on
+// this platform.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(RenderAccessibilityImplTest, TestHitTestPopupDoesNotCrash) {
+  constexpr char html[] = R"HTML(
+      <body>
+      <select>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option id="option_test">4</option>
+      </select>
+      <script>
+        // Trigger endless layout updates in the popup so the cache is
+        // processing deferred events.
+        var option_test = document.getElementById("option_test");
+        function update() {
+          option_test.innerHTML = Math.random();
+        }
+        window.setInterval(update, 100);
+      </script>
+      </body>
+      )HTML";
+  LoadHTMLAndRefreshAccessibilityTree(html);
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object also forces a layout.
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  WebAXObject html_elem = root_obj.ChildAt(0);
+  WebAXObject body = html_elem.ChildAt(0);
+  WebAXObject select = body.ChildAt(0);
+
+  // Open the popup.
+  ui::AXActionData action;
+  action.target_node_id = select.AxID();
+  action.action = ax::mojom::Action::kDoDefault;
+  GetRenderAccessibilityImpl()->PerformAction(action);
+
+  blink::WebPagePopup* popup = frame()->GetWebView()->GetPagePopup();
+  DCHECK_NE(popup, nullptr);
+
+  // Hit test the popup and ignore the result. This test is ensuring that hit
+  // testing can occur while processing deferred events, which means the cache
+  // needs to be frozen.
+  GetRenderAccessibilityImpl()->HitTest(
+      select.GetBoundsInFrameCoordinates().CenterPoint(),
+      ax::mojom::Event::kHover, /*request_id*/ 0,
+      base::BindOnce(
+          [](mojo::StructPtr<blink::mojom::HitTestResponse>) { return; }));
+  SendPendingAccessibilityEvents();
+}
+#endif  // #if !BUILDFLAG(IS_ANDROID)
+
 TEST_F(RenderAccessibilityImplTest, TestExpandCollapseTreeItem) {
   constexpr char html[] = R"HTML(
       <body>
