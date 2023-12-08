@@ -32,19 +32,35 @@ namespace partition_alloc::internal {
 
 static_assert(kSmallestBucket >= sizeof(EncodedNextFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
+              "Need enough space for freelist entries in the smallest slot");
+#endif
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+
 // The smallest bucket actually used. Note that the smallest request is 1 (if
 // it's 0, it gets patched to 1), and ref-count gets added to it.
 namespace {
 constexpr size_t kSmallestUsedBucket =
     base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
 }
+
 static_assert(kSmallestUsedBucket >=
                   sizeof(EncodedNextFreelistEntry) + sizeof(PartitionRefCount),
               "Need enough space for freelist entries and the ref-count in the "
               "smallest *used* slot");
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+static_assert(kSmallestUsedBucket >=
+                  sizeof(PoolOffsetFreelistEntry) + sizeof(PartitionRefCount),
+              "Need enough space for freelist entries and the ref-count in the "
+              "smallest *used* slot");
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+
+using PartitionFreelistEntry = EncodedNextFreelistEntry;
 
 }  // namespace partition_alloc::internal
 

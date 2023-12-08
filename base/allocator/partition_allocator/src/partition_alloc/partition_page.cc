@@ -260,7 +260,7 @@ void SlotSpanMetadata::SortFreelist() {
 
   size_t num_free_slots = 0;
   size_t slot_size = bucket->slot_size;
-  for (EncodedNextFreelistEntry* head = freelist_head; head;
+  for (PartitionFreelistEntry* head = freelist_head; head;
        head = head->GetNext(slot_size)) {
     ++num_free_slots;
     size_t offset_in_slot_span = SlotStartPtr2Addr(head) - slot_span_start;
@@ -272,14 +272,14 @@ void SlotSpanMetadata::SortFreelist() {
 
   // Empty or single-element list is always sorted.
   if (num_free_slots > 1) {
-    EncodedNextFreelistEntry* back = nullptr;
-    EncodedNextFreelistEntry* head = nullptr;
+    PartitionFreelistEntry* back = nullptr;
+    PartitionFreelistEntry* head = nullptr;
 
     for (size_t slot_number = 0; slot_number < num_provisioned_slots;
          slot_number++) {
       if (free_slots[slot_number]) {
         uintptr_t slot_start = slot_span_start + (slot_size * slot_number);
-        auto* entry = EncodedNextFreelistEntry::EmplaceAndInitNull(slot_start);
+        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
 
         if (!head) {
           head = entry;
