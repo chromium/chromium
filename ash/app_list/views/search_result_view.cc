@@ -51,6 +51,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -107,6 +108,14 @@ constexpr int kAnswerCardCardBackgroundCornerRadius = 12;
 constexpr int kAnswerCardFocusBarHorizontalOffset = kAnswerCardBorderMargin;
 constexpr int kAnswerCardFocusBarVerticalOffset =
     kAnswerCardCardBackgroundCornerRadius + kAnswerCardBorderMargin;
+
+// For the App Shortcuts.
+// TODO(b/306295113): Refactor to a better location suitable with search
+// provider.
+constexpr int kSearchListShortcutIconDimension = 24;
+constexpr int kSearchListShortcutIconContainerDimension = 28;
+constexpr int kSearchListShortcutHostBadgeContainerDimension = 14;
+constexpr int kSearchListShortcutHostBadgeDimension = 10;
 
 // The superscript container has a 3px top margin to shift the text up so the
 // it lines up with the text in `big_title_main_text_container_`.
@@ -361,6 +370,15 @@ SearchResultInlineIconView* SetupChildInlineIconView(
   return inline_icon_view;
 }
 
+gfx::Rect GetIconViewBounds(const gfx::Rect& content_bounds,
+                            int width,
+                            int height) {
+  gfx::Rect shortcut_bounds = content_bounds;
+  shortcut_bounds.set_width(kPreferredIconViewWidth);
+  shortcut_bounds.ClampToCenteredSize(gfx::Size(width, height));
+  return shortcut_bounds;
+}
+
 }  // namespace
 
 // An ImageView that optionally masks the image into a circle or rectangle with
@@ -442,16 +460,17 @@ SearchResultView::SearchResultView(
   SetCallback(base::BindRepeating(&SearchResultView::OnButtonPressed,
                                   base::Unretained(this)));
 
-  icon_ = AddChildView(std::make_unique<MaskedImageView>());
-  badge_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_view_ = AddChildView(std::make_unique<MaskedImageView>());
+  icon_view_->SetCanProcessEventsWithinSubtree(false);
+  icon_view_->GetViewAccessibility().OverrideIsIgnored(true);
+
+  badge_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  badge_icon_view_->SetCanProcessEventsWithinSubtree(false);
+  badge_icon_view_->GetViewAccessibility().OverrideIsIgnored(true);
+
   auto* actions_view =
       AddChildView(std::make_unique<SearchResultActionsView>(this));
   set_actions_view(actions_view);
-
-  icon_->SetCanProcessEventsWithinSubtree(false);
-  icon_->GetViewAccessibility().OverrideIsIgnored(true);
-  badge_icon_->SetCanProcessEventsWithinSubtree(false);
-  badge_icon_->GetViewAccessibility().OverrideIsIgnored(true);
 
   SetNotifyEnterExitOnChild(true);
 
@@ -917,36 +936,97 @@ SearchResultView::SetupContainerViewForTextVector(
   return label_tags;
 }
 
-void SearchResultView::UpdateBadgeIcon() {
-  if (!result() || result()->badge_icon().IsEmpty()) {
-    badge_icon_->SetVisible(false);
+void SearchResultView::UpdateIconAndBadgeIcon() {
+  // Updates `icon_view_` and `badge_icon_view_`.
+  // Note: this might leave `icon_view_` with an old icon image. But it is
+  // needed to avoid flash when a SearchResult's icon is loaded asynchronously.
+  // In this case, it looks nicer to keep the stale icon for a little while on
+  // screen instead of clearing it out. It should work correctly as long as the
+  // SearchResult does not forget to SetIcon when it's ready.
+
+  if (!result() || result()->icon().icon.IsEmpty()) {
     return;
   }
 
-  const auto* color_provider = GetColorProvider();
-  gfx::ImageSkia badge_icon_skia =
-      result()->badge_icon().Rasterize(color_provider);
+  use_webapp_shortcut_style_ =
+      result()->result_type() == AppListSearchResultType::kAppShortcutV2 &&
+      chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() &&
+      features::IsSeparateWebAppShortcutBadgeIconEnabled();
 
-  if (result()->use_badge_icon_background()) {
-    badge_icon_skia =
-        CreateIconWithCircleBackground(badge_icon_skia, color_provider);
+  const auto* color_provider = GetColorProvider();
+  const SkColor background_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBaseOpaque);
+
+  const gfx::ImageSkia& icon_image =
+      result()->icon().icon.Rasterize(color_provider);
+
+  const gfx::Size icon_size = use_webapp_shortcut_style_
+                                  ? gfx::Size(kSearchListShortcutIconDimension,
+                                              kSearchListShortcutIconDimension)
+                                  : CalculateRegularIconImageSize(icon_image);
+
+  if (use_webapp_shortcut_style_) {
+    // Icon needs to add a halo if using shortcut style.
+    gfx::ImageSkia resized_icon_image =
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            icon_image, skia::ImageOperations::RESIZE_BEST,
+            std::move(icon_size));
+
+    gfx::ImageSkia icon_with_background =
+        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+            kSearchListShortcutIconContainerDimension / 2, background_color,
+            std::move(resized_icon_image));
+
+    SetIconImage(std::move(icon_with_background), icon_view_,
+                 gfx::Size(kSearchListShortcutIconContainerDimension,
+                           kSearchListShortcutIconContainerDimension));
+  } else {
+    SetIconImage(std::move(icon_image), icon_view_, std::move(icon_size));
+  }
+  icon_view_->set_shape(result()->icon().shape);
+
+  if (result()->badge_icon().IsEmpty()) {
+    badge_icon_view_->SetVisible(false);
+    return;
   }
 
-  gfx::ImageSkia resized_badge_icon(
-      gfx::ImageSkiaOperations::CreateResizedImage(
-          badge_icon_skia, skia::ImageOperations::RESIZE_BEST,
-          SharedAppListConfig::instance().search_list_badge_icon_size()));
+  const gfx::Size badge_icon_size =
+      use_webapp_shortcut_style_
+          ? gfx::Size(kSearchListShortcutHostBadgeDimension,
+                      kSearchListShortcutHostBadgeDimension)
+          : gfx::Size(kSearchListShortcutHostBadgeContainerDimension,
+                      kSearchListShortcutHostBadgeContainerDimension);
 
-  gfx::ShadowValues shadow_values;
-  shadow_values.push_back(
-      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 0,
-                       SkColorSetARGB(0x33, 0, 0, 0)));
-  shadow_values.push_back(
-      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 2,
-                       SkColorSetARGB(0x33, 0, 0, 0)));
-  badge_icon_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-      resized_badge_icon, shadow_values));
-  badge_icon_->SetVisible(true);
+  const gfx::ImageSkia& badge_icon_image =
+      result()->badge_icon().Rasterize(color_provider);
+
+  gfx::ImageSkia resized_badge_icon_image =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          std::move(badge_icon_image), skia::ImageOperations::RESIZE_BEST,
+          std::move(badge_icon_size));
+
+  if (use_webapp_shortcut_style_ || result()->use_badge_icon_background()) {
+    // Badge icon needs to add a halo if using shortcut style or needs a
+    // background.
+    gfx::ImageSkia badge_icon_with_background =
+        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+            kSearchListShortcutHostBadgeContainerDimension / 2,
+            background_color, std::move(resized_badge_icon_image));
+    badge_icon_view_->SetImage(std::move(badge_icon_with_background));
+  } else {
+    // Badge icon needs to add shadows if not using shortcut style.
+    gfx::ShadowValues shadow_values = {
+        gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 0,
+                         SkColorSetARGB(0x33, 0, 0, 0)),
+        gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 2,
+                         SkColorSetARGB(0x33, 0, 0, 0))};
+
+    gfx::ImageSkia badge_icon_with_shadow =
+        gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+            std::move(resized_badge_icon_image), std::move(shadow_values));
+    badge_icon_view_->SetImage(std::move(badge_icon_with_shadow));
+  }
+  badge_icon_view_->SetVisible(true);
 }
 
 void SearchResultView::UpdateBigTitleContainer() {
@@ -1223,6 +1303,29 @@ gfx::Size SearchResultView::CalculatePreferredSize() const {
   return gfx::Size(kPreferredWidth, PreferredHeight());
 }
 
+gfx::Size SearchResultView::CalculateRegularIconImageSize(
+    const gfx::ImageSkia& icon_image) const {
+  // Calculate the icon image dimensions. Images could be rectangular, and we
+  // should preserve the aspect ratio.
+  const size_t dimension = result()->icon().dimension;
+  const int max = std::max(icon_image.width(), icon_image.height());
+  const bool is_square = icon_image.width() == icon_image.height();
+  const int width =
+      is_square ? dimension : dimension * icon_image.width() / max;
+  const int height =
+      is_square ? dimension : dimension * icon_image.height() / max;
+  return gfx::Size(width, height);
+}
+
+gfx::Rect SearchResultView::GetIconBadgeViewBounds(
+    const gfx::Rect& icon_view_bounds) const {
+  const gfx::Size host_badge_container_view_size =
+      gfx::Size(kSearchListShortcutHostBadgeContainerDimension,
+                kSearchListShortcutHostBadgeContainerDimension);
+  return gfx::Rect(icon_view_bounds.CenterPoint(),
+                   std::move(host_badge_container_view_size));
+}
+
 void SearchResultView::Layout() {
   // TODO(crbug/1311101) add test coverage for search result view layout.
   gfx::Rect rect(GetContentsBounds());
@@ -1230,29 +1333,14 @@ void SearchResultView::Layout() {
     return;
   }
 
-  gfx::Rect icon_bounds(rect);
+  icon_view_->SetBoundsRect(GetIconViewBounds(
+      rect, icon_view_->GetImage().width(), icon_view_->GetImage().height()));
 
-  int left_right_padding =
-      (kPreferredIconViewWidth - icon_->GetImage().width()) / 2;
-  int top_bottom_padding = (rect.height() - icon_->GetImage().height()) / 2;
-  icon_bounds.set_width(kPreferredIconViewWidth);
-  icon_bounds.Inset(gfx::Insets::VH(top_bottom_padding, left_right_padding));
-  icon_bounds.Intersect(rect);
-  icon_->SetBoundsRect(icon_bounds);
+  badge_icon_view_->SetBoundsRect(GetIconBadgeViewBounds(icon_view_->bounds()));
 
-  gfx::Rect badge_icon_bounds;
-
-  const int badge_icon_dimension =
-      SharedAppListConfig::instance().search_list_badge_icon_dimension();
-  badge_icon_bounds = gfx::Rect(icon_bounds.right() - badge_icon_dimension,
-                                icon_bounds.bottom() - badge_icon_dimension,
-                                badge_icon_dimension, badge_icon_dimension);
-  badge_icon_bounds.Inset(-kBadgeIconShadowWidth);
-  badge_icon_bounds.Intersect(rect);
-  badge_icon_->SetBoundsRect(badge_icon_bounds);
-
-  const int max_actions_width =
-      (rect.right() - ActionButtonRightMargin() - icon_bounds.right()) / 2;
+  const int max_actions_width = (rect.right() - ActionButtonRightMargin() -
+                                 (icon_view_->bounds()).right()) /
+                                2;
   int actions_width =
       std::min(max_actions_width, actions_view()->GetPreferredSize().width());
 
@@ -1458,28 +1546,8 @@ void SearchResultView::OnMetadataChanged() {
   UpdateProgressBarContainer();
   UpdateDetailsContainer();
   UpdateAccessibleName();
-  UpdateBadgeIcon();
   UpdateRating();
-  // Updates |icon_|.
-  // Note: this might leave the view with an old icon. But it is needed to avoid
-  // flash when a SearchResult's icon is loaded asynchronously. In this case, it
-  // looks nicer to keep the stale icon for a little while on screen instead of
-  // clearing it out. It should work correctly as long as the SearchResult does
-  // not forget to SetIcon when it's ready.
-  if (result() && !result()->icon().icon.IsEmpty()) {
-    const SearchResult::IconInfo& icon_info = result()->icon();
-    const gfx::ImageSkia& image = icon_info.icon.Rasterize(GetColorProvider());
-
-    // Calculate the image dimensions. Images could be rectangular, and we
-    // should preserve the aspect ratio.
-    const size_t dimension = result()->icon().dimension;
-    const int max = std::max(image.width(), image.height());
-    const bool is_square = image.width() == image.height();
-    const int width = is_square ? dimension : dimension * image.width() / max;
-    const int height = is_square ? dimension : dimension * image.height() / max;
-    SetIconImage(image, icon_, gfx::Size(width, height));
-    icon_->set_shape(icon_info.shape);
-  }
+  UpdateIconAndBadgeIcon();
 
   // Updates |actions_view()|.
   actions_view()->SetActions(result() ? result()->actions()
