@@ -24,6 +24,7 @@
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
+#include "third_party/webrtc/rtc_base/network/received_packet.h"
 
 namespace sharing {
 
@@ -603,10 +604,9 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
       return;
     }
   }
-
-  SignalReadPacket(this, reinterpret_cast<const char*>(data.data()),
-                   data.size(), address_lj,
-                   timestamp.since_origin().InMicroseconds());
+  NotifyPacketReceived(rtc::ReceivedPacket(
+      data, address_lj,
+      webrtc::Timestamp::Micros(timestamp.since_origin().InMicroseconds())));
 }
 
 AsyncDnsAddressResolverImpl::AsyncDnsAddressResolverImpl(
