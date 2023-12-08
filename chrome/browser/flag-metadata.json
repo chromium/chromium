@@ -6800,7 +6800,7 @@
   {
     "name": "quick-answers-rich-card",
     "owners": [ "croissant-eng@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "quick-app-access-test-ui",
