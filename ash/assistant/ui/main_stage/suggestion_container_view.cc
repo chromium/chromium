@@ -178,6 +178,10 @@ void SuggestionContainerView::OnConversationStartersChanged(
     return;
   }
 
+  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+    return;
+  }
+
   // If we've committed a query we should ignore changes to the cache of
   // conversation starters as we are past the state in which they should be
   // presented. To present them now could incorrectly associate the conversation
