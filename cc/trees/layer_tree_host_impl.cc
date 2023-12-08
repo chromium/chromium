@@ -3711,7 +3711,6 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        layer_tree_frame_sink_->gpu_memory_buffer_manager(),
         compositor_context_provider, raster_caps_);
   }
 
