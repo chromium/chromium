@@ -951,8 +951,13 @@ class TestRequestPauseHandler {
 class DownloadContentTest : public ContentBrowserTest {
  public:
   DownloadContentTest() {
-    feature_list_.InitAndDisableFeature(
-        download::features::kAllowDownloadResumptionWithoutStrongValidators);
+    feature_list_.InitWithFeatures(
+        {},
+        {
+            download::features::kAllowDownloadResumptionWithoutStrongValidators,
+            // Link Preview hides alt+click. Disables it not to do so.
+            blink::features::kLinkPreview,
+        });
   }
 
  protected:

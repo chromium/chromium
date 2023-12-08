@@ -7084,3 +7084,7 @@ crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disable
 crbug.com/1506782 fast/dom/HTMLImageElement/image-sizes-1x.html [ Failure Pass ]
 
 crbug.com/1509073 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
+
+# b:315306014 Link Preview hides alt+click and tests fail iff Link Preview is enabled.
+fast/events/download-on-alt-click.html [ Timeout Pass ]
+fast/events/simulated-click-by-alt-enter.html [ Failure Pass ]

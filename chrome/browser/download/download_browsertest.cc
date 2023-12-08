@@ -150,6 +150,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/switches.h"
@@ -566,6 +567,11 @@ class DownloadReferrerPolicyTest
     : public DownloadTestBase,
       public ::testing::WithParamInterface<network::mojom::ReferrerPolicy> {
  public:
+  DownloadReferrerPolicyTest() {
+    // Link Preview hides alt+click. Disables it not to do so.
+    feature_list_.InitAndDisableFeature(blink::features::kLinkPreview);
+  }
+
   void SetUpOnMainThread() override {
     referrer_policy_ = GetParam();
     DownloadTestBase::SetUpOnMainThread();
@@ -578,6 +584,7 @@ class DownloadReferrerPolicyTest
 
  private:
   network::mojom::ReferrerPolicy referrer_policy_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
