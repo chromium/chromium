@@ -237,7 +237,7 @@ class Command(object):
       '/session/:sessionId/fedcm/selectaccount')
   CLICK_FEDCM_DIALOG_BUTTON = (
       _Method.POST,
-      '/session/:sessionId/:vendorId/fedcm/clickdialogbutton')
+      '/session/:sessionId/fedcm/clickdialogbutton')
   GET_ACCOUNTS = (
       _Method.GET,
       '/session/:sessionId/fedcm/accountlist')
