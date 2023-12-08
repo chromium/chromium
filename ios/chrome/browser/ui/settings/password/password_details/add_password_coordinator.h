@@ -25,6 +25,13 @@
 // Delegate.
 @property(nonatomic, weak) id<AddPasswordCoordinatorDelegate> delegate;
 
+// Stops the coordinator.
+// - shouldDismissUI: Whether stopping also dismisses the presented
+// UIViewController. Use NO when dismissing the whole Password Manager UI in one
+// animation instead of a cascade of animations (i.e. Add Password is dismissed
+// and then the Password Manager).
+- (void)stopWithUIDismissal:(BOOL)shouldDismissUI;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_COORDINATOR_H_

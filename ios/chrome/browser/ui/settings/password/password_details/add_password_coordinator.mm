@@ -121,8 +121,24 @@
 }
 
 - (void)stop {
-  [self.viewController.navigationController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [self stopWithUIDismissal:YES];
+}
+
+#pragma mark - AddPasswordCoordinator
+
+- (void)stopWithUIDismissal:(BOOL)shouldDismissUI {
+  // When the coordinator is stopped due to failed authentication, the whole
+  // Password Manager UI is dismissed via command. Not dismissing the top
+  // coordinator UI before everything else prevents the Password Manager UI
+  // from being visible without local authentication.
+  if (shouldDismissUI) {
+    UINavigationController* navigationController =
+        _viewController.navigationController;
+    [navigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
+
   [self dismissAlertCoordinator];
   self.mediator = nil;
   self.viewController = nil;
