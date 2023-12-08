@@ -53,6 +53,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/sync/base/pref_names.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -379,8 +380,11 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
        {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
     switch (event_details.GetEventTypeFor(consent_level)) {
       case signin::PrimaryAccountChangeEvent::Type::kNone:
+        break;
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
-        // Only record metrics when setting the primary account.
+        if (consent_level == signin::ConsentLevel::kSignin) {
+          GetPrefs()->ClearPref(syncer::prefs::kExplicitBrowserSignin);
+        }
         break;
       case signin::PrimaryAccountChangeEvent::Type::kSet:
         CHECK(
@@ -388,6 +392,7 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
         signin_metrics::AccessPoint access_point =
             absl::get<signin_metrics::AccessPoint>(event_source);
 
+        // Only record metrics when setting the primary account.
         absl::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
         absl::optional<size_t> bar_bookmarks_count =
             GetBookmarkBarBookmarksCount();
@@ -404,6 +409,21 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
                                  extensions_count.value());
         }
 #endif
+
+        // Records explicit signin.
+        if (consent_level == signin::ConsentLevel::kSignin) {
+          // Unknown access points cannot be properly identified and should
+          // clear the explicit signin pref.
+          if (access_point ==
+              signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+            GetPrefs()->ClearPref(syncer::prefs::kExplicitBrowserSignin);
+          } else if (access_point !=
+                     signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+            // All others access points are explicit sign ins except the Web
+            // Signin event.
+            GetPrefs()->SetBoolean(syncer::prefs::kExplicitBrowserSignin, true);
+          }
+        }
     }
   }
 }

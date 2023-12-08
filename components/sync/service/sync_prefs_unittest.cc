@@ -367,19 +367,24 @@ TEST_F(SyncPrefsTest,
             expected_types);
 }
 
-TEST_F(SyncPrefsTest, PasswordsSelectedByDefault_UnoEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kEnablePasswordsAccountStorage,
-                            switches::kUnoDesktop},
-      /*disabled_features=*/{});
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsTest, PasswordsDefaultWithExplicitBrowserSignin) {
+  base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
 
-  // Based on the feature flags set above, Passwords is supported
-  // and enabled by default.
+  // If no explicit browser sign in occurred, then passwords are still disabled
+  // by default.
+  ASSERT_FALSE(pref_service_.GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                   .Has(UserSelectableType::kPasswords));
+
+  // Set an explicit browser signin.
+  pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  // With an explicit sign in, passwords are enabled by default.
   EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
                   .Has(UserSelectableType::kPasswords));
 }
+#endif
 
 TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
   const UserSelectableTypeSet default_selected_types =

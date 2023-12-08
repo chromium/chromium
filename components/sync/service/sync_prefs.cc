@@ -23,6 +23,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
@@ -148,6 +149,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
 
+  registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
+
   // Obsolete prefs (registered for migrations only).
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
 }
@@ -222,11 +225,13 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         type_enabled = true;
 #else
-        // kPasswords is only on by default if kUnoDesktop is enabled, otherwise
-        // the type requires a dedicated opt-in.
-        // Note: If this changes, also update the migration logic in
+        // kPasswords is only on by default if there was an explicit sign in
+        // recordedand the `switches::kUnoDesktop` is enabled.
+        // Otherwise the type requires a dedicated opt-in. Note: If
+        // this changes, also update the migration logic in
         // MigrateGlobalDataTypePrefsToAccount().
-        type_enabled = base::FeatureList::IsEnabled(switches::kUnoDesktop);
+        type_enabled = base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+                       pref_service_->GetBoolean(prefs::kExplicitBrowserSignin);
 #endif
       } else if (type == UserSelectableType::kBookmarks ||
                  type == UserSelectableType::kReadingList) {
