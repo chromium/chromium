@@ -52,6 +52,7 @@ const char kServiceId[] = "NearbySharing";
 const char kConnectionToken[] = "connection_token";
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
+const char kEndpointId[] = "974846";
 const size_t kEndpointIdLength = 4u;
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kAccountName[] = "criscros@gmail.com";
@@ -592,6 +593,7 @@ class NearbyConnectionsTest : public testing::Test {
                     options.keep_alive_timeout_millis);
           EXPECT_EQ(bluetooth_mac_address,
                     ByteArrayToMojom(options.remote_bluetooth_mac_address));
+          EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
 
           client_proxy->OnConnectionInitiated(
               std::string{nearby_device.GetEndpointId()},
@@ -635,6 +637,9 @@ class NearbyConnectionsTest : public testing::Test {
                       ClientProxy* client, const NearbyDevice& nearby_device,
                       v3::PayloadListener listener, ResultCallback callback) {
           client_proxy = client;
+
+          EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
+
           client_proxy->LocalEndpointAcceptedConnection(
               nearby_device.GetEndpointId(),
               ConvertPayloadListenerV3ToV1(std::move(listener)));
@@ -664,6 +669,9 @@ class NearbyConnectionsTest : public testing::Test {
                                   const NearbyDevice& nearby_device,
                                   ResultCallback callback) {
           client_proxy = client;
+
+          EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
+
           client_proxy->CancelEndpoint(nearby_device.GetEndpointId());
           EXPECT_TRUE(callback);
           callback({Status::kConnectionRejected});
@@ -1595,7 +1603,8 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
 }
 
 TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1626,7 +1635,8 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
 }
 
 TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1648,7 +1658,8 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
 }
 
 TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1668,7 +1679,8 @@ TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
 }
 
 TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1691,6 +1703,8 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
                                 const NearbyDevice& nearby_device,
                                 ResultCallback callback) {
         client_proxy = client;
+
+        EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
 
         client_proxy->CancelEndpoint(nearby_device.GetEndpointId());
         EXPECT_TRUE(callback);
