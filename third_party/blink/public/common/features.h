@@ -407,8 +407,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFramesM120FeaturesPart1);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFramesM120FeaturesPart2);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFencedFramesCrossOriginAutomaticBeacons);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFencedFramesReportingAttestationsChanges);

@@ -597,6 +597,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       FencedFramePropertiesNodeSource node_source =
           FencedFramePropertiesNodeSource::kClosestAncestor);
 
+  bool HasFencedFrameProperties() const {
+    return fenced_frame_properties_.has_value();
+  }
+
   // Called from the currently active document via the
   // `Fence.setReportEventDataForAutomaticBeacons` JS API.
   void SetFencedFrameAutomaticBeaconReportEventData(
@@ -605,7 +609,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features,
-      bool once) override;
+      bool once,
+      bool cross_origin_exposed) override;
 
   // Helper function to clear out automatic beacon data after one automatic
   // beacon if `once` was set to true when calling

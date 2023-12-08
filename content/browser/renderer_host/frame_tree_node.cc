@@ -953,7 +953,8 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
-    bool once) {
+    bool once,
+    bool cross_origin_exposed) {
   absl::optional<FencedFrameProperties>& properties =
       GetFencedFramePropertiesForEditing();
   // `properties` will exist for both fenced frames as well as iframes loaded
@@ -977,7 +978,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   }
   properties->UpdateAutomaticBeaconData(event_type, event_data, destinations,
                                         attribution_reporting_runtime_features,
-                                        once);
+                                        once, cross_origin_exposed);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(

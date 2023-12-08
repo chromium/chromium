@@ -794,6 +794,13 @@ BASE_FEATURE(kFencedFramesReportingAttestationsChanges,
              "FencedFramesReportingAttestationsChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable allowing cross-origin subframes to send automatic beacons. This
+// requires opt-in both from the cross-origin subframe as well as the document
+// that sets the automatic beacon data.
+BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeacons,
+             "FencedFramesCrossOriginAutomaticBeacons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Temporarily un-disable credentials on fenced frame automatic beacons until
 // third party cookie deprecation.
 // TODO(crbug.com/1496395): Remove this after 3PCD.

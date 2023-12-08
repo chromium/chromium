@@ -70,8 +70,8 @@ enum class FencedFrameCreationOutcome {
 enum class AutomaticBeaconOutcome {
   kSuccess = 0,
   kNoUserActivation,
-  kNotSameOrigin,
-  kMaxValue = kNotSameOrigin,
+  kNotSameOriginNotOptedIn,
+  kMaxValue = kNotSameOriginNotOptedIn,
 };
 
 // Corresponds to the "FencedFrameNavigationState" histogram enumeration type in

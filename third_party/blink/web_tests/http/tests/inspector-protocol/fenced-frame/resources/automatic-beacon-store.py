@@ -15,16 +15,15 @@ import hashlib
 NO_DATA_STRING = b"<No data>"
 NOT_SET_STRING = b"<Not set>"
 
-
 # The server stash requires a uuid to store data. Use a hash of the automatic
 # beacon data as the uuid to store and retrieve the data.
 def string_to_uuid(input):
     hash_value = hashlib.md5(str(input).encode("UTF-8")).hexdigest()
     return str(uuid.UUID(hex=hash_value))
 
-
 def main(request, response):
     stash = request.server.stash
+    event_type = request.GET.first(b"type", NO_DATA_STRING)
 
     # The stash is accessed concurrently by many clients. A lock is used to
     # avoid interleaved read/write from different clients.
@@ -33,11 +32,12 @@ def main(request, response):
         # that this only stores the most recent beacon that was sent.
         if request.method == "POST":
             request_body = request.body or NO_DATA_STRING
-            stash.put(string_to_uuid(request_body), request_body)
+            stash.put(string_to_uuid(event_type + request_body), request_body)
             return (200, [], b"")
 
         # Requests without a body imply they were sent as the request from
         # nextAutomaticBeacon().
         expected_body = request.GET.first(b"expected_body", NO_DATA_STRING)
-        data = stash.take(string_to_uuid(expected_body)) or NOT_SET_STRING
+        data = stash.take(
+            string_to_uuid(event_type + expected_body)) or NOT_SET_STRING
         return (200, [], data)
