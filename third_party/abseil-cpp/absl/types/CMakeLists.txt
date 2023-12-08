@@ -284,7 +284,6 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::config
     absl::core_headers
     absl::type_traits
   PUBLIC
