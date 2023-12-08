@@ -589,22 +589,6 @@ bool SuspendX11ScreenSaver(bool suspend) {
   return true;
 }
 
-gfx::ICCProfile GetICCProfileForMonitor(int monitor) {
-  gfx::ICCProfile icc_profile;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
-    return icc_profile;
-  }
-  std::string atom_name = monitor == 0
-                              ? "_ICC_PROFILE"
-                              : base::StringPrintf("_ICC_PROFILE_%d", monitor);
-  scoped_refptr<base::RefCountedMemory> data;
-  if (GetRawBytesOfProperty(GetX11RootWindow(), x11::GetAtom(atom_name.c_str()),
-                            &data, nullptr)) {
-    icc_profile = gfx::ICCProfile::FromData(data->data(), data->size());
-  }
-  return icc_profile;
-}
-
 bool IsSyncExtensionAvailable() {
 // Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
 // NotifySwapAfterResize is never called as the compositor does not notify about

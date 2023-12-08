@@ -234,10 +234,6 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsX11WindowFullScreen(x11::Window window);
 // is called an equal number of times with |suspend| set to false.
 COMPONENT_EXPORT(UI_BASE_X) bool SuspendX11ScreenSaver(bool suspend);
 
-// Returns the ICCProfile corresponding to |monitor| using XGetWindowProperty.
-COMPONENT_EXPORT(UI_BASE_X)
-gfx::ICCProfile GetICCProfileForMonitor(int monitor);
-
 // Return true if the display supports SYNC extension.
 COMPONENT_EXPORT(UI_BASE_X) bool IsSyncExtensionAvailable();
 
