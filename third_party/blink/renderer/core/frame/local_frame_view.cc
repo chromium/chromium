@@ -2932,7 +2932,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   if (!paint_artifact_compositor_) {
     paint_artifact_compositor_ = std::make_unique<PaintArtifactCompositor>(
-        page->GetScrollingCoordinator()->GetWeakPtr());
+        page->GetScrollingCoordinator()->GetScrollCallbacks());
     page->GetChromeClient().AttachRootLayer(
         paint_artifact_compositor_->RootLayer(), &GetFrame());
   }

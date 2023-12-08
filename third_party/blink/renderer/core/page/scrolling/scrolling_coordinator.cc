@@ -111,7 +111,7 @@ bool ScrollingCoordinator::UpdateCompositorScrollOffset(
 void ScrollingCoordinator::WillBeDestroyed() {
   DCHECK(page_);
   page_ = nullptr;
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  callbacks_.reset();
 }
 
 }  // namespace blink
