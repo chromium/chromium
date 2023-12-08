@@ -609,6 +609,11 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
     return false;
 
+  // Only first level suggestions can be deleted.
+  if (GetPopupLevel() > 0) {
+    return false;
+  }
+
   PopupItemId suggestion_type = suggestions_[list_index].popup_item_id;
   if (!delegate_->RemoveSuggestion(
           suggestions_[list_index].main_text.value,

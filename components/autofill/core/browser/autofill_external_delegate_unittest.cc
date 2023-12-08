@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
+#include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -2098,6 +2099,63 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsReturned(
       queried_form_triggering_field_id_,
       {Suggestion{PopupItemId::kAutocompleteEntry}});
+}
+
+class AutofillExternalDelegate_RemoveSuggestionTest
+    : public AutofillExternalDelegateUnitTest,
+      public ::testing::WithParamInterface<PopupItemId> {
+ public:
+  void SetUp() override {
+    AutofillExternalDelegateUnitTest::SetUp();
+    test_api(manager()).set_single_field_form_fill_router(
+        std::make_unique<MockSingleFieldFormFillRouter>(
+            client().GetMockAutocompleteHistoryManager(), nullptr, nullptr));
+  }
+
+  MockSingleFieldFormFillRouter* single_field_form_fill_router() {
+    return static_cast<MockSingleFieldFormFillRouter*>(
+        test_api(manager()).single_field_form_fill_router());
+  }
+};
+
+const PopupItemId kRemoveSuggestionTestCases[] = {
+    PopupItemId::kAddressEntry,
+    PopupItemId::kFillFullAddress,
+    PopupItemId::kFillFullName,
+    PopupItemId::kFillFullEmail,
+    PopupItemId::kFillFullPhoneNumber,
+    PopupItemId::kAddressFieldByFieldFilling,
+    PopupItemId::kCreditCardFieldByFieldFilling,
+    PopupItemId::kCreditCardEntry,
+    PopupItemId::kAddressEntryNotSelectable,
+    PopupItemId::kPaymentsEntryNotSelectable,
+    PopupItemId::kAutocompleteEntry,
+    PopupItemId::kPasswordEntry,
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
+                         AutofillExternalDelegate_RemoveSuggestionTest,
+                         ::testing::ValuesIn(kRemoveSuggestionTestCases));
+
+TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
+  const AutofillProfile profile = test::GetFullProfile();
+  const PopupItemId& popup_item_id = GetParam();
+  pdm().AddProfile(profile);
+
+  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+    EXPECT_CALL(*single_field_form_fill_router(),
+                OnRemoveCurrentSingleFieldSuggestion);
+  } else if (popup_item_id != PopupItemId::kPasswordEntry) {
+    // Passwords entries cannot be deleted. Since all the remaining ones are
+    // address or credit card, we can expect that pdm is called.
+    EXPECT_CALL(pdm(), RemoveByGUID);
+  }
+  bool result = external_delegate().RemoveSuggestion(
+      u"", popup_item_id, Suggestion::Guid(profile.guid()));
+
+  // Password entries are the only ones from the test set that cannot be
+  // deleted.
+  EXPECT_EQ(result, popup_item_id != PopupItemId::kPasswordEntry);
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding

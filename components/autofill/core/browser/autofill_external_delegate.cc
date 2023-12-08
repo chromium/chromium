@@ -771,18 +771,27 @@ bool AutofillExternalDelegate::RemoveSuggestion(
     const std::u16string& value,
     PopupItemId popup_item_id,
     Suggestion::BackendId backend_id) {
-  if (popup_item_id == PopupItemId::kAddressEntry ||
-      popup_item_id == PopupItemId::kCreditCardEntry) {
-    return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
+  switch (popup_item_id) {
+    // These PopupItemIds are various types which can appear in the first level
+    // suggestion to fill an address or credit card field.
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kAddressFieldByFieldFilling:
+    case PopupItemId::kCreditCardFieldByFieldFilling:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kAddressEntryNotSelectable:
+    case PopupItemId::kPaymentsEntryNotSelectable:
+      return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
+    case PopupItemId::kAutocompleteEntry:
+      manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
+                                                   popup_item_id);
+      return true;
+    default:
+      return false;
   }
-
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
-    manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
-                                                 popup_item_id);
-    return true;
-  }
-
-  return false;
 }
 
 void AutofillExternalDelegate::DidEndTextFieldEditing() {
