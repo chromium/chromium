@@ -94,6 +94,8 @@ class OpenXrController {
       XrAction action,
       std::string binding_string) const;
 
+  bool IsCurrentProfileFromHandTracker() const;
+
   absl::optional<gfx::Transform> GetGripFromPointerTransform(
       XrTime predicted_display_time) const;
 

@@ -321,7 +321,8 @@ XrResult OpenXrController::Update(XrSpace base_space,
     RETURN_IF_XR_FAILED(UpdateInteractionProfile());
   }
 
-  if (hand_tracker_ && hand_joints_enabled_) {
+  if (hand_tracker_ &&
+      (hand_joints_enabled_ || IsCurrentProfileFromHandTracker())) {
     RETURN_IF_XR_FAILED(
         hand_tracker_->Update(base_space, predicted_display_time));
   }
@@ -352,8 +353,18 @@ mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
   return description_.Clone();
 }
 
+bool OpenXrController::IsCurrentProfileFromHandTracker() const {
+  return hand_tracker_ && hand_tracker_->controller() != nullptr &&
+         interaction_profile_ ==
+             hand_tracker_->controller()->interaction_profile();
+}
+
 absl::optional<GamepadButton> OpenXrController::GetButton(
     OpenXrButtonType type) const {
+  if (IsCurrentProfileFromHandTracker()) {
+    return hand_tracker_->controller()->GetButton(type);
+  }
+
   GamepadButton ret;
   // Button should at least have one of the three actions;
   bool has_value = false;
@@ -477,15 +488,21 @@ absl::optional<Gamepad> OpenXrController::GetXrStandardGamepad() const {
 }
 
 absl::optional<Gamepad> OpenXrController::GetWebXRGamepad() const {
-  for (auto& it : GetOpenXrControllerInteractionProfiles()) {
-    if (interaction_profile_ == it.type) {
-      if (it.mapping == GamepadMapping::kXrStandard) {
-        return GetXrStandardGamepad();
-      } else {
-        // if mapping is kNone
-        return absl::nullopt;
+  auto mapping = GamepadMapping::kNone;
+
+  if (IsCurrentProfileFromHandTracker()) {
+    mapping = hand_tracker_->controller()->gamepad_mapping();
+  } else {
+    for (auto& it : GetOpenXrControllerInteractionProfiles()) {
+      if (interaction_profile_ == it.type) {
+        mapping = it.mapping;
+        break;
       }
     }
+  }
+
+  if (mapping == GamepadMapping::kXrStandard) {
+    return GetXrStandardGamepad();
   }
 
   return absl::nullopt;
@@ -502,8 +519,21 @@ XrResult OpenXrController::UpdateInteractionProfile() {
       XR_TYPE_INTERACTION_PROFILE_STATE};
   RETURN_IF_XR_FAILED(xrGetCurrentInteractionProfile(
       session_, top_level_user_path, &interaction_profile_state));
-  interaction_profile_ = path_helper_->GetInputProfileType(
-      interaction_profile_state.interactionProfile);
+  if (interaction_profile_state.interactionProfile == XR_NULL_PATH) {
+    if (hand_tracker_ && hand_tracker_->controller()) {
+      interaction_profile_ = hand_tracker_->controller()->interaction_profile();
+
+      // If the HandTracker returns a controller, that controller should not
+      // return kInvalid.
+      CHECK(interaction_profile_ !=
+            mojom::OpenXrInteractionProfileType::kInvalid);
+    } else {
+      interaction_profile_ = mojom::OpenXrInteractionProfileType::kInvalid;
+    }
+  } else {
+    interaction_profile_ = path_helper_->GetInputProfileType(
+        interaction_profile_state.interactionProfile);
+  }
 
   if (description_) {
     description_->profiles =
@@ -524,12 +554,20 @@ absl::optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
     XrTime predicted_display_time,
     XrSpace local_space,
     bool* emulated_position) const {
+  if (IsCurrentProfileFromHandTracker()) {
+    *emulated_position = false;
+    return hand_tracker_->controller()->GetBaseFromGripTransform();
+  }
+
   return GetOriginFromTarget(predicted_display_time, local_space,
                              grip_pose_space_, emulated_position);
 }
 
 absl::optional<gfx::Transform> OpenXrController::GetGripFromPointerTransform(
     XrTime predicted_display_time) const {
+  if (IsCurrentProfileFromHandTracker()) {
+    return hand_tracker_->controller()->GetGripFromPointerTransform();
+  }
   bool emulated_position;
   return GetOriginFromTarget(predicted_display_time, grip_pose_space_,
                              pointer_pose_space_, &emulated_position);

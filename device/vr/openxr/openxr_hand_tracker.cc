@@ -4,6 +4,7 @@
 
 #include "device/vr/openxr/openxr_hand_tracker.h"
 
+#include <optional>
 #include <vector>
 
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -153,6 +154,8 @@ XrResult OpenXrHandTracker::Update(XrSpace base_space,
   locate_info.baseSpace = base_space;
   locate_info.time = predicted_display_time;
 
+  AppendToLocationStruct(locations_);
+
   XrResult result = extension_helper_->ExtensionMethods().xrLocateHandJointsEXT(
       hand_tracker_, &locate_info, &locations_);
   if (XR_FAILED(result)) {
@@ -193,6 +196,10 @@ mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
   return hand_tracking_data;
 }
 
+const OpenXrHandController* OpenXrHandTracker::controller() const {
+  return nullptr;
+}
+
 XrResult OpenXrHandTracker::InitializeHandTracking() {
   XrHandTrackerCreateInfoEXT create_info{XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT};
   create_info.hand = type_ == OpenXrHandednessType::kRight ? XR_HAND_RIGHT_EXT
@@ -204,6 +211,16 @@ XrResult OpenXrHandTracker::InitializeHandTracking() {
 
 bool OpenXrHandTracker::IsDataValid() const {
   return hand_tracker_ != XR_NULL_HANDLE && locations_.isActive;
+}
+
+std::optional<gfx::Transform> OpenXrHandTracker::GetBaseFromPalmTransform()
+    const {
+  if (!IsDataValid()) {
+    return std::nullopt;
+  }
+
+  return XrPoseToGfxTransform(
+      joint_locations_buffer_[XR_HAND_JOINT_PALM_EXT].pose);
 }
 
 }  // namespace device
