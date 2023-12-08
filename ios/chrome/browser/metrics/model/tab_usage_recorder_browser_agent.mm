@@ -337,17 +337,7 @@ bool TabUsageRecorderBrowserAgent::ShouldIgnoreWebState(
     web::WebState* web_state) {
   // Do not count chrome:// urls to avoid data noise.  For example, if they were
   // counted, every new tab created would add noise to the page load count.
-  web::NavigationItem* pending_item =
-      web_state->GetNavigationManager()->GetPendingItem();
-  if (pending_item)
-    return pending_item->GetVirtualURL().SchemeIs(kChromeUIScheme);
-
-  web::NavigationItem* last_committed_item =
-      web_state->GetNavigationManager()->GetLastCommittedItem();
-  if (last_committed_item)
-    return last_committed_item->GetVirtualURL().SchemeIs(kChromeUIScheme);
-
-  return false;
+  return web_state->GetVisibleURL().SchemeIs(kChromeUIScheme);
 }
 
 bool TabUsageRecorderBrowserAgent::WebStateAlreadyEvicted(
