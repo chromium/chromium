@@ -49,7 +49,6 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
   friend class SpellCheckHostChromeImplMacTest;
 
   // SpellCheckHostImpl:
-  void RequestDictionary() override;
   void NotifyChecked(const std::u16string& word, bool misspelled) override;
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
@@ -76,12 +75,10 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
   // Implementations of the following APIs for build configs that don't use the
   // spelling service are in the base class SpellCheckHostImpl.
   void CheckSpelling(const std::u16string& word,
-                     int route_id,
                      CheckSpellingCallback callback) override;
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
   void RequestTextCheck(const std::u16string& text,
-                        int route_id,
                         RequestTextCheckCallback callback) override;
 
 #if BUILDFLAG(IS_WIN)
@@ -110,15 +107,13 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
 #endif  //  BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
         //  BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
-#if BUILDFLAG(IS_MAC)
-  int ToDocumentTag(int route_id);
-  void RetireDocumentTag(int route_id);
-  std::map<int, int> tag_map_;
-#endif  // BUILDFLAG(IS_MAC)
-
   // Returns the SpellcheckService of our |render_process_id_|. The return
   // is null if the render process is being shut down.
   virtual SpellcheckService* GetSpellcheckService() const;
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  const int document_tag_;
+#endif
 
   // The process ID of the renderer.
   const int render_process_id_;

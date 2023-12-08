@@ -17,6 +17,10 @@ namespace service_manager {
 class LocalInterfaceProvider;
 }
 
+namespace spellcheck::mojom {
+class SpellCheckHost;
+}
+
 class SpellingEngine;
 
 class SpellcheckLanguage {
@@ -66,7 +70,7 @@ class SpellcheckLanguage {
       const char16_t* text_begin,
       size_t position_in_text,
       size_t text_length,
-      int tag,
+      spellcheck::mojom::SpellCheckHost& host,
       size_t* skip_or_misspelling_start,
       size_t* skip_or_misspelling_len,
       std::vector<std::u16string>* optional_suggestions);
@@ -87,7 +91,8 @@ class SpellcheckLanguage {
 
   // Returns whether or not the given word is a contraction of valid words
   // (e.g. "word:word").
-  bool IsValidContraction(const std::u16string& word, int tag);
+  bool IsValidContraction(const std::u16string& word,
+                          spellcheck::mojom::SpellCheckHost& host);
 
   // Represents character attributes used for filtering out characters which
   // are not supported by this SpellCheck object.

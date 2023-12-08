@@ -15,8 +15,7 @@ SpellcheckLanguage::SpellcheckLanguage(
     : platform_spelling_engine_(CreateNativeSpellingEngine(embedder_provider)) {
 }
 
-SpellcheckLanguage::~SpellcheckLanguage() {
-}
+SpellcheckLanguage::~SpellcheckLanguage() = default;
 
 void SpellcheckLanguage::Init(base::File file, const std::string& language) {
   DCHECK(platform_spelling_engine_);
@@ -36,7 +35,7 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
     const char16_t* text_begin,
     size_t position_in_text,
     size_t text_length,
-    int tag,
+    spellcheck::mojom::SpellCheckHost& host,
     size_t* skip_or_misspelling_start,
     size_t* skip_or_misspelling_len,
     std::vector<std::u16string>* optional_suggestions) {
@@ -88,20 +87,22 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
 
     // Found a word (or a contraction) that the spellchecker can check the
     // spelling of.
-    if (platform_spelling_engine_->CheckSpelling(word, tag))
+    if (platform_spelling_engine_->CheckSpelling(word, host)) {
       continue;
+    }
 
     // If the given word is a concatenated word of two or more valid words
     // (e.g. "hello:hello"), we should treat it as a valid word.
-    if (IsValidContraction(word, tag))
+    if (IsValidContraction(word, host)) {
       continue;
+    }
 
     *skip_or_misspelling_start = position_in_text + word_start;
     *skip_or_misspelling_len = word_length;
 
     // Get the list of suggested words.
     if (optional_suggestions) {
-      platform_spelling_engine_->FillSuggestionList(word,
+      platform_spelling_engine_->FillSuggestionList(word, host,
                                                     optional_suggestions);
     }
     return IS_MISSPELLED;
@@ -114,8 +115,9 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
 // This function is a fall-back when the SpellcheckWordIterator class
 // returns a concatenated word which is not in the selected dictionary
 // (e.g. "in'n'out") but each word is valid.
-bool SpellcheckLanguage::IsValidContraction(const std::u16string& contraction,
-                                            int tag) {
+bool SpellcheckLanguage::IsValidContraction(
+    const std::u16string& contraction,
+    spellcheck::mojom::SpellCheckHost& host) {
   if (!contraction_iterator_.IsInitialized() &&
       !contraction_iterator_.Initialize(&character_attributes_, false)) {
     // We failed to initialize the word iterator, return as spelled correctly.
@@ -138,8 +140,9 @@ bool SpellcheckLanguage::IsValidContraction(const std::u16string& contraction,
     if (status == SpellcheckWordIterator::IS_SKIPPABLE)
       continue;
 
-    if (!platform_spelling_engine_->CheckSpelling(word, tag))
+    if (!platform_spelling_engine_->CheckSpelling(word, host)) {
       return false;
+    }
   }
   return true;
 }

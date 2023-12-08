@@ -30,14 +30,19 @@ struct SpellCheckBDictLanguage {
 };
 
 // Browser process interface exposed to the renderer for requesting spell-
-// check host services.
+// check host services to be initialized.
 //
-interface SpellCheckHost {
+interface SpellCheckInitializationHost {
   // Asks the browser to initialize the renderer's spellcheck system. The
   // initialize call arrives on interface spellcheck.mojom.SpellChecker
   // in async response to this request.
   RequestDictionary();
+};
 
+// Browser process interface exposed to the renderer for requesting spell-
+// check host services. This interface is bound per frame.
+//
+interface SpellCheckHost {
   // Tracks spell checking occurrences to collect histograms, where |word|
   // was checked, and |misspelled| is true if |word| was misspelt.
   NotifyChecked(mojo_base.mojom.String16 word, bool misspelled);
@@ -51,10 +56,8 @@ interface SpellCheckHost {
 
   // Asks the host to spellcheck the |text| using a platform-specific spell
   // checker, and returns the spellchecked |results|.
-  // TODO(crbug.com/812959): Try not to pass |route_id|. What SpellCheckHost
-  // needs is the render frame id, which should be passed in a cleaner way.
   [EnableIf=USE_BROWSER_SPELLCHECKER]
-  RequestTextCheck(mojo_base.mojom.String16 text, int32 route_id) =>
+  RequestTextCheck(mojo_base.mojom.String16 text) =>
       (array<SpellCheckResult> results);
 
   // Disconnects the Android spell checker session bridge.
@@ -63,10 +66,8 @@ interface SpellCheckHost {
 
   // Checks the correctness of a word with a platform-specific spell checker.
   // TODO(groby): This needs to originate from SpellcheckProvider.
-  // TODO(crbug.com/812959): Try not to pass |route_id|. What SpellCheckHost
-  // needs is the render frame id, which should be passed in a cleaner way.
   [EnableIf=USE_BROWSER_SPELLCHECKER, Sync]
-  CheckSpelling(mojo_base.mojom.String16 word, int32 route_id)
+  CheckSpelling(mojo_base.mojom.String16 word)
       => (bool correct);
 
   // Returns a list of suggestions for a given word with a platform-specific

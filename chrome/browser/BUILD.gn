@@ -7732,6 +7732,8 @@ static_library("browser") {
     sources += [
       "spellchecker/spell_check_host_chrome_impl.cc",
       "spellchecker/spell_check_host_chrome_impl.h",
+      "spellchecker/spell_check_initialization_host_impl.cc",
+      "spellchecker/spell_check_initialization_host_impl.h",
       "spellchecker/spellcheck_custom_dictionary.cc",
       "spellchecker/spellcheck_custom_dictionary.h",
       "spellchecker/spellcheck_factory.cc",

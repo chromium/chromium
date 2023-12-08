@@ -13,26 +13,18 @@
 
 class PlatformSpellingEngine : public SpellingEngine {
  public:
-  explicit PlatformSpellingEngine(
-      service_manager::LocalInterfaceProvider* embedder_provider);
+  PlatformSpellingEngine();
   ~PlatformSpellingEngine() override;
 
   void Init(base::File bdict_file) override;
   bool InitializeIfNeeded() override;
   bool IsEnabled() override;
-  bool CheckSpelling(const std::u16string& word_to_check, int tag) override;
+  bool CheckSpelling(const std::u16string& word_to_check,
+                     spellcheck::mojom::SpellCheckHost& host) override;
   void FillSuggestionList(
       const std::u16string& wrong_word,
+      spellcheck::mojom::SpellCheckHost& host,
       std::vector<std::u16string>* optional_suggestions) override;
-
- private:
-  spellcheck::mojom::SpellCheckHost& GetOrBindSpellCheckHost();
-
-  // Not owned. |embedder_provider_| outlives PlatformSpellingEngine.
-  raw_ptr<service_manager::LocalInterfaceProvider, ExperimentalRenderer>
-      embedder_provider_;
-
-  mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_PLATFORM_SPELLING_ENGINE_H_

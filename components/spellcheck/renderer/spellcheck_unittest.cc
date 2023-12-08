@@ -24,6 +24,7 @@
 #include "components/spellcheck/renderer/empty_local_interface_provider.h"
 #include "components/spellcheck/renderer/hunspell_engine.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
+#include "components/spellcheck/renderer/spellcheck_provider_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
@@ -32,7 +33,6 @@
 namespace {
 
 const int kNoOffset = 0;
-const int kNoTag = 0;
 
 base::FilePath GetHunspellDirectory() {
   base::FilePath hunspell_directory;
@@ -94,14 +94,15 @@ class SpellCheckTest : public testing::Test {
 
   SpellCheck* spell_check() { return spell_check_.get(); }
 
-  bool CheckSpelling(const std::string& word, int tag) {
+  bool CheckSpelling(const std::string& word) {
     return spell_check_->languages_.front()
-        ->platform_spelling_engine_->CheckSpelling(base::ASCIIToUTF16(word),
-                                                   tag);
+        ->platform_spelling_engine_->CheckSpelling(
+            base::ASCIIToUTF16(word), provider_.GetSpellCheckHost());
   }
 
-  bool IsValidContraction(const std::u16string& word, int tag) {
-    return spell_check_->languages_.front()->IsValidContraction(word, tag);
+  bool IsValidContraction(const std::u16string& word) {
+    return spell_check_->languages_.front()->IsValidContraction(
+        word, provider_.GetSpellCheckHost());
   }
 
   static void FillSuggestions(
@@ -115,7 +116,8 @@ class SpellCheckTest : public testing::Test {
   void TestSpellCheckParagraph(const std::u16string& input,
                                const std::vector<SpellCheckResult>& expected) {
     blink::WebVector<blink::WebTextCheckingResult> results;
-    spell_check()->SpellCheckParagraph(input, &results);
+    spell_check()->SpellCheckParagraph(input, provider_.GetSpellCheckHost(),
+                                       &results);
 
     EXPECT_EQ(results.size(), expected.size());
     size_t size = std::min(results.size(), expected.size());
@@ -128,9 +130,12 @@ class SpellCheckTest : public testing::Test {
 #endif
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   spellcheck::EmptyLocalInterfaceProvider embedder_provider_;
   std::unique_ptr<SpellCheck> spell_check_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+
+ protected:
+  TestingSpellCheckProvider provider_{&embedder_provider_};
 };
 
 struct MockTextCheckingResult {
@@ -544,7 +549,6 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
       {L"100,000,000", true},
       {L"3.141592653", true},
   };
-
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     size_t input_length = 0;
     if (kTestCases[i].input)
@@ -553,7 +557,8 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
     size_t misspelling_length;
     bool result = spell_check()->SpellCheckWord(
         base::WideToUTF16(kTestCases[i].input).c_str(), kNoOffset, input_length,
-        kNoTag, &misspelling_start, &misspelling_length, nullptr);
+        provider_.GetSpellCheckHost(), &misspelling_start, &misspelling_length,
+        nullptr);
 
     EXPECT_EQ(kTestCases[i].expected_result, result);
     EXPECT_EQ(kTestCases[i].misspelling_start, misspelling_start);
@@ -601,7 +606,8 @@ TEST_F(SpellCheckTest, SpellCheckSuggestions_EN_US) {
     size_t misspelling_length;
     bool result = spell_check()->SpellCheckWord(
         base::WideToUTF16(test_case.input).c_str(), kNoOffset, input_length,
-        kNoTag, &misspelling_start, &misspelling_length, &suggestions);
+        provider_.GetSpellCheckHost(), &misspelling_start, &misspelling_length,
+        &suggestions);
 
     // Check for spelling.
     EXPECT_EQ(test_case.expected_result, result);
@@ -961,7 +967,8 @@ TEST_F(SpellCheckTest, SpellCheckText) {
     size_t misspelling_length = 0;
     bool result = spell_check()->SpellCheckWord(
         base::WideToUTF16(kTestCases[i].input).c_str(), kNoOffset, input_length,
-        kNoTag, &misspelling_start, &misspelling_length, nullptr);
+        provider_.GetSpellCheckHost(), &misspelling_start, &misspelling_length,
+        nullptr);
 
     EXPECT_TRUE(result)
         << "\""
@@ -1017,8 +1024,8 @@ TEST_F(SpellCheckTest, MisspelledWords) {
     size_t misspelling_start = 0;
     size_t misspelling_length = 0;
     bool result = spell_check()->SpellCheckWord(
-        word.c_str(), kNoOffset, word_length, kNoTag, &misspelling_start,
-        &misspelling_length, nullptr);
+        word.c_str(), kNoOffset, word_length, provider_.GetSpellCheckHost(),
+        &misspelling_start, &misspelling_length, nullptr);
     EXPECT_FALSE(result);
     EXPECT_EQ(0u, misspelling_start);
     EXPECT_EQ(word_length, misspelling_length);
@@ -1115,7 +1122,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithEmptyString) {
 
   spell_check()->RequestTextChecking(
       std::u16string(),
-      std::make_unique<MockTextCheckingCompletion>(&completion));
+      std::make_unique<MockTextCheckingCompletion>(&completion),
+      provider_.GetWeakPtr());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1128,7 +1136,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
 
   const std::u16string text = u"hello";
   spell_check()->RequestTextChecking(
-      text, std::make_unique<MockTextCheckingCompletion>(&completion));
+      text, std::make_unique<MockTextCheckingCompletion>(&completion),
+      provider_.GetWeakPtr());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1141,7 +1150,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
 
   const std::u16string text = u"apple, zz";
   spell_check()->RequestTextChecking(
-      text, std::make_unique<MockTextCheckingCompletion>(&completion));
+      text, std::make_unique<MockTextCheckingCompletion>(&completion),
+      provider_.GetWeakPtr());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1157,7 +1167,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
 
   const std::u16string text = u"apple, zz, orange, zz";
   spell_check()->RequestTextChecking(
-      text, std::make_unique<MockTextCheckingCompletion>(&completion));
+      text, std::make_unique<MockTextCheckingCompletion>(&completion),
+      provider_.GetWeakPtr());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1178,7 +1189,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
 
   for (int i = 0; i < 3; ++i)
     spell_check()->RequestTextChecking(
-        text[i], std::make_unique<MockTextCheckingCompletion>(&completion[i]));
+        text[i], std::make_unique<MockTextCheckingCompletion>(&completion[i]),
+        provider_.GetWeakPtr());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1199,7 +1211,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutInitialization) {
   const std::u16string text = u"zz";
 
   spell_check()->RequestTextChecking(
-      text, std::make_unique<MockTextCheckingCompletion>(&completion));
+      text, std::make_unique<MockTextCheckingCompletion>(&completion),
+      provider_.GetWeakPtr());
 
   // The task will not be posted yet.
   base::RunLoop().RunUntilIdle();
@@ -1217,7 +1230,8 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
   // Calls RequestTextchecking a few times.
   for (int i = 0; i < 3; ++i)
     spell_check()->RequestTextChecking(
-        text[i], std::make_unique<MockTextCheckingCompletion>(&completion[i]));
+        text[i], std::make_unique<MockTextCheckingCompletion>(&completion[i]),
+        provider_.GetWeakPtr());
 
   // The last task will be posted after initialization, however the other
   // requests should be pressed without spellchecking.
@@ -1247,9 +1261,9 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
   spellcheck_results.push_back(
       SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string()));
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
-  spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
-                                           0, text, spellcheck_results,
-                                           &textcheck_results);
+  spell_check()->CreateTextCheckingResults(
+      SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
+      text, spellcheck_results, &textcheck_results);
   ASSERT_EQ(spellcheck_results.size(), textcheck_results.size());
   EXPECT_EQ(blink::kWebTextDecorationTypeSpelling,
             textcheck_results[0].decoration);
@@ -1265,9 +1279,9 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
   spellcheck_results.push_back(
       SpellCheckResult(SpellCheckResult::SPELLING, 7, 4, std::u16string()));
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
-  spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
-                                           0, text, spellcheck_results,
-                                           &textcheck_results);
+  spell_check()->CreateTextCheckingResults(
+      SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
+      text, spellcheck_results, &textcheck_results);
   ASSERT_EQ(spellcheck_results.size(), textcheck_results.size());
   EXPECT_EQ(blink::kWebTextDecorationTypeGrammar,
             textcheck_results[0].decoration);
@@ -1339,9 +1353,9 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
                        std::vector<std::u16string>({u"have", u"haven't"})));
 
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
-  spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
-                                           0, text, spellcheck_results,
-                                           &textcheck_results);
+  spell_check()->CreateTextCheckingResults(
+      SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, provider_.GetSpellCheckHost(), 0,
+      text, spellcheck_results, &textcheck_results);
 
   static std::vector<std::vector<const wchar_t*>> kExpectedReplacements = {
       {L"I've"},
@@ -1410,8 +1424,8 @@ TEST_F(SpellCheckTest, EnglishWords) {
       size_t misspelling_length = 0;
       bool result = spell_check()->SpellCheckWord(
           base::ASCIIToUTF16(kTestCases[i].input).c_str(), kNoOffset,
-          input_length, kNoTag, &misspelling_start, &misspelling_length,
-          nullptr);
+          input_length, provider_.GetSpellCheckHost(), &misspelling_start,
+          &misspelling_length, nullptr);
 
       EXPECT_EQ(kTestCases[i].should_pass, result) << kTestCases[i].input <<
           " in " << kLocales[j];
@@ -1441,8 +1455,8 @@ TEST_F(SpellCheckTest, NoSuggest) {
     size_t misspelling_length = 0;
     bool result = spell_check()->SpellCheckWord(
         base::ASCIIToUTF16(test_case.suggestion).c_str(), kNoOffset,
-        suggestion_length, kNoTag, &misspelling_start, &misspelling_length,
-        nullptr);
+        suggestion_length, provider_.GetSpellCheckHost(), &misspelling_start,
+        &misspelling_length, nullptr);
 
     EXPECT_EQ(test_case.should_pass, result) << test_case.suggestion;
 
@@ -1452,9 +1466,9 @@ TEST_F(SpellCheckTest, NoSuggest) {
     if (test_case.input)
       input_length = strlen(test_case.input);
     result = spell_check()->SpellCheckWord(
-        base::ASCIIToUTF16(test_case.input).c_str(), kNoOffset,
-        input_length, kNoTag, &misspelling_start,
-        &misspelling_length, &suggestions);
+        base::ASCIIToUTF16(test_case.input).c_str(), kNoOffset, input_length,
+        provider_.GetSpellCheckHost(), &misspelling_start, &misspelling_length,
+        &suggestions);
 
     // Input word should be a misspelling.
     EXPECT_FALSE(result) << test_case.input << " is not a misspelling";
@@ -1516,10 +1530,10 @@ TEST_F(SpellCheckTest, SpellingEngine_CheckSpelling) {
   InitializeIfNeeded();
   ASSERT_FALSE(InitializeIfNeeded());
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    bool result = CheckSpelling(kTestCases[i].word, 0);
-    EXPECT_EQ(kTestCases[i].expected_result, result) <<
-        "Failed test for " << kTestCases[i].word;
+  for (auto& test_case : kTestCases) {
+    bool result = CheckSpelling(test_case.word);
+    EXPECT_EQ(test_case.expected_result, result)
+        << "Failed test for " << test_case.word;
   }
 }
 
@@ -1534,20 +1548,16 @@ TEST_F(SpellCheckTest, LogicalSuggestions) {
     { "accidently", "accidentally" }
   };
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+  for (auto& test_case : kTestCases) {
     size_t misspelling_start = 0;
     size_t misspelling_length = 0;
     std::vector<std::u16string> suggestions;
     EXPECT_FALSE(spell_check()->SpellCheckWord(
-        base::ASCIIToUTF16(kTestCases[i].misspelled).c_str(),
-        kNoOffset,
-        strlen(kTestCases[i].misspelled),
-        kNoTag,
-        &misspelling_start,
-        &misspelling_length,
-        &suggestions));
+        base::ASCIIToUTF16(test_case.misspelled).c_str(), kNoOffset,
+        strlen(test_case.misspelled), provider_.GetSpellCheckHost(),
+        &misspelling_start, &misspelling_length, &suggestions));
     ASSERT_GE(suggestions.size(), 1U);
-    EXPECT_EQ(suggestions[0], base::ASCIIToUTF16(kTestCases[i].suggestion));
+    EXPECT_EQ(suggestions[0], base::ASCIIToUTF16(test_case.suggestion));
   }
 }
 
@@ -1562,10 +1572,11 @@ TEST_F(SpellCheckTest, IsValidContraction) {
       L"in’n’out",
   };
 
-  for (size_t i = 0; i < std::size(kLanguages); ++i) {
-    ReinitializeSpellCheck(kLanguages[i]);
-    for (size_t j = 0; j < std::size(kWords); ++j)
-      EXPECT_TRUE(IsValidContraction(base::WideToUTF16(kWords[j]), 0));
+  for (auto* const language : kLanguages) {
+    ReinitializeSpellCheck(language);
+    for (auto* const word : kWords) {
+      EXPECT_TRUE(IsValidContraction(base::WideToUTF16(word)));
+    }
   }
 }
 

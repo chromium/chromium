@@ -104,7 +104,8 @@ class MultilingualSpellCheckTest : public testing::Test {
       const std::u16string& input,
       const std::vector<SpellCheckResult>& expected) {
     blink::WebVector<blink::WebTextCheckingResult> results;
-    spellcheck_->SpellCheckParagraph(input, &results);
+    spellcheck_->SpellCheckParagraph(input, provider_->GetSpellCheckHost(),
+                                     &results);
 
     EXPECT_EQ(expected.size(), results.size());
     size_t size = std::min(results.size(), expected.size());

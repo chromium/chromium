@@ -166,7 +166,7 @@ void AwContentRendererClient::RenderFrameCreated(
   }
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
-  new SpellCheckProvider(render_frame, spellcheck_.get(), this);
+  new SpellCheckProvider(render_frame, spellcheck_.get());
 #endif
 
   // Owned by |render_frame|.
