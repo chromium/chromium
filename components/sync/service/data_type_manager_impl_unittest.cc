@@ -1761,4 +1761,84 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldReconfigureOnPreconditionChanged) {
   EXPECT_TRUE(dtm_->needs_reconfigure_for_test());
 }
 
+// Tests that failure of data type in STOPPING state is handled during
+// configuration.
+// Regression test for crbug.com/1477324.
+TEST_F(SyncDataTypeManagerImplTest, ShouldHandleStoppingTypesFailure) {
+  AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::ABORTED, DataTypeStatusTable());
+  Configure({BOOKMARKS});
+  ASSERT_EQ(GetController(BOOKMARKS)->state(),
+            DataTypeController::MODEL_STARTING);
+
+  // Bring BOOKMARKS to a STOPPING state.
+  dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+  ASSERT_EQ(DataTypeManager::STOPPED, dtm_->state());
+
+  // Recreate DTM, simulating a Sync restart.
+  RecreateDataTypeManager();
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Test error"));
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(
+      DataTypeManager::OK,
+      BuildStatusTable(ModelTypeSet(),
+                       /*datatype_errors=*/{BOOKMARKS}, ModelTypeSet()));
+  // BOOKMARKS should not be started since it is in a FAILED state.
+  Configure({BOOKMARKS});
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // No need to finish the download of BOOKMARKS since it was never started.
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_FALSE(
+      dtm_->GetTypesWithPendingDownloadForInitialSync().Has(BOOKMARKS));
+}
+
+// Tests that failure of data type in NOT_RUNNING state is handled during
+// configuration.
+// Regression test for crbug.com/1477324.
+TEST_F(SyncDataTypeManagerImplTest, ShouldHandleStoppedTypesFailure) {
+  AddController(BOOKMARKS);
+
+  // Start and stop BOOKMARKS. This is needed to allow FakeDataTypeController to
+  // get into FAILED state from NOT_RUNNING.
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+  Configure({BOOKMARKS});
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // priority types
+  dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
+
+  // Recreate DTM, simulating a Sync restart.
+  RecreateDataTypeManager();
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
+
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Test error"));
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(
+      DataTypeManager::OK,
+      BuildStatusTable(ModelTypeSet(),
+                       /*datatype_errors=*/{BOOKMARKS}, ModelTypeSet()));
+  // BOOKMARKS should not be started since it is in a FAILED state.
+  Configure({BOOKMARKS});
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // No need to finish the download of BOOKMARKS since it was never started.
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+  EXPECT_FALSE(
+      dtm_->GetTypesWithPendingDownloadForInitialSync().Has(BOOKMARKS));
+}
+
 }  // namespace syncer
