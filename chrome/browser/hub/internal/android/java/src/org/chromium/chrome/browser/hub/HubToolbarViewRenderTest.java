@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import android.app.Activity;
 import android.view.LayoutInflater;
 
+import androidx.annotation.DrawableRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -24,6 +25,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Render tests for {@link HubPaneHostView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -63,14 +67,18 @@ public class HubToolbarViewRenderTest {
         PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);
     }
 
+    private FullButtonData makeButtonData(@DrawableRes int drawableRes) {
+        DisplayButtonData displayButtonData =
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, drawableRes);
+        return new DelegateButtonData(displayButtonData, () -> {});
+    }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testActionButton() throws Exception {
-        DisplayButtonData displayButtonData =
-                new ResourceButtonData(
-                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.new_tab_icon);
-        FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, () -> {});
+        FullButtonData fullButtonData = makeButtonData(R.drawable.new_tab_icon);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -86,5 +94,26 @@ public class HubToolbarViewRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, null));
         mRenderTestRule.render(mToolbar, "noActionButton");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPaneSwitcher() throws Exception {
+        List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
+        paneSwitcherButtonData.add(makeButtonData(R.drawable.new_tab_icon));
+        paneSwitcherButtonData.add(makeButtonData(R.drawable.incognito_small));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
+                    mPropertyModel.set(
+                            HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
+                });
+        mRenderTestRule.render(mToolbar, "paneSwitcher");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 1));
+        mRenderTestRule.render(mToolbar, "paneSwitcherSelectedIndex");
     }
 }

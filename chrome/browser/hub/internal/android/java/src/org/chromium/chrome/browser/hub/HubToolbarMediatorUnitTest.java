@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import androidx.test.filters.SmallTest;
@@ -68,17 +69,21 @@ public class HubToolbarMediatorUnitTest {
         mModel = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         mModel.addObserver(mPropertyObserver);
 
-        when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonSupplier);
-        when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
-        when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneOrderController.getPaneOrder())
                 .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.BOOKMARKS));
+        when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
+        when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPane);
         when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(mBookmarksPane);
+
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
+        when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonSupplier);
+        when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+
         when(mBookmarksPane.getReferenceButtonDataSupplier())
                 .thenReturn(mBookmarksReferenceButtonDataSupplier2);
+        when(mBookmarksPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);
 
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         mBookmarksReferenceButtonDataSupplier2.set(mDisplayButtonData);
@@ -180,5 +185,34 @@ public class HubToolbarMediatorUnitTest {
 
         mBookmarksReferenceButtonDataSupplier2.set(null);
         assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testPaneSwitcherIndex() {
+        new HubToolbarMediator(mModel, mPaneManager);
+        assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
+
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        assertEquals(0, mModel.get(PANE_SWITCHER_INDEX));
+
+        mFocusedPaneSupplier.set(mBookmarksPane);
+        assertEquals(1, mModel.get(PANE_SWITCHER_INDEX));
+
+        mFocusedPaneSupplier.set(null);
+        assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
+
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        mTabSwitcherReferenceButtonDataSupplier1.set(null);
+        assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
+
+        mFocusedPaneSupplier.set(mBookmarksPane);
+        assertEquals(0, mModel.get(PANE_SWITCHER_INDEX));
+
+        mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
+        assertEquals(1, mModel.get(PANE_SWITCHER_INDEX));
+
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        assertEquals(0, mModel.get(PANE_SWITCHER_INDEX));
     }
 }
