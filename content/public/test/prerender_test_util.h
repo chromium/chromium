@@ -128,6 +128,9 @@ class PrerenderTestHelper {
   static int GetHostForUrl(WebContents& web_contents, const GURL& gurl);
   int GetHostForUrl(const GURL& gurl);
 
+  // Returns whether the registry holds the handler for prerender-into-new-tab.
+  bool HasNewTabHandle(int host_id);
+
   // Waits until a prerender has finished loading. Note: this may not be called
   // when the load fails (e.g. because it was blocked by a NavigationThrottle,
   // or the WebContents is destroyed). If the prerender doesn't yet exist, this

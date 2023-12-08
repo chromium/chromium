@@ -213,6 +213,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
+  // Returns whether prerender_new_tab_handle_by_frame_tree_node_id_ has the
+  // given id.
+  bool HasNewTabHandleByIdForTesting(int frame_tree_node_id);
+
   // Cancels all hosts.
   void CancelAllHostsForTesting();
 

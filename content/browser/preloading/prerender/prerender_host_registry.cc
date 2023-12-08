@@ -1026,6 +1026,29 @@ bool PrerenderHostRegistry::CancelHostInternal(
 
   NotifyCancel(prerender_host->frame_tree_node_id(), reason);
 
+  // Under kPrerender2InNewTab, if the host we are attempting to cancel is the
+  // new-tab host and initiator WebContents's PrerenderHostRegistry for this
+  // host is still alive, invoke the initiator WebContents's
+  // CancelNewTabHostInternal to destroy PrerenderNewTabHandle and WebContents
+  // that this new-tab host belongs to. This will eventually destroy `this`, so
+  // it should be performed asynchronously.
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
+    CHECK(prerender_host->initiator_web_contents());
+    WebContentsImpl* initiator_web_contents = static_cast<WebContentsImpl*>(
+        prerender_host->initiator_web_contents().get());
+    if (web_contents() != initiator_web_contents &&
+        !initiator_web_contents->IsBeingDestroyed()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              base::IgnoreResult(
+                  &PrerenderHostRegistry::CancelNewTabHostInternal),
+              initiator_web_contents->GetPrerenderHostRegistry()->GetWeakPtr(),
+              frame_tree_node_id,
+              PrerenderCancellationReason(reason.final_status())));
+    }
+  }
+
   // Asynchronously delete the prerender host.
   ScheduleToDeleteAbandonedHost(std::move(prerender_host), reason);
   return true;
@@ -1051,7 +1074,6 @@ bool PrerenderHostRegistry::CancelNewTabHostInternal(
   prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
   NotifyCancel(frame_tree_node_id, reason);
   handle->CancelPrerendering(reason);
-
   return true;
 }
 
@@ -1218,6 +1240,12 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     }
   }
   return nullptr;
+}
+
+bool PrerenderHostRegistry::HasNewTabHandleByIdForTesting(
+    int frame_tree_node_id) {
+  return prerender_new_tab_handle_by_frame_tree_node_id_.contains(
+      frame_tree_node_id);
 }
 
 void PrerenderHostRegistry::CancelAllHostsForTesting() {

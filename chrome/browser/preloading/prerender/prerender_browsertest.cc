@@ -637,10 +637,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(host_id);
   ASSERT_TRUE(prerender_web_contents);
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      prerender_web_contents);
   prerender_web_contents->Close();
-  EXPECT_EQ(content::test::PrerenderTestHelper::GetHostForUrl(
-                *prerender_web_contents, prerender_url),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // WebContents created for the new-tab host will eventually be destroyed after
+  // host cancellation.
+  destroyed_watcher.Wait();
+  EXPECT_FALSE(prerender_helper().HasNewTabHandle(host_id));
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",

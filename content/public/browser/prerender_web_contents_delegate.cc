@@ -41,9 +41,7 @@ void PrerenderWebContentsDelegate::LoadingStateChanged(
 }
 
 void PrerenderWebContentsDelegate::CloseContents(WebContents* source) {
-  // Cancelling prerendering should eventually destroy `this` and `source`.
-  // However, this behavior is not implemented yet.
-  // TODO(https://crbug.com/1499759): Implement this behavior.
+  // Cancelling prerendering will eventually destroy `this` and `source`.
   static_cast<WebContentsImpl*>(source)
       ->GetPrerenderHostRegistry()
       ->CancelAllHosts(PrerenderFinalStatus::kTabClosedWithoutUserGesture);

@@ -356,6 +356,11 @@ int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
   return GetHostForUrl(*GetWebContents(), gurl);
 }
 
+bool PrerenderTestHelper::HasNewTabHandle(int host_id) {
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
+  return registry.HasNewTabHandleByIdForTesting(host_id);
+}
+
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(int host_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadCompletion",
               "host_id", host_id);
