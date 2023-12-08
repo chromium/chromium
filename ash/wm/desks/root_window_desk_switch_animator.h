@@ -274,6 +274,11 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     is_combine_desks_type_ = is_combine_desks_type;
   }
 
+  // When true, this indicates that we have failed to take a screenshot (either
+  // the first or the second) and that the desk switch should proceed without
+  // any animation.
+  bool screenshot_failed() const { return screenshot_failed_; }
+
   // Begins phase (1) of the animation by taking a screenshot of the starting
   // desk content. Delegate::OnStartingDeskScreenshotTaken() will be called once
   // the screenshot is taken and placed on top of everything on the screen.
@@ -416,6 +421,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
 
   // True when phase (3) finishes.
   bool animation_finished_ = false;
+
+  // True if we have failed (including retries) to take any screenshot.
+  bool screenshot_failed_ = false;
 
   // True if during a continuous swipe, the user went all the way left or right
   // and swiping in that direction will no longer update the UI.

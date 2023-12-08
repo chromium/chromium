@@ -490,8 +490,7 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
       TakeStartingDeskScreenshot();
     } else {
       LOG(ERROR) << "Received multiple empty screenshots of the starting desk.";
-      NOTREACHED();
-      starting_desk_screenshot_taken_ = true;
+      screenshot_failed_ = true;
       delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
     }
 
@@ -512,8 +511,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
       TakeEndingDeskScreenshot();
     } else {
       LOG(ERROR) << "Received multiple empty screenshots of the ending desk.";
-      NOTREACHED();
-      ending_desk_screenshot_taken_ = true;
+      screenshot_failed_ = true;
       delegate_->OnEndingDeskScreenshotTaken();
     }
 
