@@ -31,6 +31,14 @@ void ScopedPictureInPictureOcclusionObservation::Observe(
     return;
   }
 
+  // If there's an existing observation, we need to ensure the old
+  // `observation_` is destroyed before the old `observer_`. We also need to
+  // reset the `widget_observation_` since a base::ScopedObservation requires a
+  // reset before observing again.
+  observation_.reset();
+  observer_.reset();
+  widget_observation_.Reset();
+
   observer_ = std::make_unique<PictureInPictureOcclusionTrackerObserver>(
       widget, occlusion_observer_);
   observation_ = std::make_unique<

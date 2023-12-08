@@ -243,4 +243,24 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
+// Regression test for https://crbug.com/1509371.
+TEST_F(PictureInPictureOcclusionTrackerTest, ObserveTwiceDoesNotCrash) {
+  MockPictureInPictureOcclusionObserver observer;
+  ScopedPictureInPictureOcclusionObservation observation(&observer);
+
+  // Create an observed widget.
+  std::unique_ptr<views::Widget> occludable_widget1 = CreateTestWidget();
+  occludable_widget1->Show();
+  observation.Observe(occludable_widget1.get());
+
+  // Create a second observed widget, and observe that one with the same
+  // ScopedPictureInPictureOcclusionObservation, replacing the first one.
+  std::unique_ptr<views::Widget> occludable_widget2 = CreateTestWidget();
+  occludable_widget2->Show();
+  observation.Observe(occludable_widget2.get());
+
+  // Destroy the original widget. This should not crash.
+  occludable_widget1.reset();
+}
+
 }  // namespace
