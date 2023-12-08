@@ -110,8 +110,7 @@ class FakeWebState : public WebState {
       const override API_AVAILABLE(ios(15.0));
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
-                           void (^handler)(id<CRWWebViewDownload>)) override
-      API_AVAILABLE(ios(14.5));
+                           void (^handler)(id<CRWWebViewDownload>)) override;
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;

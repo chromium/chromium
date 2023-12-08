@@ -14,7 +14,7 @@
 @property(nonatomic, strong) NSURLRequest* request;
 
 // Download object of a web resource.
-@property(nonatomic, strong) WKDownload* download API_AVAILABLE(ios(14.5));
+@property(nonatomic, strong) WKDownload* download;
 
 @end
 
@@ -23,8 +23,7 @@
 - (instancetype)initWithPath:(NSString*)destination
                      request:(NSURLRequest*)request
                      webview:(WKWebView*)webview
-                    delegate:(id<CRWWebViewDownloadDelegate>)delegate
-    API_AVAILABLE(ios(14.5)) {
+                    delegate:(id<CRWWebViewDownloadDelegate>)delegate {
   self = [super init];
   if (self) {
     self.destinationPath = destination;
@@ -35,7 +34,7 @@
   return self;
 }
 
-- (void)startDownload API_AVAILABLE(ios(14.5)) {
+- (void)startDownload {
   [self.webView startDownloadUsingRequest:self.request
                         completionHandler:^(WKDownload* download) {
                           download.delegate = self;
@@ -43,7 +42,7 @@
                         }];
 }
 
-- (void)cancelDownload:(ProceduralBlock)completion API_AVAILABLE(ios(14.5)) {
+- (void)cancelDownload:(ProceduralBlock)completion {
   [self.download cancel:^(NSData* resumeData) {
     if (completion) {
       completion();
@@ -57,19 +56,18 @@
     decideDestinationUsingResponse:(NSURLResponse*)response
                  suggestedFilename:(NSString*)suggestedFilename
                  completionHandler:
-                     (void (^)(NSURL* destination))completionHandler
-    API_AVAILABLE(ios(14.5)) {
+                     (void (^)(NSURL* destination))completionHandler {
   NSURL* destinationURL = [NSURL fileURLWithPath:self.destinationPath];
   completionHandler(destinationURL);
 }
 
-- (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(14.5)) {
+- (void)downloadDidFinish:(WKDownload*)download {
   [self.delegate downloadDidFinish];
 }
 
 - (void)download:(WKDownload*)download
     didFailWithError:(NSError*)error
-          resumeData:(NSData*)resumeData API_AVAILABLE(ios(14.5)) {
+          resumeData:(NSData*)resumeData {
   [self.delegate downloadDidFailWithError:error];
 }
 

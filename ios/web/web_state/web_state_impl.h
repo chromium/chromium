@@ -359,8 +359,7 @@ class WebStateImpl final : public WebState {
   NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const final;
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
-                           void (^handler)(id<CRWWebViewDownload>)) final
-      API_AVAILABLE(ios(14.5));
+                           void (^handler)(id<CRWWebViewDownload>)) final;
   bool IsFindInteractionSupported() final;
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;

@@ -12,7 +12,7 @@
 @protocol CRWWebViewDownload <NSObject>
 
 // Cancels the download with a completion block.
-- (void)cancelDownload:(ProceduralBlock)completion API_AVAILABLE(ios(14.5));
+- (void)cancelDownload:(ProceduralBlock)completion;
 
 @end
 

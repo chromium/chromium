@@ -509,8 +509,7 @@ class WebState : public base::SupportsUserData {
   // launched download.
   virtual void DownloadCurrentPage(NSString* destination_file,
                                    id<CRWWebViewDownloadDelegate> delegate,
-                                   void (^handler)(id<CRWWebViewDownload>))
-      API_AVAILABLE(ios(14.5)) = 0;
+                                   void (^handler)(id<CRWWebViewDownload>)) = 0;
 
   // Whether the Find interaction is supported and can be enabled.
   virtual bool IsFindInteractionSupported() = 0;

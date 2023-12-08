@@ -225,8 +225,8 @@ class WebStateImpl;
 - (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
                        destinationPath:(NSString*)destination
                               delegate:(id<CRWWebViewDownloadDelegate>)delegate
-                               handler:(void (^)(id<CRWWebViewDownload>))handler
-    API_AVAILABLE(ios(14.5));
+                               handler:
+                                   (void (^)(id<CRWWebViewDownload>))handler;
 
 // Returns whether the Find interaction is supported and can be enabled.
 - (BOOL)findInteractionSupported;

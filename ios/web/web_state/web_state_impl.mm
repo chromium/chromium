@@ -802,10 +802,10 @@ void WebStateImpl::RemovePolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.RemoveObserver(decider);
 }
 
-void WebStateImpl::DownloadCurrentPage(NSString* destination_file,
-                                       id<CRWWebViewDownloadDelegate> delegate,
-                                       void (^handler)(id<CRWWebViewDownload>))
-    API_AVAILABLE(ios(14.5)) {
+void WebStateImpl::DownloadCurrentPage(
+    NSString* destination_file,
+    id<CRWWebViewDownloadDelegate> delegate,
+    void (^handler)(id<CRWWebViewDownload>)) {
   CRWWebController* web_controller = GetWebController();
   NSURLRequest* request =
       [NSURLRequest requestWithURL:net::NSURLWithGURL(GetLastCommittedURL())];

@@ -30,12 +30,11 @@
 - (instancetype)initWithPath:(NSString*)destination
                      request:(NSURLRequest*)request
                      webview:(WKWebView*)webview
-                    delegate:(id<CRWWebViewDownloadDelegate>)delegate
-    API_AVAILABLE(ios(14.5));
+                    delegate:(id<CRWWebViewDownloadDelegate>)delegate;
 
 // Starts to download the resource at the URL in the request specified at the
 // initialization.
-- (void)startDownload API_AVAILABLE(ios(14.5));
+- (void)startDownload;
 
 @end
 
