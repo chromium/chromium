@@ -230,13 +230,16 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
 
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ": device = " << classic_address;
 
-  // For BLE devices, since we cannot connect to a message stream to retrieve
-  // the model ID and the BLE address is already known, the only remaining
-  // parameter needed is the model ID, which we retrieve via GATT characteristic
+  // For BLE devices, check it supports Fast Pair. Then, since the message
+  // stream is optional for BLE HIDs, and the BLE address is already known, the
+  // only remaining parameter needed is the model ID, which we retrieve via GATT
+  // characteristic.
   if (ash::features::IsFastPairHIDEnabled() &&
-      device->GetType() == device::BLUETOOTH_TRANSPORT_LE) {
+      device->GetType() == device::BLUETOOTH_TRANSPORT_LE &&
+      base::Contains(device->GetUUIDs(), kFastPairBluetoothUuid)) {
     CD_LOG(VERBOSE, Feature::FP)
-        << __func__ << ": BLE device detected, creating GATT connection";
+        << __func__
+        << ": BLE fast pair device detected, creating GATT connection";
     CreateGattConnection(device);
     return;
   }
