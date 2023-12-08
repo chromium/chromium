@@ -4,20 +4,29 @@
 
 #include "ash/system/unified/feature_tile.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/strings/string_number_conversions.h"
+#include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -70,6 +79,10 @@ constexpr gfx::Size kCompactTwoRowTitleLabelSize(kCompactWidth - 24,
 constexpr gfx::Insets kCompactTitlesContainerMargins =
     gfx::Insets::TLBR(0, 12, 6, 12);
 
+// Download progress constants.
+constexpr int kDownloadProgressBorderThickness = 4;
+constexpr int kDownloadProgressLeadingEdgeRadius = 2;
+
 // Creates an ink drop hover highlight for `host` with `color_id`.
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
     views::View* host,
@@ -83,6 +96,69 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 }
 
 }  // namespace
+
+FeatureTile::ProgressBackground::ProgressBackground(
+    const ui::ColorId progress_color_id,
+    const ui::ColorId background_color_id)
+    : progress_color_id_(progress_color_id),
+      background_color_id_(background_color_id) {}
+
+void FeatureTile::ProgressBackground::Paint(gfx::Canvas* canvas,
+                                            views::View* view) const {
+  FeatureTile* tile = static_cast<FeatureTile*>(view);
+
+  // Start with a simple rounded-rect background as the base. This part is
+  // symmetric so the canvas does not need to be flipped for RTL.
+  cc::PaintFlags background_flags;
+  background_flags.setAntiAlias(true);
+  background_flags.setStyle(cc::PaintFlags::kFill_Style);
+  background_flags.setColor(
+      view->GetColorProvider()->GetColor(background_color_id_));
+  canvas->DrawRoundRect(view->GetLocalBounds(), tile->corner_radius_,
+                        background_flags);
+
+  // Then draw the progress bar on top. This part is NOT symmetric, so first
+  // flip the canvas (if necessary) to handle RTL layouts. Do this using a
+  // `gfx::ScopedCanvas` so that the canvas does not stay flipped for other
+  // paint commands later in the pipeline that aren't expecting a flipped
+  // canvas.
+  gfx::ScopedCanvas scoped_canvas(canvas);
+  if (!view->GetFlipCanvasOnPaintForRTLUI()) {
+    scoped_canvas.FlipIfRTL(view->width());
+  }
+
+  // The progress bar is a rounded-rect (of radius
+  // `kDownloadProgressLeadingEdgeRadius`) that is clipped to a slightly smaller
+  // rounded-rect. The clip's radius is set such that there appears to be a
+  // border of thickness `kDownloadProgressBorderThickness` all around the tile
+  // (note that this is not an actual `views::Border`).
+
+  // Set the clip.
+  gfx::Rect clip_bounds(view->GetLocalBounds());
+  clip_bounds.Inset(kDownloadProgressBorderThickness);
+  int clip_radius =
+      std::max(0, tile->corner_radius_ - kDownloadProgressBorderThickness);
+  SkScalar clip_radii[8];
+  std::fill_n(clip_radii, 8, clip_radius);
+  SkPath clip;
+  clip.addRoundRect(gfx::RectToSkRect(clip_bounds), clip_radii);
+  canvas->ClipPath(clip, /*do_anti_alias=*/true);
+
+  // Shrink the width of the progress bar according to the tile's current
+  // download progress.
+  float percent = static_cast<float>(tile->download_progress_percent_) / 100.0f;
+  gfx::Rect progress_bounds(clip_bounds);
+  progress_bounds.set_width(percent * progress_bounds.width());
+
+  // Draw the progress bar.
+  cc::PaintFlags progress_flags;
+  progress_flags.setAntiAlias(true);
+  progress_flags.setStyle(cc::PaintFlags::kFill_Style);
+  progress_flags.setColor(
+      view->GetColorProvider()->GetColor(progress_color_id_));
+  canvas->DrawRoundRect(progress_bounds, kDownloadProgressLeadingEdgeRadius,
+                        progress_flags);
+}
 
 FeatureTile::FeatureTile(PressedCallback callback,
                          bool is_togglable,
@@ -175,7 +251,7 @@ void FeatureTile::CreateChildViews() {
     label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
     // By default, assume compact tiles will not support sub-labels.
-    SetCompactTileLabelPreferences(/*add_sub_label=*/false);
+    SetCompactTileLabelPreferences(/*has_sub_label=*/false);
 
     // Compact labels use kCrosAnnotation2 with a shorter custom line height.
     const auto font_list = TypographyProvider::Get()->ResolveTypographyToken(
@@ -262,8 +338,15 @@ void FeatureTile::UpdateColors() {
     foreground_optional_color = cros_tokens::kCrosSysDisabled;
   }
 
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                         corner_radius_));
+  SetBackground(
+      features::IsVcDlcUiEnabled() &&
+              download_state_ == DownloadState::kDownloading
+          ? std::make_unique<ProgressBackground>(
+                /*progress_color_id=*/cros_tokens::kCrosSysHighlightShape,
+                /*background_color_id=*/background_color)
+          : views::CreateThemedRoundedRectBackground(background_color,
+                                                     corner_radius_));
+
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetBaseColorId(toggled_
                                ? cros_tokens::kCrosSysRipplePrimary
@@ -369,6 +452,18 @@ void FeatureTile::SetIconButtonTooltipText(const std::u16string& tooltip_text) {
 }
 
 void FeatureTile::SetLabel(const std::u16string& label) {
+  // If `VcDlcUi` is enabled and the tile is currently in a download state that
+  // requires a non-client-specified label to be shown then store the new
+  // client-specified label but don't immediately update the UI. The UI will be
+  // updated to show the new label when the download finishes.
+  if (features::IsVcDlcUiEnabled()) {
+    client_specified_label_text_ = label;
+    if (download_state_ == DownloadState::kPending ||
+        download_state_ == DownloadState::kDownloading) {
+      return;
+    }
+  }
+
   label_->SetText(label);
 }
 
@@ -395,8 +490,44 @@ void FeatureTile::SetSubLabelVisibility(bool visible) {
     // visible, the primary label and sub-label have one line each to display
     // text. If disabling sub-label visibility, reset `label_` to allow its text
     // to display on two lines.
-    SetCompactTileLabelPreferences(/*add_sub_label=*/visible);
+    SetCompactTileLabelPreferences(/*has_sub_label=*/visible);
   }
+}
+
+void FeatureTile::SetDownloadState(DownloadState state, int progress) {
+  // Download state is only supported when `VcDlcUi` is enabled.
+  CHECK(features::IsVcDlcUiEnabled())
+      << "Download states are not supported when `VcDlcUi` is disabled";
+
+  // Check if this tile is already in a download state such that we can bail out
+  // without doing any updates.
+  if (download_state_ == state) {
+    // We can always bail out early if we're already in the given
+    // non-downloading state.
+    if (state != DownloadState::kDownloading) {
+      return;
+    }
+
+    // We can only bail out early from a downloading state if we're already at
+    // the given download progress.
+    if (download_progress_percent_ == progress) {
+      return;
+    }
+  }
+
+  // Set the new download state and update the tile to reflect it.
+  if (state == DownloadState::kDownloading) {
+    CHECK_GE(progress, 0)
+        << "Expected download progress to be in the range [0, 100], actual: "
+        << progress;
+    CHECK_LE(progress, 100)
+        << "Expected download progress to be in the range [0, 100], actual: "
+        << progress;
+    download_progress_percent_ = progress;
+  }
+  download_state_ = state;
+  UpdateColors();
+  UpdateLabelForDownloadState();
 }
 
 void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -474,6 +605,35 @@ void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
   label_->SetMultiLine(!has_sub_label);
   // Elide after 2 lines if there's no sub-label. Otherwise, 1 line.
   label_->SetMaxLines(has_sub_label ? 1 : 2);
+}
+
+void FeatureTile::SetDownloadLabel(const std::u16string& download_label) {
+  // Download state is only supported when `VcDlcUi` is enabled.
+  CHECK(features::IsVcDlcUiEnabled())
+      << "Download states are not supported when `VcDlcUi` is disabled";
+  label_->SetText(download_label);
+}
+
+void FeatureTile::UpdateLabelForDownloadState() {
+  // Download state is only supported when `VcDlcUi` is enabled.
+  CHECK(features::IsVcDlcUiEnabled())
+      << "Download states are not supported when `VcDlcUi` is disabled";
+  switch (download_state_) {
+    case DownloadState::kNone:
+    case DownloadState::kDownloaded:
+    case DownloadState::kError:
+      label_->SetText(client_specified_label_text_);
+      break;
+    case DownloadState::kPending:
+      SetDownloadLabel(l10n_util::GetStringUTF16(
+          IDS_ASH_FEATURE_TILE_DOWNLOAD_PENDING_TITLE));
+      break;
+    case DownloadState::kDownloading:
+      SetDownloadLabel(l10n_util::GetStringFUTF16(
+          IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE,
+          base::NumberToString16(download_progress_percent_)));
+      break;
+  }
 }
 
 BEGIN_METADATA(FeatureTile, views::Button)

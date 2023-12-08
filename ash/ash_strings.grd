@@ -859,6 +859,14 @@ Style notes:
         Device change to previous version is overdue
       </message>
 
+      <!-- `FeatureTile` downloading states -->
+      <message name="IDS_ASH_FEATURE_TILE_DOWNLOAD_PENDING_TITLE" desc="The title of a feature tile that currently has a download that has not yet started.">
+        Download pending
+      </message>
+      <message name="IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE" desc="The title of a feature tile that currently has an in-progress download.">
+        Downloading <ph name="DOWNLOAD_PERCENT">$1<ex>7</ex></ph>%
+      </message>
+
       <!-- Upgrade notifications -->
       <message name="IDS_RELAUNCH_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the device must be restarted within two or more days.">
         {0, plural,
