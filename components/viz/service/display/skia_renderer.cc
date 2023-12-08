@@ -3641,22 +3641,27 @@ void SkiaRenderer::PrepareRenderPassOverlay(
         flat_quad_to_target_transform.GetCheckedInverse();
   }
 
-  // The |clip_rect| is in the device coordinate and with all transforms
-  // (translation, scaling, rotation, etc), so remove them.
+  // The |clip_rect| is in the target coordinate space with all transforms
+  // (translation, scaling, rotation, etc), so remove them since we are
+  // later updating the quad-to-target transform to be the identity. These
+  // properties must stay in sync with the transform in case they are used
+  // in Calculate[RPDQ|DrawQuad]Params(), and so we can restrict the overlay
+  // backing size to just what is visible.
   absl::optional<base::AutoReset<absl::optional<gfx::Rect>>>
       auto_reset_clip_rect;
-  if (shared_quad_state->clip_rect) {
-    gfx::RectF clip_rect(*shared_quad_state->clip_rect);
-    if (quad_to_target_transform_inverse) {
-      clip_rect = quad_to_target_transform_inverse->MapRect(clip_rect);
-      auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
-                                   gfx::ToEnclosedRect(clip_rect));
-    } else {
-      // If we can't position the clip rect into render pass space, we shouldn't
-      // use it when rendering.
-      auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
-                                   absl::nullopt);
-    }
+  if (quad_to_target_transform_inverse) {
+    // |output_rect| is also in the original target space and is the default
+    // clip that we should include since we have to manually apply that as
+    // well for overlay sizing.
+    gfx::RectF clip_rect(quad->shared_quad_state->clip_rect.value_or(
+        current_frame()->current_render_pass->output_rect));
+    clip_rect = quad_to_target_transform_inverse->MapRect(clip_rect);
+    auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect,
+                                 gfx::ToEnclosedRect(clip_rect));
+  } else {
+    // If we can't position the clip rect into render pass space, we shouldn't
+    // use it when rendering.
+    auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect, absl::nullopt);
   }
 
   // The |mask_filter_info| is in the device coordinate and with all transforms
@@ -3694,11 +3699,15 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     rpdq_params = CalculateRPDQParams(target_to_device, quad, &params);
   }
 
-  const gfx::Rect filter_bounds =
+  gfx::Rect filter_bounds =
       gfx::SkIRectToRect(rpdq_params.filter_bounds.roundOut());
-
-  // |filter_bounds| is the content space bounds that includes any filtered
-  // extents. If empty, the draw can be skipped.
+  // Apply the clip that is normally handled indirectly via SkCanvas::clipRect.
+  // Since |shared_quad_state->quad_to_target_transform| and |clip_rect| were
+  // modified above, it is in the same coordinate space as |filter_bounds| now.
+  if (shared_quad_state->clip_rect) {
+    filter_bounds.Intersect(*shared_quad_state->clip_rect);
+  }
+  // If empty, the draw can be skipped
   if (filter_bounds.IsEmpty()) {
     return;
   }
