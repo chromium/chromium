@@ -103,30 +103,24 @@ ScriptPromise IdentityCredential::disconnect(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  if (!options->hasConfigURL()) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "configURL is required"));
+    return promise;
+  }
+
+  if (!options->hasClientId()) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "clientId is required"));
+    return promise;
+  }
+
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The 'identity-credentials-get` feature is not enabled in this "
         "document."));
-    return promise;
-  }
-
-  if (!options->hasConfigURL()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "configURL is required"));
-    return promise;
-  }
-
-  if (!options->hasAccountHint()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "accountHint is required"));
-    return promise;
-  }
-
-  if (!options->hasClientId()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "clientId is required"));
     return promise;
   }
 
