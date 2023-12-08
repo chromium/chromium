@@ -253509,6 +253509,19 @@
        {}
       ]
      ],
+     "backdrop-filter-svg.html": [
+      "01771ed56386c08c7c9c719d0417bd7ba897d6b9",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/backdrop-filter-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-update.html": [
       "6a81fc63eb5d9bb08101f2125059dd110173b82e",
       [
@@ -342777,6 +342790,10 @@
        "56c6243809bef53423ff18d4b70a8597795cacec",
        []
       ],
+      "backdrop-filter-svg-ref.html": [
+       "3d5853ac6698ee9dafba37a825f3dc4e2d07b64e",
+       []
+      ],
       "backdrop-filters-grayscale-001-ref.html": [
        "ba01ac6bd07464a829817dbfc8e72438c7c97168",
        []
@@ -394032,11 +394049,11 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "58df4c9b596d20f09d845e3b74073547d61df21a",
+     "5ab8e2bf259b10a3c49a6db45754f83d1e3140e8",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "11172828b7e65ebe01b61f77a87494b174939f8d",
+     "14c36a8bf259be22fe47209a544059e195144237",
      []
     ],
     "leaky_relu.https.any.worker-expected.txt": [
@@ -466594,7 +466611,7 @@
       ]
      ],
      "progress-computed.tentative.html": [
-      "1f313a059715a9fc52b2a30c5a55616873d2ac22",
+      "2f564fa14e9e1ba1cb083d00fa64ae5029d9be3b",
       [
        null,
        {}
