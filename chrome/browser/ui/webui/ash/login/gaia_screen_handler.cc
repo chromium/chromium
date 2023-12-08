@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -532,6 +533,16 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
           "isDeviceOwner",
           account_id == user_manager::UserManager::Get()->GetOwnerAccountId());
     }
+  } else if (gaia_path == WizardContext::GaiaPath::kReauth) {
+    // To ensure that no reauth request is sent when the email is unavailable,
+    // update the gaia path to the default.
+    gaia_path = WizardContext::GaiaPath::kDefault;
+    params.Set(
+        "gaiaPath",
+        GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(
+            1));
+
+    base::debug::DumpWithoutCrashing();
   }
 
   if (!gaia_reauth_request_token_.empty()) {

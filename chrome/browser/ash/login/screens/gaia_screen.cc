@@ -129,10 +129,8 @@ void GaiaScreen::LoadOnlineGaia() {
   auto* context = LoginDisplayHost::default_host()->GetWizardContext();
   switch (context->gaia_config.gaia_path) {
     case WizardContext::GaiaPath::kDefault:
-      LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
-      break;
     case WizardContext::GaiaPath::kReauth:
-      LoadDefaultOnlineGaia(EmptyAccountId());
+      LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
       break;
     case WizardContext::GaiaPath::kChildSignin:
     case WizardContext::GaiaPath::kChildSignup:
