@@ -11,7 +11,6 @@
 
 // This coordinator encapsulates the integration to ScreenTime, reporting web
 // usage and blocking restricted webpages.
-API_AVAILABLE(ios(14.0))
 @interface ScreenTimeCoordinator : ChromeCoordinator
 // The view controller that must be placed above the web view to enable web
 // usage reporting. This view controller automatically blocks when the reported

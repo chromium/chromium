@@ -15,8 +15,7 @@ class ScreenTimeHistoryDeleter;
 
 // Factory that owns and associates a ScreenTimeHistoryDeleter with
 // ChromeBrowserState.
-class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleterFactory
-    : public BrowserStateKeyedServiceFactory {
+class ScreenTimeHistoryDeleterFactory : public BrowserStateKeyedServiceFactory {
  public:
   static ScreenTimeHistoryDeleter* GetForBrowserState(
       ChromeBrowserState* browser_state);

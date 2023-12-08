@@ -14,9 +14,8 @@
 
 // ScreenTimeHistoryDeleter is responsible for deleting ScreenTime history when
 // Chrome history is deleted.
-class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleter
-    : public KeyedService,
-      public history::HistoryServiceObserver {
+class ScreenTimeHistoryDeleter : public KeyedService,
+                                 public history::HistoryServiceObserver {
  public:
   explicit ScreenTimeHistoryDeleter(history::HistoryService* history_service);
 
