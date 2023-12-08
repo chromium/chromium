@@ -3212,6 +3212,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
     }
 
+    void FragmentCountChanged() {
+      // Even if the fragment count has changed, the total stitched size of the
+      // object may be the same as before, although the size of the individual
+      // fragments may have changed. Full paint invalidation is required.
+      SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kLayout);
+    }
+
     FragmentData& FirstFragment() { return *layout_object_.fragment_; }
     FragmentDataList& FragmentList() { return *layout_object_.fragment_; }
 

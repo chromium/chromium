@@ -2712,9 +2712,6 @@ void LayoutBox::AppendLayoutResult(const LayoutResult* result) {
   layout_results_.push_back(std::move(result));
   InvalidateCachedGeometry();
   CheckDidAddFragment(*this, fragment);
-
-  if (layout_results_.size() > 1)
-    FragmentCountOrSizeDidChange();
 }
 
 void LayoutBox::ReplaceLayoutResult(const LayoutResult* result,
@@ -2733,9 +2730,17 @@ void LayoutBox::ReplaceLayoutResult(const LayoutResult* result,
         InvalidateItems(*old_result);
       FragmentItems::ClearAssociatedFragments(this);
     }
-    if (layout_results_.size() > 1) {
-      if (fragment.Size() != old_fragment.Size())
-        FragmentCountOrSizeDidChange();
+    // We are about to replace a fragment, and the size may have changed. The
+    // inline-size and total stitched block-size may still remain unchanged,
+    // though, and pre-paint can only detect changes in the total stitched
+    // size. So this is our last chance to detect any size changes at the
+    // fragment itself. Only do this if we're fragmented, though. Otherwise
+    // leave it to pre-paint to figure out if invalidation is really required,
+    // since it's fine to just check the stitched sizes when not fragmented.
+    // Unconditionally requiring full paint invalidation at size changes may be
+    // unnecessary and expensive.
+    if (layout_results_.size() > 1 && fragment.Size() != old_fragment.Size()) {
+      SetShouldDoFullPaintInvalidation();
     }
   }
   // |layout_results_| is particularly critical when side effects are disabled.
@@ -2799,8 +2804,6 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
     InvalidateItems(*layout_results_[i]);
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
-  if (layout_results_.size() > 1)
-    FragmentCountOrSizeDidChange();
   layout_results_.Shrink(results_to_keep);
   InvalidateCachedGeometry();
 }

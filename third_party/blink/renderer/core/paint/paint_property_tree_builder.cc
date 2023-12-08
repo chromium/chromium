@@ -3311,12 +3311,19 @@ void PaintPropertyTreeBuilder::UpdateFragmentData() {
         pre_paint_info_->fragmentainer_idx;
   } else {
     DCHECK_EQ(&fragment, &object_.FirstFragment());
+    const FragmentDataList& fragment_list =
+        object_.GetMutableForPainting().FragmentList();
+    wtf_size_t old_fragment_count = fragment_list.size();
     object_.GetMutableForPainting().FragmentList().Shrink(1);
 
     if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
       // We're not fragmented, but we may have been previously. Reset the
       // fragmentainer index.
       fragment.SetFragmentID(0);
+
+      if (old_fragment_count > 1u) {
+        object_.GetMutableForPainting().FragmentCountChanged();
+      }
     } else {
       // We're inside monolithic content, but further out there's a
       // fragmentation context. Keep the fragmentainer index, so that the

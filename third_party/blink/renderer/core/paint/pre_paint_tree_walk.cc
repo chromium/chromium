@@ -377,7 +377,13 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   bool needs_paint_properties = fragment_data->PaintProperties();
 
   wtf_size_t fragment_data_idx = 0;
-  if (!pre_paint_info.is_first_for_node) {
+  if (pre_paint_info.is_first_for_node) {
+    if (const auto* layout_box = DynamicTo<LayoutBox>(&object)) {
+      if (layout_box->PhysicalFragmentCount() != fragment_list.size()) {
+        object.GetMutableForPainting().FragmentCountChanged();
+      }
+    }
+  } else {
     if (pre_paint_info.is_inside_fragment_child) {
       if (!object.HasInlineFragments() && !IsLinkHighlighted(object)) {
         // We don't need any additional fragments for culled inlines - unless
