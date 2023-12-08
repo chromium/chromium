@@ -234,7 +234,8 @@ base::trace_event::TraceConfig GetTracingConfig() {
 }  // namespace
 
 base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
-    std::string_view title) {
+    std::string_view title,
+    base::Time timestamp) {
   constexpr size_t kMaxNameSize = 32;
   char normalized_name[kMaxNameSize];
   size_t index = 0;
@@ -252,7 +253,7 @@ base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
   normalized_name[index] = 0;
 
   const std::string time =
-      base::UnlocalizedTimeFormatWithPattern(Now(), "yyyy-MM-dd_HH-mm-ss");
+      base::UnlocalizedTimeFormatWithPattern(timestamp, "yyyy-MM-dd_HH-mm-ss");
   return GetDownloadsFolder().AppendASCII(base::StringPrintf(
       "overview_tracing_%s_%s.json", normalized_name, time.c_str()));
 }
@@ -524,7 +525,8 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
   std::string string_data;
   string_data.swap(*trace_data);
 
-  const base::FilePath model_path = GetModelPathFromTitle(trace->task_title);
+  const base::FilePath model_path =
+      GetModelPathFromTitle(trace->task_title, trace->timestamp);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},

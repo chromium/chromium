@@ -42,7 +42,8 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
  public:
   struct ActiveTrace;
 
-  base::FilePath GetModelPathFromTitle(std::string_view title);
+  base::FilePath GetModelPathFromTitle(std::string_view title,
+                                       base::Time timestamp);
 
   ArcGraphicsTracingHandler();
 

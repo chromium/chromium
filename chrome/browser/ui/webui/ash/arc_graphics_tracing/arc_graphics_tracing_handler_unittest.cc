@@ -188,33 +188,32 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
 TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
   base::FilePath download_path = base::FilePath::FromASCII("/mnt/downloads");
   handler_->set_downloads_folder(download_path);
-
-  handler_->set_now(base::Time::UnixEpoch() + base::Seconds(1));
+  base::Time timestamp = base::Time::UnixEpoch() + base::Seconds(1);
 
   std::unique_ptr<icu::TimeZone> tz;
   SetTimeZone("America/Chicago");
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_test_title_1_1969-12-31_18-00-01.json"),
-            handler_->GetModelPathFromTitle("Test Title #:1"));
+            handler_->GetModelPathFromTitle("Test Title #:1", timestamp));
   SetTimeZone("Indian/Maldives");
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_0123456789012345678901234567890_"
                 "1970-01-01_05-00-01.json"),
             handler_->GetModelPathFromTitle(
-                "0123456789012345678901234567890123456789"));
+                "0123456789012345678901234567890123456789", timestamp));
 
   SetTimeZone("Etc/UTC");
-  handler_->set_now(base::Time::UnixEpoch() + base::Days(50));
+  timestamp = base::Time::UnixEpoch() + base::Days(50);
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_xyztitle_1970-02-20_00-00-00.json"),
-            handler_->GetModelPathFromTitle("xyztitle"));
+            handler_->GetModelPathFromTitle("xyztitle", timestamp));
 
   SetTimeZone("Japan");
   download_path = base::FilePath::FromASCII("/var/DownloadFolder");
   handler_->set_downloads_folder(download_path);
   EXPECT_EQ(download_path.AppendASCII(
                 "overview_tracing_secret_app_1970-02-20_09-00-00.json"),
-            handler_->GetModelPathFromTitle("Secret App"));
+            handler_->GetModelPathFromTitle("Secret App", timestamp));
 }
 
 TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
