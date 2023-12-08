@@ -8,8 +8,11 @@
 #include "base/functional/callback_forward.h"
 
 namespace gfx {
+enum class BufferFormat : uint8_t;
 class ColorSpace;
 class GpuFence;
+struct GpuMemoryBufferHandle;
+class Size;
 class Transform;
 }  // namespace gfx
 
@@ -18,7 +21,6 @@ class SurfaceTexture;
 }  // namespace gl
 
 namespace gpu {
-class GpuMemoryBufferImplAndroidHardwareBuffer;
 struct MailboxHolder;
 struct SyncToken;
 }  // namespace gpu
@@ -74,12 +76,14 @@ class MailboxToSurfaceBridge {
       const gpu::SyncToken& sync_token,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) = 0;
 
-  // Creates a shared image bound to |buffer|. Returns a mailbox holder that
-  // references the shared image with a sync token representing a point after
-  // the creation. Caller must call DestroySharedImage to free the shared image.
-  // Does not take ownership of |buffer| or retain any references to it.
+  // Creates a shared image bound to |buffer_handle|. Returns a mailbox holder
+  // that references the shared image with a sync token representing a point
+  // after the creation. Caller must call DestroySharedImage to free the shared
+  // image. Backing keeps reference to the |buffer_handle|.
   virtual gpu::MailboxHolder CreateSharedImage(
-      gpu::GpuMemoryBufferImplAndroidHardwareBuffer* buffer,
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      gfx::BufferFormat buffer_format,
+      const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       uint32_t usage) = 0;
 

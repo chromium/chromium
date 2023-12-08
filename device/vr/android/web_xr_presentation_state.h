@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -23,10 +24,6 @@
 namespace gl {
 class GLFence;
 }  // namespace gl
-
-namespace gpu {
-class GpuMemoryBufferImplAndroidHardwareBuffer;
-}  // namespace gpu
 
 namespace viz {
 struct BeginFrameArgs;
@@ -94,8 +91,8 @@ struct WebXrSharedBuffer {
 
   gfx::Size size = {0, 0};
 
-  // Shared GpuMemoryBuffer
-  std::unique_ptr<gpu::GpuMemoryBufferImplAndroidHardwareBuffer> gmb;
+  // This owns a single reference to an AHardwareBuffer object.
+  base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
 
   // Resources in the remote GPU process command buffer context
   gpu::MailboxHolder mailbox_holder;
