@@ -6,6 +6,7 @@
 
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -60,10 +61,23 @@ TEST(ProxyInfoTest, UseVsOverrideProxyList) {
 
 TEST(ProxyInfoTest, IsForIpProtection) {
   ProxyInfo info;
+
+  ProxyChain regular_proxy_chain =
+      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);
+  info.UseProxyChain(regular_proxy_chain);
   EXPECT_FALSE(info.is_for_ip_protection());
-  info.set_is_for_ip_protection(true);
+
+  ProxyChain ip_protection_proxy_chain =
+      ProxyChain({
+                     ProxyServer::FromSchemeHostAndPort(
+                         ProxyServer::SCHEME_HTTPS, "proxy1", absl::nullopt),
+                     ProxyServer::FromSchemeHostAndPort(
+                         ProxyServer::SCHEME_HTTPS, "proxy2", absl::nullopt),
+                 })
+          .ForIpProtection();
+  info.UseProxyChain(ip_protection_proxy_chain);
   EXPECT_TRUE(info.is_for_ip_protection());
-  info.set_is_for_ip_protection(false);
+  info.UseProxyChain(regular_proxy_chain);
   EXPECT_FALSE(info.is_for_ip_protection());
 }
 

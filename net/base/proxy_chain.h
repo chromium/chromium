@@ -115,24 +115,35 @@ class NET_EXPORT ProxyChain {
                                           : false;
   }
 
-  // Returns true if a proxy server list is available .
+  // Returns true if a proxy server list is available.
   bool IsValid() const { return proxy_server_list_.has_value(); }
 
+  // Returns a `ProxyChain` for use by the IP Protection feature. This is used
+  // for metrics collection and for special handling (for instance, IP
+  // protection proxy chains will have an authorization header appended to the
+  // CONNECT requests sent to the proxy servers).
+  ProxyChain&& ForIpProtection() &&;
+  bool is_for_ip_protection() const { return is_for_ip_protection_; }
+
   bool operator==(const ProxyChain& other) const {
-    return proxy_server_list_ == other.proxy_server_list_;
+    return std::tie(proxy_server_list_, is_for_ip_protection_) ==
+           std::tie(other.proxy_server_list_, other.is_for_ip_protection_);
   }
 
   bool operator!=(const ProxyChain& other) const { return !(*this == other); }
 
   // Comparator function so this can be placed in a std::map.
   bool operator<(const ProxyChain& other) const {
-    return proxy_server_list_ < other.proxy_server_list_;
+    return std::tie(proxy_server_list_, is_for_ip_protection_) <
+           std::tie(other.proxy_server_list_, other.is_for_ip_protection_);
   }
 
   std::string ToDebugString() const;
 
  private:
   std::optional<std::vector<ProxyServer>> proxy_server_list_;
+
+  bool is_for_ip_protection_ = false;
 
   // Returns true if this chain is valid.
   bool IsValidInternal() const;

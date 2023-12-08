@@ -58,11 +58,6 @@ class NET_EXPORT ProxyInfo {
   // proxy configuration.
   void OverrideProxyList(const ProxyList& proxy_list);
 
-  // Indicates that this is a proxy for IP Protection.
-  void set_is_for_ip_protection(bool is_for_ip_protection) {
-    is_for_ip_protection_ = is_for_ip_protection;
-  }
-
   // Indicates that the request that uses this proxy config caused a match with
   // the masked domain list.
   // This is a temporary workaround to gather initial metrics for IP Protection.
@@ -133,8 +128,9 @@ class NET_EXPORT ProxyInfo {
     return did_bypass_proxy_;
   }
 
-  // Returns true if this proxy info is for IP Protection.
-  bool is_for_ip_protection() const { return is_for_ip_protection_; }
+  // Returns true if the first proxy chain corresponds to one used for IP
+  // Protection.
+  bool is_for_ip_protection() const;
 
   // Returns true if the request that uses this proxy config caused a match with
   // the masked domain list.
@@ -221,9 +217,6 @@ class NET_EXPORT ProxyInfo {
 
   // Whether the proxy result represent a proxy bypass.
   bool did_bypass_proxy_ = false;
-
-  // Whether this proxy is for IP Protection.
-  bool is_for_ip_protection_ = false;
 
   // Whether the request that uses this proxy config caused a match with the
   // masked domain list.

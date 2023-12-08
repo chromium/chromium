@@ -102,29 +102,40 @@ bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
              : false;
 }
 
-std::vector<net::ProxyChain> IpProtectionConfigCacheImpl::GetProxyChainList() {
+// static
+std::vector<net::ProxyChain>
+IpProtectionConfigCacheImpl::ConvertProxyServerStringsToProxyChainList(
+    const std::vector<std::vector<std::string>>& proxy_server_strings) {
   std::vector<net::ProxyChain> proxy_chain_list;
-  if (ipp_proxy_list_manager_ != nullptr) {
-    for (const std::vector<std::string>& proxy_chain_hostnames :
-         ipp_proxy_list_manager_->ProxyList()) {
-      bool invalid_proxy_server = false;
-      std::vector<net::ProxyServer> proxy_servers;
-      for (const auto& proxy : proxy_chain_hostnames) {
-        net::ProxyServer proxy_server = net::ProxyServer::FromSchemeHostAndPort(
-            net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt);
-        // If invalid proxy server, skip entire proxy chain.
-        if (!proxy_server.is_valid()) {
-          invalid_proxy_server = true;
-          break;
-        }
-        proxy_servers.push_back(std::move(proxy_server));
+  for (const std::vector<std::string>& proxy_chain_hostnames :
+       proxy_server_strings) {
+    bool invalid_proxy_server = false;
+    std::vector<net::ProxyServer> proxy_servers;
+    for (const auto& proxy : proxy_chain_hostnames) {
+      net::ProxyServer proxy_server = net::ProxyServer::FromSchemeHostAndPort(
+          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt);
+      // If invalid proxy server, skip entire proxy chain.
+      if (!proxy_server.is_valid()) {
+        invalid_proxy_server = true;
+        break;
       }
-      if (!invalid_proxy_server) {
-        proxy_chain_list.emplace_back(std::move(proxy_servers));
-      }
+      proxy_servers.push_back(std::move(proxy_server));
+    }
+    if (!invalid_proxy_server) {
+      net::ProxyChain ip_protection_proxy_chain =
+          net::ProxyChain(std::move(proxy_servers)).ForIpProtection();
+      proxy_chain_list.push_back(std::move(ip_protection_proxy_chain));
     }
   }
   return proxy_chain_list;
+}
+
+std::vector<net::ProxyChain> IpProtectionConfigCacheImpl::GetProxyChainList() {
+  if (ipp_proxy_list_manager_ == nullptr) {
+    return {};
+  }
+  return ConvertProxyServerStringsToProxyChainList(
+      ipp_proxy_list_manager_->ProxyList());
 }
 
 void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {

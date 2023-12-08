@@ -27007,15 +27007,15 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
 // protection.
 TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   ProxyInfo proxy_info;
-  ProxyChain proxy_chain =
-      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
-  proxy_info.UseProxyChain(proxy_chain);
-  proxy_info.set_is_for_ip_protection(true);
+  ProxyChain ip_protection_proxy_chain =
+      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443)
+          .ForIpProtection();
+  proxy_info.UseProxyChain(ip_protection_proxy_chain);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
   EXPECT_EQ(response_info.was_ip_protected, true);
-  EXPECT_EQ(response_info.proxy_chain, proxy_chain);
+  EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
 }
 
 }  // namespace net

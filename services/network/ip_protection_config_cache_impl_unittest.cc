@@ -170,9 +170,12 @@ TEST_F(IpProtectionConfigCacheImplTest,
 // Proxy list manager returns currently cached proxy hostnames.
 TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
   std::string proxy = "a-proxy";
-  const std::vector<net::ProxyChain> proxy_chain_list = {
+  auto ip_protection_proxy_chain =
       net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt))};
+                          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt))
+          .ForIpProtection();
+  const std::vector<net::ProxyChain> proxy_chain_list = {
+      std::move(ip_protection_proxy_chain)};
   auto ipp_proxy_list_manager_ =
       std::make_unique<MockIpProtectionProxyListManager>();
   ipp_proxy_list_manager_->SetProxyList({{proxy}});

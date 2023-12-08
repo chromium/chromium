@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/proxy_chain.h"
 #include "services/network/ip_protection_config_cache.h"
 #include "services/network/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection_token_cache_manager.h"
@@ -51,7 +52,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
 
+  static std::vector<net::ProxyChain>
+  ConvertProxyServerStringsToProxyChainListForTesting(
+      const std::vector<std::vector<std::string>>& proxy_server_strings) {
+    return ConvertProxyServerStringsToProxyChainList(proxy_server_strings);
+  }
+
  private:
+  static std::vector<net::ProxyChain> ConvertProxyServerStringsToProxyChainList(
+      const std::vector<std::vector<std::string>>& proxy_server_strings);
   // Source of auth tokens and proxy list, when needed.
   mojo::Remote<network::mojom::IpProtectionConfigGetter> config_getter_;
 

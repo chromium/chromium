@@ -67,6 +67,9 @@ struct ProxyServer {
 struct ProxyChain {
   // The sequence of servers in this chain, or if nullopt, an invalid chain.
   array<ProxyServer>? proxy_servers;
+
+  // Whether this chain corresponds to one used for IP Protection.
+  bool is_for_ip_protection;
 };
 
 // Host resolution error info.

@@ -199,13 +199,21 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       }
     }
     // Final fallback is to DIRECT.
-    proxy_list.AddProxyChain(net::ProxyChain::Direct());
+    auto direct_proxy_chain = net::ProxyChain::Direct();
+    if (net::features::kIpPrivacyDirectOnly.Get()) {
+      // To enable measuring how much traffic would be proxied (for
+      // experimentation and planning purposes), mark the direct
+      // proxy chain as being for IP Protection when `kIpPrivacyDirectOnly` is
+      // true. When it is false, we only care about traffic that actually went
+      // through the IP Protection proxies, so don't set this flag.
+      direct_proxy_chain = std::move(direct_proxy_chain).ForIpProtection();
+    }
+    proxy_list.AddProxyChain(std::move(direct_proxy_chain));
 
     if (VLOG_IS_ON(3)) {
       dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
                           proxy_list.ToDebugString()}));
     }
-    result->set_is_for_ip_protection(true);
     result->OverrideProxyList(
         MergeProxyRules(result->proxy_list(), proxy_list));
     result->DeprioritizeBadProxyChains(proxy_retry_info);
@@ -236,7 +244,8 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
-  if (IsProxyForIpProtection(bad_chain) && ipp_config_cache_) {
+  if (bad_chain.is_for_ip_protection()) {
+    CHECK(ipp_config_cache_);
     ipp_config_cache_->RequestRefreshProxyList();
   }
 
@@ -256,30 +265,27 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   if (IsInProxyConfig(proxy_chain)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
-  if (IsForIpProtection() && IsProxyForIpProtection(proxy_chain)) {
-    if (ipp_config_cache_) {
-      // Temporarily support a pre-shared key for access to proxyB.
-      if (chain_index == 1) {
-        std::string proxy_b_psk = net::features::kIpPrivacyProxyBPsk.Get();
-        if (!proxy_b_psk.empty()) {
-          vlog("adding proxyB PSK");
-          extra_headers->SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
-                                   base::StrCat({"Preshared ", proxy_b_psk}));
-        }
+  if (IsForIpProtection() && proxy_chain.is_for_ip_protection()) {
+    // Temporarily support a pre-shared key for access to proxyB.
+    if (chain_index == 1) {
+      std::string proxy_b_psk = net::features::kIpPrivacyProxyBPsk.Get();
+      if (!proxy_b_psk.empty()) {
+        vlog("adding proxyB PSK");
+        extra_headers->SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
+                                 base::StrCat({"Preshared ", proxy_b_psk}));
       }
-      absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
-          ipp_config_cache_->GetAuthToken(chain_index);
-      if (token) {
-        vlog("adding auth token");
-        // The token value we have here is the full Authorization header value,
-        // so we can add it verbatim.
-        extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                 std::move((*token)->token));
-      } else {
-        vlog("no token available");
-      }
+    }
+    CHECK(ipp_config_cache_);
+    absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
+        ipp_config_cache_->GetAuthToken(chain_index);
+    if (token) {
+      vlog("adding auth token");
+      // The token value we have here is the full Authorization header value, so
+      // we can add it verbatim.
+      extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
+                               std::move((*token)->token));
     } else {
-      vlog("no auth token cache");
+      vlog("no token available");
     }
   } else {
     vlog("not for IP protection");
@@ -361,14 +367,6 @@ bool NetworkServiceProxyDelegate::IsForIpProtection() {
   // Only IP protection uses the network service proxy allow list, so this
   // config represents IP protection if and only if the allow list is in use.
   return proxy_config_->rules.restrict_to_network_service_proxy_allow_list;
-}
-
-bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
-    const net::ProxyChain& proxy_chain) const {
-  if (!ipp_config_cache_) {
-    return false;
-  }
-  return base::Contains(ipp_config_cache_->GetProxyChainList(), proxy_chain);
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(

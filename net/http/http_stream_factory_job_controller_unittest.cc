@@ -49,6 +49,7 @@
 #include "net/proxy_resolution/mock_proxy_resolver.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_list.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
@@ -123,8 +124,9 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
   base::Value::Dict empty_dict_;
 };
 
-// A `TestProxyDelegate` which always sets `is_for_ip_protection` on the
-// `ProxyInfo` it receives in `OnResolveProxy()`.
+// A `TestProxyDelegate` which always sets a `ProxyChain` with
+// `is_for_ip_protection` set to true on the `ProxyInfo` it receives in
+// `OnResolveProxy()`.
 class TestProxyDelegateForIpProtection : public TestProxyDelegate {
  public:
   void OnResolveProxy(const GURL& url,
@@ -132,7 +134,15 @@ class TestProxyDelegateForIpProtection : public TestProxyDelegate {
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
-    result->set_is_for_ip_protection(true);
+    auto ip_protection_proxy_chain =
+        net::ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
+                                               "ip-pro", 443)
+            .ForIpProtection();
+
+    net::ProxyList proxy_list;
+    proxy_list.AddProxyChain(ip_protection_proxy_chain);
+    proxy_list.AddProxyChain(net::ProxyChain::Direct());
+    result->UseProxyList(proxy_list);
   }
 };
 
@@ -1022,7 +1032,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
   std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          "HTTPS badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
   auto test_proxy_delegate =
       std::make_unique<TestProxyDelegateForIpProtection>();
 
@@ -1037,7 +1047,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
   std::vector<MockRead> reads;
 
-  // Generate errors for both the main proxy.
+  // Generate errors for the first proxy server.
   std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job;
   std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job;
   reads.emplace_back(ASYNC, ERR_TUNNEL_CONNECTION_FAILED);
@@ -1050,8 +1060,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   session_deps_.socket_factory->AddSSLSocketDataProvider(
       ssl_data_proxy_main_job.get());
 
-  // After the proxy fails, the request should fall back to using DIRECT,
-  // and succeed.
+  // After proxying fails, the request should fall back to using DIRECT, and
+  // succeed.
   SSLSocketDataProvider ssl_data_first_request(ASYNC, OK);
   StaticSocketDataProvider socket_data_direct_first_request;
   socket_data_direct_first_request.set_connect_data(MockConnect(ASYNC, OK));

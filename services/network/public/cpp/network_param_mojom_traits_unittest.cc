@@ -34,6 +34,14 @@ TEST(ProxyChain, SerializeAndDeserialize) {
           net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "foo2", 80),
       }),
+      net::ProxyChain::Direct().ForIpProtection(),
+      net::ProxyChain({
+                          net::ProxyServer::FromSchemeHostAndPort(
+                              net::ProxyServer::SCHEME_HTTPS, "foo1", 80),
+                          net::ProxyServer::FromSchemeHostAndPort(
+                              net::ProxyServer::SCHEME_HTTPS, "foo2", 80),
+                      })
+          .ForIpProtection(),
   };
   for (auto& original : kChains) {
     SCOPED_TRACE(original.ToDebugString());

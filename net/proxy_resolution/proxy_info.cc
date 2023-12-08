@@ -17,7 +17,6 @@ ProxyInfo::~ProxyInfo() = default;
 void ProxyInfo::Use(const ProxyInfo& other) {
   proxy_resolve_start_time_ = other.proxy_resolve_start_time_;
   proxy_resolve_end_time_ = other.proxy_resolve_end_time_;
-  is_for_ip_protection_ = other.is_for_ip_protection_;
   proxy_list_ = other.proxy_list_;
   proxy_retry_info_ = other.proxy_retry_info_;
   did_bypass_proxy_ = other.did_bypass_proxy_;
@@ -135,6 +134,13 @@ bool ProxyInfo::is_socks() const {
   return proxy_chain().GetProxyServer(/*chain_index=*/0).is_socks();
 }
 
+bool ProxyInfo::is_for_ip_protection() const {
+  if (is_empty()) {
+    return false;
+  }
+  return proxy_chain().is_for_ip_protection();
+}
+
 std::string ProxyInfo::ToDebugString() const {
   return proxy_list_.ToDebugString();
 }
@@ -155,7 +161,6 @@ void ProxyInfo::RemoveProxiesWithoutScheme(int scheme_bit_field) {
 void ProxyInfo::Reset() {
   proxy_resolve_start_time_ = base::TimeTicks();
   proxy_resolve_end_time_ = base::TimeTicks();
-  is_for_ip_protection_ = false;
   proxy_list_.Clear();
   proxy_retry_info_.clear();
   did_bypass_proxy_ = false;
