@@ -45,6 +45,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
@@ -139,7 +140,9 @@ class BrowsingDataRemoverBrowserTest
     // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
     // in tests during deprecation trial and enterprise policy support.
     enabled_features.push_back(blink::features::kWebSQLAccess);
-    InitFeatureLists(std::move(enabled_features), {});
+    // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
+    InitFeatureLists(std::move(enabled_features),
+                     /*disabled_features=*/{switches::kUnoDesktop});
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -215,6 +216,11 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     return ConsentLevel::kSignin;
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+    return ConsentLevel::kSignin;
+  }
+
   // In some cases, clearing the primary account is not allowed regardless of
   // the consent level (e.g. cloud-managed profiles). In these cases, the dice
   // account reconcilor delegate should never remove the primary account
@@ -351,6 +357,14 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
   if (!identity_manager_->HasPrimaryAccount(consent_level)) {
     return;
   }
+
+  // In the UNO model the primary account should not be signed out if the
+  // account cookie is deleted by user action.
+  if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+      !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (IsAccountSupervised(identity_manager_) &&
       base::FeatureList::IsEnabled(
