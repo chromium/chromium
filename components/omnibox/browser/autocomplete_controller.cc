@@ -214,7 +214,7 @@ void AutocompleteController::ExtendMatchSubtypes(
   // TYPE_ON_DEVICE_HEAD, set the subtype accordingly.
   if (match.provider) {
     if (match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST) {
-      // Make sure changes here are reflected in UpdateAssistedQueryStats()
+      // Make sure changes here are reflected in UpdateSearchboxStats()
       // below in which the zero-prefix suggestions are counted.
       // We abuse this subtype and use it to for zero-suggest suggestions that
       // aren't personalized by the server. That is, it indicates either
@@ -239,7 +239,7 @@ void AutocompleteController::ExtendMatchSubtypes(
                AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
       // This subtype indicates a match from an on-device head provider.
       subtypes->emplace(omnibox::SUBTYPE_SUGGEST_2G_LITE);
-      // Make sure changes here are reflected in UpdateAssistedQueryStats()
+      // Make sure changes here are reflected in UpdateSearchboxStats()
       // below in which the zero-prefix suggestions are counted.
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
@@ -683,30 +683,25 @@ void AutocompleteController::ResetSession() {
 }
 
 void AutocompleteController::
-    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+    UpdateMatchDestinationURLWithAdditionalSearchboxStats(
         base::TimeDelta query_formulation_time,
         AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox",
                "AutocompleteController::"
-               "UpdateMatchDestinationURLWithAdditionalAssistedQueryStats");
-  // The assisted_query_stats is expected to have been previously set when this
+               "UpdateMatchDestinationURLWithAdditionalSearchboxStats");
+  // The searchbox_stats is expected to have been previously set when this
   // method is called. If that is not the case, this method is being called by
-  // mistake and assisted_query_stats (and searchbox_stats) should not be
-  // updated with additional information.
+  // mistake and searchbox_stats should not be updated with additional
+  // information.
   if (!match->search_terms_args ||
-      match->search_terms_args->assisted_query_stats.empty()) {
-    return;
-  }
-
-  if (match->search_terms_args->searchbox_stats.ByteSizeLong() == 0) {
-    NOTREACHED() << "searchbox_stats must be set when assisted_query_stats is.";
+      match->search_terms_args->searchbox_stats.ByteSizeLong() == 0) {
     return;
   }
 
   // Append the query formulation time (time from when the user first typed a
   // character into the omnibox to when the user selected a query), whether
-  // a field trial has triggered, and the current page classification to the AQS
-  // parameter.
+  // a field trial has triggered, and the current page classification to the
+  // searchbox stats parameter.
   bool search_feature_triggered =
       triggered_feature_service_->GetFeatureTriggeredInSession(
           metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE) ||
@@ -715,19 +710,16 @@ void AutocompleteController::
   const std::string experiment_stats = base::StringPrintf(
       "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       search_feature_triggered, input_.current_page_classification());
-  match->search_terms_args->assisted_query_stats += "." + experiment_stats;
   // TODO(crbug.com/1247846): experiment_stats is a deprecated field. We should
-  // however continue to report it for parity with what gets reported in aqs=,
-  // and for the downstream consumers that expect this field. Once gs_lcrp=
-  // fully replaces aqs=, Chrome should start logging the substitute fields and
+  // however continue to report it for the downstream consumers that expect this
+  // field. Eventually Chrome should start logging the substitute fields and
   // the downstream consumers should migrate to using those fields before we
   // can stop logging this deprecated field.
   match->search_terms_args->searchbox_stats.set_experiment_stats(
       experiment_stats);
 
-  // Append the ExperimentStatsV2 to the AQS parameter to be logged in
-  // searchbox_stats.proto's experiment_stats_v2 field.
-  std::vector<std::string> experiment_stats_v2_strings;
+  // Append the ExperimentStatsV2 to the searchbox stats parameter to be logged
+  // in searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
     for (const auto& experiment_stat_v2 :
          zero_suggest_provider_->experiment_stats_v2s()) {
@@ -736,10 +728,6 @@ void AutocompleteController::
       // suggestion type/subtype pairs to be delimited with commas instead.
       std::string value = experiment_stat_v2.string_value();
       std::replace(value.begin(), value.end(), ':', ',');
-      // The SearchboxStats logging flow expects experiment stats type and value
-      // to be delimited with 'i'.
-      experiment_stats_v2_strings.push_back(
-          base::NumberToString(experiment_stat_v2.type_int()) + "i" + value);
       auto* reported_experiment_stats_v2 =
           match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
       reported_experiment_stats_v2->set_type_int(experiment_stat_v2.type_int());
@@ -757,17 +745,8 @@ void AutocompleteController::
         omnibox_position_stat.type_int());
     reported_experiment_stats_v2->set_int_value(
         omnibox_position_stat.int_value());
-    experiment_stats_v2_strings.push_back(
-        base::NumberToString(omnibox_position_stat.type_int()) + "i" +
-        base::NumberToString(omnibox_position_stat.int_value()));
   }
 #endif
-
-  if (!experiment_stats_v2_strings.empty()) {
-    // 'j' is used as a delimiter between individual experiment stat entries.
-    match->search_terms_args->assisted_query_stats +=
-        "." + base::JoinString(experiment_stats_v2_strings, "j");
-  }
 
   SetMatchDestinationURL(match);
 }
@@ -1107,7 +1086,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
 
   UpdateKeywordDescriptions(&internal_result_);
   UpdateAssociatedKeywords(&internal_result_);
-  UpdateAssistedQueryStats(&internal_result_);
+  UpdateSearchboxStats(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
   MaybeRemoveCompanyEntityImages(&internal_result_);
   MaybeCleanSuggestionsForKeywordMode(input_, &internal_result_);
@@ -1316,8 +1295,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
   }
 }
 
-void AutocompleteController::UpdateAssistedQueryStats(
-    AutocompleteResult* result) {
+void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
   using omnibox::metrics::ChromeSearchboxStats;
 
   if (result->empty())
@@ -1326,7 +1304,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
   ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
 
-  // Build the impressions string (the AQS part after ".").
   int count = 0;
   int num_zero_prefix_suggestions_shown = 0;
   absl::optional<omnibox::SuggestType> last_type;
@@ -1414,7 +1391,7 @@ void AutocompleteController::UpdateAssistedQueryStats(
   searchbox_stats.set_zero_prefix_enabled(num_zero_prefix_suggestions_shown >
                                           0);
 
-  // Go over all matches and set AQS if the match supports it.
+  // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
     const TemplateURL* template_url =
@@ -1424,7 +1401,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
 
     match->search_terms_args->searchbox_stats = searchbox_stats;
 
-    std::string selected_position;
     // Prevent trivial suggestions from getting credit for being selected.
     if (!match->IsTrivialAutocompletion()) {
       match_position = match_index_to_position[index];
@@ -1439,8 +1415,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
       match->search_terms_args->searchbox_stats.mutable_assisted_query_info()
           ->MergeFrom(*selected_suggestion);
 
-      selected_position = base::StringPrintf("%" PRIuS, match_position);
-
       // Reconstruct AQS for items sharing the slot (e.g. elements in the
       // carousel).
       if (match_index_belongs_to_horizontal_render_group[index]) {
@@ -1448,11 +1422,8 @@ void AutocompleteController::UpdateAssistedQueryStats(
             match->suggest_type, match->subtypes, 1);
       }
     }
-    match->search_terms_args->assisted_query_stats =
-        base::StringPrintf("chrome.%s.%s", selected_position.c_str(),
-                           base::JoinString(aqs, "j").c_str());
 
-    // Duplicate AQS/SBS for eligible ActionsInSuggest.
+    // Duplicate searchbox stats for eligible ActionsInSuggest.
     // TODO(1418077): rather than computing the `action_uri`, keep the
     // updated search_terms_args, and apply the query formulation time the
     // moment the action is selected.
@@ -1468,8 +1439,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
       search_terms_args.searchbox_stats.mutable_assisted_query_info()
           ->MergeFrom(
               match->search_terms_args->searchbox_stats.assisted_query_info());
-      search_terms_args.assisted_query_stats =
-          match->search_terms_args->assisted_query_stats;
 
       action_in_suggest->action_info.set_action_uri(
           ComputeURLFromSearchTermsArgs(

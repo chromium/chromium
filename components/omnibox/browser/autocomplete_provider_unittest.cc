@@ -348,10 +348,9 @@ class AutocompleteProviderTest : public testing::Test {
     std::vector<absl::optional<omnibox::GroupId>> suggestion_group_ids;
   };
 
-  struct AssistedQueryStatsTestData {
+  struct SearchboxStatsTestData {
     const AutocompleteMatch::Type match_type;
     absl::optional<omnibox::GroupId> group_id;
-    const std::string expected_aqs;
     const omnibox::metrics::ChromeSearchboxStats expected_searchbox_stats;
     omnibox::SuggestType type;
     base::flat_set<omnibox::SuggestSubtype> subtypes;
@@ -384,9 +383,8 @@ class AutocompleteProviderTest : public testing::Test {
   void UpdateResultsWithSuggestionGroupsTestData(
       const SuggestionGroupsTestData& test_data);
 
-  void RunAssistedQueryStatsTest(
-      const AssistedQueryStatsTestData* aqs_test_data,
-      size_t size);
+  void RunSearchboxStatsTest(const SearchboxStatsTestData* sbs_test_data,
+                             size_t size);
 
   void RunQuery(const std::string& query, bool allow_exact_keyword_match);
 
@@ -484,7 +482,7 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
   //       don't rely on kResultsPerProvided and default relevance ordering
   //       (B > A).
   RegisterTemplateURL(kTestTemplateURLKeyword,
-                      "http://aqs/{searchTerms}/{google:assistedQueryStats}");
+                      "http://foo/{searchTerms}/{google:assistedQueryStats}");
 
   AutocompleteController::Providers providers;
 
@@ -638,36 +636,33 @@ void AutocompleteProviderTest::UpdateResultsWithSuggestionGroupsTestData(
   result_.GroupAndDemoteMatchesInGroups();
 }
 
-void AutocompleteProviderTest::RunAssistedQueryStatsTest(
-    const AssistedQueryStatsTestData* aqs_test_data,
+void AutocompleteProviderTest::RunSearchboxStatsTest(
+    const SearchboxStatsTestData* sbs_test_data,
     size_t size) {
   // Prepare input.
   const size_t kMaxRelevance = 1000;
   ACMatches matches;
   for (size_t i = 0; i < size; ++i) {
     AutocompleteMatch match(nullptr, kMaxRelevance - i, false,
-                            aqs_test_data[i].match_type);
-    match.suggestion_group_id = aqs_test_data[i].group_id;
+                            sbs_test_data[i].match_type);
+    match.suggestion_group_id = sbs_test_data[i].group_id;
     match.allowed_to_be_default_match = true;
     match.keyword = kTestTemplateURLKeyword;
     match.search_terms_args =
         std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-    match.suggest_type = aqs_test_data[i].type;
-    match.subtypes = aqs_test_data[i].subtypes;
+    match.suggest_type = sbs_test_data[i].type;
+    match.subtypes = sbs_test_data[i].subtypes;
     matches.push_back(match);
   }
   result_.Reset();
   result_.AppendMatches(matches);
   result_.MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 
-  // Update AQS.
-  controller_->UpdateAssistedQueryStats(&result_);
+  // Update Searchbox stats.
+  controller_->UpdateSearchboxStats(&result_);
 
   // Verify data.
   for (size_t i = 0; i < size; ++i) {
-    EXPECT_EQ(aqs_test_data[i].expected_aqs,
-              result_.match_at(i)->search_terms_args->assisted_query_stats);
-
     std::string serialized_searchbox_stats;
     result_.match_at(i)->search_terms_args->searchbox_stats.SerializeToString(
         &serialized_searchbox_stats);
@@ -676,7 +671,7 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
                           base::Base64UrlEncodePolicy::OMIT_PADDING,
                           &encoded_searchbox_stats);
     std::string expected_serialized_searchbox_stats;
-    aqs_test_data[i].expected_searchbox_stats.SerializeToString(
+    sbs_test_data[i].expected_searchbox_stats.SerializeToString(
         &expected_serialized_searchbox_stats);
     std::string expected_encoded_searchbox_stats;
     base::Base64UrlEncode(expected_serialized_searchbox_stats,
@@ -733,7 +728,7 @@ void AutocompleteProviderTest::CopyResults() {
 GURL AutocompleteProviderTest::GetDestinationURL(
     AutocompleteMatch& match,
     base::TimeDelta query_formulation_time) const {
-  controller_->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+  controller_->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       query_formulation_time, &match);
   return match.destination_url;
 }
@@ -754,8 +749,8 @@ TEST_F(AutocompleteProviderTest, Query) {
   EXPECT_EQ(provider2, result_.default_match()->provider);
 }
 
-// Tests assisted query stats.
-TEST_F(AutocompleteProviderTest, AssistedQueryStats) {
+// Tests searchbox stats.
+TEST_F(AutocompleteProviderTest, SearchboxStats) {
   ResetControllerWithTestProviders(false, nullptr, nullptr);
   RunTest();
 
@@ -764,15 +759,18 @@ TEST_F(AutocompleteProviderTest, AssistedQueryStats) {
       result_.size());
 
   // Now, check the results from the second provider, as they should not have
-  // assisted query stats set.
+  // searchbox stats set.
   for (size_t i = 0; i < kResultsPerProvider; ++i) {
-    EXPECT_TRUE(
-        result_.match_at(i)->search_terms_args->assisted_query_stats.empty());
+    EXPECT_EQ(
+        0u,
+        result_.match_at(i)->search_terms_args->searchbox_stats.ByteSizeLong());
   }
-  // The first provider has a test keyword, so AQS should be non-empty.
+  // The first provider has a test keyword, so the searchbox stats should be
+  // non-empty.
   for (size_t i = kResultsPerProvider; i < result_.size(); ++i) {
-    EXPECT_FALSE(
-        result_.match_at(i)->search_terms_args->assisted_query_stats.empty());
+    EXPECT_NE(
+        0u,
+        result_.match_at(i)->search_terms_args->searchbox_stats.ByteSizeLong());
   }
 }
 
@@ -1015,7 +1013,7 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
   }
 }
 
-TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
+TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
   ResetControllerWithTestProviders(false, nullptr, nullptr);
 
   base::test::ScopedFeatureList feature_list;
@@ -1023,16 +1021,15 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
 
   {
     omnibox::metrics::ChromeSearchboxStats searchbox_stats;
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         //  MSVC doesn't support zero-length arrays, so supply some dummy data.
         {AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
          {/* GroupID */},
-         "",
          searchbox_stats,
          omnibox::TYPE_NATIVE_CHROME}};
     SCOPED_TRACE("No matches");
     // Note: We pass 0 here to ignore the dummy data above.
-    RunAssistedQueryStatsTest(test_data, 0);
+    RunSearchboxStatsTest(test_data, 0);
   }
 
   // Note: See suggest.proto for the types and subtypes referenced below.
@@ -1047,14 +1044,13 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     available_suggestion->set_type(omnibox::TYPE_NATIVE_CHROME);
     available_suggestion->add_subtypes(omnibox::SUBTYPE_OMNIBOX_ECHO_SEARCH);
 
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
          {/* GroupID */},
-         "chrome..69i57",
          searchbox_stats,
          omnibox::TYPE_NATIVE_CHROME}};
     SCOPED_TRACE("One match");
-    RunAssistedQueryStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data));
   }
 
   {
@@ -1069,15 +1065,14 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     auto* assisted_query_info = searchbox_stats.mutable_assisted_query_info();
     assisted_query_info->MergeFrom(searchbox_stats.available_suggestions(0));
 
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.0.46i39",
          searchbox_stats,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL}}};
     SCOPED_TRACE("One match with provider populated subtypes");
-    RunAssistedQueryStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data));
   }
 
   {
@@ -1098,28 +1093,25 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     auto* assisted_query_info = searchbox_stats.mutable_assisted_query_info();
     assisted_query_info->MergeFrom(searchbox_stats.available_suggestions(0));
 
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {omnibox::GROUP_MOBILE_MOST_VISITED},
-         "chrome.0.0i724",
          searchbox_stats,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {omnibox::GROUP_MOBILE_MOST_VISITED},
-         "chrome.0.0i724",
          searchbox_stats,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {omnibox::GROUP_MOBILE_MOST_VISITED},
-         "chrome.0.0i724",
          searchbox_stats,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES}},
     };
     SCOPED_TRACE("Multiple matches in horizontal render group");
-    RunAssistedQueryStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data));
   }
 
   {
@@ -1161,43 +1153,38 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     assisted_query_info = stats_2.mutable_assisted_query_info();
     assisted_query_info->MergeFrom(searchbox_stats.available_suggestions(2));
 
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         // Entity Suggestion
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.0.46i362j0i724j46i362",
          stats_0,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_ZERO_PREFIX}},
         // Three horizontally rendered tiles
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {omnibox::GROUP_MOBILE_MOST_VISITED},
-         "chrome.1.46i362j0i724j46i362",
          stats_1,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {omnibox::GROUP_MOBILE_MOST_VISITED},
-         "chrome.1.46i362j0i451j46i362",
          stats_1,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {omnibox::GROUP_MOBILE_MOST_VISITED},
-         "chrome.1.46i362j0i450j46i362",
          stats_1,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY}},
         // Entity suggestion.
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.2.46i362j0i450j46i362",
          stats_2,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_ZERO_PREFIX}},
     };
     SCOPED_TRACE("Multiple matches with horizontal render group");
-    RunAssistedQueryStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data));
   }
 
   {
@@ -1260,10 +1247,9 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
 
     // This test confirms that repetitive subtype information is being
     // properly handled and reported as the same suggestion type.
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {/* GroupID */},
-         "chrome.0.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_0,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS,
@@ -1272,13 +1258,11 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
         // repeated subtype match.
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.1.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_1,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS}},
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.2.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_2,
          omnibox::TYPE_CATEGORICAL_QUERY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS,
@@ -1287,7 +1271,6 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
         // it comes with additional subtype information (42).
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.3.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_3,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS,
@@ -1296,13 +1279,12 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
         // because these items are not adjacent.
         {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
          {/* GroupID */},
-         "chrome.4.0i39i143i362j46i39i143j185i39i143j46i39i143i362j46i39i143",
          searchbox_stats_4,
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS}},
     };
     SCOPED_TRACE("Complex set of matches with repetitive subtypes");
-    RunAssistedQueryStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data));
   }
 
   // This test confirms that selection of trivial suggestions does not get
@@ -1386,150 +1368,56 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
     assisted_query_info = searchbox_stats_7.mutable_assisted_query_info();
     assisted_query_info->MergeFrom(searchbox_stats.available_suggestions(7));
 
-    AssistedQueryStatsTestData test_data[] = {
+    SearchboxStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
          {/* GroupID */},
-         "chrome..69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_0,
          omnibox::TYPE_NATIVE_CHROME},
         {AutocompleteMatchType::URL_WHAT_YOU_TYPED,
          {/* GroupID */},
-         "chrome..69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_1,
          omnibox::TYPE_NATIVE_CHROME},
         {AutocompleteMatchType::NAVSUGGEST,
          {/* GroupID */},
-         "chrome.2.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_2,
          omnibox::TYPE_NAVIGATION},
         {AutocompleteMatchType::NAVSUGGEST,
          {/* GroupID */},
-         "chrome.3.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_3,
          omnibox::TYPE_NAVIGATION},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {/* GroupID */},
-         "chrome.4.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_4,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {/* GroupID */},
-         "chrome.5.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_5,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX,
           omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY}},
         {AutocompleteMatchType::SEARCH_SUGGEST,
          {/* GroupID */},
-         "chrome.6.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_6,
          omnibox::TYPE_QUERY,
          {omnibox::SUBTYPE_ZERO_PREFIX,
           omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS}},
         {AutocompleteMatchType::SEARCH_HISTORY,
          {/* GroupID */},
-         "chrome.7.69i57j69i58j5i64l2j0i362j0i362i450j0i362i451j69i59",
          searchbox_stats_7,
          omnibox::TYPE_NATIVE_CHROME},
     };
     SCOPED_TRACE("Trivial and zero-prefix matches");
-    RunAssistedQueryStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data));
   }
 }
 
-TEST_F(AutocompleteProviderTest, GetDestinationURL_AssistedQueryStatsOnly) {
+TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   ResetControllerWithKeywordAndSearchProviders();
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({omnibox::kReportAssistedQueryStats},
-                                {omnibox::kReportSearchboxStats});
-
-  // For the destination URL to have aqs parameters for query formulation time
-  // and the field trial triggered bit, many conditions need to be satisfied.
-  AutocompleteMatch match(nullptr, 1100, false,
-                          AutocompleteMatchType::SEARCH_SUGGEST);
-  GURL url(GetDestinationURL(match, base::Milliseconds(2456)));
-  EXPECT_TRUE(url.path().empty());
-
-  // The protocol needs to be https.
-  RegisterTemplateURL(kTestTemplateURLKeyword,
-                      "https://aqs/{searchTerms}/{google:assistedQueryStats}");
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // There needs to be a keyword provider.
-  match.keyword = kTestTemplateURLKeyword;
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // search_terms_args needs to be set.
-  match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // Both assisted_query_stats and searchbox_stats need to have been set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  match.search_terms_args->searchbox_stats.set_client_name("chrome");
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j0j0&", url.path());
-
-  // Test field trial triggered bit set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  set_remote_search_feature_triggered_in_session(true);
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j0&", url.path());
-
-  // Test page classification set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  set_current_page_classification(metrics::OmniboxEventProto::OTHER);
-  set_remote_search_feature_triggered_in_session(false);
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j0j4&", url.path());
-
-  // Test page classification and field trial triggered set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  set_remote_search_feature_triggered_in_session(true);
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4&", url.path());
-
-  // Test experiment stats set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
-  experiment_stats_v2.set_type_int(10001);
-  experiment_stats_v2.set_string_value("0:67");
-  add_zero_suggest_provider_experiment_stats_v2(experiment_stats_v2);
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4.10001i0,67&",
-            url.path());
-
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  experiment_stats_v2.set_type_int(10001);
-  experiment_stats_v2.set_string_value("54:67");
-  add_zero_suggest_provider_experiment_stats_v2(experiment_stats_v2);
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ(
-      "//"
-      "aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4.10001i0,67j10001i54,67&",
-      url.path());
-}
-
-TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
-  ResetControllerWithKeywordAndSearchProviders();
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({omnibox::kReportSearchboxStats},
-                                {omnibox::kReportAssistedQueryStats});
-
-  // For the destination URL to have aqs parameters for query formulation time
-  // and the field trial triggered bit, many conditions need to be satisfied.
+  // For the destination URL to have searchbox stats parameters for query
+  // formulation time and the field trial triggered bit, many conditions need
+  // to be satisfied.
   AutocompleteMatch match(nullptr, 1100, false,
                           AutocompleteMatchType::SEARCH_SUGGEST);
   GURL url(GetDestinationURL(match, base::Milliseconds(2456)));
@@ -1552,9 +1440,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
-  // Both assisted_query_stats and searchbox_stats need to have been set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
+  // searchbox_stats need to have been set.
   match.search_terms_args->searchbox_stats.set_client_name("chrome");
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqMA&", url.path());
@@ -1675,54 +1561,6 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
     EXPECT_EQ(10001, expected.experiment_stats_v2(0).type_int());
     EXPECT_EQ("0,67", expected.experiment_stats_v2(0).string_value());
   }
-}
-
-TEST_F(AutocompleteProviderTest,
-       GetDestinationURL_AssistedQueryStatsAndSearchboxStats) {
-  ResetControllerWithKeywordAndSearchProviders();
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kReportSearchboxStats, omnibox::kReportAssistedQueryStats}, {});
-
-  // For the destination URL to have aqs parameters for query formulation time
-  // and the field trial triggered bit, many conditions need to be satisfied.
-  AutocompleteMatch match(nullptr, 1100, false,
-                          AutocompleteMatchType::SEARCH_SUGGEST);
-  GURL url(GetDestinationURL(match, base::Milliseconds(2456)));
-  EXPECT_TRUE(url.path().empty());
-
-  // The protocol needs to be https.
-  RegisterTemplateURL(kTestTemplateURLKeyword,
-                      "https://foo/{searchTerms}/{google:assistedQueryStats}");
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // There needs to be a keyword provider.
-  match.keyword = kTestTemplateURLKeyword;
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // search_terms_args needs to be set.
-  match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // If assisted_query_stats is not set, searchbox_stats is not reported either.
-  match.search_terms_args->searchbox_stats.set_client_name("chrome");
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
-
-  // Both assisted_query_stats and searchbox_stats need to have been set.
-  match.search_terms_args->assisted_query_stats =
-      "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ(
-      "//"
-      "gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqMA&aqs=chrome.0."
-      "69i57j69i58j5l2j0l3j69i59.2456j0j0&",
-      url.path());
 }
 
 TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
@@ -1964,7 +1802,7 @@ class AutocompleteProviderPrefetchTest : public AutocompleteProviderTest {
  public:
   AutocompleteProviderPrefetchTest() {
     RegisterTemplateURL(kTestTemplateURLKeyword,
-                        "http://aqs/{searchTerms}/{google:assistedQueryStats}");
+                        "http://foo/{searchTerms}/{google:assistedQueryStats}");
     // Create an empty controller.
     ResetControllerWithType(0);
     provider_listener_ =

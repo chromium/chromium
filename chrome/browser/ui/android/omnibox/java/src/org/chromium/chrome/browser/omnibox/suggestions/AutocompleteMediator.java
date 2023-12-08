@@ -708,8 +708,8 @@ class AutocompleteMediator
 
     /**
      * Updates the URL we will navigate to from suggestion, if needed. This will update the search
-     * URL to be of the corpus type if query in the omnibox is displayed and update aqs= parameter
-     * on regular web search URLs.
+     * URL to be of the corpus type if query in the omnibox is displayed and update gs_lcrp=
+     * parameter on regular web search URLs.
      *
      * @param suggestion The chosen omnibox suggestion.
      * @param matchIndex The index of the chosen omnibox suggestion.

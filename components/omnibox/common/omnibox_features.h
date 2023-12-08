@@ -130,10 +130,6 @@ BASE_DECLARE_FEATURE(kUpdatedConnectionSecurityIndicators);
 BASE_DECLARE_FEATURE(kDefaultTypedNavigationsToHttps);
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 
-// Omnibox Logging.
-BASE_DECLARE_FEATURE(kReportAssistedQueryStats);
-BASE_DECLARE_FEATURE(kReportSearchboxStats);
-
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
 BASE_DECLARE_FEATURE(kMlUrlScoring);

@@ -734,18 +734,6 @@ const char kOmniboxPopulateShortcutsDatabaseDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "to provider better suggestions ranking.";
 
-const char kOmniboxReportAssistedQueryStatsName[] =
-    "Omnibox Assisted Query Stats param";
-const char kOmniboxReportAssistedQueryStatsDescription[] =
-    "Enables reporting the Assisted Query Stats param in search destination "
-    "URLs originated from the Omnibox.";
-
-const char kOmniboxReportSearchboxStatsName[] =
-    "Omnibox Searchbox Stats proto param";
-const char kOmniboxReportSearchboxStatsDescription[] =
-    "Enables reporting the serialized Searchbox Stats proto param in search "
-    "destination URLs originated from the Omnibox.";
-
 extern const char kOmniboxSuggestionsRTLImprovementsName[] =
     "Omnibox Improved RTL Suggestion Layout";
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =

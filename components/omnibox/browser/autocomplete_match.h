@@ -847,8 +847,8 @@ struct AutocompleteMatch {
   bool from_previous = false;
 
   // Optional search terms args.  If present,
-  // AutocompleteController::UpdateAssistedQueryStats() will incorporate this
-  // data with additional data it calculates and pass the completed struct to
+  // AutocompleteController::UpdateSearchboxStats() will incorporate this data
+  // with additional data it calculates and pass the completed struct to
   // TemplateURLRef::ReplaceSearchTerms() to reset the match's |destination_url|
   // after the complete set of matches in the AutocompleteResult has been chosen
   // and sorted.  Most providers will leave this as NULL, which will cause the

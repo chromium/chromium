@@ -638,14 +638,6 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxPopulateShortcutsDatabaseName[];
 extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
 
-// Title and description for assisted query stats param reporting.
-extern const char kOmniboxReportAssistedQueryStatsName[];
-extern const char kOmniboxReportAssistedQueryStatsDescription[];
-
-// Title and description for searchbox stats flag.
-extern const char kOmniboxReportSearchboxStatsName[];
-extern const char kOmniboxReportSearchboxStatsDescription[];
-
 // Title and description for improved RTL layout of suggestions.
 extern const char kOmniboxSuggestionsRTLImprovementsName[];
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[];

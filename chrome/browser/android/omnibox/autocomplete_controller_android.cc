@@ -416,13 +416,13 @@ void AutocompleteControllerAndroid::DeleteMatchElement(JNIEnv* env,
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
-    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+    UpdateMatchDestinationURLWithAdditionalSearchboxStats(
         JNIEnv* env,
         uintptr_t match_ptr,
         jlong elapsed_time_since_input_change) {
   auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
   autocomplete_controller_
-      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           base::Milliseconds(elapsed_time_since_input_change), match);
   return url::GURLAndroid::FromNativeGURL(env, match->destination_url);
 }

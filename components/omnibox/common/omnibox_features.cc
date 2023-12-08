@@ -462,18 +462,6 @@ BASE_FEATURE(kDefaultTypedNavigationsToHttps,
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
-// If enabled, Omnibox reports the Assisted Query Stats in the aqs= param in the
-// Search Results Page URL.
-BASE_FEATURE(kReportAssistedQueryStats,
-             "OmniboxReportAssistedQueryStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
-// Search Results Page URL.
-BASE_FEATURE(kReportSearchboxStats,
-             "OmniboxReportSearchboxStats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
 // training the ML scoring models.
 BASE_FEATURE(kLogUrlScoringSignals,

@@ -350,8 +350,8 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
-     * Updates AQS/SBS parameters on the selected match that we will navigate to and returns the
-     * updated URL.
+     * Updates searchbox stats parameters on the selected match that we will navigate to and
+     * returns the updated URL.
      *
      * @param match the AutocompleteMatch object to get the updated destination URL for
      * @param elapsedTimeSinceInputChange the number of ms between the time the user started typing
@@ -364,7 +364,7 @@ public class AutocompleteController implements Destroyable {
         if (!hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH)) return null;
 
         return AutocompleteControllerJni.get()
-                .updateMatchDestinationURLWithAdditionalAssistedQueryStats(
+                .updateMatchDestinationURLWithAdditionalSearchboxStats(
                         mNativeController, match.getNativeObjectRef(), elapsedTimeSinceInputChange);
     }
 
@@ -434,7 +434,7 @@ public class AutocompleteController implements Destroyable {
 
         void deleteMatch(long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
 
-        GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
+        GURL updateMatchDestinationURLWithAdditionalSearchboxStats(
                 long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange);

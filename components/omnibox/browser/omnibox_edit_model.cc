@@ -2324,7 +2324,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
       now - time_user_first_modified_omnibox_);
   controller_->autocomplete_controller()
-      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
 
   GURL destination_url = action ? action->getUrl() : match.destination_url;

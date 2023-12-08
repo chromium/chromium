@@ -189,12 +189,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // content; see |OmniboxEditModel::user_input_in_progress_|.
   void ResetSession();
 
-  // Updates the destination URL for the given match with the final AQS
-  // parameter using additional information otherwise not available at initial
-  // construction time iff the provider's TemplateURL supports assisted query
+  // Updates the destination URL for the given match with the final searchbox
+  // stats parameter using additional information otherwise not available at
+  // initial construction time iff the provider's TemplateURL supports searchbox
   // stats.
   // This method should be called right before the user navigates to the match.
-  void UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+  void UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       base::TimeDelta query_formulation_time,
       AutocompleteMatch* match) const;
 
@@ -257,7 +257,7 @@ class AutocompleteController : public AutocompleteProviderListener,
                            FilterMatchesForInstantKeywordWithBareAt);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateAssistedQueryStats);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateSearchboxStats);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
                            SupportedProvider_NonPrefetch);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
@@ -350,9 +350,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Pack matches show their URLs as descriptions instead of the provider name.
   void UpdateKeywordDescriptions(AutocompleteResult* result);
 
-  // For each AutocompleteMatch in `result`, updates the assisted query stats
-  // iff the provider's TemplateURL supports it.
-  void UpdateAssistedQueryStats(AutocompleteResult* result);
+  // For each AutocompleteMatch in `result`, updates the searchbox stats iff the
+  // provider's TemplateURL supports it.
+  void UpdateSearchboxStats(AutocompleteResult* result);
 
   // Update the tail suggestions' `tail_suggest_common_prefix`.
   void UpdateTailSuggestPrefix(AutocompleteResult* result);

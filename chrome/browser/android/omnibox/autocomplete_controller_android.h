@@ -77,7 +77,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>
-  UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+  UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       JNIEnv* env,
       uintptr_t match_ptr,
       jlong elapsed_time_since_input_change);
