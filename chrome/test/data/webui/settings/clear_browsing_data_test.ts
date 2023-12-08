@@ -158,7 +158,9 @@ suite('ClearBrowsingDataDesktop', function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({enableCbdTimeframeRequired: false});
+    // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
+    loadTimeData.overrideValues(
+        {enableCbdTimeframeRequired: false, unoDesktopEnabled: false});
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
