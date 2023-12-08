@@ -66,8 +66,7 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
     AcceptParams(const AcceptParams& other);
     ~AcceptParams();
 
-    content::BrowserThread::ID thread_id;
-    raw_ptr<void, LeakedDanglingUntriaged> browser_context_id;
+    raw_ptr<content::BrowserContext> browser_context;
     std::string extension_id;
     scoped_refptr<ServerSocketData> server_sockets;
     scoped_refptr<ClientSocketData> client_sockets;
@@ -89,17 +88,11 @@ class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
-  // Post an extension event from |thread_id| to UI thread
-  static void PostEvent(const AcceptParams& params,
-                        std::unique_ptr<Event> event);
-
   // Dispatch an extension event on to EventRouter instance on UI thread.
-  static void DispatchEvent(void* browser_context_id,
+  static void DispatchEvent(content::BrowserContext* browser_context,
                             const std::string& extension_id,
                             std::unique_ptr<Event> event);
 
-  // Usually IO thread (except for unit testing).
-  content::BrowserThread::ID thread_id_;
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<ServerSocketData> server_sockets_;
   scoped_refptr<ClientSocketData> client_sockets_;

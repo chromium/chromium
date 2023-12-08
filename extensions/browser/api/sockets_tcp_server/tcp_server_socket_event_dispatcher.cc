@@ -40,7 +40,7 @@ TCPServerSocketEventDispatcher* TCPServerSocketEventDispatcher::Get(
 
 TCPServerSocketEventDispatcher::TCPServerSocketEventDispatcher(
     content::BrowserContext* context)
-    : thread_id_(Socket::kThreadId), browser_context_(context) {
+    : browser_context_(context) {
   ApiResourceManager<ResumableTCPServerSocket>* server_manager =
       ApiResourceManager<ResumableTCPServerSocket>::Get(browser_context_);
   DCHECK(server_manager)
@@ -72,7 +72,7 @@ TCPServerSocketEventDispatcher::AcceptParams::~AcceptParams() = default;
 void TCPServerSocketEventDispatcher::OnServerSocketListen(
     const std::string& extension_id,
     int socket_id) {
-  DCHECK_CURRENTLY_ON(thread_id_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StartSocketAccept(extension_id, socket_id);
 }
@@ -80,7 +80,7 @@ void TCPServerSocketEventDispatcher::OnServerSocketListen(
 void TCPServerSocketEventDispatcher::OnServerSocketResume(
     const std::string& extension_id,
     int socket_id) {
-  DCHECK_CURRENTLY_ON(thread_id_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StartSocketAccept(extension_id, socket_id);
 }
@@ -88,11 +88,10 @@ void TCPServerSocketEventDispatcher::OnServerSocketResume(
 void TCPServerSocketEventDispatcher::StartSocketAccept(
     const std::string& extension_id,
     int socket_id) {
-  DCHECK_CURRENTLY_ON(thread_id_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AcceptParams params;
-  params.thread_id = thread_id_;
-  params.browser_context_id = browser_context_;
+  params.browser_context = browser_context_;
   params.extension_id = extension_id;
   params.server_sockets = server_sockets_;
   params.client_sockets = client_sockets_;
@@ -103,7 +102,7 @@ void TCPServerSocketEventDispatcher::StartSocketAccept(
 
 // static
 void TCPServerSocketEventDispatcher::StartAccept(const AcceptParams& params) {
-  DCHECK_CURRENTLY_ON(params.thread_id);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ResumableTCPServerSocket* socket =
       params.server_sockets->Get(params.extension_id, params.socket_id);
@@ -130,7 +129,7 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     const std::optional<net::IPEndPoint>& remote_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
-  DCHECK_CURRENTLY_ON(params.thread_id);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(net::OK, result_code);
 
   if (result_code == net::OK) {
@@ -148,14 +147,14 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_TCP_SERVER_ON_ACCEPT,
                   sockets_tcp_server::OnAccept::kEventName, std::move(args)));
-    PostEvent(params, std::move(event));
+    DispatchEvent(params.browser_context, params.extension_id,
+                  std::move(event));
 
     // Post a task to delay the "accept" until the socket is available, as
     // calling StartAccept at this point would error with ERR_IO_PENDING.
-    content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&TCPServerSocketEventDispatcher::StartAccept,
-                                  params));
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TCPServerSocketEventDispatcher::StartAccept, params));
   } else {
     // Dispatch "onAcceptError" event but don't start another accept to avoid
     // potential infinite "accepts" if we have a persistent network error.
@@ -166,7 +165,8 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     std::unique_ptr<Event> event(new Event(
         events::SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR,
         sockets_tcp_server::OnAcceptError::kEventName, std::move(args)));
-    PostEvent(params, std::move(event));
+    DispatchEvent(params.browser_context, params.extension_id,
+                  std::move(event));
 
     // Since we got an error, the socket is now "paused" until the application
     // "resumes" it.
@@ -179,27 +179,16 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
 }
 
 // static
-void TCPServerSocketEventDispatcher::PostEvent(const AcceptParams& params,
-                                               std::unique_ptr<Event> event) {
-  DCHECK_CURRENTLY_ON(params.thread_id);
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
-                                params.extension_id, std::move(event)));
-}
-
-// static
 void TCPServerSocketEventDispatcher::DispatchEvent(
-    void* browser_context_id,
+    content::BrowserContext* browser_context,
     const std::string& extension_id,
     std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  content::BrowserContext* context =
-      reinterpret_cast<content::BrowserContext*>(browser_context_id);
-  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
+  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(
+          browser_context)) {
     return;
-  EventRouter* router = EventRouter::Get(context);
+  }
+  EventRouter* router = EventRouter::Get(browser_context);
   if (router) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Terminal app is the only non-extension to use sockets
