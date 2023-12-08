@@ -18,9 +18,8 @@ typedef void (^ChevronToggledBlock)(SnippetState snippet_state);
 // engines in a UITableView.
 @interface SnippetSearchEngineCell : TableViewCell
 
-// The imageview that is displayed on the leading edge of the cell.  This
-// contains a favicon composited on top of an off-white background.
-@property(nonatomic, readonly, strong) FaviconView* faviconView;
+// Favicon image to display the search engine icon.
+@property(nonatomic, strong) UIImage* faviconImage;
 // The search engine name.
 @property(nonatomic, readonly, strong) UILabel* nameLabel;
 // The search engine snippet for the description.

@@ -17,17 +17,16 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
 // Line width for the fake omnibox.
 constexpr CGFloat kLineWidth = 1.;
 // Parameters for the fake omnibox.
-constexpr CGFloat kFakeOmniboxWidth = 226.;
-constexpr CGFloat kFakeOmniboxHeight = 48.;
 constexpr CGFloat kFakeOmniboxCornerRadius = 99.;
 // Parameters for empty field in the fake omnibox.
 constexpr CGFloat kFakeOmniboxFieldWidth = 102.;
 constexpr CGFloat kFakeOmniboxFieldHeight = 12.;
 constexpr CGFloat kFakeOmniboxFieldCornerRadius = 12.;
-constexpr CGFloat kFakeOmniboxFieldLeadingInset = 52.;
+constexpr CGFloat kFakeOmniboxFieldLeadingInset = 48.;
 // Magnifying glass size.
 constexpr CGFloat kMagnifyingGlassSize = 20.;
 constexpr CGFloat kMagnifyingGlassFrameSize = 24.;
@@ -35,6 +34,7 @@ constexpr CGFloat kMagnifyingGlassLeadingInset = 16.;
 constexpr CGFloat kMagnifyingGlassTopInset = 12.;
 // The margin between the text and the arrow on the "More" button.
 constexpr CGFloat kMoreArrowMargin = 4;
+
 }  // namespace
 
 UIView* CreateFakeEmptyOmnibox() {
@@ -146,6 +146,8 @@ UIView* CreateFakeOmnibox(UIImageView* icon, NSString* searchEngineName) {
   [fake_omnibox addSubview:searchWithLabel];
 
   // Add the favicon on the side.
+  icon.layer.cornerRadius = kFaviconImageViewRadius;
+  icon.clipsToBounds = YES;
   [fake_omnibox addSubview:icon];
   if (base::i18n::IsRTL()) {
     icon.frame = CGRectMake(kFakeOmniboxWidth - kMagnifyingGlassLeadingInset -

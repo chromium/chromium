@@ -26,9 +26,6 @@ namespace {
 // Accessibility Identifier.
 NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
     @"SearchEngineChoiceTitleAccessibilityIdentifier";
-// Parameters for the fake omnibox.
-constexpr CGFloat kFakeOmniboxWidth = 226.;
-constexpr CGFloat kFakeOmniboxHeight = 48.;
 // Line width for the bottom separator.
 constexpr CGFloat kLineWidth = 1.;
 // The horizontal space between the safe area edges and the view elements.

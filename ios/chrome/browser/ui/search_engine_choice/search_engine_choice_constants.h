@@ -15,6 +15,13 @@ enum class SnippetState {
   kShown,
 };
 
+// Fake omnibox width and height (for the empty and not-empty illustration).
+extern const CGFloat kFakeOmniboxWidth;
+extern const CGFloat kFakeOmniboxHeight;
+// Favicon size and radius.
+extern const CGFloat kFaviconImageViewSize;
+extern const CGFloat kFaviconImageViewRadius;
+
 // Prefix for the SearchEngineCell accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 // `Set as Default` button accessibility identifier.

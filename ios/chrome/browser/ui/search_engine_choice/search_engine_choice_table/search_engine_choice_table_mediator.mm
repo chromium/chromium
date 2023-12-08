@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_consumer.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
 namespace {
@@ -135,7 +136,7 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
     _faviconLoader->FaviconForPageUrl(
         item.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
-          item.faviconAttributes = attributes;
+          item.faviconImage = attributes.faviconImage;
           [weakSelf.consumer faviconAttributesUpdatedForItem:item];
         });
   }
