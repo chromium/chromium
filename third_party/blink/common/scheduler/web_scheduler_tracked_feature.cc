@@ -132,6 +132,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"IndexedDBEvent", "IndexedDB event is pending"};
     case WebSchedulerTrackedFeature::kWebSerial:
       return {"WebSerial", "Serial port open"};
+    case WebSchedulerTrackedFeature::kSmartCard:
+      return {"SmartCard", "SmartCardContext used"};
   }
   return {};
 }

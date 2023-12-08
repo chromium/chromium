@@ -52147,6 +52147,7 @@ Called by update_scheduler_enums.py.-->
   <int value="62" label="WebSerial"/>
   <int value="63" label="WebSocketSticky"/>
   <int value="64" label="WebRTCSticky"/>
+  <int value="65" label="SmartCard"/>
 </enum>
 
 <enum name="WebShareMethod">

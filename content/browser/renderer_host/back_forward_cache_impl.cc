@@ -193,6 +193,7 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
           WebSchedulerTrackedFeature::kRequestedMIDIPermission,
           WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
+          WebSchedulerTrackedFeature::kSmartCard,
           WebSchedulerTrackedFeature::kSharedWorker,
           WebSchedulerTrackedFeature::kSpeechRecognizer,
           WebSchedulerTrackedFeature::kSpeechSynthesis,

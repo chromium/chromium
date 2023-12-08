@@ -1624,6 +1624,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       // Currently we add WebSchedulerTrackedFeature::kWebSerial only for
       // disabling aggressive throttling.
       NOTREACHED_NORETURN();
+    case WebSchedulerTrackedFeature::kSmartCard:
+      return Page::BackForwardCacheNotRestoredReasonEnum::SmartCard;
   }
 }
 
@@ -1823,6 +1825,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
     case WebSchedulerTrackedFeature::kWebTransport:
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
+    case WebSchedulerTrackedFeature::kSmartCard:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:
