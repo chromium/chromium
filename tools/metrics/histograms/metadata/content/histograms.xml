@@ -143,6 +143,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSettings.IsAllowedByTpcdMetadataGrant.Duration"
+    units="microseconds" expires_after="2024-04-30">
+  <owner>trishalfonso@google.com</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Measures how long a call to content_settings::IsAllowedByTpcdMetadataGrant
+    takes when CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings
+    returns true. Logged each time a call is made. Note that histogram samples
+    for clients without high-resolution clocks are dropped.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
     expires_after="2024-05-26">
   <owner>engedy@chromium.org</owner>

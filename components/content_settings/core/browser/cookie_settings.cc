@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -110,7 +111,8 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
           net::CookieSettingOverrides())) {
     return false;
   }
-
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "ContentSettings.IsAllowedByTpcdMetadataGrant.Duration");
   base::AutoLock lock(tpcd_lock_);
   if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
       std::cmp_greater_equal(settings_for_3pcd_metadata_grants_.size(),
