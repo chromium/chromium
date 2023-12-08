@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {isAudio, isImage} from '../../../common/js/file_type.js';
+import type {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
 import {ImageTransformation} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';
@@ -38,7 +39,8 @@ export class ThumbnailModel {
   /**
    * @return Promise fulfilled with old format metadata list.
    */
-  async get(entries: Entry[]): Promise<ThumbnailMetadataItem[]> {
+  async get(entries: Array<Entry|FilesAppEntry>):
+      Promise<ThumbnailMetadataItem[]> {
     const results: Record<string, ThumbnailMetadataItem> = {};
     const metadataList = await this.metadataModel_.get(entries, [
       'modificationTime',
@@ -49,7 +51,7 @@ export class ThumbnailModel {
       'present',
     ]);
 
-    const contentRequestEntries: Entry[] = [];
+    const contentRequestEntries: Array<Entry|FilesAppEntry> = [];
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i]!;
       const metadata = metadataList[i]!;

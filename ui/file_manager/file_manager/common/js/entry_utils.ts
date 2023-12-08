@@ -331,8 +331,8 @@ export function isTrashEntry(entry: Entry|FilesAppEntry): entry is TrashEntry {
  *     directory. Returns true if both entries are null.
  */
 export function isSameEntry(
-    entry1: Entry|FilesAppEntry|undefined,
-    entry2: Entry|FilesAppEntry|undefined): boolean {
+    entry1: Entry|FilesAppEntry|null|undefined,
+    entry2: Entry|FilesAppEntry|null|undefined): boolean {
   if (!entry1 && !entry2) {
     return true;
   }
@@ -347,7 +347,9 @@ export function isSameEntry(
  * @return True if the both arrays contain same files or directories
  *     in the same order. Returns true if both arrays are null.
  */
-export function isSameEntries(entries1: Entry[], entries2: Entry[]): boolean {
+export function isSameEntries(
+    entries1: Array<Entry|FilesAppEntry>,
+    entries2: Array<Entry|FilesAppEntry>): boolean {
   if (!entries1 && !entries2) {
     return true;
   }
@@ -385,7 +387,8 @@ export function isSameFileSystem(
  * Checks if given two entries are in the same directory.
  * @return True if given entries are in the same directory.
  */
-export function isSiblingEntry(entry1: Entry, entry2: Entry): boolean {
+export function isSiblingEntry(
+    entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry): boolean {
   const path1 = entry1.fullPath.split('/');
   const path2 = entry2.fullPath.split('/');
   if (path1.length != path2.length) {
@@ -786,18 +789,7 @@ export function unwrapEntry<T extends AllEntryTypes>(entry: T): AllEntryTypes {
   }
 
   const nativeEntry = 'getNativeEntry' in entry && entry.getNativeEntry();
-  if (nativeEntry) {
-    if (isDirectoryEntry(nativeEntry)) {
-      return nativeEntry;
-    }
-    return nativeEntry;
-  }
-
-  if (isDirectoryEntry(entry)) {
-    return entry;
-  }
-
-  return entry;
+  return nativeEntry || entry;
 }
 
 /**

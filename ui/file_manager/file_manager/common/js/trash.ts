@@ -138,7 +138,7 @@ export function deleteIsForever(
   const enabledTrashVolumeURLs = getEnabledTrashVolumeURLs(
       volumeManager, /*includeTrashPath=*/ false,
       /*deleteIsForeverOnly=*/ true);
-  return entries.every(e => {
+  return entries.every((e: Entry|FilesAppEntry) => {
     for (const volumeURL of enabledTrashVolumeURLs) {
       if (e.toURL().startsWith(volumeURL)) {
         return true;

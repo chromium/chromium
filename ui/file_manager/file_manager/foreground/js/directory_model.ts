@@ -591,11 +591,11 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   /**
    * @return Array of selected entries.
    */
-  private getSelectedEntries_(): Entry[] {
+  private getSelectedEntries_(): Array<Entry|FilesAppEntry> {
     const indexes = this.fileListSelection_.selectedIndexes;
     const fileList = this.getFileList();
     if (fileList) {
-      return indexes.map(i => fileList.item(i));
+      return indexes.map(i => fileList.item(i)!);
     }
     return [];
   }
@@ -603,13 +603,13 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   /**
    * @param value List of selected entries.
    */
-  private setSelectedEntries_(value: Entry[]) {
+  private setSelectedEntries_(value: Array<Entry|FilesAppEntry>) {
     const indexes = [];
     const fileList = this.getFileList();
     const urls = entriesToURLs(value);
 
     for (let i = 0; i < fileList.length; i++) {
-      if (urls.indexOf(fileList.item(i).toURL()) !== -1) {
+      if (urls.indexOf(fileList.item(i)!.toURL()) !== -1) {
         indexes.push(i);
       }
     }
@@ -619,15 +619,15 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   /**
    * @return Lead entry.
    */
-  private getLeadEntry_(): Entry {
+  private getLeadEntry_(): Entry|FilesAppEntry|null {
     const index = this.fileListSelection_.leadIndex;
-    return index >= 0 ? this.getFileList().item(index) : null;
+    return index >= 0 ? this.getFileList().item(index)! : null;
   }
 
   /**
    * @param value The new lead entry.
    */
-  private setLeadEntry_(value: Entry) {
+  private setLeadEntry_(value: Entry|FilesAppEntry|null) {
     const fileList = this.getFileList();
     for (let i = 0; i < fileList.length; i++) {
       if (isSameEntry(fileList.item(i), value)) {
@@ -822,7 +822,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     const fileList = this.getFileList();
     const removedUrls = [];
     for (let i = 0; i < fileList.length; i++) {
-      removedUrls.push(fileList.item(i).toURL());
+      removedUrls.push(fileList.item(i)!.toURL());
     }
     this.metadataModel_.notifyEntriesRemoved(removedUrls);
 
@@ -864,7 +864,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         callback();
         return;
       }
-      const currentDirEntry = this.getCurrentDirEntry();
+      const currentDirEntry = this.getCurrentDirEntry()!;
       assert(currentDirEntry);
       const newDirContents = this.createDirectoryContents_(
           this.currentFileListContext_, currentDirEntry, this.lastSearchQuery_);
@@ -1107,7 +1107,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         const newEntryUrl = newEntry.toURL();
 
         for (let i = 0; i < list.length; i++) {
-          const item = list.item(i);
+          const item = list.item(i)!;
           const url = item.toURL();
           if (url === oldEntryUrl) {
             list.replaceItem(item, newEntry);
@@ -1344,7 +1344,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   selectEntry(entry: Entry) {
     const fileList = this.getFileList();
     for (let i = 0; i < fileList.length; i++) {
-      if (fileList.item(i).toURL() === entry.toURL()) {
+      if (fileList.item(i)!.toURL() === entry.toURL()) {
         this.selectIndex(i);
         return;
       }
@@ -1361,7 +1361,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     this.fileListSelection_.beginChange();
     this.fileListSelection_.unselectAll();
     for (let i = 0; i < fileList.length; i++) {
-      if (urls.indexOf(fileList.item(i).toURL()) >= 0) {
+      if (urls.indexOf(fileList.item(i)!.toURL()) >= 0) {
         this.fileListSelection_.setIndexSelected(i, true);
       }
     }

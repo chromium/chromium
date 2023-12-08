@@ -174,7 +174,8 @@ export function testHiddenForFiles() {
   // Mock current directory to Recent.
   directoryModel.getCurrentRootType = () => RootType.RECENT;
   // Current file list has 1 item.
-  fileListModel.push({name: 'a.txt', isDirectory: false, toURL: () => 'a.txt'});
+  fileListModel.push(
+      {name: 'a.txt', isDirectory: false, toURL: () => 'a.txt'} as Entry);
 
   emptyFolderController.updateUi();
   assertTrue(element.hidden);

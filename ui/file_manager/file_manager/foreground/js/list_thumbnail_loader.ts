@@ -9,6 +9,7 @@ import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event
 import {LruCache} from '../../common/js/lru_cache.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
 import {Source, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import type {DirectoryModel} from './directory_model.js';
@@ -171,7 +172,7 @@ export class ListThumbnailLoader extends
     const entry = isNullOrUndefined(event.detail.index) ?
         null :
         this.dataModel_.item(event.detail.index);
-    const cachedThumbnail = this.cache_.peek(entry?.toURL());
+    const cachedThumbnail = this.cache_.peek(entry?.toURL() || '');
     if (cachedThumbnail) {
       cachedThumbnail.outdated = true;
     }
@@ -204,7 +205,7 @@ export class ListThumbnailLoader extends
    *
    * @return If the thumbnail is not in cache, this returns null.
    */
-  getThumbnailFromCache(entry: Entry): ThumbnailData|null {
+  getThumbnailFromCache(entry: Entry|FilesAppEntry): ThumbnailData|null {
     // Since we want to evict cache based on high priority range, we use peek
     // here instead of get.
     return this.cache_.peek(entry.toURL()) || null;
@@ -220,7 +221,7 @@ export class ListThumbnailLoader extends
       return;
     }
 
-    const entry = this.dataModel_.item(this.cursor_);
+    const entry = this.dataModel_.item(this.cursor_)!;
 
     // Check volume type for optimizing the parameters.
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
@@ -252,7 +253,7 @@ export class ListThumbnailLoader extends
    * @param index Index of an entry in current data model.
    * @param entry An entry.
    */
-  private enqueue_(index: number, entry: Entry) {
+  private enqueue_(index: number, entry: Entry|FilesAppEntry) {
     const task = new ListThumbnailLoaderTask(
         entry, this.volumeManager_, this.thumbnailModel_,
         this.thumbnailLoaderConstructor_);
@@ -281,7 +282,7 @@ export class ListThumbnailLoader extends
     if (item && item.toURL() !== thumbnail.fileUrl) {
       index = -1;
       for (let i = 0; i < this.dataModel_.length; i++) {
-        if (this.dataModel_.item(i).toURL() === thumbnail.fileUrl) {
+        if (this.dataModel_.item(i)!.toURL() === thumbnail.fileUrl) {
           index = i;
           break;
         }
@@ -341,7 +342,8 @@ export class ListThumbnailLoaderTask {
    * @param thumbnailLoaderConstructor A constructor of thumbnail loader.
    */
   constructor(
-      private entry_: Entry, private volumeManager_: VolumeManager,
+      private entry_: Entry|FilesAppEntry,
+      private volumeManager_: VolumeManager,
       private thumbnailModel_: ThumbnailModel,
       private thumbnailLoaderConstructor_: typeof ThumbnailLoader) {}
 

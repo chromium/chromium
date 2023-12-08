@@ -8,6 +8,7 @@ import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chro
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {getMediaType, isImage, isPDF, isRaw, isVideo} from '../../common/js/file_type.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import type {ThumbnailMetadataItem} from './metadata/thumbnail_model.js';
 
@@ -43,7 +44,7 @@ export class ThumbnailLoader {
    * @param priority Priority, the highest is 0. default: 2.
    */
   constructor(
-      private entry_: Entry, loaderType?: LoaderType,
+      private entry_: Entry|FilesAppEntry, loaderType?: LoaderType,
       private metadata_?: ThumbnailMetadataItem, mediaType?: string,
       suppliedLoadTargets?: LoadTarget[], priority?: number) {
     const loadTargets = suppliedLoadTargets || [

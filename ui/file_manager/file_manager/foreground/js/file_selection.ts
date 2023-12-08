@@ -8,6 +8,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {isEncrypted} from '../../common/js/file_type.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {Store} from '../../externs/ts/store.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {updateSelection} from '../../state/ducks/current_directory.js';
@@ -38,7 +39,7 @@ export class FileSelection {
   private hasReadOnlyEntry_ = false;
 
   constructor(
-      public indexes: number[], public entries: Entry[],
+      public indexes: number[], public entries: Array<Entry|FilesAppEntry>,
       volumeManager: VolumeManager) {
     this.entries.forEach(entry => {
       if (!entry) {
@@ -133,7 +134,7 @@ export class FileSelectionHandler extends EventTarget {
         indexes
             .map(index => this.directoryModel_.getFileList().item(index))
             // Filter out undefined for invalid index b/277232289.
-            .filter(entry => !!entry);
+            .filter((entry): entry is Entry|FilesAppEntry => !!entry);
     this.selection = new FileSelection(indexes, entries, this.volumeManager_);
 
     if (this.selectionUpdateTimer_) {
@@ -252,7 +253,7 @@ export class FileSelectionHandler extends EventTarget {
     const selectedIndexes =
         this.directoryModel_.getFileListSelection().selectedIndexes;
     const selectedEntries = selectedIndexes.map(index => {
-      return this.directoryModel_.getFileList().item(index);
+      return this.directoryModel_.getFileList().item(index)!;
     });
     // Check if any of the selected entries are blocked by DLP:
     // a volume/directory in case of file-saveas (managed by the VolumeManager),

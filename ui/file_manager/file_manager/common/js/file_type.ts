@@ -107,7 +107,8 @@ export function getMediaType(
  * @param mimeType Optional mime type for the file.
  * @return True if audio file.
  */
-export function isAudio(entry: Entry, mimeType?: string): boolean {
+export function isAudio(
+    entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   return getMediaType(entry, mimeType) === 'audio';
 }
 
@@ -118,7 +119,8 @@ export function isAudio(entry: Entry, mimeType?: string): boolean {
  * @param mimeType Optional mime type for the file.
  * @return True if image file.
  */
-export function isImage(entry: Entry, mimeType?: string): boolean {
+export function isImage(
+    entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   return getMediaType(entry, mimeType) === 'image';
 }
 
@@ -127,7 +129,8 @@ export function isImage(entry: Entry, mimeType?: string): boolean {
  * @param mimeType Optional mime type for the file.
  * @return True if video file.
  */
-export function isVideo(entry: Entry, mimeType?: string): boolean {
+export function isVideo(
+    entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   return getMediaType(entry, mimeType) === 'video';
 }
 
@@ -136,7 +139,8 @@ export function isVideo(entry: Entry, mimeType?: string): boolean {
  * @param mimeType Optional mime type for the file.
  * @return True if document file.
  */
-export function isDocument(entry: Entry, mimeType?: string): boolean {
+export function isDocument(
+    entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   const type = getMediaType(entry, mimeType);
   return type === 'document' || type === 'hosted' || type === 'text';
 }
@@ -146,7 +150,7 @@ export function isDocument(entry: Entry, mimeType?: string): boolean {
  * @param mimeType Optional mime type for the file.
  * @return True if raw file.
  */
-export function isRaw(entry: Entry, mimeType?: string): boolean {
+export function isRaw(entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   return getMediaType(entry, mimeType) === 'raw';
 }
 
@@ -155,7 +159,7 @@ export function isRaw(entry: Entry, mimeType?: string): boolean {
  * @param mimeType Optional mime type for this file.
  * @return Whether or not this is a PDF file.
  */
-export function isPDF(entry: Entry, mimeType?: string): boolean {
+export function isPDF(entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   return getType(entry, mimeType).subtype === 'PDF';
 }
 
@@ -176,7 +180,8 @@ export function isType(
  * @param mimeType Optional mime type for the file.
  * @return Returns true if the file is hosted.
  */
-export function isHosted(entry: Entry, mimeType?: string): boolean {
+export function isHosted(
+    entry: Entry|FilesAppEntry, mimeType?: string): boolean {
   return getType(entry, mimeType).type === 'hosted';
 }
 
@@ -199,7 +204,7 @@ export function isEncrypted(
  *     'images/filetype_' + icon + '.png'.
  */
 export function getIcon(
-    entry: Entry|VolumeEntry|FileData, mimeType?: string,
+    entry: Entry|FilesAppEntry|VolumeEntry|FileData, mimeType?: string,
     rootType?: RootType): string {
   // Handles the FileData and FilesAppEntry types.
   if (entry && 'iconName' in entry) {
@@ -209,7 +214,7 @@ export function getIcon(
   let icon;
   // Handles other types of entries.
   if (entry) {
-    const ventry = entry as Entry | VolumeEntry;
+    const ventry = entry as Entry | FilesAppEntry;
     const fileType = getType(ventry, mimeType);
     const overridenIcon = getIconOverrides(ventry, rootType);
     icon = overridenIcon || fileType.icon || fileType.type;

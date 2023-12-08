@@ -189,7 +189,7 @@ export class DialogActionController {
       throw new Error('Too many files selected!');
     }
 
-    const selectedEntry = dm.item(selectedIndexes[0] ?? -1);
+    const selectedEntry = dm.item(selectedIndexes[0] ?? -1)!;
 
     if (isFolderDialogType(this.dialogType_)) {
       if (!selectedEntry.isDirectory) {
@@ -201,8 +201,8 @@ export class DialogActionController {
       }
     }
 
-    const singleSelection = {
-      urls: [files[0]],
+    const singleSelection: SelectFilesAndCloseParams = {
+      urls: [files[0]!],
       multiple: false,
       filterIndex: this.dialogFooter_.selectedFilterIndex,
     };

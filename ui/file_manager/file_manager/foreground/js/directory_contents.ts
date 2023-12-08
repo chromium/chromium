@@ -230,7 +230,8 @@ export class SearchV2ContentScanner extends ContentScanner {
     return topEntry ? this.getWrappedVolumeEntry_(topEntry) : entry;
   }
 
-  private getWrappedVolumeEntry_(entry: UniversalDirectory): UniversalDirectory {
+  private getWrappedVolumeEntry_(entry: UniversalDirectory):
+      UniversalDirectory {
     const state = getStore().getState();
     // Fetch the wrapped VolumeEntry from the store.
     const fileData = state.allEntries[entry.toURL()];
@@ -1047,7 +1048,7 @@ export class DirectoryContents extends EventTarget {
     super();
 
     this.fileList_ = this.context_.fileList;
-    this.fileList_.InitNewDirContents(this.context_.volumeManager);
+    this.fileList_.initNewDirContents(this.context_.volumeManager);
   }
 
   /**
@@ -1081,7 +1082,7 @@ export class DirectoryContents extends EventTarget {
    */
   createMetadataSnapshot(): Map<string, MetadataItem> {
     const snapshot = new Map<string, MetadataItem>();
-    const entries: Entry[] = this.fileList_.slice();
+    const entries: UniversalEntry[] = this.fileList_.slice();
     const metadata =
         this.context_.metadataModel.getCache(entries, ['modificationTime']);
     for (const [i, entry] of entries.entries()) {
@@ -1122,7 +1123,7 @@ export class DirectoryContents extends EventTarget {
       return;
     }
     const updatedIndexes = [];
-    const entries: Entry[] = this.fileList_.slice();
+    const entries: UniversalEntry[] = this.fileList_.slice();
     const freshMetadata =
         this.context_.metadataModel.getCache(entries, ['modificationTime']);
 
@@ -1220,14 +1221,14 @@ export class DirectoryContents extends EventTarget {
     const updatedList: Entry[] = [];
     const updatedIndexes = [];
     for (let i = 0; i < this.fileList_.length; i++) {
-      const url = this.fileList_.item(i).toURL();
+      const url = this.fileList_.item(i)!.toURL();
 
       if (removedSet.has(url)) {
         // Find the maximum range in which all items need to be removed.
         const begin = i;
         let end = i + 1;
         while (end < this.fileList_.length &&
-               removedSet.has(this.fileList_.item(end).toURL())) {
+               removedSet.has(this.fileList_.item(end)?.toURL() || '')) {
           end++;
         }
         // Remove the range [begin, end) at once to avoid multiple sorting.
@@ -1348,7 +1349,7 @@ export class DirectoryContents extends EventTarget {
           // filters or are already present in the current file list.
           const currentURLs = new Set<string>();
           for (let i = 0; i < this.fileList_.length; ++i) {
-            currentURLs.add(this.fileList_.item(i).toURL());
+            currentURLs.add(this.fileList_.item(i)!.toURL());
           }
           const entriesFiltered = entries.filter(
               (e) => this.context_.fileFilter.filter(e) &&
@@ -1406,4 +1407,3 @@ export class DirectoryContents extends EventTarget {
         .then(callback);
   }
 }
-

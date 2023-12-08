@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppEntry} from '../files_app_entry_interfaces.js';
+
 /**
  * Crostini shared path state handler.
  *
@@ -73,7 +75,7 @@ export class Crostini {
   /**
    * Returns true if entry can be shared with the specified VM.
    * @param {string} vmName
-   * @param {!Entry} entry
+   * @param {!Entry|!FilesAppEntry} entry
    * @param {boolean} persist If path is to be persisted.
    * @return {boolean}
    */

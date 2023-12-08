@@ -6,7 +6,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {str} from '../../common/js/translations.js';
 
-import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupHeader} from './file_list_model.js';
+import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 
 
@@ -61,7 +61,8 @@ function assertEntryArrayEquals(entryArray, names) {
 function makeSimpleFileListModel(names) {
   const fileListModel = new FileListModel(createFakeMetadataModel({}));
   for (let i = 0; i < names.length; i++) {
-    fileListModel.push({name: names[i], isDirectory: false});
+    fileListModel.push(
+        /** @type {!Entry} */ ({name: names[i], isDirectory: false}));
   }
   return fileListModel;
 }
@@ -99,35 +100,44 @@ export function testIsImageDominant() {
   assertEquals(fileListModel.isImageDominant(), false);
 
   // Adding one image. Image should be dominant in this directory (100%).
-  fileListModel.push({name: 'c.jpg', isDirectory: false});
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'c.jpg', isDirectory: false}));
   assertEquals(fileListModel.isImageDominant(), true);
 
   // Adding a directory shouldn't affect how the image is dominant (still 100%).
-  fileListModel.push({name: 'tmp_folder', isDirectory: true});
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'tmp_folder', isDirectory: true}));
   assertEquals(fileListModel.isImageDominant(), true);
 
   // Adding a non-image file, which will make the images not dominant (50%);
-  fileListModel.push({name: 'a.txt', isDirectory: false});
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'a.txt', isDirectory: false}));
   assertEquals(fileListModel.isImageDominant(), false);
 
   // Adding two image. Now 75%(3/4) files are images. Still not dominant.
-  fileListModel.push({name: 'c.jpg', isDirectory: false});
-  fileListModel.push({name: 'c.jpg', isDirectory: false});
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'c.jpg', isDirectory: false}));
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'c.jpg', isDirectory: false}));
   assertEquals(fileListModel.isImageDominant(), false);
 
   // Adding one more. Now 80%(4/5) files are images. Reached the threshold.
-  fileListModel.push({name: 'c.jpg', isDirectory: false});
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'c.jpg', isDirectory: false}));
   assertEquals(fileListModel.isImageDominant(), true);
 }
 
 export function testSortWithFolders() {
   const fileListModel =
       new FileListModel(createFakeMetadataModel(TEST_METADATA));
-  fileListModel.push({name: 'dirA', isDirectory: true});
-  fileListModel.push({name: 'dirB', isDirectory: true});
-  fileListModel.push({name: 'a.txt', isDirectory: false});
-  fileListModel.push({name: 'b.html', isDirectory: false});
-  fileListModel.push({name: 'c.jpg', isDirectory: false});
+  fileListModel.push(/** @type {!Entry} */ ({name: 'dirA', isDirectory: true}));
+  fileListModel.push(/** @type {!Entry} */ ({name: 'dirB', isDirectory: true}));
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'a.txt', isDirectory: false}));
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'b.html', isDirectory: false}));
+  fileListModel.push(
+      /** @type {!Entry} */ ({name: 'c.jpg', isDirectory: false}));
 
   // In following sort tests, note that folders should always be prior to files.
   fileListModel.sort('name', 'asc');
@@ -179,7 +189,8 @@ export function testSplice() {
   });
 
   fileListModel.splice(
-      2, 1, {name: 'p', isDirectory: false}, {name: 'b', isDirectory: false});
+      2, 1, /** @type {!Entry} */ ({name: 'p', isDirectory: false}),
+      /** @type {!Entry} */ ({name: 'b', isDirectory: false}));
   assertFileListModelElementNames(fileListModel, ['a', 'b', 'd', 'p', 'x']);
 }
 
@@ -209,7 +220,8 @@ export function testSpliceWithoutSortStatus() {
   });
 
   fileListModel.splice(
-      2, 1, {name: 'p', isDirectory: false}, {name: 'b', isDirectory: false});
+      2, 1, /** @type {!Entry} */ ({name: 'p', isDirectory: false}),
+      /** @type {!Entry} */ ({name: 'b', isDirectory: false}));
   // If the sort status is not specified, the original order should be kept.
   // i.e. the 2nd element in the original array, 'x', should be removed, and
   // 'p' and 'b' should be inserted at the position without changing the order.
@@ -273,7 +285,8 @@ export function testSpliceWithoutDeletingItems() {
   });
 
   fileListModel.splice(
-      2, 0, {name: 'p', isDirectory: false}, {name: 'b', isDirectory: false});
+      2, 0, /** @type {!Entry} */ ({name: 'p', isDirectory: false}),
+      /** @type {!Entry} */ ({name: 'b', isDirectory: false}));
   assertFileListModelElementNames(
       fileListModel, ['a', 'b', 'd', 'n', 'p', 'x']);
 }
@@ -295,8 +308,9 @@ export function testGroupByModificationTime() {
   /**
    * @type {!Array<{
    *  metadataMap: !Object<string, {modificationTime: Date}>,
-   *  expectedGroups: !Array<!GroupHeader>,
-   *  expectedReversedGroups: !Array<!GroupHeader>,
+   *  expectedGroups: !Array<!import("./file_list_model.js").GroupHeader>,
+   *  expectedReversedGroups:
+   * !Array<!import("./file_list_model.js").GroupHeader>,
    * }>}
    */
   const testData = [
@@ -461,7 +475,7 @@ export function testGroupByModificationTime() {
     fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
     fileListModel.sort(GROUP_BY_FIELD_MODIFICATION_TIME, 'desc');
     const files = Object.keys(test.metadataMap).map(fileName => {
-      return {name: fileName, isDirectory: false};
+      return /** @type {!Entry} */ ({name: fileName, isDirectory: false});
     });
     fileListModel.push(...files);
     const snapshot = fileListModel.getGroupBySnapshot();
@@ -477,7 +491,7 @@ export function testGroupByDirectory() {
   /**
    * @type {!Array<{
    *  metadataMap: !Object<string, {isDirectory: boolean}>,
-   *  expectedGroups: !Array<!GroupHeader>,
+   *  expectedGroups: !Array<!import("./file_list_model.js").GroupHeader>,
    *  expectedFileList: !Array<string>,
    *  expectedReversedFileList: !Array<string>,
    * }>}
@@ -554,18 +568,18 @@ export function testGroupByDirectory() {
     fileListModel.groupByField = GROUP_BY_FIELD_DIRECTORY;
     fileListModel.sort('name', 'asc');
     const files = Object.keys(test.metadataMap).map(fileName => {
-      return {
+      return /** @type {!Entry} */ ({
         name: fileName,
         // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         isDirectory: test.metadataMap[fileName].isDirectory,
-      };
+      });
     });
     fileListModel.push(...files);
     const snapshot = fileListModel.getGroupBySnapshot();
     assertArrayEquals(snapshot, test.expectedGroups);
     for (let i = 0; i < fileListModel.length; i++) {
       const item = fileListModel.item(i);
-      assertEquals(item.name, test.expectedFileList[i]);
+      assertEquals(item?.name, test.expectedFileList[i]);
     }
     // Reverse order won't change the group snapshot, e.g Folders are always
     // at the beginning.
@@ -574,7 +588,7 @@ export function testGroupByDirectory() {
     assertArrayEquals(snapshotReverse, test.expectedGroups);
     for (let i = 0; i < fileListModel.length; i++) {
       const item = fileListModel.item(i);
-      assertEquals(item.name, test.expectedReversedFileList[i]);
+      assertEquals(item?.name, test.expectedReversedFileList[i]);
     }
   }
 }

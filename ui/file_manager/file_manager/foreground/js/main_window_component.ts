@@ -417,7 +417,7 @@ export class MainWindowComponent {
     const text = this.ui_.listContainer.textSearchState.text;
     const dm = this.directoryModel_.getFileList();
     for (let index = 0; index < dm.length; ++index) {
-      const name = dm.item(index).name;
+      const name = dm.item(index)!.name;
       if (name.substring(0, text.length).toLowerCase() == text) {
         const selectionModel =
             this.ui_.listContainer.currentList.selectionModel;

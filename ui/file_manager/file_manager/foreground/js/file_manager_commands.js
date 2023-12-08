@@ -979,7 +979,7 @@ export class DeleteCommand extends FilesCommand {
 
   /**
    * Delete the entries (if the entries can be deleted).
-   * @param {!Array<!Entry|FilesAppEntry|FakeEntry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @param {boolean} permanentlyDelete if true, entries are permanently deleted
    *     rather than moved to trash.
@@ -1066,7 +1066,7 @@ export class DeleteCommand extends FilesCommand {
   /**
    * Returns true if all entries can be deleted. Note: This does not check for
    * root or fake entries.
-   * @param {!Array<!Entry|FilesAppEntry|FakeEntry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @return {boolean}
    * @private
@@ -1080,7 +1080,7 @@ export class DeleteCommand extends FilesCommand {
 
   /**
    * Returns True if entries can be deleted.
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @return {boolean}
    * @public
@@ -1100,7 +1100,7 @@ export class DeleteCommand extends FilesCommand {
   /**
    * Returns true if any entry belongs to a read-only volume or is
    * forced to be read-only like MyFiles>Downloads.
-   * @param {!Array<!Entry|FilesAppEntry|FakeEntry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    * @param {!CommandHandlerDeps} fileManager
    * @return {boolean}
    * @private

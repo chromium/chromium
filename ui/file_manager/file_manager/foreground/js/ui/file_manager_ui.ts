@@ -16,6 +16,7 @@ import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js'
 import {DirectoryTreeContainer} from '../../../containers/directory_tree_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../../externs/ts/state.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfCloudPanel} from '../../../widgets/xf_cloud_panel.js';
@@ -426,8 +427,7 @@ export class FileManagerUI {
     if (this.passwordDialog_) {
       return this.passwordDialog_;
     }
-    this.passwordDialog_ =
-        document.createElement('xf-password-dialog');
+    this.passwordDialog_ = document.createElement('xf-password-dialog');
     this.element.appendChild(this.passwordDialog_);
     return this.passwordDialog_;
   }
@@ -439,8 +439,7 @@ export class FileManagerUI {
     if (this.xfConflictDialog_) {
       return this.xfConflictDialog_;
     }
-    this.xfConflictDialog_ =
-        document.createElement('xf-conflict-dialog');
+    this.xfConflictDialog_ = document.createElement('xf-conflict-dialog');
     this.element.appendChild(this.xfConflictDialog_);
     return this.xfConflictDialog_;
   }
@@ -676,7 +675,8 @@ export class FileManagerUI {
    */
   private onExternalLinkClick_(event: Event) {
     const target = event.target;
-    if (!(target instanceof HTMLElement) || target.tagName !== 'A' || !('href' in target)) {
+    if (!(target instanceof HTMLElement) || target.tagName !== 'A' ||
+        !('href' in target)) {
       return;
     }
 
@@ -699,7 +699,7 @@ export class FileManagerUI {
    *
    * @param entries List of opened entries.
    */
-  showOpenInOtherDesktopAlert(entries: Entry[]) {
+  showOpenInOtherDesktopAlert(entries: Array<Entry|FilesAppEntry>) {
     if (!entries.length) {
       return;
     }
@@ -769,4 +769,3 @@ export class FileManagerUI {
     }
   }
 }
-

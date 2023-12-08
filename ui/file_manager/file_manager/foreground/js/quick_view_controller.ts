@@ -13,6 +13,7 @@ import {getType} from '../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
@@ -49,7 +50,7 @@ export class QuickViewController {
   /**
    * Current selection of selectionHandler.
    */
-  private entries_: Entry[] = [];
+  private entries_: Array<Entry|FilesAppEntry> = [];
 
   /**
    * The tasks for the current entry shown in quick view.
@@ -299,7 +300,7 @@ export class QuickViewController {
   /**
    * Returns true if the entry can be deleted.
    */
-  private async canDeleteEntry_(entry: Entry) {
+  private async canDeleteEntry_(entry: Entry|FilesAppEntry) {
     const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
     return deleteCommand.canDeleteEntries([entry], this.fileManager_);
   }
@@ -412,7 +413,7 @@ export class QuickViewController {
    * metadata and tasks were being async fetched. Bail out in that case.
    */
   private async onMetadataLoaded_(
-      entry: Entry, items: MetadataItem[], fileTasks: FileTasks,
+      entry: Entry|FilesAppEntry, items: MetadataItem[], fileTasks: FileTasks,
       canDelete: boolean) {
     const tasks = fileTasks.getAnnotatedTasks();
 
@@ -446,7 +447,7 @@ export class QuickViewController {
   }
 
   private async getQuickViewParameters_(
-      entry: FileEntry|Entry, items: MetadataItem[],
+      entry: FileEntry|Entry|FilesAppEntry, items: MetadataItem[],
       tasks: chrome.fileManagerPrivate.FileTask[],
       canDelete: boolean): Promise<Partial<QuickViewParams>> {
     const firstItem = items[0];

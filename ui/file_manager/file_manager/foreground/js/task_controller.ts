@@ -5,6 +5,7 @@
 import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
+import {unwrapEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
@@ -198,7 +199,8 @@ export class TaskController {
    */
   private async changeDefaultTask_(
       selection: FileSelection, task: chrome.fileManagerPrivate.FileTask) {
-    const entries = selection.entries;
+    const entries =
+        selection.entries.map(entry => unwrapEntry(entry)) as Entry[];
 
     const mimeTypes =
         await Promise.all(entries.map(entry => this.getMimeType_(entry)));
@@ -367,7 +369,7 @@ export class TaskController {
    * from its content or name.
    * @param entry An entry to obtain its mime type.
    */
-  private async getMimeType_(entry: Entry): Promise<string> {
+  private async getMimeType_(entry: Entry|FilesAppEntry): Promise<string> {
     const properties =
         await this.metadataModel_.get([entry], ['contentMimeType']);
     if (properties && properties[0]!.contentMimeType) {
@@ -537,7 +539,7 @@ export class TaskController {
    * Return the tasks for the `entry`.
    * @param entry
    */
-  async getEntryFileTasks(entry: Entry): Promise<FileTasks> {
+  async getEntryFileTasks(entry: Entry|FilesAppEntry): Promise<FileTasks> {
     return FileTasks.create(
         this.volumeManager_, this.metadataModel_, this.directoryModel_,
         this.ui_, this.fileTransferController_!, [entry], this.taskHistory_,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileData} from '../../externs/ts/state.js';
 import {TaskHistory} from '../../foreground/js/task_history.js';
 
@@ -90,7 +91,7 @@ export function getDefaultTask(
  */
 export function annotateTasks(
     tasks: chrome.fileManagerPrivate.FileTask[],
-    entries: Entry[]|FileData[]): AnnotatedTask[] {
+    entries: Array<Entry|FilesAppEntry>|FileData[]): AnnotatedTask[] {
   const result: AnnotatedTask[] = [];
   for (const task of tasks) {
     const {appId, taskType, actionId} = task.descriptor;

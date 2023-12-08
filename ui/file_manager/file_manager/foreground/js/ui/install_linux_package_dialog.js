@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {str} from '../../../common/js/translations.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
@@ -55,7 +56,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     this.buttons.insertBefore(this.installButton_, this.okButton);
     this.initialFocusElement_ = this.installButton_;
 
-    /** @private @type {?Entry} */
+    /** @private @type {?(Entry|FilesAppEntry)} */
     this.entry_ = null;
   }
 

@@ -212,7 +212,7 @@ export async function parseTrashInfoFiles(entries: Entry[]) {
       entries.map(e => unwrapEntry(e)));
 }
 
-export async function getMimeType(entry: Entry) {
+export async function getMimeType(entry: Entry|FilesAppEntry) {
   return promisify<string|undefined>(
       chrome.fileManagerPrivate.getMimeType, unwrapEntry(entry));
 }

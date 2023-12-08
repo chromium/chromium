@@ -8,13 +8,10 @@ import {str} from '../../../common/js/translations.js';
 import {ConfirmDialog} from './dialogs.js';
 
 
-
 /**
  * ImportCrostiniImageDialog is used as the handler for .tini files.
+ * Creates dialog in DOM.
  */
-  /**
-   * Creates dialog in DOM.
-   */
 export class ImportCrostiniImageDialog extends ConfirmDialog {
   /**
    * @param {HTMLElement} parentNode Node to be parent for this dialog.

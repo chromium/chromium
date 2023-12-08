@@ -4,6 +4,7 @@
 
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {Store} from '../../externs/ts/store.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
@@ -124,7 +125,8 @@ export class ScanController {
    * Sends the scanned directory content to the Store.
    */
   private updateStore_() {
-    const entries: Entry[] = this.directoryModel_.getFileList().slice();
+    const entries: Array<Entry|FilesAppEntry> =
+        this.directoryModel_.getFileList().slice();
     this.store_.dispatch(updateDirectoryContent({entries}));
   }
 

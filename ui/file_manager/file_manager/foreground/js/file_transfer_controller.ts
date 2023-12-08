@@ -18,7 +18,7 @@ import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../co
 import {FileErrorToDomError, visitURL} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -412,7 +412,7 @@ export class FileTransferController {
     if (!currentDirEntry) {
       return;
     }
-    let entry: Entry|FakeEntry|FilesAppDirEntry = currentDirEntry;
+    let entry: Entry|FilesAppEntry|FakeEntry|FilesAppDirEntry = currentDirEntry;
     if (isRecentRoot(currentDirEntry)) {
       entry = this.selectionHandler_.selection.entries[0]!;
     } else if (isTrashRoot(currentDirEntry)) {
@@ -440,7 +440,7 @@ export class FileTransferController {
   private appendCutOrCopyInfo_(
       clipboardData: DataTransfer|null,
       effectAllowed: DataTransfer['effectAllowed'],
-      sourceVolumeInfo: VolumeInfo, entries: Entry[],
+      sourceVolumeInfo: VolumeInfo, entries: Array<Entry|FilesAppEntry>,
       missingFileContents: boolean) {
     if (!clipboardData) {
       return;
@@ -478,7 +478,8 @@ export class FileTransferController {
   /**
    * Appends files of |entries| to |clipboardData|.
    */
-  private appendFiles_(clipboardData: DataTransfer|null, entries: Entry[]) {
+  private appendFiles_(
+      clipboardData: DataTransfer|null, entries: Array<Entry|FilesAppEntry>) {
     if (!clipboardData) {
       return;
     }

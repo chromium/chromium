@@ -115,7 +115,7 @@ export function setUp() {
       });
 }
 
-function getKeyOfGetCallback(entries: Entry[]): string {
+function getKeyOfGetCallback(entries: Array<Entry|FilesAppEntry>): string {
   return entries.reduce((previous, current) => {
     return previous + '|' + current.toURL();
   }, '');
