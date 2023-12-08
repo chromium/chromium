@@ -118,6 +118,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Granted by persisted permission"/>
 </enum>
 
+<enum name="FileSystemAccessRestorePermissionPromptOutcome">
+  <int value="0" label="Allowed every time by user"/>
+  <int value="1" label="Allowed one time by user"/>
+  <int value="2" label="Ignored by user"/>
+  <int value="3" label="Rejected by user"/>
+  <int value="4" label="Dismissed by user"/>
+</enum>
+
 <enum name="ImportantSitesReason">
   <int value="0" label="Engagement"/>
   <int value="1" label="Durable"/>

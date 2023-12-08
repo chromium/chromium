@@ -928,9 +928,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    // TODO(crbug.com/1011533): Record UMA metric once defined. Consider adding
-    // more `PermissionRequestOutcome` types to account for "restore every time"
-    // case and invalid state case.
+    // TODO(crbug.com/1011533): Consider adding more `PermissionRequestOutcome`
+    // types to account for "restore every time" case and invalid state case.
 
     if (context_->GetPersistedGrantType(origin_) !=
         PersistedGrantType::kDormant) {
@@ -943,27 +942,48 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     switch (result) {
       case PermissionAction::GRANTED:
         context_->OnRestorePermissionAllowedEveryTime(origin_);
-        std::move(callback).Run(
+        base::UmaHistogramEnumeration(
+            "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+            RestorePermissionPromptOutcome::kAllowed);
+        RunCallbackAndRecordPermissionRequestOutcome(
+            std::move(callback),
             PermissionRequestOutcome::kGrantedByRestorePrompt);
         break;
       case PermissionAction::GRANTED_ONCE:
         context_->OnRestorePermissionAllowedOnce(origin_);
-        std::move(callback).Run(
+        base::UmaHistogramEnumeration(
+            "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+            RestorePermissionPromptOutcome::kAllowedOnce);
+        RunCallbackAndRecordPermissionRequestOutcome(
+            std::move(callback),
             PermissionRequestOutcome::kGrantedByRestorePrompt);
         break;
       case PermissionAction::DENIED:
         context_->OnRestorePermissionDeniedOrDismissed(origin_);
-        std::move(callback).Run(PermissionRequestOutcome::kUserDenied);
+        base::UmaHistogramEnumeration(
+            "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+            RestorePermissionPromptOutcome::kRejected);
+        RunCallbackAndRecordPermissionRequestOutcome(
+            std::move(callback), PermissionRequestOutcome::kUserDenied);
         break;
       case PermissionAction::DISMISSED:
         context_->OnRestorePermissionDeniedOrDismissed(origin_);
-        std::move(callback).Run(PermissionRequestOutcome::kUserDismissed);
+        base::UmaHistogramEnumeration(
+            "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+            RestorePermissionPromptOutcome::kDismissed);
+        RunCallbackAndRecordPermissionRequestOutcome(
+            std::move(callback), PermissionRequestOutcome::kUserDismissed);
         break;
       case PermissionAction::IGNORED:
-        // TODO(crbug.com/1011533): Figure out if this action is detectable on
-        // UI-side, and update `PermissionRequestOutcome` type.
+        // TODO(crbug.com/1011533): This action is not user-detectable,
+        // consider replacing `PermissionRequestOutcome` with a more
+        // appropriate type.
         context_->OnRestorePermissionIgnored(origin_);
-        std::move(callback).Run(PermissionRequestOutcome::kRequestAborted);
+        base::UmaHistogramEnumeration(
+            "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+            RestorePermissionPromptOutcome::kIgnored);
+        RunCallbackAndRecordPermissionRequestOutcome(
+            std::move(callback), PermissionRequestOutcome::kRequestAborted);
         break;
       case PermissionAction::REVOKED:
       case PermissionAction::NUM:

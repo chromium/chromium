@@ -74,6 +74,8 @@ using PermissionRequestOutcome =
     content::FileSystemAccessPermissionGrant::PermissionRequestOutcome;
 using PermissionStatus =
     content::FileSystemAccessPermissionGrant::PermissionStatus;
+using RestorePermissionPromptOutcome =
+    ChromeFileSystemAccessPermissionContext::RestorePermissionPromptOutcome;
 using SensitiveDirectoryResult =
     ChromeFileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserActivationState =
@@ -207,6 +209,9 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
                               future.GetCallback());
     auto result = future.Get();
     if (result == PermissionRequestOutcome::kGrantedByRestorePrompt) {
+      histograms.ExpectBucketCount(
+          "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+          RestorePermissionPromptOutcome::kAllowed, 1);
       EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
       EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
     } else {
@@ -1507,6 +1512,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_AllowOnce) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED_ONCE);
   auto grant1 = permission_context()->GetReadPermissionGrant(
@@ -1530,6 +1536,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant1->RequestPermission(frame_id(), UserActivationState::kNotRequired,
                             future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kGrantedByRestorePrompt);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kAllowedOnce, 1);
   EXPECT_NE(permission_context()->content_settings()->GetContentSetting(
                 kTestOrigin.GetURL(), kTestOrigin.GetURL(),
                 ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION),
@@ -1547,10 +1556,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Denied) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DENIED);
   EXPECT_EQ(TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin),
             PermissionRequestOutcome::kUserDenied);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kRejected, 1);
 
   // Persisted grants are cleared as a result of restore prompt rejection, when
   // Extended Permissions is not enabled.
@@ -1726,10 +1739,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Ignored) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::IGNORED);
   auto result =
       TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kIgnored, 1);
   EXPECT_EQ(result, PermissionRequestOutcome::kRequestAborted);
 
   // Persisted grants are cleared by ignoring the restore prompt.
@@ -2175,6 +2192,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_Dismissed) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DISMISSED);
   content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
@@ -2182,11 +2200,13 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
+  auto result =
+      TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+  EXPECT_EQ(result, PermissionRequestOutcome::kUserDismissed);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kDismissed, 1);
 
-  base::test::TestFuture<PermissionRequestOutcome> future;
-  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
-                           future.GetCallback());
-  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserDismissed);
   // The grant status should change as a result of dismissal.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(

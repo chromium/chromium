@@ -358,6 +358,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.RestorePermissionPromptOutcome"
+    enum="FileSystemAccessRestorePermissionPromptOutcome"
+    expires_after="2024-05-01">
+  <owner>christinesm@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The result of a user interaction with the File System Access Persistent
+    Permissions restore prompt UI.
+  </summary>
+</histogram>
+
 <histogram
     name="Storage.FileSystemAccess.{OpType}PermissionRequestOutcome.{EntryType}"
     enum="FileSystemAccessPermissionRequestOutcome" expires_after="2024-05-01">
