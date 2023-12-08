@@ -14,10 +14,12 @@
   await swHelper.installSWAndWaitForActivated(
       'service-worker-router-fetch-all.js');
 
+  const responseReceivedPromise = dp.Network.onceResponseReceived();
+
   await session.evaluate(
       `fetch('${testRunner.url('./resources/does-not-exists.txt')}')`)
 
-  const responseReceived = await dp.Network.onceResponseReceived();
+  const responseReceived = await responseReceivedPromise;
   testRunner.log(responseReceived.params.response.serviceWorkerRouterInfo);
 
   testRunner.completeTest();
