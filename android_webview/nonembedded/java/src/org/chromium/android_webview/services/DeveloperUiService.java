@@ -21,7 +21,6 @@ import android.os.Process;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.Flag;
@@ -220,13 +219,6 @@ public final class DeveloperUiService extends Service {
         return mBinder;
     }
 
-    private Notification.Builder createNotificationBuilder() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return new Notification.Builder(this, CHANNEL_ID);
-        }
-        return new Notification.Builder(this);
-    }
-
     private Intent createFlagsFragmentIntent(boolean resetFlags) {
         Intent intent = new Intent("com.android.webview.SHOW_DEV_UI");
         intent.setClassName(getPackageName(), "org.chromium.android_webview.devui.MainActivity");
@@ -238,9 +230,7 @@ public final class DeveloperUiService extends Service {
         return intent;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private void registerDefaultNotificationChannel() {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         CharSequence name = "WebView DevTools alerts";
         // The channel importance should be consistent with the Notification priority on pre-O.
         NotificationChannel channel =
@@ -252,9 +242,7 @@ public final class DeveloperUiService extends Service {
     }
 
     private void markAsForegroundService() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerDefaultNotificationChannel();
-        }
+        registerDefaultNotificationChannel();
 
         Intent openFlagsIntent = createFlagsFragmentIntent(false);
         PendingIntent pendingOpenFlagsIntent =
@@ -279,8 +267,8 @@ public final class DeveloperUiService extends Service {
                                 pendingResetExperimentsIntent)
                         .build();
 
-        Notification.Builder builder =
-                createNotificationBuilder()
+        Notification notification =
+                new Notification.Builder(this, CHANNEL_ID)
                         .setContentTitle(NOTIFICATION_TITLE)
                         .setContentText(NOTIFICATION_CONTENT)
                         .setSmallIcon(org.chromium.android_webview.devui.R.drawable.ic_flag)
@@ -288,17 +276,8 @@ public final class DeveloperUiService extends Service {
                         .setOngoing(true)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .addAction(resetExperimentsAction)
-                        .setTicker(NOTIFICATION_TICKER);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            builder =
-                    builder
-                            // No sound, vibration, or lights.
-                            .setDefaults(0)
-                            // This should be consistent with NotificationChannel importance.
-                            .setPriority(Notification.PRIORITY_LOW);
-        }
-        Notification notification = builder.build();
+                        .setTicker(NOTIFICATION_TICKER)
+                        .build();
         try {
             startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
         } catch (IllegalStateException e) {
@@ -338,14 +317,10 @@ public final class DeveloperUiService extends Service {
             if (mDeveloperModeEnabled) return;
             // Keep this service alive as long as we're in developer mode.
             Intent intent = new Intent(this, DeveloperUiService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Android O doesn't allow bound Services to request foreground status unless the
-                // app is running in the foreground already or we already started the service with
-                // Context#startForegroundService.
-                startForegroundService(intent);
-            } else {
-                startService(intent);
-            }
+            // Android O doesn't allow bound Services to request foreground status unless the
+            // app is running in the foreground already or we already started the service with
+            // Context#startForegroundService.
+            startForegroundService(intent);
 
             ComponentName developerModeState =
                     new ComponentName(this, DeveloperModeUtils.DEVELOPER_MODE_STATE_COMPONENT);

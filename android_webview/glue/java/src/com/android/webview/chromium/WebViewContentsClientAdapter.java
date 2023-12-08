@@ -27,6 +27,7 @@ import android.webkit.JsDialogHelper;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -123,8 +124,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                                     WebView newWebView = t.getWebView();
                                     if (newWebView == mWebView) {
                                         throw new IllegalArgumentException(
-                                                "Parent WebView cannot host its own popup window. Please "
-                                                        + "use WebSettings.setSupportMultipleWindows(false)");
+                                                "Parent WebView cannot host its own popup window."
+                                                        + " Please use"
+                                                        + " WebSettings.setSupportMultipleWindows("
+                                                        + "false)");
                                     }
 
                                     if (newWebView != null
@@ -706,7 +709,8 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         } catch (WindowManager.BadTokenException e) {
             Log.w(
                     TAG,
-                    "Unable to create JsDialog. Has this WebView outlived the Activity it was created with?");
+                    "Unable to create JsDialog. Has this WebView outlived the Activity it was"
+                            + " created with?");
             return false;
         }
         return true;
@@ -1021,14 +1025,24 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
 
     @Override
     public boolean onRenderProcessGone(final AwRenderProcessGoneDetail detail) {
-        // WebViewClient.onRenderProcessGone was added in O.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
-
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICallback.WebViewClient.onRenderProcessGone")) {
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_RENDER_PROCESS_GONE);
-            return GlueApiHelperForO.onRenderProcessGone(mWebViewClient, mWebView, detail);
+            return mWebViewClient.onRenderProcessGone(
+                    mWebView,
+                    new RenderProcessGoneDetail() {
+                        @Override
+                        public boolean didCrash() {
+                            return detail.didCrash();
+                        }
+
+                        @Override
+                        @SuppressWarnings("WrongConstant") // https://crbug.com/1509716
+                        public int rendererPriorityAtExit() {
+                            return detail.rendererPriority();
+                        }
+                    });
         }
     }
 

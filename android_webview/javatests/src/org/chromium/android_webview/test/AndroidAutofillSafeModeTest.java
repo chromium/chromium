@@ -8,9 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -26,15 +24,12 @@ import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.Set;
 
 /** Tests for WebView AndroidAutofillSafeMode. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@RequiresApi(Build.VERSION_CODES.O)
 public class AndroidAutofillSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "AndroidAutofillTest";
 

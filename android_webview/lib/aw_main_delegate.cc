@@ -194,10 +194,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     // to the new mechanism in android_webview/browser/aw_field_trials.cc.
     base::ScopedAddFeatureFlags features(cl);
 
-    if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_OREO) {
-      features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
-    }
+    features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
 
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {
       features.EnableIfNotSet(::features::kLogJsConsoleMessages);

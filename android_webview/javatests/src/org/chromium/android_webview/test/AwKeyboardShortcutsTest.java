@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import android.os.Build;
 import android.view.KeyEvent;
 
 import androidx.test.filters.SmallTest;
@@ -22,7 +21,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwKeyboardShortcuts;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 
@@ -55,9 +53,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlPlusZoomIn() {
         executeCtrlPlus();
@@ -67,9 +62,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlShiftPlusZoomIn() {
         executeCtrlShiftPlus();
@@ -79,9 +71,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlEqualsZoomIn() {
         executeCtrlEquals();
@@ -91,9 +80,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlShiftEqualsZoomIn() {
         executeCtrlShiftEquals();
@@ -103,9 +89,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testKeyEventZoomInZoomIn() {
         executeZoomInKey();
@@ -115,9 +98,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testCtrlMinusZoomOut() {
         executeCtrlMinus();
@@ -127,9 +107,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     @SkipMutations(reason = "This test depends on AwSettings.setSupportZoom(true)")
     public void testKeyEventZoomOutZoomOut() {
         executeZoomOutKey();
@@ -139,9 +116,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     public void testPlusWithNoCtrlNoZoomIn() {
         KeyEvent keyEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_PLUS, 0, 0);
         AwKeyboardShortcuts.onKeyDown(keyEvent, mAwContents);
@@ -151,9 +125,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     public void testMinusWithNoCtrlNoZoomOut() {
         KeyEvent keyEvent = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MINUS, 0, 0);
         AwKeyboardShortcuts.onKeyDown(keyEvent, mAwContents);
@@ -163,9 +134,6 @@ public class AwKeyboardShortcutsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1414082")
     public void testWebViewZoomNotSupported() {
         mAwContents.getSettings().setSupportZoom(false);
         executeAllZoomShortcuts();

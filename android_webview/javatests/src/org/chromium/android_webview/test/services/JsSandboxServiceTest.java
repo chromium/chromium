@@ -8,10 +8,8 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.RequiresApi;
 import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.EvaluationResultSizeLimitExceededException;
 import androidx.javascriptengine.FileDescriptorIOException;
@@ -35,7 +33,6 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,8 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation test for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@RequiresApi(Build.VERSION_CODES.O)
 @OnlyRunIn(SINGLE_PROCESS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly

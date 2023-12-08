@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import android.os.Build;
 import android.webkit.WebViewDatabase;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
@@ -167,57 +166,11 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
 
     @Override
     public boolean hasFormData() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return false;
-
-        if (checkNeedsPost()) {
-            return mFactory.runOnUiThreadBlocking(
-                    new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped(
-                                            "WebView.APICall.Framework.WEBVIEW_DATABASE_HAS_FORM_DATA")) {
-                                WebViewChromium.recordWebViewApiCall(
-                                        ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA);
-                                return mBrowserContext.hasFormData();
-                            }
-                        }
-                    });
-        }
-
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.WEBVIEW_DATABASE_HAS_FORM_DATA")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_HAS_FORM_DATA);
-            return mBrowserContext.hasFormData();
-        }
+        return false;
     }
 
     @Override
     public void clearFormData() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) return;
-
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped(
-                                            "WebView.APICall.Framework.WEBVIEW_DATABASE_CLEAR_FORM_DATA")) {
-                                WebViewChromium.recordWebViewApiCall(
-                                        ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA);
-                                mBrowserContext.clearFormData();
-                            }
-                        }
-                    });
-            return;
-        }
-
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.WEBVIEW_DATABASE_CLEAR_FORM_DATA")) {
-            WebViewChromium.recordWebViewApiCall(ApiCall.WEBVIEW_DATABASE_CLEAR_FORM_DATA);
-            mBrowserContext.clearFormData();
-        }
     }
 
     private static boolean checkNeedsPost() {

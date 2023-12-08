@@ -1724,17 +1724,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: WebView.RENDERER_PRIORITY_WAIVED, WebView.RENDERER_PRIORITY_BOUND, WebView.RENDERER_PRIORITY_IMPORTANT"
-        errorLine1="                return detail.rendererPriority();"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/glue/java/src/com/android/webview/chromium/GlueApiHelperForO.java"
-            line="45"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL"
         errorLine1="        if (ViewCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL) {"
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">

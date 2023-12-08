@@ -12,8 +12,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 
@@ -57,7 +55,6 @@ public final class DeveloperModeUtils {
         return enabledState == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private static void startDeveloperUiService(String webViewPackageName) {
         final Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent();
@@ -89,9 +86,7 @@ public final class DeveloperModeUtils {
                         .path(FLAG_OVERRIDE_URI_PATH)
                         .build();
         final Context appContext = ContextUtils.getApplicationContext();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startDeveloperUiService(webViewPackageName);
-        }
+        startDeveloperUiService(webViewPackageName);
         try (Cursor cursor =
                 appContext
                         .getContentResolver()

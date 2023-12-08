@@ -7,9 +7,7 @@ package org.chromium.android_webview.test.services;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.content.Context;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.JavaScriptIsolate;
 import androidx.javascriptengine.JavaScriptSandbox;
@@ -28,7 +26,6 @@ import org.chromium.android_webview.shell.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,8 +37,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Instrumentation tests for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@RequiresApi(Build.VERSION_CODES.O)
 @OnlyRunIn(SINGLE_PROCESS)
 public class JsSandboxFledgeTest {
     private static final int TIMEOUT_SECONDS = 5;

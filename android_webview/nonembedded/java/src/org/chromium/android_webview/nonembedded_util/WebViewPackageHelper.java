@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.webkit.WebView;
 
 import org.chromium.base.ResettersForTesting;
@@ -39,24 +38,7 @@ public final class WebViewPackageHelper {
         if (sWebViewCurrentPackageForTesting != null) {
             return sWebViewCurrentPackageForTesting;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return WebView.getCurrentWebViewPackage();
-        } else { // L-N
-            try {
-                PackageInfo loadedWebViewPackageInfo = getLoadedWebViewPackageInfo();
-                if (loadedWebViewPackageInfo != null) return loadedWebViewPackageInfo;
-            } catch (ClassNotFoundException
-                    | IllegalAccessException
-                    | InvocationTargetException
-                    | NoSuchMethodException e) {
-                return null;
-            }
-
-            // If WebViewFactory.getLoadedPackageInfo() returns null then WebView hasn't been loaded
-            // yet, in that case we need to fetch the name of the WebView package, and fetch the
-            // corresponding PackageInfo through the PackageManager
-            return getNotYetLoadedWebViewPackageInfo(context);
-        }
+        return WebView.getCurrentWebViewPackage();
     }
 
     /**

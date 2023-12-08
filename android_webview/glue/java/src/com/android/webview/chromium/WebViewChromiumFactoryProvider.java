@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.os.UserManager;
-import android.provider.Settings;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PacProcessor;
@@ -351,19 +350,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 CommandLineUtil.initCommandLine();
             }
 
-            boolean multiProcess = false;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Ask the system if multiprocess should be enabled on O+.
-                multiProcess = GlueApiHelperForO.isMultiProcessEnabled(webViewDelegate);
-            } else {
-                // Check the multiprocess developer setting directly on N.
-                multiProcess =
-                        Settings.Global.getInt(
-                                        ctx.getContentResolver(),
-                                        Settings.Global.WEBVIEW_MULTIPROCESS,
-                                        0)
-                                == 1;
-            }
+            boolean multiProcess = webViewDelegate.isMultiProcessEnabled();
             if (multiProcess) {
                 CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
@@ -560,9 +547,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     public static boolean preloadInZygote() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                && ProductConfig.IS_BUNDLE) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P && ProductConfig.IS_BUNDLE) {
             // Apply workaround if we're a bundle on O, where the split APK handling bug exists.
             SplitApkWorkaround.apply();
         }
