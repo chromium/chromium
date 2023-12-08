@@ -93,6 +93,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-betty-pi-arc-chrome-accessibility-fyi",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-eve-chrome",
 )
 
