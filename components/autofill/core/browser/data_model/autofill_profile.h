@@ -54,19 +54,11 @@ class AutofillProfile : public AutofillDataModel {
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
-  // TODO(crbug.com/1464568): Make the country parameter non-optional.
-  explicit AutofillProfile(
-      AddressCountryCode country_code =
-          i18n_model_definition::kLegacyHierarchyCountryCode);
-  explicit AutofillProfile(
-      const std::string& guid,
-      Source source = Source::kLocalOrSyncable,
-      AddressCountryCode country_code =
-          i18n_model_definition::kLegacyHierarchyCountryCode);
-  explicit AutofillProfile(
-      Source source,
-      AddressCountryCode country_code =
-          i18n_model_definition::kLegacyHierarchyCountryCode);
+  explicit AutofillProfile(AddressCountryCode country_code);
+  AutofillProfile(const std::string& guid,
+                  Source source,
+                  AddressCountryCode country_code);
+  AutofillProfile(Source source, AddressCountryCode country_code);
 
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;

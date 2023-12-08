@@ -413,7 +413,7 @@ class BrowserAutofillManager : public AutofillManager {
     // The profile or credit card that was used for the initial fill.
     // The std::string associated with the credit card is the CVC, which may be
     // empty.
-    absl::variant<AutofillProfile, std::pair<CreditCard, std::u16string>>
+    absl::variant<std::pair<CreditCard, std::u16string>, AutofillProfile>
         profile_or_credit_card_with_cvc;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
