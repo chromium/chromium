@@ -268,17 +268,27 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!maybe_execution_mode) {
     return true;
   }
-  base::UmaHistogramBoolean(
-      "Ads.InterestGroup.EnumNaming.Update.WorkletExecutionMode",
-      *maybe_execution_mode == "groupByOrigin");
-  if (*maybe_execution_mode == "compatibility") {
-    interest_group_update.execution_mode =
-        blink::InterestGroup::ExecutionMode::kCompatibilityMode;
-  } else if (*maybe_execution_mode == "group-by-origin" ||
-             *maybe_execution_mode == "groupByOrigin") {
+  if (*maybe_execution_mode == "group-by-origin" ||
+      *maybe_execution_mode == "groupByOrigin") {
     interest_group_update.execution_mode =
         blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.EnumNaming.Update.WorkletExecutionMode",
+        *maybe_execution_mode == "groupByOrigin");
+  } else if (base::FeatureList::IsEnabled(
+                 features::kEnableUpdatingExecutionModeToFrozenContext) &&
+             *maybe_execution_mode == "frozen-context") {
+    interest_group_update.execution_mode =
+        blink::InterestGroup::ExecutionMode::kFrozenContext;
+  } else {
+    // We fallback to compatibility mode both when an update explicitly
+    // specifies 'compatibility' as the execution mode, and anytime an update
+    // specifies any unrecognized execution mode.
+    interest_group_update.execution_mode =
+        blink::InterestGroup::ExecutionMode::kCompatibilityMode;
   }
+  base::UmaHistogramEnumeration("Ads.InterestGroup.Update.AuctionExecutionMode",
+                                interest_group_update.execution_mode.value());
   return true;
 }
 

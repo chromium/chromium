@@ -25737,6 +25737,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Intent picker dialog shown automatically"/>
 </enum>
 
+<enum name="InterestGroupAdAuctionExecutionMode">
+  <int value="0" label="compatibility"/>
+  <int value="1" label="group-by-origin"/>
+  <int value="2" label="frozen-context"/>
+</enum>
+
 <enum name="InterestGroupAdAuctionRoundUpdateResult">
   <int value="0" label="Round update is successful"/>
   <int value="1" label="Round update is cancelled due to timeout"/>

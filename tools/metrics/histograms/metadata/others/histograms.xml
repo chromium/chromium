@@ -1261,6 +1261,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Update.AuctionExecutionMode"
+    enum="InterestGroupAdAuctionExecutionMode" expires_after="2024-06-20">
+  <owner>behamilton@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Records what the interest group's execution mode is after updating the
+    interest group. In the case of an unrecognized mode, execution mode will
+    fallback to compatibility mode.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.{AuctionType}.AbortTime" units="ms"
     expires_after="2024-06-20">
   <owner>mmenke@chromium.org</owner>

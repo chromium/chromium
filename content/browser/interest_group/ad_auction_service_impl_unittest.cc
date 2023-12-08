@@ -729,7 +729,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
          blink::features::kFledgeNegativeTargeting,
          blink::features::kPrivateAggregationApiMultipleCloudProviders,
          aggregation_service::kAggregationServiceMultipleCloudProviders,
-         features::kEnableUpdatingUserBiddingSignals},
+         features::kEnableUpdatingUserBiddingSignals,
+         features::kEnableUpdatingExecutionModeToFrozenContext},
         /*disabled_features=*/{});
     fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
@@ -1601,6 +1602,163 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(
       aggregation_service::kDefaultAggregationCoordinatorAwsCloud,
       group.aggregation_coordinator_origin.value_or(url::Origin()).Serialize());
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdateExecutionModeToGroupByOrigin) {
+  base::HistogramTester histogram_tester;
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "executionMode": "group-by-origin"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.execution_mode =
+      blink::mojom::InterestGroup_ExecutionMode::kFrozenContext;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups().at(0)->interest_group.execution_mode,
+            blink::InterestGroup::ExecutionMode::kGroupedByOriginMode);
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Update.AuctionExecutionMode",
+      blink::InterestGroup::ExecutionMode::kGroupedByOriginMode, 1);
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdateExecutionModeToFrozenContext) {
+  base::HistogramTester histogram_tester;
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "executionMode": "frozen-context"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.execution_mode =
+      blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups().at(0)->interest_group.execution_mode,
+            blink::InterestGroup::ExecutionMode::kFrozenContext);
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Update.AuctionExecutionMode",
+      blink::InterestGroup::ExecutionMode::kFrozenContext, 1);
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdateExecutionModeTocompatibilityMode) {
+  base::HistogramTester histogram_tester;
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "executionMode": "compatibility"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.execution_mode =
+      blink::mojom::InterestGroup_ExecutionMode::kFrozenContext;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups().at(0)->interest_group.execution_mode,
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode);
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Update.AuctionExecutionMode",
+      blink::InterestGroup::ExecutionMode::kCompatibilityMode, 1);
+}
+
+TEST_F(AdAuctionServiceImplTest,
+       UpdateUnrecognizedExecutionModeToCompatibility) {
+  base::HistogramTester histogram_tester;
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "executionMode": "unrecognized-mode"
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.execution_mode =
+      blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+
+  EXPECT_EQ(groups->GetInterestGroups().at(0)->interest_group.execution_mode,
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode);
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Update.AuctionExecutionMode",
+      blink::InterestGroup::ExecutionMode::kCompatibilityMode, 1);
+}
+
+class AdAuctionServiceImplUpdateExecutionModeToFrozenContextDisabledTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplUpdateExecutionModeToFrozenContextDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kEnableUpdatingExecutionModeToFrozenContext);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AdAuctionServiceImplUpdateExecutionModeToFrozenContextDisabledTest,
+       DisabledUpdateExecutionModeToFrozenContext) {
+  base::HistogramTester histogram_tester;
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+    "executionMode": "frozen-context"
+})");
+
+  blink::InterestGroup interest_group1 = CreateInterestGroup();
+  interest_group1.update_url = kUpdateUrlA;
+  interest_group1.bidding_url = kBiddingLogicUrlA;
+  interest_group1.execution_mode =
+      blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
+  JoinInterestGroupAndFlush(interest_group1);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  auto groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups->size(), 1u);
+  const auto& group = groups->GetInterestGroups()[0]->interest_group;
+  EXPECT_EQ(group.execution_mode,
+            blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Update.AuctionExecutionMode",
+      blink::InterestGroup::ExecutionMode::kCompatibilityMode, 1);
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.
