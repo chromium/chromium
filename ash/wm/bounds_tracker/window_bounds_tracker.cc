@@ -153,7 +153,10 @@ WindowBoundsTracker::~WindowBoundsTracker() {
 }
 
 void WindowBoundsTracker::OnWindowDestroying(aura::Window* window) {
-  RemoveWindowFromBoundsDatabase(window);
+  // Stops observing `window` and removes it from the `bounds_database_` if
+  // it has bounds stored.
+  bounds_database_.erase(window);
+  window_observations_.RemoveObservation(window);
 }
 
 void WindowBoundsTracker::OnWindowAddedToRootWindow(aura::Window* window) {
@@ -321,14 +324,6 @@ void WindowBoundsTracker::RemapOrRestore(aura::Window* window,
   UpdateBoundsDatabaseOfWindow(window, target_window_display_info,
                                remapped_bounds);
   return;
-}
-
-void WindowBoundsTracker::RemoveWindowFromBoundsDatabase(aura::Window* window) {
-  const auto count = bounds_database_.erase(window);
-  CHECK(count);
-  if (window_observations_.IsObservingSource(window)) {
-    window_observations_.RemoveObservation(window);
-  }
 }
 
 base::flat_map<WindowBoundsTracker::WindowDisplayInfo, gfx::Rect>&

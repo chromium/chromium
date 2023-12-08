@@ -105,9 +105,6 @@ class WindowBoundsTracker : public aura::WindowObserver,
   // target display.
   void RemapOrRestore(aura::Window* window, int64_t target_display_id);
 
-  // Stops observing `window` and removes it from the `bounds_database_`.
-  void RemoveWindowFromBoundsDatabase(aura::Window* window);
-
   // Updates the window's bounds stored in `bounds_database_` on the key
   // `window_display_info` to the given `bounds`. Returns the bounds database of
   // `window` stored in `bounds_database_`.
