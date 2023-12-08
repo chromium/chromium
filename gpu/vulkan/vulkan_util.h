@@ -145,6 +145,11 @@ COMPONENT_EXPORT(VULKAN)
 SemaphoreHandle ExportVkOpaqueExternalSemaphore(VkDevice vk_device,
                                                 VkSemaphore vk_semaphore);
 
+COMPONENT_EXPORT(VULKAN)
+std::vector<VkDrmFormatModifierPropertiesEXT>
+QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
+                                      VkFormat format);
+
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_
