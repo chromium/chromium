@@ -203,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(QuicConnectionMigrationTest,
   WaitForNetworkChange();
 
   EvalJsResult result = ResolveDelayedResponse();
-  ASSERT_FALSE(result.error.empty());
+  EXPECT_TRUE(result.error.empty())
+      << "Delayed response got error: '" << result.error << "'";
 
   FetchHistogramsFromChildProcesses();
   ASSERT_EQ(histograms.GetBucketCount(
