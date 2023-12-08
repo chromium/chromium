@@ -83,6 +83,11 @@ bool ShouldResetFirstFollowCount() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:@"ResetFirstFollow"];
 }
 
+bool ShouldForceContentNotificationsPromo() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"ForceContentNotificationsPromo"];
+}
+
 bool ShouldForceFeedSigninPromo() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"ForceFeedSigninPromo"];

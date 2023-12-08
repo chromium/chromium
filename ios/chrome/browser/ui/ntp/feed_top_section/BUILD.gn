@@ -7,6 +7,7 @@ source_set("constants") {
     "notifications_promo_view_constants.h",
     "notifications_promo_view_constants.mm",
   ]
+  deps = [ "//base" ]
 }
 
 source_set("feed_top_section") {
@@ -23,6 +24,8 @@ source_set("feed_top_section") {
   deps = [
     ":constants",
     ":feed_top_section_promos_ui",
+    "//base",
+    "//components/prefs",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
@@ -31,8 +34,10 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",

@@ -473,4 +473,18 @@ const char kPriceNotificationsHasBeenShown[] =
 const char kPasswordSharingFlowHasBeenEntered[] =
     "ios.password_sharing.flow_entered";
 
+// A time object used to determine when the Notifications promo was last
+// dismissed.
+const char kNotificationsPromoLastDismissed[] =
+    "ios.content_notifications.promo_last_dismissed";
+// A time object used to determine when the Notifications promo was last shown.
+const char kNotificationsPromoLastShown[] =
+    "ios.content_notifications.promo_last_shown";
+// An int used to determine how many times the Notifications promo has been
+// shown to the user.
+const char kNotificationsPromoTimesShown[] =
+    "ios.content_notifications.promo_times_shown";
+const char kNotificationsPromoTimesDismissed[] =
+    "ios.content_notifications.promo_times_dismissed";
+
 }  // namespace prefs

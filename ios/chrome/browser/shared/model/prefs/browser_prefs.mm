@@ -669,6 +669,13 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterListPref(kSigninLastAccounts);
   registry->RegisterBooleanPref(kSigninLastAccountsMigrated, false);
+
+  // Preferences related to Content Notifications.
+  registry->RegisterTimePref(prefs::kNotificationsPromoLastDismissed,
+                             base::Time());
+  registry->RegisterTimePref(prefs::kNotificationsPromoLastShown, base::Time());
+  registry->RegisterIntegerPref(prefs::kNotificationsPromoTimesShown, 0);
+  registry->RegisterIntegerPref(prefs::kNotificationsPromoTimesDismissed, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.

@@ -5,11 +5,15 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 
 #import "base/feature_list.h"
+#import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -122,40 +126,108 @@
 
 #pragma mark - Private
 
-- (void)updateShouldShowPromo {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  // Don't show any promo if Set Up List is Enabled.
-  if (set_up_list_utils::IsSetUpListActive(localState)) {
-    return;
-  }
-  // Don't show the promo for incognito or start surface.
-  BOOL isStartSurfaceOrIncognito = self.isIncognito ||
-                                   [self.NTPDelegate isStartSurface] ||
-                                   !self.isSignInPromoEnabled;
-
-  // Don't show the promo if the account is not elegible for a SigninPromo.
-  BOOL isAccountEligibleForSignInPromo = NO;
+- (BOOL)isUserSignedIn {
   auto consent =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
+  return self.identityManager->HasPrimaryAccount(consent);
+}
+
+// TODO(b/315161586): Disable notifications promo if DSE changes.
+- (BOOL)shouldShowNotificationsPromo {
+  // Check feature flag.
+  if (!IsContentPushNotificationsPromoEnabled()) {
+    return false;
+  }
+
+  // Check if user is signed in.
+  if (![self isUserSignedIn]) {
+    return false;
+  }
+
+  // Check if override is active. Override only works if the user is signed in.
+  if (experimental_flags::ShouldForceContentNotificationsPromo()) {
+    return true;
+  }
+
+  int notificationsPromoTimesShown =
+      self.prefService->GetInteger(prefs::kNotificationsPromoTimesShown);
+  int notificationsPromoTimesDismissed =
+      self.prefService->GetInteger(prefs::kNotificationsPromoTimesDismissed);
+
+  base::Time now = base::Time::Now();
+  // Check if promo has been displayed `kNotificationsPromoMaxShownCount`.
+  if (notificationsPromoTimesShown >= kNotificationsPromoMaxShownCount) {
+    return false;
+  }
+
+  // Check if promo is in cooldown from dismissal.
+  if (notificationsPromoTimesDismissed >=
+      kNotificationsPromoMaxDismissedCount) {
+    return false;
+  }
+  // Check if the pref has been initialized before (base::Time() returns the
+  // null value for a base::Time type.
+  if (self.prefService->GetTime(prefs::kNotificationsPromoLastDismissed) !=
+      base::Time()) {
+    if (now -
+            self.prefService->GetTime(prefs::kNotificationsPromoLastDismissed) <
+        kNotificationsPromoDismissedCooldownTime) {
+      return false;
+    }
+  }
+  // Check if it has been less than `kNotificationsPromoShownCooldownTime`.
+  if (now - self.prefService->GetTime(prefs::kNotificationsPromoLastShown) <
+      kNotificationsPromoShownCooldownTime) {
+    return false;
+  }
+  // If all the conditions pass above, update prefs and return true.
+  self.prefService->SetTime(prefs::kNotificationsPromoLastShown, now);
+  notificationsPromoTimesShown += 1;
+  self.prefService->SetTime(prefs::kNotificationsPromoLastShown, now);
+  self.prefService->SetInteger(prefs::kNotificationsPromoTimesShown,
+                               notificationsPromoTimesShown);
+  return true;
+}
+
+- (BOOL)shouldShowSigninPromo {
+  // Don't show the promo if the account is not eligible for a SigninPromo.
+  BOOL isAccountEligibleForSignInPromo = NO;
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
                                 authenticationService:self.authenticationService
                                           prefService:self.prefService]) {
-    isAccountEligibleForSignInPromo =
-        !self.identityManager->HasPrimaryAccount(consent);
+    isAccountEligibleForSignInPromo = ![self isUserSignedIn];
   }
-  BOOL isAccountSignedIn = self.identityManager->HasPrimaryAccount(consent);
-
+  // Don't show the promo for incognito or start surface or if account is not
+  // eligible.
+  BOOL isStartSurfaceOrIncognito = self.isIncognito ||
+                                   [self.NTPDelegate isStartSurface] ||
+                                   !self.isSignInPromoEnabled;
   if (!isStartSurfaceOrIncognito && isAccountEligibleForSignInPromo) {
+    return true;
+  }
+  return false;
+}
+
+- (void)updateShouldShowPromo {
+  // Don't show any promo if Set Up List is Enabled.
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (set_up_list_utils::IsSetUpListActive(localState)) {
+    // Hide promo as a safeguard in case it is being shown.
+    [self.consumer hidePromo];
+    return;
+  }
+
+  if ([self shouldShowSigninPromo]) {
     self.consumer.visiblePromoViewType = PromoViewTypeSignin;
     [self.consumer showPromo];
     return;
   }
 
-  if (IsContentPushNotificationsPromoEnabled() && isAccountSignedIn) {
+  if ([self shouldShowNotificationsPromo]) {
     self.consumer.visiblePromoViewType = PromoViewTypeNotifications;
     [self.consumer showPromo];
     return;

@@ -131,6 +131,11 @@ extern const char kPriceNotificationsHasBeenShown[];
 
 extern const char kPasswordSharingFlowHasBeenEntered[];
 
+extern const char kNotificationsPromoLastDismissed[];
+extern const char kNotificationsPromoLastShown[];
+extern const char kNotificationsPromoTimesShown[];
+extern const char kNotificationsPromoTimesDismissed[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_

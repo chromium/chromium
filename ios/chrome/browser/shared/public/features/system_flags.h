@@ -48,6 +48,10 @@ bool ShouldResetFirstFollowCount();
 // dismissal conditions. The promo will still only show for signed out users.
 bool ShouldForceFeedSigninPromo();
 
+// Returns true if the top of feed notifications promo should be shown
+// regardless of dismissal conditions. It is only shown for signed in users.
+bool ShouldForceContentNotificationsPromo();
+
 // Returns true if Tile Ablation should be forced regardless of the value of
 // `isTileAblationExperimentComplete`.
 bool ShouldIgnoreTileAblationConditions();

@@ -56,6 +56,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Force Content Notifications Promo</string>
+			<key>Key</key>
+			<string>ForceContentNotificationsPromo</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Force Feed Signin Promo</string>
 			<key>Key</key>
 			<string>ForceFeedSigninPromo</string>

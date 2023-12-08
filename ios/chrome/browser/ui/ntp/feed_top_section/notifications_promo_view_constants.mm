@@ -10,3 +10,8 @@ NSString* const kNotificationsPromoPrimaryButtonId =
     @"NotificationsPromoPrimaryButtonId";
 NSString* const kNotificationsPromoSecondaryButtonId =
     @"NotificationsPromoSecondaryButtonId";
+
+int const kNotificationsPromoMaxDismissedCount = 2;
+int const kNotificationsPromoMaxShownCount = 6;
+base::TimeDelta const kNotificationsPromoDismissedCooldownTime = base::Days(14);
+base::TimeDelta const kNotificationsPromoShownCooldownTime = base::Minutes(30);
