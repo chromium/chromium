@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_APP_PUBLISHER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_APP_PUBLISHER_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -267,8 +267,8 @@ class AppPublisher
 
   // Modifies CapabilityAccess for `app_id`.
   void ModifyCapabilityAccess(const std::string& app_id,
-                              absl::optional<bool> accessing_camera,
-                              absl::optional<bool> accessing_microphone);
+                              std::optional<bool> accessing_camera,
+                              std::optional<bool> accessing_microphone);
 
   // Resets all tracked capabilities for apps of type `app_type`. Should be
   // called when the publisher stops running apps (e.g. when a VM shuts down).

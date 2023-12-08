@@ -71,28 +71,28 @@ const PackageId& PromiseAppUpdate::PackageId() const {
   }
 }
 
-absl::optional<std::string> PromiseAppUpdate::Name() const {
+std::optional<std::string> PromiseAppUpdate::Name() const {
   if (delta_ && delta_->name.has_value()) {
     return *delta_->name;
   }
   if (state_ && state_->name.has_value()) {
     return *state_->name;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PromiseAppUpdate::NameChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(name);
 }
 
-absl::optional<float> PromiseAppUpdate::Progress() const {
+std::optional<float> PromiseAppUpdate::Progress() const {
   if (delta_ && delta_->progress.has_value()) {
     return *delta_->progress;
   }
   if (state_ && state_->progress.has_value()) {
     return *state_->progress;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PromiseAppUpdate::ProgressChanged() const {

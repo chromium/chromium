@@ -146,12 +146,12 @@ bool GetGalleryFilePathAndId(const std::string& gallery_id,
   return true;
 }
 
-absl::optional<base::Value::List> ConstructFileSystemList(
+std::optional<base::Value::List> ConstructFileSystemList(
     content::RenderFrameHost* rfh,
     const extensions::Extension* extension,
     const std::vector<MediaFileSystemInfo>& filesystems) {
   if (!rfh)
-    return absl::nullopt;
+    return std::nullopt;
 
   MediaGalleriesPermission::CheckParam read_param(
       MediaGalleriesPermission::kReadPermission);
@@ -395,7 +395,7 @@ MediaGalleriesGetMediaFileSystemsFunction::Run() {
   if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
     return RespondNow(Error(kDeprecatedError));
 
-  absl::optional<GetMediaFileSystems::Params> params(
+  std::optional<GetMediaFileSystems::Params> params(
       GetMediaFileSystems::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   MediaGalleries::GetMediaFileSystemsInteractivity interactive =
@@ -466,7 +466,7 @@ void MediaGalleriesGetMediaFileSystemsFunction::GetAndReturnGalleries() {
 
 void MediaGalleriesGetMediaFileSystemsFunction::ReturnGalleries(
     const std::vector<MediaFileSystemInfo>& filesystems) {
-  absl::optional<base::Value::List> list =
+  std::optional<base::Value::List> list =
       ConstructFileSystemList(render_frame_host(), extension(), filesystems);
   if (!list) {
     Respond(Error("Error returning Media Galleries filesystems."));
@@ -580,7 +580,7 @@ void MediaGalleriesAddUserSelectedFolderFunction::OnDirectorySelected(
 void MediaGalleriesAddUserSelectedFolderFunction::ReturnGalleriesAndId(
     MediaGalleryPrefId pref_id,
     const std::vector<MediaFileSystemInfo>& filesystems) {
-  absl::optional<base::Value::List> list =
+  std::optional<base::Value::List> list =
       ConstructFileSystemList(render_frame_host(), extension(), filesystems);
   if (!list) {
     Respond(Error("Error returning Media Galleries filesystems."));
@@ -632,7 +632,7 @@ ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
   if (args().size() < 2)
     return RespondNow(Error("options parameter not specified."));
 
-  absl::optional<MediaGalleries::MediaMetadataOptions> options =
+  std::optional<MediaGalleries::MediaMetadataOptions> options =
       MediaGalleries::MediaMetadataOptions::FromValue(args()[1]);
   if (!options)
     return RespondNow(Error("Invalid value for options parameter."));
@@ -791,7 +791,7 @@ ExtensionFunction::ResponseAction MediaGalleriesAddGalleryWatchFunction::Run() {
   if (!render_frame_host() || !render_frame_host()->GetProcess())
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
-  absl::optional<AddGalleryWatch::Params> params(
+  std::optional<AddGalleryWatch::Params> params(
       AddGalleryWatch::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -867,7 +867,7 @@ MediaGalleriesRemoveGalleryWatchFunction::Run() {
   if (!render_frame_host() || !render_frame_host()->GetProcess())
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
-  absl::optional<RemoveGalleryWatch::Params> params(
+  std::optional<RemoveGalleryWatch::Params> params(
       RemoveGalleryWatch::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 

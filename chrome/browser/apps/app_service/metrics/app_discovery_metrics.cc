@@ -199,7 +199,7 @@ bool AppDiscoveryMetrics::ShouldRecordUkmForAppId(const std::string& app_id) {
 
 bool AppDiscoveryMetrics::IsAnyAppInstanceActive(
     const std::string& app_id,
-    absl::optional<base::UnguessableToken> exclude_instance_id) {
+    std::optional<base::UnguessableToken> exclude_instance_id) {
   bool is_any_instance_active = false;
 
   // App id not found.

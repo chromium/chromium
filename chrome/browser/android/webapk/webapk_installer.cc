@@ -5,6 +5,7 @@
 #include "chrome/browser/android/webapk/webapk_installer.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -52,7 +53,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -582,7 +582,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
 }
 
 void WebApkInstaller::OnGotIconMurmur2Hashes(
-    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+    std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
         hashes) {
   if (!hashes) {
     OnResult(webapps::WebApkInstallResult::ICON_HASHER_ERROR);

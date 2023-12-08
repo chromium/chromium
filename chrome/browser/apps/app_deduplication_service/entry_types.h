@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_DEDUPLICATION_SERVICE_ENTRY_TYPES_H_
 #define CHROME_BROWSER_APPS_APP_DEDUPLICATION_SERVICE_ENTRY_TYPES_H_
 
+#include <optional>
 #include <string>
 
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -50,7 +50,7 @@ struct Entry {
   std::string id;
 
   // The app type for EntryType::kApp.
-  absl::optional<AppType> app_type;
+  std::optional<AppType> app_type;
 };
 
 // For logging and debugging purposes.

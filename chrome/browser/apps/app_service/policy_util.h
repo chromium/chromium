@@ -17,13 +17,13 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_POLICY_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_POLICY_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -61,7 +61,7 @@ bool IsFileManagerVirtualTaskPolicyId(base::StringPiece policy_id);
 
 // Maps `policy_id` which represents a virtual task to an actual `id` of
 // this virtual task.
-absl::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
+std::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
     base::StringPiece policy_id);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -81,7 +81,7 @@ std::vector<std::string> GetAppIdsFromPolicyId(Profile*,
                                                const std::string& policy_id);
 
 // Returns the |policy_ids| field of the app with id equal to |app_id| or
-// absl::nullopt if there's no such app.
+// std::nullopt if there's no such app.
 //
 // Web App Example:
 // Admin installs a Web App using "https://foo.example" as the install URL.
@@ -102,25 +102,25 @@ std::vector<std::string> GetAppIdsFromPolicyId(Profile*,
 // Camera app is "hfhhnacclhffhdffklopdkcgdhifgngh". Calling
 // GetPolicyIdsFromAppId() with "hfhhnacclhffhdffklopdkcgdhifgngh" will return
 // {"camera"}.
-absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
+std::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
     Profile*,
     const std::string& app_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Maps SystemWebAppType to a policy id.
-// Returns absl::nullopt for apps not included in official builds.
-absl::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
+// Returns std::nullopt for apps not included in official builds.
+std::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
     ash::SystemWebAppType);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns the policy ID for a given preinstalled web app ID. Note that not all
 // preinstalled web apps are supposed to have a policy ID (currently we only
-// support EDU apps) - in all other cases this will return absl::nullopt.
-absl::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
+// support EDU apps) - in all other cases this will return std::nullopt.
+std::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
     base::StringPiece preinstalled_web_app_id);
 
 void SetPreinstalledWebAppsMappingForTesting(
-    absl::optional<base::flat_map<base::StringPiece, base::StringPiece>>
+    std::optional<base::flat_map<base::StringPiece, base::StringPiece>>
         preinstalled_web_apps_mapping_for_testing);
 
 }  // namespace apps_util

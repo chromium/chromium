@@ -407,9 +407,9 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
     return;
   }
 
-  const absl::optional<const base::TimeDelta> running_time_value =
+  const std::optional<const base::TimeDelta> running_time_value =
       base::ValueToTimeDelta(data_dict->Find(kUsageTimeDurationKey));
-  const absl::optional<const base::TimeDelta> reporting_usage_time_value =
+  const std::optional<const base::TimeDelta> reporting_usage_time_value =
       base::ValueToTimeDelta(data_dict->Find(kReportingUsageTimeDurationKey));
   if (!running_time_value.has_value() &&
       !reporting_usage_time_value.has_value()) {
@@ -620,7 +620,7 @@ GURL AppPlatformMetrics::GetURLForBorealis(Profile* profile,
   //
   // This is more robust, as it handles some unidentified apps (if they have a
   // steam id).
-  absl::optional<int> borealis_id = borealis::SteamGameId(profile, app_id);
+  std::optional<int> borealis_id = borealis::SteamGameId(profile, app_id);
   if (borealis_id.has_value()) {
     return ukm::AppSourceUrlRecorder::GetURLForBorealis(
         base::NumberToString(borealis_id.value()));
@@ -1087,14 +1087,13 @@ void AppPlatformMetrics::InitRunningDuration() {
       continue;
     }
 
-    absl::optional<base::TimeDelta> unreported_duration =
+    std::optional<base::TimeDelta> unreported_duration =
         base::ValueToTimeDelta(running_duration_update->FindByDottedPath(key));
     if (unreported_duration.has_value()) {
       running_duration_[app_type_name] = unreported_duration.value();
     }
 
-    absl::optional<int> count =
-        activated_count_update->FindIntByDottedPath(key);
+    std::optional<int> count = activated_count_update->FindIntByDottedPath(key);
     if (count.has_value()) {
       activated_count_[app_type_name] = count.value();
     }

@@ -136,11 +136,11 @@ void BadgeManager::BindServiceWorkerReceiverIfAllowed(
                                 std::move(context));
 }
 
-absl::optional<BadgeManager::BadgeValue> BadgeManager::GetBadgeValue(
+std::optional<BadgeManager::BadgeValue> BadgeManager::GetBadgeValue(
     const webapps::AppId& app_id) {
   const auto& it = badged_apps_.find(app_id);
   if (it == badged_apps_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return it->second;
 }
@@ -154,7 +154,7 @@ void BadgeManager::SetBadgeForTesting(const webapps::AppId& app_id,
                                       BadgeValue value,
                                       ukm::UkmRecorder* test_recorder) {
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  if (value == absl::nullopt) {
+  if (value == std::nullopt) {
     ukm::builders::Badging(source_id)
         .SetUpdateAppBadge(kSetFlagBadge)
         .Record(test_recorder);
@@ -172,7 +172,7 @@ void BadgeManager::ClearBadgeForTesting(const webapps::AppId& app_id,
   ukm::builders::Badging(source_id)
       .SetUpdateAppBadge(kClearBadge)
       .Record(test_recorder);
-  UpdateBadge(app_id, absl::nullopt);
+  UpdateBadge(app_id, std::nullopt);
 }
 
 const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
@@ -187,7 +187,7 @@ void BadgeManager::SetSyncBridgeForTesting(
 }
 
 void BadgeManager::UpdateBadge(const webapps::AppId& app_id,
-                               absl::optional<BadgeValue> value) {
+                               std::optional<BadgeValue> value) {
   if (sync_bridge_ &&
       !IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
                                clock_, profile_)) {
@@ -218,8 +218,8 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
 
   // Convert the mojo badge representation into a BadgeManager::BadgeValue.
   BadgeValue value = mojo_value->is_flag()
-                         ? absl::nullopt
-                         : absl::make_optional(mojo_value->get_number());
+                         ? std::nullopt
+                         : std::make_optional(mojo_value->get_number());
 
   // ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
@@ -228,7 +228,7 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
     // The app's start_url is used to identify the app
     // for recording badging usage per app.
     ukm::SourceId source_id = ukm::AppSourceUrlRecorder::GetSourceIdForPWA(url);
-    if (value == absl::nullopt) {
+    if (value == std::nullopt) {
       ukm::builders::Badging(source_id)
           .SetUpdateAppBadge(kSetFlagBadge)
           .Record(recorder);
@@ -239,7 +239,7 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
     }
     ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
 
-    UpdateBadge(/*app_id=*/std::get<0>(app), absl::make_optional(value));
+    UpdateBadge(/*app_id=*/std::get<0>(app), std::make_optional(value));
   }
 }
 
@@ -257,7 +257,7 @@ void BadgeManager::ClearBadge() {
         .SetUpdateAppBadge(kClearBadge)
         .Record(recorder);
     ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
-    UpdateBadge(/*app_id=*/std::get<0>(app), absl::nullopt);
+    UpdateBadge(/*app_id=*/std::get<0>(app), std::nullopt);
   }
 }
 
@@ -275,7 +275,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
     return std::vector<std::tuple<webapps::AppId, GURL>>{};
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  const absl::optional<webapps::AppId> app_id =
+  const std::optional<webapps::AppId> app_id =
       registrar.FindAppWithUrlInScope(frame->GetLastCommittedURL());
   if (!app_id)
     return std::vector<std::tuple<webapps::AppId, GURL>>{};
@@ -306,7 +306,7 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   return app_ids_urls;
 }
 
-std::string GetBadgeString(absl::optional<uint64_t> badge_content) {
+std::string GetBadgeString(std::optional<uint64_t> badge_content) {
   if (!badge_content)
     return "•";
 

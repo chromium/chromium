@@ -166,7 +166,7 @@ void BruschettaApps::LaunchAppWithIntent(const std::string& app_id,
                                          LaunchCallback callback) {
   const int64_t display_id =
       window_info ? window_info->display_id : display::kInvalidDisplayId;
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+  std::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry()->GetRegistration(app_id);
   if (!registration) {
     // TODO(b/247638226): RecordAppLaunchHistogram(kUnknown) to collect usage

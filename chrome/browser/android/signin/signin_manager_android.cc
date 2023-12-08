@@ -200,7 +200,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
     const CoreAccountInfo& account,
     RegisterPolicyWithAccountCallback callback) {
   if (!ShouldLoadPolicyForUser(account.email)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -210,7 +210,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
           [](RegisterPolicyWithAccountCallback callback,
              const std::string& dm_token, const std::string& client_id,
              const std::vector<std::string>& user_affiliation_ids) {
-            absl::optional<ManagementCredentials> credentials;
+            std::optional<ManagementCredentials> credentials;
             if (!dm_token.empty()) {
               credentials.emplace(dm_token, client_id, user_affiliation_ids);
             }
@@ -237,7 +237,7 @@ void SigninManagerAndroid::FetchAndApplyCloudPolicy(
 void SigninManagerAndroid::OnPolicyRegisterDone(
     const CoreAccountInfo& account,
     base::OnceCallback<void()> policy_callback,
-    const absl::optional<ManagementCredentials>& credentials) {
+    const std::optional<ManagementCredentials>& credentials) {
   if (credentials) {
     FetchPolicyBeforeSignIn(account, std::move(policy_callback),
                             credentials.value());
@@ -271,14 +271,13 @@ void SigninManagerAndroid::IsAccountManaged(
   base::android::ScopedJavaGlobalRef<jobject> callback(env, j_callback);
 
   RegisterPolicyWithAccount(
-      account,
-      base::BindOnce(
-          [](base::android::ScopedJavaGlobalRef<jobject> callback,
-             const absl::optional<ManagementCredentials>& credentials) {
-            base::android::RunBooleanCallbackAndroid(callback,
-                                                     credentials.has_value());
-          },
-          callback));
+      account, base::BindOnce(
+                   [](base::android::ScopedJavaGlobalRef<jobject> callback,
+                      const std::optional<ManagementCredentials>& credentials) {
+                     base::android::RunBooleanCallbackAndroid(
+                         callback, credentials.has_value());
+                   },
+                   callback));
 }
 
 base::android::ScopedJavaLocalRef<jstring>

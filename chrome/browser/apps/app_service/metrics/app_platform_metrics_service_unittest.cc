@@ -574,7 +574,7 @@ class AppPlatformMetricsServiceTest
         GetPrefService()->GetDict(kAppRunningDuration);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
-    absl::optional<base::TimeDelta> unreported_duration =
+    std::optional<base::TimeDelta> unreported_duration =
         base::ValueToTimeDelta(dict.FindByDottedPath(key));
     if (time_delta.is_zero()) {
       EXPECT_FALSE(unreported_duration.has_value());
@@ -628,7 +628,7 @@ class AppPlatformMetricsServiceTest
         GetPrefService()->GetDict(kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
-    absl::optional<int> activated_count = dict.FindIntByDottedPath(key);
+    std::optional<int> activated_count = dict.FindIntByDottedPath(key);
     if (expected_count == 0) {
       EXPECT_FALSE(activated_count.has_value());
       return;

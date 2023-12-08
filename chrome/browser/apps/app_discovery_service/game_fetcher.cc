@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_discovery_service/game_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -22,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"

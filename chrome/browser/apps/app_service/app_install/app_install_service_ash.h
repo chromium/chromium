@@ -38,7 +38,7 @@ class AppInstallServiceAsh : public AppInstallService {
   void InstallFromFetchedData(AppInstallSurface surface,
                               PackageId expected_package_id,
                               base::OnceClosure callback,
-                              absl::optional<AppInstallData> data);
+                              std::optional<AppInstallData> data);
 
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;

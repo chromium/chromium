@@ -200,14 +200,14 @@ namespace apps {
 
 void RecordAppLaunch(const std::string& app_id,
                      apps::LaunchSource launch_source) {
-  if (const absl::optional<apps::DefaultAppName> app_name =
+  if (const std::optional<apps::DefaultAppName> app_name =
           PreinstalledWebAppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (const absl::optional<apps::DefaultAppName> app_name =
+  if (const std::optional<apps::DefaultAppName> app_name =
           SystemWebAppIdToName(app_id)) {
     RecordDefaultAppLaunch(app_name.value(), launch_source);
 
@@ -274,7 +274,7 @@ void RecordAppLaunch(const std::string& app_id,
   }
 }
 
-const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
+const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
   if (app_id == web_app::kCalculatorAppId) {
     return apps::DefaultAppName::kCalculator;
@@ -313,12 +313,12 @@ const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
   } else if (app_id == web_app::kYoutubeMusicAppId) {
     return apps::DefaultAppName::kYouTubeMusic;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
+const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     const std::string& app_id) {
   // These apps should all have chrome:// URLs.
   if (app_id == web_app::kCameraAppId) {
@@ -351,7 +351,7 @@ const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
   } else if (app_id == web_app::kShortcutCustomizationAppId) {
     return apps::DefaultAppName::kShortcutCustomizationApp;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

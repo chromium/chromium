@@ -452,17 +452,17 @@ AppServiceProxyLacros::AppInnerIconLoader::AppInnerIconLoader(
     AppServiceProxyLacros* host)
     : host_(host) {}
 
-absl::optional<IconKey> AppServiceProxyLacros::AppInnerIconLoader::GetIconKey(
+std::optional<IconKey> AppServiceProxyLacros::AppInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
   if (!host_->crosapi_receiver_.is_bound()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForOneApp(
       id,
       [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });

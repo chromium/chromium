@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -30,7 +31,6 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -166,7 +166,7 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  absl::optional<PackageId> package_id =
+  std::optional<PackageId> package_id =
       apps_util::GetPackageIdForApp(profile_.get(), update);
   if (!package_id.has_value()) {
     return;
@@ -206,7 +206,7 @@ void PromiseAppService::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
 
 void PromiseAppService::OnGetPromiseAppInfoCompleted(
     const PackageId& package_id,
-    absl::optional<PromiseAppWrapper> promise_app_info) {
+    std::optional<PromiseAppWrapper> promise_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the promise app doesn't exist in the registry, drop the update. The app

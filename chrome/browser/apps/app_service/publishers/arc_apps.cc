@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
@@ -69,7 +70,6 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -82,7 +82,7 @@
 
 namespace {
 
-absl::optional<int> g_test_arc_version_;
+std::optional<int> g_test_arc_version_;
 
 apps::PermissionType GetPermissionType(
     arc::mojom::AppPermission arc_permission_type) {
@@ -152,13 +152,13 @@ apps::Permissions CreatePermissions(
   return permissions;
 }
 
-absl::optional<arc::UserInteractionType> GetUserInterationType(
+std::optional<arc::UserInteractionType> GetUserInterationType(
     apps::LaunchSource launch_source) {
   auto user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
   switch (launch_source) {
     // kUnknown is not set anywhere, this case is not valid.
     case apps::LaunchSource::kUnknown:
-      return absl::nullopt;
+      return std::nullopt;
     case apps::LaunchSource::kFromChromeInternal:
       user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
       break;
@@ -218,7 +218,7 @@ absl::optional<arc::UserInteractionType> GetUserInterationType(
       break;
     default:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
   return user_interaction_type;
 }
@@ -351,14 +351,14 @@ apps::WindowInfoPtr SetSessionId(apps::WindowInfoPtr window_info) {
   return window_info;
 }
 
-absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
-                                     const std::string& app_id) {
+std::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
+                                    const std::string& app_id) {
   // Set null to resize lock state until the Mojo connection to ARC++ has been
   // established. This prevents Chrome and ARC++ from having inconsistent
   // states.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If we don't have the connection (e.g. for non-supported Android versions),
@@ -366,7 +366,7 @@ absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
   auto* compatibility_mode =
       arc_service_manager->arc_bridge_service()->compatibility_mode();
   if (!compatibility_mode->IsConnected()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Check if |SetResizeLockState| is available to see if Android is ready to
@@ -375,7 +375,7 @@ absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, SetResizeLockState);
   if (!instance) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto resize_lock_state = prefs->GetResizeLockState(app_id);
@@ -389,7 +389,7 @@ absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
     // FULLY_LOCKED means the resize-lock-related features are not available
     // including the resizability toggle in the app management page.
     case arc::mojom::ArcResizeLockState::FULLY_LOCKED:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -1131,7 +1131,7 @@ void ArcApps::OnTaskDestroyed(int32_t task_id) {
 }
 
 void ArcApps::OnIntentFiltersUpdated(
-    const absl::optional<std::string>& package_name) {
+    const std::optional<std::string>& package_name) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
     return;
@@ -1151,7 +1151,7 @@ void ArcApps::OnIntentFiltersUpdated(
   // Note: Cannot combine the two for-loops because the return type of
   // GetAppIds() is std::vector<std::string> and the return type of
   // GetAppsForPackage() is std::unordered_set<std::string>.
-  if (package_name == absl::nullopt) {
+  if (package_name == std::nullopt) {
     for (const auto& app_id : prefs->GetAppIds()) {
       GetAppInfoAndPublish(app_id);
     }

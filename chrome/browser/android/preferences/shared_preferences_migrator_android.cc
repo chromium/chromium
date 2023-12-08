@@ -4,11 +4,11 @@
 
 #include "chrome/browser/android/preferences/shared_preferences_migrator_android.h"
 
+#include <optional>
 #include <string>
 
 #include "base/android/shared_preferences/shared_preferences_manager.h"
 #include "chrome/browser/preferences/android/chrome_shared_preferences.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::android::SharedPreferencesManager;
 
@@ -19,12 +19,12 @@ void ClearKey(const std::string& shared_preference_key) {
   shared_prefs.RemoveKey(shared_preference_key);
 }
 
-absl::optional<bool> GetAndClearBoolean(
+std::optional<bool> GetAndClearBoolean(
     const std::string& shared_preference_key) {
   SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
 
   if (!shared_prefs.ContainsKey(shared_preference_key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool result =
@@ -33,11 +33,11 @@ absl::optional<bool> GetAndClearBoolean(
   return result;
 }
 
-absl::optional<int> GetAndClearInt(const std::string& shared_preference_key) {
+std::optional<int> GetAndClearInt(const std::string& shared_preference_key) {
   SharedPreferencesManager shared_prefs = GetChromeSharedPreferences();
 
   if (!shared_prefs.ContainsKey(shared_preference_key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int result = shared_prefs.ReadInt(shared_preference_key, /*default_value=*/0);

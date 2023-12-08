@@ -47,7 +47,7 @@ class AppInstallNavigationThottleBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     apps::SetAlmanacEndpointUrlForTesting(std::move(test_endpoint));
 #else
-    const absl::optional<std::vector<std::string>>& capabilities =
+    const std::optional<std::vector<std::string>>& capabilities =
         chromeos::BrowserParamsProxy::Get()->AshCapabilities();
     if (!capabilities || !base::Contains(*capabilities, "b/304680258")) {
       GTEST_SKIP() << "Unsupported Ash version.";

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -94,7 +94,7 @@ class PromiseAppService : public AppRegistryCache::Observer {
   // Update a promise app's fields with the info retrieved from the Almanac API.
   void OnGetPromiseAppInfoCompleted(
       const PackageId& package_id,
-      absl::optional<PromiseAppWrapper> promise_app_info);
+      std::optional<PromiseAppWrapper> promise_app_info);
 
   // Adds an icon to the icon cache and marks the corresponding promise app
   // as ready to show after all the icons are downloaded.

@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURE_TEST_SUPPORT_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURE_TEST_SUPPORT_H_
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -21,7 +22,7 @@ namespace apps::test {
 // file itself.
 // Note: `captures_by_default` being set to true is not supported by ChromeOS.
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
-    absl::optional<bool> override_captures_by_default = absl::nullopt);
+    std::optional<bool> override_captures_by_default = std::nullopt);
 
 std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX();
 

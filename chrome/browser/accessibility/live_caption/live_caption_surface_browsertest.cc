@@ -4,6 +4,8 @@
 
 #include "chrome/browser/accessibility/live_caption/live_caption_surface.h"
 
+#include <optional>
+
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -24,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -164,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Bounds) {
 
   // Callback to assign bounds to local variables.
   const auto assign_bounds = [](gfx::Rect* d,
-                                const absl::optional<gfx::Rect>& b) {
+                                const std::optional<gfx::Rect>& b) {
     ASSERT_TRUE(b.has_value());
     *d = *b;
   };

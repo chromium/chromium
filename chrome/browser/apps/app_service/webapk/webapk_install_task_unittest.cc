@@ -86,7 +86,7 @@ arc::mojom::WebApkInfoPtr BuildDefaultWebApkInfo(
   return webapk_info;
 }
 
-absl::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
+std::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
     std::string abi_list) {
   arc::ArcFeatures arc_features;
   arc_features.build_props.abi_list = abi_list;
@@ -181,7 +181,7 @@ class WebApkInstallTaskTest : public testing::Test {
 
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
   std::unique_ptr<apps::WebApkTestServer> webapk_test_server_;
-  base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
+  base::RepeatingCallback<std::optional<arc::ArcFeatures>()>
       arc_features_getter_;
 };
 

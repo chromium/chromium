@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_DISCOVERY_METRICS_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -69,9 +69,9 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   // Returns true if there is an active instance of an app other than
   // |exclude_instance_id|. If |exclude_instance_id| is nullopt, then all
   // instances will be checked.
-  bool IsAnyAppInstanceActive(const std::string& app_id,
-                              absl::optional<base::UnguessableToken>
-                                  exclude_instance_id = absl::nullopt);
+  bool IsAnyAppInstanceActive(
+      const std::string& app_id,
+      std::optional<base::UnguessableToken> exclude_instance_id = std::nullopt);
 
   // Records app state metrics if there has been a change.
   void RecordAppState(const InstanceUpdate& instance_update);

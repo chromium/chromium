@@ -12,12 +12,11 @@ AppDeduplicationMapper::AppDeduplicationMapper() = default;
 
 AppDeduplicationMapper::~AppDeduplicationMapper() = default;
 
-absl::optional<proto::DeduplicateData>
-AppDeduplicationMapper::ToDeduplicateData(
+std::optional<proto::DeduplicateData> AppDeduplicationMapper::ToDeduplicateData(
     const proto::DeduplicateResponse& response) {
   if (response.app_group().empty()) {
     LOG(ERROR) << "No duplicate groups found.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   proto::DeduplicateData deduplicate_data;
   for (const auto& group : response.app_group()) {
@@ -25,14 +24,14 @@ AppDeduplicationMapper::ToDeduplicateData(
 
     if (group.app_group_uuid().empty()) {
       LOG(ERROR) << "The uuid for an app group cannot be empty.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     deduplicate_group->set_app_group_uuid(group.app_group_uuid());
 
     if (group.package_id().empty()) {
       LOG(ERROR) << "An app group must have at least 1 package id.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     for (int i = 0; i < group.package_id_size(); i++) {

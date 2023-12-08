@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
@@ -20,7 +22,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -60,7 +61,7 @@ apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
 // object. Called on a background thread, since loading these values may block.
 apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info) {
   info.version_info.ash_chrome = version_info::GetVersionNumber();
-  absl::optional<std::string> platform_version =
+  std::optional<std::string> platform_version =
       chromeos::version_loader::GetVersion(
           chromeos::version_loader::VERSION_SHORT);
   info.version_info.platform = platform_version.value_or("");
@@ -147,7 +148,7 @@ void DeviceInfoManager::GetDeviceInfo(
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  absl::optional<base::StringPiece> hwid =
+  std::optional<base::StringPiece> hwid =
       provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   device_info.hardware_id = std::string(hwid.value_or(""));
 

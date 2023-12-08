@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -62,7 +63,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/grit/extensions_browser_resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr int32_t kAppDialogIconSize = 48;
@@ -757,7 +757,7 @@ void AppServiceProxyAsh::LoadDefaultIcon(AppType app_type,
     default_icon_resource_id = publisher->DefaultIconResourceId();
   }
   LoadIconFromResource(
-      profile_, absl::nullopt, icon_type, size_in_dip, default_icon_resource_id,
+      profile_, std::nullopt, icon_type, size_in_dip, default_icon_resource_id,
       /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
 }
 
@@ -773,24 +773,24 @@ AppServiceProxyAsh::ShortcutInnerIconLoader::ShortcutInnerIconLoader(
     AppServiceProxyAsh* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
-absl::optional<IconKey> AppServiceProxyAsh::ShortcutInnerIconLoader::GetIconKey(
+std::optional<IconKey> AppServiceProxyAsh::ShortcutInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
   if (!host_->ShortcutRegistryCache()->HasShortcut(ShortcutId(id))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const absl::optional<IconKey>& icon_key =
+  const std::optional<IconKey>& icon_key =
       host_->ShortcutRegistryCache()->GetShortcut(ShortcutId(id))->icon_key;
 
   if (icon_key.has_value()) {
     return std::move(*icon_key->Clone());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser>
@@ -1035,7 +1035,7 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
 
   // Load the family link kite logo icon for the app pause dialog or the app
   // block dialog for the child profile.
-  LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
+  LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/std::nullopt, icon_type,
                        kAppDialogIconSize, IDR_SUPERVISED_USER_ICON,
                        kAllowPlaceholderIcon, IconEffects::kNone,
                        std::move(callback));
@@ -1422,7 +1422,7 @@ void AppServiceProxyAsh::OnShortcutIconRead(const ShortcutId& shortcut_id,
     if (!publisher) {
       LOG(WARNING) << "No publisher for requested icon";
       LoadIconFromResource(
-          profile_, absl::nullopt, icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
+          profile_, std::nullopt, icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
           /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
       return;
     }
@@ -1446,7 +1446,7 @@ void AppServiceProxyAsh::OnShortcutIconInstalled(const ShortcutId& shortcut_id,
                                                  LoadIconCallback callback,
                                                  bool install_success) {
   if (!install_success) {
-    LoadIconFromResource(profile_, absl::nullopt, icon_type, size_in_dip,
+    LoadIconFromResource(profile_, std::nullopt, icon_type, size_in_dip,
                          default_icon_resource_id,
                          /*is_placeholder_icon=*/false, icon_effects,
                          std::move(callback));

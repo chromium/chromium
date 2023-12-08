@@ -363,10 +363,10 @@ void RecommendAppsFetcherImpl::OnAshResponse(
 }
 
 void RecommendAppsFetcherImpl::OnArcFeaturesRead(
-    absl::optional<arc::ArcFeatures> read_result) {
+    std::optional<arc::ArcFeatures> read_result) {
   arc_features_ready_ = true;
 
-  if (read_result != absl::nullopt) {
+  if (read_result != std::nullopt) {
     for (const auto& feature : read_result.value().feature_map) {
       device_config_.add_system_available_feature(feature.first);
     }

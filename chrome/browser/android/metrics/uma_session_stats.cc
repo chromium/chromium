@@ -180,10 +180,10 @@ bool UmaSessionStats::IsBackgroundSessionStartForTesting() {
 }
 
 void UmaSessionStats::EmitAndResetCounters() {
-  absl::optional<int> on_postcreate_counter =
+  std::optional<int> on_postcreate_counter =
       android::shared_preferences::GetAndClearInt(
           "Chrome.UMA.OnPostCreateCounter2");
-  absl::optional<int> on_resume_counter =
+  std::optional<int> on_resume_counter =
       android::shared_preferences::GetAndClearInt(
           "Chrome.UMA.OnResumeCounter2");
   int on_create_count = std::min(on_postcreate_counter.value_or(0), 3);

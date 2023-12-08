@@ -80,7 +80,7 @@ class AppDeduplicationService : public KeyedService,
   // Returns the map key of the duplicate group in the duplication map if a
   // group is found, and return nullptr if the entry id doesn't belong to
   // and duplicate group.
-  absl::optional<uint32_t> FindDuplicationIndex(const Entry& entry);
+  std::optional<uint32_t> FindDuplicationIndex(const Entry& entry);
 
   // Calls server connector to make a request to the Fondue server to retrieve
   // duplicate app group data.
@@ -88,7 +88,7 @@ class AppDeduplicationService : public KeyedService,
 
   // Processes data retrieved by server connector and stores in disk.
   void OnGetDeduplicateDataFromServerCompleted(
-      absl::optional<proto::DeduplicateData> response);
+      std::optional<proto::DeduplicateData> response);
 
   // Checks for any errors after data is written to cache. If the write is
   // successful, it will call the cache to read from disk.
@@ -96,7 +96,7 @@ class AppDeduplicationService : public KeyedService,
 
   // Process data read from cache and converts it into `Entry`s.
   void OnReadDeduplicationCacheCompleted(
-      absl::optional<proto::DeduplicateData> data);
+      std::optional<proto::DeduplicateData> data);
 
   // Maps deduplicate data read from disk to `Entry`s which are then stored
   // inside the class as maps.

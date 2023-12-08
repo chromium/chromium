@@ -54,11 +54,11 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
 
 }  // namespace
 
-absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
+std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
   if (UseFakeAppForTesting()) {
     std::string fake_app = FakeAppForTesting();  // IN-TEST
     if (fake_app.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return AppInfoForAppUrl(
@@ -67,7 +67,7 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
 
   NSURL* nsurl = net::NSURLWithGURL(url);
   if (!nsurl) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SFUniversalLink* link = [[SFUniversalLink alloc] initWithWebpageURL:nsurl];
@@ -76,7 +76,7 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
     return AppInfoForAppUrl(link.applicationURL);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void LaunchMacApp(const GURL& url, const std::string& launch_name) {

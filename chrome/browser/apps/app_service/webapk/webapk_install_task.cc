@@ -207,7 +207,7 @@ void AddUpdateParams(webapk::WebApk* webapk,
 
 // Attaches icon PNG data and hash to an existing icon entry, and then
 // serializes and returns the entire proto. Should be called on a worker thread.
-absl::optional<std::string> AddIconDataAndSerializeProto(
+std::optional<std::string> AddIconDataAndSerializeProto(
     std::unique_ptr<webapk::WebApk> webapk,
     std::vector<uint8_t> icon_data,
     arc::mojom::WebApkInfoPtr web_apk_info) {
@@ -228,7 +228,7 @@ absl::optional<std::string> AddIconDataAndSerializeProto(
     // If we don't have an update reason here, return before we query the server
     // as there is no reason to update.
     if (webapk->update_reasons_size() == 0) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -344,7 +344,7 @@ void WebApkInstallTask::OnWebApkInfoLoaded(
 
 void WebApkInstallTask::OnArcFeaturesLoaded(
     std::unique_ptr<webapk::WebApk> webapk,
-    absl::optional<arc::ArcFeatures> arc_features) {
+    std::optional<arc::ArcFeatures> arc_features) {
   if (!arc_features) {
     LOG(ERROR) << "Could not load ArcFeatures";
     DeliverResult(WebApkInstallStatus::kArcUnavailable);
@@ -360,7 +360,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   }
 
   auto& icon_manager = web_app_provider_->icon_manager();
-  absl::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
+  std::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
           app_id_, {web_app::IconPurpose::MASKABLE, web_app::IconPurpose::ANY},
           kMinimumIconSize);
@@ -420,7 +420,7 @@ void WebApkInstallTask::OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
 }
 
 void WebApkInstallTask::OnProtoSerialized(
-    absl::optional<std::string> serialized_proto) {
+    std::optional<std::string> serialized_proto) {
   if (!serialized_proto && !serialized_proto.has_value()) {
     // We don't need to continue the update, because the existing WebAPK is up
     // to date.

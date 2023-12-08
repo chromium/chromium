@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -731,7 +731,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
     OnApps(std::move(apps), AppType::kWeb);
     proxy()->SetSupportedLinksPreference(kTestAppId);
 
-    absl::optional<std::string> preferred_app =
+    std::optional<std::string> preferred_app =
         proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
     ASSERT_EQ(kTestAppId, preferred_app);
   }
@@ -745,7 +745,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
 
     OnApps(std::move(apps), AppType::kWeb);
 
-    absl::optional<std::string> preferred_app =
+    std::optional<std::string> preferred_app =
         proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
     ASSERT_EQ(kTestAppId, preferred_app);
   }
@@ -759,9 +759,9 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
 
     OnApps(std::move(apps), AppType::kWeb);
 
-    absl::optional<std::string> preferred_app =
+    std::optional<std::string> preferred_app =
         proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
-    ASSERT_EQ(absl::nullopt, preferred_app);
+    ASSERT_EQ(std::nullopt, preferred_app);
   }
 }
 
@@ -802,7 +802,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
   auto mime_intent = std::make_unique<Intent>(apps_util::kIntentActionSend);
   mime_intent->mime_type = "image/png";
   ASSERT_EQ(
-      absl::nullopt,
+      std::nullopt,
       proxy()->PreferredAppsList().FindPreferredAppForIntent(mime_intent));
 
   // Set app 2 as preferred. Both of the previous preferences for app 1 should
@@ -812,14 +812,14 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
 
   ASSERT_EQ(kTestAppId2,
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
-  ASSERT_EQ(absl::nullopt,
+  ASSERT_EQ(std::nullopt,
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
 
   // Remove all supported link preferences for app 2.
 
   proxy()->RemoveSupportedLinksPreference(kTestAppId2);
 
-  ASSERT_EQ(absl::nullopt,
+  ASSERT_EQ(std::nullopt,
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
 }
 
@@ -930,8 +930,8 @@ TEST_F(AppServiceProxyPreferredAppsTest,
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
 
-  EXPECT_EQ(absl::nullopt, GetPreferredAppsList().FindPreferredAppForUrl(
-                               GURL("https://www.a.com/")));
+  EXPECT_EQ(std::nullopt, GetPreferredAppsList().FindPreferredAppForUrl(
+                              GURL("https://www.a.com/")));
   EXPECT_EQ(kAppId3, GetPreferredAppsList().FindPreferredAppForUrl(
                          GURL("https://www.b.com/")));
   EXPECT_EQ(kAppId3, GetPreferredAppsList().FindPreferredAppForUrl(
@@ -985,11 +985,11 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlapSupportedLink) {
   FakePublisherForProxyTest pub(proxy(), AppType::kArc,
                                 std::vector<std::string>{kAppId1, kAppId2});
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
   EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
 
@@ -1015,9 +1015,9 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlapSupportedLink) {
 
   EXPECT_EQ(kAppId2,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId1));
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
@@ -1063,11 +1063,11 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsDuplicatedSupportedLink) {
   FakePublisherForProxyTest pub(proxy(), AppType::kArc,
                                 std::vector<std::string>{kAppId1});
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
   EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
 
@@ -1149,8 +1149,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
 
-  EXPECT_EQ(absl::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
-                               GURL("https://www.a.com/")));
+  EXPECT_EQ(std::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
+                              GURL("https://www.a.com/")));
   EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
                          GURL("https://www.b.com/")));
   EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
@@ -1169,8 +1169,8 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   proxy()->RemoveSupportedLinksPreference(kAppId3);
 
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
-  EXPECT_EQ(absl::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
-                               GURL("https://www.c.com/")));
+  EXPECT_EQ(std::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
+                              GURL("https://www.c.com/")));
 }
 
 TEST_F(AppServiceProxyTest, LaunchCallback) {

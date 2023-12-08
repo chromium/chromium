@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,7 +52,6 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/url_constants.h"
 

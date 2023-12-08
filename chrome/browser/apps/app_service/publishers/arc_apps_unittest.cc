@@ -301,8 +301,8 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArcSystem) {
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
-  ASSERT_EQ(absl::nullopt, preferred_apps().FindPreferredAppForUrl(
-                               GURL("https://www.example.com/foo")));
+  ASSERT_EQ(std::nullopt, preferred_apps().FindPreferredAppForUrl(
+                              GURL("https://www.example.com/foo")));
 }
 
 // Verifies that a call to set the supported links preference from App Service
@@ -496,7 +496,7 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   permissions.emplace(arc::mojom::AppPermission::CAMERA,
                       arc::mojom::PermissionState::New(
                           /*granted=*/true, /*managed=*/false,
-                          /*details=*/absl::nullopt, /*one_time=*/true));
+                          /*details=*/std::nullopt, /*one_time=*/true));
   permissions.emplace(
       arc::mojom::AppPermission::LOCATION,
       arc::mojom::PermissionState::New(/*granted=*/true, /*managed=*/true,
@@ -522,7 +522,7 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   EXPECT_EQ(result[0]->permission_type, apps::PermissionType::kCamera);
   EXPECT_EQ(absl::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);
   EXPECT_FALSE(result[0]->is_managed);
-  EXPECT_EQ(result[0]->details, absl::nullopt);
+  EXPECT_EQ(result[0]->details, std::nullopt);
 
   EXPECT_EQ(result[1]->permission_type, apps::PermissionType::kLocation);
   EXPECT_TRUE(result[1]->IsPermissionEnabled());
@@ -542,7 +542,7 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<apps::State> result;
+  std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
@@ -575,7 +575,7 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<apps::State> result;
+  std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
@@ -613,7 +613,7 @@ TEST_F(
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<apps::State> result;
+  std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
@@ -652,7 +652,7 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<apps::State> result;
+  std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,

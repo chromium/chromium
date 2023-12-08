@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
 
   // Check the app is installed in app_registry_cache.
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
 
   // Wait for update to be registered with the app registry cache.
   AppReadinessWaiter(GetAshProfile(), app_id).Await();
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest,
 
   // Wait for update to be registered with the app registry cache.
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   AppReadinessWaiter(GetAshProfile(), app_id).Await();
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {

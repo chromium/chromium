@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -34,7 +35,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -88,7 +88,7 @@ class AppServiceProxyBase : public KeyedService,
     LaunchSource launch_source_ = LaunchSource::kUnknown;
     std::vector<base::FilePath> file_paths_;
     WindowInfoPtr window_info_;
-    absl::optional<AppLaunchParams> params_;
+    std::optional<AppLaunchParams> params_;
     LaunchCallback call_back_;
   };
 
@@ -384,7 +384,7 @@ class AppServiceProxyBase : public KeyedService,
     explicit AppInnerIconLoader(AppServiceProxyBase* host);
 
     // apps::IconLoader overrides.
-    absl::optional<IconKey> GetIconKey(const std::string& id) override;
+    std::optional<IconKey> GetIconKey(const std::string& id) override;
     std::unique_ptr<Releaser> LoadIconFromIconKey(
         const std::string& id,
         const IconKey& icon_key,

@@ -77,7 +77,7 @@ void WebApkDatabase::Write(
 
 void WebApkDatabase::OnDatabaseOpened(
     RegistryOpenedCallback callback,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -95,7 +95,7 @@ void WebApkDatabase::OnDatabaseOpened(
 
 void WebApkDatabase::OnAllDataRead(
     RegistryOpenedCallback callback,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -112,7 +112,7 @@ void WebApkDatabase::OnAllDataRead(
 void WebApkDatabase::OnAllMetadataRead(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
     RegistryOpenedCallback callback,
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -140,7 +140,7 @@ void WebApkDatabase::OnAllMetadataRead(
 
 void WebApkDatabase::OnDataWritten(
     CompletionCallback callback,
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     error_callback_.Run(*error);

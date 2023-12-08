@@ -626,12 +626,12 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
 
   EXPECT_CALL(processor(), Delete(_, _)).Times(0);
 
-  absl::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
+  std::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
       std::move(metadata_change_list), std::move(sync_changes));
 
   run_loop.Run();
 
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 
   const Registry& final_registry = sync_bridge().GetRegistryForTesting();
   EXPECT_EQ(4u, final_registry.size());
@@ -730,10 +730,10 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
   syncer::EntityChangeList sync_changes;
-  absl::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
+  std::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
       std::move(metadata_change_list), std::move(sync_changes));
 
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
   EXPECT_EQ(0u, sync_bridge().GetRegistryForTesting().size());
   EXPECT_EQ(0u, database_factory().ReadRegistry().size());
 }
@@ -799,11 +799,11 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
-  absl::optional<syncer::ModelError> result =
+  std::optional<syncer::ModelError> result =
       sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                                 std::move(sync_changes));
 
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
 
   const Registry& final_registry = sync_bridge().GetRegistryForTesting();
   EXPECT_EQ(3u, final_registry.size());
@@ -870,11 +870,11 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
   syncer::EntityChangeList sync_changes;
-  absl::optional<syncer::ModelError> result =
+  std::optional<syncer::ModelError> result =
       sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                                 std::move(sync_changes));
 
-  EXPECT_EQ(absl::nullopt, result);
+  EXPECT_EQ(std::nullopt, result);
   EXPECT_EQ(0u, sync_bridge().GetRegistryForTesting().size());
   EXPECT_EQ(0u, database_factory().ReadRegistry().size());
 }

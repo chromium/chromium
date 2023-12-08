@@ -5,6 +5,7 @@
 #include "chrome/browser/android/webapk/webapk_update_data_fetcher.h"
 
 #include <jni.h>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
@@ -224,7 +224,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
 }
 
 void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
-    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+    std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
         hashes) {
   if (!hashes)
     return;

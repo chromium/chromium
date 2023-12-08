@@ -153,7 +153,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedPrefSet) {
   // Since we're creating a new profile with no saved state, we expect the state
   // to be "started", but not "completed".
   EXPECT_TRUE(flow_started.has_value() && flow_started.value());
-  EXPECT_EQ(flow_completed, absl::nullopt);
+  EXPECT_EQ(flow_completed, std::nullopt);
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
@@ -174,7 +174,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
   // completed.
   auto flow_completed =
       GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
-  EXPECT_NE(flow_completed, absl::nullopt);
+  EXPECT_NE(flow_completed, std::nullopt);
   EXPECT_TRUE(flow_completed.value());
 }
 
@@ -235,7 +235,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedNotCompletedAfterServerError) {
   // Since there was an error fetching apps, the flow should be "started" but
   // not "completed".
   EXPECT_EQ(flow_started, true);
-  EXPECT_EQ(flow_completed, absl::nullopt);
+  EXPECT_EQ(flow_completed, std::nullopt);
 }
 
 }  // namespace apps

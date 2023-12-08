@@ -47,7 +47,7 @@ AppInstallNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
 }
 
 // static
-absl::optional<PackageId> AppInstallNavigationThrottle::ExtractPackageId(
+std::optional<PackageId> AppInstallNavigationThrottle::ExtractPackageId(
     std::string_view query) {
   url::Component query_slice(0, query.length());
   url::Component key_slice;
@@ -69,7 +69,7 @@ absl::optional<PackageId> AppInstallNavigationThrottle::ExtractPackageId(
     // conversion.
     return PackageId::FromString(base::UTF16ToUTF8(decoded_value.view()));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AppInstallNavigationThrottle::AppInstallNavigationThrottle(
@@ -97,7 +97,7 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
   // TODO(b/304680258): Integration test this flow.
   const GURL& url = navigation_handle()->GetURL();
   if (url.SchemeIs(kAppInstallScheme) && url.path_piece() == kAppInstallPath) {
-    absl::optional<PackageId> package_id = ExtractPackageId(url.query_piece());
+    std::optional<PackageId> package_id = ExtractPackageId(url.query_piece());
     // TODO(b/303350800): Generalize to work with all app types.
     if (package_id.has_value() && package_id->app_type() == AppType::kWeb) {
       Profile* profile = Profile::FromBrowserContext(

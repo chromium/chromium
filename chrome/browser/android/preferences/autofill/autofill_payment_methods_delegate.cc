@@ -5,6 +5,7 @@
 #include "chrome/browser/android/preferences/autofill/autofill_payment_methods_delegate.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/android/callback_android.h"
 #include "chrome/android/chrome_jni_headers/AutofillPaymentMethodsDelegate_jni.h"
@@ -21,7 +22,6 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -75,7 +75,7 @@ void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
   CreditCard* credit_card =
       personal_data_manager_->GetCreditCardByInstrumentId(instrument_id);
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *credit_card, VirtualCardEnrollmentSource::kSettingsPage, absl::nullopt,
+      *credit_card, VirtualCardEnrollmentSource::kSettingsPage, std::nullopt,
       profile_->GetPrefs(), base::BindOnce(&risk_util::LoadRiskDataHelper),
       base::BindOnce(&RunVirtualCardEnrollmentFieldsLoadedCallback,
                      ScopedJavaGlobalRef<jobject>(jcallback)));

@@ -107,7 +107,7 @@ static void JNI_CookiesFetcher_RestoreCookies(
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
-  absl::optional<net::CookiePartitionKey> pk;
+  std::optional<net::CookiePartitionKey> pk;
   if (!net::CookiePartitionKey::Deserialize(
           base::android::ConvertJavaStringToUTF8(env, partition_key), pk)) {
     return;

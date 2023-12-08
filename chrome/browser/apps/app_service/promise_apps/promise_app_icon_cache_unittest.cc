@@ -44,7 +44,7 @@ class PromiseAppIconCacheTest : public testing::Test {
                                           IconEffects icon_effects) {
     base::test::TestFuture<std::unique_ptr<apps::IconValue>> callback;
     apps::LoadIconFromResource(
-        /*profile=*/nullptr, absl::nullopt, IconType::kStandard, size_in_dip,
+        /*profile=*/nullptr, std::nullopt, IconType::kStandard, size_in_dip,
         IDR_APP_ICON_PLACEHOLDER_CUBE,
         /*is_placeholder_icon=*/true, icon_effects, callback.GetCallback());
     apps::IconValue* placeholder_iv = callback.Get().get();
@@ -57,7 +57,7 @@ class PromiseAppIconCacheTest : public testing::Test {
     iv->icon_type = apps::IconType::kUncompressed;
 
     base::test::TestFuture<IconValuePtr> image_with_effects;
-    ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, effects,
+    ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/std::nullopt, effects,
                      bitmap.width(), std::move(iv),
                      image_with_effects.GetCallback());
 

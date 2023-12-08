@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_OMNIBOX_GEOLOCATION_HEADER_H_
 #define CHROME_BROWSER_ANDROID_OMNIBOX_GEOLOCATION_HEADER_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class GURL;
@@ -17,7 +16,7 @@ bool HasGeolocationPermission();
 
 // Gives the full string of the entire Geolocation header if it can be added for
 // a request to |url|. Does not prompt for permission.
-absl::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
-                                                          Profile* profile);
+std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
+                                                         Profile* profile);
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_GEOLOCATION_HEADER_H_

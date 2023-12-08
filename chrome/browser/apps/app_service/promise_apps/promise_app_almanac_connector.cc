@@ -140,14 +140,14 @@ void PromiseAppAlmanacConnector::OnGetPromiseAppResponse(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
   if (!error.ok()) {
     LOG(ERROR) << error.message();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   proto::PromiseAppResponse response;
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(PromiseAppWrapper(response));

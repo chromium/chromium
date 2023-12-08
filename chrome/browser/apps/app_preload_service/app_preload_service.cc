@@ -157,7 +157,7 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     base::TimeTicks start_time,
-    absl::optional<std::vector<PreloadAppDefinition>> apps) {
+    std::optional<std::vector<PreloadAppDefinition>> apps) {
   if (!apps.has_value()) {
     OnFirstLoginFlowComplete(start_time, /*success=*/false);
     return;

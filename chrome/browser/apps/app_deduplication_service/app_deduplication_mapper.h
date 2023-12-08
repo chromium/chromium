@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_DEDUPLICATION_SERVICE_APP_DEDUPLICATION_MAPPER_H_
 #define CHROME_BROWSER_APPS_APP_DEDUPLICATION_SERVICE_APP_DEDUPLICATION_MAPPER_H_
 
+#include <optional>
+
 #include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps::deduplication {
 
@@ -22,7 +23,7 @@ class AppDeduplicationMapper {
   ~AppDeduplicationMapper();
 
   // Maps the deduplicate response proto to the deduplicate data proto.
-  absl::optional<proto::DeduplicateData> ToDeduplicateData(
+  std::optional<proto::DeduplicateData> ToDeduplicateData(
       const proto::DeduplicateResponse& response);
 };
 

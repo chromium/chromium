@@ -135,7 +135,7 @@ WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
     return;
   }
 
-  absl::optional<base::TimeDelta> running_time_value =
+  std::optional<base::TimeDelta> running_time_value =
       base::ValueToTimeDelta(data_dict->Find(kRunningTimeKey));
   if (!running_time_value.has_value()) {
     return;

@@ -62,13 +62,13 @@ AppServiceProxyBase::AppInnerIconLoader::AppInnerIconLoader(
     AppServiceProxyBase* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
-absl::optional<IconKey> AppServiceProxyBase::AppInnerIconLoader::GetIconKey(
+std::optional<IconKey> AppServiceProxyBase::AppInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForOneApp(
       id,
       [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });
@@ -236,8 +236,7 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
 }
 
 uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
-  absl::optional<apps::IconKey> icon_key =
-      app_icon_loader()->GetIconKey(app_id);
+  std::optional<apps::IconKey> icon_key = app_icon_loader()->GetIconKey(app_id);
   if (!icon_key.has_value()) {
     return IconEffects::kNone;
   }
@@ -252,8 +251,7 @@ AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
                                              int32_t size_hint_in_dip,
                                              bool allow_placeholder_icon,
                                              LoadIconCallback callback) {
-  absl::optional<apps::IconKey> icon_key =
-      app_icon_loader()->GetIconKey(app_id);
+  std::optional<apps::IconKey> icon_key = app_icon_loader()->GetIconKey(app_id);
   if (!icon_key.has_value()) {
     std::move(callback).Run(std::make_unique<IconValue>());
     return nullptr;

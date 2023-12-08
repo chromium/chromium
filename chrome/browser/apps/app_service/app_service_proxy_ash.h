@@ -281,7 +281,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
     explicit ShortcutInnerIconLoader(AppServiceProxyAsh* host);
 
     // apps::IconLoader overrides.
-    absl::optional<IconKey> GetIconKey(const std::string& id) override;
+    std::optional<IconKey> GetIconKey(const std::string& id) override;
     std::unique_ptr<Releaser> LoadIconFromIconKey(
         const std::string& id,
         const IconKey& icon_key,

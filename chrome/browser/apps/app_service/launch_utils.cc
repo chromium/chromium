@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -33,7 +34,6 @@
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
@@ -471,7 +471,7 @@ AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
     return result;
   }
 
-  absl::optional<std::string> preferred =
+  std::optional<std::string> preferred =
       proxy->PreferredAppsList().FindPreferredAppForUrl(url);
   if (preferred && base::Contains(result.candidates, *preferred)) {
     result.preferred = std::move(preferred);

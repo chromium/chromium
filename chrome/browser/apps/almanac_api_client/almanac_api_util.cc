@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -87,7 +87,7 @@ absl::Status GetDownloadError(
     int net_error,
     const network::mojom::URLResponseHead* response_info,
     const std::string* response_body,
-    const absl::optional<std::string>& histogram_name) {
+    const std::optional<std::string>& histogram_name) {
   int response_code = 0;
   if (response_info && response_info->headers) {
     response_code = response_info->headers->response_code();

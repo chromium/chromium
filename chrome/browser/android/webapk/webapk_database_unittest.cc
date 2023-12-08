@@ -104,7 +104,7 @@ class WebApkDatabaseTest : public ::testing::Test {
     database_factory().GetStore()->CommitWriteBatch(
         std::move(write_batch),
         base::BindLambdaForTesting(
-            [&](const absl::optional<syncer::ModelError>& error) {
+            [&](const std::optional<syncer::ModelError>& error) {
               EXPECT_FALSE(error);
               run_loop.Quit();
             }));

@@ -91,9 +91,9 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList() {
   return apps;
 }
 
-absl::optional<bool> HasBadge(Profile* profile, const std::string& app_id) {
+std::optional<bool> HasBadge(Profile* profile, const std::string& app_id) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  absl::optional<bool> has_badge;
+  std::optional<bool> has_badge;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&has_badge](const apps::AppUpdate& update) {
         has_badge = update.HasBadge();

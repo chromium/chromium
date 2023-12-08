@@ -131,7 +131,7 @@ class AppIconFactoryTest : public testing::Test {
   apps::IconValuePtr RunLoadIconFromResource(apps::IconType icon_type,
                                              apps::IconEffects icon_effects) {
     base::test::TestFuture<apps::IconValuePtr> future;
-    apps::LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/absl::nullopt,
+    apps::LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/std::nullopt,
                                icon_type, kSizeInDip, IDR_LOGO_CROSTINI_DEFAULT,
                                /*is_placeholder_icon=*/false, icon_effects,
                                future.GetCallback());

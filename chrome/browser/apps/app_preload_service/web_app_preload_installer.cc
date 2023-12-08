@@ -149,7 +149,7 @@ void WebAppPreloadInstaller::InstallAllAppsWhenReady() {
   }
 
   // Reset the values after installation has been performed.
-  apps_for_installation_ = absl::nullopt;
+  apps_for_installation_ = std::nullopt;
 }
 
 void WebAppPreloadInstaller::InstallAppImpl(

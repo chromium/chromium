@@ -26,7 +26,7 @@ class WebAppLinkCapturingDelegate
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
   bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
-  absl::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
+  std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,
                                  const GURL& url,

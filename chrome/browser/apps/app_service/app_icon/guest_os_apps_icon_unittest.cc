@@ -93,7 +93,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
 
   // Manually generates an icon made up of a `solid_color` with applied
   // `effects`, without going through any publisher icon loading code.
-  IconValuePtr GenerateIcon(absl::optional<std::string> app_id,
+  IconValuePtr GenerateIcon(std::optional<std::string> app_id,
                             SkColor solid_color,
                             int size_dp,
                             IconEffects effects) {

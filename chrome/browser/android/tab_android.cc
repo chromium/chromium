@@ -403,7 +403,7 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
   // release.
   content::WebContents* released_contents = web_contents_.release();
   if (released_contents) {
-    released_contents->SetOwnerLocationForDebug(absl::nullopt);
+    released_contents->SetOwnerLocationForDebug(std::nullopt);
   }
 
   // Remove the link from the native WebContents to |this|, since the

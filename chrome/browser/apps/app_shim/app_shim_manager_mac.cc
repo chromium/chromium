@@ -7,6 +7,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -64,7 +65,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -108,7 +108,7 @@ void DumpError(std::string error_details) {
 //   * "has_value() == true" app shim validation should occur.
 //   * "has_value() == false" app shim validation should be skipped.
 //   * "has_value() == true && value() == null" validation should always fail.
-absl::optional<base::apple::ScopedCFTypeRef<SecRequirementRef>>
+std::optional<base::apple::ScopedCFTypeRef<SecRequirementRef>>
 CreateAppShimRequirement() {
   // Note: Don't validate |framework_code|: We don't need to waste time
   // validating. We are only interested in discovering if the framework bundle
@@ -123,7 +123,7 @@ CreateAppShimRequirement() {
   // this as success because there’s no identity to protect or even match, so
   // it’s not dangerous to let the shim connect.
   if (status == errSecCSUnsigned) {
-    return absl::nullopt;  // has_value() == false
+    return std::nullopt;  // has_value() == false
   }
 
   // If there was an error obtaining the SecStaticCodeRef something is very
@@ -152,7 +152,7 @@ CreateAppShimRequirement() {
       base::apple::GetValueFromDictionary<CFNumberRef>(
           framework_signing_info.get(), kSecCodeInfoFlags);
   if (!framework_signing_info_flags) {
-    return absl::nullopt;  // has_value() == false
+    return std::nullopt;  // has_value() == false
   }
 
   // If the framework bundle is ad-hoc signed there is nothing else to
@@ -170,7 +170,7 @@ CreateAppShimRequirement() {
     return base::apple::ScopedCFTypeRef<SecRequirementRef>(nullptr);
   }
   if (static_cast<uint32_t>(flags) & kSecCodeSignatureAdhoc) {
-    return absl::nullopt;  // has_value() == false
+    return std::nullopt;  // has_value() == false
   }
 
   // Moving on. Time to start building a requirement that we will use to
@@ -214,7 +214,7 @@ CreateAppShimRequirement() {
 // the app shim at runtime.
 bool IsAcceptablyCodeSignedLegacy(pid_t app_shim_pid) {
   static base::NoDestructor<
-      absl::optional<base::apple::ScopedCFTypeRef<SecRequirementRef>>>
+      std::optional<base::apple::ScopedCFTypeRef<SecRequirementRef>>>
       app_shim_requirement(CreateAppShimRequirement());
   if (!app_shim_requirement->has_value()) {
     // App shim validation is not required because framework bundle is not
@@ -385,7 +385,7 @@ struct AppShimManager::ProfileState {
   std::set<Browser*> browsers;
 
   // The current BadgeValue for this (app, Profile) pair.
-  absl::optional<badging::BadgeManager::BadgeValue> badge;
+  std::optional<badging::BadgeManager::BadgeValue> badge;
 };
 
 // The state for an individual app. This includes the state for all
@@ -527,7 +527,7 @@ bool AppShimManager::HasNonBookmarkAppWindowsOpen() {
 void AppShimManager::UpdateAppBadge(
     Profile* profile,
     const webapps::AppId& app_id,
-    const absl::optional<badging::BadgeManager::BadgeValue>& badge) {
+    const std::optional<badging::BadgeManager::BadgeValue>& badge) {
   // TODO(https://crbug.com/1199624): Support updating the app badge for apps
   // that aren't currently running.
   auto found_app = apps_.find(app_id);
@@ -643,7 +643,7 @@ void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
             : "");
   } else if (profile_state->app_state->multi_profile_host &&
              profile_state->app_state->multi_profile_host->GetAppShim()) {
-    absl::optional<badging::BadgeManager::BadgeValue> combined_badge;
+    std::optional<badging::BadgeManager::BadgeValue> combined_badge;
     for (const auto& [profile, state] : profile_state->app_state->profiles) {
       if (state->badge) {
         if (!combined_badge) {

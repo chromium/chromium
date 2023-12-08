@@ -53,20 +53,20 @@ class WebApkDatabase {
 
  private:
   void OnDatabaseOpened(RegistryOpenedCallback callback,
-                        const absl::optional<syncer::ModelError>& error,
+                        const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::ModelTypeStore> store);
   void OnAllDataRead(
       RegistryOpenedCallback callback,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
   void OnAllMetadataRead(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
       RegistryOpenedCallback callback,
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,
-                     const absl::optional<syncer::ModelError>& error);
+                     const std::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
   const raw_ptr<AbstractWebApkDatabaseFactory, DanglingUntriaged>

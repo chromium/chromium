@@ -125,7 +125,7 @@ void AddArcPackage(ArcAppTest& arc_test,
         fake_app->package_name, /*package_version=*/1,
         /*last_backup_android_id=*/1,
         /*last_backup_time=*/1, /*sync=*/true, /*system=*/false,
-        /*vpn_provider=*/false, /*web_app_info=*/nullptr, absl::nullopt,
+        /*vpn_provider=*/false, /*web_app_info=*/nullptr, std::nullopt,
         std::move(permissions));
     arc_test.AddPackage(package->Clone());
     arc_test.app_instance()->SendPackageAdded(package->Clone());
@@ -157,10 +157,9 @@ apps::Permissions MakeFakePermissions() {
   return permissions;
 }
 
-apps::CapabilityAccessPtr MakeCapabilityAccess(
-    const std::string& app_id,
-    absl::optional<bool> camera,
-    absl::optional<bool> microphone) {
+apps::CapabilityAccessPtr MakeCapabilityAccess(const std::string& app_id,
+                                               std::optional<bool> camera,
+                                               std::optional<bool> microphone) {
   apps::CapabilityAccessPtr access =
       std::make_unique<apps::CapabilityAccess>(app_id);
   access->camera = std::move(camera);
@@ -333,8 +332,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void VerifyOptionalBool(absl::optional<bool> source,
-                          absl::optional<bool> target) {
+  void VerifyOptionalBool(std::optional<bool> source,
+                          std::optional<bool> target) {
     if (source.has_value()) {
       EXPECT_EQ(source, target);
     }
@@ -363,18 +362,18 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  base::Time last_launch_time,
                  base::Time install_time,
                  const apps::Permissions& permissions,
-                 absl::optional<bool> is_platform_app = absl::nullopt,
-                 absl::optional<bool> recommendable = absl::nullopt,
-                 absl::optional<bool> searchable = absl::nullopt,
-                 absl::optional<bool> show_in_launcher = absl::nullopt,
-                 absl::optional<bool> show_in_shelf = absl::nullopt,
-                 absl::optional<bool> show_in_search = absl::nullopt,
-                 absl::optional<bool> show_in_management = absl::nullopt,
-                 absl::optional<bool> handles_intents = absl::nullopt,
-                 absl::optional<bool> allow_uninstall = absl::nullopt,
-                 absl::optional<bool> allow_close = absl::nullopt,
-                 absl::optional<bool> has_badge = absl::nullopt,
-                 absl::optional<bool> paused = absl::nullopt,
+                 std::optional<bool> is_platform_app = std::nullopt,
+                 std::optional<bool> recommendable = std::nullopt,
+                 std::optional<bool> searchable = std::nullopt,
+                 std::optional<bool> show_in_launcher = std::nullopt,
+                 std::optional<bool> show_in_shelf = std::nullopt,
+                 std::optional<bool> show_in_search = std::nullopt,
+                 std::optional<bool> show_in_management = std::nullopt,
+                 std::optional<bool> handles_intents = std::nullopt,
+                 std::optional<bool> allow_uninstall = std::nullopt,
+                 std::optional<bool> allow_close = std::nullopt,
+                 std::optional<bool> has_badge = std::nullopt,
+                 std::optional<bool> paused = std::nullopt,
                  WindowMode window_mode = WindowMode::kUnknown) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
@@ -449,10 +448,10 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 
   void VerifyCapabilityAccess(const std::string& app_id,
-                              absl::optional<bool> accessing_camera,
-                              absl::optional<bool> accessing_microphone) {
-    absl::optional<bool> camera;
-    absl::optional<bool> microphone;
+                              std::optional<bool> accessing_camera,
+                              std::optional<bool> accessing_microphone) {
+    std::optional<bool> camera;
+    std::optional<bool> microphone;
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppCapabilityAccessCache()
         .ForOneApp(app_id, [&camera, &microphone](
@@ -578,7 +577,7 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
                            /*accessing_camera=*/true,
-                           /*accessing_microphone=*/absl::nullopt);
+                           /*accessing_microphone=*/std::nullopt);
   }
 
   // Cancel accessing Camera for `package_name1`.
@@ -606,7 +605,7 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
                            /*accessing_microphone=*/true);
     VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
                            /*accessing_camera=*/true,
-                           /*accessing_microphone=*/absl::nullopt);
+                           /*accessing_microphone=*/std::nullopt);
   }
 
   // Cancel accessing Microphone for `package_name1`.
@@ -958,7 +957,7 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
   VerifyApp(AppType::kWeb, "a", "TestApp", Readiness::kReady,
             InstallReason::kUser, InstallSource::kSync, {"TestApp"},
             kLastLaunchTime, kInstallTime, MakeFakePermissions(),
-            /*is_platform_app=*/absl::nullopt, /*recommendable=*/true,
+            /*is_platform_app=*/std::nullopt, /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
@@ -1009,12 +1008,12 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
 
     std::vector<CapabilityAccessPtr> capability_access1;
     capability_access1.push_back(MakeCapabilityAccess(app_id1,
-                                                      /*camera=*/absl::nullopt,
+                                                      /*camera=*/std::nullopt,
                                                       /*microphone=*/true));
     capability_access1.push_back(
         MakeCapabilityAccess(app_id2,
                              /*camera=*/true,
-                             /*microphone=*/absl::nullopt));
+                             /*microphone=*/std::nullopt));
     web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access1));
   }
 
@@ -1058,11 +1057,11 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
   EXPECT_EQ(app_id2, observer.updated_ids()[1]);
   EXPECT_EQ(app_id3, observer.updated_ids()[2]);
   VerifyCapabilityAccess(app_id1,
-                         /*accessing_camera=*/absl::nullopt,
+                         /*accessing_camera=*/std::nullopt,
                          /*accessing_microphone=*/true);
   VerifyCapabilityAccess(app_id2,
                          /*accessing_camera=*/true,
-                         /*accessing_microphone=*/absl::nullopt);
+                         /*accessing_microphone=*/std::nullopt);
   VerifyCapabilityAccess(app_id3,
                          /*accessing_camera=*/true,
                          /*accessing_microphone=*/true);
@@ -1079,7 +1078,7 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
     capability_access3.push_back(
         MakeCapabilityAccess(app_id4,
                              /*camera=*/true,
-                             /*microphone=*/absl::nullopt));
+                             /*microphone=*/std::nullopt));
     web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access3));
   }
 
@@ -1088,7 +1087,7 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
   EXPECT_EQ(app_id4, observer.updated_ids()[3]);
   VerifyCapabilityAccess(app_id4,
                          /*accessing_camera=*/true,
-                         /*accessing_microphone=*/absl::nullopt);
+                         /*accessing_microphone=*/std::nullopt);
 
   // Disconnect crosapi.
   web_apps_crosapi->OnControllerDisconnected();
@@ -1131,12 +1130,12 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdatedCapability) {
   {
     std::vector<CapabilityAccessPtr> capability_access1;
     capability_access1.push_back(MakeCapabilityAccess(app_id1,
-                                                      /*camera=*/absl::nullopt,
+                                                      /*camera=*/std::nullopt,
                                                       /*microphone=*/true));
     capability_access1.push_back(
         MakeCapabilityAccess(app_id2,
                              /*camera=*/true,
-                             /*microphone=*/absl::nullopt));
+                             /*microphone=*/std::nullopt));
     web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access1));
   }
 
@@ -1151,11 +1150,11 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdatedCapability) {
   web_apps_crosapi->RegisterAppController(std::move(pending_remote1));
 
   VerifyCapabilityAccess(app_id1,
-                         /*accessing_camera=*/absl::nullopt,
+                         /*accessing_camera=*/std::nullopt,
                          /*accessing_microphone=*/true);
   VerifyCapabilityAccess(app_id2,
                          /*accessing_camera=*/true,
-                         /*accessing_microphone=*/absl::nullopt);
+                         /*accessing_microphone=*/std::nullopt);
 
   // Add more capability access after register Crosapi.
   std::string app_id3 = "c";
@@ -1197,20 +1196,20 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiCapabilityReset) {
 
   std::vector<CapabilityAccessPtr> capability_access;
   capability_access.push_back(MakeCapabilityAccess(app_id1,
-                                                   /*camera=*/absl::nullopt,
+                                                   /*camera=*/std::nullopt,
                                                    /*microphone=*/true));
   capability_access.push_back(
       MakeCapabilityAccess(app_id2,
                            /*camera=*/true,
-                           /*microphone=*/absl::nullopt));
+                           /*microphone=*/std::nullopt));
   web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access));
 
   VerifyCapabilityAccess(app_id1,
-                         /*accessing_camera=*/absl::nullopt,
+                         /*accessing_camera=*/std::nullopt,
                          /*accessing_microphone=*/true);
   VerifyCapabilityAccess(app_id2,
                          /*accessing_camera=*/true,
-                         /*accessing_microphone=*/absl::nullopt);
+                         /*accessing_microphone=*/std::nullopt);
 
   // Disconnect crosapi.
   web_apps_crosapi->OnControllerDisconnected();

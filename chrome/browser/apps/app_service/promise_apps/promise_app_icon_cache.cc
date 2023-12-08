@@ -52,7 +52,7 @@ void PromiseAppIconCache::GetIconAndApplyEffects(const PackageId& package_id,
     VLOG(1) << "Using placeholder icon for promise app with Package Id: "
             << package_id.ToString();
     LoadIconFromResource(
-        /*profile=*/nullptr, absl::nullopt, IconType::kStandard, size_in_dip,
+        /*profile=*/nullptr, std::nullopt, IconType::kStandard, size_in_dip,
         IDR_APP_ICON_PLACEHOLDER_CUBE,
         /*is_placeholder_icon=*/true, icon_effects, std::move(callback));
     return;
@@ -102,7 +102,7 @@ void PromiseAppIconCache::GetIconAndApplyEffects(const PackageId& package_id,
     return;
   }
   apps::ApplyIconEffects(
-      /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects, size_in_dip,
+      /*profile=*/nullptr, /*app_id=*/std::nullopt, icon_effects, size_in_dip,
       std::move(icon_value), std::move(callback));
 }
 

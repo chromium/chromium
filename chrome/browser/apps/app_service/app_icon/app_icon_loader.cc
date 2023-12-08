@@ -225,7 +225,7 @@ FaviconResultToImageSkia(base::OnceCallback<void(gfx::ImageSkia)> callback,
       std::move(callback), icon_scale);
 }
 
-absl::optional<web_app::IconPurpose> GetIconPurpose(
+std::optional<web_app::IconPurpose> GetIconPurpose(
     const std::string& web_app_id,
     const web_app::WebAppIconManager& icon_manager,
     int size_hint_in_dip) {
@@ -244,15 +244,15 @@ absl::optional<web_app::IconPurpose> GetIconPurpose(
 
   if (icon_manager.HasSmallestIcon(web_app_id, {web_app::IconPurpose::MASKABLE},
                                    max_icon_size_in_px)) {
-    return absl::make_optional(web_app::IconPurpose::MASKABLE);
+    return std::make_optional(web_app::IconPurpose::MASKABLE);
   }
 
   if (icon_manager.HasSmallestIcon(web_app_id, {web_app::IconPurpose::ANY},
                                    max_icon_size_in_px)) {
-    return absl::make_optional(web_app::IconPurpose::ANY);
+    return std::make_optional(web_app::IconPurpose::ANY);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
@@ -306,7 +306,7 @@ bool AdaptiveIconPaths::IsEmpty() {
 }
 
 AppIconLoader::AppIconLoader(Profile* profile,
-                             absl::optional<std::string> app_id,
+                             std::optional<std::string> app_id,
                              IconType icon_type,
                              int size_hint_in_dip,
                              bool is_placeholder_icon,
@@ -325,7 +325,7 @@ AppIconLoader::AppIconLoader(Profile* profile,
 
 AppIconLoader::AppIconLoader(
     Profile* profile,
-    absl::optional<std::string> app_id,
+    std::optional<std::string> app_id,
     IconType icon_type,
     int size_hint_in_dip,
     bool is_placeholder_icon,
@@ -389,7 +389,7 @@ AppIconLoader::~AppIconLoader() {
 }
 
 void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
-                                     const absl::optional<std::string>& app_id,
+                                     const std::optional<std::string>& app_id,
                                      IconValuePtr iv) {
   TRACE_EVENT0("ui", "AppIconLoader::ApplyIconEffects");
   if (!iv || iv->uncompressed.isNull())
@@ -418,7 +418,7 @@ void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
 }
 
 void AppIconLoader::ApplyBadges(IconEffects icon_effects,
-                                const absl::optional<std::string>& app_id,
+                                const std::optional<std::string>& app_id,
                                 IconValuePtr iv) {
   TRACE_EVENT0("ui", "AppIconLoader::ApplyBadges");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -478,7 +478,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
   // constructor.
   icon_scale_for_compressed_response_ = icon_scale_;
 
-  absl::optional<web_app::IconPurpose> icon_purpose_to_read =
+  std::optional<web_app::IconPurpose> icon_purpose_to_read =
       GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
 
   if (!icon_purpose_to_read.has_value()) {
@@ -738,7 +738,7 @@ void AppIconLoader::GetWebAppCompressedIconData(
   TRACE_EVENT0("ui", "AppIconLoader::GetWebAppCompressedIconData");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<web_app::IconPurpose> icon_purpose_to_read =
+  std::optional<web_app::IconPurpose> icon_purpose_to_read =
       GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
 
   if (!icon_purpose_to_read.has_value() || icon_type_ == IconType::kUnknown) {

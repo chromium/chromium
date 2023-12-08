@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -196,7 +196,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
       const base::FilePath& profile_path,
       const std::string& app_id,
       bool is_from_bookmark,
-      absl::optional<chrome::mojom::AppShimLaunchResult>* launch_result)
+      std::optional<chrome::mojom::AppShimLaunchResult>* launch_result)
       : AppShimHostBootstrap(getpid()),
         profile_path_(profile_path),
         app_id_(app_id),
@@ -230,7 +230,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   }
 
   static void DoTestLaunchDone(
-      absl::optional<chrome::mojom::AppShimLaunchResult>* launch_result,
+      std::optional<chrome::mojom::AppShimLaunchResult>* launch_result,
       chrome::mojom::AppShimLaunchResult result,
       variations::VariationsCommandLine feature_state,
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
@@ -249,7 +249,7 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   const bool is_from_bookmark_;
   // Note that |launch_result_| is optional so that we can track whether or not
   // the callback to set it has arrived.
-  raw_ptr<absl::optional<chrome::mojom::AppShimLaunchResult>> launch_result_ =
+  raw_ptr<std::optional<chrome::mojom::AppShimLaunchResult>> launch_result_ =
       nullptr;
   base::WeakPtrFactory<TestingAppShimHostBootstrap> weak_factory_;
 };
@@ -568,15 +568,15 @@ class AppShimManagerTest : public testing::Test {
   base::WeakPtr<TestingAppShimHostBootstrap> bootstrap_aa_duplicate_;
   base::WeakPtr<TestingAppShimHostBootstrap> bootstrap_aa_thethird_;
 
-  absl::optional<chrome::mojom::AppShimLaunchResult> bootstrap_aa_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult> bootstrap_ba_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult> bootstrap_ca_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult> bootstrap_xa_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult> bootstrap_ab_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult> bootstrap_bb_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult>
+  std::optional<chrome::mojom::AppShimLaunchResult> bootstrap_aa_result_;
+  std::optional<chrome::mojom::AppShimLaunchResult> bootstrap_ba_result_;
+  std::optional<chrome::mojom::AppShimLaunchResult> bootstrap_ca_result_;
+  std::optional<chrome::mojom::AppShimLaunchResult> bootstrap_xa_result_;
+  std::optional<chrome::mojom::AppShimLaunchResult> bootstrap_ab_result_;
+  std::optional<chrome::mojom::AppShimLaunchResult> bootstrap_bb_result_;
+  std::optional<chrome::mojom::AppShimLaunchResult>
       bootstrap_aa_duplicate_result_;
-  absl::optional<chrome::mojom::AppShimLaunchResult>
+  std::optional<chrome::mojom::AppShimLaunchResult>
       bootstrap_aa_thethird_result_;
 
   // Unique ptr to the TestsHosts used by the tests. These are passed by
@@ -1693,9 +1693,9 @@ TEST_F(AppShimManagerTest, UpdateAppBadge) {
   manager_->UpdateAppBadge(&profile_b_, kTestAppIdA,
                            badging::BadgeManager::BadgeValue());
   EXPECT_EQ("•", host_aa_->test_app_shim_->badge_label_);
-  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA, absl::nullopt);
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA, std::nullopt);
   EXPECT_EQ("•", host_aa_->test_app_shim_->badge_label_);
-  manager_->UpdateAppBadge(&profile_b_, kTestAppIdA, absl::nullopt);
+  manager_->UpdateAppBadge(&profile_b_, kTestAppIdA, std::nullopt);
   EXPECT_EQ("", host_aa_->test_app_shim_->badge_label_);
 }
 

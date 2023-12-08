@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_H_
 
+#include <optional>
 #include <ostream>
 
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace apps {
@@ -39,20 +39,20 @@ struct PromiseApp {
 
   // Used for the accessibility label in Launcher/ Shelf. Not used for the main
   // icon label as it is typically more verbose than just the official app name.
-  absl::optional<std::string> name;
+  std::optional<std::string> name;
 
-  absl::optional<float> progress;
+  std::optional<float> progress;
   PromiseStatus status = PromiseStatus::kUnknown;
 
   // Set when an app from the package associated with the promise app gets
   // installed, and the promise app status changes to `kSuccess`. The ID of the
   // app that was installed.
-  absl::optional<std::string> installed_app_id;
+  std::optional<std::string> installed_app_id;
 
   // Hide the promise app from the Launcher/ Shelf by default. Only show
   // it when we have enough information about the installing package (e.g. name,
   // icon).
-  absl::optional<bool> should_show;
+  std::optional<bool> should_show;
 
   std::unique_ptr<PromiseApp> Clone() const;
 };

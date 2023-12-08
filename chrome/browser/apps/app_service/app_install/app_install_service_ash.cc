@@ -99,7 +99,7 @@ void AppInstallServiceAsh::InstallFromFetchedData(
     AppInstallSurface surface,
     PackageId expected_package_id,
     base::OnceClosure callback,
-    absl::optional<AppInstallData> data) {
+    std::optional<AppInstallData> data) {
   AppInstallResult result = [&] {
     if (!data) {
       return AppInstallResult::kAlmanacFetchFailed;

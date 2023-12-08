@@ -241,7 +241,7 @@ TabIterator& TabIterator::operator++() {
 
   // At the end of an entry then go to the next entry.
   tabs_ = nullptr;
-  current_tab_ = absl::nullopt;
+  current_tab_ = std::nullopt;
   current_entry_++;
   if (current_entry_ == entries_->cend()) {
     return *this;

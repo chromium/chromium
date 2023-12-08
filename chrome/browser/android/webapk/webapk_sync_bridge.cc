@@ -5,6 +5,7 @@
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -28,7 +29,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace webapk {
@@ -322,7 +322,7 @@ void WebApkSyncBridge::ApplyIncrementalSyncChangesToRegistry(
   }
 }
 
-absl::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   CHECK(change_processor()->IsTrackingMetadata());
@@ -362,7 +362,7 @@ absl::optional<syncer::ModelError> WebApkSyncBridge::MergeFullSyncData(
   ApplyIncrementalSyncChangesToRegistry(
       std::move(registry_update_from_installed_and_sync));
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WebApkSyncBridge::PrepareRegistryUpdateFromSyncApps(
@@ -373,8 +373,7 @@ void WebApkSyncBridge::PrepareRegistryUpdateFromSyncApps(
       sync_update_from_installed, sync_changes, registry_update_from_sync);
 }
 
-absl::optional<syncer::ModelError>
-WebApkSyncBridge::ApplyIncrementalSyncChanges(
+std::optional<syncer::ModelError> WebApkSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<RegistryUpdateData> registry_update_from_sync =
@@ -389,7 +388,7 @@ WebApkSyncBridge::ApplyIncrementalSyncChanges(
 
   ApplyIncrementalSyncChangesToRegistry(std::move(registry_update_from_sync));
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void WebApkSyncBridge::OnWebApkUsed(

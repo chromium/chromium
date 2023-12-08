@@ -23,14 +23,14 @@ ArCore::MinMaxRange FakeArCore::GetTargetFramerateRange() {
   return {30.f, 30.f};
 }
 
-absl::optional<ArCore::InitializeResult> FakeArCore::Initialize(
+std::optional<ArCore::InitializeResult> FakeArCore::Initialize(
     base::android::ScopedJavaLocalRef<jobject> application_context,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-    absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
+    std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
 
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
@@ -40,7 +40,7 @@ absl::optional<ArCore::InitializeResult> FakeArCore::Initialize(
   // Fake device does not support depth for now:
   if (base::Contains(required_features,
                      device::mojom::XRSessionFeature::DEPTH)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (base::Contains(optional_features,
@@ -48,7 +48,7 @@ absl::optional<ArCore::InitializeResult> FakeArCore::Initialize(
     enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
   }
 
-  return ArCore::InitializeResult(enabled_features, absl::nullopt);
+  return ArCore::InitializeResult(enabled_features, std::nullopt);
 }
 
 void FakeArCore::SetDisplayGeometry(
@@ -249,20 +249,20 @@ bool FakeArCore::RequestHitTest(
   return true;
 }
 
-absl::optional<uint64_t> FakeArCore::SubscribeToHitTest(
+std::optional<uint64_t> FakeArCore::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr nativeOriginInformation,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<uint64_t> FakeArCore::SubscribeToHitTestForTransientInput(
+std::optional<uint64_t> FakeArCore::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 mojom::XRHitTestSubscriptionResultsDataPtr
@@ -371,7 +371,7 @@ void FakeArCore::DetachAnchor(uint64_t anchor_id) {
 
 mojom::XRTrackedImagesDataPtr FakeArCore::GetTrackedImages() {
   std::vector<mojom::XRTrackedImageDataPtr> images_data;
-  return mojom::XRTrackedImagesData::New(std::move(images_data), absl::nullopt);
+  return mojom::XRTrackedImagesData::New(std::move(images_data), std::nullopt);
 }
 
 void FakeArCore::Pause() {

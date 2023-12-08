@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
 #include "url/gurl.h"
@@ -152,7 +152,7 @@ void GetWebApkCreationParams(Profile* profile,
   auto webapk_manifest = std::make_unique<webapk::WebAppManifest>();
 
   auto& icon_manager = provider->icon_manager();
-  absl::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
+  std::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
           app_id, {web_app::IconPurpose::MASKABLE, web_app::IconPurpose::ANY},
           kMinimumIconSize);

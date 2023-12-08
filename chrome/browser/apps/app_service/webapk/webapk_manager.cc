@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 
+#include <optional>
+
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/check.h"
@@ -26,7 +28,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kGeneratedWebApkPackagePrefix[] = "org.chromium.webapk.";
@@ -304,7 +305,7 @@ void WebApkManager::UninstallInternal(const std::string& app_id) {
     return;
   }
 
-  absl::optional<std::string> package_name =
+  std::optional<std::string> package_name =
       webapk_prefs::GetWebApkPackageName(profile_, app_id);
   // Ignore cases where we try to uninstall a package which doesn't exist, as
   // it's possible that the uninstall request was queued multiple times.

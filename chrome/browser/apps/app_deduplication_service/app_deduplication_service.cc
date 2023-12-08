@@ -30,14 +30,14 @@ constexpr char kAppDeduplicationFilePath[] =
     "app_deduplication_service/deduplication_data/deduplication_data.pb";
 
 // Converts PackageId strings to Entrys when the source is Website.
-absl::optional<apps::deduplication::Entry> GetEntryForWebsite(
+std::optional<apps::deduplication::Entry> GetEntryForWebsite(
     const std::string& id) {
   size_t separator = id.find_first_of(':');
   apps::deduplication::Entry entry;
 
   if (separator == std::string::npos || separator == id.size() - 1) {
     LOG(ERROR) << "Source is an unsupported type.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string app_type = id.substr(0, separator);
@@ -48,7 +48,7 @@ absl::optional<apps::deduplication::Entry> GetEntryForWebsite(
     entry = apps::deduplication::Entry(entry_url);
   } else {
     LOG(ERROR) << "Source is an unsupported type.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return entry;
 }
@@ -110,8 +110,7 @@ std::vector<Entry> AppDeduplicationService::GetDuplicates(
     const Entry& entry_query) {
   std::vector<Entry> entries;
 
-  absl::optional<uint32_t> duplication_index =
-      FindDuplicationIndex(entry_query);
+  std::optional<uint32_t> duplication_index = FindDuplicationIndex(entry_query);
   if (!duplication_index.has_value()) {
     return entries;
   }
@@ -132,12 +131,12 @@ std::vector<Entry> AppDeduplicationService::GetDuplicates(
 bool AppDeduplicationService::AreDuplicates(const Entry& entry_1,
                                             const Entry& entry_2) {
   // TODO(b/238394602): Add interface with more than 2 entry ids.
-  absl::optional<uint32_t> duplication_index_1 = FindDuplicationIndex(entry_1);
+  std::optional<uint32_t> duplication_index_1 = FindDuplicationIndex(entry_1);
   if (!duplication_index_1.has_value()) {
     return false;
   }
 
-  absl::optional<uint32_t> duplication_index_2 = FindDuplicationIndex(entry_2);
+  std::optional<uint32_t> duplication_index_2 = FindDuplicationIndex(entry_2);
   if (!duplication_index_2.has_value()) {
     return false;
   }
@@ -162,7 +161,7 @@ void AppDeduplicationService::UpdateInstallationStatus(
                            : EntryStatus::kNotInstalledApp;
 }
 
-absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
+std::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
     const Entry& entry) {
   // TODO(b/238394602): Add logic to handle url entry id and web apps.
   // Check if there is an exact match of the entry id.
@@ -202,7 +201,7 @@ absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AppDeduplicationService::GetDeduplicateDataFromServer(
@@ -225,7 +224,7 @@ void AppDeduplicationService::GetDeduplicateDataFromServer(
 }
 
 void AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted(
-    absl::optional<proto::DeduplicateData> response) {
+    std::optional<proto::DeduplicateData> response) {
   if (response.has_value()) {
     profile_->GetPrefs()->SetTime(prefs::kLastGetDataFromServerTimestamp,
                                   base::Time::Now());
@@ -258,7 +257,7 @@ void AppDeduplicationService::OnWriteDeduplicationCacheCompleted(bool result) {
 }
 
 void AppDeduplicationService::OnReadDeduplicationCacheCompleted(
-    absl::optional<proto::DeduplicateData> data) {
+    std::optional<proto::DeduplicateData> data) {
   if (!data.has_value()) {
     LOG(ERROR) << "Reading deduplication data from disk failed.";
     return;
@@ -281,11 +280,11 @@ void AppDeduplicationService::DeduplicateDataToEntries(
   for (auto const& group : data.app_group()) {
     DuplicateGroup duplicate_group;
     for (auto const& id : group.package_id()) {
-      absl::optional<PackageId> package_id = PackageId::FromString(id);
+      std::optional<PackageId> package_id = PackageId::FromString(id);
       std::string app_id;
       Entry entry;
       if (!package_id.has_value()) {
-        absl::optional<Entry> web_id = GetEntryForWebsite(id);
+        std::optional<Entry> web_id = GetEntryForWebsite(id);
         if (!web_id.has_value()) {
           continue;
         }

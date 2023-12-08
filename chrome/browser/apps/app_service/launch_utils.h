@@ -121,7 +121,7 @@ struct AppIdsToLaunchForUrl {
   // Apps that can handle a given URL.
   std::vector<std::string> candidates;
   // The users preference for an app to handle a given URL.
-  absl::optional<std::string> preferred;
+  std::optional<std::string> preferred;
 };
 
 // Takes a `url` and returns a vector of app IDs and the users preferred choice
