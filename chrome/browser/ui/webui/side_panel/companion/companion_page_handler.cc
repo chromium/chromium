@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/companion/companion_page_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
@@ -152,11 +153,19 @@ void CompanionPageHandler::DidFinishNavigation(
     return;
   }
   NotifyURLChanged(/*is_full_reload=*/false);
+  page_title_available_ = false;
+  companion_ready_for_title_ = false;
 }
 
 void CompanionPageHandler::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  if (companion_ready_for_title_) {
+    NotifyTitleChanged();
+  } else {
+    page_title_available_ = true;
+  }
+
   // We only want to classify images in the main frame.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
@@ -211,7 +220,15 @@ void CompanionPageHandler::HandleVisualQueryResult(
 
 void CompanionPageHandler::OnLoadingState(
     side_panel::mojom::LoadingState loading_state) {
-  // We only care about loading state, if VQS is enabled.
+  if (loading_state == side_panel::mojom::LoadingState::kStartedLoading) {
+    if (page_title_available_) {
+      NotifyTitleChanged();
+    } else {
+      companion_ready_for_title_ = true;
+    }
+  }
+
+  // Only continue if VQS is enabled.
   if (!visual_query_host_) {
     return;
   }
@@ -335,6 +352,19 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
   if (visual_query_host_) {
     visual_query_host_->CancelClassification(web_contents()->GetVisibleURL());
   }
+}
+
+void CompanionPageHandler::NotifyTitleChanged() {
+  auto* pref_service = GetProfile()->GetPrefs();
+  if (IsUserPermittedToSharePageContentWithCompanion(pref_service)) {
+    const std::u16string& page_title = web_contents()->GetTitle();
+    std::string str_title;
+    if (base::UTF16ToUTF8(page_title.c_str(), page_title.size(), &str_title)) {
+      page_->UpdatePageTitle(str_title);
+    }
+  }
+  page_title_available_ = false;
+  companion_ready_for_title_ = false;
 }
 
 void CompanionPageHandler::NotifyLinkOpened(

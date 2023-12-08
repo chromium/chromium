@@ -115,6 +115,10 @@ class CompanionPageHandler
   // subsequent navigations on the main frame.
   void NotifyURLChanged(bool is_full_reload);
 
+  // Notifies the companion side panel about the page title of the main frame
+  // using a postmessage() update.
+  void NotifyTitleChanged();
+
   // Registers a WebContentsModalDialogManager for our WebContents in order to
   // display web modal dialogs triggered by it.
   void RegisterModalDialogManager(Browser* browser);
@@ -170,6 +174,9 @@ class CompanionPageHandler
   std::optional<base::TimeTicks> full_load_start_time_;
   std::optional<base::TimeTicks> reload_start_time_;
   std::optional<base::TimeTicks> ui_loading_start_time_;
+
+  bool page_title_available_;
+  bool companion_ready_for_title_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

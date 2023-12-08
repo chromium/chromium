@@ -535,6 +535,14 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return eval_js_result.ExtractString();
   }
 
+  absl::optional<std::string> GetLastPageTitleFromPostMessage() {
+    content::EvalJsResult eval_js_result = EvalJs("getLastReceivedPageTitle()");
+    if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
+      return absl::nullopt;
+    }
+    return eval_js_result.ExtractString();
+  }
+
   void EnableMsbb(bool enable_msbb) {
     auto* pref_service = browser()->profile()->GetPrefs();
     pref_service->SetBoolean(
@@ -554,6 +562,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     EnableMsbb(msbb);
     browser()->profile()->GetPrefs()->SetBoolean(
         companion::kExpsOptInStatusGrantedPref, exps);
+  }
+
+  void EnablePco(bool enable_pco) {
+    auto* pref_service = browser()->profile()->GetPrefs();
+    pref_service->SetBoolean(
+        unified_consent::prefs::kPageContentCollectionEnabled, enable_pco);
   }
 
   virtual void SetUpFeatureList() {
@@ -602,6 +616,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
           companion::visual_query::features::kVisualQuerySuggestions,
           /*params*/ {}));
     }
+    enabled_features.emplace_back(base::test::FeatureRefAndParams(
+        companion::features::kCompanionEnablePageContent, /*params*/ {}));
     enabled_features.emplace_back(
         companion::features::internal::
             kCompanionEnabledByObservingExpsNavigations,
@@ -1134,6 +1150,27 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(clicked_url, GetLastLinkOpenedUrlFromPostMessage());
   EXPECT_EQ(kExpectedNewTabLinkMetadata,
             GetLastLinkOpenedMetadataFromPostMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       PageTitleNotifiesViaPostMessage) {
+  EnablePco(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,"
+                      "<head><title>Title of the page</title></head>")));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  CompanionScriptBuilder builder(MethodType::kCompanionLoadingState);
+  builder.loading_state = LoadingState::kStartedLoading;
+  builder.wait_for_message = true;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Ensure browser sent post message
+  EXPECT_EQ("Title of the page", GetLastPageTitleFromPostMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
