@@ -38,12 +38,12 @@ class PartitionKey {
 #else
   friend PartitionKey GetPartitionKey(
       const content::StoragePartitionConfig& config);
+#endif  // BUILDFLAG(IS_IOS)
 
   // Get the default PartitionKey for tests. If your test uses non-default
   // StoragePartitions, it should not call this. Instead, call
   // `content_settings::GetPartitionKey()` with appropriate arguments.
   static const PartitionKey& GetDefaultForTesting();
-#endif  // BUILDFLAG(IS_IOS)
 
   // Content settings partitioning is a work-in-progress. When it is done, for
   // non-ios platforms, the partition key is supposed to be computed from

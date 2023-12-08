@@ -13,12 +13,12 @@ namespace content_settings {
 const PartitionKey& PartitionKey::GetDefault() {
   return GetDefaultImpl();
 }
-#else
+#endif  // BUILDFLAG(IS_IOS)
+
 // static
 const PartitionKey& PartitionKey::GetDefaultForTesting() {
   return GetDefaultImpl();
 }
-#endif  // BUILDFLAG(IS_IOS)
 
 // static
 const PartitionKey& PartitionKey::WipGetDefault() {
