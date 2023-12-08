@@ -8786,13 +8786,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowPerformanceMetricsHudDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kHudDisplayForPerformanceMetrics)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"disable-buffer-bw-compression",
-     flag_descriptions::kDisableBufferBWCompressionName,
-     flag_descriptions::kDisableBufferBWCompressionDescription, kOsCrOS,
-     SINGLE_VALUE_TYPE(switches::kDisableBufferBWCompression)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"enable-speculation-rules-prerendering-target-hint",
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintName,
      flag_descriptions::kSpeculationRulesPrerenderingTargetHintDescription,

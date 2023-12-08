@@ -3459,9 +3459,6 @@ extern const char kCameraAppAutoQRDetectionDescription[];
 extern const char kCameraAppDigitalZoomName[];
 extern const char kCameraAppDigitalZoomDescription[];
 
-extern const char kDisableBufferBWCompressionName[];
-extern const char kDisableBufferBWCompressionDescription[];
-
 extern const char kDisableCameraFrameRotationAtSourceName[];
 extern const char kDisableCameraFrameRotationAtSourceDescription[];
 

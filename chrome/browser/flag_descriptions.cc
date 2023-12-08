@@ -6007,11 +6007,6 @@ const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
 const char kCameraAppDigitalZoomDescription[] =
     "Enable this flag to use digital zoom in Camera app.";
 
-const char kDisableBufferBWCompressionName[] =
-    "Disable buffer bandwidth compression";
-const char kDisableBufferBWCompressionDescription[] =
-    "Disable bandwidth compression when allocating buffers";
-
 const char kDisableCameraFrameRotationAtSourceName[] =
     "Disable camera frame rotation at source";
 const char kDisableCameraFrameRotationAtSourceDescription[] =
