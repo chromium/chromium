@@ -14,8 +14,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
@@ -114,7 +115,7 @@ public abstract class TabListEditorAction {
 
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private PropertyModel mModel;
-    private TabModelSelector mTabModelSelector;
+    private Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private ActionDelegate mActionDelegate;
     private SelectionDelegate<Integer> mSelectionDelegate;
     private Boolean mEditorSupportsActionOnRelatedTabs;
@@ -232,7 +233,7 @@ public abstract class TabListEditorAction {
      */
     public boolean perform() {
         assert mActionDelegate != null;
-        assert mTabModelSelector != null;
+        assert mCurrentTabModelFilterSupplier != null;
         assert mSelectionDelegate != null;
 
         List<Tab> tabs =
@@ -265,19 +266,20 @@ public abstract class TabListEditorAction {
     }
 
     /**
-     * Called by {@link TabModelSelectionEditorMediator} to supply additional dependencies.
-     * @param tabModelSelector that this action should act on.
+     * Called by {@link TabListEditorMediator} to supply additional dependencies.
+     *
+     * @param currentTabModelFilterSupplier that this action should act on.
      * @param selectionDelegate to get selected tab IDs from.
      * @param actionDelegate to control the TabListEditor.
      * @param editorSupportsActionOnRelatedTabs whether the TabListEditor supports actions on
-     *                                          related tabs.
+     *     related tabs.
      */
     void configure(
-            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Supplier<TabModelFilter> currentTabModelFilterSupplier,
             @NonNull SelectionDelegate<Integer> selectionDelegate,
             @NonNull ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
-        mTabModelSelector = tabModelSelector;
+        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mSelectionDelegate = selectionDelegate;
         mActionDelegate = actionDelegate;
         mEditorSupportsActionOnRelatedTabs = editorSupportsActionOnRelatedTabs;
@@ -287,9 +289,10 @@ public abstract class TabListEditorAction {
         return mModel;
     }
 
-    protected @NonNull TabModelSelector getTabModelSelector() {
-        assert mTabModelSelector != null;
-        return mTabModelSelector;
+    protected @NonNull TabGroupModelFilter getTabGroupModelFilter() {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        assert filter != null;
+        return filter;
     }
 
     protected @NonNull ActionDelegate getActionDelegate() {
@@ -305,7 +308,7 @@ public abstract class TabListEditorAction {
     private List<Tab> getTabsFromSelection() {
         List<Tab> selectedTabs = new ArrayList<>();
         for (int tabId : mSelectionDelegate.getSelectedItems()) {
-            Tab tab = TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
+            Tab tab = TabModelUtils.getTabById(getTabGroupModelFilter().getTabModel(), tabId);
             if (tab == null) continue;
 
             selectedTabs.add(tab);
@@ -314,9 +317,7 @@ public abstract class TabListEditorAction {
     }
 
     protected List<Tab> getTabsAndRelatedTabsFromSelection() {
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
 
         List<Tab> tabs = new ArrayList<>();
         for (int tabId : mSelectionDelegate.getSelectedItems()) {
@@ -326,15 +327,13 @@ public abstract class TabListEditorAction {
     }
 
     public static int getTabCountIncludingRelatedTabs(
-            TabModelSelector tabModelSelector, List<Integer> tabIds) {
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-
+            TabGroupModelFilter tabGroupModelFilter, List<Integer> tabIds) {
         int tabCount = 0;
         for (int tabId : tabIds) {
-            Tab tab = TabModelUtils.getTabById(tabModelSelector.getCurrentModel(), tabId);
-            tabCount += filter.getRelatedTabCountForRootId(filter.getRootId(tab));
+            Tab tab = TabModelUtils.getTabById(tabGroupModelFilter.getTabModel(), tabId);
+            tabCount +=
+                    tabGroupModelFilter.getRelatedTabCountForRootId(
+                            tabGroupModelFilter.getRootId(tab));
         }
         return tabCount;
     }

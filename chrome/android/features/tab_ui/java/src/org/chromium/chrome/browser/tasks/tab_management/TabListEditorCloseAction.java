@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
@@ -52,7 +53,7 @@ public class TabListEditorCloseAction extends TabListEditorAction {
     public void onSelectionStateChange(List<Integer> tabIds) {
         int size =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
+                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
                         : tabIds.size();
         setEnabledAndItemCount(!tabIds.isEmpty(), size);
     }
@@ -61,16 +62,12 @@ public class TabListEditorCloseAction extends TabListEditorAction {
     public boolean performAction(List<Tab> tabs) {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
+        TabModel model = getTabGroupModelFilter().getTabModel();
         if (tabs.size() == 1) {
-            getTabModelSelector()
-                    .getCurrentModel()
-                    .closeTab(
-                            tabs.get(0),
-                            /* animate= */ false,
-                            /* uponExit= */ false,
-                            /* canUndo= */ true);
+            model.closeTab(
+                    tabs.get(0), /* animate= */ false, /* uponExit= */ false, /* canUndo= */ true);
         } else {
-            getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
+            model.closeMultipleTabs(tabs, true);
         }
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                 TabListEditorActionMetricGroups.CLOSE);

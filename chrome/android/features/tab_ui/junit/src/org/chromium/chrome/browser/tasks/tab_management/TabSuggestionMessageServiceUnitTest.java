@@ -174,7 +174,7 @@ public class TabSuggestionMessageServiceUnitTest {
         TabListEditorAction action =
                 mMessageService.getAction(tabSuggestion, mTabSuggestionFeedbackCallback);
         action.configure(
-                mTabModelSelector,
+                () -> mTabGroupModelFilter,
                 mSelectionDelegate,
                 mActionDelegate,
                 /* editorSupportsActionOnRelatedTabs= */ false);

@@ -134,7 +134,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
     public boolean performAction(List<Tab> tabs) {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
-        TabList tabList = getTabModelSelector().getCurrentModel();
+        TabList tabList = getTabGroupModelFilter().getTabModel();
         List<Integer> sortedTabIndexList = filterTabs(tabs, tabList);
 
         if (sortedTabIndexList.size() == 0) {

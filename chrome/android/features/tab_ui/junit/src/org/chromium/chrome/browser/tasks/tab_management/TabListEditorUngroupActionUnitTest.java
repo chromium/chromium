@@ -26,8 +26,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
@@ -50,9 +48,7 @@ import java.util.Set;
 public class TabListEditorUngroupActionUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock private TabModelSelector mTabModelSelector;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private TabGroupModelFilter mGroupFilter;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
@@ -69,10 +65,8 @@ public class TabListEditorUngroupActionUnitTest {
                         ButtonType.TEXT,
                         IconPosition.START);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
+        when(mGroupFilter.getTabModel()).thenReturn(mTabModel);
+        mAction.configure(() -> mGroupFilter, mSelectionDelegate, mDelegate, false);
     }
 
     @Test

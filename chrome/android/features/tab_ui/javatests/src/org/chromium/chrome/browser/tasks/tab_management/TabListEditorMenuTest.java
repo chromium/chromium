@@ -41,7 +41,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -155,7 +155,7 @@ public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
 
     // Real mocks.
     @Mock private TabModel mTabModel;
-    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
 
@@ -177,7 +177,7 @@ public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
 
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(TAB_COUNT);
 
         for (int id = 0; id < TAB_COUNT; id++) {
@@ -253,7 +253,7 @@ public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
                             AppCompatResources.getColorStateList(
                                     getActivity(), R.color.default_icon_color_tint_list));
             action.configure(
-                    mTabModelSelector,
+                    () -> mTabGroupModelFilter,
                     mSelectionDelegate,
                     mDelegate,
                     /* editorSupportsActionOnRelatedTabs= */ false);

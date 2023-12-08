@@ -34,8 +34,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
@@ -66,8 +64,6 @@ public class TabListEditorShareActionUnitTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private TabGroupModelFilter mTabModelFilter;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
@@ -113,10 +109,7 @@ public class TabListEditorShareActionUnitTest {
                                     }
                                 }));
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
+        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         doAnswer(
                         invocation -> {
                             return Collections.singletonList(
@@ -125,7 +118,7 @@ public class TabListEditorShareActionUnitTest {
                 .when(mTabModelFilter)
                 .getRelatedTabList(anyInt());
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
-        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
     }
 
     @Test

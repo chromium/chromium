@@ -499,12 +499,17 @@ public class TabSwitcherCoordinator
                     isItemTypeSelectable
                             ? TabProperties.UiType.SELECTABLE
                             : TabProperties.UiType.CLOSABLE;
+            var currentTabModelFilterSupplier =
+                    mTabModelSelector
+                            .getTabModelFilterProvider()
+                            .getCurrentTabModelFilterSupplier();
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
                             mCoordinatorView,
                             mBrowserControlsStateProvider,
-                            mTabModelSelector,
+                            currentTabModelFilterSupplier,
+                            () -> mTabModelSelector.getModel(false),
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mMode,

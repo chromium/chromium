@@ -55,32 +55,21 @@ public class TabListEditorGroupAction extends TabListEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
-
         int size =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
+                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
                         : tabIds.size();
         setEnabledAndItemCount(tabIds.size() > 1, size);
     }
 
     @Override
     public boolean performAction(List<Tab> tabs) {
-        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
-
-        TabGroupModelFilter tabGroupModelFilter =
-                (TabGroupModelFilter)
-                        getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter();
+        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter();
 
         HashSet<Tab> selectedTabs = new HashSet<>(tabs);
         Tab destinationTab =
                 getDestinationTab(
                         tabs,
-                        getTabModelSelector().getCurrentModel(),
                         tabGroupModelFilter,
                         editorSupportsActionOnRelatedTabs());
         List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabList(destinationTab.getId());
@@ -88,7 +77,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
 
         // Sort tabs by index prevent visual bugs when undoing.
         List<Tab> sortedTabs = new ArrayList<>(selectedTabs.size());
-        TabModel model = getTabModelSelector().getCurrentModel();
+        TabModel model = tabGroupModelFilter.getTabModel();
         for (int i = 0; i < model.getCount(); i++) {
             Tab tab = model.getTabAt(i);
             if (!selectedTabs.contains(tab)) continue;
@@ -115,16 +104,15 @@ public class TabListEditorGroupAction extends TabListEditorAction {
      * group with the smallest group index. Otherwise, all selected items are merge to the tab with
      * the largest tab index.
      * @param tabs the list of all tabs to merge.
-     * @param model the {@link TabModel} containing the tabs.
      * @param filter the {@link TabGroupModelFilter} for managing groups.
      * @param actionOnRelatedTabs whether to attempt to merge to groups.
      * @return the tab to merge to.
      */
     private Tab getDestinationTab(
             List<Tab> tabs,
-            TabModel model,
             TabGroupModelFilter filter,
             boolean actionOnRelatedTabs) {
+        TabModel model = filter.getTabModel();
         int greatestTabIndex = TabModel.INVALID_TAB_INDEX;
         int smallestGroupIndex = TabModel.INVALID_TAB_INDEX;
         for (Tab tab : tabs) {

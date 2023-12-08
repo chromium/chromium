@@ -51,26 +51,15 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
-        // assert !editorSupportsActionOnRelatedTabs()
-        //     : "Ungrouping is not supported when actions apply to related tabs.";
-
         setEnabledAndItemCount(!tabIds.isEmpty(), tabIds.size());
     }
 
     @Override
     public boolean performAction(List<Tab> tabs) {
-        assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
         assert !editorSupportsActionOnRelatedTabs()
                 : "Ungrouping is not supported when actions apply to related tabs.";
 
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter();
+        TabGroupModelFilter filter = getTabGroupModelFilter();
         for (Tab tab : tabs) {
             filter.moveTabOutOfGroup(tab.getId());
         }

@@ -9,20 +9,21 @@ import android.content.res.ColorStateList;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorNavigationProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -45,20 +46,22 @@ class TabListEditorMediator
         implements TabListEditorCoordinator.TabListEditorController,
                 TabListEditorAction.ActionDelegate {
     private final Context mContext;
-    private final TabModelSelector mTabModelSelector;
+    private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final @NonNull Callback<TabModelFilter> mOnTabModelFilterChanged =
+            this::onTabModelFilterChanged;
     private final TabListCoordinator mTabListCoordinator;
     private final TabListEditorCoordinator.ResetHandler mResetHandler;
     private final PropertyModel mModel;
     private final SelectionDelegate<Integer> mSelectionDelegate;
     private final TabListEditorToolbar mTabListEditorToolbar;
     private final boolean mActionOnRelatedTabs;
-    private final TabModelSelectorTabModelObserver mTabModelObserver;
-    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final TabModelObserver mTabModelObserver;
     private TabListEditorCoordinator.TabListEditorNavigationProvider mNavigationProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final List<Tab> mVisibleTabs = new ArrayList<>();
 
+    private TabModelFilter mCurrentTabModelFilter;
     private PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
     private TabListEditorMenu mTabListEditorMenu;
@@ -75,7 +78,7 @@ class TabListEditorMediator
 
     TabListEditorMediator(
             Context context,
-            TabModelSelector tabModelSelector,
+            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             TabListCoordinator tabListCoordinator,
             TabListEditorCoordinator.ResetHandler resetHandler,
             PropertyModel model,
@@ -86,7 +89,7 @@ class TabListEditorMediator
             TabListEditorLayout tabListEditorLayout,
             @UiType int itemType) {
         mContext = context;
-        mTabModelSelector = tabModelSelector;
+        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabListCoordinator = tabListCoordinator;
         mResetHandler = resetHandler;
         mModel = model;
@@ -103,19 +106,21 @@ class TabListEditorMediator
                     TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER,
                     (tabIdList) -> {
                         return TabListEditorAction.getTabCountIncludingRelatedTabs(
-                                mTabModelSelector, tabIdList);
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                                tabIdList);
                     });
         }
 
         mTabModelObserver =
-                new TabModelSelectorTabModelObserver(mTabModelSelector) {
+                new TabModelObserver() {
                     @Override
                     public void didAddTab(
                             Tab tab,
                             int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
-                        if (!mTabModelSelector.isTabStateInitialized()) return;
+                        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+                        if (filter == null || !filter.isTabModelRestored()) return;
                         // When tab is added due to multi-window close or moving between multiple
                         // windows, force hiding the selection editor.
                         if (type == TabLaunchType.FROM_RESTORE
@@ -142,18 +147,8 @@ class TabListEditorMediator
                     }
                 };
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        // Incognito in both light/dark theme is the same as non-incognito mode in
-                        // dark theme. Non-incognito mode and incognito in both light/dark themes
-                        // in dark theme all look dark.
-                        updateColors(newModel.isIncognito());
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
-        updateColors(mTabModelSelector.isIncognitoSelected());
+        onTabModelFilterChanged(
+                mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         mNavigationProvider =
                 new TabListEditorCoordinator.TabListEditorNavigationProvider(
@@ -249,13 +244,14 @@ class TabListEditorMediator
 
         mActionListModel.clear();
         for (TabListEditorAction action : actions) {
-            action.configure(mTabModelSelector, mSelectionDelegate, this, mActionOnRelatedTabs);
+            action.configure(
+                    mCurrentTabModelFilterSupplier, mSelectionDelegate, this, mActionOnRelatedTabs);
             mActionListModel.add(action.getPropertyModel());
         }
         if (navigationProvider != null) {
             mNavigationProvider = navigationProvider;
         }
-        updateColors(mTabModelSelector.isIncognitoSelected());
+        updateColors(mCurrentTabModelFilterSupplier.get().isIncognito());
     }
 
     @Override
@@ -359,9 +355,27 @@ class TabListEditorMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        mTabModelObserver.destroy();
-        if (mTabModelSelector != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        removeCurrentTabModelFilterObserver();
+        mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
+    }
+
+    private void onTabModelFilterChanged(TabModelFilter newFilter) {
+        if (mCurrentTabModelFilterSupplier == newFilter) return;
+
+        // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
+        // Non-incognito mode and incognito in both light/dark themes in dark theme all look
+        // dark.
+        updateColors(newFilter.isIncognito());
+
+        removeCurrentTabModelFilterObserver();
+
+        newFilter.addObserver(mTabModelObserver);
+        mCurrentTabModelFilter = newFilter;
+    }
+
+    private void removeCurrentTabModelFilterObserver() {
+        if (mCurrentTabModelFilter != null) {
+            mCurrentTabModelFilter.removeObserver(mTabModelObserver);
         }
     }
 }

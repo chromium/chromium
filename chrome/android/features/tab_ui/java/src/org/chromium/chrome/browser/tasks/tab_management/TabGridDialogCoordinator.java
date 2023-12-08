@@ -176,12 +176,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     TabUiFeatureUtilities.shouldUseListMode(mActivity)
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID;
+            var currentTabModelFilterSupplier =
+                    mTabModelSelector
+                            .getTabModelFilterProvider()
+                            .getCurrentTabModelFilterSupplier();
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
                             mDialogView.findViewById(R.id.dialog_container_view),
                             mBrowserControlsStateProvider,
-                            mTabModelSelector,
+                            currentTabModelFilterSupplier,
+                            () -> mTabModelSelector.getModel(false),
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mode,
