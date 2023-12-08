@@ -275,12 +275,6 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
 
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
-    LOG(ERROR) << "Device doesn't support "
-               << media::FourccToString(kDriverCodecFourcc) << ".";
-    return nullptr;
-  }
-
   const gfx::Size bitstream_coded_size = GetResolutionFromBitstream(stream);
   LOG(INFO) << "Ivf file header: "
             << gfx::Size(file_header.width, file_header.height).ToString();

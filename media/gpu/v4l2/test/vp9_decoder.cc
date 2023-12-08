@@ -181,12 +181,6 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
 
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
-    LOG(ERROR) << "Device doesn't support "
-               << media::FourccToString(kDriverCodecFourcc) << ".";
-    return nullptr;
-  }
-
   gfx::Size display_resolution =
       gfx::Size(file_header.width, file_header.height);
   LOG(INFO) << "Ivf file header: " << display_resolution.ToString();

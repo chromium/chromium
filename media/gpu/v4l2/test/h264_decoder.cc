@@ -909,12 +909,6 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
 
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
-    LOG(ERROR) << "Device doesn't support "
-               << media::FourccToString(kDriverCodecFourcc) << ".";
-    return nullptr;
-  }
-
   return base::WrapUnique(
       new H264Decoder(std::move(v4l2_ioctl), coded_size.value(), stream));
 }
