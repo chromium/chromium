@@ -37,7 +37,6 @@ class AutocompleteEntry;
 struct AutofillMetadata;
 class AutofillOfferData;
 class AutofillTableEncryptor;
-class AutofillTableTest;
 class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
@@ -645,12 +644,6 @@ class AutofillTable : public WebDatabaseTable,
   bool AddFormFieldValues(const std::vector<FormFieldData>& elements,
                           std::vector<AutocompleteChange>* changes);
 
-  // Records a single form element in the database in the autofill table. A list
-  // of all added and updated autocomplete entries is returned in the changes
-  // out parameter.
-  bool AddFormFieldValue(const FormFieldData& element,
-                         std::vector<AutocompleteChange>* changes);
-
   // Retrieves a vector of all values which have been recorded in the autofill
   // table as the value in a form element with name |name| and which start with
   // |prefix|. The comparison of the prefix is case insensitive.
@@ -995,58 +988,9 @@ class AutofillTable : public WebDatabaseTable,
   static const size_t kMaxDataLength;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_AddChanges);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autocomplete_GetCountOfValuesContainedBetween);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autocomplete_RemoveBetweenChanges);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_UpdateDontReplace);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillTableTest,
-      Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillTableTest,
-      Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillTableTest,
-      Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillTableTest,
-      Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillTableTest,
-      Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillTableTest,
-      Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           RemoveExpiredFormElements_Expires_DeleteEntry);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           RemoveExpiredFormElements_NotOldEnough);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_AddFormFieldValues);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, AutofillProfile);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, UpdateAutofillProfile);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           RemoveAutofillDataModifiedBetween);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, CreditCard);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, UpdateCreditCard);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autocomplete_GetAllAutocompleteEntries_OneResult);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autocomplete_GetAllAutocompleteEntries_TwoDistinct);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           Autocomplete_GetAllAutocompleteEntries_TwoSame);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autocomplete_GetEntry_Populated);
-
-  // Methods for adding autocomplete entries at a specified time. For testing
-  // only.
-  bool AddFormFieldValuesTime(const std::vector<FormFieldData>& elements,
-                              std::vector<AutocompleteChange>* changes,
-                              base::Time time);
   bool AddFormFieldValueTime(const FormFieldData& element,
-                             std::vector<AutocompleteChange>* changes,
-                             base::Time time);
+                             base::Time time,
+                             std::vector<AutocompleteChange>* changes);
 
   bool SupportsMetadataForModelType(syncer::ModelType model_type) const;
   int GetKeyValueForModelType(syncer::ModelType model_type) const;

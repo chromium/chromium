@@ -236,7 +236,8 @@ INSTANTIATE_TEST_SUITE_P(
                        AutofillProfile::Source::kAccount}));
 
 TEST_F(AutofillTableTest, Autocomplete) {
-  Time t1 = AutofillClock::Now();
+  TestAutofillClock clock(AutofillClock::Now());
+  base::Time begin = AutofillClock::Now();
 
   // Simulate the submission of a handful of entries in a field called "Name",
   // some more often than others.
@@ -244,25 +245,25 @@ TEST_F(AutofillTableTest, Autocomplete) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  base::Time now = AutofillClock::Now();
-  base::TimeDelta two_seconds = base::Seconds(2);
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   std::vector<AutocompleteEntry> v;
   for (int i = 0; i < 5; ++i) {
     field.value = u"Clark Kent";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, now + i * two_seconds));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(base::Seconds(2));
   }
+  clock.SetNow(begin);
   for (int i = 0; i < 3; ++i) {
     field.value = u"Clark Sutter";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, now + i * two_seconds));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(base::Seconds(2));
   }
+  clock.SetNow(begin);
   for (int i = 0; i < 2; ++i) {
     field.name = u"Favorite Color";
     field.value = u"Green";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, now + i * two_seconds));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(base::Seconds(2));
   }
 
   // We have added the name Clark Kent 5 times, so count should be 5.
@@ -309,7 +310,7 @@ TEST_F(AutofillTableTest, Autocomplete) {
   // Removing all elements since the beginning of this function should remove
   // everything from the database.
   changes.clear();
-  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, Time(), &changes));
+  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(begin, Time(), &changes));
 
   const AutocompleteChange kExpectedChanges[] = {
       AutocompleteChange(AutocompleteChange::REMOVE,
@@ -336,16 +337,16 @@ TEST_F(AutofillTableTest, Autocomplete) {
   const std::u16string kValue = u"  toto   ";
   field.name = u"blank";
   field.value = std::u16string();
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   field.name = u"blank";
   field.value = u" ";
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   field.name = u"blank";
   field.value = u"      ";
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   field.name = u"blank";
   field.value = kValue;
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   // They should be stored normally as the DB layer does not check for empty
   // values.
@@ -356,13 +357,13 @@ TEST_F(AutofillTableTest, Autocomplete) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetEntry_Populated) {
+  TestAutofillClock clock(base::Time::FromSecondsSinceUnixEpoch(1546889367));
+
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  base::Time now = base::Time::FromSecondsSinceUnixEpoch(1546889367);
-
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   std::vector<AutocompleteEntry> prefix_v;
   EXPECT_TRUE(
@@ -373,33 +374,34 @@ TEST_F(AutofillTableTest, Autocomplete_GetEntry_Populated) {
       table_->GetFormValuesForElementName(field.name, u"", &no_prefix_v, 10));
 
   AutocompleteEntry expected_entry(AutocompleteKey(field.name, field.value),
-                                   now, now);
+                                   AutofillClock::Now(), AutofillClock::Now());
 
   EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 
   // Update date_last_used.
-  base::Time new_time = now + base::Seconds(1000);
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, new_time));
+  clock.Advance(base::Seconds(1000));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"Super", &prefix_v, 10));
   EXPECT_TRUE(
       table_->GetFormValuesForElementName(field.name, u"", &no_prefix_v, 10));
 
-  expected_entry = AutocompleteEntry(AutocompleteKey(field.name, field.value),
-                                     now, new_time);
+  expected_entry =
+      AutocompleteEntry(AutocompleteKey(field.name, field.value),
+                        expected_entry.date_created(), AutofillClock::Now());
 
   EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
+  TestAutofillClock clock(AutofillClock::Now());
   AutocompleteChangeList changes;
   // This test makes time comparisons that are precise to a microsecond, but the
   // database uses the time_t format which is only precise to a second.
   // Make sure we use timestamps rounded to a second.
   Time begin = Time::FromTimeT(AutofillClock::Now().ToTimeT());
-  Time now = begin;
   base::TimeDelta second = base::Seconds(1);
 
   struct Entry {
@@ -413,8 +415,8 @@ TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
     FormFieldData field;
     field.name = entry.name;
     field.value = entry.value;
-    ASSERT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
-    now += second;
+    ASSERT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(second);
   }
 
   // While the entry "Alter ego" : "Superman" is entirely contained within
@@ -459,6 +461,7 @@ TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
+  TestAutofillClock clock(AutofillClock::Now());
   base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
@@ -467,8 +470,9 @@ TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t1));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t2));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(one_day);
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, t2, &changes));
@@ -487,22 +491,20 @@ TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_AddChanges) {
-  base::TimeDelta one_day(base::Days(1));
-  Time t1 = AutofillClock::Now();
-  Time t2 = t1 + one_day;
-
+  TestAutofillClock clock(AutofillClock::Now());
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t1));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::ADD,
                                AutocompleteKey(u"Name", u"Superman")),
             changes[0]);
 
   changes.clear();
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t2));
+  clock.Advance(base::Days(1));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
                                AutocompleteKey(u"Name", u"Superman")),
@@ -591,7 +593,7 @@ TEST_F(AutofillTableTest, Autocomplete_UpdateReplace) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   AutocompleteEntry entry(MakeAutocompleteEntry(u"Name", u"Superman", 1, 2));
   std::vector<AutocompleteEntry> entries;
@@ -614,7 +616,7 @@ TEST_F(AutofillTableTest, Autocomplete_UpdateDontReplace) {
   FormFieldData field;
   field.name = existing.key().name();
   field.value = existing.key().value();
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   AutocompleteEntry entry(MakeAutocompleteEntry(u"Name", u"Clark Kent", 1, 2));
   std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
@@ -630,8 +632,6 @@ TEST_F(AutofillTableTest, Autocomplete_UpdateDontReplace) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
-  Time t = AutofillClock::Now();
-
   // Add multiple values for "firstname" and "lastname" names.  Test that only
   // first value of each gets added. Related to security issue:
   // http://crbug.com/51727.
@@ -654,7 +654,7 @@ TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
   elements.push_back(field);
 
   std::vector<AutocompleteChange> changes;
-  table_->AddFormFieldValuesTime(elements, &changes, t);
+  table_->AddFormFieldValues(elements, &changes);
 
   ASSERT_EQ(2U, changes.size());
   EXPECT_EQ(changes[0],
@@ -671,21 +671,16 @@ TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore) {
+  TestAutofillClock clock;
   // Add an entry used only before the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(10)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(20)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(30)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(40)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(10 * (i + 1)));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
@@ -698,21 +693,16 @@ TEST_F(AutofillTableTest,
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter) {
+  TestAutofillClock clock;
   // Add an entry used only after the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(60)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(70)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(80)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(90)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(50 + 10 * i));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
@@ -725,21 +715,16 @@ TEST_F(AutofillTableTest,
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring) {
+  TestAutofillClock clock;
   // Add an entry used entirely during the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(10)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(20)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(30)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(40)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(10 * (i + 1)));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
@@ -755,21 +740,16 @@ TEST_F(AutofillTableTest,
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
+  TestAutofillClock clock;
   // Add an entry used both before and during the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(10)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(20)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(30)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(40)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(10 * (i + 1)));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
@@ -790,21 +770,16 @@ TEST_F(AutofillTableTest,
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
+  TestAutofillClock clock;
   // Add an entry used both during and after the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(60)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(70)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(80)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(90)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(50 + 10 * i));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
@@ -825,27 +800,30 @@ TEST_F(AutofillTableTest,
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days) {
-  const base::Time kNow = AutofillClock::Now();
-  const base::Time k29DaysOld = kNow - base::Days(29);
-  const base::Time k30DaysOld = kNow - base::Days(30);
-  const base::Time k31DaysOld = kNow - base::Days(31);
+  TestAutofillClock clock(AutofillClock::Now());
 
   // Add some form field entries.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
-  field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, kNow));
-  field.value = u"Clark Kent";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k29DaysOld));
+
   field.value = u"Clark Sutter";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k31DaysOld));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(base::Days(2));
+
+  field.value = u"Clark Kent";
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(base::Days(29));
+
+  field.value = u"Superman";
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+
   EXPECT_EQ(3U, changes.size());
 
   // Removing all elements added before 30days from the database.
   changes.clear();
-  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(base::Time(), k30DaysOld,
-                                                     &changes));
+  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
+      base::Time(), AutofillClock::Now() - base::Days(30), &changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
                                AutocompleteKey(u"Name", u"Clark Sutter")),
@@ -859,18 +837,17 @@ TEST_F(AutofillTableTest,
 // Tests that we set the change type to EXPIRE for expired elements and we
 // delete an old entry.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
-  auto kNow = AutofillClock::Now();
-  auto k2YearsOld = kNow - 2 * kAutocompleteRetentionPolicyPeriod;
+  TestAutofillClock clock(AutofillClock::Now());
 
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k2YearsOld));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(2 * kAutocompleteRetentionPolicyPeriod);
   changes.clear();
 
   EXPECT_TRUE(table_->RemoveExpiredFormElements(&changes));
-
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::EXPIRE,
                                AutocompleteKey(field.name, field.value)),
             changes[0]);
@@ -879,14 +856,14 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
 // Tests that we don't
 // delete non-expired entries' data from the SQLite table.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_NotOldEnough) {
-  auto kNow = AutofillClock::Now();
-  auto k2DaysOld = kNow - base::Days(2);
+  TestAutofillClock clock(AutofillClock::Now());
 
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k2DaysOld));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(base::Days(2));
   changes.clear();
 
   EXPECT_TRUE(table_->RemoveExpiredFormElements(&changes));
@@ -2022,14 +1999,13 @@ TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_OneResult) {
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
-  time_t start = 0;
+  TestAutofillClock clock;
   std::vector<Time> timestamps1;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(
-      table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-  timestamps1.push_back(Time::FromTimeT(start));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  timestamps1.push_back(AutofillClock::Now());
   std::string key1("NameSuperman");
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key1, timestamps1));
@@ -2049,28 +2025,26 @@ TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_OneResult) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoDistinct) {
+  TestAutofillClock clock;
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
-  time_t start = 0;
 
   std::vector<Time> timestamps1;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(
-      table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-  timestamps1.push_back(Time::FromTimeT(start));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  timestamps1.push_back(AutofillClock::Now());
   std::string key1("NameSuperman");
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key1, timestamps1));
 
-  ++start;
+  clock.SetNow(Time::FromTimeT(1));
   std::vector<Time> timestamps2;
   field.name = u"Name";
   field.value = u"Clark Kent";
-  EXPECT_TRUE(
-      table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-  timestamps2.push_back(Time::FromTimeT(start));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  timestamps2.push_back(AutofillClock::Now());
   std::string key2("NameClark Kent");
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key2, timestamps2));
@@ -2093,18 +2067,19 @@ TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoDistinct) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoSame) {
+  TestAutofillClock clock;
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
   std::vector<Time> timestamps;
-  time_t start = 0;
-  for (int i = 0; i < 2; ++i, ++start) {
+  for (int i = 0; i < 2; ++i) {
     FormFieldData field;
     field.name = u"Name";
     field.value = u"Superman";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-    timestamps.push_back(Time::FromTimeT(start));
+    base::Time now = Time::FromTimeT(i);
+    clock.SetNow(now);
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    timestamps.push_back(now);
   }
 
   std::string key("NameSuperman");
@@ -3119,7 +3094,7 @@ TEST_F(AutofillTableTest, DontCrashWhenAddingValueToPoisonedDB) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_FALSE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_FALSE(table_->AddFormFieldValues({field}, &changes));
 }
 
 TEST_F(AutofillTableTest, AddBankAccount) {

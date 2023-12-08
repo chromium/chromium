@@ -1082,13 +1082,24 @@ bool AutofillTable::MigrateToVersion(int version,
 bool AutofillTable::AddFormFieldValues(
     const std::vector<FormFieldData>& elements,
     std::vector<AutocompleteChange>* changes) {
-  return AddFormFieldValuesTime(elements, changes, AutofillClock::Now());
-}
-
-bool AutofillTable::AddFormFieldValue(
-    const FormFieldData& element,
-    std::vector<AutocompleteChange>* changes) {
-  return AddFormFieldValueTime(element, changes, AutofillClock::Now());
+  const base::Time now = AutofillClock::Now();
+  // Only add one new entry for each unique element name.  Use |seen_names|
+  // to track this.  Add up to |kMaximumUniqueNames| unique entries per
+  // form.
+  const size_t kMaximumUniqueNames = 256;
+  std::set<std::u16string> seen_names;
+  for (const FormFieldData& element : elements) {
+    if (!seen_names.insert(element.name).second) {
+      continue;
+    }
+    if (seen_names.size() == kMaximumUniqueNames) {
+      break;
+    }
+    if (!AddFormFieldValueTime(element, now, changes)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool AutofillTable::GetFormValuesForElementName(
@@ -3531,31 +3542,10 @@ bool AutofillTable::MigrateToVersion121DropServerAddressTables() {
          transaction.Commit();
 }
 
-bool AutofillTable::AddFormFieldValuesTime(
-    const std::vector<FormFieldData>& elements,
-    std::vector<AutocompleteChange>* changes,
-    base::Time time) {
-  // Only add one new entry for each unique element name.  Use |seen_names|
-  // to track this.  Add up to |kMaximumUniqueNames| unique entries per
-  // form.
-  const size_t kMaximumUniqueNames = 256;
-  std::set<std::u16string> seen_names;
-  bool result = true;
-  for (const FormFieldData& element : elements) {
-    if (seen_names.size() >= kMaximumUniqueNames)
-      break;
-    if (base::Contains(seen_names, element.name))
-      continue;
-    result = result && AddFormFieldValueTime(element, changes, time);
-    seen_names.insert(element.name);
-  }
-  return result;
-}
-
 bool AutofillTable::AddFormFieldValueTime(
     const FormFieldData& element,
-    std::vector<AutocompleteChange>* changes,
-    base::Time time) {
+    base::Time time,
+    std::vector<AutocompleteChange>* changes) {
   if (!db_->is_open()) {
     return false;
   }
@@ -3599,18 +3589,9 @@ bool AutofillTable::AddFormFieldValueTime(
       return false;
     }
   } else {
-    time_t time_as_time_t = time.ToTimeT();
-    sql::Statement s;
-    InsertBuilder(
-        db_, s, kAutofillTable,
-        {kName, kValue, kValueLower, kDateCreated, kDateLastUsed, kCount});
-    s.BindString16(0, element.name);
-    s.BindString16(1, element.value);
-    s.BindString16(2, base::i18n::ToLower(element.value));
-    s.BindInt64(3, time_as_time_t);
-    s.BindInt64(4, time_as_time_t);
-    s.BindInt(5, 1);
-    if (!s.Run()) {
+    if (!InsertAutocompleteEntry({{element.name, element.value},
+                                  /*date_created=*/time,
+                                  /*date_last_used=*/time})) {
       DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("INSERT");
       return false;
     }
@@ -3618,8 +3599,8 @@ bool AutofillTable::AddFormFieldValueTime(
 
   AutocompleteChange::Type change_type =
       already_exists ? AutocompleteChange::UPDATE : AutocompleteChange::ADD;
-  changes->push_back(AutocompleteChange(
-      change_type, AutocompleteKey(element.name, element.value)));
+  changes->emplace_back(change_type,
+                        AutocompleteKey(element.name, element.value));
   return true;
 }
 
