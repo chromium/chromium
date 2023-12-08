@@ -13,7 +13,18 @@
         },
         "pending_time": {
           "p50_mins": 20
-        }
+        },
+        "period_days": 7
+      }
+    },
+    {
+      "name": "Low Value",
+      "score": 1,
+      "thresholds": {
+        "fail_rate": {
+          "average": 0.99
+        },
+        "period_days": 90
       }
     }
   ],
@@ -26,7 +37,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -38,7 +58,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -49,7 +78,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -61,7 +99,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -73,7 +120,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -85,7 +141,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -97,7 +162,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -109,7 +183,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -121,7 +204,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -133,7 +225,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -145,7 +246,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -157,7 +267,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -169,7 +288,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -181,7 +309,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -193,7 +330,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -205,7 +351,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -226,7 +381,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -247,7 +413,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -259,7 +436,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -270,7 +456,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -281,7 +476,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -292,7 +496,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -303,7 +516,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -315,7 +537,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -327,7 +558,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -348,7 +588,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -369,7 +620,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -381,7 +643,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -393,7 +664,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -405,7 +685,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -417,7 +706,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -429,7 +727,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -441,7 +748,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -453,7 +769,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -465,7 +790,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -477,7 +811,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -489,7 +832,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -501,7 +853,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -513,7 +874,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -525,7 +895,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -537,7 +916,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -549,7 +937,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -561,7 +958,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -573,7 +979,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -585,7 +1000,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -597,7 +1021,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -609,7 +1042,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -621,7 +1063,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -633,7 +1084,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -645,7 +1105,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -657,7 +1126,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -669,7 +1147,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -681,7 +1168,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -693,7 +1189,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -705,7 +1210,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -717,7 +1231,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -729,7 +1252,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -741,7 +1273,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -753,7 +1294,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -765,7 +1315,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -777,7 +1336,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -789,7 +1357,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -801,7 +1378,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -813,7 +1399,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -825,7 +1420,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -837,7 +1441,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -849,7 +1462,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -861,7 +1483,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -873,7 +1504,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -885,7 +1525,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -897,7 +1546,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -909,7 +1567,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -921,7 +1588,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -933,7 +1609,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -945,7 +1630,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -957,7 +1651,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -969,7 +1672,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -981,7 +1693,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -993,7 +1714,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1005,7 +1735,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1016,7 +1755,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1028,7 +1776,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1040,7 +1797,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1052,7 +1818,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1064,7 +1839,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1076,7 +1860,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1088,7 +1881,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1100,7 +1902,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1112,7 +1923,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1124,7 +1944,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1136,7 +1965,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1148,7 +1986,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1160,7 +2007,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1172,7 +2028,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1184,7 +2049,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1196,7 +2070,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1208,7 +2091,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1220,7 +2112,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1232,7 +2133,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1244,7 +2154,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1256,7 +2175,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1268,7 +2196,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1280,7 +2217,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1292,7 +2238,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1304,7 +2259,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1316,7 +2280,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1328,7 +2301,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1340,7 +2322,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1352,7 +2343,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1364,7 +2364,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1376,7 +2385,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1388,7 +2406,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1400,7 +2427,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1412,7 +2448,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1424,7 +2469,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1443,7 +2497,18 @@
               "infra_fail_rate": {
                 "average": 0.05
               },
-              "pending_time": {}
+              "pending_time": {},
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1454,7 +2519,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1466,7 +2540,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1478,7 +2561,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1490,7 +2582,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1502,7 +2603,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1514,7 +2624,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1526,7 +2645,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1538,7 +2666,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1550,7 +2687,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1562,7 +2708,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1574,7 +2729,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1586,7 +2750,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1597,7 +2770,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1608,7 +2790,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1620,7 +2811,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1631,7 +2831,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1643,7 +2852,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1655,7 +2873,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -1676,7 +2903,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1697,7 +2935,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1718,7 +2967,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1739,7 +2999,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1760,7 +3031,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1781,7 +3063,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1802,7 +3095,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1823,7 +3127,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1844,7 +3159,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1865,7 +3191,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1886,7 +3223,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1907,7 +3255,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1928,7 +3287,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1949,7 +3319,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1970,7 +3351,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -1991,7 +3383,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2012,7 +3415,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2033,7 +3447,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2054,7 +3479,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2075,7 +3511,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2096,7 +3543,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2117,7 +3575,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2138,7 +3607,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2159,7 +3639,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2180,7 +3671,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2201,7 +3703,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2222,7 +3735,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2243,7 +3767,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2264,7 +3799,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2285,7 +3831,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2306,7 +3863,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2327,7 +3895,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2348,7 +3927,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2369,7 +3959,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2390,7 +3991,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2411,7 +4023,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2432,7 +4055,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2453,7 +4087,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2474,7 +4119,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2495,7 +4151,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -2507,7 +4174,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2519,7 +4195,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2531,7 +4216,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2543,7 +4237,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2555,7 +4258,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2567,7 +4279,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2579,7 +4300,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2591,7 +4321,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2603,7 +4342,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2615,7 +4363,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2627,7 +4384,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2639,7 +4405,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2651,7 +4426,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2663,7 +4447,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2675,7 +4468,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2687,7 +4489,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2699,7 +4510,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2711,7 +4531,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2723,7 +4552,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2734,7 +4572,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2746,7 +4593,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2758,7 +4614,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2769,7 +4634,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2781,7 +4655,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2793,7 +4676,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2805,7 +4697,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2816,7 +4717,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2828,7 +4738,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2840,7 +4759,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2852,7 +4780,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2864,7 +4801,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2876,7 +4822,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2888,7 +4843,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2900,7 +4864,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2912,7 +4885,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2924,7 +4906,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2936,7 +4927,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2948,7 +4948,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2960,7 +4969,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2972,7 +4990,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2984,7 +5011,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -2996,7 +5032,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3008,7 +5053,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3020,7 +5074,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3032,7 +5095,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3044,7 +5116,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3056,7 +5137,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3068,7 +5158,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3080,7 +5179,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3092,7 +5200,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3104,7 +5221,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3116,7 +5242,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3128,7 +5263,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3140,7 +5284,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3152,7 +5305,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3164,7 +5326,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3176,7 +5347,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3188,7 +5368,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3200,7 +5389,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3212,7 +5410,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3224,7 +5431,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3236,7 +5452,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3248,7 +5473,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3260,7 +5494,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3272,7 +5515,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3284,7 +5536,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3307,7 +5568,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3330,7 +5602,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3353,7 +5636,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3376,7 +5670,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3399,7 +5704,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3422,7 +5738,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3445,7 +5772,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3468,7 +5806,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3491,7 +5840,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3514,7 +5874,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3537,7 +5908,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3559,7 +5941,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3581,7 +5974,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3593,7 +5997,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3605,7 +6018,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3617,7 +6039,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3628,7 +6059,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3640,7 +6080,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3652,7 +6101,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3664,7 +6122,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3676,7 +6143,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3688,7 +6164,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3700,7 +6185,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3711,7 +6205,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3722,7 +6225,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3733,7 +6245,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3744,7 +6265,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3755,7 +6285,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3778,7 +6317,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3801,7 +6351,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3813,7 +6374,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3836,7 +6406,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3859,7 +6440,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3870,7 +6462,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3892,7 +6493,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3915,7 +6527,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -3927,7 +6550,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3939,7 +6571,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3951,7 +6592,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3963,7 +6613,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3975,7 +6634,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -3987,7 +6655,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4009,7 +6686,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4021,7 +6709,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4044,7 +6741,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4055,7 +6763,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4078,7 +6795,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4101,7 +6829,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4113,7 +6852,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4125,7 +6873,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4136,7 +6893,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4148,7 +6914,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4171,7 +6946,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4194,7 +6980,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4217,7 +7014,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4239,7 +7047,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4251,7 +7070,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4263,7 +7091,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4275,7 +7112,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4287,7 +7133,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4299,7 +7154,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4311,7 +7175,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4323,7 +7196,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4334,7 +7216,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4355,7 +7246,18 @@
               },
               "pending_time": {
                 "p50_mins": 20
-              }
+              },
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "fail_rate": {
+                "average": 0.99
+              },
+              "period_days": 90
             }
           }
         ]
@@ -4367,7 +7269,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4379,7 +7290,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4391,7 +7311,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4403,7 +7332,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4415,7 +7353,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4427,7 +7374,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4439,7 +7395,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4451,7 +7416,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4462,7 +7436,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4474,7 +7457,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4486,7 +7478,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4498,7 +7499,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4510,7 +7520,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4522,7 +7541,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4534,7 +7562,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4546,7 +7583,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4558,7 +7604,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4570,7 +7625,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4582,7 +7646,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4594,7 +7667,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4606,7 +7688,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4618,7 +7709,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4630,7 +7730,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4642,7 +7751,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4654,7 +7772,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4666,7 +7793,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4678,7 +7814,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4690,7 +7835,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4702,7 +7856,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
@@ -4714,7 +7877,16 @@
             "name": "Unhealthy",
             "score": 5,
             "thresholds": {
-              "_default": "_default"
+              "_default": "_default",
+              "period_days": 7
+            }
+          },
+          {
+            "name": "Low Value",
+            "score": 1,
+            "thresholds": {
+              "_default": "_default",
+              "period_days": 90
             }
           }
         ]
