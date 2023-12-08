@@ -295,8 +295,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // How the user last caused the `context_menu_` to show.
   crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
 
-  // Whether a paste is currently being performed.
-  bool currently_pasting_ = false;
+  // Indicates whether the clipboard data has been replaced due to an
+  // in-progress clipboard history paste.
+  bool clipboard_data_replaced_ = false;
 
   // Used to post asynchronous tasks when opening or closing the clipboard
   // history menu. Note that those tasks have data races between each other.
