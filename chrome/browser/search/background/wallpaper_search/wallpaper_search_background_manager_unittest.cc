@@ -423,23 +423,41 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 // Test that a wallpaper search background is not removed if it is in history
 TEST_F(WallpaperSearchBackgroundManagerTest,
        RemoveWallpaperSearchBackground_History) {
-  // Set theme to prefs, add it to history, and write it to file.
-  base::Token token = base::Token::CreateRandom();
-  base::Value::List history = base::Value::List().Append(
-      base::Value::Dict().Set(kWallpaperSearchHistoryId, token.ToString()));
+  // Fill history and create files.
+  base::Value::List history = base::Value::List();
+  std::vector<base::Token> tokens;
+  for (int i = 0; i < 6; ++i) {
+    base::Token temp_token = base::Token::CreateRandom();
+    tokens.push_back(temp_token);
+    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
+                                           temp_token.ToString()));
+    base::WriteFile(GetFilePathForBackground(temp_token), "hi");
+  }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
-  base::WriteFile(GetFilePathForBackground(token), "hi");
 
   // Set theme to prefs using a token already in history and check that its file
   // is there.
   pref_service().SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
-                           token.ToString());
-  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(token)));
+                           tokens[0].ToString());
+  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[0])));
 
   // Clear wallpaper search theme resource.
   WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(&profile());
   task_environment().RunUntilIdle();
 
   // The theme file created above should still be there.
-  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(token)));
+  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[0])));
+
+  // Set a middle theme to prefs using a token already in history and check
+  // that its file is there.
+  pref_service().SetString(prefs::kNtpCustomBackgroundLocalToDeviceId,
+                           tokens[3].ToString());
+  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[3])));
+
+  // Clear wallpaper search theme resource.
+  WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(&profile());
+  task_environment().RunUntilIdle();
+
+  // The theme file created above should still be there.
+  EXPECT_TRUE(base::PathExists(GetFilePathForBackground(tokens[3])));
 }
