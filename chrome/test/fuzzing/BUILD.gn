@@ -30,7 +30,8 @@ if (fuzzing_engine_supports_custom_main) {
   buildflag_header("in_process_fuzzer_buildflags") {
     header = "in_process_fuzzer_buildflags.h"
     flags = [
-      "AVOID_SINGLE_PROCESS_MODE=$use_libfuzzer",
+      "IS_CENTIPEDE=$use_centipede",
+      "IS_LIBFUZZER=$use_libfuzzer",
 
       # crbug.com/1474421: remove these lines once the bug is fixed.
       "DEBUG_CLUSTERFUZZ_FAILURE=$use_libfuzzer",
@@ -66,7 +67,11 @@ if (!is_android) {
 
     proto_source = "kombucha_in_process_fuzzer.proto"
 
-    deps = [ "//chrome:packed_resources" ]
+    deps = [
+      ":in_process_fuzzer_buildflags",
+      "//chrome:packed_resources",
+      "//chrome/app:command_ids",
+    ]
 
     # Used for UI controls
     if (use_aura) {
