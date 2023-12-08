@@ -3289,7 +3289,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params)
       override;
   void CreateChildFrame(
-      int new_routing_id,
+      const blink::LocalFrameToken& frame_token,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,

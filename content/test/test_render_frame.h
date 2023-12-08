@@ -82,6 +82,7 @@ class TestRenderFrame : public RenderFrameImpl {
   explicit TestRenderFrame(RenderFrameImpl::CreateParams params);
 
  private:
+  void BindToFrame(blink::WebNavigationControl* frame) override;
   mojom::FrameHost* GetFrameHost() override;
 
   std::unique_ptr<MockFrameHost> mock_frame_host_;

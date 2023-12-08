@@ -113,17 +113,18 @@ class MockRenderThread : public RenderThread {
   void ReleaseAllWebViews();
 
   void OnCreateChildFrame(
-      int32_t child_routing_id,
+      const blink::LocalFrameToken& frame_token,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker);
 
   // Returns the receiver end of the BrowserInterfaceBroker interface whose
-  // client end was passed in to construct RenderFrame with |routing_id|; if
+  // client end was passed in to construct RenderFrame with `frame_token`; if
   // any. The client end will be used by the RenderFrame to service interface
   // requests originating from the initial empty document.
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-  TakeInitialBrowserInterfaceBrokerReceiverForFrame(int32_t routing_id);
+  TakeInitialBrowserInterfaceBrokerReceiverForFrame(
+      const blink::LocalFrameToken& frame_token);
 
  protected:
   // This function operates as a regular IPC listener. Subclasses
@@ -139,8 +140,9 @@ class MockRenderThread : public RenderThread {
 
   // Pending BrowserInterfaceBrokers sent from the renderer when creating a
   // new Frame and informing the browser.
-  std::map<int32_t, mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
-      frame_routing_id_to_initial_browser_brokers_;
+  std::map<blink::LocalFrameToken,
+           mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
+      frame_token_to_initial_browser_brokers_;
 
   // The last known good deserializer for sync messages.
   std::unique_ptr<IPC::MessageReplyDeserializer> reply_deserializer_;

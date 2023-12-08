@@ -3594,8 +3594,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
 
   // Now create the child frame in the browser via an asynchronous call.
   GetFrameHost()->CreateChildFrame(
-      child_routing_id,
-      pending_frame_receiver.InitWithNewEndpointAndPassRemote(),
+      frame_token, pending_frame_receiver.InitWithNewEndpointAndPassRemote(),
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       blink::mojom::PolicyContainerBindParams::New(
           std::move(policy_container_bind_params.receiver)),

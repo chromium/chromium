@@ -139,7 +139,7 @@ class MockFrameHost : public mojom::FrameHost {
   }
 
   void CreateChildFrame(
-      int new_routing_id,
+      const blink::LocalFrameToken& frame_token,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
@@ -166,7 +166,7 @@ class MockFrameHost : public mojom::FrameHost {
     MockRenderThread* mock_render_thread =
         static_cast<MockRenderThread*>(RenderThread::Get());
     mock_render_thread->OnCreateChildFrame(
-        new_routing_id, std::move(frame_remote),
+        frame_token, std::move(frame_remote),
         std::move(browser_interface_broker_receiver));
   }
 
@@ -237,11 +237,6 @@ RenderFrameImpl* TestRenderFrame::CreateTestRenderFrame(
 TestRenderFrame::TestRenderFrame(RenderFrameImpl::CreateParams params)
     : RenderFrameImpl(std::move(params)),
       mock_frame_host_(std::make_unique<MockFrameHost>()) {
-  MockRenderThread* mock_render_thread =
-      static_cast<MockRenderThread*>(RenderThread::Get());
-  mock_frame_host_->SetInitialBrowserInterfaceBrokerReceiver(
-      mock_render_thread->TakeInitialBrowserInterfaceBrokerReceiverForFrame(
-          GetRoutingID()));
 }
 
 TestRenderFrame::~TestRenderFrame() {}
@@ -407,6 +402,15 @@ bool TestRenderFrame::IsPageStateUpdated() const {
 
 bool TestRenderFrame::IsURLOpened() const {
   return mock_frame_host_->is_url_opened();
+}
+
+void TestRenderFrame::BindToFrame(blink::WebNavigationControl* frame) {
+  RenderFrameImpl::BindToFrame(frame);
+  MockRenderThread* mock_render_thread =
+      static_cast<MockRenderThread*>(RenderThread::Get());
+  mock_frame_host_->SetInitialBrowserInterfaceBrokerReceiver(
+      mock_render_thread->TakeInitialBrowserInterfaceBrokerReceiverForFrame(
+          frame->GetLocalFrameToken()));
 }
 
 mojom::FrameHost* TestRenderFrame::GetFrameHost() {

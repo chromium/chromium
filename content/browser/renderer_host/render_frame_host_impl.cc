@@ -3923,7 +3923,7 @@ void RenderFrameHostImpl::OnPreloadingHeuristicsModelDone(const GURL& url,
 }
 
 void RenderFrameHostImpl::CreateChildFrame(
-    int new_routing_id,
+    const blink::LocalFrameToken& frame_token,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
@@ -3938,13 +3938,13 @@ void RenderFrameHostImpl::CreateChildFrame(
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     blink::FrameOwnerElementType owner_type,
     ukm::SourceId document_ukm_source_id) {
-  blink::LocalFrameToken frame_token;
+  int new_routing_id = MSG_ROUTING_NONE;
   base::UnguessableToken devtools_frame_token;
   blink::DocumentToken document_token;
   if (!static_cast<RenderProcessHostImpl*>(GetProcess())
-           ->TakeFrameTokensForFrameRoutingID(new_routing_id, frame_token,
-                                              devtools_frame_token,
-                                              document_token)) {
+           ->TakeStoredDataForFrameToken(frame_token, new_routing_id,
+                                         devtools_frame_token,
+                                         document_token)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND);
     return;

@@ -2900,13 +2900,13 @@ void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
   Cleanup();
 }
 
-bool RenderProcessHostImpl::TakeFrameTokensForFrameRoutingID(
-    int32_t new_routing_id,
-    blink::LocalFrameToken& frame_token,
+bool RenderProcessHostImpl::TakeStoredDataForFrameToken(
+    const blink::LocalFrameToken& frame_token,
+    int32_t& new_routing_id,
     base::UnguessableToken& devtools_frame_token,
     blink::DocumentToken& document_token) {
-  return widget_helper_->TakeFrameTokensForFrameRoutingID(
-      new_routing_id, frame_token, devtools_frame_token, document_token);
+  return widget_helper_->TakeStoredDataForFrameToken(
+      frame_token, new_routing_id, devtools_frame_token, document_token);
 }
 
 void RenderProcessHostImpl::AddObserver(RenderProcessHostObserver* observer) {

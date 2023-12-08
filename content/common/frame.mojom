@@ -705,11 +705,11 @@ interface FrameHost {
   [Sync] CreateNewWindow(CreateNewWindowParams params)
       => (CreateNewWindowStatus status, CreateNewWindowReply? reply);
 
-  // Asynchronously creates a child frame. A routing ID must be allocated first
-  // by calling RenderMessageFilter::GenerateFrameRoutingID()
+  // Asynchronously creates a child frame. A blink.mojom.LocalFrameToken must
+  // be allocated first by calling RenderMessageFilter::GenerateFrameRoutingID()
   // Each of these messages will have a corresponding mojom::FrameHost::Detach
   // API sent when the frame is detached from the DOM.
-  CreateChildFrame(int32 child_routing_id,
+  CreateChildFrame(blink.mojom.LocalFrameToken child_frame_token,
                    pending_associated_remote<content.mojom.Frame> frame,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,
