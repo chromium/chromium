@@ -390,40 +390,6 @@ TEST_F(EditingListTest, TestReposition) {
   EXPECT_EQ(content_bounds_origin, final_list_bounds.origin());
 }
 
-TEST_F(EditingListTest, TestEducationNudge) {
-  // 1. Education nudge shows up for `EditingList` by "+" button when there is
-  // no active action in the list.
-  // 2. After adding the first action, the education nudge shows up for input
-  // mapping by the touch point.
-  // 3. After closing `ButtonOptionsMenu`, the education nudge shows up for
-  // `EditingList`.
-  auto* editing_list = GetEditingListWidget();
-  auto* input_mapping = GetInputMappingWidget();
-  DCHECK(editing_list);
-  DCHECK(input_mapping);
-  EXPECT_FALSE(GetEducationNudge(editing_list));
-  EXPECT_FALSE(GetEducationNudge(input_mapping));
-  // Remove all actions.
-  for (const auto& action : touch_injector_->actions()) {
-    controller_->RemoveAction(action.get());
-  }
-  // The education nudge for `editing_list` shows up.
-  auto* editing_list_nudge = GetEducationNudge(editing_list);
-  EXPECT_TRUE(editing_list);
-  EXPECT_TRUE(
-      editing_list_nudge->IsStackedAbove(editing_list->GetNativeView()));
-  EXPECT_FALSE(GetEducationNudge(input_mapping));
-
-  // Add an action, the previous education nudge for `editing_list` is removed.
-  AddNewAction();
-  EXPECT_FALSE(GetEducationNudge(editing_list));
-  // The education nudge for `input_mapping` shows up.
-  auto* input_mapping_nudge = GetEducationNudge(input_mapping);
-  EXPECT_TRUE(input_mapping_nudge);
-  EXPECT_TRUE(
-      input_mapping_nudge->IsStackedAbove(input_mapping->GetNativeView()));
-}
-
 TEST_F(EditingListTest, TestKeyEditNudge) {
   // Key edit nudge shows up after the first action's `ButtonOptionsMenu`.
   EXPECT_FALSE(IsKeyEditNudgeShown());

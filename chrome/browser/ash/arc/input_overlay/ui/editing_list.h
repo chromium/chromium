@@ -111,7 +111,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
 
   // TouchInjectorObserver:

@@ -446,8 +446,6 @@ source_set("ash") {
     "arc/input_overlay/ui/message_view.h",
     "arc/input_overlay/ui/name_tag.cc",
     "arc/input_overlay/ui/name_tag.h",
-    "arc/input_overlay/ui/nudge.cc",
-    "arc/input_overlay/ui/nudge.h",
     "arc/input_overlay/ui/nudge_view.cc",
     "arc/input_overlay/ui/nudge_view.h",
     "arc/input_overlay/ui/reposition_controller.cc",

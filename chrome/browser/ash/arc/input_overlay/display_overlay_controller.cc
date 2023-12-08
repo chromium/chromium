@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/rich_nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
@@ -56,7 +55,6 @@ constexpr int kNudgeVerticalAlign = 8;
 constexpr char kButtonOptionsMenu[] = "GameControlsButtonOptionsMenu";
 constexpr char kEditingList[] = "GameControlsEditingList";
 constexpr char kInputMapping[] = "GameControlsInputMapping";
-constexpr char kEduationNudge[] = "GameControlsEducationNudge";
 constexpr char kDeleteEditShortcut[] = "DeleteEditShortcut";
 constexpr char kActionHighlight[] = "ActionHighlight";
 
@@ -737,38 +735,6 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
     button_options_widget_->ShowInactive();
   } else {
     button_options_widget_->Hide();
-  }
-}
-
-void DisplayOverlayController::AddNudgeWidget(views::View* anchor_view,
-                                              const std::u16string& text) {
-  auto* anchor_widget = anchor_view->GetWidget();
-  DCHECK(anchor_widget);
-
-  auto it = nudge_widgets_.find(anchor_widget);
-  views::Widget* nudge_widget_ptr;
-  if (it == nudge_widgets_.end()) {
-    auto nudge_widget = CreateTransientWidget(
-        touch_injector_->window(), /*widget_name=*/kEduationNudge,
-        /*accept_events=*/true, /*is_floating=*/true);
-    nudge_widget_ptr = nudge_widget.get();
-    nudge_widgets_.emplace(anchor_widget, std::move(nudge_widget));
-  } else {
-    nudge_widget_ptr = it->second.get();
-  }
-
-  nudge_widget_ptr->SetContentsView(
-      std::make_unique<Nudge>(this, anchor_view, text));
-  auto* window = nudge_widget_ptr->GetNativeWindow();
-  window->parent()->StackChildAtTop(window);
-  nudge_widget_ptr->ShowInactive();
-}
-
-void DisplayOverlayController::RemoveNudgeWidget(views::Widget* widget) {
-  auto it = nudge_widgets_.find(widget);
-  if (it != nudge_widgets_.end()) {
-    it->second->Close();
-    nudge_widgets_.erase(it);
   }
 }
 

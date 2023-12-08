@@ -480,13 +480,6 @@ gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
 }
 
-void EditingList::VisibilityChanged(View* starting_from, bool is_visible) {
-  if (is_visible && is_zero_state_) {
-    // TODO(b/274690042): Replace it with localized strings.
-    controller_->AddNudgeWidget(add_button_, u"Add your first button here");
-  }
-}
-
 void EditingList::OnThemeChanged() {
   views::View::OnThemeChanged();
 
@@ -508,7 +501,6 @@ void EditingList::OnActionAdded(Action& action) {
   DCHECK(scroll_content_);
   if (controller_->GetActiveActionsSize() == 1u) {
     // Clear the zero-state.
-    controller_->RemoveNudgeWidget(GetWidget());
     UpdateOnZeroState(/*is_zero_state=*/false);
     show_nudge_ = true;
   }
@@ -534,8 +526,6 @@ void EditingList::OnActionRemoved(const Action& action) {
   // Set to zero-state if it is empty.
   if (controller_->GetActiveActionsSize() == 0u) {
     UpdateOnZeroState(/*is_zero_state=*/true);
-    // TODO(b/274690042): Replace it with localized strings.
-    controller_->AddNudgeWidget(add_button_, u"Add your first button here");
   }
 
   UpdateAddButtonState();

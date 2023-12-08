@@ -59,7 +59,6 @@ class EditLabels : public views::View {
   // Called when this view is clicked upon.
   void FocusLabel();
 
-  void ShowEduNudgeForEditingTip();
 
   // Returns Action name, such as "Joystick WASD".
   std::u16string CalculateActionName();

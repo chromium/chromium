@@ -92,15 +92,6 @@ void EditLabels::FocusLabel() {
   labels_[0]->RequestFocus();
 }
 
-void EditLabels::ShowEduNudgeForEditingTip() {
-  size_t size = labels_.size();
-  DCHECK_GE(size, 1u);
-  // TODO(b/274690042): Replace it with localized strings.
-  controller_->AddNudgeWidget(labels_[size - 1],
-                              u"You can easily click and swap this key. To "
-                              u"edit the details, tap the row.");
-}
-
 std::u16string EditLabels::CalculateActionName() {
   std::u16string key_string = u"";
   // Check if all labels are unassigned. The prefix for the sub-title is

@@ -111,9 +111,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveButtonOptionsMenuWidget();
   void SetButtonOptionsMenuWidgetVisibility(bool is_visible);
 
-  void AddNudgeWidget(views::View* anchor_view, const std::u16string& text);
-  void RemoveNudgeWidget(views::Widget* widget);
-
   void AddDeleteEditShortcutWidget(ActionViewListItem* anchor_view);
   void RemoveDeleteEditShortcutWidget();
 
