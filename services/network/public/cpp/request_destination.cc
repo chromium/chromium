@@ -12,6 +12,7 @@ namespace network {
 // When updating this, consider also updating RequestDestination in
 // third_party/blink/renderer/core/fetch/request.idl.
 
+// LINT.IfChange
 const char* RequestDestinationToString(
     network::mojom::RequestDestination dest) {
   switch (dest) {
@@ -70,6 +71,7 @@ const char* RequestDestinationToString(
       return "speculationrules";
   }
 }
+// LINT.ThenChange(/third_party/blink/renderer/core/fetch/request.idl)
 
 const char* RequestDestinationToStringForHistogram(
     network::mojom::RequestDestination dest) {
