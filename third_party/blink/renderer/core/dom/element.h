@@ -837,6 +837,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   enum class UpdateBehavior {
     kStyleAndLayout,
     kNoneForAccessibility,
+    kNoneForIsFocused,
   };
   // IsFocusable is true if the element SupportsFocus(), and is currently
   // focusable (using the mouse). This method can be called when layout is not

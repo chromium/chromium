@@ -616,7 +616,7 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // activation reason, we simply return false to avoid updating style & layout
   // tree for this node.
   absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
-  if (UNLIKELY(update_behavior == UpdateBehavior::kNoneForAccessibility)) {
+  if (UNLIKELY(update_behavior != UpdateBehavior::kStyleAndLayout)) {
     DCHECK(!NeedsStyleRecalc()) << this;
     disallow_scope.emplace(GetDocument().Lifecycle());
   } else {
@@ -6097,7 +6097,7 @@ bool Element::CanBeKeyboardFocusableScroller(
   // to have up to date style and layout before calling IsScrollableNode.
   // However, for a11y code, layout updates should not be performed here.
   absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
-  if (UNLIKELY(update_behavior == UpdateBehavior::kNoneForAccessibility)) {
+  if (UNLIKELY(update_behavior != UpdateBehavior::kStyleAndLayout)) {
     disallow_scope.emplace(GetDocument().Lifecycle());
   } else {
     auto* box = GetLayoutObject();

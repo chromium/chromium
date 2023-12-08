@@ -188,7 +188,7 @@ bool SVGAElement::SupportsFocus(UpdateBehavior update_behavior) const {
 
 bool SVGAElement::ShouldHaveFocusAppearance() const {
   return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
-         SVGGraphicsElement::SupportsFocus();
+         SVGGraphicsElement::SupportsFocus(UpdateBehavior::kNoneForIsFocused);
 }
 
 bool SVGAElement::IsURLAttribute(const Attribute& attribute) const {

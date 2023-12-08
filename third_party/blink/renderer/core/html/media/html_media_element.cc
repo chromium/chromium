@@ -703,7 +703,7 @@ bool HTMLMediaElement::SupportsFocus(UpdateBehavior update_behavior) const {
 }
 
 bool HTMLMediaElement::IsFocusable(UpdateBehavior update_behavior) const {
-  if (!SupportsFocus()) {
+  if (!SupportsFocus(update_behavior)) {
     return false;
   }
   return !IsFullscreen() || HTMLElement::IsFocusable(update_behavior);
