@@ -29,13 +29,13 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
-    "fake_data.js",
-    "fake_help_content_provider.js",
-    "fake_feedback_service_provider.js",
+    "fake_data.ts",
+    "fake_help_content_provider.ts",
+    "fake_feedback_service_provider.ts",
     "feedback_constants.ts",
     "feedback_types.ts",
     "feedback_utils.ts",
-    "mojo_interface_provider.js",
+    "mojo_interface_provider.ts",
     "questionnaire.ts",
   ]
 

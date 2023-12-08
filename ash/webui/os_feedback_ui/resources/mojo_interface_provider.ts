@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {FeedbackServiceProvider, FeedbackServiceProviderInterface, HelpContentProvider, HelpContentProviderInterface} from './os_feedback_ui.mojom-webui.js';
 
@@ -12,49 +12,33 @@ import {FeedbackServiceProvider, FeedbackServiceProviderInterface, HelpContentPr
  * to override them with test/fake implementations.
  */
 
-/**
- * @type {?FeedbackServiceProviderInterface}
- */
-let feedbackServiceProvider = null;
+let feedbackServiceProvider: FeedbackServiceProviderInterface|null = null;
 
-/**
- * @type {?HelpContentProviderInterface}
- */
-let helpContentProvider = null;
+let helpContentProvider: HelpContentProviderInterface|null = null;
 
-/**
- * @param {?FeedbackServiceProviderInterface} testProvider
- */
-export function setFeedbackServiceProviderForTesting(testProvider) {
+export function setFeedbackServiceProviderForTesting(
+    testProvider: FeedbackServiceProviderInterface|null) {
   feedbackServiceProvider = testProvider;
 }
 
-/**
- * @param {?HelpContentProviderInterface} testProvider
- */
-export function setHelpContentProviderForTesting(testProvider) {
+export function setHelpContentProviderForTesting(
+    testProvider: HelpContentProviderInterface|null) {
   helpContentProvider = testProvider;
 }
 
-/**
- * @return {!FeedbackServiceProviderInterface}
- */
-export function getFeedbackServiceProvider() {
+export function getFeedbackServiceProvider(): FeedbackServiceProviderInterface {
   if (!feedbackServiceProvider) {
     feedbackServiceProvider = FeedbackServiceProvider.getRemote();
   }
-  assert(!!feedbackServiceProvider);
+  assert(feedbackServiceProvider);
   return feedbackServiceProvider;
 }
 
-/**
- * @return {!HelpContentProviderInterface}
- */
-export function getHelpContentProvider() {
+export function getHelpContentProvider(): HelpContentProviderInterface {
   if (!helpContentProvider) {
     helpContentProvider = HelpContentProvider.getRemote();
   }
 
-  assert(!!helpContentProvider);
+  assert(helpContentProvider);
   return helpContentProvider;
 }

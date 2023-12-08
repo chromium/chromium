@@ -12,8 +12,7 @@ import {FeedbackContext, HelpContentType, SearchRequest, SearchResponse} from '.
  * Fake data used for testing purpose.
  */
 
-/** @type {!HelpContentList} */
-export const fakePopularHelpContentList = [
+export const fakePopularHelpContentList: HelpContentList = [
   {
     title: stringToMojoString16('fake article'),
     url: {url: 'https://support.google.com/chromebook/?q=article'},
@@ -26,8 +25,7 @@ export const fakePopularHelpContentList = [
   },
 ];
 
-/** @type {!HelpContentList} */
-export const fakeHelpContentList = [
+export const fakeHelpContentList: HelpContentList = [
   {
     title: stringToMojoString16('Fix connection problems'),
     url: {url: 'https://support.google.com/chromebook/?q=6318213'},
@@ -57,109 +55,106 @@ export const fakeHelpContentList = [
   },
 ];
 
-/** @type {!HelpContentList} */
-export const fakeEmptyHelpContentList = [];
+export const fakeEmptyHelpContentList: HelpContentList = [];
 
-/** @type {!SearchRequest} */
-export const fakeSearchRequest = {
+export const fakeSearchRequest: SearchRequest = {
   maxResults: 5,
   query: stringToMojoString16('wifi not working'),
 };
 
-/** @type {!SearchResponse} */
-export const fakeSearchResponse = {
+export const fakeSearchResponse: SearchResponse = {
   results: fakeHelpContentList,
   totalResults: 10,
 };
 
-/** @type {!SearchResponse} */
-export const fakeEmptySearchResponse = {
+export const fakeEmptySearchResponse: SearchResponse = {
   results: fakeEmptyHelpContentList,
   totalResults: 0,
 };
 
-/** @type {!FeedbackContext} */
-export const fakeFeedbackContext = {
-  email: 'test.user2@test.com',
-  pageUrl: {url: 'chrome://tab/'},
-  isInternalAccount: false,
-  fromAssistant: false,
+export const fakeFeedbackContext: FeedbackContext = {
   assistantDebugInfoAllowed: false,
-  fromSettingsSearch: false,
-  fromAutofill: false,
   autofillMetadata: '',
-  wifiDebugLogsAllowed: false,
-  traceId: 1,
   categoryTag: 'MediaApp',
+  email: 'test.user2@test.com',
+  extraDiagnostics: undefined,
+  fromAssistant: false,
+  fromAutofill: false,
+  fromSettingsSearch: false,
   hasLinkedCrossDevicePhone: false,
+  isInternalAccount: false,
+  pageUrl: {url: 'chrome://tab/'},
+  traceId: 1,
+  wifiDebugLogsAllowed: false,
 };
 
-/** @type {!FeedbackContext} */
-export const fakeEmptyFeedbackContext = {
-  email: '',
-  pageUrl: {url: ''},
-  isInternalAccount: false,
-  fromAssistant: false,
+export const fakeEmptyFeedbackContext: FeedbackContext = {
   assistantDebugInfoAllowed: false,
-  fromSettingsSearch: false,
-  fromAutofill: false,
   autofillMetadata: '',
-  wifiDebugLogsAllowed: false,
-  traceId: 0,
+  categoryTag: '',
+  email: '',
+  extraDiagnostics: undefined,
+  fromAssistant: false,
+  fromAutofill: false,
+  fromSettingsSearch: false,
   hasLinkedCrossDevicePhone: false,
+  isInternalAccount: false,
+  pageUrl: {url: ''},
+  traceId: 0,
+  wifiDebugLogsAllowed: false,
 };
 
-/**
- * Feedback context for login flow, i.e., on oobe or login screen.
- * @type {!FeedbackContext}
- */
-export const fakeLoginFlowFeedbackContext = {
-  email: '',
-  pageUrl: {url: ''},
-  isInternalAccount: false,
-  fromAssistant: false,
+/** Feedback context for login flow, i.e., on oobe or login screen. */
+export const fakeLoginFlowFeedbackContext: FeedbackContext = {
   assistantDebugInfoAllowed: false,
-  fromSettingsSearch: false,
-  fromAutofill: false,
   autofillMetadata: '',
-  wifiDebugLogsAllowed: false,
-  traceId: 0,
   categoryTag: 'Login',
+  email: '',
+  extraDiagnostics: undefined,
+  fromAssistant: false,
+  fromAutofill: false,
+  fromSettingsSearch: false,
   hasLinkedCrossDevicePhone: false,
+  isInternalAccount: false,
+  pageUrl: {url: ''},
+  traceId: 0,
+  wifiDebugLogsAllowed: false,
 };
 
-/** @type {!FeedbackContext} */
-export const fakeInternalUserFeedbackContext = {
-  email: 'test.user@google.com',
-  pageUrl: {url: 'chrome://tab/'},
-  isInternalAccount: true,
-  fromAssistant: true,
+export const fakeInternalUserFeedbackContext: FeedbackContext = {
   assistantDebugInfoAllowed: false,
-  fromSettingsSearch: true,
-  fromAutofill: false,
   autofillMetadata: '',
-  wifiDebugLogsAllowed: false,
-  traceId: 1,
+  categoryTag: '',
+  email: 'test.user@google.com',
+  extraDiagnostics: undefined,
+  fromAssistant: true,
+  fromAutofill: false,
+  fromSettingsSearch: true,
   hasLinkedCrossDevicePhone: true,
-};
-
-/** @type {!FeedbackContext} */
-export const fakeFeedbackContextWithoutLinkedCrossDevicePhone = {
-  email: 'test.user@google.com',
-  pageUrl: {url: 'chrome://tab/'},
   isInternalAccount: true,
-  fromAssistant: true,
-  assistantDebugInfoAllowed: false,
-  fromSettingsSearch: true,
-  fromAutofill: false,
-  autofillMetadata: '',
-  wifiDebugLogsAllowed: false,
+  pageUrl: {url: 'chrome://tab/'},
   traceId: 1,
-  hasLinkedCrossDevicePhone: false,
+  wifiDebugLogsAllowed: false,
 };
 
-/** @type {!Array<number>} */
-export const fakePngData = [
+export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
+    FeedbackContext = {
+      assistantDebugInfoAllowed: false,
+      autofillMetadata: '',
+      categoryTag: '',
+      email: 'test.user@google.com',
+      extraDiagnostics: undefined,
+      fromAssistant: true,
+      fromAutofill: false,
+      fromSettingsSearch: true,
+      hasLinkedCrossDevicePhone: false,
+      isInternalAccount: true,
+      pageUrl: {url: 'chrome://tab/'},
+      traceId: 1,
+      wifiDebugLogsAllowed: false,
+    };
+
+export const fakePngData: number[] = [
   137, 80,  78, 71,  13,  10, 26, 10,  0,  0,  0,   13,  73,  72,  68,  82,
   0,   0,   0,  8,   0,   0,  0,  8,   8,  2,  0,   0,   0,   75,  109, 41,
   220, 0,   0,  0,   34,  73, 68, 65,  84, 8,  215, 99,  120, 173, 168, 135,
