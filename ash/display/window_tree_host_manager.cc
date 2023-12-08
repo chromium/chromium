@@ -660,7 +660,7 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
   }
 
   if (Shell::Get()->window_bounds_tracker()) {
-    should_restore_windows_on_display_addd_ = true;
+    should_restore_windows_on_display_added_ = true;
   }
 }
 
@@ -997,9 +997,9 @@ void WindowTreeHostManager::PostDisplayConfigurationChange() {
   // destination displays along with other display content.
   Shell::Get()->UpdateCursorCompositingEnabled();
 
-  if (should_restore_windows_on_display_addd_) {
+  if (should_restore_windows_on_display_added_) {
     Shell::Get()->window_bounds_tracker()->MaybeRestoreWindowsOnDisplayAdded();
-    should_restore_windows_on_display_addd_ = false;
+    should_restore_windows_on_display_added_ = false;
   }
 }
 
