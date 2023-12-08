@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_EMPTY_TRASH_IO_TASK_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_EMPTY_TRASH_IO_TASK_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -79,7 +80,7 @@ class EmptyTrashIOTask : public IOTask {
 
   // Stores the id of the restore operation if one is in progress. Used to stop
   // the empty trash operation.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;

@@ -30,7 +30,7 @@ DeleteIOTask::DeleteIOTask(
   progress_.total_bytes = file_urls.size();
 
   for (const auto& url : file_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
   }
 }
 

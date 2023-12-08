@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager {
 
@@ -150,7 +150,7 @@ class Volume {
   static std::unique_ptr<Volume> CreateForTesting(
       base::FilePath path,
       VolumeType volume_type,
-      absl::optional<guest_os::VmType> vm_type,
+      std::optional<guest_os::VmType> vm_type,
       base::FilePath source_path = {});
 
   // Getters for all members. See below for details.
@@ -193,7 +193,7 @@ class Volume {
     return icon_set_;
   }
   bool hidden() const { return hidden_; }
-  absl::optional<guest_os::VmType> vm_type() const { return vm_type_; }
+  std::optional<guest_os::VmType> vm_type() const { return vm_type_; }
 
   base::WeakPtr<Volume> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
@@ -290,7 +290,7 @@ class Volume {
   bool hidden_ = false;
 
   // Only set for VOLUME_TYPE_GUEST_OS, identifies the type of Guest OS VM.
-  absl::optional<guest_os::VmType> vm_type_;
+  std::optional<guest_os::VmType> vm_type_;
 
   base::WeakPtrFactory<Volume> weak_ptr_factory_{this};
 };

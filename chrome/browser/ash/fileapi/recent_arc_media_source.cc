@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -107,7 +107,7 @@ class RecentArcMediaSource::MediaRoot {
  private:
   void OnGetRecentDocuments(
       const Params& params,
-      absl::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents);
+      std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents);
   void ScanDirectory(const Params& params, const base::FilePath& path);
   void OnReadDirectory(
       const Params& params,
@@ -138,7 +138,7 @@ class RecentArcMediaSource::MediaRoot {
   // In case of multiple files with the same document ID found, the file with
   // lexicographically smallest URL is kept. A nullopt value means the
   // corresponding file is not (yet) found.
-  std::map<std::string, absl::optional<RecentFile>> document_id_to_file_;
+  std::map<std::string, std::optional<RecentFile>> document_id_to_file_;
 
   base::WeakPtrFactory<MediaRoot> weak_ptr_factory_{this};
 };
@@ -187,7 +187,7 @@ void RecentArcMediaSource::MediaRoot::GetRecentFiles(
 
 void RecentArcMediaSource::MediaRoot::OnGetRecentDocuments(
     const Params& params,
-    absl::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents) {
+    std::optional<std::vector<arc::mojom::DocumentPtr>> maybe_documents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(0, num_inflight_readdirs_);
   DCHECK(document_id_to_file_.empty());
@@ -206,7 +206,7 @@ void RecentArcMediaSource::MediaRoot::OnGetRecentDocuments(
       if (!FileNameMatches(base::UTF8ToUTF16(document->display_name), q16)) {
         continue;
       }
-      document_id_to_file_.emplace(document->document_id, absl::nullopt);
+      document_id_to_file_.emplace(document->document_id, std::nullopt);
     }
   }
 
@@ -276,7 +276,7 @@ void RecentArcMediaSource::MediaRoot::OnReadDirectory(
     // We keep the lexicographically smallest URL to stabilize the results when
     // there are multiple files with the same document ID.
     auto url = BuildDocumentsProviderUrl(params, subpath);
-    absl::optional<RecentFile>& entry = iter->second;
+    std::optional<RecentFile>& entry = iter->second;
     if (!entry.has_value() ||
         storage::FileSystemURL::Comparator()(url, entry.value().url())) {
       entry = RecentFile(url, file.last_modified);
@@ -297,7 +297,7 @@ void RecentArcMediaSource::MediaRoot::OnComplete() {
 
   std::vector<RecentFile> files;
   for (const auto& entry : document_id_to_file_) {
-    const absl::optional<RecentFile>& file = entry.second;
+    const std::optional<RecentFile>& file = entry.second;
     if (file.has_value()) {
       files.emplace_back(file.value());
     }

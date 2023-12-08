@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -36,7 +38,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using crostini::mojom::InstallerError;
 using crostini::mojom::InstallerState;

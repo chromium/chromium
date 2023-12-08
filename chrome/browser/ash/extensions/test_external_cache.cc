@@ -91,7 +91,7 @@ void TestExternalCache::PutExternalExtension(
 }
 
 void TestExternalCache::SetBackoffPolicy(
-    absl::optional<net::BackoffEntry::Policy> new_backoff_policy) {
+    std::optional<net::BackoffEntry::Policy> new_backoff_policy) {
   backoff_policy_ = new_backoff_policy;
 }
 

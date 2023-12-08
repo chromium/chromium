@@ -128,7 +128,7 @@ void LogGoogleDriveMetricsAfterFallback(
   cloud_open_metrics->LogTaskResult(task_result);
 }
 
-absl::optional<ash::office_fallback::FallbackReason>
+std::optional<ash::office_fallback::FallbackReason>
 DriveConnectionStatusToFallbackReason(
     drive::util::ConnectionStatus drive_connection_status) {
   switch (drive_connection_status) {
@@ -141,7 +141,7 @@ DriveConnectionStatusToFallbackReason(
     case drive::util::ConnectionStatus::kMetered:
       return ash::office_fallback::FallbackReason::kMeteredConnection;
     case drive::util::ConnectionStatus::kConnected:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -196,7 +196,7 @@ bool ExecuteWebDriveOfficeTask(
 
   const drive::util::ConnectionStatus drive_connection_status =
       drive::util::GetDriveConnectionStatus(profile);
-  const absl::optional<ash::office_fallback::FallbackReason>
+  const std::optional<ash::office_fallback::FallbackReason>
       opt_fallback_reason =
           DriveConnectionStatusToFallbackReason(drive_connection_status);
   if (opt_fallback_reason) {

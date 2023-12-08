@@ -491,7 +491,7 @@ AbortCallback FakeProvidedFileSystem::FlushFile(
   if (entry->write_buffer) {
     *entry->metadata->size = entry->write_buffer->size();
     entry->contents = std::move(*entry->write_buffer);
-    entry->write_buffer = absl::nullopt;
+    entry->write_buffer = std::nullopt;
   }
   return PostAbortableTask(
       base::BindOnce(std::move(callback), base::File::FILE_OK));

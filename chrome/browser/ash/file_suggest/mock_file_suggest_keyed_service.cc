@@ -40,7 +40,7 @@ void MockFileSuggestKeyedService::GetSuggestFileData(
     FileSuggestionType type,
     GetSuggestFileDataCallback callback) {
   if (!IsProtoInitialized()) {
-    std::move(callback).Run(/*suggestions=*/absl::nullopt);
+    std::move(callback).Run(/*suggestions=*/std::nullopt);
     return;
   }
 
@@ -54,7 +54,7 @@ void MockFileSuggestKeyedService::GetSuggestFileData(
 
 void MockFileSuggestKeyedService::SetSuggestionsForType(
     FileSuggestionType type,
-    const absl::optional<std::vector<FileSuggestData>>& suggestions) {
+    const std::optional<std::vector<FileSuggestData>>& suggestions) {
   type_suggestion_mappings_[type] = suggestions;
   OnSuggestionProviderUpdated(type);
 }
@@ -62,7 +62,7 @@ void MockFileSuggestKeyedService::SetSuggestionsForType(
 void MockFileSuggestKeyedService::RunGetSuggestFileDataCallback(
     FileSuggestionType type,
     GetSuggestFileDataCallback callback) {
-  absl::optional<std::vector<FileSuggestData>> suggestions;
+  std::optional<std::vector<FileSuggestData>> suggestions;
   auto iter = type_suggestion_mappings_.find(type);
   if (iter != type_suggestion_mappings_.end()) {
     suggestions = iter->second;

@@ -214,7 +214,7 @@ MATCHER_P4(ExpectEventArgPauseParams,
       << "The policyParams field is not available on the event";
   const std::string* actual_type = policy_pause_params->FindString("type");
   EXPECT_TRUE(actual_type) << "Could not find the string with key: type";
-  const absl::optional<int> actual_count =
+  const std::optional<int> actual_count =
       policy_pause_params->FindInt("policyFileCount");
   EXPECT_TRUE(actual_count.has_value())
       << "Could not find the number with key: type";
@@ -222,7 +222,7 @@ MATCHER_P4(ExpectEventArgPauseParams,
       policy_pause_params->FindString("fileName");
   EXPECT_TRUE(actual_file_name)
       << "Could not find the string with key: fileName";
-  const absl::optional<bool> actual_always_show_review =
+  const std::optional<bool> actual_always_show_review =
       policy_pause_params->FindBool("alwaysShowReview");
   EXPECT_TRUE(actual_always_show_review.has_value())
       << "Could not find the string with key: alwaysShowReview";
@@ -254,14 +254,14 @@ MATCHER_P4(ExpectEventArgPolicyError,
 
   const std::string* actual_type = policy_error->FindString("type");
   EXPECT_TRUE(actual_type) << "Could not find the string with key: type";
-  const absl::optional<int> actual_count =
+  const std::optional<int> actual_count =
       policy_error->FindInt("policyFileCount");
   EXPECT_TRUE(actual_count.has_value())
       << "Could not find the string with key: type";
   const std::string* actual_file_name = policy_error->FindString("fileName");
   EXPECT_TRUE(actual_file_name)
       << "Could not find the string with key: fileName";
-  const absl::optional<bool> actual_always_show_review =
+  const std::optional<bool> actual_always_show_review =
       policy_error->FindBool("alwaysShowReview");
   EXPECT_TRUE(actual_always_show_review.has_value())
       << "Could not find the string with key: alwaysShowReview";

@@ -290,19 +290,18 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
       RunAutotestPrivateExtensionTest("holdingSpace", std::move(suite_args)))
       << message_;
 
-  absl::optional<base::Time> timeOfFirstAdd =
+  std::optional<base::Time> timeOfFirstAdd =
       ash::holding_space_prefs::GetTimeOfFirstAdd(prefs);
-  absl::optional<base::Time> timeOfFirstAvailability =
+  std::optional<base::Time> timeOfFirstAvailability =
       ash::holding_space_prefs::GetTimeOfFirstAvailability(prefs);
 
   ASSERT_TRUE(ash::holding_space_prefs::IsPreviewsEnabled(prefs));
   ASSERT_EQ(timeOfFirstAdd.has_value(), mark_time_of_first_add);
-  ASSERT_NE(timeOfFirstAvailability, absl::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs),
-            absl::nullopt);
+  ASSERT_NE(timeOfFirstAvailability, std::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs), std::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs),
-            absl::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
+            std::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), std::nullopt);
 
   if (timeOfFirstAdd) {
     ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);

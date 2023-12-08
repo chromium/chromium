@@ -135,7 +135,7 @@ void RecentDriveSource::GotSearchResults(
     const Params& params,
     GetRecentFilesCallback callback,
     drive::FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
   search_query_.reset();
   auto* integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);

@@ -265,7 +265,7 @@ void AddFakeAppWithIntentFilters(
     const std::string& app_id,
     std::vector<apps::IntentFilterPtr> intent_filters,
     apps::AppType app_type,
-    absl::optional<bool> handles_intents,
+    std::optional<bool> handles_intents,
     apps::AppServiceProxy* app_service_proxy) {
   std::vector<apps::AppPtr> apps;
   auto app = std::make_unique<apps::App>(app_type, app_id);
@@ -283,7 +283,7 @@ void AddFakeWebApp(const std::string& app_id,
                    const std::string& mime_type,
                    const std::string& file_extension,
                    const std::string& activity_label,
-                   absl::optional<bool> handles_intents,
+                   std::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy) {
   std::vector<apps::IntentFilterPtr> filters;
   filters.push_back(apps_util::MakeFileFilterForView(mime_type, file_extension,

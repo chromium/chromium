@@ -102,7 +102,7 @@ void AddFakeAppWithIntentFilters(
     const std::string& app_id,
     std::vector<apps::IntentFilterPtr> intent_filters,
     apps::AppType app_type,
-    absl::optional<bool> handles_intents,
+    std::optional<bool> handles_intents,
     apps::AppServiceProxy* app_service_proxy);
 
 // Add a fake web app with to the `app_service_proxy`.
@@ -110,7 +110,7 @@ void AddFakeWebApp(const std::string& app_id,
                    const std::string& mime_type,
                    const std::string& file_extension,
                    const std::string& activity_label,
-                   absl::optional<bool> handles_intents,
+                   std::optional<bool> handles_intents,
                    apps::AppServiceProxy* app_service_proxy);
 
 // Fake DriveFs specific to the `DriveTest`. The alternate URL is the only piece

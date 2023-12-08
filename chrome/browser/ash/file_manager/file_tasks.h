@@ -235,7 +235,7 @@ struct ResultingTasks {
   ~ResultingTasks();
 
   std::vector<FullTaskDescriptor> tasks;
-  absl::optional<PolicyDefaultHandlerStatus> policy_default_handler_status;
+  std::optional<PolicyDefaultHandlerStatus> policy_default_handler_status;
 };
 
 // Registers profile prefs related to file_manager.
@@ -258,8 +258,8 @@ void RemoveDefaultTask(Profile* profile,
 
 // Returns the default task for the given |mime_type|/|suffix| combination in
 // |task_out|. If it finds a MIME type match, then it prefers that over a suffix
-// match. If a default can't be found, then it returns absl::nullopt.
-absl::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
+// match. If a default can't be found, then it returns std::nullopt.
+std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
     const PrefService& pref_service,
     const std::string& mime_type,
     const std::string& suffix);
@@ -277,11 +277,11 @@ std::string MakeTaskID(const std::string& app_id,
 std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor);
 
 // Parses the task ID, extracts app ID, task type, action ID and returns the
-// created TaskDescriptor. On failure, returns absl::nullopt.
+// created TaskDescriptor. On failure, returns std::nullopt.
 //
 // See also the comment at the beginning of the file for details for how
 // "task_id" looks like.
-absl::optional<TaskDescriptor> ParseTaskID(const std::string& task_id);
+std::optional<TaskDescriptor> ParseTaskID(const std::string& task_id);
 
 // The callback is used for ExecuteFileTask().
 typedef base::OnceCallback<void(

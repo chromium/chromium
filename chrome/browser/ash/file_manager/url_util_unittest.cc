@@ -26,7 +26,7 @@ namespace {
 // Parse a JSON query string into a base::Value.
 base::Value ParseJsonQueryString(const std::string& query) {
   const std::string json = base::UnescapeBinaryURLComponent(query);
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value = base::JSONReader::Read(json);
   return value ? std::move(*value) : base::Value();
 }
 

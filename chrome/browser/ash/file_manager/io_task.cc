@@ -84,8 +84,8 @@ ResumeParams& ResumeParams::operator=(ResumeParams&& other) = default;
 ResumeParams::~ResumeParams() = default;
 
 EntryStatus::EntryStatus(storage::FileSystemURL file_url,
-                         absl::optional<base::File::Error> file_error,
-                         absl::optional<storage::FileSystemURL> source_url)
+                         std::optional<base::File::Error> file_error,
+                         std::optional<storage::FileSystemURL> source_url)
     : url(file_url), error(file_error), source_url(source_url) {}
 
 EntryStatus::~EntryStatus() = default;
@@ -163,7 +163,7 @@ DummyIOTask::DummyIOTask(std::vector<storage::FileSystemURL> source_urls,
   progress_.total_bytes = 2;
 
   for (auto& url : source_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
   }
 }
 

@@ -52,7 +52,7 @@ RestoreIOTask::RestoreIOTask(
   progress_.total_bytes = 0;
 
   for (const auto& url : file_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
   }
 
   if (file_urls.size() > 0) {
@@ -184,11 +184,11 @@ void RestoreIOTask::RestoreItem(
       CreateFileSystemURL(progress_.sources[idx].url,
                           MakeRelativeFromBasePath(trashed_file_location));
   if (!destination_result.has_value()) {
-    progress_.outputs.emplace_back(source_url, absl::nullopt);
+    progress_.outputs.emplace_back(source_url, std::nullopt);
     OnRestoreItem(idx, destination_result.error());
     return;
   }
-  progress_.outputs.emplace_back(destination_result.value(), absl::nullopt);
+  progress_.outputs.emplace_back(destination_result.value(), std::nullopt);
 
   // File browsers generally default to preserving mtimes on copy/move so we
   // should do the same.

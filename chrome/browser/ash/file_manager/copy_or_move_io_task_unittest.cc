@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -33,7 +34,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using ::base::test::RunClosure;
@@ -60,7 +60,7 @@ MATCHER_P(EntryStatusUrls, matcher, "") {
 }
 
 MATCHER_P(EntryStatusErrors, matcher, "") {
-  std::vector<absl::optional<base::File::Error>> errors;
+  std::vector<std::optional<base::File::Error>> errors;
   for (const auto& status : arg) {
     errors.push_back(status.error);
   }
@@ -112,7 +112,7 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
                               drive::FileError error,
                               drivefs::mojom::PooledQuotaUsagePtr usage) {
     progress_.sources.emplace_back(CreateFileSystemURL("foo.txt"),
-                                   absl::nullopt);
+                                   std::nullopt);
     base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder"));
     progress_.SetDestinationFolder(CreateFileSystemURL("dest_folder/"));
     CopyOrMoveIOTaskImpl task(GetParam(), progress_, {},
@@ -128,7 +128,7 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
   State CheckSharedDriveQuota(drive::FileError error,
                               drivefs::mojom::FileMetadataPtr metadata) {
     progress_.sources.emplace_back(CreateFileSystemURL("foo.txt"),
-                                   absl::nullopt);
+                                   std::nullopt);
     base::CreateDirectory(temp_dir_.GetPath().Append("dest_folder"));
     progress_.SetDestinationFolder(CreateFileSystemURL("dest_folder/"));
     CopyOrMoveIOTaskImpl task(GetParam(), progress_, {},
@@ -189,7 +189,7 @@ TEST_P(CopyOrMoveIOTaskTest, Basic) {
                 Field(&ProgressStatus::bytes_transferred, kTestFileSize),
                 Field(&ProgressStatus::sources,
                       EntryStatusErrors(
-                          ElementsAre(base::File::FILE_OK, absl::nullopt))),
+                          ElementsAre(base::File::FILE_OK, std::nullopt))),
                 Field(&ProgressStatus::outputs,
                       EntryStatusUrls(ElementsAre(expected_output_urls[0]))),
                 Field(&ProgressStatus::outputs,
@@ -337,7 +337,7 @@ TEST_P(CopyOrMoveIOTaskTest, MissingSource) {
                 Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
                 Field(&ProgressStatus::sources,
                       EntryStatusErrors(ElementsAre(
-                          base::File::FILE_ERROR_NOT_FOUND, absl::nullopt))),
+                          base::File::FILE_ERROR_NOT_FOUND, std::nullopt))),
                 Field(&ProgressStatus::outputs, IsEmpty()))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 

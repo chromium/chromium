@@ -284,8 +284,8 @@ void CrostiniPackageNotification::Close(bool by_user) {
 }
 
 void CrostiniPackageNotification::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (current_status_ == PackageOperationStatus::FAILED) {
     crostini::ShowCrostiniPackageInstallFailureView(error_message_);
   }

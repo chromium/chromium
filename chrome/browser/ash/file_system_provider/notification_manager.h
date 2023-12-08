@@ -53,11 +53,11 @@ class NotificationManager : public NotificationManagerInterface,
       const std::string& id,
       const gfx::ImageSkia& image,
       bool is_placeholder_icon,
-      const absl::optional<gfx::ImageSkia>& badge_image) override;
+      const std::optional<gfx::ImageSkia>& badge_image) override;
 
   // message_center::NotificationObserver overrides:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
   void Close(bool by_user) override;
 
  private:

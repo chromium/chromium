@@ -185,7 +185,7 @@ bool IsUninstallable(Profile* profile, const std::string& app_id) {
   }
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+  std::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
   if (registration) {
     return registration->CanUninstall();
@@ -292,7 +292,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+  std::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
 
   if (!registration) {

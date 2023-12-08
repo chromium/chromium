@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -214,7 +214,7 @@ class CopyOrMoveIOTaskImpl {
 
   // Stores the id of the copy or move operation if one is in progress. Used so
   // the transfer can be cancelled.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.

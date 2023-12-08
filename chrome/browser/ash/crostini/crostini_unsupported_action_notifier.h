@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UNSUPPORTED_ACTION_NOTIFIER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
 
 namespace crostini {

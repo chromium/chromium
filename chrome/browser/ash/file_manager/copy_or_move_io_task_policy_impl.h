@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_IO_TASK_POLICY_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 class FileTransferAnalysisDelegate;
@@ -57,7 +57,7 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
       OperationType type,
       ProgressStatus& progress,
       std::vector<base::FilePath> destination_file_names,
-      std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+      std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
           settings,
       storage::FileSystemURL destination_folder,
       Profile* profile,
@@ -101,7 +101,7 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // This resumes the transfer and allows for the warned files to be transferred
   // if the warning is proceeded.
   void OnConnectorsWarnDialogResult(
-      absl::optional<std::u16string> user_justification,
+      std::optional<std::u16string> user_justification,
       bool should_proceed);
 
   // Checks `file_transfer_analysis_delegates_[idx]` whether a transfer is
@@ -127,8 +127,7 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
 
   // Stores the settings, only valid until creation of respective.
   // FileTransferAnalysisDelegate.
-  std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
-      settings_;
+  std::vector<std::optional<enterprise_connectors::AnalysisSettings>> settings_;
   // Stores the delegates responsible for the file scanning.
   // Will be empty if the FileTransferConnector is disabled. If scanning is
   // disabled for a source-destination-pair, the unique_ptr will be nullptr. If

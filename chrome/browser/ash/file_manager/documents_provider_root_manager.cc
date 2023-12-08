@@ -180,7 +180,7 @@ void DocumentsProviderRootManager::RequestGetRoots() {
 }
 
 void DocumentsProviderRootManager::OnGetRoots(
-    absl::optional<std::vector<arc::mojom::RootPtr>> maybe_roots) {
+    std::optional<std::vector<arc::mojom::RootPtr>> maybe_roots) {
   if (!maybe_roots.has_value()) {
     return;
   }

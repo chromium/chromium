@@ -167,7 +167,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   list.Append(has_more);
   list.Append(execution_time);
 
-  absl::optional<Params> params = Params::Create(std::move(list));
+  std::optional<Params> params = Params::Create(std::move(list));
   ASSERT_TRUE(params.has_value());
   RequestValue request_value =
       RequestValue::CreateForReadFileSuccess(std::move(*params));

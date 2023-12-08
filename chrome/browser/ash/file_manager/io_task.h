@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_
 
 #include <cstddef>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -157,9 +157,9 @@ struct PauseParams {
   ~PauseParams();
 
   // Set iff pausing due to name conflict.
-  absl::optional<ConflictPauseParams> conflict_params;
+  std::optional<ConflictPauseParams> conflict_params;
   // Set iff pausing due to a policy warning.
-  absl::optional<PolicyPauseParams> policy_params;
+  std::optional<PolicyPauseParams> policy_params;
 };
 
 // Resume I/O task parameters when paused because of a name conflict.
@@ -191,17 +191,16 @@ struct ResumeParams {
   ~ResumeParams();
 
   // Set iff paused due to name conflict.
-  absl::optional<ConflictResumeParams> conflict_params;
+  std::optional<ConflictResumeParams> conflict_params;
   // Set iff paused due to a policy warning.
-  absl::optional<PolicyResumeParams> policy_params;
+  std::optional<PolicyResumeParams> policy_params;
 };
 
 // Represents the status of a particular entry in an I/O task.
 struct EntryStatus {
-  EntryStatus(
-      storage::FileSystemURL file_url,
-      absl::optional<base::File::Error> file_error,
-      absl::optional<storage::FileSystemURL> source_url = absl::nullopt);
+  EntryStatus(storage::FileSystemURL file_url,
+              std::optional<base::File::Error> file_error,
+              std::optional<storage::FileSystemURL> source_url = std::nullopt);
   ~EntryStatus();
 
   EntryStatus(EntryStatus&& other);
@@ -211,11 +210,11 @@ struct EntryStatus {
   storage::FileSystemURL url;
 
   // May be empty if the entry has not been fully processed yet.
-  absl::optional<base::File::Error> error;
+  std::optional<base::File::Error> error;
 
   // The source from which the entry identified by `url` is generated. May be
   // empty if not relevant.
-  absl::optional<storage::FileSystemURL> source_url;
+  std::optional<storage::FileSystemURL> source_url;
 
   // True if entry is a directory when its metadata is processed.
   bool is_directory = false;
@@ -269,7 +268,7 @@ class ProgressStatus {
   // Information about policy errors that occurred, if any. Empty otherwise.
   // Can be set only if Data Leak Prevention or Enterprise Connectors policies
   // apply.
-  absl::optional<PolicyError> policy_error;
+  std::optional<PolicyError> policy_error;
 
   // I/O Operation type (e.g. copy, move).
   OperationType type;

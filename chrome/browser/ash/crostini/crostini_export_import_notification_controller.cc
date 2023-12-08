@@ -98,7 +98,7 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
 
   delegate_->SetCallback(base::BindRepeating(
       [](Profile* profile, ExportImportType type,
-         guest_os::GuestId container_id, absl::optional<int> button_index) {
+         guest_os::GuestId container_id, std::optional<int> button_index) {
         if (!button_index.has_value()) {
           return;
         }

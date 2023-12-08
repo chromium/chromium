@@ -79,7 +79,7 @@ class FakeEventRouter : public extensions::EventRouter {
         dict->GetDict().FindString("fileSystemId");
     EXPECT_NE(file_system_id, nullptr);
     EXPECT_EQ(kFileSystemId, *file_system_id);
-    absl::optional<int> id = dict->GetDict().FindInt("requestId");
+    std::optional<int> id = dict->GetDict().FindInt("requestId");
     EXPECT_TRUE(id);
     int request_id = *id;
     EXPECT_TRUE(event->event_name == extensions::api::file_system_provider::
@@ -99,7 +99,7 @@ class FakeEventRouter : public extensions::EventRouter {
 
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      absl::optional<Params> params(Params::Create(list));
+      std::optional<Params> params(Params::Create(list));
       ASSERT_TRUE(params.has_value());
       file_system_->GetRequestManager()->FulfillRequest(
           request_id,

@@ -78,7 +78,7 @@ ZipIOTask::ZipIOTask(
   progress_.total_bytes = 0;
 
   for (auto& url : source_urls) {
-    progress_.sources.emplace_back(std::move(url), absl::nullopt);
+    progress_.sources.emplace_back(std::move(url), std::nullopt);
   }
 }
 
@@ -203,7 +203,7 @@ void ZipIOTask::ZipItems(
     Complete(State::kError);
     return;
   }
-  progress_.outputs.emplace_back(destination_result.value(), absl::nullopt);
+  progress_.outputs.emplace_back(destination_result.value(), std::nullopt);
   progress_callback_.Run(progress_);
 
   zip_file_creator_ = base::MakeRefCounted<ZipFileCreator>(

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
@@ -64,7 +65,6 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 using base::test::TestFuture;
@@ -405,7 +405,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
   EXPECT_TRUE(result_future.Get());
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   auto notification = notification_service.GetNotification("crostini_low_disk");
-  EXPECT_NE(absl::nullopt, notification);
+  EXPECT_NE(std::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest,
@@ -428,7 +428,7 @@ TEST_F(CrostiniManagerTest,
   EXPECT_TRUE(result_future.Get());
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   auto notification = notification_service.GetNotification("crostini_low_disk");
-  EXPECT_EQ(absl::nullopt, notification);
+  EXPECT_EQ(std::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {

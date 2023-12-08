@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/fileapi/recent_source.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -124,7 +124,7 @@ class RecentModel : public KeyedService {
   FileAccumulator accumulator_;
 
   // Cached GetRecentFiles() response.
-  absl::optional<std::vector<RecentFile>> cached_files_ = absl::nullopt;
+  std::optional<std::vector<RecentFile>> cached_files_ = std::nullopt;
 
   // The parameters of the last query. These are used to check if the
   // cached content can be re-used.
@@ -152,7 +152,7 @@ class RecentModel : public KeyedService {
 
   // If set, limits the length of time the GetRecentFiles method can take before
   // returning results, if any, in the callback.
-  absl::optional<base::TimeDelta> scan_timeout_duration_;
+  std::optional<base::TimeDelta> scan_timeout_duration_;
 
   // The monotically increasing sequence number. Used to distinguish between
   // current and timed out calls.

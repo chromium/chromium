@@ -213,7 +213,7 @@ fmp::IOTaskType GetIOTaskType(io_task::OperationType type) {
 }
 
 fmp::PolicyErrorType GetPolicyErrorType(
-    absl::optional<io_task::PolicyErrorType> type) {
+    std::optional<io_task::PolicyErrorType> type) {
   if (!type.has_value()) {
     return fmp::PolicyErrorType::kNone;
   }
@@ -622,7 +622,7 @@ EventRouter::EventRouter(Profile* profile)
 EventRouter::~EventRouter() = default;
 
 void EventRouter::OnIntentFiltersUpdated(
-    const absl::optional<std::string>& package_name) {
+    const std::optional<std::string>& package_name) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_APPS_UPDATED,

@@ -89,7 +89,7 @@ std::unique_ptr<ProviderInterface> ExtensionProvider::Create(
                    .multiple_mounts = capabilities->multiple_mounts(),
                    .source = capabilities->source()},
       extension->name(),
-      /*icon_set=*/absl::nullopt);
+      /*icon_set=*/std::nullopt);
 }
 
 std::unique_ptr<ProvidedFileSystemInterface>
@@ -143,7 +143,7 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
                                      ProviderId id,
                                      Capabilities capabilities,
                                      std::string name,
-                                     absl::optional<IconSet> icon_set)
+                                     std::optional<IconSet> icon_set)
     : provider_id_(std::move(id)),
       capabilities_(std::move(capabilities)),
       name_(std::move(name)),

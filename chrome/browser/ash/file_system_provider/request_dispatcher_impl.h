@@ -46,10 +46,10 @@ class RequestDispatcherImpl : public RequestDispatcher {
   RequestDispatcherImpl& operator=(const RequestDispatcherImpl&) = delete;
 
   bool DispatchRequest(int request_id,
-                       absl::optional<std::string> file_system_id,
+                       std::optional<std::string> file_system_id,
                        std::unique_ptr<extensions::Event> event) override;
   void CancelRequest(int request_id,
-                     absl::optional<std::string> file_system_id) override;
+                     std::optional<std::string> file_system_id) override;
 
  private:
   // This method is only used when Lacros is enabled. It's a callback from

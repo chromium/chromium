@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -47,7 +47,7 @@ void DoReportOnlyScanning(
     std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>
         previous_file_transfer_analysis_delegate,
     size_t idx,
-    std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+    std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
         settings,
     std::vector<storage::FileSystemURL> sources,
     std::vector<storage::FileSystemURL> outputs,
@@ -90,7 +90,7 @@ void DoReportOnlyScanning(
 // The `io_task_completion_callback` will be run before the scans are executed.
 void StartReportOnlyScanning(
     IOTask::CompleteCallback io_task_completion_callback,
-    std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+    std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
         settings,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
@@ -154,7 +154,7 @@ CopyOrMoveIOTaskPolicyImpl::CopyOrMoveIOTaskPolicyImpl(
     OperationType type,
     ProgressStatus& progress,
     std::vector<base::FilePath> destination_file_names,
-    std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+    std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
         settings,
     storage::FileSystemURL destination_folder,
     Profile* profile,
@@ -175,7 +175,7 @@ CopyOrMoveIOTaskPolicyImpl::CopyOrMoveIOTaskPolicyImpl(
     // just check the value for the first valid setting.
     auto valid_setting = base::ranges::find_if(
         settings_,
-        [](const absl::optional<enterprise_connectors::AnalysisSettings>&
+        [](const std::optional<enterprise_connectors::AnalysisSettings>&
                setting) { return setting.has_value(); });
     report_only_scans_ = valid_setting->value().block_until_verdict ==
                          enterprise_connectors::BlockUntilVerdict::kNoBlock;
@@ -460,7 +460,7 @@ bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
 }
 
 void CopyOrMoveIOTaskPolicyImpl::OnConnectorsWarnDialogResult(
-    absl::optional<std::u16string> user_justification,
+    std::optional<std::u16string> user_justification,
     bool should_proceed) {
   if (!should_proceed) {
     // No need to cancel. Cancel will be called from

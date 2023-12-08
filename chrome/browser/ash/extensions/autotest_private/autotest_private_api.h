@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_AUTOTEST_PRIVATE_AUTOTEST_PRIVATE_API_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/display/display.h"
@@ -745,7 +745,7 @@ class AutotestPrivateSetAssistantEnabledFunction
   // will respond with an error.
   void Timeout();
 
-  absl::optional<bool> enabled_;
+  std::optional<bool> enabled_;
   base::OneShotTimer timeout_timer_;
 };
 
@@ -776,7 +776,7 @@ class AutotestPrivateSendAssistantTextQueryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   // Called when the interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const absl::optional<std::string>& error);
+  void OnInteractionFinishedCallback(const std::optional<std::string>& error);
 
   // Called when Assistant service fails to respond in a certain amount of
   // time. We will respond with an error.
@@ -803,7 +803,7 @@ class AutotestPrivateWaitForAssistantQueryStatusFunction
   ResponseAction Run() override;
 
   // Called when the current interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const absl::optional<std::string>& error);
+  void OnInteractionFinishedCallback(const std::optional<std::string>& error);
 
   // Called when Assistant service fails to respond in a certain amount of
   // time. We will respond with an error.
@@ -1158,10 +1158,10 @@ class AutotestPrivateWaitForDisplayRotationFunction
   ~AutotestPrivateWaitForDisplayRotationFunction() override;
   ResponseAction Run() override;
 
-  absl::optional<ResponseValue> CheckScreenRotationAnimation();
+  std::optional<ResponseValue> CheckScreenRotationAnimation();
 
   int64_t display_id_ = display::kInvalidDisplayId;
-  absl::optional<display::Display::Rotation> target_rotation_;
+  std::optional<display::Display::Rotation> target_rotation_;
   // A reference to keep the instance alive while waiting for rotation.
   scoped_refptr<ExtensionFunction> self_;
 };

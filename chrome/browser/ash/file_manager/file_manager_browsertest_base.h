@@ -72,7 +72,7 @@ class SmbfsTestVolume;
 ash::LoggedInUserMixin::LogInType LogInTypeFor(
     TestAccountType test_account_type);
 
-absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type);
+std::optional<AccountId> AccountIdFor(TestAccountType test_account_type);
 
 class FileManagerBrowserTestBase
     : public content::DevToolsAgentHostObserver,

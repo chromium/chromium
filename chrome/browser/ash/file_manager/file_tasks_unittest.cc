@@ -223,7 +223,7 @@ class FileManagerFileTaskWithAppServiceTest : public testing::Test {
   }
 
   void AddFakeAppToAppService(const std::string& app_id,
-                              const absl::optional<std::string>& package_name,
+                              const std::optional<std::string>& package_name,
                               std::vector<std::string> policy_ids,
                               apps::AppType app_type) {
     auto app = std::make_unique<apps::App>(app_type, app_id);

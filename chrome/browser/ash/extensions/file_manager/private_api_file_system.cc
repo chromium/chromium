@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -110,7 +111,6 @@
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -215,7 +215,7 @@ ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
   return ash::disks::FormatFileSystemType::kUnknown;
 }
 
-absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
+std::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
     api::file_manager_private::IOTaskType type) {
   switch (type) {
     case api::file_manager_private::IOTaskType::kCopy:
@@ -302,7 +302,7 @@ policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
   return policy::FilesDialogType::kUnknown;
 }
 
-absl::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
+std::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     api::file_manager_private::PolicyErrorType type) {
   switch (type) {
     case api::file_manager_private::PolicyErrorType::kDlp:
@@ -310,12 +310,12 @@ absl::optional<policy::Policy> ApiPolicyErrorTypeToChromeEnum(
     case api::file_manager_private::PolicyErrorType::kEnterpriseConnectors:
       return policy::Policy::kEnterpriseConnectors;
     case api::file_manager_private::PolicyErrorType::kNone:
-      return absl::nullopt;
+      return std::nullopt;
     case api::file_manager_private::PolicyErrorType::kDlpWarningTimeout:
       NOTREACHED() << "Unexpected policy type " << base::to_underlying(type);
   }
   NOTREACHED() << "Unknown policy error type " << base::to_underlying(type);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Handles a callback from the LocalImageSearchService. The job of this function
@@ -354,7 +354,7 @@ FileManagerPrivateGrantAccessFunction::FileManagerPrivateGrantAccessFunction() =
 
 ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
   using extensions::api::file_manager_private::GrantAccess::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -576,7 +576,7 @@ bool FileManagerPrivateInternalRemoveFileWatchFunction::IsAddWatch() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetSizeStatsFunction::Run() {
   using extensions::api::file_manager_private::GetSizeStats::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   VolumeManager* const volume_manager =
@@ -723,7 +723,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDriveQuotaMetadataFunction::Run() {
   using extensions::api::file_manager_private_internal::GetDriveQuotaMetadata::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -809,7 +809,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalValidatePathNameLengthFunction::Run() {
   using extensions::api::file_manager_private_internal::ValidatePathNameLength::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -841,7 +841,7 @@ void FileManagerPrivateInternalValidatePathNameLengthFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateFormatVolumeFunction::Run() {
   using extensions::api::file_manager_private::FormatVolume::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   VolumeManager* const volume_manager =
@@ -866,7 +866,7 @@ FileManagerPrivateFormatVolumeFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateSinglePartitionFormatFunction::Run() {
   using extensions::api::file_manager_private::SinglePartitionFormat::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const DiskMountManager::Disks& disks =
@@ -901,7 +901,7 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateRenameVolumeFunction::Run() {
   using extensions::api::file_manager_private::RenameVolume::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   VolumeManager* const volume_manager =
@@ -943,7 +943,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
 
   using extensions::api::file_manager_private_internal::GetDisallowedTransfers::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   profile_ = Profile::FromBrowserContext(browser_context());
@@ -976,8 +976,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
       static_cast<policy::DlpFilesControllerAsh*>(
           rules_manager->GetDlpFilesController());
   files_controller->CheckIfTransferAllowed(
-      /*task_id=*/absl::nullopt, source_urls_, destination_url_,
-      params->is_move,
+      /*task_id=*/std::nullopt, source_urls_, destination_url_, params->is_move,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
                          OnGetDisallowedFiles,
                      this));
@@ -1039,7 +1038,7 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
   }
 
   using extensions::api::file_manager_private_internal::GetDlpMetadata::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -1059,7 +1058,7 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
       static_cast<policy::DlpFilesControllerAsh*>(
           rules_manager->GetDlpFilesController());
 
-  absl::optional<policy::DlpFileDestination> destination;
+  std::optional<policy::DlpFileDestination> destination;
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     LOG(WARNING) << "Failed to locate WebContents";
@@ -1121,7 +1120,7 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   }
 
   using extensions::api::file_manager_private::GetDlpRestrictionDetails::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   policy::DlpFilesControllerAsh* files_controller =
@@ -1174,7 +1173,7 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
   }
 
   using extensions::api::file_manager_private::GetDlpBlockedComponents::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::vector<data_controls::Component> components =
@@ -1194,7 +1193,7 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetDialogCallerFunction::Run() {
-  absl::optional<policy::DlpFileDestination> caller =
+  std::optional<policy::DlpFileDestination> caller =
       SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
           GetSenderWebContents());
   base::Value::Dict info;
@@ -1216,7 +1215,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   using extensions::api::file_manager_private_internal::ResolveIsolatedEntries::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -1300,7 +1299,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalComputeChecksumFunction::Run() {
   using drive::util::FileStreamMd5Digester;
   using extensions::api::file_manager_private_internal::ComputeChecksum::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->url.empty()) {
@@ -1345,7 +1344,7 @@ FileManagerPrivateSearchFilesByHashesFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateSearchFilesByHashesFunction::Run() {
   using api::file_manager_private::SearchFilesByHashes::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // TODO(hirono): Check the volume ID and fail the function for volumes other
@@ -1456,7 +1455,7 @@ FileManagerPrivateInternalSearchFilesFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSearchFilesFunction::Run() {
   using api::file_manager_private_internal::SearchFiles::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   const auto& search_params = params->search_params;
 
@@ -1601,7 +1600,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDirectorySizeFunction::Run() {
   using extensions::api::file_manager_private_internal::GetDirectorySize::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->url.empty()) {
@@ -1649,7 +1648,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private_internal::StartIOTask::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* const profile = Profile::FromBrowserContext(browser_context());
@@ -1791,7 +1790,7 @@ FileManagerPrivateCancelIOTaskFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private::CancelIOTask::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   VolumeManager* const volume_manager =
@@ -1813,7 +1812,7 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private::ResumeIOTask::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   VolumeManager* const volume_manager =
@@ -1835,7 +1834,7 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
         params->params.conflict_params->conflict_apply_to_all.value_or(false);
   }
   if (params->params.policy_params) {
-    absl::optional<policy::Policy> policy =
+    std::optional<policy::Policy> policy =
         ApiPolicyErrorTypeToChromeEnum(params->params.policy_params->type);
     if (policy.has_value()) {
       io_task_resume_params.policy_params.emplace();
@@ -1854,7 +1853,7 @@ FileManagerPrivateDismissIOTaskFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private::DismissIOTask::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->task_id <= 0) {
@@ -1880,7 +1879,7 @@ FileManagerPrivateShowPolicyDialogFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private::ShowPolicyDialog::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->task_id <= 0) {
@@ -1934,7 +1933,7 @@ FileManagerPrivateInternalParseTrashInfoFilesFunction::Run() {
 
   using extensions::api::file_manager_private_internal::ParseTrashInfoFiles::
       Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* const profile = Profile::FromBrowserContext(browser_context());

@@ -44,7 +44,7 @@ class LoginScreenUiCloseFunction : public ExtensionFunction {
 
  private:
   // Callback upon completion of window closing.
-  void OnClosed(bool success, const absl::optional<std::string>& error);
+  void OnClosed(bool success, const std::optional<std::string>& error);
 };
 
 }  // namespace extensions

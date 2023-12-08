@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -65,7 +65,7 @@ class ExternalCacheImplTest : public testing::Test,
     return test_shared_loader_factory_;
   }
 
-  const absl::optional<base::Value::Dict>& provided_prefs() { return prefs_; }
+  const std::optional<base::Value::Dict>& provided_prefs() { return prefs_; }
   const std::set<extensions::ExtensionId>& deleted_extension_files() const {
     return deleted_extension_files_;
   }
@@ -137,7 +137,7 @@ class ExternalCacheImplTest : public testing::Test,
 
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
-  absl::optional<base::Value::Dict> prefs_;
+  std::optional<base::Value::Dict> prefs_;
   std::set<extensions::ExtensionId> deleted_extension_files_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

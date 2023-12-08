@@ -88,7 +88,7 @@ void EmptyTrashIOTask::RemoveTrashSubDirectory(
           storage_key_, storage::FileSystemType::kFileSystemTypeLocal,
           trash_path.Append(folder_name_to_remove));
 
-  progress_.outputs.emplace_back(trash_url, absl::nullopt);
+  progress_.outputs.emplace_back(trash_url, std::nullopt);
 
   auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &EmptyTrashIOTask::OnRemoveTrashSubDirectory,

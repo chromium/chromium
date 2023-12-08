@@ -31,7 +31,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
   using extensions::api::file_manager_private_internal::
       ToggleAddedToHoldingSpace::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ash::HoldingSpaceKeyedService* const holding_space =

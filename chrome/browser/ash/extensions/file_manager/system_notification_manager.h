@@ -160,7 +160,7 @@ class SystemNotificationManager {
       file_manager::io_task::IOTaskId task_id,
       const std::string& notification_id,
       const bool paused,
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // Returns an instance of an 'ash' Notification with title and message
   // specified by string ID values (for 110n).
@@ -210,7 +210,7 @@ class SystemNotificationManager {
   NotificationPtr MakeDriveSyncErrorNotification(const Event& event);
 
   // Click handler for the Drive offline confirmation dialog notification.
-  void HandleDriveDialogClick(absl::optional<int> button_index);
+  void HandleDriveDialogClick(std::optional<int> button_index);
 
   // Make notification from the DriveFS offline settings event.
   NotificationPtr MakeDriveConfirmDialogNotification(const Event& event);
@@ -226,18 +226,18 @@ class SystemNotificationManager {
       const std::string& path,
       const std::vector<DeviceNotificationUserActionUmaType>&
           uma_types_for_buttons,
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // Click handler for Data Leak Prevention or Enterprise Connectors policy
   // notifications.
   void HandleDataProtectionPolicyNotificationClick(
       base::RepeatingClosure proceed_callback,
       base::RepeatingClosure cancel_callback,
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // Click handler for the progress notification.
   void HandleProgressClick(const std::string& notification_id,
-                           absl::optional<int> button_index);
+                           std::optional<int> button_index);
 
   // Makes a notification instance for mount errors.
   NotificationPtr MakeMountErrorNotification(

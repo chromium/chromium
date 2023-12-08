@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,7 +48,6 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
 namespace file_manager::io_task {
@@ -518,12 +518,12 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
 
   if (!destination_result.has_value()) {
     progress_->outputs.emplace_back(progress_->GetDestinationFolder(),
-                                    absl::nullopt);
+                                    std::nullopt);
     OnCopyOrMoveComplete(idx, destination_result.error());
     return;
   }
 
-  progress_->outputs.emplace_back(destination_result.value(), absl::nullopt);
+  progress_->outputs.emplace_back(destination_result.value(), std::nullopt);
   DCHECK_EQ(idx + 1, progress_->outputs.size());
 
   const storage::FileSystemURL& source_url = progress_->sources[idx].url;

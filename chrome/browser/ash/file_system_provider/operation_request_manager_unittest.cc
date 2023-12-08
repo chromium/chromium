@@ -33,12 +33,12 @@ namespace {
 
 const RequestType kTestRequestType = RequestType::kGetMetadata;
 
-absl::optional<std::string> GetTestingParamFromResult(
+std::optional<std::string> GetTestingParamFromResult(
     const RequestValue& result) {
   if (const std::string* testing_param = result.testing_params()) {
     return *testing_param;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Fake implementation for the notification manager. Simulates user action on
@@ -135,7 +135,7 @@ class EventLogger {
     virtual ~SuccessEvent() {}
 
     int request_id() const { return request_id_; }
-    const absl::optional<std::string>& testing_param() const {
+    const std::optional<std::string>& testing_param() const {
       return testing_param_;
     }
     bool has_more() const { return has_more_; }
@@ -143,7 +143,7 @@ class EventLogger {
 
    private:
     int request_id_;
-    absl::optional<std::string> testing_param_;
+    std::optional<std::string> testing_param_;
     bool result_is_valid_;
     bool has_more_;
   };

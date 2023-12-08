@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_RESTORE_IO_TASK_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_RESTORE_IO_TASK_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_error_or.h"
@@ -15,7 +16,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -97,7 +97,7 @@ class RestoreIOTask : public IOTask {
 
   // Stores the id of the restore operation if one is in progress. Used so the
   // restore can be cancelled.
-  absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+  std::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   // Validates and parses .trashinfo files.
   std::unique_ptr<trash::TrashInfoValidator> validator_ = nullptr;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -38,7 +39,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -256,7 +256,7 @@ NotificationPtr SystemNotificationManager::CreateNotification(
 
 void SystemNotificationManager::HandleProgressClick(
     const std::string& notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (button_index) {
     // Cancel the copy operation.
     FileSystemContextPtr file_system_context =
@@ -353,7 +353,7 @@ void SystemNotificationManager::HandleIOTaskProgressNotificationClick(
     IOTaskId task_id,
     const std::string& notification_id,
     const bool paused,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
@@ -621,7 +621,7 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
 static const char kDriveDialogId[] = "swa-drive-confirm-dialog";
 
 void SystemNotificationManager::HandleDriveDialogClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   drivefs::mojom::DialogResult result = drivefs::mojom::DialogResult::kDismiss;
   if (button_index) {
     if (button_index.value() == 1) {
@@ -862,7 +862,7 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
     const std::string& path,
     const std::vector<DeviceNotificationUserActionUmaType>&
         uma_types_for_buttons,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (button_index) {
     if (button_index.value() == 0) {
       base::FilePath volume_root(path);
@@ -885,7 +885,7 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
     RepeatingClosure proceed_callback,
     RepeatingClosure cancel_callback,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }

@@ -297,10 +297,10 @@ void ExternalCacheImpl::PutExternalExtension(
 }
 
 void ExternalCacheImpl::SetBackoffPolicy(
-    absl::optional<net::BackoffEntry::Policy> backoff_policy) {
+    std::optional<net::BackoffEntry::Policy> backoff_policy) {
   backoff_policy_ = backoff_policy;
   if (downloader_) {
-    // If `backoff_policy` is `absl::nullopt`, it will reset to default backoff
+    // If `backoff_policy` is `std::nullopt`, it will reset to default backoff
     // policy.
     downloader_->SetBackoffPolicy(backoff_policy);
   }

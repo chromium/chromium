@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chrome/common/chrome_features.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -43,7 +43,7 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
   progress_.total_bytes = 0;
 
   for (const auto& url : source_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
   }
 
   source_urls_ = std::move(source_urls);
@@ -78,7 +78,7 @@ void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
   // Check if scanning is enabled.
   bool scanning_feature_enabled =
       base::FeatureList::IsEnabled(features::kFileTransferEnterpriseConnector);
-  std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+  std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
       scanning_settings;
   if (scanning_feature_enabled) {
     scanning_settings =

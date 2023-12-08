@@ -54,13 +54,13 @@ class DriveFileSuggestionProvider : public FileSuggestionProvider {
   // file suggestion data before validation.
   void OnDriveFilePathsLocated(
       std::vector<ItemSuggestCache::Result> raw_suggest_results,
-      absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+      std::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
 
   // Ends the validation on drive suggestion file paths and publishes the
   // result.
   void EndDriveFilePathValidation(
       DriveSuggestValidationStatus validation_status,
-      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
+      const std::optional<std::vector<FileSuggestData>>& suggest_results);
 
   const raw_ptr<Profile> profile_;
 

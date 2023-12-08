@@ -53,7 +53,7 @@ MATCHER_P(EntryStatusUrls, matcher, "") {
 // `std::vector<EntryStatus>` ignoring the `url` field. The supplied `arg`
 // should be a `std::vector<base::File::Error>` to match against.
 MATCHER_P(EntryStatusErrors, matcher, "") {
-  std::vector<absl::optional<base::File::Error>> errors;
+  std::vector<std::optional<base::File::Error>> errors;
   for (const auto& status : arg) {
     errors.push_back(status.error);
   }

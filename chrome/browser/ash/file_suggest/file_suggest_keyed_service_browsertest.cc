@@ -30,14 +30,13 @@ class MockObserver : public FileSuggestKeyedService::Observer {
   void WaitUntilFetchingSuggestData() { run_loop_.Run(); }
 
   // Returns the most recently fetched suggest data.
-  const absl::optional<std::vector<FileSuggestData>>& last_fetched_data()
-      const {
+  const std::optional<std::vector<FileSuggestData>>& last_fetched_data() const {
     return last_fetched_data_;
   }
 
  private:
   void OnSuggestFileDataFetched(
-      const absl::optional<std::vector<FileSuggestData>>& suggest_data_array) {
+      const std::optional<std::vector<FileSuggestData>>& suggest_data_array) {
     last_fetched_data_ = suggest_data_array;
     run_loop_.Quit();
   }
@@ -52,7 +51,7 @@ class MockObserver : public FileSuggestKeyedService::Observer {
 
   const raw_ptr<FileSuggestKeyedService, ExperimentalAsh> file_suggest_service_;
   base::RunLoop run_loop_;
-  absl::optional<std::vector<FileSuggestData>> last_fetched_data_;
+  std::optional<std::vector<FileSuggestData>> last_fetched_data_;
   base::ScopedObservation<FileSuggestKeyedService,
                           FileSuggestKeyedService::Observer>
       file_suggest_service_observation_{this};
@@ -82,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
   service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(
-          [](const absl::optional<std::vector<FileSuggestData>>& suggest_data) {
+          [](const std::optional<std::vector<FileSuggestData>>& suggest_data) {
             EXPECT_FALSE(suggest_data.has_value());
           }));
   tester.ExpectBucketCount("Ash.Search.DriveFileSuggestDataValidation.Status",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_DRIVE_SOURCE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -55,7 +55,7 @@ class RecentDriveSource : public RecentSource {
       const Params& params,
       GetRecentFilesCallback callback,
       drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
+      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 

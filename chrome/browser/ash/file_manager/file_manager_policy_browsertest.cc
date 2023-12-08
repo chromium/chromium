@@ -247,7 +247,7 @@ class DlpFilesAppBrowserTestBase {
     if (name == "setCheckFilesTransferMockToPause") {
       base::FilePath download_path =
           file_manager::util::GetDownloadsFolderForProfile(profile);
-      absl::optional<int> task_id = value.FindInt("taskId");
+      std::optional<int> task_id = value.FindInt("taskId");
       EXPECT_TRUE(task_id.has_value() && task_id.value() > 0);
       const base::Value::List* file_names = value.FindList("fileNames");
       EXPECT_TRUE(file_names);
@@ -277,7 +277,7 @@ class DlpFilesAppBrowserTestBase {
               chromeos::DlpClient::CheckFilesTransferCallback daemon_callback) {
             auto warning_callback = base::BindOnce(
                 [](chromeos::DlpClient::CheckFilesTransferCallback daemon_cb,
-                   absl::optional<std::u16string> justification,
+                   std::optional<std::u16string> justification,
                    bool should_proceed) {
                   if (should_proceed) {
                     std::move(daemon_cb).Run({});
@@ -413,7 +413,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
   void SetUpOnMainThread(Profile* profile) {
     // Set a device management token. It is required to enable scanning.
     // Without it, FileTransferAnalysisDelegate::IsEnabled() always
-    // returns absl::nullopt.
+    // returns std::nullopt.
     SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
     // Enable reporting.
@@ -611,7 +611,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
       CHECK(destination_volume_name);
       const base::Value::List* entry_paths = value.FindList("entry_paths");
       CHECK(entry_paths);
-      absl::optional<bool> expect_proceed_warning_reports_optional =
+      std::optional<bool> expect_proceed_warning_reports_optional =
           value.FindBool("expect_proceed_warning_reports");
       bool expect_proceed_warning_reports =
           expect_proceed_warning_reports_optional.value_or(false);

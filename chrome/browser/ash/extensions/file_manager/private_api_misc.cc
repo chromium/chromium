@@ -91,8 +91,8 @@ namespace fsp = ash::file_system_provider;
 namespace fmp = api::file_manager_private;
 namespace fmpi = api::file_manager_private_internal;
 
-using absl::optional;
 using fmp::ProfileInfo;
+using std::optional;
 
 // Thresholds for mountCrostini() API.
 constexpr base::TimeDelta kMountCrostiniSlowOperationThreshold =

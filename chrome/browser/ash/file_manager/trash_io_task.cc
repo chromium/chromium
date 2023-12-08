@@ -130,7 +130,7 @@ TrashIOTask::TrashIOTask(
   progress_.total_bytes = 0;
 
   for (const auto& url : file_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
     trash_entries_.emplace_back();
   }
 }
@@ -479,7 +479,7 @@ void TrashIOTask::WriteMetadata(
     const storage::FileSystemURL& files_folder_location,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
   if (!destination_result.has_value()) {
-    progress_.outputs.emplace_back(files_folder_location, absl::nullopt);
+    progress_.outputs.emplace_back(files_folder_location, std::nullopt);
     TrashComplete(source_idx, output_idx, destination_result.error());
     return;
   }
@@ -493,7 +493,7 @@ void TrashIOTask::WriteMetadata(
       absolute_trash_path, trash::kInfoFolderName, file_name);
   progress_.outputs.emplace_back(
       CreateFileSystemURL(progress_.sources[source_idx].url, destination_path),
-      absl::nullopt);
+      std::nullopt);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -525,7 +525,7 @@ void TrashIOTask::TrashFile(size_t source_idx,
                             const storage::FileSystemURL& destination_url) {
   DCHECK(source_idx < progress_.sources.size());
   DCHECK(output_idx < progress_.outputs.size());
-  progress_.outputs.emplace_back(destination_url, absl::nullopt);
+  progress_.outputs.emplace_back(destination_url, std::nullopt);
 
   last_progress_size_ = 0;
 

@@ -94,7 +94,7 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  absl::optional<Params> params = Params::Create(parsed_json->GetList());
+  std::optional<Params> params = Params::Create(parsed_json->GetList());
   ASSERT_TRUE(params.has_value());
   *result = RequestValue::CreateForReadDirectorySuccess(std::move(*params));
   ASSERT_TRUE(result->is_valid());

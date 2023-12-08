@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/restore_to_destination_io_task.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -11,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -49,7 +49,7 @@ RestoreToDestinationIOTask::RestoreToDestinationIOTask(
   progress_.total_bytes = 0;
 
   for (const auto& url : file_urls) {
-    progress_.sources.emplace_back(url, absl::nullopt);
+    progress_.sources.emplace_back(url, std::nullopt);
   }
 }
 

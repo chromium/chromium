@@ -219,7 +219,7 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -286,7 +286,7 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
     }
     head_.response_start = base::TimeTicks::Now();
     client_->OnReceiveResponse(head_.Clone(), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     data_producer_ = std::make_unique<FileSystemReaderDataPipeProducer>(
         std::move(producer_handle), std::move(stream_reader), size,
