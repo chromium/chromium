@@ -96,10 +96,12 @@ std::u16string GetUsernameFromSuggestion(const std::u16string& suggestion) {
 
 // Returns a string representing the icon of either the account store or the
 // local password store.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 autofill::Suggestion::Icon CreateStoreIcon(bool for_account_store) {
   return for_account_store ? autofill::Suggestion::Icon::kGoogle
                            : autofill::Suggestion::Icon::kNoIcon;
 }
+#endif
 
 // If |field_suggestion| matches |field_content|, creates a Suggestion out of it
 // and appends to |suggestions|.
@@ -149,7 +151,12 @@ void AppendSuggestionIfMatching(
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = autofill::Suggestion::Icon::kGlobe;
-    suggestion.trailing_icon = CreateStoreIcon(from_account_store);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kButterOnDesktopFollowup)) {
+      suggestion.trailing_icon = CreateStoreIcon(from_account_store);
+    }
+#endif
     suggestions->push_back(suggestion);
   }
 }
