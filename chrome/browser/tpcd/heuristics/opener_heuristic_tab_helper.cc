@@ -347,11 +347,21 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
     const GURL& popup_url,
     OptionalBool has_iframe,
     bool is_current_interaction) {
+  uint64_t access_id = base::RandUint64();
+
+  if (DIPSService* dips =
+          DIPSService::Get(web_contents()->GetBrowserContext())) {
+    dips->storage()
+        ->AsyncCall(&DIPSStorage::WritePopup)
+        .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
+                  access_id,
+                  /*popup_time=*/GetClock()->Now(), is_current_interaction)
+        .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
+  }
+
   if (toplevel_reported_) {
     return;
   }
-
-  uint64_t access_id = base::RandUint64();
 
   ukm::builders::OpenerHeuristic_TopLevel(opener_source_id_)
       .SetAccessId(access_id)
@@ -362,20 +372,6 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
       .Record(ukm::UkmRecorder::Get());
 
   toplevel_reported_ = true;
-
-  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
-  if (!dips) {
-    // If DIPS is disabled, we can't look up past popup events.
-    // TODO(rtarpine): consider falling back to SiteEngagementService.
-    return;
-  }
-
-  dips->storage()
-      ->AsyncCall(&DIPSStorage::WritePopup)
-      .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
-                access_id,
-                /*popup_time=*/GetClock()->Now(), is_current_interaction)
-      .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(

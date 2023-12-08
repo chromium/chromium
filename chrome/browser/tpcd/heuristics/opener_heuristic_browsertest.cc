@@ -53,6 +53,8 @@ using content::RenderFrameHost;
 using content::WebContents;
 using content::WebContentsObserver;
 using testing::ElementsAre;
+using testing::Field;
+using testing::Optional;
 using testing::Pair;
 using tpcd::experiment::EnableForIframeTypes;
 
@@ -262,6 +264,23 @@ class OpenerHeuristicBrowserTest
     }
     return static_cast<OptionalBool>(
         entries[0].metrics["OpenerHasSameSiteIframe"]);
+  }
+
+  absl::optional<PopupsStateValue> GetPopupState(const GURL& opener_url,
+                                                 const GURL& popup_url) {
+    absl::optional<PopupsStateValue> state;
+
+    GetDipsService()
+        ->storage()
+        ->AsyncCall(&DIPSStorage::ReadPopup)
+        .WithArgs(GetSiteForDIPS(opener_url), GetSiteForDIPS(popup_url))
+        .Then(base::BindLambdaForTesting(
+            [&state](absl::optional<PopupsStateValue> db_state) {
+              state = db_state;
+            }));
+    GetDipsService()->storage()->FlushPostedTasksForTesting();
+
+    return state;
   }
 
   base::FieldTrialParams tpcd_heuristics_grants_params_;
@@ -1286,6 +1305,37 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
             toplevel_url);
   EXPECT_EQ(entries[0].metrics["IsAdTaggedPopupClick"], true);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       PastAndCurrentInteractionAreBothReportedToDipsDb) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL initial_site = embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL initial_url = embedded_test_server()->GetURL(
+      "b.test", "/cross-site/c.test/title1.html");
+  GURL final_url = embedded_test_server()->GetURL("c.test", "/title1.html");
+
+  // Initialize popup and interaction.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), initial_site));
+  SimulateMouseClick(GetActiveWebContents());
+
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(initial_url));
+  ASSERT_EQ(popup->GetLastCommittedURL(), final_url);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(popup);
+  GetDipsService()->storage()->FlushPostedTasksForTesting();
+
+  absl::optional<PopupsStateValue> initial_state =
+      GetPopupState(opener_url, initial_url);
+  absl::optional<PopupsStateValue> final_state =
+      GetPopupState(opener_url, final_url);
+  ASSERT_THAT(
+      initial_state,
+      Optional(Field(&PopupsStateValue::is_current_interaction, false)));
+  ASSERT_THAT(final_state,
+              Optional(Field(&PopupsStateValue::is_current_interaction, true)));
 }
 
 // chrome/browser/ui/browser.h (for changing profile prefs) is not available on
