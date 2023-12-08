@@ -50,7 +50,7 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 #include "chrome/browser/ash/policy/remote_commands/affiliated_remote_commands_invalidator.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"

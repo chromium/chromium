@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_ADMIN_SESSION_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_ADMIN_SESSION_CONTROLLER_H_
 
 #include <memory>
 #include <optional>
@@ -14,9 +14,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
-#include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
-#include "chrome/browser/ash/policy/remote_commands/start_crd_session_job_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/remote_activity_notification_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -134,4 +134,4 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_ADMIN_SESSION_CONTROLLER_H_

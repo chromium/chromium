@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/crd_uma_logger.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "device_management_backend.pb.h"
 

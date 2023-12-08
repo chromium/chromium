@@ -1,6 +1,3 @@
-# For CRD related changes
-per-file *crd*=file://chrome/browser/ash/app_mode/OWNERS
-
 # For reboot and powerwash. Please report issues at
 # https://issuetracker.google.com/issues/new?component=1206077 (internal) or at
 # https://issuetracker.google.com/issues/new?component=1185521 (public).

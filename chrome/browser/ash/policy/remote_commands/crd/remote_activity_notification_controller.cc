@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/remote_activity_notification_controller.h"
 
 #include <memory>
 

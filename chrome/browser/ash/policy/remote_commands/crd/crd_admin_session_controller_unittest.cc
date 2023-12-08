@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 
 #include <optional>
 #include <string>
@@ -24,7 +24,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

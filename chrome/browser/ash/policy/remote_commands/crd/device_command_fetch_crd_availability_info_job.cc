@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/device_command_fetch_crd_availability_info_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/device_command_fetch_crd_availability_info_job.h"
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"

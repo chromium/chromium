@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/crd_oauth_token_fetcher.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_oauth_token_fetcher.h"
 
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
-#include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"

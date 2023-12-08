@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_UMA_LOGGER_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_UMA_LOGGER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_UMA_LOGGER_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_UMA_LOGGER_H_
 
 #include <string>
 
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 
 namespace policy {
 
@@ -36,4 +36,4 @@ class CrdUmaLogger {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_UMA_LOGGER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_UMA_LOGGER_H_

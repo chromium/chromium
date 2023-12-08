@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/device_command_start_crd_session_job.h"
 
 #include <memory>
 #include <optional>
@@ -20,9 +20,9 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
-#include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"

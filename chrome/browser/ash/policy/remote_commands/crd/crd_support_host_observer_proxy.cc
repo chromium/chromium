@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/crd_support_host_observer_proxy.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_support_host_observer_proxy.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
 #include "remoting/protocol/errors.h"
 
 using remoting::protocol::ErrorCode;

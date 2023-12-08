@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_REMOTE_ACTIVITY_NOTIFICATION_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_REMOTE_ACTIVITY_NOTIFICATION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_REMOTE_ACTIVITY_NOTIFICATION_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_REMOTE_ACTIVITY_NOTIFICATION_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_observer.h"
@@ -55,4 +55,4 @@ class RemoteActivityNotificationController
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_REMOTE_ACTIVITY_NOTIFICATION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_REMOTE_ACTIVITY_NOTIFICATION_CONTROLLER_H_

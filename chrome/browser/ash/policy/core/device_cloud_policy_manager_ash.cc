@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"

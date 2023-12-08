@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/device_command_start_crd_session_job.h"
 
 #include <iomanip>
 #include <memory>
@@ -24,10 +24,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_oauth_token_fetcher.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_uma_logger.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_oauth_token_fetcher.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"

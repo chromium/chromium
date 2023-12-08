@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "components/user_manager/user_manager.h"
 #include "remoting/protocol/errors.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
 
 #include <cstdint>
 #include <memory>
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/observer_list.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
@@ -68,4 +68,4 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_SUPPORT_HOST_OBSERVER_PROXY_H_
