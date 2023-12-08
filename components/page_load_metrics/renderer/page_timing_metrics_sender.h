@@ -105,8 +105,7 @@ class PageTimingMetricsSender {
 
   void UpdateResourceMetadata(int resource_id,
                               bool is_ad_resource,
-                              bool is_main_frame_resource,
-                              bool completed_before_fcp);
+                              bool is_main_frame_resource);
   void SetUpSmoothnessReporting(base::ReadOnlySharedMemoryRegion shared_memory);
   void InitiateUserInteractionTiming();
   mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() {

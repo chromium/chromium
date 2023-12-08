@@ -64,7 +64,6 @@ class PageResourceDataUse {
 
   void SetReportedAsAdResource(bool reported_as_ad_resource);
   void SetIsMainFrameResource(bool is_main_frame_resource);
-  void SetCompletedBeforeFCP(bool completed_before_fcp);
 
   // Creates a ResourceDataUpdate mojo for this resource. This page resource
   // contains information since the last time update. Should be called at most
@@ -90,7 +89,6 @@ class PageResourceDataUse {
   bool is_secure_scheme_ = false;
   bool proxy_used_ = false;
   bool is_primary_frame_resource_ = false;
-  bool completed_before_fcp_ = false;
 
   mojom::CacheType cache_type_ = mojom::CacheType::kNotCached;
 

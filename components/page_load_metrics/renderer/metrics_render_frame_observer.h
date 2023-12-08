@@ -173,10 +173,6 @@ class MetricsRenderFrameObserver
   // ad.
   void UpdateResourceMetadata(int request_id);
 
-  // Called on the completion of a resource from network or cache to determine
-  // if it completed before FCP.
-  void MaybeSetCompletedBeforeFCP(int request_id);
-
   void SendMetrics();
   void OnMetricsSenderCreated();
   virtual Timing GetTiming() const;
@@ -200,9 +196,6 @@ class MetricsRenderFrameObserver
 
   // Set containing all request ids that were reported as ads from the renderer.
   std::set<int> ad_request_ids_;
-
-  // Set containing all request ids that were reported as completing before FCP.
-  std::set<int> before_fcp_request_ids_;
 
   // Handle to the shared memory for transporting smoothness related ukm data.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;

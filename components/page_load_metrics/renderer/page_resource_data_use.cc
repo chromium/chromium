@@ -90,11 +90,6 @@ void PageResourceDataUse::SetIsMainFrameResource(bool is_main_frame_resource) {
   is_main_frame_resource_ = is_main_frame_resource;
 }
 
-void PageResourceDataUse::SetCompletedBeforeFCP(bool completed_before_fcp) {
-  DCHECK(completed_before_fcp);
-  completed_before_fcp_ = completed_before_fcp;
-}
-
 int PageResourceDataUse::CalculateNewlyReceivedBytes() {
   int newly_received_bytes = total_received_bytes_ - last_update_bytes_;
   last_update_bytes_ = total_received_bytes_;
@@ -119,7 +114,6 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
   resource_data_update->is_secure_scheme = is_secure_scheme_;
   resource_data_update->proxy_used = proxy_used_;
   resource_data_update->is_primary_frame_resource = is_primary_frame_resource_;
-  resource_data_update->completed_before_fcp = completed_before_fcp_;
   return resource_data_update;
 }
 }  // namespace page_load_metrics

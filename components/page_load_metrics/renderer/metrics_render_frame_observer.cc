@@ -261,7 +261,6 @@ void MetricsRenderFrameObserver::DidCompleteResponse(
     provisional_frame_resource_data_use_->DidCompleteResponse(status);
   } else if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->DidCompleteResponse(request_id, status);
-    MaybeSetCompletedBeforeFCP(request_id);
     UpdateResourceMetadata(request_id);
   }
 }
@@ -307,7 +306,6 @@ void MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache(
   if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->DidLoadResourceFromMemoryCache(
         response_url, request_id, encoded_body_length, mime_type);
-    MaybeSetCompletedBeforeFCP(request_id);
     UpdateResourceMetadata(request_id);
   }
 }
@@ -483,34 +481,6 @@ bool MetricsRenderFrameObserver::SetUpSmoothnessReporting(
   return true;
 }
 
-void MetricsRenderFrameObserver::MaybeSetCompletedBeforeFCP(int request_id) {
-  if (HasNoRenderFrame()) {
-    return;
-  }
-
-  const blink::WebPerformanceMetricsForReporting& perf =
-      render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
-
-  // Blink returns 0 if the performance metrics are unavailable. Check that
-  // navigation start is set to determine if performance metrics are
-  // available.
-  if (perf.NavigationStart() == 0) {
-    return;
-  }
-
-  // This should not be possible, but none the less occasionally fails in edge
-  // case tests. Since we don't expect this to be valid, throw out this entry.
-  // See crbug.com/1027535.
-  if (base::Time::Now() <
-      base::Time::FromSecondsSinceUnixEpoch(perf.NavigationStart())) {
-    return;
-  }
-
-  if (perf.FirstContentfulPaint() == 0) {
-    before_fcp_request_ids_.insert(request_id);
-  }
-}
-
 MetricsRenderFrameObserver::Timing::Timing(
     mojom::PageLoadTimingPtr relative_timing,
     const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing)
@@ -534,14 +504,6 @@ void MetricsRenderFrameObserver::UpdateResourceMetadata(int request_id) {
     ad_request_ids_.erase(ad_resource_it);
   }
 
-  // If the request completed before fcp, pop it off the list of known
-  // before-fcp requests.
-  auto before_fcp_it = before_fcp_request_ids_.find(request_id);
-  bool completed_before_fcp = before_fcp_it != before_fcp_request_ids_.end();
-  if (completed_before_fcp) {
-    before_fcp_request_ids_.erase(before_fcp_it);
-  }
-
   bool is_main_frame_resource = render_frame()->IsMainFrame();
 
   if (provisional_frame_resource_data_use_ &&
@@ -555,8 +517,7 @@ void MetricsRenderFrameObserver::UpdateResourceMetadata(int request_id) {
     // Don't bother with before-fcp metrics for a provisional frame.
   } else {
     page_timing_metrics_sender_->UpdateResourceMetadata(
-        request_id, reported_as_ad_resource, is_main_frame_resource,
-        completed_before_fcp);
+        request_id, reported_as_ad_resource, is_main_frame_resource);
   }
 }
 
