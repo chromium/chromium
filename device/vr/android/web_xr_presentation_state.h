@@ -241,10 +241,6 @@ class WebXrPresentationState {
   // timeout.
   bool last_ui_allows_sending_vsync = false;
 
-  // GpuMemoryBuffer creation needs a buffer ID. We don't really care about
-  // this, but try to keep it unique to avoid confusion.
-  int next_memory_buffer_id = 0;
-
  private:
   // Checks if we're in a valid state for processing the current animating
   // frame. Invalid states include mailbox_bridge_ready_ being false, or an
