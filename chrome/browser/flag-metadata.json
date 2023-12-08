@@ -1433,7 +1433,7 @@
   {
     "name": "cros-legacy-media-formats",
     "owners": [ "dalecurtis@chromium.org", "tapted@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 126
   },
   {
     "name": "cros-libassistant-v2-migration",
@@ -7744,7 +7744,7 @@
   {
     "name": "theora-video-codec",
     "owners": ["dalecurtis@chromium.org"],
-    "expiry_milestone": 122
+    "expiry_milestone": 123
   },
   {
     "name": "third-party-cookie-deprecation-trial",
