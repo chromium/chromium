@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -1511,12 +1510,10 @@ enum HeaderBehaviour {
                                  .secondaryToolbarViewController.view
                 aboveSubview:primaryToolbarView];
 
-    // Create the NamedGuides and add them to the browser view.
-    NSArray<GuideName*>* guideNames = @[
-      // TODO(crbug.com/1450600): Migrate kContentAreaGuide to LayoutGuideCenter
-      kContentAreaGuide,
-    ];
-    AddNamedGuidesToView(guideNames, self.view);
+    // TODO(crbug.com/1450600): Migrate kContentAreaGuide to LayoutGuideCenter.
+    // Add guide kContentAreaGuide to the browser view.
+    [self.view
+        addLayoutGuide:[[NamedGuide alloc] initWithName:kContentAreaGuide]];
 
     // Configure the content area guide.
     NamedGuide* contentAreaGuide = [NamedGuide guideWithName:kContentAreaGuide
