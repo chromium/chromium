@@ -17,8 +17,18 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/features.h"
+#include "content/public/common/content_features.h"
 #include "url/origin.h"
 
+namespace {
+bool CacheIsEnabled() {
+  // Do not use cache for the testing population.
+  return !base::FeatureList::IsEnabled(
+             features::kCookieDeprecationFacilitatedTesting) &&
+         base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache);
+}
+
+}  // namespace
 namespace content {
 
 SingleStorageInterestGroup::SingleStorageInterestGroup(
@@ -83,7 +93,7 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
     base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback) {
   // If the cache is disabled, simply call
   // InterestGroupStorage::GetInterestGroupsForOwner on each request.
-  if (!base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache)) {
+  if (!CacheIsEnabled()) {
     interest_group_storage_
         .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
         .WithArgs(owner)

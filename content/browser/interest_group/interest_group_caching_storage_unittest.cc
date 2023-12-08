@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/common/features.h"
+#include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -40,7 +41,9 @@ class InterestGroupCachingStorageTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    feature_list_.InitAndEnableFeature(features::kFledgeUseInterestGroupCache);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFledgeUseInterestGroupCache},
+        /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
   }
 
   absl::optional<scoped_refptr<StorageInterestGroups>>
@@ -726,7 +729,30 @@ TEST_F(InterestGroupCachingStorageTest,
 
 TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kFledgeUseInterestGroupCache);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFledgeUseInterestGroupCache});
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  auto ig = MakeInterestGroup(owner, "name");
+
+  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
+
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+  ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
+}
+
+TEST_F(InterestGroupCachingStorageTest,
+       NoCachingWhenCookieDeprecationFacilitatedTestingEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFledgeUseInterestGroupCache,
+                            features::kCookieDeprecationFacilitatedTesting},
+      /*disabled_features=*/{});
   std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
       CreateCachingStorage();
   url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
