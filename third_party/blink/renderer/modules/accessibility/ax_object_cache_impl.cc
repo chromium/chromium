@@ -2140,6 +2140,14 @@ bool AXObjectCacheImpl::CanDeferTreeUpdate(Document* tree_update_document) {
     return false;
   }
 
+  if (tree_update_document != document_) {
+    // If we are queuing an update to a document other than the main document,
+    // then it must be in an active popup document. The cache would never
+    // receive notifications from other documents.
+    DCHECK(popup_document_);
+    DCHECK_EQ(tree_update_document, popup_document_);
+  }
+
   return true;
 }
 
@@ -3040,11 +3048,19 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     if (IsDirty()) {
       if (GetPopupDocumentIfShowing()) {
         ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
-        CHECK(tree_update_callback_queue_popup_.empty());
       }
       ProcessDeferredAccessibilityEventsImpl(document);
-      CHECK(tree_update_callback_queue_main_.empty());
     }
+
+    // At this point, the popup queue should be clear, and we must ensure this
+    // even if nothing is dirty. It seems that there are cases where it
+    // IsDirty() returns false where there is no popup document, but there are
+    // entries in the popup queue.
+    // TODO(https://crbug.com/1507396): It is unclear when this happens, but it
+    // explains why we still have a full popup queue in CheckTreeIsUpdated().
+    // DCHECKs have been added elsewhere to help discover the underlying cause.
+    // For now, keep this line in order to pass CheckTreeIsUpdated().
+    tree_update_callback_queue_popup_.clear();
 
 #if BUILDFLAG(IS_ANDROID)
     // On Android, the inline textboxes of focused editable subtrees are always
@@ -3158,8 +3174,13 @@ bool AXObjectCacheImpl::IsMainDocumentDirty() const {
 }
 
 bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
-  if (!popup_document_)
+  if (!popup_document_) {
+    // This should have been cleared in RemovePopup(), but technically the
+    // popup could be null without calling that, since it's a weak pointer.
+    DCHECK(tree_update_callback_queue_popup_.empty());
+    DCHECK(notifications_to_post_popup_.empty());
     return false;
+  }
   return !tree_update_callback_queue_popup_.empty() ||
          !notifications_to_post_popup_.empty();
 }
