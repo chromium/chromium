@@ -232,8 +232,24 @@ bool ContentAnalysisDelegate::BypassRequiresJustification() const {
 }
 
 std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
-  return l10n_util::GetStringUTF16(
-      IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL);
+  int id;
+  switch (access_point_) {
+    case safe_browsing::DeepScanAccessPoint::UPLOAD:
+    case safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP:
+    case safe_browsing::DeepScanAccessPoint::FILE_TRANSFER:
+      id = IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL;
+      break;
+    case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
+      id = IDS_DEEP_SCANNING_DIALOG_DOWNLOAD_BYPASS_JUSTIFICATION_LABEL;
+      break;
+    case safe_browsing::DeepScanAccessPoint::PASTE:
+      id = IDS_DEEP_SCANNING_DIALOG_PASTE_BYPASS_JUSTIFICATION_LABEL;
+      break;
+    case safe_browsing::DeepScanAccessPoint::PRINT:
+      id = IDS_DEEP_SCANNING_DIALOG_PRINT_BYPASS_JUSTIFICATION_LABEL;
+      break;
+  }
+  return l10n_util::GetStringUTF16(id);
 }
 
 absl::optional<std::u16string>
