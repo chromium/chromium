@@ -49,7 +49,6 @@ static_js_files = [
 
   # Metadata:
   "file_manager/foreground/js/metadata/metadata_dispatcher.js",
-  "file_manager/foreground/js/metadata/multi_metadata_provider.js",
 
   # Files app UI:
   "file_manager/foreground/js/ui/a11y_announce.js",
@@ -363,6 +362,7 @@ ts_files = [
   "file_manager/foreground/js/metadata/metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_request.ts",
   "file_manager/foreground/js/metadata/mpeg_parser.ts",
+  "file_manager/foreground/js/metadata/multi_metadata_provider.ts",
   "file_manager/foreground/js/metadata/thumbnail_model.ts",
 ]
 
@@ -560,6 +560,7 @@ ts_test_files = [
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.ts",
   "file_manager/foreground/js/metadata/metadata_model_unittest.ts",
   "file_manager/foreground/js/metadata/mock_metadata.ts",
+  "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.ts",
 ]
 
@@ -625,7 +626,6 @@ unittest_files = [
   # Background:
 
   # Foreground:
-  "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
   "file_manager/foreground/js/file_list_model_unittest.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",
