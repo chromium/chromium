@@ -25,6 +25,11 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   DisplaySettingsProvider& operator=(const DisplaySettingsProvider& other) =
       delete;
 
+  static constexpr char kInternalDisplaySettingsHistogramName[] =
+      "ChromeOS.Settings.Display.Internal";
+  static constexpr char kExternalDisplaySettingsHistogramName[] =
+      "ChromeOS.Settings.Display.External";
+
   void BindInterface(
       mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver);
 
@@ -36,6 +41,10 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   void ObserveDisplayConfiguration(
       mojo::PendingRemote<mojom::DisplayConfigurationObserver> observer)
       override;
+
+  void RecordChangingDisplaySettings(
+      mojom::DisplaySettingsType type,
+      mojom::DisplaySettingsValuePtr value) override;
 
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;

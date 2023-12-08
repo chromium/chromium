@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DevicePageBrowserProxyImpl, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -131,6 +131,88 @@ suite('<settings-display>', () => {
   teardown(() => {
     displayPage.remove();
     Router.getInstance().resetRouteForTesting();
+  });
+
+  test('display settings histogram tests', async function() {
+    await initPage();
+
+    // Add a display.
+    addDisplay(1);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+
+    // Sanity check display count and the first display is an internal display.
+    assertEquals(1, displayPage.displays.length);
+    assertTrue(displayPage.displays[0]!.isInternal);
+
+    // Add a second display.
+    addDisplay(2);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    flush();
+
+    // Sanity check display count and the second display is an external display.
+    assertEquals(2, displayPage.displays.length);
+    assertFalse(displayPage.displays[1]!.isInternal);
+
+    // Select the second display.
+    const displayLayout =
+        displayPage.shadowRoot!.querySelector('#displayLayout');
+    assertTrue(!!displayLayout);
+    const displayDiv =
+        strictQuery('#_fakeDisplayId2', displayLayout.shadowRoot, HTMLElement);
+    assertTrue(!!displayDiv);
+    displayDiv.click();
+
+    // Sanity check the second display is selected.
+    assertEquals(displayPage.displays[1]!.id, displayPage.selectedDisplay!.id);
+    flush();
+
+    // Mock user changing display resolution.
+    const displayModeSelector =
+        displayPage.shadowRoot!.getElementById('displayModeSelector') as any;
+    assertTrue(!!displayModeSelector);
+    displayModeSelector.pref = {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 5,
+    };
+    displayModeSelector.dispatchEvent(new CustomEvent('change'));
+
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    flush();
+
+    // Verify histogram count for resolution change.
+    const externalDisplayHistogram =
+        displaySettingsProvider.getExternalDisplayHistogram();
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kResolution));
+
+    // Mock user changing refresh rate.
+    const refreshRateSelector =
+        displayPage.shadowRoot!.getElementById('refreshRateSelector') as any;
+    assertTrue(!!refreshRateSelector);
+    refreshRateSelector.pref = {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 1,
+    };
+    refreshRateSelector.dispatchEvent(new CustomEvent('change'));
+
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    flush();
+
+    // Verify histogram count for refresh rate change.
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kRefreshRate));
   });
 
   test('display tests', async function() {

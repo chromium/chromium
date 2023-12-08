@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -100,6 +101,7 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
 
  protected:
   std::unique_ptr<DisplaySettingsProvider> provider_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test the behavior when the tablet mode status has changed. The tablet mode is
@@ -135,6 +137,27 @@ TEST_F(DisplaySettingsProviderTest, DisplayConfigurationObservation) {
   fake_observer.WaitForDisplayConfigurationChanged();
 
   EXPECT_EQ(1u, fake_observer.num_display_configuration_changed_calls());
+}
+
+// Test histogram is recorded when users change display settings.
+TEST_F(DisplaySettingsProviderTest, ChangeDisplaySettingsHistogram) {
+  // Loop through all display setting types.
+  for (int typeInt = static_cast<int>(mojom::DisplaySettingsType::kMinValue);
+       typeInt <= static_cast<int>(mojom::DisplaySettingsType::kMaxValue);
+       typeInt++) {
+    mojom::DisplaySettingsType type =
+        static_cast<mojom::DisplaySettingsType>(typeInt);
+    for (bool internal : {true, false}) {
+      auto value = mojom::DisplaySettingsValue::New();
+      value->is_internal_display = internal;
+      provider_->RecordChangingDisplaySettings(type, std::move(value));
+      histogram_tester_.ExpectBucketCount(
+          internal
+              ? DisplaySettingsProvider::kInternalDisplaySettingsHistogramName
+              : DisplaySettingsProvider::kExternalDisplaySettingsHistogramName,
+          type, 1);
+    }
+  }
 }
 
 }  // namespace ash::settings

@@ -38,7 +38,7 @@ import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {DisplayConfigurationObserverReceiver, DisplaySettingsProviderInterface, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplayConfigurationObserverReceiver, DisplaySettingsProviderInterface, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
@@ -1183,6 +1183,19 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     getDisplayApi()
         .setDisplayProperties(this.selectedDisplay.id, properties)
         .then(() => this.setPropertiesCallback_());
+
+    // Compare new mode and current mode to find out if user has changed the
+    // resolution or just the refresh rate.
+    const currentMode =
+        this.selectedDisplay.modes[this.currentSelectedModeIndex_];
+    const newMode = this.selectedDisplay.modes[this.selectedModePref_.value];
+    const displaySettingsType = (currentMode.height === newMode.height &&
+                                 currentMode.width === newMode.width) ?
+        DisplaySettingsType.kRefreshRate :
+        DisplaySettingsType.kResolution;
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        displaySettingsType,
+        {isInternalDisplay: this.selectedDisplay.isInternal});
   }
 
   /**

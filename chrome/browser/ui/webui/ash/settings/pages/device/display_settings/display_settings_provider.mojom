@@ -4,6 +4,23 @@
 
 module ash.settings.mojom;
 
+// Type of the display settings. Do not change the order since they are used
+// for metrics. Keep in sync with the DisplaySettingsType enum in
+// tools/metrics/histograms/metadata/chromeos_settings/enums.xml.
+enum DisplaySettingsType {
+  kResolution = 0,
+  kRefreshRate,
+  // TODO(zhangwenyu): handle more display settings.
+};
+
+// Value of the display settings.
+struct DisplaySettingsValue {
+  // Whether the display is an internal display. This is optional since some
+  // settings like toggling mirror mode apply to both internal and external
+  // displays. In that case, this property will not be provided.
+  bool? is_internal_display;
+};
+
 // Implemented by clients that wish to be notified when the tablet mode is
 // changed.
 interface TabletModeObserver {
@@ -30,4 +47,8 @@ interface DisplaySettingsProvider {
   // Registers an observer for display configuration changes.
   ObserveDisplayConfiguration(
     pending_remote<DisplayConfigurationObserver> observer);
+
+  // Record metrics when clients request to change display settings.
+  RecordChangingDisplaySettings(DisplaySettingsType type,
+    DisplaySettingsValue value);
 };

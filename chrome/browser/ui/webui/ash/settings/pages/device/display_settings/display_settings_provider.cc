@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "ui/display/manager/display_manager.h"
 
@@ -62,6 +63,22 @@ void DisplaySettingsProvider::OnDidProcessDisplayChanges(
   for (auto& observer : display_configuration_observers_) {
     observer->OnDisplayConfigurationChanged();
   }
+}
+
+void DisplaySettingsProvider::RecordChangingDisplaySettings(
+    mojom::DisplaySettingsType type,
+    mojom::DisplaySettingsValuePtr value) {
+  std::optional<bool> is_internal_display = value->is_internal_display;
+  if (!is_internal_display.has_value()) {
+    // TODO(zhangwenyu): handle settings that apply to both internal and
+    // external display, such as toggling mirror mode.
+    return;
+  }
+
+  const std::string histogram_name =
+      is_internal_display.value() ? kInternalDisplaySettingsHistogramName
+                                  : kExternalDisplaySettingsHistogramName;
+  base::UmaHistogramEnumeration(histogram_name, type);
 }
 
 }  // namespace ash::settings
