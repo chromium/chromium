@@ -48,8 +48,6 @@ schema:
     - system_apps
     - games
     - browser
-supported_chrome_os_management:
-- google_cloud
 supported_on:
 - chrome_os:117-
 tags:

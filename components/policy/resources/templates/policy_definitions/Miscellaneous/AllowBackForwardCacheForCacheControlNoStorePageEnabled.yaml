@@ -16,7 +16,6 @@ supported_on:
 - fuchsia:117-
 deprecated: false
 device_only: false
-supported_chrome_os_management: ['google_cloud']
 features:
   can_be_mandatory: true
   can_be_recommended: false

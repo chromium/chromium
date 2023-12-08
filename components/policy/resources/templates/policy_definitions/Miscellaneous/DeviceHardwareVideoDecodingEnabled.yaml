@@ -16,8 +16,6 @@ supported_on:
 
 device_only: true
 
-supported_chrome_os_management: ['google_cloud']
-
 features:
   dynamic_refresh: false
   per_profile: false

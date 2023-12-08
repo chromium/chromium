@@ -116,9 +116,8 @@ deprecated: false
 # policy only exists on ChromeOS.
 device_only: false
 
-# ChromeOS devices can either be managed through the Google cloud or through
-# Active Directory. Most policies are supported for both management types, but
-# some are not. The supported values are 'google_cloud', 'active_directory'.
+# Deprecated field, which should only be used for legacy policies that were
+# supported by ChromeAD. No new policy should use this.
 supported_chrome_os_management: ['google_cloud', 'active_directory']
 
 features:

@@ -35,7 +35,5 @@ owners:
 - cros-peripherals@google.com
 schema:
   type: boolean
-supported_chrome_os_management:
-- google_cloud
 tags: []
 type: main
