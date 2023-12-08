@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -128,6 +129,23 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)tearDown {
   GREYAssertNil([ReadingListAppInterface clearEntries],
                 @"Unable to clear Reading List entries");
+
+  // Close the Reading List if it is open.
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      assertWithMatcher:grey_notNil()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kTableViewNavigationDismissButtonId)]
+        performAction:grey_tap()];
+  }
+
+  // Close tabs before clearing browsing history to prevent unneeded tabs from
+  // reloading.
+  [ChromeEarlGrey closeAllNormalTabs];
+
   [ChromeEarlGrey clearBrowsingHistory];
   // Prevent failure due to clear browsing data spinner. Should be called
   // before [super tearDown] which calls sign-out.
