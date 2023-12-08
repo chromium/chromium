@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -31,8 +30,6 @@ constexpr auto kInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 16);
 // Contains an icon representing the key binding and a label describing what the
 // key binding does.
 class PickerUserEducationItemView : public views::View {
-  METADATA_HEADER(PickerUserEducationItemView, views::View)
-
  public:
   explicit PickerUserEducationItemView(const base::StringPiece16 label)
       : label_(label) {
@@ -44,9 +41,6 @@ class PickerUserEducationItemView : public views::View {
   // TODO(b/314876439): Add icons for each item.
   std::u16string label_;
 };
-
-BEGIN_METADATA(PickerUserEducationItemView)
-END_METADATA
 
 }  // namespace
 

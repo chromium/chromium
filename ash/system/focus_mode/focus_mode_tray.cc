@@ -18,7 +18,6 @@
 #include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -47,8 +46,6 @@ constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
 }  // namespace
 
 class FocusModeTray::TaskItemView : public views::BoxLayoutView {
-  METADATA_HEADER(TaskItemView, views::BoxLayoutView)
-
  public:
   TaskItemView(const std::u16string& title, PressedCallback callback) {
     SetBorder(views::CreateEmptyBorder(kTaskItemViewInsets));
@@ -111,9 +108,6 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   raw_ptr<views::ImageButton> radio_button_ = nullptr;
   raw_ptr<views::Label> task_title_ = nullptr;
 };
-
-BEGIN_METADATA(FocusModeTray, TaskItemView, views::BoxLayoutView)
-END_METADATA
 
 FocusModeTray::FocusModeTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
