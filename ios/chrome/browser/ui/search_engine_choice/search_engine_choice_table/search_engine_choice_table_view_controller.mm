@@ -58,7 +58,7 @@ constexpr CGFloat kTableViewSeparatorLeadingInset = 56;
       UIEdgeInsetsMake(0, kTableViewSeparatorLeadingInset, 0, 0);
   tableView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.styler.cellBackgroundColor =
-      [UIColor colorNamed:kTertiaryBackgroundColor];
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   tableView.separatorColor = [UIColor colorNamed:kGrey300Color];
 
   [self loadModel];
