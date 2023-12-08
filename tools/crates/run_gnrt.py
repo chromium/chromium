@@ -42,10 +42,11 @@ def main():
     if sys.platform == 'win32':
         exe = '.exe'
 
-    cargo_bin = os.path.abspath(
-        os.path.join(args.rust_sysroot, 'bin', f'cargo{exe}'))
-    rustc_bin = os.path.abspath(
-        os.path.join(args.rust_sysroot, 'bin', f'rustc{exe}'))
+    abs_rust_sysroot = os.path.abspath(args.rust_sysroot)
+    cargo_bin = os.path.join(abs_rust_sysroot, 'bin', f'cargo{exe}')
+    rustc_bin = os.path.join(abs_rust_sysroot, 'bin', f'rustc{exe}')
+    # The paths given to `--config` need to be unix separators.
+    rustc_bin_unix_style = rustc_bin.replace('\\', '/')
 
     cargo_env = os.environ
     cargo_env['CARGO_HOME'] = os.path.abspath(
@@ -55,8 +56,8 @@ def main():
     return subprocess.run([
         cargo_bin, '--locked', 'run', '--release', '--manifest-path',
         GNRT_MANIFEST_PATH, '--target-dir', target_dir, '--config',
-        f'build.rustc="{rustc_bin}"', '--', f'--cargo-path={cargo_bin}',
-        f'--rustc-path={rustc_bin}'
+        f'build.rustc="{rustc_bin_unix_style}"', '--',
+        f'--cargo-path={cargo_bin}', f'--rustc-path={rustc_bin}'
     ] + args.gnrt_args).returncode
 
 
