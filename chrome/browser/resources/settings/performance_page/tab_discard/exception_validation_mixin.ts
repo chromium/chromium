@@ -5,7 +5,7 @@
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_browser_proxy.js';
+import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
 
 export const MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH = 10 * 1024;
 
@@ -16,13 +16,13 @@ export const TAB_DISCARD_EXCEPTIONS_MANAGED_PREF =
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const TabDiscardExceptionValidationMixin = dedupingMixin(
+export const ExceptionValidationMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
-    Constructor<TabDiscardExceptionValidationMixinInterface&
+    Constructor<ExceptionValidationMixinInterface&
                 I18nMixinInterface> => {
       const superClassBase = I18nMixin(superClass);
-      class TabDiscardExceptionValidationMixin extends superClassBase implements
-          TabDiscardExceptionValidationMixinInterface {
+      class ExceptionValidationMixin extends superClassBase implements
+          ExceptionValidationMixinInterface {
         static get properties() {
           return {
             errorMessage: {type: String, value: ''},
@@ -66,10 +66,10 @@ export const TabDiscardExceptionValidationMixin = dedupingMixin(
         }
       }
 
-      return TabDiscardExceptionValidationMixin;
+      return ExceptionValidationMixin;
     });
 
-export interface TabDiscardExceptionValidationMixinInterface {
+export interface ExceptionValidationMixinInterface {
   errorMessage: string;
   inputInvalid: boolean;
   rule: string;

@@ -9,7 +9,7 @@ import '/shared/settings/controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared.css.js';
-import './tab_discard_exception_list.js';
+import './tab_discard/exception_list.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getDiscardTimerOptions} from './discard_timer_options.js';
 import {HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 import {getTemplate} from './performance_page.html.js';
-import {TabDiscardExceptionListElement} from './tab_discard_exception_list.js';
+import {ExceptionListElement} from './tab_discard/exception_list.js';
 
 export const HIGH_EFFICIENCY_MODE_PREF =
     'performance_tuning.high_efficiency_mode.state';
@@ -29,7 +29,7 @@ const SettingsPerformancePageElementBase = PrefsMixin(PolymerElement);
 
 export interface SettingsPerformancePageElement {
   $: {
-    tabDiscardExceptionsList: TabDiscardExceptionListElement,
+    exceptionList: ExceptionListElement,
     toggleButton: SettingsToggleButtonElement,
   };
 }

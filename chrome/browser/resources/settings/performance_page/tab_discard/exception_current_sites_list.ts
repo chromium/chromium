@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../controls/settings_checkbox_list_entry.js';
-import '../settings_shared.css.js';
-import '../site_favicon.js';
+import '../../controls/settings_checkbox_list_entry.js';
+import '../../settings_shared.css.js';
+import '../../site_favicon.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrScrollableMixin, CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
@@ -14,12 +14,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_browser_proxy.js';
-import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
-import {getTemplate} from './tab_discard_exception_current_sites_list.html.js';
-import {TAB_DISCARD_EXCEPTIONS_PREF} from './tab_discard_exception_validation_mixin.js';
+import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
+import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+import {getTemplate} from './exception_current_sites_list.html.js';
+import {TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
-export interface TabDiscardExceptionCurrentSitesListElement {
+export interface ExceptionCurrentSitesListElement {
   $: {
     list: IronListElement,
   };
@@ -28,13 +28,13 @@ export interface TabDiscardExceptionCurrentSitesListElement {
 type Site = string;
 
 type Constructor<T> = new (...args: any[]) => T;
-const TabDiscardExceptionCurrentSitesListElementBase =
+const ExceptionCurrentSitesListElementBase =
     ListPropertyUpdateMixin(CrScrollableMixin(PrefsMixin(PolymerElement))) as
     Constructor<ListPropertyUpdateMixinInterface&CrScrollableMixinInterface&
                 PrefsMixinInterface&PolymerElement>;
 
-export class TabDiscardExceptionCurrentSitesListElement extends
-    TabDiscardExceptionCurrentSitesListElementBase {
+export class ExceptionCurrentSitesListElement extends
+    ExceptionCurrentSitesListElementBase {
   static get is() {
     return 'tab-discard-exception-current-sites-list';
   }
@@ -195,10 +195,10 @@ export class TabDiscardExceptionCurrentSitesListElement extends
 declare global {
   interface HTMLElementTagNameMap {
     'tab-discard-exception-current-sites-list':
-        TabDiscardExceptionCurrentSitesListElement;
+        ExceptionCurrentSitesListElement;
   }
 }
 
 customElements.define(
-    TabDiscardExceptionCurrentSitesListElement.is,
-    TabDiscardExceptionCurrentSitesListElement);
+    ExceptionCurrentSitesListElement.is,
+    ExceptionCurrentSitesListElement);

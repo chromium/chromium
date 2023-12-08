@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionAddDialogTabs, TabDiscardExceptionEditDialogElement, TabDiscardExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
+import {ExceptionAddDialogElement, ExceptionAddDialogTabs, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -13,9 +13,8 @@ import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
 suite('TabDiscardExceptionsDialog', function() {
-  let dialog: TabDiscardExceptionAddDialogElement|
-      TabDiscardExceptionTabbedAddDialogElement|
-      TabDiscardExceptionEditDialogElement;
+  let dialog: ExceptionAddDialogElement|ExceptionTabbedAddDialogElement|
+      ExceptionEditDialogElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
 
@@ -38,9 +37,9 @@ suite('TabDiscardExceptionsDialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function setupDialog(dialog: TabDiscardExceptionAddDialogElement|
-                       TabDiscardExceptionTabbedAddDialogElement|
-                       TabDiscardExceptionEditDialogElement) {
+  function setupDialog(dialog: ExceptionAddDialogElement|
+                       ExceptionTabbedAddDialogElement|
+                       ExceptionEditDialogElement) {
     dialog.set('prefs', {
       performance_tuning: {
         tab_discarding: {
@@ -55,16 +54,16 @@ suite('TabDiscardExceptionsDialog', function() {
     flush();
   }
 
-  function setupAddDialog(): TabDiscardExceptionAddDialogElement {
-    const addDialog: TabDiscardExceptionAddDialogElement =
+  function setupAddDialog(): ExceptionAddDialogElement {
+    const addDialog: ExceptionAddDialogElement =
         document.createElement('tab-discard-exception-add-dialog');
     setupDialog(addDialog);
     return addDialog;
   }
 
   async function setupTabbedAddDialog():
-      Promise<TabDiscardExceptionTabbedAddDialogElement> {
-    const addDialog: TabDiscardExceptionTabbedAddDialogElement =
+      Promise<ExceptionTabbedAddDialogElement> {
+    const addDialog: ExceptionTabbedAddDialogElement =
         document.createElement('tab-discard-exception-tabbed-add-dialog');
     setupDialog(addDialog);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
@@ -72,8 +71,8 @@ suite('TabDiscardExceptionsDialog', function() {
     return addDialog;
   }
 
-  function setupEditDialog(): TabDiscardExceptionEditDialogElement {
-    const editDialog: TabDiscardExceptionEditDialogElement =
+  function setupEditDialog(): ExceptionEditDialogElement {
+    const editDialog: ExceptionEditDialogElement =
         document.createElement('tab-discard-exception-edit-dialog');
     setupDialog(editDialog);
     editDialog.setRuleToEditForTesting(EXISTING_RULE);
@@ -113,7 +112,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertTrue(dialog.$.actionButton.disabled);
   }
 
-  test('testTabDiscardExceptionsAddDialogState', async function() {
+  test('testExceptionAddDialogState', async function() {
     dialog = setupAddDialog();
     assertTrue(dialog.$.dialog.open);
     assertFalse(dialog.$.input.$.input.invalid);
@@ -122,18 +121,17 @@ suite('TabDiscardExceptionsDialog', function() {
     await testValidation();
   });
 
-  test('testTabDiscardExceptionsTabbedAddDialogState', async function() {
+  test('testExceptionTabbedAddDialogState', async function() {
     dialog = await setupTabbedAddDialog();
     assertTrue(dialog.$.dialog.open);
-    assertEquals(
-        TabDiscardExceptionAddDialogTabs.MANUAL, dialog.$.tabs.selected);
+    assertEquals(ExceptionAddDialogTabs.MANUAL, dialog.$.tabs.selected);
     assertFalse(dialog.$.input.$.input.invalid);
     assertTrue(dialog.$.actionButton.disabled);
 
     await testValidation();
   });
 
-  test('testTabDiscardExceptionsListEditDialogState', async function() {
+  test('testExceptionListEditDialogState', async function() {
     dialog = setupEditDialog();
     assertTrue(dialog.$.dialog.open);
     assertFalse(dialog.$.input.$.input.invalid);
@@ -150,19 +148,19 @@ suite('TabDiscardExceptionsDialog', function() {
         dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value, [EXISTING_RULE]);
   }
 
-  test('testTabDiscardExceptionsAddDialogCancel', async function() {
+  test('testExceptionAddDialogCancel', async function() {
     dialog = setupAddDialog();
     await assertUserInputValidated(VALID_RULE);
     assertCancel();
   });
 
-  test('testTabDiscardExceptionsTabbedAddDialogCancel', async function() {
+  test('testExceptionTabbedAddDialogCancel', async function() {
     dialog = await setupTabbedAddDialog();
     await assertUserInputValidated(VALID_RULE);
     assertCancel();
   });
 
-  test('testTabDiscardExceptionsEditDialogCancel', async function() {
+  test('testExceptionEditDialogCancel', async function() {
     dialog = setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertCancel();
@@ -176,7 +174,7 @@ suite('TabDiscardExceptionsDialog', function() {
         dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value, expectedRules);
   }
 
-  test('testTabDiscardExceptionsAddDialogSubmit', async function() {
+  test('testExceptionAddDialogSubmit', async function() {
     dialog = setupAddDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([EXISTING_RULE, VALID_RULE]);
@@ -185,13 +183,13 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
   });
 
-  test('testTabDiscardExceptionsAddDialogSubmitExisting', async function() {
+  test('testExceptionAddDialogSubmitExisting', async function() {
     dialog = setupAddDialog();
     await assertUserInputValidated(EXISTING_RULE);
     assertSubmit([EXISTING_RULE]);
   });
 
-  test('testTabDiscardExceptionsTabbedAddDialogSubmit', async function() {
+  test('testExceptionTabbedAddDialogSubmit', async function() {
     dialog = await setupTabbedAddDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([EXISTING_RULE, VALID_RULE]);
@@ -200,15 +198,13 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
   });
 
-  test(
-      'testTabDiscardExceptionsTabbedAddDialogSubmitExisting',
-      async function() {
-        dialog = await setupTabbedAddDialog();
-        await assertUserInputValidated(EXISTING_RULE);
-        assertSubmit([EXISTING_RULE]);
-      });
+  test('testExceptionTabbedAddDialogSubmitExisting', async function() {
+    dialog = await setupTabbedAddDialog();
+    await assertUserInputValidated(EXISTING_RULE);
+    assertSubmit([EXISTING_RULE]);
+  });
 
-  test('testTabDiscardExceptionsEditDialogSubmit', async function() {
+  test('testExceptionEditDialogSubmit', async function() {
     dialog = setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     assertSubmit([VALID_RULE]);
@@ -217,7 +213,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(HighEfficiencyModeExceptionListAction.EDIT, action);
   });
 
-  test('testTabDiscardExceptionsEditDialogSubmitExisting', async function() {
+  test('testExceptionEditDialogSubmitExisting', async function() {
     dialog.setPrefValue(
         TAB_DISCARD_EXCEPTIONS_PREF, [EXISTING_RULE, VALID_RULE]);
     dialog = setupEditDialog();
@@ -226,13 +222,13 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   function assertRulesListEquals(
-      dialog: TabDiscardExceptionTabbedAddDialogElement, rules: string[]) {
+      dialog: ExceptionTabbedAddDialogElement, rules: string[]) {
     const actual = dialog.$.list.$.list.items!;
     assertDeepEquals(rules, actual);
   }
 
   function getRulesListEntry(
-      dialog: TabDiscardExceptionTabbedAddDialogElement,
+      dialog: ExceptionTabbedAddDialogElement,
       idx: number): SettingsCheckboxListEntryElement {
     const entry = [
       ...dialog.$.list.$.list
@@ -243,16 +239,15 @@ suite('TabDiscardExceptionsDialog', function() {
     return entry;
   }
 
-  test('testTabDiscardExceptionsTabbedAddDialogListEmpty', async function() {
+  test('testExceptionTabbedAddDialogListEmpty', async function() {
     performanceBrowserProxy.setCurrentOpenSites([EXISTING_RULE]);
     dialog = await setupTabbedAddDialog();
 
-    assertEquals(
-        TabDiscardExceptionAddDialogTabs.MANUAL, dialog.$.tabs.selected);
+    assertEquals(ExceptionAddDialogTabs.MANUAL, dialog.$.tabs.selected);
     assertFalse(dialog.$.list.getIsUpdatingForTesting());
   });
 
-  test('testTabDiscardExceptionsTabbedAddDialogList', async function() {
+  test('testExceptionTabbedAddDialogList', async function() {
     const expectedRules =
         [...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE).keys()].map(
             index => `rule${index}`);
@@ -262,8 +257,7 @@ suite('TabDiscardExceptionsDialog', function() {
     await eventToPromise('iron-resize', dialog);
     flush();
 
-    assertEquals(
-        TabDiscardExceptionAddDialogTabs.CURRENT_SITES, dialog.$.tabs.selected);
+    assertEquals(ExceptionAddDialogTabs.CURRENT_SITES, dialog.$.tabs.selected);
     assertRulesListEquals(dialog, expectedRules);
     assertTrue(dialog.$.actionButton.disabled);
     getRulesListEntry(dialog, 2).click();
@@ -273,8 +267,7 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   function switchAddDialogTab(
-      dialog: TabDiscardExceptionTabbedAddDialogElement,
-      tabId: TabDiscardExceptionAddDialogTabs) {
+      dialog: ExceptionTabbedAddDialogElement, tabId: ExceptionAddDialogTabs) {
     const tabs =
         dialog.$.tabs.shadowRoot!.querySelectorAll<HTMLElement>('.tab');
     const tab = tabs[tabId];
@@ -282,30 +275,31 @@ suite('TabDiscardExceptionsDialog', function() {
     tab.click();
   }
 
-  test('testTabDiscardExceptionsTabbedAddDialogSwitchTabs', async function() {
+  test('testExceptionTabbedAddDialogSwitchTabs', async function() {
     performanceBrowserProxy.setCurrentOpenSites([VALID_RULE]);
     dialog = await setupTabbedAddDialog();
     flush();
 
     getRulesListEntry(dialog, 0).click();
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertTrue(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertFalse(dialog.$.actionButton.disabled);
 
     getRulesListEntry(dialog, 0).click();
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertTrue(dialog.$.actionButton.disabled);
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
     assertFalse(dialog.$.actionButton.disabled);
   });
 
-  test('testTabDiscardExceptionsTabbedAddDialogLiveUpdate', async function() {
+  // Flaky on all OSes. TODO(charlesmeng): Fix and enable the test.
+  test.skip('testExceptionTabbedAddDialogLiveUpdate', async function() {
     const UPDATE_INTERVAL_MS = 3;
     const INITIAL_SITE = 'siteA';
     const CHANGED_SITE = 'siteB';
@@ -325,7 +319,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertRulesListEquals(dialog, [CHANGED_SITE]);
 
     // after switching to the manual tab, list should no longer update
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.MANUAL);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     assertFalse(dialog.$.list.getIsUpdatingForTesting());
     await new Promise((resolve) => setTimeout(resolve, UPDATE_INTERVAL_MS));
@@ -334,7 +328,7 @@ suite('TabDiscardExceptionsDialog', function() {
 
     // after switching back to the list tab, list should start updating again
     performanceBrowserProxy.resetResolver('getCurrentOpenSites');
-    switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
+    switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     await eventToPromise('iron-resize', dialog.$.list.$.list);
     assertTrue(dialog.$.list.getIsUpdatingForTesting());

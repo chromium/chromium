@@ -11,26 +11,26 @@ import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome:
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
-import {getTemplate} from './tab_discard_exception_add_input.html.js';
-import {TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionValidationMixin, TabDiscardExceptionValidationMixinInterface} from './tab_discard_exception_validation_mixin.js';
+import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+import {getTemplate} from './exception_add_input.html.js';
+import {TAB_DISCARD_EXCEPTIONS_PREF, ExceptionValidationMixin, ExceptionValidationMixinInterface} from './exception_validation_mixin.js';
 
-export interface TabDiscardExceptionAddInputElement {
+export interface ExceptionAddInputElement {
   $: {
     input: CrInputElement,
   };
 }
 
 type Constructor<T> = new (...args: any[]) => T;
-const TabDiscardExceptionAddInputElementBase =
-    TabDiscardExceptionValidationMixin(
+const ExceptionAddInputElementBase =
+    ExceptionValidationMixin(
         ListPropertyUpdateMixin(PrefsMixin(PolymerElement))) as
-    Constructor<TabDiscardExceptionValidationMixinInterface&
+    Constructor<ExceptionValidationMixinInterface&
                 ListPropertyUpdateMixinInterface&PrefsMixinInterface&
                 PolymerElement>;
 
-export class TabDiscardExceptionAddInputElement extends
-    TabDiscardExceptionAddInputElementBase {
+export class ExceptionAddInputElement extends
+    ExceptionAddInputElementBase {
   static get is() {
     return 'tab-discard-exception-add-input';
   }
@@ -53,9 +53,9 @@ export class TabDiscardExceptionAddInputElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-discard-exception-add-input': TabDiscardExceptionAddInputElement;
+    'tab-discard-exception-add-input': ExceptionAddInputElement;
   }
 }
 
 customElements.define(
-    TabDiscardExceptionAddInputElement.is, TabDiscardExceptionAddInputElement);
+    ExceptionAddInputElement.is, ExceptionAddInputElement);

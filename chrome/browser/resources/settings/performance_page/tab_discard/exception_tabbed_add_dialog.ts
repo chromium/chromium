@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import './tab_discard_exception_add_input.js';
-import './tab_discard_exception_current_sites_list.js';
+import './exception_add_input.js';
+import './exception_current_sites_list.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -16,33 +16,33 @@ import {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TabDiscardExceptionAddInputElement} from './tab_discard_exception_add_input.js';
-import {TabDiscardExceptionCurrentSitesListElement} from './tab_discard_exception_current_sites_list.js';
-import {getTemplate} from './tab_discard_exception_tabbed_add_dialog.html.js';
+import {ExceptionAddInputElement} from './exception_add_input.js';
+import {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';
+import {getTemplate} from './exception_tabbed_add_dialog.html.js';
 
-export enum TabDiscardExceptionAddDialogTabs {
+export enum ExceptionAddDialogTabs {
   CURRENT_SITES = 0,
   MANUAL = 1,
 }
 
-export interface TabDiscardExceptionTabbedAddDialogElement {
+export interface ExceptionTabbedAddDialogElement {
   $: {
     actionButton: CrButtonElement,
     cancelButton: CrButtonElement,
     dialog: CrDialogElement,
-    input: TabDiscardExceptionAddInputElement,
-    list: TabDiscardExceptionCurrentSitesListElement,
+    input: ExceptionAddInputElement,
+    list: ExceptionCurrentSitesListElement,
     tabs: CrTabsElement,
   };
 }
 
 type Constructor<T> = new (...args: any[]) => T;
-const TabDiscardExceptionTabbedAddDialogElementBase =
+const ExceptionTabbedAddDialogElementBase =
     PrefsMixin(PolymerElement) as
     Constructor<PrefsMixinInterface&PolymerElement>;
 
-export class TabDiscardExceptionTabbedAddDialogElement extends
-    TabDiscardExceptionTabbedAddDialogElementBase {
+export class ExceptionTabbedAddDialogElement extends
+    ExceptionTabbedAddDialogElementBase {
   static get is() {
     return 'tab-discard-exception-tabbed-add-dialog';
   }
@@ -55,7 +55,7 @@ export class TabDiscardExceptionTabbedAddDialogElement extends
     return {
       selectedTab_: {
         type: Number,
-        value: TabDiscardExceptionAddDialogTabs.MANUAL,
+        value: ExceptionAddDialogTabs.MANUAL,
       },
 
       tabNames_: {
@@ -71,20 +71,20 @@ export class TabDiscardExceptionTabbedAddDialogElement extends
     };
   }
 
-  private selectedTab_: TabDiscardExceptionAddDialogTabs;
+  private selectedTab_: ExceptionAddDialogTabs;
   private tabNames_: string[];
   private submitDisabledList_: boolean;
   private submitDisabledManual_: boolean;
 
   private onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {
-      this.selectedTab_ = TabDiscardExceptionAddDialogTabs.CURRENT_SITES;
+      this.selectedTab_ = ExceptionAddDialogTabs.CURRENT_SITES;
     }
     this.$.dialog.showModal();
   }
 
   private isAddCurrentSitesTabSelected_() {
-    return this.selectedTab_ === TabDiscardExceptionAddDialogTabs.CURRENT_SITES;
+    return this.selectedTab_ === ExceptionAddDialogTabs.CURRENT_SITES;
   }
 
   private onCancelClick_() {
@@ -111,10 +111,10 @@ export class TabDiscardExceptionTabbedAddDialogElement extends
 declare global {
   interface HTMLElementTagNameMap {
     'tab-discard-exception-tabbed-add-dialog':
-        TabDiscardExceptionTabbedAddDialogElement;
+        ExceptionTabbedAddDialogElement;
   }
 }
 
 customElements.define(
-    TabDiscardExceptionTabbedAddDialogElement.is,
-    TabDiscardExceptionTabbedAddDialogElement);
+    ExceptionTabbedAddDialogElement.is,
+    ExceptionTabbedAddDialogElement);

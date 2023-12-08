@@ -435,8 +435,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SystemPage) {
 }
 #endif
 
-// Flaky on all OSes. TODO(charlesmeng): Enable the test.
-IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_TabDiscardExceptionDialog) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, TabDiscardExceptionDialog) {
   RunTest("settings/tab_discard_exception_dialog_test.js", "mocha.run()");
 }
 

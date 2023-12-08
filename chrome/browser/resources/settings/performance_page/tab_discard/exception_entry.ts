@@ -5,24 +5,24 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '../settings_shared.css.js';
+import '../../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin} from '../base_mixin.js';
+import {BaseMixin} from '../../base_mixin.js';
 
-import {getTemplate} from './tab_discard_exception_entry.html.js';
+import {getTemplate} from './exception_entry.html.js';
 
-export interface TabDiscardExceptionEntry {
+export interface ExceptionEntry {
   site: string;
   managed: boolean;
 }
 
-const TabDiscardExceptionEntryElementBase = BaseMixin(PolymerElement);
+const ExceptionEntryElementBase = BaseMixin(PolymerElement);
 
-export class TabDiscardExceptionEntryElement extends
-    TabDiscardExceptionEntryElementBase {
+export class ExceptionEntryElement extends
+    ExceptionEntryElementBase {
   static get is() {
     return 'tab-discard-exception-entry';
   }
@@ -38,7 +38,7 @@ export class TabDiscardExceptionEntryElement extends
     };
   }
 
-  entry: TabDiscardExceptionEntry;
+  entry: ExceptionEntry;
 
   private onMenuClick_(e: Event) {
     this.fire(
@@ -56,9 +56,9 @@ export class TabDiscardExceptionEntryElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-discard-exception-entry': TabDiscardExceptionEntryElement;
+    'tab-discard-exception-entry': ExceptionEntryElement;
   }
 }
 
 customElements.define(
-    TabDiscardExceptionEntryElement.is, TabDiscardExceptionEntryElement);
+    ExceptionEntryElement.is, ExceptionEntryElement);

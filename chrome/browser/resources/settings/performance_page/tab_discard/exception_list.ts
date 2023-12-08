@@ -9,11 +9,11 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import '../settings_shared.css.js';
-import './tab_discard_exception_add_dialog.js';
-import './tab_discard_exception_edit_dialog.js';
-import './tab_discard_exception_entry.js';
-import './tab_discard_exception_tabbed_add_dialog.js';
+import '../../settings_shared.css.js';
+import './exception_add_dialog.js';
+import './exception_edit_dialog.js';
+import './exception_entry.js';
+import './exception_tabbed_add_dialog.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -27,16 +27,16 @@ import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TooltipMixin, TooltipMixinInterface} from '../tooltip_mixin.js';
+import {TooltipMixin, TooltipMixinInterface} from '../../tooltip_mixin.js';
 
-import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
-import {TabDiscardExceptionEntry} from './tab_discard_exception_entry.js';
-import {getTemplate} from './tab_discard_exception_list.html.js';
-import {TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './tab_discard_exception_validation_mixin.js';
+import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+import {ExceptionEntry} from './exception_entry.js';
+import {getTemplate} from './exception_list.html.js';
+import {TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
 export const TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE: number = 5;
 
-export interface TabDiscardExceptionListElement {
+export interface ExceptionListElement {
   $: {
     addButton: CrButtonElement,
     collapse: IronCollapseElement,
@@ -50,13 +50,13 @@ export interface TabDiscardExceptionListElement {
 }
 
 type Constructor<T> = new (...args: any[]) => T;
-const TabDiscardExceptionListElementBase =
+const ExceptionListElementBase =
     TooltipMixin(ListPropertyUpdateMixin(PrefsMixin(PolymerElement))) as
     Constructor<TooltipMixinInterface&ListPropertyUpdateMixinInterface&
                 PrefsMixinInterface&PolymerElement>;
 
-export class TabDiscardExceptionListElement extends
-    TabDiscardExceptionListElementBase {
+export class ExceptionListElement extends
+    ExceptionListElementBase {
   static get is() {
     return 'tab-discard-exception-list';
   }
@@ -119,7 +119,7 @@ export class TabDiscardExceptionListElement extends
     ];
   }
 
-  private siteList_: TabDiscardExceptionEntry[];
+  private siteList_: ExceptionEntry[];
   private overflowSiteListExpanded: boolean;
   private selectedRule_: string;
   private isDiscardExceptionsImprovementsEnabled_: boolean;
@@ -192,7 +192,7 @@ export class TabDiscardExceptionListElement extends
   }
 
   private onPrefsChanged_() {
-    const newSites: TabDiscardExceptionEntry[] = [];
+    const newSites: ExceptionEntry[] = [];
     for (const pref
              of [TAB_DISCARD_EXCEPTIONS_MANAGED_PREF,
                  TAB_DISCARD_EXCEPTIONS_PREF]) {
@@ -208,7 +208,7 @@ export class TabDiscardExceptionListElement extends
 
     // Optimizes updates by keeping existing references and minimizes splices
     this.updateList(
-        'siteList_', (entry: TabDiscardExceptionEntry) => entry.site, newSites);
+        'siteList_', (entry: ExceptionEntry) => entry.site, newSites);
   }
 
   /**
@@ -223,9 +223,9 @@ export class TabDiscardExceptionListElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-discard-exception-list': TabDiscardExceptionListElement;
+    'tab-discard-exception-list': ExceptionListElement;
   }
 }
 
 customElements.define(
-    TabDiscardExceptionListElement.is, TabDiscardExceptionListElement);
+    ExceptionListElement.is, ExceptionListElement);
