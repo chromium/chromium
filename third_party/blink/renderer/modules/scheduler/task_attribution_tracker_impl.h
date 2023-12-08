@@ -24,8 +24,6 @@ class ScriptWrappableTaskState;
 
 namespace blink::scheduler {
 
-class TaskAttributionTrackerTest;
-
 // This class is used to keep track of tasks posted on the main thread and their
 // ancestry. It assigns an incerementing ID per task, and gets notified when a
 // task is posted, started or ended, and using that, it keeps track of which
@@ -34,8 +32,6 @@ class TaskAttributionTrackerTest;
 // current task.
 class MODULES_EXPORT TaskAttributionTrackerImpl
     : public TaskAttributionTracker {
-  friend class TaskAttributionTrackerTest;
-
  public:
   TaskAttributionTrackerImpl();
 
