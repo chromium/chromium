@@ -21,6 +21,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/bring_android_tabs/model/metrics.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -207,6 +208,8 @@ BringAndroidTabsToIOSService::LoadSyncedSessionsAndComputeTabPositions() {
   synced_sessions_ =
       std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
   size_t session_count = synced_sessions_->GetSessionCount();
+  std::set<std::pair<std::u16string, std::u16string>> tab_titles_and_urls;
+
   for (size_t session_idx = 0; session_idx < session_count; session_idx++) {
     // Only tabs from an Android phone device within the last
     // `kTimeRangeOfTabsImported` are considered Android tabs.
@@ -220,7 +223,20 @@ BringAndroidTabsToIOSService::LoadSyncedSessionsAndComputeTabPositions() {
     // Tabs are already ordered by recency.
     for (size_t tab_idx = 0; tab_idx < tab_size; tab_idx++) {
       std::tuple<size_t, size_t> indices = {session_idx, tab_idx};
-      position_of_tabs_in_synced_sessions_.push_back(indices);
+
+      // Skip tabs with the same title and URL.
+      const synced_sessions::DistantTab* tab_candidate =
+          synced_sessions_->GetSession(session_idx)->tabs[tab_idx].get();
+      std::pair<std::u16string, std::u16string> tab_candidate_key = {
+          tab_candidate->title,
+          url_formatter::
+              FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                  tab_candidate->virtual_url)};
+      if (!tab_titles_and_urls.contains(tab_candidate_key)) {
+        position_of_tabs_in_synced_sessions_.push_back(indices);
+        tab_titles_and_urls.insert(tab_candidate_key);
+      }
+
       if (position_of_tabs_in_synced_sessions_.size() >= kMaxNumberOfTabs) {
         break;
       }

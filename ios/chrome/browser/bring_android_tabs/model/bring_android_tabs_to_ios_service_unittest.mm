@@ -47,10 +47,14 @@ namespace {
 
 // Number of test foreign sessions from a phone.
 const size_t kPhoneSessionCount = 2;
+// Number of test foreign sessions from a tablet.
+const size_t kTabletSessionCount = 1;
 // Maximum number of tabs that should be imported.
 const int kMaxNumberOfTabs = 20;
 // Maximum number of tabs that should be instant loaded.
 const int kMaxNumberOfInstantLoadedTabs = 6;
+// Amount of duplicate foreign tabs per session to create when needed.
+const int kNumberOfDuplicatesToCreatePerSession = 1;
 // Test URL.
 const std::string kTestURLPrefix = "https://url";
 std::string GetTestURLSpec(int index) {
@@ -125,7 +129,10 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   MockOpenTabsUIDelegate(int tab_per_session, base::Time modified_time)
       : sync_sessions::OpenTabsUIDelegate(),
         tab_per_session_(tab_per_session),
-        modified_time_(modified_time) {}
+        modified_time_(modified_time) {
+    tab_index_ = 0;
+    create_duplicates_ = false;
+  }
 
   MOCK_METHOD(bool,
               GetAllForeignSessions,
@@ -182,32 +189,50 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
 
   // Mocks foreign sessions for GetAllForeignSessions() and
   // GetForeignSessionTabs(). Three sessions will be created, with two phone
-  // sessions and one tablet session. THere will be `tab_per_session_` tabs in
+  // sessions and one tablet session. There will be `tab_per_session_` tabs in
   // each session.
   void MockForeignSessions() {
     ON_CALL(*this, GetAllForeignSessions)
-        .WillByDefault([this](std::vector<const sync_sessions::SyncedSession*>*
-                                  sessions) {
-          sessions->push_back(Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
-                                      syncer::DeviceInfo::FormFactor::kPhone));
-          sessions->push_back(Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
-                                      syncer::DeviceInfo::FormFactor::kPhone));
-          sessions->push_back(Session(sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
-                                      syncer::DeviceInfo::FormFactor::kTablet));
-          return true;
-        });
+        .WillByDefault(
+            [this](std::vector<const sync_sessions::SyncedSession*>* sessions) {
+              for (size_t i = 0; i < kPhoneSessionCount; i++) {
+                sessions->push_back(
+                    Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+                            syncer::DeviceInfo::FormFactor::kPhone));
+              }
+              for (size_t i = 0; i < kTabletSessionCount; i++) {
+                sessions->push_back(
+                    Session(sync_pb::SyncEnums_DeviceType_TYPE_TABLET,
+                            syncer::DeviceInfo::FormFactor::kTablet));
+              }
+              return true;
+            });
     ON_CALL(*this, GetForeignSessionTabs)
         .WillByDefault([this](const std::string& tag,
                               std::vector<const sessions::SessionTab*>* tabs) {
+          // Use tab_index_ to not have duplicate tab titles/URLs.
           for (int i = 0; i < tab_per_session_; i++) {
-            tabs->push_back(Tab(i));
+            tabs->push_back(Tab(tab_index_++));
           }
+
+          if (create_duplicates_) {
+            for (int i = 0; i < kNumberOfDuplicatesToCreatePerSession; i++) {
+              tabs->push_back(Tab(i));
+            }
+          }
+
           return true;
         });
   }
 
+  void SetCreateDuplicates(bool create_duplicates) {
+    create_duplicates_ = create_duplicates;
+  }
+
  private:
   int tab_per_session_;
+  int tab_index_;
+  bool create_duplicates_;
   base::Time modified_time_;
 };
 
@@ -239,6 +264,20 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     open_ui_delegate_ =
         std::make_unique<bring_android_tabs::MockOpenTabsUIDelegate>(
             tab_per_session, session_time);
+    open_ui_delegate_->MockForeignSessions();
+  }
+
+  // Helper method that creates a fake OpenTabsUIDelegate with duplicate foreign
+  // tabs for testing purposes.
+  void SetUpOpenTabsUIDelegateWithDuplicates(int tab_per_session,
+                                             bool tabs_recently_active) {
+    base::Time session_time = tabs_recently_active
+                                  ? base::Time::Now()
+                                  : base::Time::Now() - base::Days(14);
+    open_ui_delegate_ =
+        std::make_unique<bring_android_tabs::MockOpenTabsUIDelegate>(
+            tab_per_session, session_time);
+    open_ui_delegate_->SetCreateDuplicates(true);
     open_ui_delegate_->MockForeignSessions();
   }
 
@@ -401,9 +440,9 @@ TEST_F(BringAndroidTabsToIOSServiceTest, InstantLoadFirstFewTabs) {
   FakeUrlLoadingBrowserAgent* url_loader = GetTestUrlLoader();
   bring_android_tabs_to_ios_service()->OpenAllTabs(url_loader);
   EXPECT_EQ(kMaxNumberOfInstantLoadedTabs, url_loader->load_new_tab_call_count);
-  EXPECT_EQ(GetTestURLSpec(tab_per_session - 1),
+  EXPECT_EQ(GetTestURLSpec(kMaxNumberOfInstantLoadedTabs - 1),
             url_loader->last_params.web_params.url.spec());
-  EXPECT_EQ(GetTestTitle(tab_per_session - 1),
+  EXPECT_EQ(GetTestTitle(kMaxNumberOfInstantLoadedTabs - 1),
             url_loader->last_params.placeholder_title);
   EXPECT_TRUE(url_loader->last_params.instant_load);
 }
@@ -427,8 +466,7 @@ TEST_F(BringAndroidTabsToIOSServiceTest, LazyLoadSomeInvisibleTabs) {
   bring_android_tabs_to_ios_service()->OpenTabsAtIndices(indices, url_loader);
   EXPECT_EQ(kMaxNumberOfInstantLoadedTabs + 1,
             url_loader->load_new_tab_call_count);
-  int last_tab_index =
-      (kMaxNumberOfInstantLoadedTabs + 1) % tab_per_session - 1;
+  int last_tab_index = kMaxNumberOfInstantLoadedTabs;
   EXPECT_EQ(GetTestURLSpec(last_tab_index),
             url_loader->last_params.web_params.url.spec());
   EXPECT_EQ(GetTestTitle(last_tab_index),
@@ -457,10 +495,39 @@ TEST_F(BringAndroidTabsToIOSServiceTest, AvoidOpenTooManyTabs) {
   bring_android_tabs_to_ios_service()->OpenAllTabs(url_loader);
   EXPECT_EQ(kMaxNumberOfTabs, url_loader->load_new_tab_call_count);
 
-  int last_tab_index = kMaxNumberOfTabs % tab_per_session - 1;
+  int last_tab_index = kMaxNumberOfTabs - 1;
   EXPECT_EQ(GetTestURLSpec(last_tab_index),
             url_loader->last_params.web_params.url.spec());
   EXPECT_EQ(GetTestTitle(last_tab_index),
             url_loader->last_params.placeholder_title);
   EXPECT_FALSE(url_loader->last_params.instant_load);
+}
+
+// Tests that when there are foreign tabs with repeating title and URLs, they
+// are not opened.
+TEST_F(BringAndroidTabsToIOSServiceTest, AvoidOpenDuplicateTabs) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    GTEST_SKIP() << "Feature unsupported on iPad";
+  }
+
+  int tab_per_session = 2;
+  SetUpOpenTabsUIDelegateWithDuplicates(tab_per_session,
+                                        /*tabs_recently_active=*/true);
+  SetUpBringAndroidTabsServiceAndLoadTabs(/*is_android_switcher=*/true);
+
+  EXPECT_EQ(bring_android_tabs_to_ios_service()->GetNumberOfAndroidTabs(),
+            static_cast<size_t>(tab_per_session * kPhoneSessionCount));
+  ExpectHistogram(bring_android_tabs::PromptAttemptStatus::kSuccess);
+  FakeUrlLoadingBrowserAgent* url_loader = GetTestUrlLoader();
+  bring_android_tabs_to_ios_service()->OpenAllTabs(url_loader);
+  EXPECT_EQ(static_cast<int>(tab_per_session * kPhoneSessionCount),
+            url_loader->load_new_tab_call_count);
+
+  // Verify that only deduplicated tabs are loaded, by looking at the last
+  // loaded tab.
+  int last_tab_index = (tab_per_session * kPhoneSessionCount) - 1;
+  EXPECT_EQ(GetTestURLSpec(last_tab_index),
+            url_loader->last_params.web_params.url.spec());
+  EXPECT_EQ(GetTestTitle(last_tab_index),
+            url_loader->last_params.placeholder_title);
 }
