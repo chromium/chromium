@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "components/exo/surface_observer.h"
 
 namespace aura {
@@ -27,7 +27,7 @@ class Surface;
 namespace arc {
 
 struct PerfTraceResult {
-  double fps, commit_deviation, render_quality;
+  double fps, present_deviation, render_quality;
 };
 
 using TicksNowCallback = base::RepeatingCallback<base::TimeTicks()>;
@@ -63,7 +63,7 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // was called.
   base::TimeDelta timer_delay_for_testing() const;
 
-  bool tracing_active() const { return tracing_active_; }
+  bool TracingActive() const;
   const aura::Window* window() const { return window_; }
 
   // Schedules tracing with a delay and for specific amount of time. If
@@ -119,11 +119,8 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // detection.
   base::TimeTicks last_active_time_;
 
-  // Times at which frames were recorded.
-  std::vector<base::TimeTicks> frame_times_;
-
-  // Indicates that tracing is in active state.
-  bool tracing_active_ = false;
+  // Traces and records frame timing.
+  std::optional<PresentFramesTracer> frames_;
 
   TicksNowCallback ticks_now_callback_;
 

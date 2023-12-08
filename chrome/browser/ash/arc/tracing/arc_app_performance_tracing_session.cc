@@ -50,7 +50,7 @@ void ArcAppPerformanceTracingSession::Schedule(
     const base::TimeDelta& start_delay,
     const base::TimeDelta& tracing_period,
     DoneCallback on_done) {
-  DCHECK(!tracing_active_);
+  DCHECK(!TracingActive());
   DCHECK(!tracing_timer_.IsRunning());
   detect_idles_ = detect_idles;
   tracing_period_ = tracing_period;
@@ -65,7 +65,7 @@ void ArcAppPerformanceTracingSession::Schedule(
 }
 
 void ArcAppPerformanceTracingSession::Finish() {
-  DCHECK(tracing_active_);
+  DCHECK(TracingActive());
   Analyze(ticks_now_callback_.Run() - tracing_start_);
 }
 
@@ -91,7 +91,7 @@ void ArcAppPerformanceTracingSession::Start() {
 
   VLOG(1) << "Start tracing.";
 
-  frame_times_.clear();
+  frames_.emplace();
 
   exo::Surface* const surface = exo::GetShellRootSurface(window_);
   DCHECK(surface);
@@ -111,13 +111,16 @@ void ArcAppPerformanceTracingSession::Start() {
         base::BindOnce(&ArcAppPerformanceTracingSession::Analyze,
                        base::Unretained(this), tracing_period_));
   }
-  tracing_active_ = true;
+}
+
+bool ArcAppPerformanceTracingSession::TracingActive() const {
+  return frames_.has_value();
 }
 
 void ArcAppPerformanceTracingSession::Stop(
     const std::optional<PerfTraceResult>& result) {
   VLOG(1) << "Stop tracing.";
-  tracing_active_ = false;
+  frames_.reset();
   tracing_timer_.Stop();
   scoped_surface_.reset();
   if (on_done_) {
@@ -145,13 +148,14 @@ void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
 
   if (DetectIdle()) {
     Stop(std::nullopt);
-  } else {
-    frame_times_.emplace_back(ticks_now_callback_.Run());
+    return;
   }
+
+  frames_->ListenForPresent(surface);
 }
 
 void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
-  if (frame_times_.size() < 2 || tracing_period <= base::TimeDelta() ||
+  if (frames_->presents().size() < 2 || tracing_period <= base::TimeDelta() ||
       DetectIdle()) {
     Stop(std::nullopt);
     return;
@@ -161,11 +165,11 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
 
   double vsync_error_deviation_accumulator = 0;
   std::vector<base::TimeDelta> deltas;
-  deltas.reserve(frame_times_.size() - 1);
+  deltas.reserve(frames_->presents().size() - 1);
 
-  for (auto fitr = frame_times_.begin() + 1; fitr != frame_times_.end();
-       fitr++) {
-    const auto frame_delta = *fitr - *(fitr - 1);
+  for (auto fitr = frames_->presents().begin() + 1;
+       fitr != frames_->presents().end(); fitr++) {
+    const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
     deltas.push_back(frame_delta);
 
     // Calculate the number of display frames passed between two updates.
@@ -182,7 +186,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
     vsync_error_deviation_accumulator +=
         (vsync_error.InMicrosecondsF() * vsync_error.InMicrosecondsF());
   }
-  const double commit_deviation =
+  const double present_deviation =
       sqrt(vsync_error_deviation_accumulator / deltas.size());
 
   std::sort(deltas.begin(), deltas.end());
@@ -193,7 +197,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
 
   const double fps = deltas.size() / tracing_period.InSecondsF();
 
-  Stop(PerfTraceResult{fps, commit_deviation, render_quality});
+  Stop(PerfTraceResult{fps, present_deviation, render_quality});
 }
 
 }  // namespace arc

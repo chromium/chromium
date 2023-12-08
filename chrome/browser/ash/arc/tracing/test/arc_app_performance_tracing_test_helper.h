@@ -24,6 +24,11 @@ namespace arc {
 class ArcAppPerformanceTracing;
 class ArcAppPerformanceTracingSession;
 
+enum class PresentType {
+  kDiscarded,
+  kSuccessful,
+};
+
 // Helper class to share common functionality in browser and unit tests.
 class ArcAppPerformanceTracingTestHelper {
  public:
@@ -56,6 +61,9 @@ class ArcAppPerformanceTracingTestHelper {
   // Plays default sequence that has FPS = 45, CommitDeviation = 216 and
   // RenderQuality = 48% for target tracing period as 1/3 seconds.
   void PlayDefaultSequence(exo::Surface* surface);
+
+  // Causes the surface to be committed and its present callback to be invoked.
+  void Commit(exo::Surface* surface, PresentType present);
 
   // Disables App Syncing for profile.
   void DisableAppSync();

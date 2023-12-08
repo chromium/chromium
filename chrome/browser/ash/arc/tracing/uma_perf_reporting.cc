@@ -79,10 +79,10 @@ void UmaPerfReporting::OnDone(ArcAppPerformanceTracingSession* session,
     VLOG(1) << "Analyzing is done for " << category << " "
             << " FPS: " << result->fps
             << ", quality: " << result->render_quality
-            << ", commit_deviation: " << result->commit_deviation;
+            << ", present_deviation: " << result->present_deviation;
 
     ReportFPS(category, result->fps);
-    ReportCommitDeviation(category, result->commit_deviation);
+    ReportCommitDeviation(category, result->present_deviation);
     ReportQuality(category, result->render_quality);
 
     reported_categories_.insert(category);

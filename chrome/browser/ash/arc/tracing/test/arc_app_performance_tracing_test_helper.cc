@@ -61,7 +61,7 @@ ArcAppPerformanceTracingTestHelper::GetTracingSession() {
 
 void ArcAppPerformanceTracingTestHelper::FireTimerForTesting() {
   DCHECK(GetTracingSession());
-  DCHECK(GetTracingSession()->tracing_active());
+  DCHECK(GetTracingSession()->TracingActive());
   GetTracingSession()->FireTimerForTesting();
 }
 
@@ -69,11 +69,11 @@ void ArcAppPerformanceTracingTestHelper::PlaySequence(
     exo::Surface* surface,
     const std::vector<base::TimeDelta>& deltas) {
   DCHECK(GetTracingSession());
-  DCHECK(GetTracingSession()->tracing_active());
-  surface->Commit();
+  DCHECK(GetTracingSession()->TracingActive());
+  Commit(surface, PresentType::kSuccessful);
   for (const base::TimeDelta& delta : deltas) {
     ticks_now_ += delta;
-    surface->Commit();
+    Commit(surface, PresentType::kSuccessful);
   }
 }
 
@@ -103,6 +103,24 @@ void ArcAppPerformanceTracingTestHelper::PlayDefaultSequence(
       normal_interval + error3,
   };
   PlaySequence(surface, sequence);
+}
+
+void ArcAppPerformanceTracingTestHelper::Commit(exo::Surface* surface,
+                                                PresentType present) {
+  surface->Commit();
+
+  std::list<exo::Surface::FrameCallback> frame_callbacks;
+  std::list<exo::Surface::PresentationCallback> presentation_callbacks;
+  surface->AppendSurfaceHierarchyCallbacks(&frame_callbacks,
+                                           &presentation_callbacks);
+
+  // Null timestamp indicates a discarded present.
+  gfx::PresentationFeedback feedback(
+      present == PresentType::kSuccessful ? ticks_now_ : base::TimeTicks(),
+      base::TimeDelta() /* interval */, 0 /* flags */);
+  for (auto& cb : presentation_callbacks) {
+    cb.Run(feedback);
+  }
 }
 
 void ArcAppPerformanceTracingTestHelper::DisableAppSync() {
