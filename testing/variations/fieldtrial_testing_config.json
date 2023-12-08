@@ -8579,6 +8579,30 @@
             ]
         }
     ],
+    "HostIndexedTpcdMetadataGrants": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MetadataGrantsThreshold": "1"
+                    },
+                    "enable_features": [
+                        "HostIndexedMetadataGrants"
+                    ]
+                }
+            ]
+        }
+    ],
     "Hotspot": [
         {
             "platforms": [
