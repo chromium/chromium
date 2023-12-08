@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "content/common/content_export.h"
 
-namespace content::features {
+namespace features {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2BypassMemoryLimitCheck);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NewLimitAndScheduler);
@@ -19,6 +19,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2EmbedderBlockedHosts);
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
     kPrerender2EmbedderBlockedHostsParam;
 
-}  // namespace content::features
+}  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FEATURES_H_

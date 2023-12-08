@@ -4,7 +4,7 @@
 
 #include "content/browser/preloading/prerender/prerender_features.h"
 
-namespace content::features {
+namespace features {
 
 // Kill-switch controlled by the field trial. When this feature is enabled,
 // PrerenderHostRegistry doesn't query about the current memory footprint and
@@ -41,4 +41,4 @@ BASE_FEATURE(kPrerender2EmbedderBlockedHosts,
 const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsParam{
     &kPrerender2EmbedderBlockedHosts, "embedder_blocked_hosts", ""};
 
-}  // namespace content::features
+}  // namespace features

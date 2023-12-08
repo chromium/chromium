@@ -5,7 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "base/feature_list.h"
 
-namespace content::features {
+namespace features {
 
 BASE_FEATURE(kPrefetchUseContentRefactor,
              "PrefetchUseContentRefactor",
@@ -30,4 +30,4 @@ BASE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped,
              "PrefetchDocumentManagerEarlyCookieCopySkipped",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-}  // namespace content::features
+}  // namespace features
