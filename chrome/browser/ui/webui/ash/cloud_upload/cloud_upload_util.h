@@ -59,7 +59,7 @@ enum class UploadType {
 
 // List of UMA enum values for the cloud provider used when opening a file. The
 // enum values must be kept in sync with CloudProvider in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class CloudProvider {
   kNone = 0,
   kUnknown = 1,
@@ -79,7 +79,7 @@ enum class OfficeFilesTransferRequired {
 
 // List of UMA enum values for Office File Handler task results for Drive. The
 // enum values must be kept in sync with OfficeDriveOpenErrors in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeDriveOpenErrors {
   kOffline = 0,
   kDriveFsInterface = 1,
@@ -98,7 +98,7 @@ enum class OfficeDriveOpenErrors {
 
 // List of UMA enum values for opening Office files from OneDrive, with the
 // MS365 PWA. The enum values must be kept in sync with OfficeOneDriveOpenErrors
-// in tools/metrics/histograms/enums.xml.
+// in tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeOneDriveOpenErrors {
   kSuccess = 0,
   kOffline = 1,
@@ -143,7 +143,7 @@ enum class OfficeFilesSourceVolume {
 
 // List of UMA enum value for Web Drive Office task results. The enum values
 // must be kept in sync with OfficeTaskResult in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeTaskResult {
   kFallbackQuickOffice = 0,
   kFallbackOther = 1,
@@ -166,7 +166,7 @@ enum class OfficeTaskResult {
 // numeric values should never be reused.
 //
 // The enum values must be kept in sync with OfficeFilesUploadResult in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeFilesUploadResult {
   kSuccess = 0,
   kOtherError = 1,

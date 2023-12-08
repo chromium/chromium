@@ -74,7 +74,7 @@ OfficeOpenExtensions GetOfficeOpenExtension(const storage::FileSystemURL& url) {
   return OfficeOpenExtensions::kOther;
 }
 
-void LogOneDriveOpenErrorUmaAfterFallback(
+void LogOneDriveMetricsAfterFallback(
     ash::office_fallback::FallbackReason fallback_reason,
     ash::cloud_upload::OfficeTaskResult task_result,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
@@ -94,7 +94,7 @@ void LogOneDriveOpenErrorUmaAfterFallback(
   cloud_open_metrics->LogTaskResult(task_result);
 }
 
-void LogGoogleDriveOpenErrorUmaAfterFallback(
+void LogGoogleDriveMetricsAfterFallback(
     ash::office_fallback::FallbackReason fallback_reason,
     ash::cloud_upload::OfficeTaskResult task_result,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
@@ -269,12 +269,12 @@ void OnDialogChoiceReceived(
     const std::string& choice) {
   if (choice == ash::office_fallback::kDialogChoiceQuickOffice) {
     if (IsWebDriveOfficeTask(task)) {
-      LogGoogleDriveOpenErrorUmaAfterFallback(
+      LogGoogleDriveMetricsAfterFallback(
           fallback_reason,
           ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice,
           std::move(cloud_open_metrics));
     } else if (IsOpenInOfficeTask(task)) {
-      LogOneDriveOpenErrorUmaAfterFallback(
+      LogOneDriveMetricsAfterFallback(
           fallback_reason,
           ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice,
           std::move(cloud_open_metrics));
@@ -294,12 +294,12 @@ void OnDialogChoiceReceived(
     }
   } else if (choice == ash::office_fallback::kDialogChoiceCancel) {
     if (IsWebDriveOfficeTask(task)) {
-      LogGoogleDriveOpenErrorUmaAfterFallback(
+      LogGoogleDriveMetricsAfterFallback(
           fallback_reason,
           ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
           std::move(cloud_open_metrics));
     } else if (IsOpenInOfficeTask(task)) {
-      LogOneDriveOpenErrorUmaAfterFallback(
+      LogOneDriveMetricsAfterFallback(
           fallback_reason,
           ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
           std::move(cloud_open_metrics));
