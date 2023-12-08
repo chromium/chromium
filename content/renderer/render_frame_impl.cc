@@ -2058,6 +2058,7 @@ bool RenderFrameImpl::Send(IPC::Message* message) {
 }
 
 bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // We may get here while detaching, when the WebFrame has been deleted.  Do
   // not process any messages in this state.
   if (!frame_)
@@ -2073,7 +2074,7 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
     if (observer.OnMessageReceived(msg))
       return true;
   }
-
+#endif
   return false;
 }
 

@@ -29,6 +29,7 @@ buildflag_header("buildflags") {
     "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
     "MBI_MODE_PER_RENDER_PROCESS_HOST=$_mbi_mode_per_render_process_host",
     "MBI_MODE_PER_SITE_INSTANCE=$_mbi_mode_per_site_instance",
+    "CONTENT_ENABLE_LEGACY_IPC=$content_enable_legacy_ipc",
   ]
 }
 
