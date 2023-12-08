@@ -406,7 +406,8 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
 // can be throttled/suppressed. This is true if `prefs` indicates that this
 // upload has already happened within the last update window. Updates `prefs`
 // account for the upload for `form`.
-bool CanThrottleUpload(const FormStructure& form,
+bool CanThrottleUpload(FormSignature form_signature,
+                       mojom::SubmissionSource form_submission_source,
                        base::TimeDelta throttle_reset_period,
                        PrefService* pref_service) {
   // PasswordManager uploads are triggered via specific first occurrences and
@@ -426,21 +427,20 @@ bool CanThrottleUpload(const FormStructure& form,
   // Get the key for the upload bucket and extract the current bitfield value.
   static constexpr size_t kNumUploadBuckets = 1021;
   std::string key = base::StringPrintf(
-      "%03X",
-      static_cast<int>(form.form_signature().value() % kNumUploadBuckets));
+      "%03X", static_cast<int>(form_signature.value() % kNumUploadBuckets));
   const auto& upload_events =
       pref_service->GetDict(prefs::kAutofillUploadEvents);
   int value = upload_events.FindInt(key).value_or(0);
 
   // Calculate the mask we expect to be set for the form's upload bucket.
-  const int bit = static_cast<int>(form.submission_source());
+  const int bit = static_cast<int>(form_submission_source);
   DCHECK_LE(0, bit);
   DCHECK_LT(bit, 32);
   const int mask = (1 << bit);
 
   // Check if this is the first upload for this event. If so, update the upload
   // event pref to set the appropriate bit.
-  bool is_first_upload_for_event = ((value & mask) == 0);
+  const bool is_first_upload_for_event = ((value & mask) == 0);
   if (is_first_upload_for_event) {
     ScopedDictPrefUpdate update(pref_service, prefs::kAutofillUploadEvents);
     update->Set(std::move(key), value | mask);
@@ -646,28 +646,31 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
 }
 
 bool AutofillCrowdsourcingManager::StartUploadRequest(
-    const FormStructure& form,
-    bool form_was_autofilled,
-    const ServerFieldTypeSet& available_field_types,
-    const std::string& login_form_signature,
-    bool observed_submission,
+    std::vector<AutofillUploadContents> upload_contents,
+    mojom::SubmissionSource form_submission_source,
+    int form_active_field_count,
     PrefService* prefs,
     base::WeakPtr<Observer> observer) {
-  if (!IsEnabled())
+  if (!IsEnabled()) {
     return false;
+  }
+  if (upload_contents.empty()) {
+    return false;
+  }
 
-  bool can_throttle_upload =
-      CanThrottleUpload(form, throttle_reset_period_, prefs);
-  bool throttling_is_enabled =
-      base::FeatureList::IsEnabled(features::test::kAutofillUploadThrottling);
-  bool is_small_form = form.active_field_count() < 3;
-  bool allow_upload =
-      !(can_throttle_upload && (throttling_is_enabled || is_small_form));
-  AutofillMetrics::LogUploadEvent(form.submission_source(), allow_upload);
+  const FormSignature form_signature(upload_contents[0].form_signature());
+  const bool can_throttle_upload = CanThrottleUpload(
+      form_signature, form_submission_source, throttle_reset_period_, prefs);
+  const bool is_small_form = form_active_field_count < 3;
+  const bool allow_upload = !(can_throttle_upload &&
+                              (base::FeatureList::IsEnabled(
+                                   features::test::kAutofillUploadThrottling) ||
+                               is_small_form));
+  AutofillMetrics::LogUploadEvent(form_submission_source, allow_upload);
 
   // For debugging purposes, even throttled uploads are logged. If no log
   // manager is active, the function can exit early for throttled uploads.
-  bool needs_logging = log_manager_ && log_manager_->IsLoggingActive();
+  const bool needs_logging = log_manager_ && log_manager_->IsLoggingActive();
   if (!needs_logging && !allow_upload)
     return false;
 
@@ -691,7 +694,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 
     FormRequestData request_data = {
         .observer = observer,
-        .form_signatures = {form.form_signature()},
+        .form_signatures = {form_signature},
         .request_type = AutofillCrowdsourcingManager::REQUEST_UPLOAD,
         .isolation_info = std::nullopt,
         .payload = std::move(payload).value(),
@@ -708,13 +711,25 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     return StartRequest(std::move(request_data));
   };
 
-  std::vector<AutofillUploadContents> uploads =
-      form.EncodeUploadRequest(available_field_types, form_was_autofilled,
-                               login_form_signature, observed_submission);
-  bool all_succeeded = !uploads.empty();
-  for (AutofillUploadContents& upload : uploads)
+  bool all_succeeded = true;
+  for (AutofillUploadContents& upload : upload_contents) {
     all_succeeded &= Upload(std::move(upload));
+  }
   return all_succeeded;
+}
+
+bool AutofillCrowdsourcingManager::StartUploadRequest(
+    const FormStructure& form,
+    bool form_was_autofilled,
+    const ServerFieldTypeSet& available_field_types,
+    const std::string& login_form_signature,
+    bool observed_submission,
+    PrefService* prefs,
+    base::WeakPtr<Observer> observer) {
+  return StartUploadRequest(
+      form.EncodeUploadRequest(available_field_types, form_was_autofilled,
+                               login_form_signature, observed_submission),
+      form.submission_source(), form.active_field_count(), prefs, observer);
 }
 
 void AutofillCrowdsourcingManager::ClearUploadHistory(PrefService* pref_service) {

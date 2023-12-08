@@ -100,9 +100,24 @@ class AutofillCrowdsourcingManager {
                                  net::IsolationInfo isolation_info,
                                  base::WeakPtr<Observer> observer);
 
-  // Starts an upload request for the given |form|.
-  // |available_field_types| should contain the types for which we have data
-  // stored on the local client.
+  // Starts an upload request for `upload_contents`. If `upload_contents` has
+  // more than one element, then `upload_contents[0]` is expected to correspond
+  // to the browser form and `upload_contents[i]` with `i>0` are expected to
+  // correspond to the renderer forms that constitute the browser form.
+  // See `autofill::FormForest` for more information on browser vs renderer
+  // forms.
+  virtual bool StartUploadRequest(
+      std::vector<AutofillUploadContents> upload_contents,
+      mojom::SubmissionSource form_submission_source,
+      int form_active_field_count,
+      PrefService* prefs,
+      base::WeakPtr<Observer> observer);
+
+  // DEPRECATED (crbug.com/1505969): Use the version that expect
+  // `AutofillUploadContents` instead of `FormStructure` instead.
+  //
+  // Starts an upload request for the given |form|. |available_field_types|
+  // should contain the types for which we have data stored on the local client.
   // |login_form_signature| may be empty. It is non-empty when the user fills
   // and submits a login form using a generated password. In this case,
   // |login_form_signature| should be set to the submitted form's signature.
