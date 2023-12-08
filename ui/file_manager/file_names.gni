@@ -413,12 +413,11 @@ ts_templates = [
 ]
 
 ts_test_files = [
-  "file_manager/common/js/array_data_model_unittest.ts",
-
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Common.
+  "file_manager/common/js/array_data_model_unittest.ts",
   "file_manager/common/js/async_util_unittest.ts",
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_type_unittest.ts",
@@ -514,6 +513,7 @@ ts_test_files = [
   "file_manager/foreground/js/directory_contents_unittest.ts",
   "file_manager/foreground/js/directory_model_unittest.ts",
   "file_manager/foreground/js/empty_folder_controller_unittest.ts",
+  "file_manager/foreground/js/file_list_model_unittest.ts",
   "file_manager/foreground/js/file_tasks_unittest.ts",
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/file_type_filters_controller_unittest.ts",
@@ -627,7 +627,6 @@ unittest_files = [
 
   # Foreground:
   "file_manager/foreground/js/file_manager_commands_unittest.js",
-  "file_manager/foreground/js/file_list_model_unittest.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",
   "file_manager/foreground/js/ui/actions_submenu_unittest.js",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.js",

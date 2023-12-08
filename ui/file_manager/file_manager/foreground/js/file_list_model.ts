@@ -322,14 +322,6 @@ export class FileListModel extends ArrayDataModel<UniversalEntry> {
   }
 
   /**
-   * Returns true if image files are dominant in this file list (i.e. 80% or
-   * more files are images).
-   */
-  isImageDominant(): boolean {
-    return this.numFiles_ > 0 && this.numImageFiles_ * 10 >= this.numFiles_ * 8;
-  }
-
-  /**
    * Sets whether to use modificationByMeTime as "Last Modified" time.
    */
   setUseModificationByMeTime(useModificationByMeTime: boolean) {
