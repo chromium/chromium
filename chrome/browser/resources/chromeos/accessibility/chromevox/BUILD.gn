@@ -51,7 +51,7 @@ chromevox_es6_modules = [
   "../common/key_code.js",
   "../common/local_storage.js",
   "../common/rect_util.js",
-  "../common/string_util.js",
+  "$tsc_common_out_dir/string_util.js",
   "../common/tree_walker.js",
   "background/abstract_earcons.js",
   "background/abstract_tts.js",

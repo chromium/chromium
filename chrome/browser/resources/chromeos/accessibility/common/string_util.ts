@@ -7,11 +7,7 @@
  */
 
 export class StringUtil {
-  /**
-   * @param {string} str
-   * @return {string}
-   */
-  static toUpperCamelCase(str) {
+  static toUpperCamelCase(str: string): string {
     const wordRegex = /(?:^\w|[A-Z]|(?:\b|_)\w)/g;
     const underscoreAndWhitespaceRegex = /(\s|_)+/g;
     return str.replace(wordRegex, word => word.toUpperCase())
@@ -20,12 +16,12 @@ export class StringUtil {
 
   /**
    * Returns the length of the longest common prefix of two strings.
-   * @param {string} first The first string.
-   * @param {string} second The second string.
-   * @return {number} The length of the longest common prefix, which may be 0
+   * @param first The first string.
+   * @param second The second string.
+   * @return The length of the longest common prefix, which may be 0
    *     for an empty common prefix.
    */
-  static longestCommonPrefixLength(first, second) {
+  static longestCommonPrefixLength(first: string, second: string): number {
     const limit = Math.min(first.length, second.length);
     let i;
     for (i = 0; i < limit; ++i) {
@@ -46,11 +42,13 @@ export class StringUtil {
    * @param {number} offset A valid character index in |str|.
    * @return {number} A valid index of |str| or |str.length|.
    */
-  static nextCodePointOffset(str, offset) {
+  static nextCodePointOffset(str: string, offset: number): number {
     if (offset >= str.length) {
       return str.length;
     }
-    if (str.codePointAt(offset) > StringUtil.MAX_BMP_CODEPOINT) {
+    // TODO(b/314203187): Not null asserted, check these to make sure this is
+    // correct.
+    if (str.codePointAt(offset)! > StringUtil.MAX_BMP_CODEPOINT) {
       return offset + 2;
     }
     return offset + 1;
@@ -65,22 +63,20 @@ export class StringUtil {
    * @return {number} A valid character index into |str| (or -1 in the case
    *     where |offset| is 0).
    */
-  static previousCodePointOffset(str, offset) {
+  static previousCodePointOffset(str: string, offset: number): number {
     if (offset <= 0) {
       return -1;
     }
+    // TODO(b/314203187): Not null asserted, check these to make sure this is
+    // correct.
     if (offset > 1 &&
-        str.codePointAt(offset - 2) > StringUtil.MAX_BMP_CODEPOINT) {
+        str.codePointAt(offset - 2)! > StringUtil.MAX_BMP_CODEPOINT) {
       return offset - 2;
     }
     return offset - 1;
   }
 
-  /**
-   * @param {string} title
-   * @return {string}
-   */
-  static toTitleCase(title) {
+  static toTitleCase(title: string): string {
     return title.replace(
         /\w\S*/g, word => word.charAt(0).toUpperCase() + word.substr(1));
   }
@@ -90,7 +86,7 @@ export class StringUtil {
    * @param {string} s A camel case string, e.g. 'brailleTable8'.
    * @return {string} A snake case string, e.g. 'braille_table_8'.
    */
-  static camelToSnake(s) {
+  static camelToSnake(s: string): string {
     return s.replace(/([A-Z0-9])/g, '_$1').toLowerCase();
   }
 
@@ -99,15 +95,17 @@ export class StringUtil {
    * @return {boolean} True if a character breaks a word, used to determine
    *     if the previous word should be spoken.
    */
-  static isWordBreakChar(ch) {
+  static isWordBreakChar(ch: string): boolean {
     return Boolean(ch.match(/^\W$/));
   }
 }
 
-/**
- * The last code point of the Unicode basic multilingual plane.
- * Code points larger than this value are represented in UTF-16 by a surrogate
- * pair, that is two code units.
- * @const {number}
- */
-StringUtil.MAX_BMP_CODEPOINT = 65535;
+export namespace StringUtil {
+  /**
+   * The last code point of the Unicode basic multilingual plane.
+   * Code points larger than this value are represented in UTF-16 by a surrogate
+   * pair, that is two code units.
+   * @const {number}
+   */
+  export const MAX_BMP_CODEPOINT = 65535;
+}
