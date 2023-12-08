@@ -248,11 +248,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // Defines the role that the system has assigned to an audio endpoint device.
   const ERole device_role_;
 
-  // The sharing mode for the connection.
-  // Valid values are AUDCLNT_SHAREMODE_SHARED and AUDCLNT_SHAREMODE_EXCLUSIVE
-  // where AUDCLNT_SHAREMODE_SHARED is the default.
-  const AUDCLNT_SHAREMODE share_mode_;
-
   // Counts the number of audio frames written to the endpoint buffer.
   UINT64 num_written_frames_;
 

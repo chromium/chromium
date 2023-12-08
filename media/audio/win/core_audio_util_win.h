@@ -79,10 +79,6 @@ class MEDIA_EXPORT CoreAudioUtil {
   // Example: double s = RefererenceTimeToTimeDelta(t).InMillisecondsF();
   static base::TimeDelta ReferenceTimeToTimeDelta(REFERENCE_TIME time);
 
-  // Returns AUDCLNT_SHAREMODE_EXCLUSIVE if --enable-exclusive-mode is used
-  // as command-line flag and AUDCLNT_SHAREMODE_SHARED otherwise (default).
-  static AUDCLNT_SHAREMODE GetShareMode();
-
   // The Windows Multimedia Device (MMDevice) API enables audio clients to
   // discover audio endpoint devices and determine their capabilities.
 
@@ -166,7 +162,6 @@ class MEDIA_EXPORT CoreAudioUtil {
   // Returns true if the specified |client| supports the format in |format|
   // for the given |share_mode| (shared or exclusive).
   static bool IsFormatSupported(IAudioClient* client,
-                                AUDCLNT_SHAREMODE share_mode,
                                 WaveFormatWrapper format);
 
   // Returns true if the specified |channel_layout| is supported for the

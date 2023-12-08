@@ -48,13 +48,6 @@ MEDIA_EXPORT extern const char kAlsaInputDevice[];
 MEDIA_EXPORT extern const char kAlsaOutputDevice[];
 #endif
 
-#if BUILDFLAG(IS_WIN)
-MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
-MEDIA_EXPORT extern const char kForceWaveAudio[];
-MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
-MEDIA_EXPORT extern const char kWaveOutBuffers[];
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
 MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];

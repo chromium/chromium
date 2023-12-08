@@ -10,7 +10,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -547,13 +547,6 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
     int stream_channel_count = stream->audio_decoder_config().channels();
 
-    bool try_supported_channel_layouts = false;
-#if BUILDFLAG(IS_WIN)
-    try_supported_channel_layouts =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kTrySupportedChannelLayouts);
-#endif
-
     // We don't know how to up-mix for DISCRETE layouts (fancy multichannel
     // hardware with non-standard speaker arrangement). Instead, pretend the
     // hardware layout is stereo and let the OS take care of further up-mixing
@@ -564,8 +557,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     // mixer will attempt to up-mix stereo source streams to just the left/right
     // speaker of the 5.1 setup, nulling out the other channels
     // (http://crbug.com/177872).
-    hw_channel_layout = hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-                                try_supported_channel_layouts
+    hw_channel_layout = hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE
                             ? CHANNEL_LAYOUT_STEREO
                             : hw_params.channel_layout();
     int hw_channel_count = ChannelLayoutToChannelCount(hw_channel_layout);

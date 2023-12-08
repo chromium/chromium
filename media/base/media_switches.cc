@@ -69,28 +69,6 @@ const char kAlsaOutputDevice[] = "alsa-output-device";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FREEBSD) || BUILDFLAG(IS_SOLARIS)
 
-#if BUILDFLAG(IS_WIN)
-// Use exclusive mode audio streaming for Windows Vista and higher.
-// Leads to lower latencies for audio streams which uses the
-// AudioParameters::AUDIO_PCM_LOW_LATENCY audio path.
-// See http://msdn.microsoft.com/en-us/library/windows/desktop/dd370844.aspx
-// for details.
-const char kEnableExclusiveAudio[] = "enable-exclusive-audio";
-
-// Use Windows WaveOut/In audio API even if Core Audio is supported.
-const char kForceWaveAudio[] = "force-wave-audio";
-
-// Instead of always using the hardware channel layout, check if a driver
-// supports the source channel layout.  Avoids outputting empty channels and
-// permits drivers to enable stereo to multichannel expansion.  Kept behind a
-// flag since some drivers lie about supported layouts and hang when used.  See
-// http://crbug.com/259165 for more details.
-const char kTrySupportedChannelLayouts[] = "try-supported-channel-layouts";
-
-// Number of buffers to use for WaveOut.
-const char kWaveOutBuffers[] = "waveout-buffers";
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables protected buffers for encrypted video streams.
 const char kEnableProtectedVideoBuffers[] = "enable-protected-video-buffers";
