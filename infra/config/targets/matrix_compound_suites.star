@@ -979,6 +979,11 @@ targets.legacy_matrix_compound_suite(
                 "CROS_TROGDOR_PUBLIC_LKGM",
             ],
         ),
+        "chromeos_integration_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_TROGDOR_PUBLIC_LKGM",
+            ],
+        ),
     },
 )
 

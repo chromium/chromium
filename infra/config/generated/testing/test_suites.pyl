@@ -7636,6 +7636,11 @@
     },
 
     'lacros_arm64_generic_rel_skylab': {
+      'chromeos_integration_tests': {
+        'variants': [
+          'CROS_TROGDOR_PUBLIC_LKGM',
+        ],
+      },
       'lacros_skylab_tests': {
         'variants': [
           'CROS_TROGDOR_PUBLIC_LKGM',
