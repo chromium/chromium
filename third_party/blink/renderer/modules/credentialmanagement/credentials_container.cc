@@ -1501,6 +1501,14 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         }
       }
 
+      if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
+          provider->hasRegistered() && provider->registered()) {
+        mojom::blink::IdentityProviderPtr identity_provider =
+            blink::mojom::blink::IdentityProvider::From(*provider);
+        identity_provider_ptrs.push_back(std::move(identity_provider));
+        continue;
+      }
+
       // TODO(kenrb): Add some renderer-side validation here, such as
       // validating |provider|, and making sure the calling context is legal.
       // Some of this has not been spec'd yet.
@@ -1521,9 +1529,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       String client_id = provider->clientId();
 
       ++provider_index;
-      if ((!provider_url.IsValid() &&
-           (!provider->hasRegistered() || !provider->registered())) ||
-          client_id == "") {
+      if (!provider_url.IsValid() || client_id.empty()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             String::Format("Provider %i information is incomplete.",

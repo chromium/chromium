@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
           var {token} = await navigator.credentials.get({
             identity: {
               providers: [{
-                configURL: "",
+                nonce: "1234",
                 clientId: "https://rp.example",
                 registered: true,
               }]
