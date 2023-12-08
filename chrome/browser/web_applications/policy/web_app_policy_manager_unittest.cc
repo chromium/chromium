@@ -1454,7 +1454,12 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
   if (ShouldSkipPWASpecificTest()) {
     return;
   }
-  const char kWebAppSettingNoDefaultConfiguration[] = R"([
+  const char kWebAppSettingConfiguration[] = R"([
+    {
+      "manifest_id": "*",
+      "run_on_os_login": "run_windowed",
+      "prevent_close_after_run_on_os_login": true
+    },
     {
       "manifest_id": "https://windowed.example/",
       "run_on_os_login": "run_windowed",
@@ -1471,21 +1476,25 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
       "prevent_close_after_run_on_os_login": true
     },
     {
-      "manifest_id": "bad.uri",
+      "manifest_id": "https://allowed.example/",
       "run_on_os_login": "allowed",
       "prevent_close_after_run_on_os_login": true
     }
   ])";
+  const char kWildcardUrl[] = "https://wildcard.example/";
+  const char kAllowedUrl[] = "https://allowed.example/";
 
   // Make sure that WebAppRegistrar::GetComputedManifestId does not fail.
+  InstallPwa(kWildcardUrl);
   InstallPwa(kWindowedUrl);
   InstallPwa(kTabbedUrl);
   InstallPwa(kNoContainerUrl);
+  InstallPwa(kAllowedUrl);
 
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(profile(), kWebAppSettingNoDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingConfiguration);
   loop.Run();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1493,18 +1502,24 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
           PreventCloseStatus::kPreventCloseEnabled ||
       GetParam().prevent_close_status ==
           PreventCloseStatus::kPreventCloseDefault) {
+    EXPECT_FALSE(IsPreventCloseEnabled(kWildcardUrl));
     EXPECT_TRUE(IsPreventCloseEnabled(kWindowedUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
+    EXPECT_FALSE(IsPreventCloseEnabled(kAllowedUrl));
   } else {
+    EXPECT_FALSE(IsPreventCloseEnabled(kWildcardUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kWindowedUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
     EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
+    EXPECT_FALSE(IsPreventCloseEnabled(kAllowedUrl));
   }
 #else
+  EXPECT_FALSE(IsPreventCloseEnabled(kWildcardUrl));
   EXPECT_FALSE(IsPreventCloseEnabled(kWindowedUrl));
   EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
   EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
+  EXPECT_FALSE(IsPreventCloseEnabled(kAllowedUrl));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
