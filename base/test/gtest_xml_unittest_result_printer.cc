@@ -75,7 +75,7 @@ void XmlUnitTestResultPrinter::AddLink(const std::string& name,
   fprintf(output_file_.get(),
           "    <link name=\"%s\" classname=\"%s\" "
           "link_name=\"%s\">%s</link>\n",
-          info->name(), info->test_case_name(), name.c_str(),
+          info->name(), info->test_suite_name(), name.c_str(),
           escaped_url.c_str());
   fflush(output_file_);
 }
@@ -97,7 +97,7 @@ void XmlUnitTestResultPrinter::AddTag(const std::string& name,
   fprintf(output_file_.get(),
           "    <tag name=\"%s\" classname=\"%s\" "
           "tag_name=\"%s\">%s</tag>\n",
-          info->name(), info->test_case_name(), name.c_str(),
+          info->name(), info->test_suite_name(), name.c_str(),
           escaped_value.c_str());
   fflush(output_file_);
 }
@@ -131,8 +131,8 @@ void XmlUnitTestResultPrinter::OnAssert(const char* file,
                       summary, message);
 }
 
-void XmlUnitTestResultPrinter::OnTestCaseStart(
-    const testing::TestCase& test_case) {
+void XmlUnitTestResultPrinter::OnTestSuiteStart(
+    const testing::TestSuite& test_suite) {
   fprintf(output_file_.get(), "  <testsuite>\n");
   fflush(output_file_);
 }
@@ -144,7 +144,7 @@ void XmlUnitTestResultPrinter::OnTestStart(
   // <testcase> tag here - it requires e.g. run time of the test to be known.
   fprintf(output_file_.get(),
           "    <x-teststart name=\"%s\" classname=\"%s\" timestamp=\"%s\" />\n",
-          test_info.name(), test_info.test_case_name(),
+          test_info.name(), test_info.test_suite_name(),
           TimeFormatAsIso8601(Time::Now()).c_str());
   fflush(output_file_);
 }
@@ -156,7 +156,7 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
           test_info.name(),
           static_cast<double>(test_info.result()->elapsed_time()) /
               Time::kMillisecondsPerSecond,
-          test_info.test_case_name(),
+          test_info.test_suite_name(),
           TimeFormatAsIso8601(Time::FromMillisecondsSinceUnixEpoch(
                                   test_info.result()->start_timestamp()))
               .c_str());
@@ -195,8 +195,8 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
   fflush(output_file_);
 }
 
-void XmlUnitTestResultPrinter::OnTestCaseEnd(
-    const testing::TestCase& test_case) {
+void XmlUnitTestResultPrinter::OnTestSuiteEnd(
+    const testing::TestSuite& test_suite) {
   fprintf(output_file_.get(), "  </testsuite>\n");
   fflush(output_file_);
 }

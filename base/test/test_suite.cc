@@ -219,33 +219,33 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   }
   void OnTestEnd(const testing::TestInfo& test) override {
     DCHECK_EQ(feature_list_set_before_test_, FeatureList::GetInstance())
-        << " in test " << test.test_case_name() << "." << test.name();
+        << " in test " << test.test_suite_name() << "." << test.name();
     DCHECK_EQ(thread_pool_set_before_test_, ThreadPoolInstance::Get())
-        << " in test " << test.test_case_name() << "." << test.name();
+        << " in test " << test.test_suite_name() << "." << test.name();
     feature_list_set_before_test_ = nullptr;
     thread_pool_set_before_test_ = nullptr;
   }
 
-  // Check for leaks in test cases (consisting of one or more tests).
-  void OnTestCaseStart(const testing::TestCase& test_case) override {
-    feature_list_set_before_case_ = FeatureList::GetInstance();
-    thread_pool_set_before_case_ = ThreadPoolInstance::Get();
+  // Check for leaks in test suites (consisting of one or more tests).
+  void OnTestSuiteStart(const testing::TestSuite& test_suite) override {
+    feature_list_set_before_suite_ = FeatureList::GetInstance();
+    thread_pool_set_before_suite_ = ThreadPoolInstance::Get();
   }
-  void OnTestCaseEnd(const testing::TestCase& test_case) override {
-    DCHECK_EQ(feature_list_set_before_case_, FeatureList::GetInstance())
-        << " in case " << test_case.name();
-    DCHECK_EQ(thread_pool_set_before_case_, ThreadPoolInstance::Get())
-        << " in case " << test_case.name();
-    feature_list_set_before_case_ = nullptr;
-    thread_pool_set_before_case_ = nullptr;
+  void OnTestSuiteEnd(const testing::TestSuite& test_suite) override {
+    DCHECK_EQ(feature_list_set_before_suite_, FeatureList::GetInstance())
+        << " in suite " << test_suite.name();
+    DCHECK_EQ(thread_pool_set_before_suite_, ThreadPoolInstance::Get())
+        << " in suite " << test_suite.name();
+    feature_list_set_before_suite_ = nullptr;
+    thread_pool_set_before_suite_ = nullptr;
   }
 
  private:
   raw_ptr<FeatureList, DanglingUntriaged> feature_list_set_before_test_ =
       nullptr;
-  raw_ptr<FeatureList> feature_list_set_before_case_ = nullptr;
+  raw_ptr<FeatureList> feature_list_set_before_suite_ = nullptr;
   raw_ptr<ThreadPoolInstance> thread_pool_set_before_test_ = nullptr;
-  raw_ptr<ThreadPoolInstance> thread_pool_set_before_case_ = nullptr;
+  raw_ptr<ThreadPoolInstance> thread_pool_set_before_suite_ = nullptr;
 };
 
 // iOS: base::Process is not available.
@@ -447,7 +447,7 @@ void TestSuite::UnitTestAssertHandler(const char* file,
   const ::testing::TestInfo* const test_info =
       ::testing::UnitTest::GetInstance()->current_test_info();
   if (test_info) {
-    LOG(ERROR) << "Currently running: " << test_info->test_case_name() << "."
+    LOG(ERROR) << "Currently running: " << test_info->test_suite_name() << "."
                << test_info->name();
     fflush(stderr);
   }
