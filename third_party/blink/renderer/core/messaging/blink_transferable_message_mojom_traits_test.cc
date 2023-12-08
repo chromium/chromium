@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -56,6 +57,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   // More exhaustive tests in web_tests/. This is a sanity check.
   // Build the original ArrayBuffer in a block scope to simulate situations
   // where a buffer may be freed twice.
+  test::TaskEnvironment task_environment;
   mojo::Message mojo_message;
   {
     V8TestingScope scope;
@@ -99,6 +101,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 TEST(BlinkTransferableMessageStructTraitsTest,
      ArrayBufferContentsLazySerializationSucceeds) {
   // More exhaustive tests in web_tests/. This is a sanity check.
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   size_t num_elements = 8;
@@ -152,6 +155,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   // More exhaustive tests in web_tests/. This is a sanity check.
   // Build the original ImageBitmap in a block scope to simulate situations
   // where a buffer may be freed twice.
+  test::TaskEnvironment task_environment;
   mojo::Message mojo_message;
   {
     V8TestingScope scope;
@@ -178,6 +182,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 TEST(BlinkTransferableMessageStructTraitsTest,
      BitmapLazySerializationSucceeds) {
   // More exhaustive tests in web_tests/. This is a sanity check.
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ImageBitmap* original_bitmap = CreateBitmap();
   // The original bitmap's height and width will be 0 after it is transferred.
@@ -265,6 +270,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
 
 TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
        AcceleratedImageTransferSuccess) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scope.GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalTest)
@@ -313,6 +319,7 @@ TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
 
 TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
        AcceleratedImageTransferReceiverCrash) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scope.GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalTest)

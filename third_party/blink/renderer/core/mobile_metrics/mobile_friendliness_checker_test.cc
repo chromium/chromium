@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -123,6 +124,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
     EXPECT_NE(it, ukm.metrics.end());
     EXPECT_GT(it->second, expected);
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(MobileFriendlinessCheckerTest, NoViewportSetting) {

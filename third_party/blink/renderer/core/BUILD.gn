@@ -1491,6 +1491,9 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_intersection_observer,
                          "",
                          "intersection_observer")
+  sources += rebase_path(blink_core_tests_mathml, "", "mathml")
+  sources += rebase_path(blink_core_tests_messaging, "", "messaging")
+  sources += rebase_path(blink_core_tests_mobile_metrics, "", "mobile_metrics")
   sources +=
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=

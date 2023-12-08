@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/mobile_metrics/tap_friendliness_checker.h"
+
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -10,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -71,6 +73,7 @@ class TapFriendlinessCheckerTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> helper_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
 };
