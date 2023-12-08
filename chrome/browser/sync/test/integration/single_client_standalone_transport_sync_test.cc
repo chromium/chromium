@@ -547,10 +547,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // E.g. Autofill and Payments are enabled by default (based on the
+  // E.g. Reading List and Payments are enabled by default (based on the
   // Features set by the fixture).
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kAutofill));
+      syncer::UserSelectableType::kReadingList));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPayments));
   // Preferences is not supported in transport mode (based on the Features
@@ -580,9 +580,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Autofill and Payments should still be enabled and disabled, respectively.
+  // Reading List and Payments should still be enabled and disabled,
+  // respectively.
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kAutofill));
+      syncer::UserSelectableType::kReadingList));
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPayments));
   // Preferences is supported in transport mode now but should've been disabled
@@ -613,9 +614,9 @@ IN_PROC_BROWSER_TEST_F(
                                     syncer::PassphraseType::kCustomPassphrase)
                   .Wait());
 
-  // E.g. Payments and Autofill are enabled by default.
+  // E.g. ReadingList and Autofill are enabled by default.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPayments));
+      syncer::UserSelectableType::kReadingList));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
   // Preferences is not supported without `kReplaceSyncPromosWithSignInPromos`.
@@ -636,11 +637,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
             syncer::PassphraseType::kCustomPassphrase);
 
-  // Payments is still enabled (not affected by the migration).
+  // Reading List is still enabled (not affected by the migration).
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPayments));
-  // Preferences is supported now, but got disabled by the migration (same as
-  // for non-custom-passphrase users).
+      syncer::UserSelectableType::kReadingList));
+  // Preferences got disabled by the migration (same as for
+  // non-custom-passphrase users).
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
   // Autofill should've been disabled specifically for custom passphrase users.
