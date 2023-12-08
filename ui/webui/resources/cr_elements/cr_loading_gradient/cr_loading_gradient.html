@@ -37,21 +37,21 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(
-        130deg,
+        135deg,
         var(--cr-loading-gradient-color-start) 0%,
         var(--cr-loading-gradient-color-middle) 20%,
         var(--cr-loading-gradient-color-end) 40%,
         var(--cr-loading-gradient-color-start) 60%,
         var(--cr-loading-gradient-color-middle) 80%,
         var(--cr-loading-gradient-color-end) 100%);
-    background-position: 0% 0%;
+    background-position: 100% 100%;
     background-size: 250% 250%;
-    animation: gradient 5s infinite linear;
+    animation: gradient 2s infinite linear;
   }
 
   @keyframes gradient {
-    0% { background-position: 0 0; }
-    100% { background-position: 100% 100%; }
+    0% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
   }
 </style>
 <div id="gradient"></div>
