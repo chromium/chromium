@@ -17999,7 +17999,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="LinkCapturingIPHAppBubbleIgnored">
+<action name="LinkCapturingIPHAppBubbleAccepted">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user clicks on the Open App Settings button in the IPH
+    bubble that pops up whenever an app is opened via a link capturing workflow
+    due to the app being set to support links by default.
+  </description>
+</action>
+
+<action name="LinkCapturingIPHAppBubbleNotAccepted">
   <owner>dibyapal@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
@@ -18009,13 +18019,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="LinkCapturingIPHAppSettingsOpened">
+<action name="LinkCapturingIPHAppBubbleShown">
   <owner>dibyapal@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
-    Recorded when the user clicks on the Open App Settings button in the IPH
-    bubble that pops up whenever an app is opened via a link capturing workflow
-    due to the app being set to support links by default.
+    Recorded when the IPH bubble is shown as a result of launching an app that
+    has link capturing enabled and is set to support links by default.
   </description>
 </action>
 

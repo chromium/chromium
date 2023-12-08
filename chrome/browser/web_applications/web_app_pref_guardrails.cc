@@ -49,7 +49,7 @@ WebAppPrefGuardrails WebAppPrefGuardrails::GetForMlInstallPrompt(
 }
 
 // static
-WebAppPrefGuardrails WebAppPrefGuardrails::GetForLinkCapturingIPH(
+WebAppPrefGuardrails WebAppPrefGuardrails::GetForLinkCapturingIph(
     PrefService* pref_service) {
   return WebAppPrefGuardrails(
       pref_service, web_app::kIPHLinkCapturingGuardrails,
@@ -61,30 +61,40 @@ WebAppPrefGuardrails::~WebAppPrefGuardrails() = default;
 
 void WebAppPrefGuardrails::RecordIgnore(const webapps::AppId& app_id,
                                         base::Time time) {
-  // If the ignore count guardrails are not defined or the pref names are not
-  // set, exit early since the ignore guardrails are not required to be
-  // counted.
-  if (!HasIgnoreGuardrails()) {
+  // The ignore pref keys not being passed is an indication that ignore
+  // guardrails need not be measured.
+  if (pref_names_->last_ignore_time_name.empty() ||
+      pref_names_->not_accepted_count_name.empty()) {
     return;
   }
 
-  UpdateAppSpecificNotAcceptedPrefs(app_id, time,
-                                    pref_names_->last_ignore_time_name);
-  UpdateGlobalNotAcceptedPrefs(time, pref_names_->last_ignore_time_name);
+  if (guardrail_data_->app_specific_mute_after_ignore_days.has_value()) {
+    UpdateAppSpecificNotAcceptedPrefs(app_id, time,
+                                      pref_names_->last_ignore_time_name);
+  }
+
+  if (guardrail_data_->global_mute_after_ignore_days.has_value()) {
+    UpdateGlobalNotAcceptedPrefs(time, pref_names_->last_ignore_time_name);
+  }
 }
 
 void WebAppPrefGuardrails::RecordDismiss(const webapps::AppId& app_id,
                                          base::Time time) {
-  // If the dismiss count guardrails are not defined or the pref names are not
-  // set, exit early since the dismiss guardrails are not required to be
-  // counted.
-  if (!HasDismissGuardrails()) {
+  // The dismiss pref keys not being passed is an indication that dismiss
+  // guardrails need not be measured.
+  if (pref_names_->last_dismiss_time_name.empty() ||
+      pref_names_->not_accepted_count_name.empty()) {
     return;
   }
 
-  UpdateAppSpecificNotAcceptedPrefs(app_id, time,
-                                    pref_names_->last_dismiss_time_name);
-  UpdateGlobalNotAcceptedPrefs(time, pref_names_->last_dismiss_time_name);
+  if (guardrail_data_->app_specific_mute_after_dismiss_days.has_value()) {
+    UpdateAppSpecificNotAcceptedPrefs(app_id, time,
+                                      pref_names_->last_dismiss_time_name);
+  }
+
+  if (guardrail_data_->global_mute_after_dismiss_days.has_value()) {
+    UpdateGlobalNotAcceptedPrefs(time, pref_names_->last_dismiss_time_name);
+  }
 }
 
 void WebAppPrefGuardrails::RecordAccept(const webapps::AppId& app_id) {
@@ -141,28 +151,17 @@ WebAppPrefGuardrails::WebAppPrefGuardrails(
       pref_names_(guardrail_pref_names),
       max_days_to_store_guardrails_(max_days_to_store_guardrails) {}
 
-bool WebAppPrefGuardrails::HasIgnoreGuardrails() {
-  return !pref_names_->not_accepted_count_name.empty() &&
-         !pref_names_->last_ignore_time_name.empty() &&
-         guardrail_data_->app_specific_mute_after_ignore_days.has_value() &&
-         guardrail_data_->global_mute_after_ignore_days.has_value();
-}
-
-bool WebAppPrefGuardrails::HasDismissGuardrails() {
-  return !pref_names_->last_dismiss_time_name.empty() &&
-         !pref_names_->not_accepted_count_name.empty() &&
-         guardrail_data_->app_specific_mute_after_dismiss_days.has_value() &&
-         guardrail_data_->global_mute_after_dismiss_days.has_value();
-}
-
 absl::optional<std::string> WebAppPrefGuardrails::IsAppBlocked(
     const webapps::AppId& app_id) {
   // Block if user ignored the action for the app N+ times.
-  int app_ignored_count = GetIntWebAppPref(pref_service_, app_id,
-                                           pref_names_->not_accepted_count_name)
-                              .value_or(0);
-  if (app_ignored_count >= guardrail_data_->app_specific_not_accept_count) {
-    return base::StrCat({"app_specific_not_accept_count_exceeded:", app_id});
+  if (guardrail_data_->app_specific_not_accept_count.has_value()) {
+    int app_ignored_count =
+        GetIntWebAppPref(pref_service_, app_id,
+                         pref_names_->not_accepted_count_name)
+            .value_or(0);
+    if (app_ignored_count >= guardrail_data_->app_specific_not_accept_count) {
+      return base::StrCat({"app_specific_not_accept_count_exceeded:", app_id});
+    }
   }
 
   // Block if user ignored the action for the app within N days.

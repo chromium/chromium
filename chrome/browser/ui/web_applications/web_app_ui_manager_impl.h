@@ -207,7 +207,11 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void ShowIPHPromoForAppsLaunchedViaLinkCapturing(const Browser* browser,
+                                                   const webapps::AppId& app_id,
                                                    bool is_activated);
+
+  void OnIPHPromoResponseForLinkCapturing(const Browser* browser,
+                                          const webapps::AppId& app_id);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   const raw_ptr<Profile> profile_;
