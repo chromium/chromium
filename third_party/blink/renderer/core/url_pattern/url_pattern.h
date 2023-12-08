@@ -24,6 +24,9 @@ class URLPatternResult;
 
 class CORE_EXPORT URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
+  struct Options final {
+    bool ignore_case;
+  };
   using Component = url_pattern::Component;
   using ComponentSet = base::EnumSet<Component::Type,
                                      Component::Type::kProtocol,
@@ -72,6 +75,7 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
              Component* pathname,
              Component* search,
              Component* hash,
+             Options options,
              base::PassKey<URLPattern> key);
 
   bool test(ScriptState* script_state,
@@ -129,6 +133,7 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   Member<Component> pathname_;
   Member<Component> search_;
   Member<Component> hash_;
+  const Options options_;
 
   // For data analysis: the components which would be wildcarded but are empty
   // due to the string parsing.

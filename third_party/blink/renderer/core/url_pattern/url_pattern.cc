@@ -547,10 +547,13 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (exception_state.HadException())
     return nullptr;
 
+  Options urlpattern_options;
+  urlpattern_options.ignore_case = options->ignoreCase();
+
   URLPattern* result = MakeGarbageCollected<URLPattern>(
       protocol_component, username_component, password_component,
       hostname_component, port_component, pathname_component, search_component,
-      hash_component, base::PassKey<URLPattern>());
+      hash_component, urlpattern_options, base::PassKey<URLPattern>());
   if (init->hasBaseURL()) {
     auto& would_be_wildcard = result->wildcard_with_base_url_change_;
     if (!init->hasUsername() &&
@@ -592,6 +595,7 @@ URLPattern::URLPattern(Component* protocol,
                        Component* pathname,
                        Component* search,
                        Component* hash,
+                       Options options,
                        base::PassKey<URLPattern> key)
     : protocol_(protocol),
       username_(username),
@@ -600,7 +604,8 @@ URLPattern::URLPattern(Component* protocol,
       port_(port),
       pathname_(pathname),
       search_(search),
-      hash_(hash) {}
+      hash_(hash),
+      options_(options) {}
 
 bool URLPattern::test(ScriptState* script_state,
                       const V8URLPatternInput* input,
