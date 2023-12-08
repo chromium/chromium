@@ -195,6 +195,9 @@ export class KeyCombinationInputDialogElement extends
 
   private onShortcutInputUpdate_(e: ShortcutInputCaptureStateEvent): void {
     this.isCapturing = e.detail.capturing;
+    if (!this.isCapturing && !this.inputKeyEvent && this.isOpen) {
+      this.close();
+    }
   }
 
   private onEditButtonClicked_(): void {
