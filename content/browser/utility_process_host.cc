@@ -378,7 +378,6 @@ bool UtilityProcessHost::StartProcess() {
       switches::kEnableResourcesFileSharing,
 #endif
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      switches::kChromeOSVideoDecoderTaskRunner,
       switches::kHardwareVideoDecodeFrameRate,
 #endif
     };
