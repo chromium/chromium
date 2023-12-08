@@ -139,7 +139,7 @@ void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
   CHECK(!callback_);
   callback_ = std::move(callback);
 
-  auto view = std::make_unique<IsolatedWebAppInstallerView>(this);
+  auto view = IsolatedWebAppInstallerView::Create(this);
   view_ = view.get();
   std::unique_ptr<views::DialogDelegate> dialog_delegate =
       CreateDialogDelegate(std::move(view));

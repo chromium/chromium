@@ -138,9 +138,6 @@ std::unique_ptr<KeyedService> NullServiceFactory(content::BrowserContext*) {
 
 class MockView : public IsolatedWebAppInstallerView {
  public:
-  explicit MockView(IsolatedWebAppInstallerView::Delegate* delegate)
-      : IsolatedWebAppInstallerView(delegate) {}
-
   MOCK_METHOD(void, ShowDisabledScreen, (), (override));
   MOCK_METHOD(void, ShowGetMetadataScreen, (), (override));
   MOCK_METHOD(void, UpdateGetMetadataProgress, (double progress), (override));
@@ -251,7 +248,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   base::test::TestFuture<void> callback;
@@ -282,7 +279,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   base::test::TestFuture<void> callback;
@@ -305,7 +302,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
@@ -329,7 +326,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
@@ -355,7 +352,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
@@ -386,7 +383,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
@@ -421,7 +418,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(bundle_path);
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
@@ -452,7 +449,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
-  testing::StrictMock<MockView> view(&controller);
+  testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
 
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");

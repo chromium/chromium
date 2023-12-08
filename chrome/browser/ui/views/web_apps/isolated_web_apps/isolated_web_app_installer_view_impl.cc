@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_impl.h"
 
 #include <memory>
 #include <optional>
@@ -206,12 +206,19 @@ void IsolatedWebAppInstallerView::SetDialogButtons(
   dialog_delegate->SetButtons(buttons);
 }
 
-IsolatedWebAppInstallerView::IsolatedWebAppInstallerView(Delegate* delegate)
-    : delegate_(delegate), dialog_view_(nullptr), initialized_(false) {}
+// static
+std::unique_ptr<IsolatedWebAppInstallerView>
+IsolatedWebAppInstallerView::Create(Delegate* delegate) {
+  return std::make_unique<IsolatedWebAppInstallerViewImpl>(delegate);
+}
 
-IsolatedWebAppInstallerView::~IsolatedWebAppInstallerView() = default;
+IsolatedWebAppInstallerViewImpl::IsolatedWebAppInstallerViewImpl(
+    Delegate* delegate)
+    : delegate_(delegate), dialog_view_(nullptr) {}
 
-void IsolatedWebAppInstallerView::ShowDisabledScreen() {
+IsolatedWebAppInstallerViewImpl::~IsolatedWebAppInstallerViewImpl() = default;
+
+void IsolatedWebAppInstallerViewImpl::ShowDisabledScreen() {
   ShowScreen(std::make_unique<InstallerDialogView>(
       CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                  ui::kColorAlertMediumSeverityIcon),
@@ -221,7 +228,7 @@ void IsolatedWebAppInstallerView::ShowDisabledScreen() {
                           base::Unretained(delegate_))));
 }
 
-void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {
+void IsolatedWebAppInstallerViewImpl::ShowGetMetadataScreen() {
   auto view = std::make_unique<InstallerDialogView>(
       CreateImageModelFromVector(kFingerprintIcon, ui::kColorAccent),
       IDS_IWA_INSTALLER_VERIFICATION_TITLE,
@@ -243,12 +250,13 @@ void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {
   ShowScreen(std::move(view), progress_bar);
 }
 
-void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(double percent) {
+void IsolatedWebAppInstallerViewImpl::UpdateGetMetadataProgress(
+    double percent) {
   CHECK(progress_bar_);
   progress_bar_->SetValue(percent);
 }
 
-void IsolatedWebAppInstallerView::ShowMetadataScreen(
+void IsolatedWebAppInstallerViewImpl::ShowMetadataScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
   auto view = std::make_unique<InstallerDialogView>(
       CreateImageModelFromBundleMetadata(bundle_metadata),
@@ -268,7 +276,7 @@ void IsolatedWebAppInstallerView::ShowMetadataScreen(
   ShowScreen(std::move(view));
 }
 
-void IsolatedWebAppInstallerView::ShowInstallScreen(
+void IsolatedWebAppInstallerViewImpl::ShowInstallScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
   auto view = std::make_unique<InstallerDialogView>(
       CreateImageModelFromBundleMetadata(bundle_metadata),
@@ -289,12 +297,12 @@ void IsolatedWebAppInstallerView::ShowInstallScreen(
   ShowScreen(std::move(view), progress_bar);
 }
 
-void IsolatedWebAppInstallerView::UpdateInstallProgress(double percent) {
+void IsolatedWebAppInstallerViewImpl::UpdateInstallProgress(double percent) {
   CHECK(progress_bar_);
   progress_bar_->SetValue(percent);
 }
 
-void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(
+void IsolatedWebAppInstallerViewImpl::ShowInstallSuccessScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
   ShowScreen(std::make_unique<InstallerDialogView>(
       CreateImageModelFromBundleMetadata(bundle_metadata),
@@ -302,7 +310,7 @@ void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(
       bundle_metadata.app_name()));
 }
 
-void IsolatedWebAppInstallerView::ShowScreen(
+void IsolatedWebAppInstallerViewImpl::ShowScreen(
     std::unique_ptr<InstallerDialogView> dialog_view,
     views::ProgressBar* progress_bar) {
   if (!initialized_) {
@@ -320,7 +328,7 @@ void IsolatedWebAppInstallerView::ShowScreen(
   InvalidateLayout();
 }
 
-void IsolatedWebAppInstallerView::ShowDialog(
+void IsolatedWebAppInstallerViewImpl::ShowDialog(
     const IsolatedWebAppInstallerModel::DialogContent& dialog_content) {
   CHECK(initialized_);
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
@@ -357,7 +365,7 @@ void IsolatedWebAppInstallerView::ShowDialog(
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
 
-BEGIN_METADATA(IsolatedWebAppInstallerView, views::BoxLayoutView)
+BEGIN_METADATA(IsolatedWebAppInstallerViewImpl, views::BoxLayoutView)
 END_METADATA
 
 }  // namespace web_app
