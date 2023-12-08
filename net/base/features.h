@@ -490,6 +490,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
 // HTTP2.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointHttp2);
 
+// Enables using the new ALPS codepoint to negotiate application settings for
+// QUIC.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointQUIC);
+
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.
 // TODO(https://crbug.com/853508): Remove after the bug fix will go well for a

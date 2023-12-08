@@ -49,6 +49,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -5022,4 +5023,29 @@ IN_PROC_BROWSER_TEST_F(PrefersReducedTransparencyExplicitlyDisabledBrowserTest,
   EmulateMedia(R"([{"name": "prefers-reduced-transparency", "value": ""}])");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_reduced_transparency_observed(), "");
+}
+
+class QUICClientHintsTest : public ClientHintsBrowserTest {
+  // Enables quic feature to make sure no crash happen.
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitFromCommandLine(
+        base::StrCat({kDefaultFeatures, ",UseNewAlpsCodepointQUIC"}), "");
+    return feature_list;
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    ClientHintsBrowserTest::SetUpCommandLine(cmd);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kEnableQuic);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(QUICClientHintsTest, BasicQUICAlps) {
+  base::HistogramTester histogram_tester;
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetHttp2Url("/blank.html")));
+  histogram_tester.ExpectBucketCount(
+      "ClientHints.AcceptCHFrame",
+      content::AcceptCHFrameRestart::kNavigationRestarted, 1);
 }

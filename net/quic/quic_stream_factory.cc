@@ -2376,6 +2376,7 @@ QuicStreamFactory::CreateCryptoConfigHandle(
   crypto_config->AddCanonicalSuffix(".googlevideo.com");
   crypto_config->AddCanonicalSuffix(".googleusercontent.com");
   crypto_config->AddCanonicalSuffix(".gvt1.com");
+  crypto_config->set_alps_use_new_codepoint(params_.use_new_alps_codepoint);
 
   ConfigureQuicCryptoClientConfig(*crypto_config);
 
