@@ -152,7 +152,7 @@ TEST_F(ExtensionsHatsHandlerTest, ExtensionsPageLoad) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(),
-                  15000, _, expected_product_specific_data, true, _, _))
+                  15000, _, expected_product_specific_data, true, _, _, _))
       .Times(1);
   ExtensionsSafetyHubTriggerSurvey();
   task_environment()->RunUntilIdle();
@@ -175,7 +175,7 @@ TEST_F(ExtensionsHatsHandlerTest, OnSurveyInteraction) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   "HappinessTrackingSurveysExtensionsSafetyHub", web_contents(),
-                  15000, _, expected_product_specific_data, true, _, _))
+                  15000, _, expected_product_specific_data, true, _, _, _))
       .Times(1);
 
   ExtensionsSafetyHubExtensionKept();

@@ -986,7 +986,7 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
       {});
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _))
+              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _))
       .Times(1);
   const std::vector<std::string> module_ids = {"recipe_tasks", "cart"};
   handler_->OnModulesLoadedWithData(module_ids);
@@ -1003,7 +1003,7 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
       {});
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _))
+              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _))
       .Times(0);
   const std::vector<std::string> module_ids = {"recipe_tasks"};
   handler_->OnModulesLoadedWithData(module_ids);

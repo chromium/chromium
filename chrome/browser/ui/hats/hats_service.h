@@ -86,7 +86,9 @@ class HatsService : public KeyedService {
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data,
       base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing()) = 0;
+      base::OnceClosure failure_callback = base::DoNothing(),
+      const absl::optional<std::string_view>& supplied_trigger_id =
+          absl::nullopt) = 0;
 
   // Launches survey (with id |trigger|) with a timeout |timeout_ms| if
   // appropriate.
@@ -118,7 +120,9 @@ class HatsService : public KeyedService {
       const SurveyStringData& product_specific_string_data = {},
       bool require_same_origin = false,
       base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing()) = 0;
+      base::OnceClosure failure_callback = base::DoNothing(),
+      const absl::optional<std::string_view>& supplied_trigger_id =
+          absl::nullopt) = 0;
 
   // Whether the user is eligible for any survey (of the type |user_prompted|
   // or not) to be shown. A return value of false is always a true-negative,

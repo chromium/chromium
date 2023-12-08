@@ -110,7 +110,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerSettingsPrivacy, web_contents(), 15000,
-                  expected_product_specific_data, _, true, _, _))
+                  expected_product_specific_data, _, true, _, _, _))
       .Times(2);
   base::Value::List args;
   args.Append(
@@ -126,9 +126,10 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
 
 TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   // Check that completing a privacy guide triggers a privacy guide hats.
-  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
-                                       kHatsSurveyTriggerPrivacyGuide,
-                                       web_contents(), 15000, _, _, true, _, _))
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerPrivacyGuide,
+                                                web_contents(), 15000, _, _,
+                                                true, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(
@@ -159,7 +160,7 @@ TEST_F(HatsHandlerTest, MAYBE_SecurityPageInteractions) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerSettingsSecurity, web_contents(), 15000, _,
-                  expected_product_specific_data, true, _, _))
+                  expected_product_specific_data, true, _, _, _))
       .Times(1);
 
   base::Value::List args;
@@ -196,7 +197,7 @@ TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
   // Enable targeting for users who have not seen the Privacy Sandbox page and
   // ensure the handler does not attempt to launch the survey.
   EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _))
+              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _))
       .Times(0);
 
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
@@ -221,7 +222,7 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerPrivacySandbox, web_contents(), 10000,
-                  expected_product_specific_data, _, true, _, _));
+                  expected_product_specific_data, _, true, _, _, _));
   base::Value::List args;
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));
@@ -302,7 +303,7 @@ TEST_P(HatsHandlerParamTest, AdPrivacyHats) {
     EXPECT_CALL(*mock_hats_service_,
                 LaunchDelayedSurveyForWebContents(
                     survey, web_contents(), 20000,
-                    expected_product_specific_data, _, true, _, _));
+                    expected_product_specific_data, _, true, _, _, _));
     base::Value::List args;
     args.Append(static_cast<int>(interaction));
     handler()->HandleTrustSafetyInteractionOccurred(args);
