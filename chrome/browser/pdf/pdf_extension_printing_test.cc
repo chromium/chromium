@@ -19,6 +19,7 @@
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
+#include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/printing/test_print_view_manager.h"
@@ -128,6 +129,14 @@ class PDFExtensionPrintingTest
         test_print_backend_.get());
     printing::PrintingContext::SetPrintingContextFactoryForTest(
         &test_printing_context_factory_);
+
+    // Tests assume that printing can be done to the print backend, so there
+    // must be at least one printer available for that to make sense.
+    constexpr char kTestPrinter[] = "printer1";
+    AddPrinter(kTestPrinter);
+    test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
+        kTestPrinter);
+
     PDFExtensionTestBase::SetUp();
   }
   void SetUpOnMainThread() override {
@@ -202,6 +211,26 @@ class PDFExtensionPrintingTest
     }
 #endif
     return disabled;
+  }
+
+  void AddPrinter(const std::string& printer_name) {
+    printing::PrinterBasicInfo printer_info(
+        printer_name,
+        /*display_name=*/"test printer",
+        /*printer_description=*/"A printer for testing.",
+        /*printer_status=*/0,
+        /*is_default=*/true, printing::test::kPrintInfoOptions);
+
+    auto default_caps =
+        std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
+    default_caps->copies_max = 1;
+    default_caps->dpis = printing::test::kPrinterCapabilitiesDefaultDpis;
+    default_caps->default_dpi = printing::test::kPrinterCapabilitiesDpi;
+    default_caps->papers.push_back(printing::test::kPaperLetter);
+    default_caps->papers.push_back(printing::test::kPaperLegal);
+    test_print_backend_->AddValidPrinter(
+        printer_name, std::move(default_caps),
+        std::make_unique<printing::PrinterBasicInfo>(printer_info));
   }
 
   content::WebContents* GetEmbedderWebContents() {
