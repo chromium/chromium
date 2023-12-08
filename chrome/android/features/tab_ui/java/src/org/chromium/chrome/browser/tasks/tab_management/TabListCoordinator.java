@@ -31,11 +31,14 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
@@ -104,39 +107,41 @@ public class TabListCoordinator
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
+     *
      * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
      * @param context The context to use for accessing {@link android.content.res.Resources}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *                                     controls.
-     * @param tabModelSelector {@link TabModelSelector} that will provide and receive signals about
-     *                              the tabs concerned.
+     *     controls.
+     * @param tabModelFilterSupplier The supplier for the current tab model filter.
+     * @param regularTabModelSupplier The supplier for the regular tab model.
      * @param thumbnailProvider Provider to provide screenshot related details.
      * @param titleProvider Provider for a given tab's title.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
-     *                            tabs.
+     *     tabs.
      * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
-     *                                        click on a grid card.
+     *     click on a grid card.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param itemType The item type to put in the list of tabs.
      * @param selectionDelegateProvider Provider to provide selected Tabs for a selectable tab list.
-     *                                  It's NULL when selection is not possible.
+     *     It's NULL when selection is not possible.
      * @param priceWelcomeMessageController A controller to show PriceWelcomeMessage.
      * @param parentView {@link ViewGroup} The root view of the UI.
      * @param attachToParent Whether the UI should attach to root view.
      * @param componentName A unique string uses to identify different components for UMA recording.
-     *                      Recommended to use the class name or make sure the string is unique
-     *                      through actions.xml file.
+     *     Recommended to use the class name or make sure the string is unique through actions.xml
+     *     file.
      * @param rootView The root view of the app.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
-     *                           respected in TabListMode.STRIP mode.
+     *     respected in TabListMode.STRIP mode.
      * @param hasEmptyView A boolean to determine if we should show empty view in tab switcher.
-     *                      Currently only valid for TabListMode.GRID and TabListMode.LIST.
+     *     Currently only valid for TabListMode.GRID and TabListMode.LIST.
      */
     TabListCoordinator(
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            TabModelSelector tabModelSelector,
+            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
+            @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             @Nullable PseudoTab.TitleProvider titleProvider,
             boolean actionOnRelatedTabs,
@@ -156,7 +161,8 @@ public class TabListCoordinator
                 mode,
                 context,
                 browserControlsStateProvider,
-                tabModelSelector,
+                tabModelFilterSupplier,
+                regularTabModelSupplier,
                 thumbnailProvider,
                 titleProvider,
                 actionOnRelatedTabs,
@@ -180,7 +186,8 @@ public class TabListCoordinator
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            TabModelSelector tabModelSelector,
+            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
+            @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             @Nullable PseudoTab.TitleProvider titleProvider,
             boolean actionOnRelatedTabs,
@@ -336,7 +343,8 @@ public class TabListCoordinator
                         context,
                         mModel,
                         mMode,
-                        tabModelSelector,
+                        tabModelFilterSupplier,
+                        regularTabModelSupplier,
                         thumbnailProvider,
                         titleProvider,
                         tabListFaviconProvider,

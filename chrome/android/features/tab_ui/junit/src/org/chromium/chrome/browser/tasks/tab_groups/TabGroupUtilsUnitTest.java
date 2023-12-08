@@ -82,10 +82,10 @@ public class TabGroupUtilsUnitTest {
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
 
         assertThat(
-                TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab1),
+                TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab1),
                 equalTo(mTab1));
         assertThat(
-                TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab2),
+                TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab2),
                 equalTo(mTab1));
     }
 

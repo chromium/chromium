@@ -154,13 +154,16 @@ public class TabGroupUiCoordinator
             Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onModelTokenChange) {
+        var currentTabModelFilterSupplier =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.initializeWithNative")) {
             mTabStripCoordinator =
                     new TabListCoordinator(
                             TabListCoordinator.TabListMode.STRIP,
                             mContext,
                             mBrowserControlsStateProvider,
-                            mTabModelSelector,
+                            currentTabModelFilterSupplier,
+                            () -> mTabModelSelector.getModel(false),
                             null,
                             null,
                             false,

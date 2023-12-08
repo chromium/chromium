@@ -131,6 +131,7 @@ class TabListEditorCoordinator {
     private final Activity mActivity;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    // TODO(crbug/1505772): Refactor this class to not depend on a TabModelSelector.
     private final TabModelSelector mTabModelSelector;
     private final TabListEditorLayout mTabListEditorLayout;
     private final TabListCoordinator mTabListCoordinator;
@@ -174,12 +175,17 @@ class TabListEditorCoordinator {
             // TODO(ckitagawa): Lazily instantiate the TabListEditorCoordinator. When doing so,
             // the Coordinator hosting the TabListEditorCoordinator could share and reconfigure
             // its TabListCoordinator to work with the editor as an optimization.
+            var currentTabModelFilterSuppplier =
+                    mTabModelSelector
+                            .getTabModelFilterProvider()
+                            .getCurrentTabModelFilterSupplier();
             mTabListCoordinator =
                     new TabListCoordinator(
                             mode,
                             activity,
                             mBrowserControlsStateProvider,
-                            mTabModelSelector,
+                            currentTabModelFilterSuppplier,
+                            () -> mTabModelSelector.getModel(false),
                             thumbnailProvider,
                             titleProvider,
                             displayGroups,

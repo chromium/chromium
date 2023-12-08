@@ -144,14 +144,12 @@ public class TabGroupUtils {
 
     /**
      * This method gets the selected tab of the group where {@code tab} is in.
-     * @param selector   The selector that owns the {@code tab}.
-     * @param tab        {@link Tab}
+     *
+     * @param filter The filter that owns the {@code tab}.
+     * @param tab The {@link Tab}.
      * @return The selected tab of the group which contains the {@code tab}
      */
-    public static Tab getSelectedTabInGroupForTab(TabModelSelector selector, Tab tab) {
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        selector.getTabModelFilterProvider().getCurrentTabModelFilter();
+    public static Tab getSelectedTabInGroupForTab(TabGroupModelFilter filter, Tab tab) {
         return filter.getTabAt(filter.indexOf(tab));
     }
 

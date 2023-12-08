@@ -107,6 +107,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
+            var currentTabModelFilterSupplier =
+                    tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
             mTabListCoordinator =
                     new TabListCoordinator(
                             TabUiFeatureUtilities.shouldUseListMode(mActivity)
@@ -114,7 +116,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                     : TabListCoordinator.TabListMode.GRID,
                             activity,
                             mBrowserControlsStateProvider,
-                            tabModelSelector,
+                            currentTabModelFilterSupplier,
+                            () -> tabModelSelector.getModel(false),
                             (tabId,
                                     thumbnailSize,
                                     callback,
