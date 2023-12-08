@@ -135,7 +135,7 @@ id MockMXAppResponsivenessMetric(NSDictionary* dictionary) {
   return responsiveness;
 }
 
-id MockMXAppExitMetric(NSDictionary* dictionary) API_AVAILABLE(ios(14.0)) {
+id MockMXAppExitMetric(NSDictionary* dictionary) {
   id app_exit_metric = OCMClassMock([MXAppExitMetric class]);
   id foreground = OCMClassMock([MXForegroundExitData class]);
   NSDictionary* foreground_dict = dictionary[@"foregroundExitData"];
