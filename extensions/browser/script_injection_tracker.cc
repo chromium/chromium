@@ -214,16 +214,18 @@ bool CanExtensionScriptsAffectFrame(content::RenderFrameHost& frame,
                        extension.id(), extension.location());
 }
 
-// Returns whether `script` will inject JavaScript content into the `frame` /
-// `url`. Note that this function ignores CSS content scripts. This function
-// approximates a subset of checks from UserScriptSet::GetInjectionForScript
-// (which runs in the renderer process). Unlike the renderer version, the code
-// below doesn't consider ability to create an injection host, nor the results
-// of ScriptInjector::CanExecuteOnFrame, nor the path of `url_patterns`.
+// Returns whether `extension` will inject any of `scripts` JavaScript content
+// into the `frame` / `url`. Note that this function ignores CSS content
+// scripts. This function approximates a subset of checks from
+// UserScriptSet::GetInjectionForScript (which runs in the renderer process).
+// Unlike the renderer version, the code below doesn't consider ability to
+// create an injection host, nor the results of
+// ScriptInjector::CanExecuteOnFrame, nor the path of `url_patterns`.
 // Additionally the `effective_url` calculations are also only an approximation.
 // This is okay, because the top-level doc comment for ScriptInjectionTracker
 // documents that false positives are expected and why they are okay.
-bool DoesScriptMatch(const UserScript& script,
+bool DoesScriptMatch(const Extension& extension,
+                     const UserScript& script,
                      content::RenderFrameHost& frame,
                      const GURL& url) {
   // ScriptInjectionTracker only needs to track Javascript content scripts (e.g.
@@ -234,11 +236,17 @@ bool DoesScriptMatch(const UserScript& script,
 
   GURL effective_url =
       GetEffectiveDocumentURL(&frame, url, script.match_origin_as_fallback());
-  if (script.url_patterns().MatchesSecurityOrigin(effective_url)) {
-    return true;
+
+  // Dynamic scripts can only inject when the extension has host permissions for
+  // the url.
+  auto script_source = script.GetSource();
+  if ((script_source == UserScript::Source::kDynamicContentScript ||
+       script_source == UserScript::Source::kDynamicUserScript) &&
+      !extension.permissions_data()->HasHostPermission(effective_url)) {
+    return false;
   }
 
-  return false;
+  return script.url_patterns().MatchesSecurityOrigin(effective_url);
 }
 
 void HandleProgrammaticScriptInjection(
@@ -262,15 +270,17 @@ void HandleProgrammaticScriptInjection(
       pass_key, frame, extension);
 }
 
-// Returns whether any of `scripts` will inject JavaScript content into the
-// `frame` / `url`.
-bool DoScriptsMatch(const std::vector<const UserScript*>& scripts,
+// Returns whether ``extension` will inject any of `scripts` JavaScript content
+// into the `frame` / `url`.
+bool DoScriptsMatch(const Extension& extension,
+                    const std::vector<const UserScript*>& scripts,
                     content::RenderFrameHost& frame,
                     const GURL& url) {
-  return base::ranges::any_of(scripts.begin(), scripts.end(),
-                              [&frame, &url](const UserScript* script) {
-                                return DoesScriptMatch(*script, frame, url);
-                              });
+  return base::ranges::any_of(
+      scripts.begin(), scripts.end(),
+      [&extension, &frame, &url](const UserScript* script) {
+        return DoesScriptMatch(extension, *script, frame, url);
+      });
 }
 
 // Returns whether an `extension` can inject JavaScript web view scripts into
@@ -334,7 +344,7 @@ bool DoStaticContentScriptsMatch(const Extension& extension,
   std::vector<const UserScript*> static_content_scripts =
       GetVectorFromScriptList(
           ContentScriptsInfo::GetContentScripts(&extension));
-  return DoScriptsMatch(static_content_scripts, frame, url);
+  return DoScriptsMatch(extension, static_content_scripts, frame, url);
 }
 
 // Returns whether an `extension` can inject JavaScript dynamic content scripts
@@ -356,7 +366,7 @@ bool DoDynamicContentScriptsMatch(const Extension& extension,
 
   std::vector<const UserScript*> dynamic_user_scripts = GetLoadedDynamicScripts(
       extension.id(), UserScript::Source::kDynamicContentScript, process);
-  return DoScriptsMatch(dynamic_user_scripts, frame, url);
+  return DoScriptsMatch(extension, dynamic_user_scripts, frame, url);
 }
 
 // Returns whether an `extension` can inject JavaScript dynamic user scripts
@@ -377,7 +387,7 @@ bool DoUserScriptsMatch(const Extension& extension,
 
   std::vector<const UserScript*> dynamic_user_scripts = GetLoadedDynamicScripts(
       extension.id(), UserScript::Source::kDynamicUserScript, process);
-  return DoScriptsMatch(dynamic_user_scripts, frame, url);
+  return DoScriptsMatch(extension, dynamic_user_scripts, frame, url);
 }
 
 // Returns all the extensions injecting content scripts into the `frame` /
@@ -397,6 +407,41 @@ std::vector<const Extension*> GetExtensionsInjectingContentScripts(
   }
 
   return extensions_injecting_scripts;
+}
+
+// Adds all scripts from `extension` that matches the `process` renderers to the
+// process data.
+void AddMatchingScriptsToProcess(const Extension& extension,
+                                 content::RenderProcessHost& process) {
+  bool any_frame_matches_content_scripts = false;
+  bool any_frame_matches_user_scripts = false;
+  process.ForEachRenderFrameHost([&any_frame_matches_content_scripts,
+                                  &any_frame_matches_user_scripts,
+                                  &extension](content::RenderFrameHost* frame) {
+    const GURL& url = frame->GetLastCommittedURL();
+    if (!any_frame_matches_content_scripts) {
+      any_frame_matches_content_scripts =
+          DoWebViewScripstMatch(extension, *frame) ||
+          DoStaticContentScriptsMatch(extension, *frame, url) ||
+          DoDynamicContentScriptsMatch(extension, *frame, url);
+    }
+    if (!any_frame_matches_user_scripts) {
+      any_frame_matches_user_scripts =
+          DoUserScriptsMatch(extension, *frame, url);
+    }
+  });
+
+  if (any_frame_matches_content_scripts || any_frame_matches_user_scripts) {
+    auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
+    if (any_frame_matches_content_scripts) {
+      process_data.AddScript(ScriptInjectionTracker::ScriptType::kContentScript,
+                             extension.id());
+    }
+    if (any_frame_matches_user_scripts) {
+      process_data.AddScript(ScriptInjectionTracker::ScriptType::kUserScript,
+                             extension.id());
+    }
+  }
 }
 
 // Returns all the extensions injecting user scripts into the `frame` / `url`.
@@ -749,33 +794,17 @@ void ScriptInjectionTracker::DidUpdateScriptsInRenderer(
     return;
   }
 
-  bool any_frame_matches_content_scripts = false;
-  bool any_frame_matches_user_scripts = false;
-  process.ForEachRenderFrameHost([&any_frame_matches_content_scripts,
-                                  &any_frame_matches_user_scripts,
-                                  &extension](content::RenderFrameHost* frame) {
-    auto url = frame->GetLastCommittedURL();
-    if (!any_frame_matches_content_scripts) {
-      any_frame_matches_content_scripts =
-          DoWebViewScripstMatch(*extension, *frame) ||
-          DoStaticContentScriptsMatch(*extension, *frame, url) ||
-          DoDynamicContentScriptsMatch(*extension, *frame, url);
-    }
-    if (!any_frame_matches_user_scripts) {
-      any_frame_matches_user_scripts =
-          DoUserScriptsMatch(*extension, *frame, url);
-    }
-  });
+  AddMatchingScriptsToProcess(*extension, process);
+}
 
-  if (any_frame_matches_content_scripts || any_frame_matches_user_scripts) {
-    auto& process_data = RenderProcessHostUserData::GetOrCreate(process);
-    if (any_frame_matches_content_scripts) {
-      process_data.AddScript(ScriptType::kContentScript, extension->id());
-    }
-    if (any_frame_matches_user_scripts) {
-      process_data.AddScript(ScriptType::kUserScript, extension->id());
-    }
-  }
+// static
+void ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
+    base::PassKey<PermissionsUpdater> pass_key,
+    const Extension& extension,
+    content::RenderProcessHost& process) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  AddMatchingScriptsToProcess(extension, process);
 }
 
 // static

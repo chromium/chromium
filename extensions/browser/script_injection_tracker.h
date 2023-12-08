@@ -26,6 +26,7 @@ namespace extensions {
 class Extension;
 class ExtensionWebContentsObserver;
 class UserScriptLoader;
+class PermissionsUpdater;
 class RequestContentScript;
 class ScriptExecutor;
 
@@ -120,6 +121,13 @@ class ScriptInjectionTracker {
   static void DidUpdateScriptsInRenderer(
       base::PassKey<UserScriptLoader> pass_key,
       const mojom::HostID& host_id,
+      content::RenderProcessHost& process);
+
+  // Called right after the given renderer `process` is notified about
+  // permission updates.
+  static void DidUpdatePermissionsInRenderer(
+      base::PassKey<PermissionsUpdater> pass_key,
+      const Extension& extension,
       content::RenderProcessHost& process);
 
  private:
