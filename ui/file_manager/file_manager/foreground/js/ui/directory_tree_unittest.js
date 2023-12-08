@@ -9,7 +9,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {EntryList} from '../../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../../common/js/mock_chrome.js';
-import {MockDirectoryEntry} from '../../../common/js/mock_entry.js';
+import {MockDirectoryEntry, MockFileSystem} from '../../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../../common/js/test_error_reporting.js';
 import {str} from '../../../common/js/translations.js';
 import {RootType, VolumeType} from '../../../common/js/volume_manager_types.js';
@@ -41,7 +41,7 @@ let directoryChangedListeners;
 /** @type {!Object<string,!MockDirectoryEntry>} */
 let fakeFileSystemURLEntries;
 
-/** @type {!FileSystem} */
+/** @type {!MockFileSystem} */
 let driveFileSystem;
 
 
@@ -85,7 +85,8 @@ export function setUp() {
     callback(fakeFileSystemURLEntries[url]);
   };
 
-  driveFileSystem = assert(volumeManager.volumeInfoList.item(0).fileSystem);
+  driveFileSystem = /** @type{MockFileSystem} */ (
+      assert(volumeManager.volumeInfoList.item(0).fileSystem));
   // @ts-ignore: error TS2740: Type 'FileSystemDirectoryEntry' is missing the
   // following properties from type 'MockDirectoryEntry': clone, getAllChildren,
   // getEntry_, metadata, and 2 more.
@@ -231,7 +232,8 @@ export function testCreateDirectoryTree(callback) {
  */
 export function testCreateDirectoryTreeWithTeamDrive(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
-  const driveFileSystem = volumeManager.volumeInfoList.item(0).fileSystem;
+  const driveFileSystem = /** @type{MockFileSystem} */ (
+      volumeManager.volumeInfoList.item(0).fileSystem);
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:drive/team_drives/a'] =
@@ -950,7 +952,8 @@ export function testAddFirstTeamDrive(callback) {
  */
 export function testRemoveLastTeamDrive(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
-  const driveFileSystem = volumeManager.volumeInfoList.item(0).fileSystem;
+  const driveFileSystem = /** @type{MockFileSystem} */ (
+      volumeManager.volumeInfoList.item(0).fileSystem);
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:drive/team_drives/a'] =
@@ -1090,7 +1093,8 @@ export function testAddFirstComputer(callback) {
  */
 export function testRemoveLastComputer(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
-  const driveFileSystem = volumeManager.volumeInfoList.item(0).fileSystem;
+  const driveFileSystem = /** @type{MockFileSystem} */ (
+      volumeManager.volumeInfoList.item(0).fileSystem);
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:drive/Computers/a'] =
@@ -1169,7 +1173,8 @@ export function testInsideMyDriveAndInsideDrive(callback) {
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:drive/root/folder1'] =
       MockDirectoryEntry.create(driveFileSystem, '/root/folder1');
-  const downloadsFileSystem = volumeManager.volumeInfoList.item(1).fileSystem;
+  const downloadsFileSystem = /** @type{MockFileSystem} */ (
+      volumeManager.volumeInfoList.item(1).fileSystem);
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:downloads/folder1'] =
@@ -1237,7 +1242,8 @@ export function testAddProviders(callback) {
       VolumeType.PROVIDED, 'not_smb', 'NOT_SMB_LABEL');
 
   // Add a sub directory to the non-Smb provider.
-  const provider = assert(volumeManager.volumeInfoList.item(2).fileSystem);
+  const provider = /** @type{MockFileSystem} */ (
+      assert(volumeManager.volumeInfoList.item(2).fileSystem));
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:not_smb/child'] =
@@ -1248,7 +1254,8 @@ export function testAddProviders(callback) {
       VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
 
   // Add a sub directory to the Smb provider.
-  const smbProvider = assert(volumeManager.volumeInfoList.item(3).fileSystem);
+  const smbProvider = /** @type{MockFileSystem} */ (
+      assert(volumeManager.volumeInfoList.item(3).fileSystem));
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:smb/child'] =
@@ -1258,7 +1265,8 @@ export function testAddProviders(callback) {
   volumeManager.createVolumeInfo(VolumeType.SMB, 'smbfs', 'SMBFS_LABEL');
 
   // Add a sub directory to the Smb provider.
-  const smbfs = assert(volumeManager.volumeInfoList.item(4).fileSystem);
+  const smbfs = /** @type{MockFileSystem} */ (
+      assert(volumeManager.volumeInfoList.item(4).fileSystem));
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:smbfs/child'] =
@@ -1336,7 +1344,8 @@ export function testSmbNotFetchedUntilClick(callback) {
       VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
 
   // Add a sub directory to the Smb provider.
-  const smbProvider = assert(volumeManager.volumeInfoList.item(2).fileSystem);
+  const smbProvider = /** @type{MockFileSystem} */ (
+      assert(volumeManager.volumeInfoList.item(2).fileSystem));
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:smb/child'] =
@@ -1432,7 +1441,8 @@ export function testAriaExpanded(callback) {
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:drive/root/folder1'] =
       MockDirectoryEntry.create(driveFileSystem, '/root/folder1');
-  const downloadsFileSystem = volumeManager.volumeInfoList.item(1).fileSystem;
+  const downloadsFileSystem = /** @type{MockFileSystem} */ (
+      volumeManager.volumeInfoList.item(1).fileSystem);
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:downloads/folder1'] =
@@ -1497,7 +1507,8 @@ export async function testDriveDisabled(done) {
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:drive/root/folder1'] =
       MockDirectoryEntry.create(driveFileSystem, '/root/folder1');
-  const downloadsFileSystem = volumeManager.volumeInfoList.item(1).fileSystem;
+  const downloadsFileSystem = /** @type{MockFileSystem} */ (
+      volumeManager.volumeInfoList.item(1).fileSystem);
   // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry' is not assignable
   // to type 'MockDirectoryEntry'.
   fakeFileSystemURLEntries['filesystem:downloads/folder1'] =

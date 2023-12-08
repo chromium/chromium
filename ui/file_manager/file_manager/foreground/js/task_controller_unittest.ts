@@ -191,7 +191,7 @@ export async function testGetFileTasksShouldNotBeCalledMultipleTimes() {
   const taskController =
       createTaskController(selectionHandler as unknown as FileSelectionHandler);
 
-  const fileSystem = downloads.fileSystem;
+  const fileSystem = downloads.fileSystem as MockFileSystem;
   selectionHandler.updateSelection(
       [MockFileEntry.create(fileSystem, '/test.png')], ['image/png'], store);
 
@@ -246,7 +246,7 @@ export async function testGetFileTasksShouldNotBeCalledMultipleTimes() {
 export async function testFileTasksUpdatedAfterSelectionChange() {
   const selectionHandler = window.fileManager.selectionHandler;
   const store = getStore();
-  const fileSystem = downloads.fileSystem;
+  const fileSystem = downloads.fileSystem as MockFileSystem;
 
   // Check no file tasks initially in the store.
   await waitForState(
@@ -283,7 +283,7 @@ export async function testFileTasksUpdatedAfterSelectionChange() {
 export async function testGetFileTasksShouldNotReturnObsoletePromise() {
   const selectionHandler = window.fileManager.selectionHandler;
   const store = getStore();
-  const fileSystem = downloads.fileSystem;
+  const fileSystem = downloads.fileSystem as MockFileSystem;
   const taskController =
       createTaskController(selectionHandler as unknown as FileSelectionHandler);
   selectionHandler.updateSelection(
@@ -309,7 +309,7 @@ export async function testGetFileTasksShouldNotReturnObsoletePromise() {
 export async function testGetFileTasksShouldNotCacheRejectedPromise() {
   const selectionHandler = window.fileManager.selectionHandler;
   const store = getStore();
-  const fileSystem = downloads.fileSystem;
+  const fileSystem = downloads.fileSystem as MockFileSystem;
   const taskController =
       createTaskController(selectionHandler as unknown as FileSelectionHandler);
 

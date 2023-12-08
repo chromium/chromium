@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
-import {MockDirectoryEntry, MockFileEntry} from '../../common/js/mock_entry.js';
+import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -24,9 +24,8 @@ type GetCustomActionsCallback =
     (actions: chrome.fileManagerPrivate.FileSystemProviderAction[]) => void;
 
 let mockVolumeManager: MockVolumeManager;
-let driveFileSystem: FileSystem&
-    {entries?: Record<string, DirectoryEntry|FileEntry>};
-let providedFileSystem: FileSystem&{entries?: Record<string, DirectoryEntry>};
+let driveFileSystem: MockFileSystem;
+let providedFileSystem: MockFileSystem;
 let mockMetrics: MockMetrics;
 let shortcutsModel: FolderShortcutsDataModel;
 
@@ -107,15 +106,15 @@ export function setUp() {
   mockVolumeManager = new MockVolumeManager();
   let type = VolumeType.DRIVE;
   assert(mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem);
-  driveFileSystem =
-      mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem;
+  driveFileSystem = mockVolumeManager.getCurrentProfileVolumeInfo(
+                                         type)!.fileSystem as MockFileSystem;
 
   // Setup Provided file system.
   type = VolumeType.PROVIDED;
   mockVolumeManager.createVolumeInfo(type, 'provided', 'Provided');
   assert(mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem);
-  providedFileSystem =
-      mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem;
+  providedFileSystem = mockVolumeManager.getCurrentProfileVolumeInfo(
+                                            type)!.fileSystem as MockFileSystem;
 
   // Create mock action model components.
   shortcutsModel = createFakeFolderShortcutsDataModel();
@@ -151,6 +150,7 @@ export async function testDriveDirectoryEntry() {
   assertTrue(!!shareAction);
   mockVolumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
+    reason: undefined,
   };
   assertFalse(shareAction.canExecute());
 
@@ -303,6 +303,7 @@ export async function testDriveHostedFileEntry() {
   mockMetadataModel.set(testFile, {hosted: false, pinned: false, canPin: true});
   mockVolumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+    reason: undefined,
   };
   chrome.fileManagerPrivate.pinDriveFile =
       (entry: Entry, pin: boolean, callback: VoidCallback) => {
@@ -399,6 +400,7 @@ export async function testUnpinnableDriveHostedFileEntry() {
   mockMetadataModel.set(testFile, {hosted: false, pinned: false, canPin: true});
   mockVolumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+    reason: undefined,
   };
   chrome.fileManagerPrivate.pinDriveFile =
       (entry: Entry, pin: boolean, callback: VoidCallback) => {

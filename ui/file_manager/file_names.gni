@@ -15,7 +15,6 @@ image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
   # Files Common:
-  "file_manager/common/js/mock_entry.js",
 
   # Externs:
   "file_manager/externs/background/crostini.js",
@@ -108,6 +107,7 @@ ts_files = [
   "file_manager/common/js/lru_cache.ts",
   "file_manager/common/js/metrics.ts",
   "file_manager/common/js/mock_chrome.ts",
+  "file_manager/common/js/mock_entry.ts",
   "file_manager/common/js/progress_center_common.ts",
   "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
