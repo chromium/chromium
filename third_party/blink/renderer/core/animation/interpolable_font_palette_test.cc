@@ -3,16 +3,20 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/interpolable_font_palette.h"
+
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(InterpolableFontPaletteTest, SimpleEndpointsInterpolation) {
+  test::TaskEnvironment task_environment;
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kLightPalette);
@@ -35,6 +39,7 @@ TEST(InterpolableFontPaletteTest, SimpleEndpointsInterpolation) {
 }
 
 TEST(InterpolableFontPaletteTest, NestedEndpointsInterpolation) {
+  test::TaskEnvironment task_environment;
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kLightPalette);
@@ -62,6 +67,7 @@ TEST(InterpolableFontPaletteTest, NestedEndpointsInterpolation) {
 
 // Scale/Add should have no effect.
 TEST(InterpolableFontPaletteTest, TestScaleAndAdd) {
+  test::TaskEnvironment task_environment;
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 = FontPalette::Mix(
       FontPalette::Create(), FontPalette::Create(FontPalette::kDarkPalette), 30,
@@ -84,6 +90,7 @@ TEST(InterpolableFontPaletteTest, TestScaleAndAdd) {
 }
 
 TEST(InterpolableFontPaletteTest, InterpolablePalettesEqual) {
+  test::TaskEnvironment task_environment;
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 = FontPalette::Mix(
       FontPalette::Create(FontPalette::kLightPalette), FontPalette::Create(),
@@ -102,6 +109,7 @@ TEST(InterpolableFontPaletteTest, InterpolablePalettesEqual) {
 }
 
 TEST(InterpolableFontPaletteTest, InterpolablePalettesNotEqual) {
+  test::TaskEnvironment task_environment;
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),

@@ -3,15 +3,19 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
+
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(CSSColorInterpolationTypeTest, GetRGBA1) {
+  test::TaskEnvironment task_environment;
   Color color(230, 120, 0, 255);
   EXPECT_EQ(color,
             CSSColorInterpolationType::GetColor(
@@ -19,6 +23,7 @@ TEST(CSSColorInterpolationTypeTest, GetRGBA1) {
 }
 
 TEST(CSSColorInterpolationTypeTest, GetRGBA2) {
+  test::TaskEnvironment task_environment;
   Color color(100, 190, 0, 1);
   EXPECT_EQ(color,
             CSSColorInterpolationType::GetColor(
@@ -26,6 +31,7 @@ TEST(CSSColorInterpolationTypeTest, GetRGBA2) {
 }
 
 TEST(CSSColorInterpolationTypeTest, GetRGBA3) {
+  test::TaskEnvironment task_environment;
   Color color(35, 140, 10, 10);
   EXPECT_EQ(color,
             CSSColorInterpolationType::GetColor(
@@ -33,6 +39,7 @@ TEST(CSSColorInterpolationTypeTest, GetRGBA3) {
 }
 
 TEST(CSSColorInterpolationTypeTest, GetRGBA4) {
+  test::TaskEnvironment task_environment;
   Color color(35, 140, 10, 0);
   EXPECT_EQ(Color::FromRGBA(0, 0, 0, 0),
             CSSColorInterpolationType::GetColor(
@@ -40,6 +47,7 @@ TEST(CSSColorInterpolationTypeTest, GetRGBA4) {
 }
 
 TEST(CSSColorInterpolationTypeTest, RGBBounds) {
+  test::TaskEnvironment task_environment;
   Color from_color(0, 0, 0, 0);
   Color to_color(255, 255, 255, 255);
   InterpolableValue* from =
@@ -58,6 +66,7 @@ TEST(CSSColorInterpolationTypeTest, RGBBounds) {
 }
 
 TEST(CSSColorInterpolationTypeTest, RGBToOklab) {
+  test::TaskEnvironment task_environment;
   Color from_color = Color::FromRGBAFloat(1, 1, 1, 1);
   Color to_color =
       Color::FromColorSpace(Color::ColorSpace::kOklab, 0, 0, 0, 0.5);
@@ -82,6 +91,7 @@ TEST(CSSColorInterpolationTypeTest, RGBToOklab) {
 }
 
 TEST(CSSColorInterpolationTypeTest, Oklab) {
+  test::TaskEnvironment task_environment;
   Color from_color =
       Color::FromColorSpace(Color::ColorSpace::kOklab, 1, 1, 1, 1);
   Color to_color =
