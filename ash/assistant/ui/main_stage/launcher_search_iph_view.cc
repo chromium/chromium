@@ -181,6 +181,10 @@ void LauncherSearchIphView::VisibilityChanged(views::View* starting_from,
                                               bool is_visible) {
   if (is_visible) {
     ShuffleChipsQuery();
+
+    // Label size should be changed. The `PreferredSizeChanged()` in label is
+    // not bubbled up to this view, so we need to explicitly call it here.
+    PreferredSizeChanged();
   }
 }
 
