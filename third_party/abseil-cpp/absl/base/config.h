@@ -609,6 +609,22 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_STD_STRING_VIEW 1
 #endif
 
+// ABSL_HAVE_STD_ORDERING
+//
+// Checks whether C++20 std::{partial,weak,strong}_ordering are available.
+//
+// __cpp_lib_three_way_comparison is missing on libc++
+// (https://github.com/llvm/llvm-project/issues/73953) so treat it as defined
+// when building in C++20 mode.
+#ifdef ABSL_HAVE_STD_ORDERING
+#error "ABSL_HAVE_STD_ORDERING cannot be directly set."
+#elif (defined(__cpp_lib_three_way_comparison) &&    \
+       __cpp_lib_three_way_comparison >= 201907L) || \
+    (defined(ABSL_INTERNAL_CPLUSPLUS_LANG) &&        \
+     ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L)
+#define ABSL_HAVE_STD_ORDERING 1
+#endif
+
 // ABSL_USES_STD_ANY
 //
 // Indicates whether absl::any is an alias for std::any.
@@ -667,6 +683,22 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     (ABSL_OPTION_USE_STD_STRING_VIEW == 2 &&  \
      defined(ABSL_HAVE_STD_STRING_VIEW))
 #define ABSL_USES_STD_STRING_VIEW 1
+#else
+#error options.h is misconfigured.
+#endif
+
+// ABSL_USES_STD_ORDERING
+//
+// Indicates whether absl::{partial,weak,strong}_ordering are aliases for the
+// std:: ordering types.
+#if !defined(ABSL_OPTION_USE_STD_ORDERING)
+#error options.h is misconfigured.
+#elif ABSL_OPTION_USE_STD_ORDERING == 0 || \
+    (ABSL_OPTION_USE_STD_ORDERING == 2 && !defined(ABSL_HAVE_STD_ORDERING))
+#undef ABSL_USES_STD_ORDERING
+#elif ABSL_OPTION_USE_STD_ORDERING == 1 || \
+    (ABSL_OPTION_USE_STD_ORDERING == 2 && defined(ABSL_HAVE_STD_ORDERING))
+#define ABSL_USES_STD_ORDERING 1
 #else
 #error options.h is misconfigured.
 #endif

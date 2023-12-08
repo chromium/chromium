@@ -119,8 +119,8 @@ enum class CordMemoryAccounting {
   //
   // For example:
   //   absl::Cord cord;
-  //   cord.append(some_other_cord);
-  //   cord.append(some_other_cord);
+  //   cord.Append(some_other_cord);
+  //   cord.Append(some_other_cord);
   //   // Counts `some_other_cord` twice:
   //   cord.EstimatedMemoryUsage(kTotal);
   //   // Counts `some_other_cord` once:

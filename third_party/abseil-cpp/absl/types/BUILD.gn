@@ -85,7 +85,8 @@ absl_source_set("variant") {
 
 absl_source_set("compare") {
   public = [ "compare.h" ]
-  public_deps = [
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
