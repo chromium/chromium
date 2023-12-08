@@ -219,6 +219,15 @@ Vector<uint32_t> CreateAllAxes(const wtf_size_t rank) {
   return default_axes;
 }
 
+Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank) {
+  Vector<uint32_t> default_axes;
+  if (rank > 1) {
+    default_axes.resize(rank - 1);
+    std::iota(default_axes.begin(), default_axes.end(), 1);
+  }
+  return default_axes;
+}
+
 webnn::Padding2d CalculateConvTransposePadding2D(
     const blink::MLConvTranspose2dOptions* options,
     uint32_t input_height,

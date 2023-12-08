@@ -368,7 +368,7 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .Test();
   }
   {
-    // Test building gemm with setting optional bias and scale.
+    // Test building batchNormalization with setting optional bias and scale.
     BatchNormalizationTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 3, 3}},
@@ -2425,6 +2425,203 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
                    .dimensions = {2, 4}},
         .expected = false}
         .Test();
+  }
+}
+
+struct LayerNormalizationTester {
+  OperandInfo input;
+  absl::optional<OperandInfo> scale;
+  absl::optional<OperandInfo> bias;
+  struct LayerNormalizationAttributes {
+    absl::optional<uint64_t> scale_operand_id;
+    absl::optional<uint64_t> bias_operand_id;
+    std::vector<uint32_t> axes;
+    float epsilon = 1e-5;
+  };
+  LayerNormalizationAttributes attributes;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+
+    if (scale.has_value()) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    builder.BuildLayerNormalization(input_operand_id, output_operand_id,
+                                    std::move(attributes));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, LayerNormalizationTest) {
+  {
+    // Test building layerNormalization with default option for scalar input.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {}},
+        .attributes = {.axes = {}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building layerNormalization with 4-D input.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .scale = OperandInfo{.type = mojom::Operand::DataType::kFloat16,
+                             .dimensions = {3, 4}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat16,
+                            .dimensions = {3, 4}},
+        .attributes = {.axes = {2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is a scalar and the axes is not
+    // empty.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {}},
+        .attributes = {.axes = {0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input data type is int64.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kInt64, .dimensions = {1}},
+        .attributes = {.axes = {}},
+        .output = {.type = mojom::Operand::DataType::kInt64, .dimensions = {1}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the axes have duplications.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2}},
+        .attributes = {.axes = {0, 0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the axis is greater than the input rank.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2}},
+        .attributes = {.axes = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the bias type doesn't match the input type.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 4}},
+        .attributes = {.axes = {2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the scale shape doesn't match the reduction
+    // dimensions.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .scale = OperandInfo{.type = mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 3}},
+        .attributes = {.axes = {2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .attributes = {.axes = {}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output type doesn't match the input type.
+    LayerNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .attributes = {.axes = {}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output is the same as the input.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+    builder.BuildLayerNormalization(
+        input_operand_id, input_operand_id,
+        LayerNormalizationTester::LayerNormalizationAttributes{});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the output is the same as the scale.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t scale_operand_id = builder.BuildInput(
+        "scale", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+
+    LayerNormalizationTester::LayerNormalizationAttributes attributes;
+    attributes.scale_operand_id = scale_operand_id;
+    attributes.axes = {0, 1, 2, 3};
+
+    builder.BuildLayerNormalization(input_operand_id, scale_operand_id,
+                                    std::move(attributes));
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the output is the same as the bias.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t bias_operand_id = builder.BuildInput(
+        "bias", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+
+    LayerNormalizationTester::LayerNormalizationAttributes attributes;
+    attributes.bias_operand_id = bias_operand_id;
+    attributes.axes = {0, 1, 2, 3};
+
+    builder.BuildLayerNormalization(input_operand_id, bias_operand_id,
+                                    std::move(attributes));
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
 

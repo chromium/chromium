@@ -84,6 +84,11 @@ Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank);
 // Create a axes vector [0, ..., rank - 1].
 Vector<uint32_t> CreateAllAxes(const wtf_size_t rank);
 
+// Create a default axes vector [1, ... , rank - 1] when rank > 1 and an empty
+// vector when rank <= 1 for layer normalization specified in
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
+Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank);
+
 // Helper to get padding sizes for convolution 2d or pooling 2d Nodes.
 template <typename OptionsType>
 webnn::Padding2d CalculatePadding2D(const OptionsType* options,

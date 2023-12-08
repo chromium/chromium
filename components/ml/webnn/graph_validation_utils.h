@@ -281,8 +281,6 @@ struct LayerNormalizationAttributes {
   absl::optional<Operand> scale;
   // The bias operand.
   absl::optional<Operand> bias;
-  // The indices to the input dimensions to normalize along.
-  absl::optional<std::vector<uint32_t>> axes;
 };
 
 struct SliceAttributes {
@@ -395,6 +393,7 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
 // in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
 base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
     const Operand& input,
+    base::span<const uint32_t> axes,
     const LayerNormalizationAttributes& attributes);
 
 // Validate concat operator defined in WebIDL here

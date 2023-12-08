@@ -482,6 +482,32 @@ struct Gemm {
   bool b_transpose = false;
 };
 
+// Represents an operation of normalizing the input across the feature
+// dimensions for each individual sample in a batch, where the feature
+// dimensions are the input dimensions indexed by `axes`.
+//
+// The normalization follows the expression below:
+//     Scale * ((Input - Mean) / sqrt(Variance + Epsilon)) + Bias
+// where the mean and variance values are computed on the fly across the
+// feature dimensions.
+struct LayerNormalization {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The scale operand (referenced by scale_operand_id) includes the scaling
+  // values.
+  uint64? scale_operand_id;
+  // The bias operand (referenced by bias_operand_id) includes the bias values.
+  uint64? bias_operand_id;
+  // The indices to the input dimensions to reduce along.
+  array<uint32> axes;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+};
+
 // Represents a leaky version of relu operation whose calculation follows the
 // expression max(0, x) + alpha ∗ min(0, x).
 struct LeakyRelu {
@@ -671,6 +697,7 @@ union Operation {
   Expand expand;
   Gather gather;
   Gemm gemm;
+  LayerNormalization layer_normalization;
   LeakyRelu leaky_relu;
   Matmul matmul;
   Pad pad;

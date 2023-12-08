@@ -1187,6 +1187,7 @@ LayerNormalizationAttributes& LayerNormalizationAttributes::operator=(
 
 base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
     const Operand& input,
+    base::span<const uint32_t> axes,
     const LayerNormalizationAttributes& attributes) {
   // Validate the input operand.
   if (!IsFloatingPointType(input.data_type)) {
@@ -1197,39 +1198,19 @@ base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
   const auto& input_dimensions = input.dimensions;
   const size_t input_rank = input_dimensions.size();
 
-  // Get the dimensions for layerNormalization to reduce along.
-  //
-  // TODO(crbug.com/1273291): Figure out whether the `axes` should be required,
-  // tracked by issue: https://github.com/webmachinelearning/webnn/issues/487
-  std::vector<uint32_t> reduction_dimensions;
-  if (attributes.axes.has_value()) {
-    // When `axes` is provided, the reduction dimensions are extracted from the
-    // input dimensions indexed by `axes`.
-
-    // Ensure that the axes are all less than the input rank and have no
-    // duplication.
-    const auto& axes = attributes.axes.value();
-    const auto axes_validation_result = ValidateAxes(axes, input_rank);
-    if (!axes_validation_result.has_value()) {
-      return base::unexpected(axes_validation_result.error());
-    }
-
-    reduction_dimensions.reserve(axes.size());
-    base::ranges::transform(
-        axes, std::back_inserter(reduction_dimensions),
-        [input_dimensions](uint32_t axis) { return input_dimensions[axis]; });
-  } else {
-    // When `axes` isn't provided, use the default specified in
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.
-    if (input_rank > 1) {
-      // Default to `input_dimensions[1, ... , N-1]` where N is the input rank.
-      reduction_dimensions.assign(input_dimensions.begin() + 1,
-                                  input_dimensions.end());
-    } else {
-      // Input is a scalar or 1-D tensor. In this case `reduction_dimensions`
-      // defaults to empty vector.
-    }
+  // Ensure that the axes are all less than the input rank and have no
+  // duplication.
+  const auto axes_validation_result = ValidateAxes(axes, input_rank);
+  if (!axes_validation_result.has_value()) {
+    return base::unexpected(axes_validation_result.error());
   }
+
+  // The dimensions for layerNormalization to reduce along.
+  std::vector<uint32_t> reduction_dimensions;
+  reduction_dimensions.reserve(axes.size());
+  base::ranges::transform(
+      axes, std::back_inserter(reduction_dimensions),
+      [input_dimensions](uint32_t axis) { return input_dimensions[axis]; });
 
   // Validate the scale operand.
   if (attributes.scale.has_value()) {

@@ -256,6 +256,27 @@ webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
   return component_attributes;
 }
 
+webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::LayerNormalizationPtr& layer_normalization) {
+  webnn::LayerNormalizationAttributes component_attributes;
+  const auto& scale_operand_id = layer_normalization->scale_operand_id;
+  if (scale_operand_id.has_value()) {
+    const mojom::OperandPtr& scale_operand =
+        id_to_operand_map.at(scale_operand_id.value());
+    component_attributes.scale = ConvertToComponentOperand(scale_operand.get());
+  }
+
+  const auto& bias_operand_id = layer_normalization->bias_operand_id;
+  if (bias_operand_id.has_value()) {
+    const mojom::OperandPtr& bias_operand =
+        id_to_operand_map.at(bias_operand_id.value());
+    component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
+  }
+
+  return component_attributes;
+}
+
 webnn::Pool2dAttributes ConvertToPool2dAttributes(
     const webnn::mojom::Pool2dPtr& pool2d,
     const mojom::Operand* output) {
@@ -701,6 +722,47 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateLayerNormalization(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::LayerNormalizationPtr& layer_normalization) {
+  const auto* input =
+      GetMojoOperand(id_to_operand_map, layer_normalization->input_operand_id);
+  const auto* output =
+      GetMojoOperand(id_to_operand_map, layer_normalization->output_operand_id);
+  if (!input || !output || output == input) {
+    // The layerNormalization operator is invalid.
+    return false;
+  }
+
+  const auto& scale_operand_id = layer_normalization->scale_operand_id;
+  if (scale_operand_id &&
+      (!id_to_operand_map.contains(scale_operand_id.value()) ||
+       scale_operand_id.value() == layer_normalization->output_operand_id)) {
+    // The scale operand is invalid.
+    return false;
+  }
+  const auto& bias_operand_id = layer_normalization->bias_operand_id;
+  if (bias_operand_id &&
+      (!id_to_operand_map.contains(bias_operand_id.value()) ||
+       bias_operand_id.value() == layer_normalization->output_operand_id)) {
+    // The bias operand is invalid.
+    return false;
+  }
+
+  const auto validated_output = ValidateLayerNormalizationAndInferOutput(
+      ConvertToComponentOperand(input), layer_normalization->axes,
+      ConvertToLayerNormalizationAttributes(id_to_operand_map,
+                                            layer_normalization));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
                        const mojom::LeakyReluPtr& leaky_relu) {
   if (!ValidateUnaryOperation(id_to_operand_map, leaky_relu,
@@ -1079,6 +1141,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateGather(id_to_operand_map, operation->get_gather());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kLayerNormalization:
+      return ValidateLayerNormalization(id_to_operand_map,
+                                        operation->get_layer_normalization());
     case mojom::Operation::Tag::kLeakyRelu:
       return ValidateLeakyRelu(id_to_operand_map, operation->get_leaky_relu());
     case mojom::Operation::Tag::kMatmul:

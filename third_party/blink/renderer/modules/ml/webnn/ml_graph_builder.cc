@@ -372,9 +372,6 @@ webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
   if (options->hasBias()) {
     attributes.bias = ConvertToComponentOperand(options->bias());
   }
-  if (options->hasAxes()) {
-    attributes.axes.emplace(options->axes().begin(), options->axes().end());
-  }
   return attributes;
 }
 
@@ -1022,8 +1019,13 @@ MLOperand* MLGraphBuilder::layerNormalization(
     const MLOperand* input,
     const MLLayerNormalizationOptions* options,
     ExceptionState& exception_state) {
+  // TODO(crbug.com/1273291): Figure out whether the `axes` should be required,
+  // tracked by issue: https://github.com/webmachinelearning/webnn/issues/487
+  const Vector<uint32_t> axes = options->getAxesOr(
+      CreateLayerNormalizationDefaultAxes(input->Dimensions().size()));
+
   const auto validated_output = webnn::ValidateLayerNormalizationAndInferOutput(
-      ConvertToComponentOperand(input),
+      ConvertToComponentOperand(input), axes,
       ConvertToLayerNormalizationAttributes(options));
   if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(

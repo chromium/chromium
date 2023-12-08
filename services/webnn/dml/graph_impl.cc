@@ -174,6 +174,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "gather";
     case Operation::Tag::kGemm:
       return "gemm";
+    case Operation::Tag::kLayerNormalization:
+      return "layerNormalization";
     case Operation::Tag::kLeakyRelu:
       return "leakyRelu";
     case Operation::Tag::kMatmul:
