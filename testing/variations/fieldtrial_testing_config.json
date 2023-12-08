@@ -4938,6 +4938,32 @@
             ]
         }
     ],
+    "CrOSLateBootSwapZramRecompression": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "backoff_time_sec": "300",
+                        "idle_max_time_sec": "3600",
+                        "idle_min_time_sec": "1800",
+                        "periodic_time_sec": "600",
+                        "recomp_algorithm": "zstd",
+                        "recompression_huge": "true",
+                        "recompression_huge_idle": "true",
+                        "recompression_idle": "true",
+                        "threshold_mib": "1024"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSwapZramRecompression"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootVmMemoryManagementService": [
         {
             "platforms": [
