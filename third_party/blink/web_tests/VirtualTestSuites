@@ -867,7 +867,7 @@
     "args": [
       "--enable-blink-features=CSSTextAutoSpace",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Dec 1, 2023"
+    "expires": "June 1, 2024"
   },
   {
     "prefix": "css-sign-related-functions-disabled",
