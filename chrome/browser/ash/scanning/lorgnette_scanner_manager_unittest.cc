@@ -73,6 +73,7 @@ lorgnette::ScannerInfo CreateLorgnetteScanner(
   scanner.set_name(name);
   scanner.set_manufacturer("Test");
   scanner.set_model(model);
+  scanner.set_display_name("Flatbed Test " + model);
   scanner.set_type("Flatbed");
   return scanner;
 }

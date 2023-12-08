@@ -540,6 +540,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         info.set_name(device_name.device_name);
         info.set_manufacturer(scanner.manufacturer);
         info.set_model(scanner.model);
+        info.set_display_name(scanner.display_name);
         // TODO(nmuggli): See if there's a way to determine the type of scanner.
         info.set_type("multi-function peripheral");
         info.set_device_uuid(uuid);
