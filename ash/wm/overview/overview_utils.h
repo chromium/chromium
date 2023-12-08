@@ -12,12 +12,15 @@
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/transform.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace gfx {
+class Rect;
+class Transform;
+}  // namespace gfx
 
 namespace views {
 class Widget;

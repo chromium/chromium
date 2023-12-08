@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
@@ -49,7 +50,6 @@ namespace ash {
 class AutoSnapController;
 class OverviewSession;
 class SplitViewOverviewSession;
-class SplitViewControllerTest;
 class SplitViewDivider;
 class SplitViewMetricsController;
 class SplitViewObserver;
@@ -103,15 +103,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public SnapGroupController::Observer,
                                        public LayoutDividerController {
  public:
-  // `LEFT` and `RIGHT` are named for the positions to which they correspond in
-  // clamshell mode or primary-landscape-oriented tablet mode. In portrait-
-  // oriented tablet mode, we actually snap windows on the top and bottom, but
-  // in clamshell mode, although the display orientation may sometimes be
-  // portrait, we always snap windows on the left and right (see
-  // `IsLayoutHorizontal`). The snap positions are swapped in secondary-oriented
-  // tablet mode (see `IsLayoutPrimary`).
-  enum class SnapPosition { kNone, kPrimary, kSecondary };
-
   // Why splitview was ended.
   enum class EndReason {
     kNormal = 0,
@@ -363,8 +354,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // mouse/gesture event location. Called by |EndWindowDragImpl| when
   // desired_snap_position is |NONE| but because split view is already active,
   // the dragged window needs to be snapped anyway.
-  SplitViewController::SnapPosition ComputeSnapPosition(
-      const gfx::Point& last_location_in_screen);
+  SnapPosition ComputeSnapPosition(const gfx::Point& last_location_in_screen);
 
   // In portrait mode split view, if the virtual keyboard occludes the input
   // field in the bottom window. The bottom window will be pushed up above the
@@ -435,6 +425,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
  private:
   friend class SplitViewControllerTest;
+  friend class SplitViewTestApi;
   friend class SplitViewDivider;
   friend class SplitViewOverviewSessionTest;
   friend class SplitViewOverviewSession;

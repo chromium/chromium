@@ -13,6 +13,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,11 +22,11 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace gfx {
 class PointF;
-}
+}  // namespace gfx
 
 namespace ash {
 
@@ -110,14 +111,13 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   void OnDragStarted(const gfx::PointF& location_in_screen);
   void OnDragEnded(const gfx::PointF& location_in_screen,
                    bool should_drop_window_in_overview,
-                   SplitViewController::SnapPosition snap_position);
+                   SnapPosition snap_position);
 
   // Updates the dragged window's transform during dragging.
   void UpdateDraggedWindow(const gfx::PointF& location_in_screen);
 
   // Returns the desired snap position on |location_in_screen| during dragging.
-  SplitViewController::SnapPosition GetSnapPosition(
-      const gfx::PointF& location_in_screen) const;
+  SnapPosition GetSnapPosition(const gfx::PointF& location_in_screen) const;
 
   // Returns true if the dragged window should restore to its original bounds
   // after drag ends. Happens when the bottom of the dragged window is
@@ -134,9 +134,8 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
                             std::optional<float> velocity_y) const;
 
   // Returns the desired snap position on |location_in_screen| when drag ends.
-  SplitViewController::SnapPosition GetSnapPositionOnDragEnd(
-      const gfx::PointF& location_in_screen,
-      std::optional<float> velocity_y) const;
+  SnapPosition GetSnapPositionOnDragEnd(const gfx::PointF& location_in_screen,
+                                        std::optional<float> velocity_y) const;
 
   // Returns true if we should drop the dragged window in overview after drag
   // ends.
@@ -213,11 +212,9 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
 
   base::OnceClosure on_overview_shown_callback_for_testing_;
 
-  SplitViewController::SnapPosition initial_snap_position_ =
-      SplitViewController::SnapPosition::kNone;
+  SnapPosition initial_snap_position_ = SnapPosition::kNone;
 
-  SplitViewController::SnapPosition end_snap_position_ =
-      SplitViewController::SnapPosition::kNone;
+  SnapPosition end_snap_position_ = SnapPosition::kNone;
 
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 

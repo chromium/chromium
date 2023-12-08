@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
@@ -238,10 +239,9 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
   // is active.
   split_view_controller->SnapWindow(
       window,
-      (split_view_controller->default_snap_position() ==
-       SplitViewController::SnapPosition::kPrimary)
-          ? SplitViewController::SnapPosition::kSecondary
-          : SplitViewController::SnapPosition::kPrimary,
+      (split_view_controller->default_snap_position() == SnapPosition::kPrimary)
+          ? SnapPosition::kSecondary
+          : SnapPosition::kPrimary,
       WindowSnapActionSource::kAutoSnapInSplitView,
       /*activate_window=*/false, *snap_ratio);
   return true;

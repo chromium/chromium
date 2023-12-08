@@ -3257,12 +3257,10 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   aura::Window* app2_window = app2_browser->window()->GetNativeWindow();
 
   SplitViewTestApi split_view_test_api;
-  split_view_test_api.SnapWindow(app1_window,
-                                 SplitViewTestApi::SnapPosition::LEFT);
-  split_view_test_api.SnapWindow(app2_window,
-                                 SplitViewTestApi::SnapPosition::RIGHT);
-  ASSERT_EQ(app1_window, split_view_test_api.GetLeftWindow());
-  ASSERT_EQ(app2_window, split_view_test_api.GetRightWindow());
+  split_view_test_api.SnapWindow(app1_window, ash::SnapPosition::kPrimary);
+  split_view_test_api.SnapWindow(app2_window, ash::SnapPosition::kSecondary);
+  ASSERT_EQ(app1_window, split_view_test_api.GetPrimaryWindow());
+  ASSERT_EQ(app2_window, split_view_test_api.GetSecondaryWindow());
 
   const int32_t app1_id = app1_window->GetProperty(::app_restore::kWindowIdKey);
   const int32_t app2_id = app2_window->GetProperty(::app_restore::kWindowIdKey);
@@ -3299,8 +3297,8 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   ASSERT_TRUE(restore_app1_window);
   ASSERT_TRUE(restore_app2_window);
-  EXPECT_EQ(restore_app1_window, split_view_test_api.GetLeftWindow());
-  EXPECT_EQ(restore_app2_window, split_view_test_api.GetRightWindow());
+  EXPECT_EQ(restore_app1_window, split_view_test_api.GetPrimaryWindow());
+  EXPECT_EQ(restore_app2_window, split_view_test_api.GetSecondaryWindow());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

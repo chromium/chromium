@@ -26,6 +26,7 @@
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
@@ -209,7 +210,7 @@ gfx::Rect GetGridBoundsInScreen(
   gfx::Rect bounds;
   gfx::Rect work_area =
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
-  std::optional<SplitViewController::SnapPosition> opposite_position;
+  std::optional<SnapPosition> opposite_position;
 
   // We should show partial overview for the following use cases:
   // 1. In tablet split view mode;
@@ -234,15 +235,15 @@ gfx::Rect GetGridBoundsInScreen(
     switch (state) {
       case SplitViewController::State::kPrimarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-            SplitViewController::SnapPosition::kSecondary,
+            SnapPosition::kSecondary,
             /*window_for_minimum_size=*/nullptr);
-        opposite_position = SplitViewController::SnapPosition::kSecondary;
+        opposite_position = SnapPosition::kSecondary;
         break;
       case SplitViewController::State::kSecondarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-            SplitViewController::SnapPosition::kPrimary,
+            SnapPosition::kPrimary,
             /*window_for_minimum_size=*/nullptr);
-        opposite_position = SplitViewController::SnapPosition::kPrimary;
+        opposite_position = SnapPosition::kPrimary;
         break;
       case SplitViewController::State::kNoSnap:
         bounds = work_area;
@@ -330,7 +331,7 @@ std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
           ->current_window_dragging_state();
   if (!SplitViewController::Get(root_window)->InSplitViewMode() &&
       SplitViewDragIndicators::GetSnapPosition(window_dragging_state) ==
-          SplitViewController::SnapPosition::kNone) {
+          SnapPosition::kNone) {
     return std::nullopt;
   }
 

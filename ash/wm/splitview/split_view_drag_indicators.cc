@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_highlight_view.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_util.h"
@@ -92,15 +93,15 @@ gfx::Rect GetWorkAreaBoundsNoOverlapWithShelf(aura::Window* root_window) {
 }  // namespace
 
 // static
-SplitViewController::SnapPosition SplitViewDragIndicators::GetSnapPosition(
+SnapPosition SplitViewDragIndicators::GetSnapPosition(
     WindowDraggingState window_dragging_state) {
   switch (window_dragging_state) {
     case WindowDraggingState::kToSnapPrimary:
-      return SplitViewController::SnapPosition::kPrimary;
+      return SnapPosition::kPrimary;
     case WindowDraggingState::kToSnapSecondary:
-      return SplitViewController::SnapPosition::kSecondary;
+      return SnapPosition::kSecondary;
     default:
-      return SplitViewController::SnapPosition::kNone;
+      return SnapPosition::kNone;
   }
 }
 
@@ -109,15 +110,15 @@ SplitViewDragIndicators::WindowDraggingState
 SplitViewDragIndicators::ComputeWindowDraggingState(
     bool is_dragging,
     WindowDraggingState non_snap_state,
-    SplitViewController::SnapPosition snap_position) {
+    SnapPosition snap_position) {
   if (!is_dragging || !ShouldAllowSplitView())
     return WindowDraggingState::kNoDrag;
   switch (snap_position) {
-    case SplitViewController::SnapPosition::kNone:
+    case SnapPosition::kNone:
       return non_snap_state;
-    case SplitViewController::SnapPosition::kPrimary:
+    case SnapPosition::kPrimary:
       return WindowDraggingState::kToSnapPrimary;
-    case SplitViewController::SnapPosition::kSecondary:
+    case SnapPosition::kSecondary:
       return WindowDraggingState::kToSnapSecondary;
   }
 }
@@ -178,8 +179,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
     }
 
     // When a snap preview is shown, any label that is showing shall fade out.
-    if (GetSnapPosition(window_dragging_state) !=
-        SplitViewController::SnapPosition::kNone) {
+    if (GetSnapPosition(window_dragging_state) != SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_TEXT_FADE_OUT);
       return;
     }
@@ -200,7 +200,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
 
     // If a snap preview was shown, the labels shall now fade in.
     if (GetSnapPosition(previous_window_dragging_state) !=
-        SplitViewController::SnapPosition::kNone) {
+        SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_TEXT_FADE_IN);
       return;
     }
@@ -295,7 +295,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
 
     if (window_dragging_state != WindowDraggingState::kNoDrag ||
         GetSnapPosition(previous_window_dragging_state_) !=
-            SplitViewController::SnapPosition::kNone) {
+            SnapPosition::kNone) {
       Layout(previous_window_dragging_state_ != WindowDraggingState::kNoDrag);
     }
   }
@@ -370,19 +370,17 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     // actually becomes snapped.
     const bool drag_ending_in_snap =
         window_dragging_state_ == WindowDraggingState::kNoDrag &&
-        GetSnapPosition(previous_window_dragging_state_) !=
-            SplitViewController::SnapPosition::kNone;
+        GetSnapPosition(previous_window_dragging_state_) != SnapPosition::kNone;
 
-    SplitViewController::SnapPosition snap_position =
-        GetSnapPosition(window_dragging_state_);
-    if (snap_position == SplitViewController::SnapPosition::kNone)
+    SnapPosition snap_position = GetSnapPosition(window_dragging_state_);
+    if (snap_position == SnapPosition::kNone) {
       snap_position = GetSnapPosition(previous_window_dragging_state_);
+    }
 
     gfx::Rect preview_area_bounds;
     std::optional<SplitviewAnimationType> left_highlight_animation_type;
     std::optional<SplitviewAnimationType> right_highlight_animation_type;
-    if (GetSnapPosition(window_dragging_state_) !=
-            SplitViewController::SnapPosition::kNone ||
+    if (GetSnapPosition(window_dragging_state_) != SnapPosition::kNone ||
         drag_ending_in_snap) {
       // Get the preview area bounds from the split view controller.
       preview_area_bounds = gfx::Rect(
@@ -439,7 +437,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
         }
       }
     } else if (GetSnapPosition(previous_window_dragging_state_) !=
-                   SplitViewController::SnapPosition::kNone &&
+                   SnapPosition::kNone &&
                animate) {
       if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
         left_highlight_animation_type =
@@ -509,7 +507,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     ui::Layer *other_highlight_label_layer;
     gfx::Transform preview_label_transform;
     gfx::Transform other_highlight_label_transform;
-    if (snap_position == SplitViewController::SnapPosition::kNone) {
+    if (snap_position == SnapPosition::kNone) {
       preview_label_layer = nullptr;
       other_highlight_label_layer = nullptr;
     } else if (IsPhysicalLeftOrTop(snap_position, dragged_window_)) {
@@ -527,8 +525,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     // Slide out the labels when a snap preview appears. This code also adjusts
     // the label transforms for things like display rotation while there is a
     // snap preview.
-    if (GetSnapPosition(window_dragging_state_) !=
-        SplitViewController::SnapPosition::kNone) {
+    if (GetSnapPosition(window_dragging_state_) != SnapPosition::kNone) {
       // How far each label shall slide to stay centered in the corresponding
       // highlight as it expands/contracts. Include distance traveled with zero
       // opacity (whence a label still slides, not only for simplicity in
@@ -582,7 +579,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     // inward. (Having reached this code, we know that the window is not
     // becoming snapped, because that case is handled earlier and we bail out.)
     if (GetSnapPosition(previous_window_dragging_state_) !=
-        SplitViewController::SnapPosition::kNone) {
+        SnapPosition::kNone) {
       if (animate) {
         // Animate the labels sliding in.
         DoSplitviewTransformAnimation(
@@ -654,8 +651,7 @@ void SplitViewDragIndicators::SetWindowDraggingState(
     return;
 
   // Fire a haptic event if necessary.
-  if (GetSnapPosition(window_dragging_state) !=
-      SplitViewController::SnapPosition::kNone) {
+  if (GetSnapPosition(window_dragging_state) != SnapPosition::kNone) {
     OverviewController* overview_controller =
         Shell::Get()->overview_controller();
     if (overview_controller->InOverviewSession() &&

@@ -8,9 +8,13 @@
 #include <memory>
 
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/geometry/rect.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace ash {
 class TabletModeWindowManager;
@@ -101,10 +105,9 @@ class TabletModeWindowState : public WindowState::State {
                     bool animate);
 
   // Handles Alt+[ if `snap_position` is
-  // `SplitViewController::SnapPosition::kPrimary`; handles // Alt+] if
-  // `snap_position` is `SplitViewController::SnapPosition::kSecondary`.
-  void CycleTabletSnap(WindowState* window_state,
-                       SplitViewController::SnapPosition snap_position);
+  // `SnapPosition::kPrimary`; handles // Alt+] if
+  // `snap_position` is `SnapPosition::kSecondary`.
+  void CycleTabletSnap(WindowState* window_state, SnapPosition snap_position);
 
   // Tries to snap the window in tablet split view if possible. Shows a toast if
   // it cannot be snapped.

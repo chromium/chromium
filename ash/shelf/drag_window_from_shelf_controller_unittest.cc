@@ -206,10 +206,8 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(window3->IsVisible());
 
   // In splitview mode, the snapped windows will stay visible during dragging.
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Try to drag a left snapped window
   StartDrag(window1.get(), shelf_bounds.left_center());
@@ -225,10 +223,10 @@ TEST_F(DragWindowFromShelfControllerTest,
   // snapping.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window2.get()),
-            SplitViewController::SnapPosition::kSecondary);
+            SnapPosition::kSecondary);
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window3.get()));
 
   // Try to drag a right snapped window
@@ -245,10 +243,10 @@ TEST_F(DragWindowFromShelfControllerTest,
   // snapping.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window2.get()),
-            SplitViewController::SnapPosition::kSecondary);
+            SnapPosition::kSecondary);
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window3.get()));
 }
 
@@ -428,10 +426,8 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
 
   // The same thing should happen if splitview mode is active.
   auto window2 = CreateTestWindow();
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
   StartDrag(window.get(), shelf_bounds.left_center());
   Drag(gfx::Point(0, 200), 0.f, 1.f);
   EXPECT_FALSE(window->layer()->GetTargetTransform().IsIdentity());
@@ -531,10 +527,8 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
   OverviewController* overview_controller = OverviewController::Get();
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
   // If the window is only dragged for a small distance:
@@ -1213,10 +1207,8 @@ TEST_F(DragWindowFromShelfControllerTest,
   auto window2 = CreateTestWindow();
 
   // In splitview mode, the snapped windows will stay visible during dragging.
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Try to drag a left snapped window from shelf, but finally restore to
   // original bounds.
@@ -1226,7 +1218,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   // Ensure that the window still keep its initial snap position.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   // Try to drag a right snapped window from shelf, and finally drop to
   // overview.
   StartDrag(window2.get(), shelf_bounds.right_center());
@@ -1247,7 +1239,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   // Ensure that the left window still keep snapped.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   // Ensure that the right window is still in the overview, and doesn't get
   // minimized.
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
@@ -1385,8 +1377,7 @@ TEST_F(DragWindowFromShelfControllerTest,
 
   // Create a window and snapped to the left in split screen.
   auto window = CreateTestWindow();
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
 
   // Try to drag the window from shelf.
   StartDrag(window.get(), shelf_bounds.left_center());
@@ -1608,10 +1599,10 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
   auto left_window = CreateTestWindow();
   auto right_window = CreateTestWindow();
   auto floated_window = CreateFloatedWindow();
-  split_view_controller()->SnapWindow(
-      left_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      right_window.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(left_window.get(),
+                                      SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(right_window.get(),
+                                      SnapPosition::kSecondary);
 
   // Ensure we are in a both snapped state with a floated window.
   wm::ActivateWindow(floated_window.get());

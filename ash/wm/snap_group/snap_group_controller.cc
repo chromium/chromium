@@ -12,6 +12,8 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
@@ -235,10 +237,8 @@ void SnapGroupController::RestoreSnapState(SnapGroup* snap_group) {
       SplitViewController::Get(root_window);
 
   base::AutoReset<bool> bypass(&can_enter_overview_, false);
-  split_view_controller->SnapWindow(
-      window1, SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2, SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1, SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2, SnapPosition::kSecondary);
 }
 
 }  // namespace ash

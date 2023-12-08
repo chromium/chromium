@@ -342,10 +342,8 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
   ASSERT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
@@ -410,10 +408,9 @@ TEST_F(BackGestureEventHandlerTest, BackGestureInSplitViewMode) {
   EnterOverview();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      left_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      right_window.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(left_window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(right_window.get(),
+                                    SnapPosition::kSecondary);
 
   // Set the screen orientation to LANDSCAPE_PRIMARY.
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
@@ -674,10 +671,9 @@ TEST_F(BackGestureEventHandlerTest,
   std::unique_ptr<aura::Window> right_window = CreateTestWindow();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      left_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      right_window.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(left_window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(right_window.get(),
+                                    SnapPosition::kSecondary);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
 
@@ -769,10 +765,9 @@ TEST_F(BackGestureEventHandlerTest,
   std::unique_ptr<aura::Window> right_window = CreateTestWindow();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      left_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      right_window.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(left_window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(right_window.get(),
+                                    SnapPosition::kSecondary);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
 

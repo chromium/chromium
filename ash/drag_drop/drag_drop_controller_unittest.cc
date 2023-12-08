@@ -16,6 +16,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -1659,10 +1660,9 @@ TEST_F(DragDropControllerTest, TabletSplitViewDragTwoBrowserTabs) {
   std::unique_ptr<aura::Window> tab_window2 = CreateToplevelTestWindow();
   SplitViewController* const split_view_controller =
       SplitViewController::Get(tab_window1.get());
-  split_view_controller->SnapWindow(
-      tab_window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      tab_window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(tab_window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(tab_window2.get(),
+                                    SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
 
   // Touch and hold the right tab window.

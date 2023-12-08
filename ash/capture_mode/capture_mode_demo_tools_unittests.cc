@@ -821,8 +821,7 @@ TEST_F(CaptureModeDemoToolsTest, CaptureBoundsChangeTest) {
 
   // Snap the `window` which will result in window bounds change and the key
   // combo widget will still be centered horizontally.
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller->primary_window(), window.get());
   VerifyKeyComboWidgetPosition();
 }

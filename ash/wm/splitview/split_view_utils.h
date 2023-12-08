@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -140,16 +141,15 @@ void ShowAppCannotSnapToast();
 
 // Calculates the snap position for a dragged window at |location_in_screen|,
 // ignoring any properties of the window itself. The |root_window| is of the
-// current screen. |initial_location_in_screen| is the location at drag start if
-// the drag began in |root_window|, and is empty otherwise. To be snappable
-// (meaning the return value is not
-// |SplitViewController::SplitViewController::SnapPosition::kNone|),
-// |location_in_screen| must be either inside |snap_distance_from_edge| or
-// dragged toward the edge for at least |minimum_drag_distance| distance until
-// it's dragged into a suitable edge of the work area of |root_window| (i.e.,
-// |horizontal_edge_inset| if dragged horizontally to snap, or
-// |vertical_edge_inset| if dragged vertically).
-SplitViewController::SnapPosition GetSnapPositionForLocation(
+// current screen. `initial_location_in_screen` is the location at drag start if
+// the drag began in `root_window`, and is empty otherwise. To be snappable
+// (meaning the return value is not `SnapPosition::kNone`),
+// `location_in_screen` must be either inside `snap_distance_from_edge` or
+// dragged toward the edge for at least `minimum_drag_distance` distance until
+// it's dragged into a suitable edge of the work area of `root_window` (i.e.,
+// `horizontal_edge_inset` if dragged horizontally to snap, or
+// `vertical_edge_inset` if dragged vertically).
+SnapPosition GetSnapPositionForLocation(
     aura::Window* root_window,
     const gfx::Point& location_in_screen,
     const std::optional<gfx::Point>& initial_location_in_screen,
@@ -164,15 +164,15 @@ SplitViewController::SnapPosition GetSnapPositionForLocation(
 // |GetSnapPositionForLocation| above.
 // |initial_location_in_screen| is the window location at drag start in
 // its initial window. Otherwise, the arguments are the same as above.
-ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
-    aura::Window* root_window,
-    aura::Window* window,
-    const gfx::Point& location_in_screen,
-    const gfx::Point& initial_location_in_screen,
-    int snap_distance_from_edge,
-    int minimum_drag_distance,
-    int horizontal_edge_inset,
-    int vertical_edge_inset);
+ASH_EXPORT SnapPosition
+GetSnapPosition(aura::Window* root_window,
+                aura::Window* window,
+                const gfx::Point& location_in_screen,
+                const gfx::Point& initial_location_in_screen,
+                int snap_distance_from_edge,
+                int minimum_drag_distance,
+                int horizontal_edge_inset,
+                int vertical_edge_inset);
 
 bool IsInTabletMode();
 
@@ -196,9 +196,9 @@ ASH_EXPORT bool IsLayoutPrimary(const display::Display& display);
 // according to the return values of |IsLayoutHorizontal| and
 // |IsLayoutPrimary|. Physical position refers to the position of the window
 // on the display that is held upward.
-ASH_EXPORT bool IsPhysicalLeftOrTop(SplitViewController::SnapPosition position,
+ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
                                     aura::Window* window);
-ASH_EXPORT bool IsPhysicalLeftOrTop(SplitViewController::SnapPosition position,
+ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
                                     const display::Display& display);
 
 // Returns the maximum value of the `divider_position_`, which is the width of
@@ -215,7 +215,7 @@ int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 // `is_resizing_with_divider`, if true and in tablet mode, will determine the
 // bounds based on the window's minimum size.
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
-    SplitViewController::SnapPosition snap_position,
+    SnapPosition snap_position,
     aura::Window* window_for_minimum_size,
     int divider_position,
     int divider_width,

@@ -128,30 +128,30 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
                                  SnapViewType type,
                                  float snap_ratio) {
   chromeos::OrientationType orientation = GetSnapDisplayOrientation(display);
-  enum class SnapPosition { kLeft, kRight, kBottom, kTop, kInvalid };
-  SnapPosition position = SnapPosition::kInvalid;
+  enum class SnapRegion { kLeft, kRight, kBottom, kTop, kInvalid };
+  SnapRegion snap_region = SnapRegion::kInvalid;
   const bool is_primary_snap = type == SnapViewType::kPrimary;
   bool is_horizontal = true;
 
-  // Find the actual position of window should be snapped to based on
-  // |orientation| and |type|
+  // Find the actual snap position that the `window` should be snapped to based
+  // on `orientation` and `type`.
   switch (orientation) {
     case chromeos::OrientationType::kLandscapePrimary:
-      position = is_primary_snap ? SnapPosition::kLeft : SnapPosition::kRight;
+      snap_region = is_primary_snap ? SnapRegion::kLeft : SnapRegion::kRight;
       break;
     case chromeos::OrientationType::kLandscapeSecondary:
-      position = is_primary_snap ? SnapPosition::kRight : SnapPosition::kLeft;
+      snap_region = is_primary_snap ? SnapRegion::kRight : SnapRegion::kLeft;
       break;
     case chromeos::OrientationType::kPortraitPrimary:
-      position = is_primary_snap ? SnapPosition::kTop : SnapPosition::kBottom;
+      snap_region = is_primary_snap ? SnapRegion::kTop : SnapRegion::kBottom;
       is_horizontal = false;
       break;
     case chromeos::OrientationType::kPortraitSecondary:
-      position = is_primary_snap ? SnapPosition::kBottom : SnapPosition::kTop;
+      snap_region = is_primary_snap ? SnapRegion::kBottom : SnapRegion::kTop;
       is_horizontal = false;
       break;
     default:
-      position = SnapPosition::kInvalid;
+      snap_region = SnapRegion::kInvalid;
       NOTREACHED();
       break;
   }
@@ -191,24 +191,24 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
 
   // Set the size of such side and the window position based on a given snap
   // position.
-  switch (position) {
-    case SnapPosition::kLeft:
+  switch (snap_region) {
+    case SnapRegion::kLeft:
       snap_bounds.set_width(axis_length);
       break;
-    case SnapPosition::kRight:
+    case SnapRegion::kRight:
       snap_bounds.set_width(axis_length);
       // Snap to the right.
       snap_bounds.set_x(work_area.right() - axis_length);
       break;
-    case SnapPosition::kTop:
+    case SnapRegion::kTop:
       snap_bounds.set_height(axis_length);
       break;
-    case SnapPosition::kBottom:
+    case SnapRegion::kBottom:
       snap_bounds.set_height(axis_length);
       // Snap to the bottom.
       snap_bounds.set_y(work_area.bottom() - axis_length);
       break;
-    case SnapPosition::kInvalid:
+    case SnapRegion::kInvalid:
       NOTREACHED();
       break;
   }

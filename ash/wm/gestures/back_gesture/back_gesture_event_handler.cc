@@ -23,6 +23,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -151,16 +153,15 @@ void ActivateUnderneathWindowInSplitViewMode(
   } else {
     if (left_window && split_view_controller
                            ->GetSnappedWindowBoundsInScreen(
-                               SplitViewController::SnapPosition::kPrimary,
+                               SnapPosition::kPrimary,
                                /*window_for_minimum_size=*/nullptr)
                            .Contains(location)) {
       ActivateWindow(left_window);
-    } else if (right_window &&
-               split_view_controller
-                   ->GetSnappedWindowBoundsInScreen(
-                       SplitViewController::SnapPosition::kSecondary,
-                       /*window_for_minimum_size=*/nullptr)
-                   .Contains(location)) {
+    } else if (right_window && split_view_controller
+                                   ->GetSnappedWindowBoundsInScreen(
+                                       SnapPosition::kSecondary,
+                                       /*window_for_minimum_size=*/nullptr)
+                                   .Contains(location)) {
       ActivateWindow(right_window);
     } else if (split_view_controller->split_view_divider()
                    ->GetDividerBoundsInScreen(

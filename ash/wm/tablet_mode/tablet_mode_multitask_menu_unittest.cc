@@ -97,8 +97,7 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
                                            : half_bounds.right_center());
     auto* split_view_controller = SplitViewController::Get(window);
     DCHECK_EQ(split_view_controller->GetPositionOfSnappedWindow(window),
-              left ? SplitViewController::SnapPosition::kPrimary
-                   : SplitViewController::SnapPosition::kSecondary);
+              left ? SnapPosition::kPrimary : SnapPosition::kSecondary);
   }
 
   void PressPartialPrimary(const aura::Window& window) {
@@ -401,10 +400,8 @@ TEST_F(TabletModeMultitaskMenuTest, CloseOnDoubleTapDivider) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Open the menu on one of the windows.
   ShowMultitaskMenu(*window1);
@@ -700,12 +697,11 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   std::unique_ptr<aura::Window> top_window(CreateAppWindow());
   std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
-  split_view_controller->SnapWindow(
-      top_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      bottom_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(IsPhysicalLeftOrTop(
-      SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
+  split_view_controller->SnapWindow(top_window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kSecondary);
+  EXPECT_FALSE(
+      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -740,12 +736,11 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
   std::unique_ptr<aura::Window> top_window(CreateAppWindow());
-  split_view_controller->SnapWindow(
-      bottom_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      top_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(IsPhysicalLeftOrTop(SplitViewController::SnapPosition::kPrimary,
-                                   bottom_window.get()));
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(top_window.get(), SnapPosition::kSecondary);
+  EXPECT_FALSE(
+      IsPhysicalLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but

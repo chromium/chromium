@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
-                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+                                     ash::SnapPosition::kPrimary);
 
   // Touch on the top of the window is interpreted as client hit.
   gfx::Point top_point(widget->GetWindowBoundsInScreen().width() / 2, 0);
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
-                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+                                     ash::SnapPosition::kPrimary);
 
   // A point above the window, but not in the center horizontally, as a swipe
   // down from the top center will show the chromeos tablet mode multitask menu.
@@ -1252,7 +1252,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EndOverview();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
-                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+                                     ash::SnapPosition::kPrimary);
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1547,8 +1547,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
 
   // Snap a window. No immersive mode from regular browsers.
-  ash::SplitViewTestApi().SnapWindow(
-      widget->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
+  ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
+                                     ash::SnapPosition::kSecondary);
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
   EXPECT_FALSE(immersive_controller->IsEnabled());
 
@@ -1598,8 +1598,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       views::Widget::GetWidgetForNativeView(widget2->GetNativeWindow()));
 
   // Snap a window. Immersive mode is enabled so its title bar is not visible.
-  ash::SplitViewTestApi().SnapWindow(
-      widget2->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
+  ash::SplitViewTestApi().SnapWindow(widget2->GetNativeWindow(),
+                                     ash::SnapPosition::kSecondary);
   EXPECT_TRUE(frame_view2->caption_button_container()->GetVisible());
   EXPECT_TRUE(immersive_controller->IsEnabled());
 

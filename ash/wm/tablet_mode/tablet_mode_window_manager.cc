@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/cxx20_erase.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -19,6 +18,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -32,6 +32,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -112,8 +113,8 @@ void DoSplitViewTransition(
     split_view_controller->SnapWindow(
         /*window=*/iter.first,
         /*snap_position=*/iter.second == WindowStateType::kPrimarySnapped
-            ? SplitViewController::SnapPosition::kPrimary
-            : SplitViewController::SnapPosition::kSecondary,
+            ? SnapPosition::kPrimary
+            : SnapPosition::kSecondary,
         snap_action_source,
         /*activate_window=*/false,
         /*snap_ratio=*/snap_ratio ? *snap_ratio : chromeos::kDefaultSnapRatio);

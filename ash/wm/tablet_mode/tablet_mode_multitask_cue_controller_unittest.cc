@@ -66,8 +66,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, SplitCueBounds) {
 
   auto window1 = CreateAppWindow();
 
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
 
   gfx::Rect split_bounds((window1->bounds().width() -
                           TabletModeMultitaskCueController::kCueWidth) /
@@ -81,8 +80,7 @@ TEST_F(TabletModeMultitaskCueControllerTest, SplitCueBounds) {
   EXPECT_EQ(cue_layer->bounds(), split_bounds);
 
   auto window2 = CreateAppWindow();
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   cue_layer = GetMultitaskCue()->cue_layer();
   ASSERT_TRUE(cue_layer);
@@ -186,8 +184,7 @@ TEST_F(TabletModeMultitaskCueControllerTest,
   multitask_cue_controller->DismissCue();
 
   // Window must be split so overview mode is active on the opposite side.
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
 
   multitask_cue_controller->set_pre_cue_shown_callback_for_test(
       base::BindOnce([]() { ASSERT_TRUE(false); }));

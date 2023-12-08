@@ -19,6 +19,7 @@
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -612,10 +613,10 @@ gfx::Rect BackdropController::GetBackdropBounds() {
   SplitViewController::State state = split_view_controller->state();
   DCHECK(state == SplitViewController::State::kPrimarySnapped ||
          state == SplitViewController::State::kSecondarySnapped);
-  SplitViewController::SnapPosition snap_position =
+  SnapPosition snap_position =
       (state == SplitViewController::State::kPrimarySnapped)
-          ? SplitViewController::SnapPosition::kPrimary
-          : SplitViewController::SnapPosition::kSecondary;
+          ? SnapPosition::kPrimary
+          : SnapPosition::kSecondary;
   return split_view_controller->GetSnappedWindowBoundsInScreen(
       snap_position, /*window_for_minimum_size=*/nullptr);
 }

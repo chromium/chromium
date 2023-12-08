@@ -88,7 +88,7 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
 
   bool IsPreviewAreaShowing() {
     return SplitViewDragIndicators::GetSnapPosition(window_dragging_state()) !=
-           SplitViewController::SnapPosition::kNone;
+           SnapPosition::kNone;
   }
 
   float GetEdgeInset(int screen_width) const {

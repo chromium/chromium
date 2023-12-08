@@ -447,15 +447,13 @@ TEST_F(MultitaskMenuNudgeControllerTest, TabletNudgeBounds) {
 
   // Tests that the widget is shown at the correct bounds when the window is
   // snapped in the primary position.
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
   ExpectCorrectTabletNudgeBounds(window.get());
 
   // Tests that the widget is shown at the correct bounds when the window is
   // snapped in the secondary position.
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kSecondary);
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
   ExpectCorrectTabletNudgeBounds(window.get());
 }

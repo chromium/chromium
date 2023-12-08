@@ -50,6 +50,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
@@ -649,8 +650,7 @@ TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnSavedDeskGridShow) {
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
-  split_view_controller->SnapWindow(
-      test_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(test_window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
   views::Widget* cannot_snap_widget =
       GetCannotSnapWidget(unsnappable_overview_item);
@@ -3533,8 +3533,7 @@ TEST_F(SavedDeskTest, ButtonsEnabledForUnsupportedWindowAndSplitView) {
       SplitViewController::Get(root_window);
 
   // Snap the app window into the primary position in the split view.
-  split_view_controller->SnapWindow(
-      app_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(app_window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
 
   auto* save_as_template_button =

@@ -7,6 +7,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -149,16 +150,16 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  const SplitViewController::SnapPosition preview_position =
+  const SnapPosition preview_position =
       SplitViewDragIndicators::GetSnapPosition(window_dragging_state);
-  const SplitViewController::SnapPosition previous_preview_position =
+  const SnapPosition previous_preview_position =
       SplitViewDragIndicators::GetSnapPosition(previous_window_dragging_state);
 
   aura::Window* window = GetWidget()->GetNativeWindow();
 
   if (window_dragging_state ==
       SplitViewDragIndicators::WindowDraggingState::kNoDrag) {
-    if (previous_preview_position == SplitViewController::SnapPosition::kNone) {
+    if (previous_preview_position == SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(),
                                   SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
       return;
@@ -171,7 +172,7 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  if (preview_position != SplitViewController::SnapPosition::kNone) {
+  if (preview_position != SnapPosition::kNone) {
     DoSplitviewOpacityAnimation(
         layer(),
         is_right_or_bottom_ != IsPhysicalLeftOrTop(preview_position, window)
@@ -180,7 +181,7 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  if (previous_preview_position != SplitViewController::SnapPosition::kNone) {
+  if (previous_preview_position != SnapPosition::kNone) {
     // There was a snap preview showing, but now the user has dragged away from
     // the edge of the screen, so that the preview should go away.
     if (is_right_or_bottom_ !=

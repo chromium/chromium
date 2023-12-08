@@ -1031,31 +1031,29 @@ TEST_P(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   // Snap window to left.
   ash::SplitViewController* split_view_controller =
       ash::SplitViewController::Get(ash::Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1, ash::SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window1, ash::SnapPosition::kPrimary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SplitViewController::SnapPosition::kPrimary, window1));
+      ash::SnapPosition::kPrimary, window1));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
-                ash::SplitViewController::SnapPosition::kPrimary,
+                ash::SnapPosition::kPrimary,
                 shell_surface1->GetWidget()->GetNativeWindow()));
   EXPECT_TRUE(HasBackdrop());
   split_view_controller->EndSplitView();
 
   // Snap window to right.
-  split_view_controller->SnapWindow(
-      window1, ash::SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1, ash::SnapPosition::kSecondary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SplitViewController::SnapPosition::kSecondary, window1));
+      ash::SnapPosition::kSecondary, window1));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kSecondarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
-                ash::SplitViewController::SnapPosition::kSecondary,
+                ash::SnapPosition::kSecondary,
                 shell_surface1->GetWidget()->GetNativeWindow()));
   EXPECT_TRUE(HasBackdrop());
 }
@@ -2086,13 +2084,13 @@ TEST_P(ClientControlledShellSurfaceTest,
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
-  auto window_left = CreateTestWindow();
-  auto window_right = CreateTestWindow();
+  auto primary_window = CreateTestWindow();
+  auto secondary_window = CreateTestWindow();
 
-  split_view_controller->SnapWindow(
-      window_left.get(), ash::SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window_right.get(), ash::SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(primary_window.get(),
+                                    ash::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(secondary_window.get(),
+                                    ash::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Should end split view.
@@ -2114,13 +2112,13 @@ TEST_P(ClientControlledShellSurfaceTest,
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
-  auto window_left = CreateTestWindow();
-  auto window_right = CreateTestWindow();
+  auto primary_window = CreateTestWindow();
+  auto secondary_window = CreateTestWindow();
 
-  split_view_controller->SnapWindow(
-      window_left.get(), ash::SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window_right.get(), ash::SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(primary_window.get(),
+                                    ash::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(secondary_window.get(),
+                                    ash::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Should not end split-view.

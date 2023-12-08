@@ -155,12 +155,11 @@ ui::InputMethod* GetCurrentInputMethod() {
   return nullptr;
 }
 
-WindowStateType GetStateTypeFromSnapPosition(
-    SplitViewController::SnapPosition snap_position) {
+WindowStateType GetStateTypeFromSnapPosition(SnapPosition snap_position) {
   switch (snap_position) {
-    case SplitViewController::SnapPosition::kPrimary:
+    case SnapPosition::kPrimary:
       return WindowStateType::kPrimarySnapped;
-    case SplitViewController::SnapPosition::kSecondary:
+    case SnapPosition::kSecondary:
       return WindowStateType::kSecondarySnapped;
     default:
       NOTREACHED_NORETURN();
@@ -216,10 +215,9 @@ void TriggerWMEventToSnapWindow(WindowState* window_state,
 
 // Returns true if the snap state of the `window` has changed if it's already in
 // split view mode.
-bool DidInSplitViewWindowChange(
-    aura::Window* window,
-    SplitViewController* split_view_controller,
-    SplitViewController::SnapPosition snap_position) {
+bool DidInSplitViewWindowChange(aura::Window* window,
+                                SplitViewController* split_view_controller,
+                                SnapPosition snap_position) {
   if (!split_view_controller->IsWindowInSplitView(window)) {
     return false;
   }
@@ -364,7 +362,7 @@ class SplitViewController::ToBeSnappedWindowsObserver
   }
 
   void AddToBeSnappedWindow(aura::Window* window,
-                            SplitViewController::SnapPosition snap_position,
+                            SnapPosition snap_position,
                             WindowSnapActionSource snap_action_source) {
     if (DidInSplitViewWindowChange(window, split_view_controller_,
                                    snap_position)) {
@@ -896,8 +894,7 @@ void SplitViewController::SwapWindows() {
       base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
 }
 
-SplitViewController::SnapPosition
-SplitViewController::GetPositionOfSnappedWindow(
+SnapPosition SplitViewController::GetPositionOfSnappedWindow(
     const aura::Window* window) const {
   DCHECK(IsWindowInSplitView(window));
   return window == primary_window_ ? SnapPosition::kPrimary
@@ -1185,7 +1182,7 @@ void SplitViewController::OnWindowDragCanceled() {
     split_view_divider_->OnWindowDragEnded();
 }
 
-SplitViewController::SnapPosition SplitViewController::ComputeSnapPosition(
+SnapPosition SplitViewController::ComputeSnapPosition(
     const gfx::Point& last_location_in_screen) {
   const int divider_position = InSplitViewMode() ? this->divider_position()
                                                  : GetDefaultDividerPosition();
@@ -2033,7 +2030,7 @@ void SplitViewController::UpdateSnappedBounds(aura::Window* window) {
   window_state->UpdateSnappedBounds();
 }
 
-SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
+SnapPosition SplitViewController::GetBlackScrimPosition(
     const gfx::Point& location_in_screen) {
   const gfx::Rect work_area_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(

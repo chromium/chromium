@@ -658,8 +658,8 @@ void WindowState::UpdateSnappedBounds() {
   const gfx::Rect snapped_bounds =
       split_view_controller->GetSnappedWindowBoundsInParent(
           GetStateType() == WindowStateType::kPrimarySnapped
-              ? SplitViewController::SnapPosition::kPrimary
-              : SplitViewController::SnapPosition::kSecondary,
+              ? SnapPosition::kPrimary
+              : SnapPosition::kSecondary,
           window_);
   SetBoundsDirect(snapped_bounds);
 }
