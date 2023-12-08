@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -34,11 +35,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -310,8 +313,7 @@ void DeviceCommandFetchSupportPacketJob::RunImpl(
 }
 
 bool DeviceCommandFetchSupportPacketJob::IsPiiAllowed() const {
-  UserSessionType session_type = GetCurrentUserSessionType();
-  switch (session_type) {
+  switch (current_session_type_) {
     case UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION:
     case UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION:
     case UserSessionType::AFFILIATED_USER_SESSION:
@@ -328,16 +330,24 @@ bool DeviceCommandFetchSupportPacketJob::IsPiiAllowed() const {
 }
 
 void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
+  current_session_type_ = GetCurrentUserSessionType();
+
+  // Get sign-in profile on sign-in screen.
+  // TODO: b/252962974 - Remove the dependency to sign-in profile and use
+  // nullptr when user profile isn't created yet.
+  Profile* profile = current_session_type_ == UserSessionType::NO_SESSION
+                         ? Profile::FromBrowserContext(
+                               CHECK_DEREF(ash::BrowserContextHelper::Get())
+                                   .GetSigninBrowserContext())
+                         : ProfileManager::GetActiveUserProfile();
   // Initialize SupportToolHandler with the requested details.
-  support_tool_handler_ = GetSupportToolHandler(
-      support_packet_details_.issue_case_id,
-      // Leave the email address empty since data collection is triggered by the
-      // admin remotely.
-      /*email_address=*/std::string(),
-      support_packet_details_.issue_description,
-      // TODO(b/253185578): Get sign-in profile on sign-in screen.
-      ProfileManager::GetActiveUserProfile(),
-      support_packet_details_.requested_data_collectors);
+  support_tool_handler_ =
+      GetSupportToolHandler(support_packet_details_.issue_case_id,
+                            // Leave the email address empty since data
+                            // collection is triggered by the admin remotely.
+                            /*email_address=*/std::string(),
+                            support_packet_details_.issue_description, profile,
+                            support_packet_details_.requested_data_collectors);
 
   // Start data collection.
   support_tool_handler_->CollectSupportData(

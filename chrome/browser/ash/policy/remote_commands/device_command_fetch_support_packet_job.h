@@ -131,6 +131,11 @@ class DeviceCommandFetchSupportPacketJob : public RemoteCommandJob {
   std::set<enterprise_management::FetchSupportPacketResultNote> notes_;
   // The callback to run when the execution of RemoteCommandJob has finished.
   CallbackWithResult result_callback_;
+  // Session type when job execution starts in `StartJobExecution()`.
+  // `current_session_type_` won't be updated later even if a user logs in and
+  // PII handling will be done according to this session type since the logs are
+  // collected from this current session when job execution first starts.
+  enterprise_management::UserSessionType current_session_type_;
   std::unique_ptr<SupportToolHandler> support_tool_handler_;
   std::unique_ptr<reporting::ReportQueue> report_queue_;
   base::WeakPtrFactory<DeviceCommandFetchSupportPacketJob> weak_ptr_factory_{
