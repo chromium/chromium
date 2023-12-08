@@ -59,7 +59,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   checks_.insert(client);
   if (simulate_timeout_)
     return false;
-  content::GetUIThreadTaskRunner({})->PostTask(
+  content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::
                          OnCheckUrlForSubresourceFilterComplete,

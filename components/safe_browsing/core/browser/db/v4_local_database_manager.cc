@@ -421,7 +421,7 @@ bool V4LocalDatabaseManager::CanCheckUrl(const GURL& url) const {
 }
 
 bool V4LocalDatabaseManager::ChecksAreAlwaysAsync() const {
-  return GetPrefixMatchesIsAsync();
+  return false;
 }
 
 bool V4LocalDatabaseManager::CheckBrowseUrl(
