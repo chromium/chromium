@@ -51,9 +51,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/metrics/structured/structured_events.h"
-#endif
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -688,13 +686,11 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
 DevToolsUIBindings::~DevToolsUIBindings() {
   if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging) &&
       !session_id_for_logging_.is_empty()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     metrics::structured::events::v2::dev_tools::SessionEnd()
         .SetTrigger(delegate_->GetClosedByForLogging())
         .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
-#endif
   }
   if (agent_host_.get())
     agent_host_->DetachClient(this);
@@ -1423,13 +1419,11 @@ bool DevToolsUIBindings::MaybeStartLogging() {
   if (session_id_for_logging_.is_empty()) {
     session_id_for_logging_ = base::UnguessableToken::Create();
     last_action_time_ = base::TimeTicks::Now();
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     metrics::structured::events::v2::dev_tools::SessionStart()
         .SetTrigger(delegate_->GetOpenedByForLogging())
         .SetDockSide(delegate_->GetDockStateForLogging())
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
-#endif
   }
   return true;
 }
@@ -1445,7 +1439,6 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
   if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   for (const auto& ve : event.impressions) {
     metrics::structured::events::v2::dev_tools::Impression()
         .SetVeId(ve.id)
@@ -1456,14 +1449,12 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
         .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
-#endif
 }
 
 void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
   if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::Click()
       .SetVeId(event.veid)
       .SetMouseButton(event.mouse_button)
@@ -1471,14 +1462,12 @@ void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
   if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::Hover()
       .SetVeId(event.veid)
       .SetTime(event.time)
@@ -1486,14 +1475,12 @@ void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
   if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::Drag()
       .SetVeId(event.veid)
       .SetDistance(event.distance)
@@ -1501,35 +1488,30 @@ void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
   if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::Change()
       .SetVeId(event.veid)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
   if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::KeyDown()
       .SetVeId(event.veid)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
       .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
