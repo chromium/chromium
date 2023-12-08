@@ -253,9 +253,9 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
                                                   " is not supported."));
       return;
     }
-    // HTML is the only standard format that can have an unsanitized read for
-    // now.
-    will_read_unsanitized_html_ = true;
+    // HTML is the only standard format that can be read without any processing
+    // for now.
+    will_read_unprocessed_html_ = true;
   }
 
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_READ,
@@ -295,10 +295,10 @@ void ClipboardPromise::HandleWrite(
 
   // For now, we only process the first ClipboardItem.
   ClipboardItem* clipboard_item = (*clipboard_items)[0];
-  clipboard_item_data_with_promises_ = clipboard_item->GetItems();
-  custom_format_items_ = clipboard_item->CustomFormats();
+  clipboard_item_data_with_promises_ = clipboard_item->GetRepresentations();
+  write_custom_format_types_ = clipboard_item->CustomFormats();
 
-  if (static_cast<int>(custom_format_items_.size()) >
+  if (static_cast<int>(write_custom_format_types_.size()) >
       ui::kMaxRegisteredClipboardFormats) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
@@ -307,12 +307,12 @@ void ClipboardPromise::HandleWrite(
   }
 
   DCHECK(RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
-         custom_format_items_.empty());
+         write_custom_format_types_.empty());
 
   // Input in standard formats is sanitized, so the write will be sanitized
   // unless there are custom formats.
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
-                    /*will_be_sanitized=*/custom_format_items_.empty(),
+                    /*will_be_sanitized=*/write_custom_format_types_.empty(),
                     WTF::BindOnce(&ClipboardPromise::HandleWriteWithPermission,
                                   WrapPersistent(this)));
 }
@@ -402,7 +402,7 @@ void ClipboardPromise::ReadNextRepresentation() {
   ClipboardReader* clipboard_reader = ClipboardReader::Create(
       GetLocalFrame()->GetSystemClipboard(),
       clipboard_item_data_[clipboard_representation_index_].first, this,
-      /*sanitize_html=*/!will_read_unsanitized_html_);
+      /*sanitize_html=*/!will_read_unprocessed_html_);
   if (!clipboard_reader) {
     OnRead(nullptr);
     return;
@@ -437,9 +437,9 @@ void ClipboardPromise::HandlePromiseBlobsWrite(
     HeapVector<Member<Blob>>* blob_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   wtf_size_t clipboard_item_index = 0;
-  CHECK_EQ(clipboard_item_types_.size(), blob_list->size());
+  CHECK_EQ(write_clipboard_item_types_.size(), blob_list->size());
   for (const auto& blob_item : *blob_list) {
-    const String& type = clipboard_item_types_[clipboard_item_index];
+    const String& type = write_clipboard_item_types_[clipboard_item_index];
     const String& type_with_args = blob_item->type();
     // For web custom types, extract the MIME type after removing the "web "
     // prefix. For normal (not-custom) write, blobs may have a full MIME type
@@ -460,7 +460,7 @@ void ClipboardPromise::HandlePromiseBlobsWrite(
     clipboard_item_data_.emplace_back(type, blob_item);
     clipboard_item_index++;
   }
-  clipboard_item_types_.clear();
+  write_clipboard_item_types_.clear();
 
   DCHECK(!clipboard_representation_index_);
   WriteNextRepresentation();
@@ -480,13 +480,13 @@ void ClipboardPromise::HandleWriteWithPermission(
   HeapVector<ScriptPromise> promise_list;
   promise_list.ReserveInitialCapacity(
       clipboard_item_data_with_promises_.size());
-  clipboard_item_types_.ReserveInitialCapacity(
+  write_clipboard_item_types_.ReserveInitialCapacity(
       clipboard_item_data_with_promises_.size());
   // Check that all types are valid.
   for (const auto& type_and_promise_to_blob :
        clipboard_item_data_with_promises_) {
     const String& type = type_and_promise_to_blob.first;
-    clipboard_item_types_.emplace_back(type);
+    write_clipboard_item_types_.emplace_back(type);
     promise_list.emplace_back(type_and_promise_to_blob.second);
     if (!ClipboardWriter::IsValidType(type)) {
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
