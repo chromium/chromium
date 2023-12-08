@@ -289,6 +289,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     });
   }
 
+  private getTrimmedResult_(): string|undefined {
+    return this.response_?.result.trim();
+  }
+
   private onConsentNoThanksButtonClick_() {
     this.apiProxy_.closeUi(CloseReason.kPageContentConsentDeclined);
   }

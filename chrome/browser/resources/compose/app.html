@@ -189,6 +189,11 @@
     line-height: 16px;
   }
 
+  #resultText {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
   #resultOptions {
     display: flex;
     align-items: flex-end;
@@ -366,7 +371,7 @@
       </div>
 
       <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
-        [[response_.result]]
+        <div id="resultText">[[getTrimmedResult_(response_.result)]]</div>
 
         <div id="resultOptions">
           <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
