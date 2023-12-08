@@ -264,6 +264,7 @@ source_set("app_service") {
       "//components/ukm",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",
+      "//ui/chromeos/styles:cros_tokens_color_mappings",
     ]
 
     # TODO(crbug.com/1402145): Remove circular dependencies.

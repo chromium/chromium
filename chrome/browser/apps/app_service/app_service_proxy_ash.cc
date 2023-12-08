@@ -66,7 +66,12 @@
 
 namespace {
 constexpr int32_t kAppDialogIconSize = 48;
-constexpr int32_t kAppDialogIconBadgeSize = 24;
+
+// Shortcut icon is created from a main app icon and a host badge icon. Both
+// icons are inset within the app icon - these constants reflect the raw icon
+// sizes used to create the shortcut icon.
+constexpr int32_t kAppDialogShortcutIconSize = 42;
+constexpr int32_t kAppDialogShortcutIconBadgeSize = 20;
 }  // namespace
 
 namespace apps {
@@ -672,8 +677,8 @@ void AppServiceProxyAsh::RemoveShortcut(const ShortcutId& id,
   shortcut_removal_dialogs_.emplace(id, std::move(shortcut_removal_dialog_ptr));
 
   LoadShortcutIconWithBadge(
-      id, apps::IconType::kStandard, kAppDialogIconSize,
-      kAppDialogIconBadgeSize,
+      id, apps::IconType::kStandard, kAppDialogShortcutIconSize,
+      kAppDialogShortcutIconBadgeSize,
       /*allow_placeholder_icon = */ false,
       base::BindOnce(&AppServiceProxyAsh::OnLoadIconForShortcutRemovalDialog,
                      weak_ptr_factory_.GetWeakPtr(), id, uninstall_source,

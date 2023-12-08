@@ -15,8 +15,8 @@
 
 class Profile;
 
-namespace gfx {
-class ImageSkia;
+namespace ui {
+class ImageModel;
 }
 
 // This class generates the unified shortcut removal dialog.
@@ -25,7 +25,7 @@ class ShortcutRemovalDialogView : public ProfileObserver, public AppDialogView {
   ShortcutRemovalDialogView(
       Profile* profile,
       const apps::ShortcutId& shortcut_id,
-      gfx::ImageSkia icon_with_badge,
+      const ui::ImageModel& icon_with_badge,
       base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog);
 
   ShortcutRemovalDialogView(const ShortcutRemovalDialogView&) = delete;
