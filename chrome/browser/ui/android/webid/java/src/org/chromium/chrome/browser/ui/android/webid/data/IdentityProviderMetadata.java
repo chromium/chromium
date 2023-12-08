@@ -18,6 +18,7 @@ public class IdentityProviderMetadata {
     private final String mBrandIconUrl;
     private final GURL mConfigUrl;
     private final GURL mLoginUrl;
+    private final boolean mSupportsAddAccount;
 
     @CalledByNative
     public IdentityProviderMetadata(
@@ -25,7 +26,8 @@ public class IdentityProviderMetadata {
             long brandBackgroundColor,
             String brandIconUrl,
             GURL configUrl,
-            GURL loginUrl) {
+            GURL loginUrl,
+            boolean supportsAddAccount) {
         // Parameters are longs because ColorUtils.INVALID_COLOR does not fit in an int.
         mBrandTextColor =
                 (brandTextColor == ColorUtils.INVALID_COLOR) ? null : (int) brandTextColor;
@@ -36,6 +38,7 @@ public class IdentityProviderMetadata {
         mBrandIconUrl = brandIconUrl;
         mConfigUrl = configUrl;
         mLoginUrl = loginUrl;
+        mSupportsAddAccount = supportsAddAccount;
     }
 
     public @Nullable Integer getBrandTextColor() {
@@ -56,5 +59,9 @@ public class IdentityProviderMetadata {
 
     public GURL getLoginUrl() {
         return mLoginUrl;
+    }
+
+    public boolean supportsAddAccount() {
+        return mSupportsAddAccount;
     }
 }

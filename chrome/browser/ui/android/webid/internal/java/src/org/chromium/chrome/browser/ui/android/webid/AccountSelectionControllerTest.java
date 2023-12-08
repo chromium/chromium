@@ -159,7 +159,8 @@ public class AccountSelectionControllerTest {
                         Color.BLACK,
                         TEST_IDP_BRAND_ICON_URL.getSpec(),
                         TEST_CONFIG_URL,
-                        TEST_LOGIN_URL);
+                        TEST_LOGIN_URL,
+                        /* supports_add_account= */ false);
     }
 
     @Before
@@ -257,7 +258,12 @@ public class AccountSelectionControllerTest {
     public void testNoBrandIconUrl() {
         IdentityProviderMetadata idpMetadataNoBrandIconUrl =
                 new IdentityProviderMetadata(
-                        Color.BLACK, Color.BLACK, "", TEST_CONFIG_URL, TEST_LOGIN_URL);
+                        Color.BLACK,
+                        Color.BLACK,
+                        "",
+                        TEST_CONFIG_URL,
+                        TEST_LOGIN_URL,
+                        /* supports_add_account= */ false);
         mMediator.showAccounts(
                 TEST_ETLD_PLUS_ONE,
                 TEST_ETLD_PLUS_ONE_1,

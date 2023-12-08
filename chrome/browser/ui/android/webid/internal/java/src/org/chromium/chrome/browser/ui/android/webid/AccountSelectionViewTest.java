@@ -91,7 +91,8 @@ public class AccountSelectionViewTest {
                     Color.GREEN,
                     "https://icon-url.example",
                     TEST_CONFIG_URL,
-                    TEST_LOGIN_URL);
+                    TEST_LOGIN_URL,
+                    false);
 
     private class RpContext {
         public String mValue;
@@ -426,7 +427,8 @@ public class AccountSelectionViewTest {
                         /* brandBackgroundColor= */ Color.GREEN,
                         "https://icon-url.example",
                         TEST_CONFIG_URL,
-                        TEST_LOGIN_URL);
+                        TEST_LOGIN_URL,
+                        false);
 
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
@@ -574,6 +576,9 @@ public class AccountSelectionViewTest {
                     errorDescription.getText().toString());
         }
     }
+
+    @Test
+    public void testChooseAccountWithAddAccount() {}
 
     private RecyclerView getAccounts() {
         return mContentView.findViewById(R.id.sheet_item_list);

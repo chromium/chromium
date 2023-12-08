@@ -4,15 +4,20 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -28,6 +33,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
@@ -40,6 +46,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -86,13 +94,27 @@ public class AccountSelectionIntegrationTest {
     private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
-            new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null, null, null);
+            new IdentityProviderMetadata(
+                    /* brandTextColor= */ Color.WHITE,
+                    /* brandBackgroundColor= */ Color.BLACK,
+                    /* brandIconUrl= */ null,
+                    /* configUrl= */ null,
+                    /* loginUrl= */ null,
+                    /* supports_add_account= */ false);
+    private static final IdentityProviderMetadata IDP_METADATA_WITH_ADD_ACCOUNT =
+            new IdentityProviderMetadata(
+                    /* brandTextColor= */ Color.WHITE,
+                    /* brandBackgroundColor= */ Color.BLACK,
+                    /* brandIconUrl= */ null,
+                    /* configUrl= */ null,
+                    /* loginUrl= */ null,
+                    /* supports_add_account= */ true);
 
     private static final String TEST_ERROR_CODE = "invalid_request";
     private static final IdentityCredentialTokenError TOKEN_ERROR =
             new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_URL);
 
-    private AccountSelectionComponent mAccountSelection;
+    private AccountSelectionCoordinator mAccountSelection;
 
     @Mock private AccountSelectionComponent.Delegate mMockBridge;
 
@@ -426,6 +448,164 @@ public class AccountSelectionIntegrationTest {
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountChooserWithAddAccountForNewUser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        // This should be the "multi-account chooser", so clicking an account should go
+        // to the privacy policy/TOS screen.
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        onView(withId(R.id.account_selection_continue_btn)).check(matches(withText("Add Account")));
+
+        // Click the first account
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+
+        // Sheet should still be open
+        assertNotEquals(BottomSheetController.SheetState.HIDDEN, getBottomSheetState());
+        onView(withId(R.id.account_selection_continue_btn))
+                .check(matches(withText("Continue as Bob")));
+
+        // Make sure we now show the pp/tos block.
+        TextView consent = contentView.findViewById(R.id.user_data_sharing_consent);
+        if (consent == null) {
+            throw new NoMatchingViewException.Builder()
+                    .includeViewHierarchy(true)
+                    .withRootView(contentView)
+                    .build();
+        }
+
+        runOnUiThreadBlocking(
+                () -> {
+                    contentView.findViewById(R.id.account_selection_continue_btn).performClick();
+                });
+
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountChooserWithAddAccountReturningUser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(ANA),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        onView(withId(R.id.account_selection_continue_btn)).check(matches(withText("Add Account")));
+
+        // Click the first account
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+
+        // Because this is a returning account, we should immediately sign in now.
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testAddAccount() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            /* rpContext= */ "signin");
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        onView(withId(R.id.account_selection_continue_btn)).check(matches(withText("Add Account")));
+
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                mAccountSelection.showAccounts(
+                                        EXAMPLE_ETLD_PLUS_ONE,
+                                        TEST_ETLD_PLUS_ONE_1,
+                                        TEST_ETLD_PLUS_ONE_2,
+                                        Arrays.asList(ANA),
+                                        IDP_METADATA_WITH_ADD_ACCOUNT,
+                                        mClientIdMetadata,
+                                        /* isAutoReauthn= */ false,
+                                        /* rpContext= */ "signin");
+                                mAccountSelection.getMediator().setComponentShowTime(-1000);
+                                return null;
+                            }
+                        })
+                .when(mMockBridge)
+                .onLoginToIdP(any());
+
+        // Click Add Account.
+        runOnUiThreadBlocking(
+                () -> {
+                    contentView.findViewById(R.id.account_selection_continue_btn).performClick();
+                });
+
+        // Make sure that the Ana account is now displayed.
+        onView(withText("Ana Doe")).check(matches(isDisplayed()));
+
+        // Because of how we implemented onLogInToIdP, we should be back to
+        // account chooser here. Click the account.
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+
+        // Because this is a returning account, we should immediately sign in now.
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
     }
 
     public static <T> T waitForEvent(T mock) {

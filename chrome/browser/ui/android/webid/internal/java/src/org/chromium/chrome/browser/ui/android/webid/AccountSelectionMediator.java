@@ -408,7 +408,10 @@ class AccountSelectionMediator {
             boolean isAutoReauthn,
             String rpContext) {
         showPlaceholderIcon(idpMetadata);
-        mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
+        mSelectedAccount = null;
+        if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
+            mSelectedAccount = accounts.get(0);
+        }
         showAccountsInternal(
                 topFrameForDisplay,
                 iframeForDisplay,
@@ -521,6 +524,14 @@ class AccountSelectionMediator {
         }
 
         if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
+            assert !isDataSharingConsentVisible;
+            assert mSelectedAccount == null;
+            continueButtonCallback = this::onLoginToIdP;
+        }
+
+        if (mHeaderType == HeaderType.SIGN_IN
+                && areAccountsClickable
+                && mIdpMetadata.supportsAddAccount()) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
             continueButtonCallback = this::onLoginToIdP;
@@ -715,7 +726,8 @@ class AccountSelectionMediator {
             Callback<Account> onClickListener) {
         assert account != null
                 || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC
-                || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR;
+                || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR
+                || mHeaderType == HeaderProperties.HeaderType.SIGN_IN;
 
         ContinueButtonProperties.Properties properties = new ContinueButtonProperties.Properties();
         properties.mAccount = account;

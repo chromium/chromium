@@ -473,6 +473,8 @@ class AccountSelectionViewBinder {
                 btnText =
                         String.format(
                                 context.getString(R.string.signin_error_dialog_got_it_button));
+            } else if (headerType == HeaderProperties.HeaderType.SIGN_IN && account == null) {
+                btnText = String.format(context.getString(R.string.account_selection_add_account));
             } else {
                 // Prefers to use given name if it is provided otherwise falls back to using the
                 // name.

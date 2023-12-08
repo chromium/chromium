@@ -54,7 +54,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
       java_brand_icon_url,
       url::GURLAndroid::FromNativeGURL(env, metadata.config_url),
-      url::GURLAndroid::FromNativeGURL(env, metadata.idp_login_url));
+      url::GURLAndroid::FromNativeGURL(env, metadata.idp_login_url),
+      metadata.supports_add_account);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(

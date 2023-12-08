@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -316,4 +317,9 @@ public class AccountSelectionCoordinator
 
     @Override
     public void onActivityDestroyed() {}
+
+    @VisibleForTesting
+    AccountSelectionMediator getMediator() {
+        return mMediator;
+    }
 }
