@@ -25,6 +25,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/autotest_ambient_api.h"
@@ -628,6 +629,16 @@ std::string SetAllowedPref(Profile* profile,
   profile->GetPrefs()->Set(pref_name, value);
 
   return std::string();
+}
+
+// Helper function to clear allowed user pref based on |pref_name|. Returns
+// true on success or false if |pref_name| is not in the allowlist.
+bool ClearAllowedPref(Profile* profile, const std::string& pref_name) {
+  if (pref_name != ash::ambient::prefs::kAmbientUiSettings) {
+    return false;
+  }
+  profile->GetPrefs()->ClearPref(pref_name);
+  return true;
 }
 
 // Returns the ARC app window that associates with |package_name|. Note there
@@ -3707,6 +3718,26 @@ ExtensionFunction::ResponseAction AutotestPrivateSetAllowedPrefFunction::Run() {
     return RespondNow(Error(err_msg));
   }
 
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateClearAllowedPrefFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateClearAllowedPrefFunction::
+    ~AutotestPrivateClearAllowedPrefFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateClearAllowedPrefFunction::Run() {
+  absl::optional<api::autotest_private::ClearAllowedPref::Params> params =
+      api::autotest_private::ClearAllowedPref::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (!ClearAllowedPref(Profile::FromBrowserContext(browser_context()),
+                        params->pref_name)) {
+    return RespondNow(
+        Error("Cannot clear pref absent in allowlist: " + params->pref_name));
+  }
   return RespondNow(NoArguments());
 }
 

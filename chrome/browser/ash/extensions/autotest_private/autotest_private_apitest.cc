@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/components/arc/arc_prefs.h"
@@ -19,6 +20,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -666,6 +668,30 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateIsFieldTrialActiveApiTest,
                        IsFieldTrialActive) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("isFieldTrialActive"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ClearAllowedPref) {
+  static constexpr auto kTestTheme =
+      ash::personalization_app::mojom::AmbientTheme::kFloatOnBy;
+  ash::personalization_app::mojom::AmbientTheme default_theme =
+      ash::AmbientUiSettings::ReadFromPrefService(
+          *browser()->profile()->GetPrefs())
+          .theme();
+  ASSERT_NE(kTestTheme, default_theme);
+  ash::AmbientUiSettings(kTestTheme)
+      .WriteToPrefService(*browser()->profile()->GetPrefs());
+
+  base::Value::List suite_args;
+  suite_args.Append(base::Value(ash::ambient::prefs::kAmbientUiSettings));
+
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("clearAllowedPref",
+                                              std::move(suite_args)))
+      << message_;
+  // Value read back should be the default.
+  EXPECT_EQ(ash::AmbientUiSettings::ReadFromPrefService(
+                *browser()->profile()->GetPrefs())
+                .theme(),
+            default_theme);
 }
 
 }  // namespace extensions

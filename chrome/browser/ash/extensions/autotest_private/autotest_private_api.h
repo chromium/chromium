@@ -836,6 +836,17 @@ class AutotestPrivateSetAllowedPrefFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Clear user pref value in the pref tree.
+class AutotestPrivateClearAllowedPrefFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.clearAllowedPref",
+                             AUTOTESTPRIVATE_CLEARALLOWEDPREF)
+
+ private:
+  ~AutotestPrivateClearAllowedPrefFunction() override;
+  ResponseAction Run() override;
+};
+
 // Set user pref value in the pref tree.
 class AutotestPrivateSetWhitelistedPrefFunction : public ExtensionFunction {
  public:

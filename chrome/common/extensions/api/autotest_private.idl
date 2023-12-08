@@ -1161,6 +1161,10 @@ namespace autotestPrivate {
                                                   any value,
                                                   VoidCallback callback);
 
+    // Clears value for the specified user pref in the pref tree.
+    [supportsPromises] static void clearAllowedPref(DOMString pref_name,
+                                                    VoidCallback callback);
+
     // DEPRECATED: use SetAllowedPref instead, see crbug/1262034
     // Set value for the specified user pref in the pref tree.
     [supportsPromises] static void setWhitelistedPref(DOMString pref_name,

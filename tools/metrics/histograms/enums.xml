@@ -16598,6 +16598,7 @@ Called by update_extension_histograms.py.-->
   <int value="1853" label="DOCUMENTSCAN_CLOSESCANNER"/>
   <int value="1854" label="ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS"/>
   <int value="1855" label="AUTOFILLPRIVATE_SERVERIBANLINKCLICKED"/>
+  <int value="1856" label="AUTOTESTPRIVATE_CLEARALLOWEDPREF"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">
