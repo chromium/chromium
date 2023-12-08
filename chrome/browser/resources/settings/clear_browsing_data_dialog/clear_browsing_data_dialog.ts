@@ -22,6 +22,7 @@ import '../settings_shared.css.js';
 import {PrefControlMixinInterface} from '/shared/settings/controls/pref_control_mixin.js';
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -64,8 +65,17 @@ export interface SettingsClearBrowsingDataDialogElement {
   };
 }
 
-const SettingsClearBrowsingDataDialogElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+export enum TimePeriod {
+  LAST_HOUR = 0,
+  LAST_DAY = 1,
+  LAST_WEEK = 2,
+  FOUR_WEEKS = 3,
+  ALL_TIME = 4,
+  TIME_PERIOD_LAST = ALL_TIME
+}
+
+const SettingsClearBrowsingDataDialogElementBase = RouteObserverMixin(
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
@@ -112,11 +122,26 @@ export class SettingsClearBrowsingDataDialogElement extends
         readOnly: true,
         type: Array,
         value: [
-          {value: 0, name: loadTimeData.getString('clearPeriodHour')},
-          {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
-          {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
-          {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
-          {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
+          {
+            value: TimePeriod.LAST_HOUR,
+            name: loadTimeData.getString('clearPeriodHour'),
+          },
+          {
+            value: TimePeriod.LAST_DAY,
+            name: loadTimeData.getString('clearPeriod24Hours'),
+          },
+          {
+            value: TimePeriod.LAST_WEEK,
+            name: loadTimeData.getString('clearPeriod7Days'),
+          },
+          {
+            value: TimePeriod.FOUR_WEEKS,
+            name: loadTimeData.getString('clearPeriod4Weeks'),
+          },
+          {
+            value: TimePeriod.ALL_TIME,
+            name: loadTimeData.getString('clearPeriodEverything'),
+          },
         ],
       },
 
@@ -237,6 +262,15 @@ export class SettingsClearBrowsingDataDialogElement extends
 
       nonGoogleSearchHistoryString_: String,
     };
+  }
+
+  static get observers() {
+    return [
+      `onTimePeriodAdvancedPrefUpdated_(
+          prefs.browser.clear_data.time_period.value)`,
+      `onTimePeriodBasicPrefUpdated_(
+          prefs.browser.clear_data.time_period_basic.value)`,
+    ];
   }
 
   // TODO(dpapad): make |syncStatus| private.
@@ -564,6 +598,27 @@ export class SettingsClearBrowsingDataDialogElement extends
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;
+  }
+
+  private onTimePeriodAdvancedPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(false);
+  }
+
+  private onTimePeriodBasicPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(true);
+  }
+
+
+  private onTimePeriodPrefUpdated_(basic: boolean) {
+    const timePeriodPref = basic ? 'browser.clear_data.time_period_basic' :
+                                   'browser.clear_data.time_period';
+
+    const timePeriodValue = this.getPref(timePeriodPref).value;
+
+    if (!(timePeriodValue in TimePeriod)) {
+      // If the synced time period is not supported, default to "Last hour".
+      this.setPrefValue(timePeriodPref, TimePeriod.LAST_HOUR);
+    }
   }
 }
 

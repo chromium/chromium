@@ -6,7 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement, TimePeriod} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData, StatusAction, SyncBrowserProxyImpl, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -110,6 +111,16 @@ function getClearBrowsingDataPrefs() {
   };
 }
 
+function getTimePeriodDropdown(
+    tabName: string, element: SettingsClearBrowsingDataDialogElement):
+    SettingsDropdownMenuElement {
+  const timePeriodDropdown =
+      element.shadowRoot!.getElementById(tabName)!
+          .querySelector<SettingsDropdownMenuElement>('.time-range-select');
+  assertTrue(!!timePeriodDropdown);
+  return timePeriodDropdown;
+}
+
 suite('ClearBrowsingDataDesktop', function() {
   let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
@@ -121,6 +132,7 @@ suite('ClearBrowsingDataDesktop', function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({enableCbdTimeframeRequired: false});
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -302,7 +314,6 @@ suite('ClearBrowsingDataDesktop', function() {
             '.time-range-select');
     assertTrue(!!timeframe);
     assertTrue(!!timeframe.menuOptions);
-
     assertTrue(timeframe.menuOptions.length === 5);
 
     // TODO(crbug.com/1487530): Remove once CbdTimeframeRequired finished.
@@ -336,6 +347,48 @@ suite('ClearBrowsingDataDesktop', function() {
     assertTrue(timeframe.menuOptions.some(
         option =>
             option.name === loadTimeData.getString('clearPeriod15Minutes')));
+  });
+
+  test('ClearBrowsingData_UnsupportedTimePeriod_Advanced', async function() {
+    const timePeriodDropdown = getTimePeriodDropdown('advanced-tab', element);
+    const selectElement =
+        timePeriodDropdown.shadowRoot!.querySelector('select')!;
+    assertTrue(!!selectElement);
+
+    const unsupported_pref_value = 100;
+
+    element.setPrefValue(
+        'browser.clear_data.time_period', unsupported_pref_value);
+
+    await waitAfterNextRender(timePeriodDropdown);
+
+    // Assert unsupported value in Advanced tab is replaced by the Default value
+    // (Last hour).
+    assertEquals(
+        TimePeriod.LAST_HOUR,
+        element.getPref('browser.clear_data.time_period').value);
+    assertEquals(TimePeriod.LAST_HOUR.toString(), selectElement.value);
+  });
+
+  test('ClearBrowsingData_UnsupportedTimePeriod_Basic', async function() {
+    const timePeriodDropdown = getTimePeriodDropdown('basic-tab', element);
+    const selectElement =
+        timePeriodDropdown.shadowRoot!.querySelector('select')!;
+    assertTrue(!!selectElement);
+
+    const unsupported_pref_value = 100;
+
+    element.setPrefValue(
+        'browser.clear_data.time_period_basic', unsupported_pref_value);
+
+    await waitAfterNextRender(timePeriodDropdown);
+
+    // Assert unsupported value in Basic tab is replaced by the Default value
+    // (Last hour).
+    assertEquals(
+        TimePeriod.LAST_HOUR,
+        element.getPref('browser.clear_data.time_period_basic').value);
+    assertEquals(TimePeriod.LAST_HOUR.toString(), selectElement.value);
   });
 });
 
