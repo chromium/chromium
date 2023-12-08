@@ -11,8 +11,9 @@
 
 namespace exo::wayland {
 
+// version: 6
 constexpr uint32_t kZcrRemoteShellV2Version =
-    ZCR_REMOTE_SURFACE_V2_SET_WINDOW_CORNER_RADII_SINCE_VERSION;
+    ZCR_REMOTE_SURFACE_V2_SET_SHADOW_CORNER_RADII_SINCE_VERSION;
 
 void bind_remote_shell_v2(wl_client* client,
                           void* data,
