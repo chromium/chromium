@@ -19,23 +19,26 @@ import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SetTimeBrowserProxy, SetTimeBrowserProxyImpl} from './set_time_browser_proxy.js';
 import {getTemplate} from './set_time_dialog.html.js';
 
-/**
- * @return {!Array<!{id: string, name: string, selected: Boolean}>} Items for
- *     the timezone select element.
- */
-function getTimezoneItems() {
-  const currentTimezoneId =
-      /** @type {string} */ (loadTimeData.getValue('currentTimezoneId'));
-  const timezoneList =
-      /** @type {!Array} */ (loadTimeData.getValue('timezoneList'));
+type TimezoneList = Array<[id: string, name: string]>;
+
+interface TimezoneListItem {
+  id: string;
+  name: string;
+  selected: boolean;
+}
+
+function getTimezoneItems(): TimezoneListItem[] {
+  const currentTimezoneId = loadTimeData.getString('currentTimezoneId');
+  const timezoneList = loadTimeData.getValue('timezoneList') as TimezoneList;
   return timezoneList.map(
       tz => ({id: tz[0], name: tz[1], selected: tz[0] === currentTimezoneId}));
 }
@@ -43,12 +46,12 @@ function getTimezoneItems() {
 /**
  * Builds date and time strings suitable for the values of HTML date and
  * time elements.
- * @param {!Date} date The date object to represent.
- * @return {!{date: string, time: string}} Date is an RFC 3339 formatted date
- *     and time is an HH:MM formatted time.
- * @private
+ * @param date The date object to represent.
+ * @return An object containing 2 properties:
+ *   Date is an RFC 3339 formatted date
+ *   Time is an HH:MM formatted time.
  */
-function dateToHtmlValues(date) {
+function dateToHtmlValues(date: Date): {date: string, time: string} {
   // Get the current time and subtract the timezone offset, so the
   // JSON string is in local time.
   const localDate = new Date(date);
@@ -60,9 +63,9 @@ function dateToHtmlValues(date) {
 }
 
 /**
- * @return {string} Minimum date for the date picker in RFC 3339 format.
+ * @return Minimum date for the date picker in RFC 3339 format.
  */
-function getMinDate() {
+function getMinDate(): string {
   // Start with the build date because we can't trust the clock. The build time
   // doesn't include a timezone, so subtract 1 day to get a safe minimum date.
   let minDate = new Date(loadTimeData.getValue('buildTime'));
@@ -77,9 +80,9 @@ function getMinDate() {
 }
 
 /**
- * @return {string} Maximum date for the date picker in RFC 3339 format.
+ * @return Maximum date for the date picker in RFC 3339 format.
  */
-function getMaxDate() {
+function getMaxDate(): string {
   // Set the max date to the build date plus 20 years.
   let maxDate = new Date(loadTimeData.getValue('buildTime'));
   maxDate.setFullYear(maxDate.getFullYear() + 20);
@@ -93,41 +96,36 @@ function getMaxDate() {
 }
 
 /**
- * Gets the current time in a different timezone.
- * @param {!string} timezoneId The timezone to be used to convert the time.
- * @return {Date} The converted time.
+ * Returns the current time converted to the timezone of the give `timezoneId`.
  */
-function getDateInTimezone(timezoneId) {
+function getDateInTimezone(timezoneId: string): Date {
   return new Date(new Date()
                       .toLocaleString('en-US', {timeZone: timezoneId})
                       .replace('\u202f', ' '));
 }
 
 /**
- * Gives the time difference between two timezones.
- * @param {!string} firstTimezoneId The timezone on the left-hand size of the
- *     subtraction.
- * @param {!string} secondsTimezoneId The timezone on the right-hand side of the
- *     subtraction.
- * @return {number} Delta in milliseconds between the two timezones.
+ * Returns the time difference (in milliseconds) between two timezones.
  */
-function getTimezoneDelta(firstTimezoneId, secondsTimezoneId) {
-  return getDateInTimezone(firstTimezoneId) -
-      getDateInTimezone(secondsTimezoneId);
+function getTimezoneDelta(
+    firstTimezoneId: string, secondTimezoneId: string): number {
+  return getDateInTimezone(firstTimezoneId).getTime() -
+      getDateInTimezone(secondTimezoneId).getTime();
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SetTimeDialogBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+interface SetTimeDialogElement {
+  $: {
+    dateInput: HTMLInputElement,
+    dialog: CrDialogElement,
+    timeInput: HTMLInputElement,
+  };
+}
 
-/** @polymer */
+const SetTimeDialogBase = WebUiListenerMixin(PolymerElement);
+
 class SetTimeDialogElement extends SetTimeDialogBase {
   static get is() {
-    return 'set-time-dialog';
+    return 'set-time-dialog' as const;
   }
 
   static get template() {
@@ -138,106 +136,88 @@ class SetTimeDialogElement extends SetTimeDialogBase {
     return {
       /**
        * Items to populate the timezone select.
-       * @private
        */
       timezoneItems_: {
         type: Array,
-        readonly: true,
+        readOnly: true,
         value: getTimezoneItems,
       },
 
       /**
        * Whether the timezone select element is visible.
-       * @private
        */
       isTimezoneVisible_: {
         type: Boolean,
-        readonly: true,
-        value: () =>
-            /** @type {boolean} */ (loadTimeData.getValue('showTimezone')),
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('showTimezone');
+        },
       },
 
       /**
        * The minimum date allowed in the date picker.
-       * @private
        */
       minDate_: {
         type: String,
-        readonly: true,
+        readOnly: true,
         value: getMinDate,
       },
 
       /**
        * The maximum date allowed in the date picker.
-       * @private
        */
       maxDate_: {
         type: String,
-        readonly: true,
+        readOnly: true,
         value: getMaxDate,
       },
 
-      /**
-       * The last timezone selected.
-       * @private
-       */
       selectedTimezone_: {
         type: String,
-        value: () =>
-            /** @type {string} */ (loadTimeData.getValue('currentTimezoneId')),
+        value() {
+          return loadTimeData.getString('currentTimezoneId');
+        },
       },
     };
   }
 
-  constructor() {
-    super();
+  private browserProxy_: SetTimeBrowserProxy =
+      SetTimeBrowserProxyImpl.getInstance();
+  private readonly isTimezoneVisible_: boolean;
+  private readonly maxDate_: string;
+  private readonly minDate_: string;
+  private prevValues_:
+      {dateInput: string, timeInput: string} = {dateInput: '', timeInput: ''};
+  private selectedTimezone_: string;
+  private readonly timezoneItems_: TimezoneListItem[];
+  /** ID of the timeout used to refresh the current time. */
+  private timeTimeoutId_: number|null = null;
 
-    /**
-     * Values for reverting inputs when the user's date/time is invalid. The
-     * keys are element ids.
-     * @private {{dateInput: string, timeInput: string}}
-     */
-    this.prevValues_ = {dateInput: '', timeInput: ''};
-
-    /**
-     * ID of the setTimeout() used to refresh the current time.
-     * @private {?number}
-     */
-    this.timeTimeoutId_ = null;
-
-    /** @private {!SetTimeBrowserProxy} */
-    this.browserProxy_ = SetTimeBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // Register listeners for updates from C++ code.
-    this.addWebUIListener(
+    this.addWebUiListener(
         'system-clock-updated', this.updateTime_.bind(this, new Date()));
-    this.addWebUIListener(
+    this.addWebUiListener(
         'system-timezone-changed', this.setTimezone_.bind(this));
-    this.addWebUIListener('validation-complete', this.saveAndClose_.bind(this));
+    this.addWebUiListener('validation-complete', this.saveAndClose_.bind(this));
 
     this.browserProxy_.sendPageReady();
 
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.updateTime_(new Date());
   }
 
-  /**
-   * @return {!Date} The date that is currently displayed on the dialog.
-   * @private
-   */
-  getInputTime_() {
+  private getInputTime_(): Date {
     // Midnight of the current day in GMT.
     const date = this.$.dateInput.valueAsDate;
+    assert(date);
+
     // Add hours and minutes as set on the time input field.
     date.setMilliseconds(this.$.timeInput.valueAsNumber);
     // Add seconds from the system time, since the input fields only allow
@@ -249,11 +229,9 @@ class SetTimeDialogElement extends SetTimeDialogBase {
   }
 
   /**
-   * @return {!number} Seconds since epoch representing the date on the dialog
-   *     inputs.
-   * @private
+   * @return Seconds since epoch representing the date on the dialog inputs.
    */
-  getInputTimeSinceEpoch_() {
+  private getInputTimeSinceEpoch_(): number {
     const now = this.getInputTime_();
 
     if (this.isTimezoneVisible_) {
@@ -261,22 +239,18 @@ class SetTimeDialogElement extends SetTimeDialogBase {
       // timezone was updated, which is only possible when the dropdown is
       // visible.
       const timezoneDelta = getTimezoneDelta(
-          /** @type {string} */ (loadTimeData.getValue('currentTimezoneId')),
-          this.selectedTimezone_);
+          loadTimeData.getString('currentTimezoneId'), this.selectedTimezone_);
       now.setMilliseconds(now.getMilliseconds() + timezoneDelta);
     }
 
-    return Math.floor(now / 1000);
+    return Math.floor(now.getTime() / 1000);
   }
 
-  /**
-   * Sets the current timezone.
-   * @param {string} timezoneId The timezone ID to select.
-   * @private
-   */
-  setTimezone_(timezoneId) {
+  private setTimezone_(timezoneId: string): void {
     if (this.isTimezoneVisible_) {
-      const timezoneSelect = this.shadowRoot.querySelector('#timezoneSelect');
+      const timezoneSelect =
+          this.shadowRoot!.querySelector<HTMLSelectElement>('#timezoneSelect');
+      assert(timezoneSelect);
       assert(timezoneSelect.childElementCount > 0);
       timezoneSelect.value = timezoneId;
     }
@@ -292,13 +266,12 @@ class SetTimeDialogElement extends SetTimeDialogBase {
   /**
    * Updates the date/time controls time.
    * Called initially, then called again once a minute.
-   * @param {!Date} newTime Time used to update the date/time controls.
-   * @private
+   * @param newTime Time used to update the date/time controls.
    */
-  updateTime_(newTime) {
+  private updateTime_(newTime: Date): void {
     // Only update time controls if neither is focused.
-    if (document.activeElement.id != 'dateInput' &&
-        document.activeElement.id != 'timeInput') {
+    if (document.activeElement!.id !== 'dateInput' &&
+        document.activeElement!.id !== 'timeInput') {
       const htmlValues = dateToHtmlValues(newTime);
       this.prevValues_.dateInput = this.$.dateInput.value = htmlValues.date;
       this.prevValues_.timeInput = this.$.timeInput.value = htmlValues.time;
@@ -318,36 +291,35 @@ class SetTimeDialogElement extends SetTimeDialogBase {
 
   /**
    * Sets the system time from the UI.
-   * @private
    */
-  applyTime_() {
+  private applyTime_(): void {
     this.browserProxy_.setTimeInSeconds(this.getInputTimeSinceEpoch_());
   }
 
   /**
    * Called when focus is lost on date/time controls.
-   * @param {!Event} e The blur event.
-   * @private
    */
-  onTimeBlur_(e) {
-    if (e.target.validity.valid && e.target.value) {
+  private onInputBlur_(e: Event): void {
+    const inputEl = e.target;
+    assertInstanceof(inputEl, HTMLInputElement);
+
+    const valueKey = inputEl.type === 'date' ? 'dateInput' : 'timeInput';
+    if (inputEl.value && inputEl.validity.valid) {
       // Make this the new fallback time in case of future invalid input.
-      this.prevValues_[e.target.id] = e.target.value;
+      this.prevValues_[valueKey] = inputEl.value;
     } else {
       // Restore previous value.
-      e.target.value = this.prevValues_[e.target.id];
+      inputEl.value = this.prevValues_[valueKey];
     }
 
     // Schedule periodic updates with the new time.
     this.updateTime_(this.getInputTime_());
   }
 
-  /**
-   * @param {!Event} e The change event.
-   * @private
-   */
-  onTimezoneChange_(e) {
-    this.setTimezone_(e.currentTarget.value);
+  private onTimezoneChange_(e: Event): void {
+    const selectEl = e.currentTarget;
+    assertInstanceof(selectEl, HTMLSelectElement);
+    this.setTimezone_(selectEl.value);
   }
 
   /**
@@ -355,23 +327,27 @@ class SetTimeDialogElement extends SetTimeDialogBase {
    * approval to change time, which requires an extra step after the button is
    * clicked. This method notifies the dialog delegate to start the approval
    * step, once the approval is granted the 'validation-complete' event is
-   * triggered invoking saveAndClose_. For regular accounts, this step is
-   * skipped and saveAndClose_ is called immediately after the button click.
-   * @private
+   * triggered invoking `saveAndClose_`. For regular accounts, this step is
+   * skipped and `saveAndClose_` is called immediately after the button click.
    */
-  onDoneClick_() {
+  private onDoneClick_(): void {
     this.browserProxy_.doneClicked(this.getInputTimeSinceEpoch_());
   }
 
-  /** @private */
-  saveAndClose_() {
+  private saveAndClose_(): void {
     this.applyTime_();
     // Timezone change should only be applied when the UI displays timezone
-    // setting. Otherwise |selectedTimezone_| will be empty/invalid.
+    // setting. Otherwise `selectedTimezone_` will be empty/invalid.
     if (this.isTimezoneVisible_) {
       this.browserProxy_.setTimezone(this.selectedTimezone_);
     }
     this.browserProxy_.dialogClose();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SetTimeDialogElement.is]: SetTimeDialogElement;
   }
 }
 

@@ -8,23 +8,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 # TODO(b/308829256) Remove Closure type-checking in favor of TS.
 js_type_check("closure_compile") {
   is_polymer3 = true
-  deps = [
-    ":set_time_browser_proxy",
-    ":set_time_dialog",
-  ]
-}
-
-js_library("set_time_dialog") {
-  deps = [
-    ":set_time_browser_proxy",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+  deps = [ ":set_time_browser_proxy" ]
 }
 
 js_library("set_time_browser_proxy") {
@@ -36,7 +20,7 @@ build_webui("build") {
   grd_prefix = "set_time_dialog"
 
   static_files = [ "set_time.html" ]
-  web_component_files = [ "set_time_dialog.js" ]
+  web_component_files = [ "set_time_dialog.ts" ]
   non_web_component_files = [
     "set_time.ts",
     "set_time_browser_proxy.js",
