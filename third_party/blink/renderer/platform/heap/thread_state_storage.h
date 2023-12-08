@@ -43,7 +43,7 @@ struct ThreadingTrait {
 // Storage for all ThreadState objects. This includes the main-thread
 // ThreadState as well. Keep it outside the class so that PLATFORM_EXPORT
 // doesn't apply to it (otherwise, clang-cl complains).
-extern thread_local ThreadStateStorage* g_thread_specific_ CONSTINIT
+extern constinit thread_local ThreadStateStorage* g_thread_specific_
     __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL)));
 
 // ThreadStateStorage is the explicitly managed TLS- and global-backed storage

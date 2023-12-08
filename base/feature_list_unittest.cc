@@ -28,11 +28,11 @@ namespace base {
 namespace {
 
 constexpr char kFeatureOnByDefaultName[] = "OnByDefault";
-CONSTINIT Feature kFeatureOnByDefault(kFeatureOnByDefaultName,
+constinit Feature kFeatureOnByDefault(kFeatureOnByDefaultName,
                                       FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kFeatureOffByDefaultName[] = "OffByDefault";
-CONSTINIT Feature kFeatureOffByDefault(kFeatureOffByDefaultName,
+constinit Feature kFeatureOffByDefault(kFeatureOffByDefaultName,
                                        FEATURE_DISABLED_BY_DEFAULT);
 
 std::string SortFeatureListString(const std::string& feature_list) {

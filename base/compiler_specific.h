@@ -413,16 +413,6 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define REINITIALIZES_AFTER_MOVE
 #endif
 
-// Requires constant initialization. See constinit in C++20. Allows to rely on a
-// variable being initialized before execution, and not requiring a global
-// constructor.
-#if HAS_ATTRIBUTE(require_constant_initialization)
-#define CONSTINIT __attribute__((require_constant_initialization))
-#endif
-#if !defined(CONSTINIT)
-#define CONSTINIT
-#endif
-
 #if defined(__clang__)
 #define GSL_OWNER [[gsl::Owner]]
 #define GSL_POINTER [[gsl::Pointer]]

@@ -59,7 +59,7 @@ regressions. 3 steps:
 */
 
 // A substitute for `BASE_DECLARE_FEATURE` for nesting in structs.
-#define DECLARE_FEATURE(feature) static CONSTINIT const base::Feature feature
+#define DECLARE_FEATURE(feature) static constinit const base::Feature feature
 
 // Base class other configs should inherit from.
 template <class T>

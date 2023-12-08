@@ -29,7 +29,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
 };
 
-CONSTINIT base::span<const base::Feature*> g_feature_flags_test_override;
+constinit base::span<const base::Feature*> g_feature_flags_test_override;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
   if (UNLIKELY(!g_feature_flags_test_override.empty())) {
