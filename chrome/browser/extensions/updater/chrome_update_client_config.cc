@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_observer.h"
 
 namespace extensions {
 
@@ -58,7 +60,8 @@ static FactoryCallback& GetFactoryCallback() {
 }
 
 class ExtensionActivityDataService final
-    : public update_client::ActivityDataService {
+    : public update_client::ActivityDataService,
+      public ExtensionPrefsObserver {
  public:
   explicit ExtensionActivityDataService(ExtensionPrefs* extension_prefs);
 
@@ -78,10 +81,16 @@ class ExtensionActivityDataService final
   int GetDaysSinceLastActive(const std::string& id) const override;
   int GetDaysSinceLastRollCall(const std::string& id) const override;
 
+  // ExtensionPrefsObserver:
+  void OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) override;
+
  private:
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
-  raw_ptr<ExtensionPrefs, LeakedDanglingUntriaged> extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
+
+  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
+      prefs_observation_{this};
 };
 
 // Calculates the value to use for the ping days parameter.
@@ -95,15 +104,20 @@ ExtensionActivityDataService::ExtensionActivityDataService(
     ExtensionPrefs* extension_prefs)
     : extension_prefs_(extension_prefs) {
   DCHECK(extension_prefs_);
+
+  prefs_observation_.Observe(extension_prefs);
 }
 
 void ExtensionActivityDataService::GetActiveBits(
     const std::vector<std::string>& ids,
     base::OnceCallback<void(const std::set<std::string>&)> callback) const {
   std::set<std::string> actives;
-  for (const auto& id : ids) {
-    if (extension_prefs_->GetActiveBit(id))
-      actives.insert(id);
+  if (extension_prefs_) {
+    for (const auto& id : ids) {
+      if (extension_prefs_->GetActiveBit(id)) {
+        actives.insert(id);
+      }
+    }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));
@@ -111,11 +125,17 @@ void ExtensionActivityDataService::GetActiveBits(
 
 int ExtensionActivityDataService::GetDaysSinceLastActive(
     const std::string& id) const {
+  if (!extension_prefs_) {
+    return update_client::kDaysUnknown;
+  }
   return CalculatePingDays(extension_prefs_->LastActivePingDay(id));
 }
 
 int ExtensionActivityDataService::GetDaysSinceLastRollCall(
     const std::string& id) const {
+  if (!extension_prefs_) {
+    return update_client::kDaysUnknown;
+  }
   return CalculatePingDays(extension_prefs_->LastPingDay(id));
 }
 
@@ -123,13 +143,23 @@ void ExtensionActivityDataService::GetAndClearActiveBits(
     const std::vector<std::string>& ids,
     base::OnceCallback<void(const std::set<std::string>&)> callback) {
   std::set<std::string> actives;
-  for (const auto& id : ids) {
-    if (extension_prefs_->GetActiveBit(id))
-      actives.insert(id);
-    extension_prefs_->SetActiveBit(id, false);
+  if (extension_prefs_) {
+    for (const auto& id : ids) {
+      if (extension_prefs_->GetActiveBit(id)) {
+        actives.insert(id);
+      }
+      extension_prefs_->SetActiveBit(id, false);
+    }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));
+}
+
+void ExtensionActivityDataService::OnExtensionPrefsWillBeDestroyed(
+    ExtensionPrefs* prefs) {
+  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  prefs_observation_.Reset();
+  extension_prefs_ = nullptr;
 }
 
 }  // namespace
