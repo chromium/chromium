@@ -14,7 +14,7 @@ import {SwitchAccess} from './switch_access/switch_access.js';
 
 InstanceChecker.closeExtraInstances();
 
-async function initAll(): Promise<void> {
+async function initAll() {
   await Flags.init();
   const desktop = await AsyncUtil.getDesktop();
   await SwitchAccess.init(desktop);

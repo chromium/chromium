@@ -19,14 +19,10 @@ tsc_out_dir = "$target_gen_dir/tsc"
 common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 # TS files to compile.
-ts_modules = [
-  "../switch_access_loader.ts",
-  "cache.ts",
-  "metrics.ts",
-]
+ts_modules = []
 
 # TS files needed from ../common/.
-common_ts_modules = [ "instance_checker.ts" ]
+common_ts_modules = []
 
 # JS files needed to compile TS.
 js_deps = []
@@ -35,16 +31,8 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  definitions = [
-    "../definitions/automation.d.ts",
-    "../definitions/command_line_private.d.ts",
-    "../definitions/extension_types.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/tabs.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
-  ]
+  deps = [ "../common:ts_build" ]
+  definitions = []
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -65,15 +53,12 @@ group("build") {
 # to copy all files.
 run_jsbundler("switch_access_copied_files") {
   mode = "copy"
-  deps = [
-    ":ts_build",
-    "../common:ts_build",
-  ]
   dest_dir = switch_access_dir
   sources = [
     "action_manager.js",
     "auto_scan_manager.js",
     "background.html",
+    "cache.js",
     "commands.js",
     "focus_ring_manager.js",
     "history.js",
@@ -105,6 +90,7 @@ run_jsbundler("switch_access_copied_files") {
     "icons/textSelectionStart.svg",
     "item_scan_manager.js",
     "menu_manager.js",
+    "metrics.js",
     "navigator.js",
     "navigator_interfaces.js",
     "nodes/back_button_node.js",

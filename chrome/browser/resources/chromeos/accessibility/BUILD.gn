@@ -27,6 +27,7 @@ group("build") {
     deps += [
       ":accessibility_common_guest_manifest",
       ":accessibility_common_manifest",
+      ":copied_loader_files",
       ":enhanced_network_tts_guest_manifest",
       ":enhanced_network_tts_manifest",
       ":select_to_speak_guest_manifest",
@@ -41,6 +42,13 @@ group("build") {
       "switch_access:build",
     ]
   }
+}
+
+run_jsbundler("copied_loader_files") {
+  mode = "copy"
+  dest_dir = accessibility_out_dir
+  sources = [ "switch_access_loader.js" ]
+  rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
 }
 
 manifest("accessibility_common_manifest") {
