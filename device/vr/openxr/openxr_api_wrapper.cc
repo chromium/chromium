@@ -493,6 +493,7 @@ XrResult OpenXrApiWrapper::InitSession(
 
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
       instance_, system_, extension_helper, session_, local_space_,
+      base::Contains(enabled_features_, mojom::XRSessionFeature::HAND_INPUT),
       &input_helper_));
 
   // Make sure all of the objects we initialized are there.
@@ -1116,10 +1117,8 @@ mojom::VRPosePtr OpenXrApiWrapper::GetViewerPose() const {
   return pose;
 }
 
-std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState(
-    bool hand_input_enabled) {
-  return input_helper_->GetInputState(hand_input_enabled,
-                                      GetPredictedDisplayTime());
+std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState() {
+  return input_helper_->GetInputState(GetPredictedDisplayTime());
 }
 
 void OpenXrApiWrapper::EnsureEventPolling() {

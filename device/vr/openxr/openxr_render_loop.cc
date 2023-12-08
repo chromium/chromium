@@ -69,8 +69,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   frame_data->time_delta =
       base::Nanoseconds(openxr_->GetPredictedDisplayTime());
   frame_data->views = openxr_->GetViews();
-  frame_data->input_state = openxr_->GetInputState(
-      IsFeatureEnabled(device::mojom::XRSessionFeature::HAND_INPUT));
+  frame_data->input_state = openxr_->GetInputState();
 
   frame_data->mojo_from_viewer = openxr_->GetViewerPose();
 

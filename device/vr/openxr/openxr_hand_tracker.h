@@ -21,9 +21,12 @@ class OpenXrHandTracker {
                     OpenXrHandednessType type);
   virtual ~OpenXrHandTracker();
 
-  mojom::XRHandTrackingDataPtr GetHandTrackingData(
-      XrSpace base_space,
-      XrTime predicted_display_time);
+  XrResult Update(XrSpace base_space, XrTime predicted_display_time);
+
+  mojom::XRHandTrackingDataPtr GetHandTrackingData() const;
+
+ protected:
+  bool IsDataValid() const;
 
  private:
   XrResult InitializeHandTracking();
@@ -32,6 +35,9 @@ class OpenXrHandTracker {
   XrSession session_;
   OpenXrHandednessType type_;
   XrHandTrackerEXT hand_tracker_{XR_NULL_HANDLE};
+
+  XrHandJointLocationEXT joint_locations_buffer_[XR_HAND_JOINT_COUNT_EXT];
+  XrHandJointLocationsEXT locations_{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
 };
 
 }  // namespace device
