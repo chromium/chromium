@@ -86,7 +86,7 @@ struct GPU_EXPORT Capabilities {
   std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
 
   base::flat_map<uint32_t, std::vector<uint64_t>> drm_formats_and_modifiers;
-  std::string drm_render_node;
+  uint64_t drm_device_id = 0;
 };
 
 struct GPU_EXPORT GLCapabilities {

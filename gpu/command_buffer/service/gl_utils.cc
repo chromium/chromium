@@ -17,6 +17,7 @@
 #include "ui/gl/gl_version_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <sys/stat.h>
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -323,19 +324,30 @@ void PopulateDRMCapabilities(Capabilities* caps,
     device_extension_set = gfx::ExtensionSet();
   }
 
+  std::string drm_render_node;
   if (gfx::HasExtension(device_extension_set,
                         "EGL_EXT_device_drm_render_node")) {
     const char* path =
         eglQueryDeviceStringEXT(egl_device, EGL_DRM_RENDER_NODE_FILE_EXT);
     if (path)
-      caps->drm_render_node = std::string(path);
+      drm_render_node = std::string(path);
   }
-  if (caps->drm_render_node.empty() &&
+  if (drm_render_node.empty() &&
       gfx::HasExtension(device_extension_set, "EGL_EXT_device_drm")) {
     const char* path =
         eglQueryDeviceStringEXT(egl_device, EGL_DRM_DEVICE_FILE_EXT);
     if (path)
-      caps->drm_render_node = std::string(path);
+      drm_render_node = std::string(path);
+  }
+
+  if (!drm_render_node.empty()) {
+    struct stat dev_stat;
+    if (stat(drm_render_node.c_str(), &dev_stat) == 0) {
+      static_assert(sizeof(dev_t) <= sizeof(caps->drm_device_id),
+                    "unexpected dev_t size");
+      DCHECK(dev_stat.st_rdev);
+      caps->drm_device_id = dev_stat.st_rdev;
+    }
   }
 
   EGLint num_formats = 0;
