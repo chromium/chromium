@@ -384,7 +384,7 @@ fn write_build_file(path: &Path, content: String) -> Result<()> {
     // Spawn a child process to format GN rules. The formatted GN is written to
     // the file `output_handle`.
     let mut child = check_spawn(
-        process::Command::new("gn")
+        process::Command::new(if cfg!(windows) { "gn.bat" } else { "gn" })
             .arg("format")
             .arg("--stdin")
             .stdin(process::Stdio::piped())
