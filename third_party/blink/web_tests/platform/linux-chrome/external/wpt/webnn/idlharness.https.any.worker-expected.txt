@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported."
 [FAIL] NavigatorML must be primary interface of navigator
@@ -54,6 +54,12 @@ Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
 [FAIL] MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
+[FAIL] MLGraphBuilder interface: operation instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "instanceNormalization" missing
+[FAIL] MLGraphBuilder interface: operation linear(MLOperand, optional MLLinearOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "linear" missing
+[FAIL] MLGraphBuilder interface: operation linear(optional MLLinearOptions)
+  assert_own_property: interface prototype object missing non-static operation expected property "linear" missing
 [FAIL] MLGraphBuilder interface: operation lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "lstm" missing
 [FAIL] MLGraphBuilder interface: operation lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions)
@@ -86,6 +92,18 @@ Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "hardSigmoid" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling hardSigmoid(optional MLHardSigmoidOptions) on builder with too few arguments must throw TypeError
   assert_inherits: property "hardSigmoid" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions)" with the proper type
+  assert_inherits: property "instanceNormalization" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "instanceNormalization" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "linear(MLOperand, optional MLLinearOptions)" with the proper type
+  assert_inherits: property "linear" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling linear(MLOperand, optional MLLinearOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "linear" not found in prototype chain
+[FAIL] MLGraphBuilder interface: builder must inherit property "linear(optional MLLinearOptions)" with the proper type
+  assert_inherits: property "linear" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling linear(optional MLLinearOptions) on builder with too few arguments must throw TypeError
+  assert_inherits: property "linear" not found in prototype chain
 [FAIL] MLGraphBuilder interface: builder must inherit property "lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions)" with the proper type
   assert_inherits: property "lstm" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions) on builder with too few arguments must throw TypeError

@@ -72,6 +72,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "reciprocal";
     case MLOperator::OperatorKind::kSqrt:
       return "sqrt";
+    case MLOperator::OperatorKind::kInstanceNormalization:
+      return "instanceNormalization";
     case MLOperator::OperatorKind::kLayerNormalization:
       return "layerNormalization";
     case MLOperator::OperatorKind::kLeakyRelu:

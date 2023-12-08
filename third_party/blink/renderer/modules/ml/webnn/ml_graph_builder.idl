@@ -117,6 +117,13 @@ dictionary MLEluOptions {
   float alpha = 1;
 };
 
+dictionary MLInstanceNormalizationOptions {
+  MLOperand scale;
+  MLOperand bias;
+  float epsilon = 1e-5;
+  MLInputOperandLayout layout = "nchw";
+};
+
 dictionary MLReduceOptions {
   sequence<[EnforceRange] unsigned long> axes;
   boolean keepDimensions = false;
@@ -200,6 +207,8 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand hardSwish(MLOperand x);
   [RaisesException] MLActivation hardSwish();
+
+  [RaisesException] MLOperand instanceNormalization(MLOperand input, optional MLInstanceNormalizationOptions options = {});
 
   [RaisesException] MLOperand matmul(MLOperand a, MLOperand b);
 

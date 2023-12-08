@@ -51,6 +51,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kLogicalNot,
     kReciprocal,
     kSqrt,
+    kInstanceNormalization,
     kLayerNormalization,
     kLeakyRelu,
     kLinear,

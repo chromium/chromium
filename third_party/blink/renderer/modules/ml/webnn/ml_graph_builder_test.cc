@@ -417,7 +417,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "For mean operand: the size of operand must be equal to the size "
-              "of the input dimension denoted by axis.");
+              "of the feature dimension of the input.");
   }
   {
     // Test throwing exception when the variance data type is not the same as
@@ -482,7 +482,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "For variance operand: the size of operand must be equal to the "
-              "size of the input dimension denoted by axis.");
+              "size of the feature dimension of the input.");
   }
   {
     // Test throwing exception when the scale data type is not the same as the
@@ -559,7 +559,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "For scale operand: the size of operand must be equal to the "
-              "size of the input dimension denoted by axis.");
+              "size of the feature dimension of the input.");
   }
   {
     // Test throwing exception when the bias data type is not the same as the
@@ -636,7 +636,7 @@ TEST_F(MLGraphBuilderTest, BatchNormalizationTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "For bias operand: the size of operand must be equal to the size "
-              "of the input dimension denoted by axis.");
+              "of the feature dimension of the input.");
   }
   {
     // Test throwing exception when the value of axis is not in the range of [0,
@@ -4994,6 +4994,230 @@ TEST_F(MLGraphBuilderTest, GatherTest) {
     EXPECT_EQ(
         scope.GetExceptionState().Message(),
         "The indices type must be one of the int32,uint32,int64,uint64 types.");
+  }
+}
+
+MLOperand* BuildInstanceNormalization(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLInstanceNormalizationOptions* options) {
+  auto* output =
+      builder->instanceNormalization(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* instance_normalization = output->Operator();
+  EXPECT_NE(instance_normalization, nullptr);
+  EXPECT_EQ(instance_normalization->Kind(),
+            MLOperator::OperatorKind::kInstanceNormalization);
+  EXPECT_TRUE(instance_normalization->IsConnected());
+  EXPECT_NE(instance_normalization->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, InstanceNormalizationTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building instanceNormalization with default options for 4-D input.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    EXPECT_FALSE(options->hasScale());
+    EXPECT_FALSE(options->hasBias());
+    EXPECT_TRUE(options->hasLayout());
+    EXPECT_EQ(options->layout(), V8MLInputOperandLayout::Enum::kNchw);
+    EXPECT_TRUE(options->hasEpsilon());
+    EXPECT_FLOAT_EQ(options->epsilon(), 1e-5);
+    auto* output = BuildInstanceNormalization(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3, 4}));
+  }
+  {
+    // Test building instanceNormalization with default layout NCHW.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* scale =
+        BuildInput(builder, "scale", {2}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    options->setScale(scale);
+    auto* bias =
+        BuildInput(builder, "bias", {2}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    options->setBias(bias);
+    auto* output = BuildInstanceNormalization(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3, 4}));
+  }
+  {
+    // Test building instanceNormalization with layout = Nhwc.
+    auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    auto* scale =
+        BuildInput(builder, "scale", {4}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    options->setScale(scale);
+    auto* bias =
+        BuildInput(builder, "bias", {4}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    options->setScale(bias);
+    auto* output = BuildInstanceNormalization(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3, 4}));
+  }
+  {
+    // Test throwing exception when the input is not a 4-D tensor.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5, 2},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input should be a 4-D tensor.");
+  }
+  {
+    // Test throwing exception when the input data type is not one of floating
+    // point types.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kInt32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+  {
+    // Test throwing exception when the scale data type is not the same as the
+    // input data type.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* scale =
+        BuildConstant(builder, {2}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    options->setScale(scale);
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "For scale operand: the data type doesn't match the input data type.");
+  }
+  {
+    // Test throwing exception when the scale operand is not a 1-D tensor.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* scale =
+        BuildConstant(builder, {2, 1}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    options->setScale(scale);
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For scale operand: the operand should be a 1-D tensor.");
+  }
+  {
+    // Test throwing exception when the size of scale operand is not equal
+    // to the size of the feature dimension of the input.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    auto* scale =
+        BuildConstant(builder, {2}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    options->setScale(scale);
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For scale operand: the size of operand must be equal to the "
+              "size of the feature dimension of the input.");
+  }
+  {
+    // Test throwing exception when the bias data type is not the same as the
+    // input data type.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* bias =
+        BuildConstant(builder, {2}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    options->setBias(bias);
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "For bias operand: the data type doesn't match the input data type.");
+  }
+  {
+    // Test throwing exception when the bias operand is not a 1-D tensor.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    auto* bias =
+        BuildConstant(builder, {2, 1}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    options->setBias(bias);
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For bias operand: the operand should be a 1-D tensor.");
+  }
+  {
+    // Test throwing exception when the size of bias operand is not equal to
+    // the size of the feature dimension of the input.
+    auto* input = BuildInput(builder, "input", {1, 2, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* options = MLInstanceNormalizationOptions::Create();
+    options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    auto* bias =
+        BuildConstant(builder, {2}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    options->setBias(bias);
+    auto* output = builder->instanceNormalization(input, options,
+                                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For bias operand: the size of operand must be equal to the size "
+              "of the feature dimension of the input.");
   }
 }
 

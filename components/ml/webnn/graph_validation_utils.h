@@ -265,6 +265,28 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+// Contains the attributes of instanceNormalization operator.
+struct InstanceNormalizationAttributes {
+  InstanceNormalizationAttributes();
+  ~InstanceNormalizationAttributes();
+
+  InstanceNormalizationAttributes(InstanceNormalizationAttributes&& other);
+  InstanceNormalizationAttributes& operator=(
+      InstanceNormalizationAttributes&& other);
+
+  InstanceNormalizationAttributes(const InstanceNormalizationAttributes&) =
+      delete;
+  InstanceNormalizationAttributes& operator=(
+      const InstanceNormalizationAttributes&) = delete;
+
+  // The scale operand.
+  absl::optional<Operand> scale;
+  // The bias operand.
+  absl::optional<Operand> bias;
+  // The layout format of the input.
+  InputOperandLayout layout = InputOperandLayout::kNchw;
+};
+
 // Contains the attributes of layerNormalization operator.
 struct LayerNormalizationAttributes {
   LayerNormalizationAttributes();
@@ -396,6 +418,14 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& a,
     const Operand& b,
     const GemmAttributes& attributes);
+
+// Validate and infer output information of instanceNormalization operator
+// defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-instancenorm.
+base::expected<Operand, std::string>
+ValidateInstanceNormalizationAndInferOutput(
+    const Operand& input,
+    const InstanceNormalizationAttributes& attributes);
 
 // Validate and infer output information of layerNormalization operator defined
 // in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-layernorm.

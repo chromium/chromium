@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
@@ -135,6 +136,13 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* a,
                      const MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create());
+
+MLOperand* BuildInstanceNormalization(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLInstanceNormalizationOptions* options =
+        MLInstanceNormalizationOptions::Create());
 
 MLOperand* BuildLayerNormalization(V8TestingScope& scope,
                                    MLGraphBuilder* builder,

@@ -481,10 +481,10 @@ base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
 }
 
 // This helper method is intended to validate mean, variance, scale and bias
-// operands of batchNormalization against the input operand. These operands
-// share the same constraint.
+// operands of batchNormalization and instanceNormalization against the input
+// operand. These operands share the same constraint.
 base::expected<void, std::string>
-ValidateBatchNormalizationOperandIsCompatibleWithInput(
+ValidateNormalizationOperandIsCompatibleWithInput(
     const Operand& operand,
     const Operand::DataType input_data_type,
     size_t input_size_on_axis) {
@@ -497,8 +497,8 @@ ValidateBatchNormalizationOperandIsCompatibleWithInput(
 
   if (operand.dimensions[0] != input_size_on_axis) {
     return base::unexpected(
-        "the size of operand must be equal to the size of the input dimension "
-        "denoted by axis.");
+        "the size of operand must be equal to the size of the feature "
+        "dimension of the input.");
   }
 
   return base::ok();
@@ -532,15 +532,15 @@ base::expected<Operand, std::string> ValidateBatchNormalizationAndInferOutput(
   auto input_data_type = input.data_type;
   // Validate mean operand.
   const auto validation_mean =
-      ValidateBatchNormalizationOperandIsCompatibleWithInput(
-          mean, input_data_type, input_size_on_axis);
+      ValidateNormalizationOperandIsCompatibleWithInput(mean, input_data_type,
+                                                        input_size_on_axis);
   if (!validation_mean.has_value()) {
     return base::unexpected("For mean operand: " + validation_mean.error());
   }
 
   // Validate variance operand.
   const auto validation_variance =
-      ValidateBatchNormalizationOperandIsCompatibleWithInput(
+      ValidateNormalizationOperandIsCompatibleWithInput(
           variance, input_data_type, input_size_on_axis);
   if (!validation_variance.has_value()) {
     return base::unexpected("For variance operand: " +
@@ -550,7 +550,7 @@ base::expected<Operand, std::string> ValidateBatchNormalizationAndInferOutput(
   // Validate scale operand.
   if (attributes.scale) {
     const auto validation_scale =
-        ValidateBatchNormalizationOperandIsCompatibleWithInput(
+        ValidateNormalizationOperandIsCompatibleWithInput(
             attributes.scale.value(), input_data_type, input_size_on_axis);
     if (!validation_scale.has_value()) {
       return base::unexpected("For scale operand: " + validation_scale.error());
@@ -560,7 +560,7 @@ base::expected<Operand, std::string> ValidateBatchNormalizationAndInferOutput(
   // Validate bias operand.
   if (attributes.bias) {
     const auto validation_bias =
-        ValidateBatchNormalizationOperandIsCompatibleWithInput(
+        ValidateNormalizationOperandIsCompatibleWithInput(
             attributes.bias.value(), input_data_type, input_size_on_axis);
     if (!validation_bias.has_value()) {
       return base::unexpected("For bias operand: " + validation_bias.error());
@@ -1216,6 +1216,63 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     }
   }
   return Operand(a.data_type, std::move(output_shape));
+}
+
+InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
+InstanceNormalizationAttributes::~InstanceNormalizationAttributes() = default;
+
+InstanceNormalizationAttributes::InstanceNormalizationAttributes(
+    InstanceNormalizationAttributes&& other) = default;
+InstanceNormalizationAttributes& InstanceNormalizationAttributes::operator=(
+    InstanceNormalizationAttributes&& other) = default;
+
+base::expected<Operand, std::string>
+ValidateInstanceNormalizationAndInferOutput(
+    const Operand& input,
+    const InstanceNormalizationAttributes& attributes) {
+  auto input_data_type = input.data_type;
+  // Validate the input operand.
+  if (!IsFloatingPointType(input_data_type)) {
+    return base::unexpected(
+        "The input type must be one of the floating point types.");
+  }
+
+  const auto& input_dimensions = input.dimensions;
+  if (input_dimensions.size() != 4) {
+    return base::unexpected("The input should be a 4-D tensor.");
+  }
+
+  uint32_t axis;
+  switch (attributes.layout) {
+    case InputOperandLayout::kNchw:
+      axis = 1;
+      break;
+    case InputOperandLayout::kNhwc:
+      axis = 3;
+      break;
+  }
+
+  // Validate scale operand.
+  if (attributes.scale.has_value()) {
+    const auto validation_scale =
+        ValidateNormalizationOperandIsCompatibleWithInput(
+            attributes.scale.value(), input_data_type, input_dimensions[axis]);
+    if (!validation_scale.has_value()) {
+      return base::unexpected("For scale operand: " + validation_scale.error());
+    }
+  }
+
+  // Validate the bias operand.
+  if (attributes.bias.has_value()) {
+    const auto validation_bias =
+        ValidateNormalizationOperandIsCompatibleWithInput(
+            attributes.bias.value(), input_data_type, input_dimensions[axis]);
+    if (!validation_bias.has_value()) {
+      return base::unexpected("For bias operand: " + validation_bias.error());
+    }
+  }
+
+  return Operand(input_data_type, std::move(input_dimensions));
 }
 
 LayerNormalizationAttributes::LayerNormalizationAttributes() = default;

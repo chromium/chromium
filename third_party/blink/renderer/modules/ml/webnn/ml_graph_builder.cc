@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
@@ -359,6 +360,21 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   attributes.beta = options->beta();
   attributes.a_transpose = options->aTranspose();
   attributes.b_transpose = options->bTranspose();
+  return attributes;
+}
+
+webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
+    const blink::MLInstanceNormalizationOptions* options) {
+  CHECK(options);
+  webnn::InstanceNormalizationAttributes attributes;
+  if (options->hasScale()) {
+    attributes.scale = ConvertToComponentOperand(options->scale());
+  }
+  if (options->hasBias()) {
+    attributes.bias = ConvertToComponentOperand(options->bias());
+  }
+  attributes.layout =
+      BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
   return attributes;
 }
 
@@ -1013,6 +1029,47 @@ MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
   // function.
   return MakeGarbageCollected<MLActivation>(
       this, MLOperator::OperatorKind::kHardSwish);
+}
+
+MLOperand* MLGraphBuilder::instanceNormalization(
+    const MLOperand* input,
+    const MLInstanceNormalizationOptions* options,
+    ExceptionState& exception_state) {
+  const auto validated_output =
+      webnn::ValidateInstanceNormalizationAndInferOutput(
+          ConvertToComponentOperand(input),
+          ConvertToInstanceNormalizationAttributes(options));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  auto* instance_normalization = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kInstanceNormalization, options);
+  HeapVector<Member<const MLOperand>> inputs = {input};
+  // Adding the optional operands into inputs ensures the graph traversal
+  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
+  // optional operands should be retrieved from the options instead of inputs.
+  if (options->hasScale()) {
+    inputs.push_back(options->scale());
+  }
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), instance_normalization);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+
+  instance_normalization->Connect(std::move(inputs), {output.value()});
+  return output.value();
 }
 
 MLOperand* MLGraphBuilder::layerNormalization(
