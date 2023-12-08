@@ -166,6 +166,8 @@ source_set("ipc_common_sources") {
 
   if (is_android) {
     sources += [
+      "android/android_hardware_buffer_utils.cc",
+      "android/android_hardware_buffer_utils.h",
       "android/scoped_surface_request_conduit.cc",
       "android/scoped_surface_request_conduit.h",
       "gpu_surface_lookup.cc",
