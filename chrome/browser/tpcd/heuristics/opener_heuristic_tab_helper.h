@@ -59,7 +59,8 @@ class OpenerHeuristicTabHelper
                       OptionalBool has_iframe,
                       bool is_current_interaction);
     // Create a storage access grant, if eligible per experiment flags.
-    void MaybeCreateOpenerHeuristicGrant(base::TimeDelta grant_duration);
+    void MaybeCreateOpenerHeuristicGrant(const GURL& url,
+                                         base::TimeDelta grant_duration);
     // See if the opener page has an iframe from the same site.
     OptionalBool GetOpenerHasSameSiteIframe(const GURL& popup_url);
 
