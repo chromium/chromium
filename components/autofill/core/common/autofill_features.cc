@@ -441,6 +441,12 @@ BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,
              "AutofillPreferLabelsInSomeCountries",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, a pre-filled field will only be overwritten if it's not
+// classified as meaningfully pre-filled based on server predictions.
+BASE_FEATURE(kAutofillOverwritePlaceholdersOnly,
+             "AutofillOverwritePlaceholdersOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill would not override the field values that were either
 // filled by Autofill or on page load.
 // TODO(crbug/1275649): Remove once experiment is finished.

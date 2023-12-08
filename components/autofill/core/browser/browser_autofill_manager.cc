@@ -531,6 +531,13 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
+bool IsMeaningfullyPreFilled(const FormFieldData& cached_field,
+                             const autofill::AutofillField* autofill_field) {
+  return !cached_field.value.empty() &&
+         autofill_field->may_use_prefilled_placeholder().has_value() &&
+         !autofill_field->may_use_prefilled_placeholder().value();
+}
+
 }  // namespace
 
 BrowserAutofillManager::FillingContext::FillingContext(
@@ -2253,6 +2260,16 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
       skip_reasons[i] = FieldFillingSkipReason::kFillingLimitReachedType;
       continue;
     }
+
+    // Don't fill meaningfully pre-filled fields.
+    if (!is_triggering_field &&
+        IsMeaningfullyPreFilled(form.fields[i], autofill_field) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillOverwritePlaceholdersOnly)) {
+      skip_reasons[i] = FieldFillingSkipReason::kValuePrefilled;
+      continue;
+    }
+
     skip_reasons[i] = FieldFillingSkipReason::kNotSkipped;
   }
   return skip_reasons;
