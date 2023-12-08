@@ -66,7 +66,10 @@ enum class PasswordStoreOperation {
   // Operations that are not safe to retry because they are modifying.
   kAddLoginAsync = 4,
   kUpdateLoginAsync = 5,
-  kRemoveLoginForAccount = 6,
+
+  // Obsolete
+  // kRemoveLoginForAccount = 6,
+
   kRemoveLoginAsync = 7,
   kRemoveLoginsByURLAndTimeAsync = 8,
   kRemoveLoginsCreatedBetweenAsync = 9,
@@ -314,12 +317,6 @@ class PasswordStoreAndroidBackend
   void GetAllLoginsForAccount(
       PasswordStoreAndroidBackendDispatcherBridge::Account account,
       LoginsOrErrorReply callback);
-
-  // Removes |form| from |account|.
-  void RemoveLoginForAccount(
-      const PasswordForm& form,
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      PasswordChangesOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the

@@ -317,7 +317,6 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kFillMatchingLoginsAsync:
     case PasswordStoreOperation::kAddLoginAsync:
     case PasswordStoreOperation::kUpdateLoginAsync:
-    case PasswordStoreOperation::kRemoveLoginForAccount:
     case PasswordStoreOperation::kRemoveLoginAsync:
     case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
     case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
@@ -344,8 +343,6 @@ std::string GetOperationName(PasswordStoreOperation operation) {
       return "AddLoginAsync";
     case PasswordStoreOperation::kUpdateLoginAsync:
       return "UpdateLoginAsync";
-    case PasswordStoreOperation::kRemoveLoginForAccount:
-      return "RemoveLoginForAccount";
     case PasswordStoreOperation::kRemoveLoginAsync:
       return "RemoveLoginAsync";
     case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
@@ -1018,7 +1015,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         case PasswordStoreOperation::kFillMatchingLoginsAsync:
         case PasswordStoreOperation::kAddLoginAsync:
         case PasswordStoreOperation::kUpdateLoginAsync:
-        case PasswordStoreOperation::kRemoveLoginForAccount:
         case PasswordStoreOperation::kRemoveLoginAsync:
         case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
         case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
@@ -1193,15 +1189,6 @@ void PasswordStoreAndroidBackend::GetAllLoginsForAccount(
       account, std::move(callback),
       PasswordStoreOperation::kGetAllLoginsForAccountAsync,
       /*delay=*/base::Seconds(0));
-}
-
-void PasswordStoreAndroidBackend::RemoveLoginForAccount(
-    const PasswordForm& form,
-    PasswordStoreAndroidBackendDispatcherBridge::Account account,
-    PasswordChangesOrErrorReply callback) {
-  RemoveLoginForAccountInternal(form, std::move(account), std::move(callback),
-                                PasswordStoreOperation::kRemoveLoginForAccount,
-                                /*delay=*/base::Seconds(0));
 }
 
 void PasswordStoreAndroidBackend::OnForegroundSessionStart() {

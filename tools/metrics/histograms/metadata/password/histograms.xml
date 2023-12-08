@@ -2647,7 +2647,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAutofillableLoginsAsync"
         summary="GetAutofillableLogins"/>
     <variant name=".RemoveLoginAsync" summary="RemoveLogin"/>
-    <variant name=".RemoveLoginForAccount" summary="RemoveLoginForAccount"/>
     <variant name=".RemoveLoginsByURLAndTimeAsync"
         summary="RemoveLoginsByURLAndTime"/>
     <variant name=".RemoveLoginsCreatedBetweenAsync"
@@ -2680,7 +2679,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".GetAutofillableLoginsAsync"
         summary="GetAutofillableLoginsAsync"/>
     <variant name=".RemoveLoginAsync" summary="RemoveLoginAsync"/>
-    <variant name=".RemoveLoginForAccount" summary="RemoveLoginForAccount"/>
     <variant name=".RemoveLoginsByURLAndTimeAsync"
         summary="RemoveLoginsByURLAndTimeAsync"/>
     <variant name=".RemoveLoginsCreatedBetweenAsync"
