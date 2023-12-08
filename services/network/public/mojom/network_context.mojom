@@ -412,8 +412,8 @@ struct NetworkContextParams {
   pending_receiver<ProxyConfigClient>? proxy_config_client_receiver;
 
   // If |custom_proxy_config_client_receiver| is set, this context will listen
-  // for updates to the custom proxy config, and use it if applicable for
-  // requests which would otherwise be made direct.
+  // for updates to the custom proxy config, and use it if applicable for URL
+  // requests.
   // |initial_custom_proxy_config| is the initial config settings.
   CustomProxyConfig? initial_custom_proxy_config;
   pending_receiver<CustomProxyConfigClient>?
