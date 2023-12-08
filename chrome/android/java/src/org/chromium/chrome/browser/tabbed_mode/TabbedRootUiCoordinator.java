@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.FullScreenSyncPromoUtil;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -1066,7 +1067,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean supportsEdgeToEdge() {
-        return true;
+        return EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
     }
 
     /**
