@@ -447,25 +447,22 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
       storage_path_.Append(info.identifier()), web_state_id);
 
-  // Create requests to serialize WebState storage and post it to the
-  // background sequence (the metadata will be saved when the WebState
-  // is inserted in the WebStateList).
+  // Add the metadata to `info`'s WebStateMetadataMap. It will be saved when
+  // the WebState is inserted in the WebStateList.
+  DCHECK(storage.has_metadata());
   web::proto::WebStateMetadataStorage metadata;
   metadata.Swap(storage.mutable_metadata());
 
-  ios::sessions::IORequestList requests;
-  requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
-      web_state_dir.Append(kWebStateStorageFilename),
-      std::make_unique<web::proto::WebStateStorage>(storage)));
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ios::sessions::ExecuteIORequests, std::move(requests)));
-
-  // Add the metadata to `info`'s WebStateMetadataMap. It will be saved when
-  // the WebState is inserted in the WebStateList.
   DCHECK(!base::Contains(info.metadata_map(), web_state_id));
   info.metadata_map().insert(std::make_pair(web_state_id, metadata));
+
+  // Create the request to serialize WebState storage and add it to the
+  // list of pending requests (they will be scheduled once the WebState
+  // is inserted in the Browser's WebStateList).
+  pending_requests_.push_back(
+      std::make_unique<ios::sessions::WriteProtoIORequest>(
+          web_state_dir.Append(kWebStateStorageFilename),
+          std::make_unique<web::proto::WebStateStorage>(storage)));
 
   // Create the WebState with callback that return the data from memory. This
   // ensure there is no race condition while trying to read the data from the
@@ -526,7 +523,11 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
+  // Initialize the list of requests with all pending request. This ensures
+  // that any WebState created by CreateUnrealizedWebState(...) will have
+  // its state saved.
   ios::sessions::IORequestList requests;
+  std::swap(requests, pending_requests_);
 
   // Create a map of orphaned WebStates (i.e. "unrealized" WebStates detached
   // from a WebStateList).

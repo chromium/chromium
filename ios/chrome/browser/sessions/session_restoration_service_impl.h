@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ios/chrome/browser/sessions/session_io_request.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/session_restoration_service.h"
 
@@ -108,6 +109,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
 
   // Used to enforce that the identifier are not shared between Browser.
   std::set<std::string> identifiers_;
+
+  // List of pending requests from CreateUnrealizedWebState(...).
+  ios::sessions::IORequestList pending_requests_;
 
   // Timer used to delay and batch saving data to storage.
   base::OneShotTimer timer_;
