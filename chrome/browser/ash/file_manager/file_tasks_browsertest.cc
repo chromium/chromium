@@ -1351,12 +1351,16 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  // Fails as system is offline and thus will open office fallback dialog.
+  // Launches the office fallback dialog as the system is offline.
   ExecuteFileTask(
       profile(), web_drive_office_task, file_urls, nullptr,
       base::BindOnce(
           [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {}));
+             std::string error_message) {
+            ASSERT_EQ(
+                result,
+                extensions::api::file_manager_private::TaskResult::kOpened);
+          }));
 
   // Wait for office fallback dialog to open.
   navigation_observer_dialog.Wait();
@@ -1739,12 +1743,16 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
 
   web_app_publisher_->ClearPastLaunches();
 
-  // Fails as system is offline and thus will open office fallback dialog.
+  // Launches the office fallback dialog as the system is offline.
   ExecuteFileTask(
       profile(), open_in_office_task, file_urls, nullptr,
       base::BindOnce(
           [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {}));
+             std::string error_message) {
+            ASSERT_EQ(
+                result,
+                extensions::api::file_manager_private::TaskResult::kOpened);
+          }));
 
   // Wait for office fallback dialog to open.
   navigation_observer_dialog.Wait();
@@ -1805,12 +1813,16 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   web_app_publisher_->ClearPastLaunches();
 
-  // Fails as system is offline and thus will open office fallback dialog.
+  // Launches the office fallback dialog as the system is offline.
   ExecuteFileTask(
       profile(), open_in_office_task, file_urls, nullptr,
       base::BindOnce(
           [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {}));
+             std::string error_message) {
+            ASSERT_EQ(
+                result,
+                extensions::api::file_manager_private::TaskResult::kOpened);
+          }));
 
   // Wait for office fallback dialog to open.
   navigation_observer_dialog.Wait();
