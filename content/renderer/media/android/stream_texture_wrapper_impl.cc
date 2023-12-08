@@ -12,16 +12,17 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/layers/video_frame_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace {
 // Non-member function to allow it to run even after this class is deleted.
 void OnReleaseVideoFrame(scoped_refptr<content::StreamTextureFactory> factories,
-                         gpu::Mailbox mailbox,
+                         scoped_refptr<gpu::ClientSharedImage> shared_image,
                          const gpu::SyncToken& sync_token) {
   gpu::SharedImageInterface* sii = factories->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::move(shared_image));
   sii->Flush();
 }
 }
@@ -72,9 +73,10 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
       gpu::MailboxHolder(mailbox, gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES)};
 
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-  sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                       gpu::SHARED_IMAGE_USAGE_GLES2 |
-                                       gpu::SHARED_IMAGE_USAGE_RASTER);
+  auto shared_image =
+      sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                           gpu::SHARED_IMAGE_USAGE_GLES2 |
+                                           gpu::SHARED_IMAGE_USAGE_RASTER);
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
@@ -86,9 +88,9 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   scoped_refptr<media::VideoFrame> new_frame =
       media::VideoFrame::WrapNativeTextures(
           media::PIXEL_FORMAT_ABGR, holders,
-          base::BindPostTask(
-              main_task_runner_,
-              base::BindOnce(&OnReleaseVideoFrame, factory_, mailbox)),
+          base::BindPostTask(main_task_runner_,
+                             base::BindOnce(&OnReleaseVideoFrame, factory_,
+                                            std::move(shared_image))),
           coded_size, visible_rect, visible_rect.size(), base::TimeDelta());
   new_frame->set_ycbcr_info(ycbcr_info);
 

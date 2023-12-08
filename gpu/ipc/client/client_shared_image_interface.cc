@@ -273,10 +273,12 @@ uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return proxy_->UsageForMailbox(mailbox);
 }
 
-void ClientSharedImageInterface::NotifyMailboxAdded(const Mailbox& mailbox,
-                                                    uint32_t usage) {
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
+    const Mailbox& mailbox,
+    uint32_t usage) {
   AddMailbox(mailbox);
   proxy_->NotifyMailboxAdded(mailbox, usage);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
 
 Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {

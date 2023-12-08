@@ -320,7 +320,9 @@ class GPU_EXPORT SharedImageInterface {
 
   // Informs that existing |mailbox| with |usage| can be passed to
   // DestroySharedImage().
-  virtual void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage);
+  virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
+      const Mailbox& mailbox,
+      uint32_t usage);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 };
