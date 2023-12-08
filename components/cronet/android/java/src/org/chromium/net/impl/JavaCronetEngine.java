@@ -96,7 +96,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
                                                 });
                             }
                         });
-        mLogger = CronetLoggerFactory.createNoOpLogger();
+        mLogger = CronetLoggerFactory.createLogger(mContext, CronetSource.CRONET_SOURCE_FALLBACK);
         try {
             mLogger.logCronetEngineCreation(
                     mCronetEngineId,
@@ -259,7 +259,8 @@ public final class JavaCronetEngine extends CronetEngineBase {
     public void bindToNetwork(long networkHandle) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(
-                    "This multi-network Java implementation is available starting from Android Pie");
+                    "This multi-network Java implementation is available starting from Android"
+                            + " Pie");
         }
         mNetworkHandle = networkHandle;
     }
