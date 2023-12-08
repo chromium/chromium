@@ -1571,14 +1571,17 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   BluetoothDeviceFloss* device_ptr =
       CreateOrGetDeviceForUpdate(scan_result.address, scan_result.name);
 
+  std::vector<device::BluetoothUUID> service_uuids = scan_result.service_uuids;
   device::BluetoothDevice::ServiceDataMap service_data_map;
-  for (const auto& [uuid, bytes] : scan_result.service_data) {
-    service_data_map[device::BluetoothUUID(uuid)] = bytes;
+  for (const auto& [uuid_str, bytes] : scan_result.service_data) {
+    auto uuid = device::BluetoothUUID(uuid_str);
+    service_uuids.push_back(uuid);
+    service_data_map[uuid] = bytes;
   }
 
   device_ptr->UpdateAdvertisementData(
-      scan_result.rssi, scan_result.flags, scan_result.service_uuids,
-      scan_result.tx_power, service_data_map,
+      scan_result.rssi, scan_result.flags, service_uuids, scan_result.tx_power,
+      service_data_map,
       device::BluetoothDevice::ManufacturerDataMap(
           scan_result.manufacturer_data.begin(),
           scan_result.manufacturer_data.end()));
