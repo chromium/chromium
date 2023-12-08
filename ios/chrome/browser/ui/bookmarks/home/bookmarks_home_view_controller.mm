@@ -424,6 +424,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+
+  if (_isShutDown) {
+    // After `shutdown` is called, `_browserState` is null.
+    return;
+  }
   // Set the delegate here to make sure it is working when navigating in the
   // ViewController hierarchy (as each view controller is setting itself as
   // delegate).
