@@ -227,7 +227,7 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
   // Post |task| as part of a one-off single-task Sequence.
   return PostTaskWithSequence(
       Task(from_here, std::move(task), TimeTicks::Now(), delay,
-           MessagePump::GetCurrentTaskLeeway()),
+           MessagePump::GetLeewayIgnoringThreadOverride()),
       MakeRefCounted<Sequence>(traits, nullptr,
                                TaskSourceExecutionMode::kParallel));
 }

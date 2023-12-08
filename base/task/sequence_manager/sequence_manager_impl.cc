@@ -735,7 +735,7 @@ absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
 
 void SequenceManagerImpl::MaybeAddLeewayToTask(Task& task) const {
   if (!main_thread_only().time_domain) {
-    task.leeway = MessagePump::GetTaskLeewayForCurrentThread();
+    task.leeway = MessagePump::GetLeewayForCurrentThread();
   }
 }
 
@@ -755,7 +755,7 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
     // way, we don't need to activate the high resolution timer for precise
     // tasks that will run in more than 16ms if there are non precise tasks in
     // front of them.
-    DCHECK_GE(MessagePump::GetCurrentTaskLeeway(),
+    DCHECK_GE(MessagePump::GetLeewayIgnoringThreadOverride(),
               Milliseconds(Time::kMinLowResolutionThresholdMs));
     return wake_up->delay_policy == subtle::DelayPolicy::kPrecise;
   }

@@ -21,12 +21,21 @@ namespace base {
 
 namespace {
 
+constexpr uint64_t kAlignWakeUpsMask = 1;
+constexpr uint64_t kLeewayOffset = 1;
+
+constexpr uint64_t PackAlignWakeUpsAndLeeway(bool align_wake_ups,
+                                             TimeDelta leeway) {
+  return (static_cast<uint64_t>(leeway.InMilliseconds()) << kLeewayOffset) |
+         (align_wake_ups ? kAlignWakeUpsMask : 0);
+}
+
 // This stores the current state of |kAlignWakeUps| and leeway. The last bit
 // represents if |kAlignWakeUps| is enabled, and the other bits represent the
 // leeway value applied to delayed tasks in milliseconds. An atomic is used here
 // because the value is queried from multiple threads.
-std::atomic<int64_t> g_task_leeway_and_alignement{
-    false | kDefaultLeeway.InMilliseconds() << 1};
+std::atomic<uint64_t> g_align_wake_ups_and_leeway =
+    PackAlignWakeUpsAndLeeway(false, kDefaultLeeway);
 #if BUILDFLAG(IS_WIN)
 bool g_explicit_high_resolution_timer_win = true;
 #endif  // BUILDFLAG(IS_WIN)
@@ -105,38 +114,38 @@ void MessagePump::InitializeFeatures() {
 
 // static
 void MessagePump::OverrideAlignWakeUpsState(bool enabled, TimeDelta leeway) {
-  g_task_leeway_and_alignement.store(enabled | leeway.InMilliseconds() << 1,
-                                     std::memory_order_relaxed);
+  g_align_wake_ups_and_leeway.store(PackAlignWakeUpsAndLeeway(enabled, leeway),
+                                    std::memory_order_relaxed);
 }
 
 // static
 void MessagePump::ResetAlignWakeUpsState() {
-  g_task_leeway_and_alignement.store(FeatureList::IsEnabled(kAlignWakeUps) |
-                                         kTaskLeewayParam.Get().InMilliseconds()
-                                             << 1,
-                                     std::memory_order_relaxed);
+  OverrideAlignWakeUpsState(FeatureList::IsEnabled(kAlignWakeUps),
+                            kTaskLeewayParam.Get());
 }
 
 // static
 bool MessagePump::GetAlignWakeUpsEnabled() {
-  return g_task_leeway_and_alignement.load(std::memory_order_relaxed) & 0x1;
+  return g_align_wake_ups_and_leeway.load(std::memory_order_relaxed) &
+         kAlignWakeUpsMask;
 }
 
 // static
-TimeDelta MessagePump::GetCurrentTaskLeeway() {
-  return base::Milliseconds(
-      g_task_leeway_and_alignement.load(std::memory_order_relaxed) >> 1);
+TimeDelta MessagePump::GetLeewayIgnoringThreadOverride() {
+  return Milliseconds(
+      g_align_wake_ups_and_leeway.load(std::memory_order_relaxed) >>
+      kLeewayOffset);
 }
 
 // static
-TimeDelta MessagePump::GetTaskLeewayForCurrentThread() {
+TimeDelta MessagePump::GetLeewayForCurrentThread() {
   // For some threads, there might be an override of the leeway, so check it
   // first.
   auto leeway_override = PlatformThread::GetThreadLeewayOverride();
   if (leeway_override.has_value()) {
     return leeway_override.value();
   }
-  return GetCurrentTaskLeeway();
+  return GetLeewayIgnoringThreadOverride();
 }
 
 TimeTicks MessagePump::AdjustDelayedRunTime(TimeTicks earliest_time,
@@ -146,14 +155,14 @@ TimeTicks MessagePump::AdjustDelayedRunTime(TimeTicks earliest_time,
   // alignment when the leeway is less than the OS default timer resolution.
 #if BUILDFLAG(IS_WIN)
   if (g_explicit_high_resolution_timer_win &&
-      GetTaskLeewayForCurrentThread() <=
+      GetLeewayForCurrentThread() <=
           Milliseconds(Time::kMinLowResolutionThresholdMs)) {
     return earliest_time;
   }
 #endif  // BUILDFLAG(IS_WIN)
   if (GetAlignWakeUpsEnabled()) {
     TimeTicks aligned_run_time = earliest_time.SnappedToNextTick(
-        TimeTicks(), GetTaskLeewayForCurrentThread());
+        TimeTicks(), GetLeewayForCurrentThread());
     return std::min(aligned_run_time, latest_time);
   }
   return run_time;

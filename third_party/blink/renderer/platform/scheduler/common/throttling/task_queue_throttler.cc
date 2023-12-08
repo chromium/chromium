@@ -86,7 +86,7 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
       // used for throttled tasks since those tasks can tolerate having their
       // execution being delayed.
       return base::sequence_manager::WakeUp{
-          allowed_run_time, base::MessagePump::GetTaskLeewayForCurrentThread(),
+          allowed_run_time, base::MessagePump::GetLeewayForCurrentThread(),
           base::sequence_manager::WakeUpResolution::kLow,
           base::subtle::DelayPolicy::kFlexibleNoSooner};
     }

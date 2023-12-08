@@ -37,8 +37,8 @@ class BASE_EXPORT MessagePump {
   static void OverrideAlignWakeUpsState(bool enabled, TimeDelta leeway);
   static void ResetAlignWakeUpsState();
   static bool GetAlignWakeUpsEnabled();
-  static TimeDelta GetCurrentTaskLeeway();
-  static TimeDelta GetTaskLeewayForCurrentThread();
+  static TimeDelta GetLeewayIgnoringThreadOverride();
+  static TimeDelta GetLeewayForCurrentThread();
 
   // Creates the default MessagePump based on |type|. Caller owns return value.
   static std::unique_ptr<MessagePump> Create(MessagePumpType type);
