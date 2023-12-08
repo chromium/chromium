@@ -32,9 +32,15 @@
 
   #options {
     display: flex;
-    gap: 8px;
     height: 30%;
     justify-content: center;
+  }
+
+  /* This makes the options scrollable. */
+  #optionSubcontainer {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
   }
 
   #searchButtons {
@@ -85,15 +91,17 @@
     </template>
   </div>
   <div id="options">
-    <template is="dom-repeat" items="[[options_]]" as="option">
-      <cr-button
-          class$="[[getOptionClass_(option, selectedChip_.translation)]]"
-          on-click="onClickOption_"
-          aria-pressed$="[[isOptionSelected_(option, selectedChip_.translation)]]">
-        <iron-icon icon="personalization:circle_checkmark" slot="prefix-icon"></iron-icon>
-        [[option.translation]]
-      </cr-button>
-    </template>
+    <div id="optionSubcontainer">
+      <template is="dom-repeat" items="[[options_]]" as="option">
+        <cr-button
+            class$="[[getOptionClass_(option, selectedChip_.translation)]]"
+            on-click="onClickOption_"
+            aria-pressed$="[[isOptionSelected_(option, selectedChip_.translation)]]">
+          <iron-icon icon="personalization:circle_checkmark" slot="prefix-icon"></iron-icon>
+          [[option.translation]]
+        </cr-button>
+      </template>
+    </div>
   </div>
   <div id="searchButtons">
     <cr-button id="inspire" on-click="onClickInspire_">
