@@ -8,11 +8,9 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buildMockTemplateUrl;
 
-import android.app.Activity;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 
+import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -44,7 +42,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class SearchEngineSettingsRenderTest {
-
     public final @Rule BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
@@ -53,6 +50,7 @@ public class SearchEngineSettingsRenderTest {
     public final @Rule ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
+                    .setRevision(1)
                     .build();
 
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();
@@ -95,24 +93,23 @@ public class SearchEngineSettingsRenderTest {
         View view =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Activity activity = mActivityTestRule.getActivity();
-                            SearchEngineAdapter adapter =
-                                    new SearchEngineAdapter(activity, mProfile);
-                            adapter.start();
-
-                            LinearLayout container = new LinearLayout(activity);
-                            container.setLayoutParams(
-                                    new LinearLayout.LayoutParams(
-                                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                            container.setOrientation(LinearLayout.VERTICAL);
-
-                            container.addView(adapter.getView(0, null, container));
-                            container.addView(adapter.getView(1, null, container));
-
-                            activity.setContentView(container);
-                            return container;
+                            FragmentManager fragmentManager =
+                                    mActivityTestRule.getActivity().getSupportFragmentManager();
+                            SearchEngineSettings fragment =
+                                    (SearchEngineSettings)
+                                            fragmentManager
+                                                    .getFragmentFactory()
+                                                    .instantiate(
+                                                            SearchEngineSettings.class
+                                                                    .getClassLoader(),
+                                                            SearchEngineSettings.class.getName());
+                            fragment.setProfile(mProfile);
+                            fragmentManager
+                                    .beginTransaction()
+                                    .replace(android.R.id.content, fragment)
+                                    .commitNow();
+                            return fragment.getView();
                         });
-
         mRenderTestRule.render(view, screenshotId);
     }
 
