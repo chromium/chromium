@@ -35,6 +35,14 @@ const base::FeatureParam<std::string> kSyntheticTrialGroupOverride{
     &features::kCookieDeprecationFacilitatedTesting,
     "synthetic_trial_group_override", ""};
 
+bool NeedsOnboardingForExperiment() {
+  if (!kDisable3PCookies.Get()) {
+    return false;
+  }
+
+  return kNeedOnboardingForSyntheticTrial.Get();
+}
+
 }  // namespace
 
 // TODO(b/302798031): This flag is needed to deflake
@@ -189,7 +197,7 @@ bool ExperimentManagerImpl::DidVersionChange() const {
 void ExperimentManagerImpl::NotifyProfileTrackingProtectionOnboarded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!kDisable3PCookies.Get()) {
+  if (!NeedsOnboardingForExperiment()) {
     return;
   }
 
@@ -222,13 +230,13 @@ bool ExperimentManagerImpl::CanRegisterSyntheticTrial() const {
   switch (g_browser_process->local_state()->GetInteger(
       prefs::kTPCDExperimentClientState)) {
     case static_cast<int>(utils::ExperimentState::kEligible):
-      return !kDisable3PCookies.Get();
+      return !NeedsOnboardingForExperiment();
     case static_cast<int>(utils::ExperimentState::kIneligible):
     case static_cast<int>(utils::ExperimentState::kOnboarded):
       return true;
     case static_cast<int>(utils::ExperimentState::kUnknownEligibility):
       if (kForceEligibleForTesting.Get()) {
-        return !kDisable3PCookies.Get();
+        return !NeedsOnboardingForExperiment();
       } else {
         return false;
       }

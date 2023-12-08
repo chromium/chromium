@@ -48,6 +48,7 @@ struct SyntheticTrialTestCase {
   absl::optional<std::string> expected_group_name;
   std::string group_name_override;
   bool disable_3pcs = false;
+  bool need_onboarding = false;
 };
 
 constexpr char kEligibleGroupName[] = "eligible";
@@ -57,7 +58,8 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
  public:
   ExperimentManagerImplBrowserTest(bool force_profiles_eligible_chromeos,
                                    std::string group_name_override,
-                                   bool disable_3pcs) {
+                                   bool disable_3pcs,
+                                   bool need_onboarding) {
     // Force profile eligibility on ChromeOS. There is a flaky issue where
     // `SetClientEligibility` is sometimes called twice, the second time with an
     // ineligible profile even if the first was eligible.
@@ -72,7 +74,9 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
         {{"label", kEligibleGroupName},
          {"force_profiles_eligible", force_profiles_eligible_str},
          {"synthetic_trial_group_override", group_name_override},
-         {kDisable3PCookiesName, disable_3pcs ? "true" : "false"}});
+         {kDisable3PCookiesName, disable_3pcs ? "true" : "false"},
+         {kNeedOnboardingForSyntheticTrialName,
+          need_onboarding ? "true" : "false"}});
   }
 
   void Wait() {
@@ -112,7 +116,8 @@ class ExperimentManagerImplSyntheticTrialTest
       : ExperimentManagerImplBrowserTest(
             /*force_profiles_eligible_chromeos=*/GetParam().new_state_eligible,
             GetParam().group_name_override,
-            /*disable_3pcs=*/GetParam().disable_3pcs) {}
+            /*disable_3pcs=*/GetParam().disable_3pcs,
+            /*need_onboarding=*/GetParam().need_onboarding) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
@@ -212,12 +217,28 @@ const SyntheticTrialTestCase kTestCases[] = {
         .new_state_eligible = true,
         .expected_group_name = absl::nullopt,
         .disable_3pcs = true,
+        .need_onboarding = true,
+    },
+    {
+        .prev_state = utils::ExperimentState::kEligible,
+        .new_state_eligible = true,
+        .expected_group_name = kEligibleGroupName,
+        .disable_3pcs = true,
+        .need_onboarding = false,
     },
     {
         .prev_state = utils::ExperimentState::kOnboarded,
         .new_state_eligible = true,
         .expected_group_name = kEligibleGroupName,
         .disable_3pcs = true,
+        .need_onboarding = true,
+    },
+    {
+        .prev_state = utils::ExperimentState::kOnboarded,
+        .new_state_eligible = true,
+        .expected_group_name = kEligibleGroupName,
+        .disable_3pcs = true,
+        .need_onboarding = false,
     },
 };
 
@@ -232,7 +253,8 @@ class ExperimentManagerImplDisable3PCsSyntheticTrialTest
       : ExperimentManagerImplBrowserTest(
             /*force_profiles_eligible_chromeos=*/false,
             /*group_name_override=*/"",
-            /*disable_3pcs=*/true) {}
+            /*disable_3pcs=*/true,
+            /*need_onboarding=*/true) {}
 };
 
 IN_PROC_BROWSER_TEST_F(ExperimentManagerImplDisable3PCsSyntheticTrialTest,
