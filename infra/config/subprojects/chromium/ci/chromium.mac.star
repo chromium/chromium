@@ -197,6 +197,7 @@ ci.builder(
         ],
     ),
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|arm64",
         short_name = "bld",
