@@ -87,6 +87,10 @@
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/locale/' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/searchwidget/'
     },
+    'android_startup_metrics': {
+      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/metrics/.*StartupMetricsTracker.java' \
+                  '|chrome/android/java/src/org/chromium/chrome/browser/metrics/SimpleStartupForegroundSessionDetector.java'
+    },
     'android_studio': {
       'filepath': 'build/android/gradle/' \
                   '|docs/android_studio.md' \
@@ -2425,6 +2429,7 @@
     'android_omnibox': ['ender+watch@chromium.org'],
     'android_search_widget': ['tedchoc+watch@chromium.org',
                               'yusufo+watch@chromium.org'],
+    'android_startup_metrics': ['pasko+watch@chromium.org'],
     'android_studio': ['wnwen+watch@chromium.org',
                        'nyquist+watch@chromium.org'],
     'android_tab': ['dtrainor+watch@chromium.org'],
