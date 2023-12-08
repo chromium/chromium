@@ -851,6 +851,12 @@ void FederatedAuthRequestImpl::RequestToken(
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
+  // TODO(crbug.com/1307709): handle button mode with multiple IdP.
+  if (IsFedCmButtonModeEnabled() &&
+      idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton &&
+      render_frame_host().HasTransientUserActivation()) {
+    rp_mode_ = RpMode::kButton;
+  }
 
   FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
 
@@ -878,7 +884,7 @@ void FederatedAuthRequestImpl::RequestToken(
       break;
   }
 
-  if (error_token_status) {
+  if (error_token_status && rp_mode_ == RpMode::kWidget) {
     CompleteRequestWithError(request_result, *error_token_status,
                              /*token_error=*/absl::nullopt,
                              /*should_delay_callback=*/true);
@@ -1365,7 +1371,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
   // on the same RP origin) before the browser receives the accounts response.
   // We should exit early without showing any UI.
-  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
+  // Note that for the button flow is not affected by the permission status.
+  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED &&
+      rp_mode_ != RpMode::kButton) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorDisabledInSettings,
         TokenStatus::kDisabledInSettings,
@@ -1382,16 +1390,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     CHECK(idp_data_for_display_.empty());
   }
 
-  blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
       idp_data_for_display_.push_back(*idp_info_it->second->data);
-      // TODO(crbug.com/1307709): handle button mode with multiple IdP.
-      if (IsFedCmButtonModeEnabled() &&
-          render_frame_host().HasTransientUserActivation()) {
-        rp_mode = idp_info_it->second->rp_mode;
-      }
     }
   }
 
@@ -1474,7 +1476,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (dialog_type_ != kAutoReauth) {
     identity_selection_type_ = kExplicit;
   } else if (!IsFedCmButtonModeEnabled() ||
-             rp_mode == blink::mojom::RpMode::kWidget) {
+             rp_mode_ == blink::mojom::RpMode::kWidget) {
     identity_selection_type_ = kAutoWidget;
   } else {
     identity_selection_type_ = kAutoButton;
@@ -1846,7 +1848,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   // settings are changed while an existing FedCM UI is displayed. Ideally, we
   // should enforce this check before all requests but users typically won't
   // have time to disable the FedCM API in other types of requests.
-  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
+  // Note that for the button flow is not affected by the permission status.
+  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED &&
+      rp_mode_ != RpMode::kButton) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorDisabledInSettings,
         TokenStatus::kDisabledInSettings,
@@ -1914,6 +1918,7 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
 
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
+  should_embargo &= rp_mode_ == RpMode::kWidget;
   if (should_embargo) {
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }
@@ -1983,6 +1988,7 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   }
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
+  should_embargo &= rp_mode_ == RpMode::kWidget;
   if (should_embargo) {
     api_permission_delegate_->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }

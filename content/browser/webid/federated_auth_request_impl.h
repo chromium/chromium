@@ -41,6 +41,7 @@ class RenderFrameHost;
 
 using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using TokenError = IdentityCredentialTokenError;
+using RpMode = blink::mojom::RpMode;
 
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
 // fulfill WebID-related requests.
@@ -472,6 +473,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
+  RpMode rp_mode_{RpMode::kWidget};
 
   std::unique_ptr<DigitalCredentialProvider> digital_credential_provider_;
   RequestTokenCallback digital_credential_request_callback_;
