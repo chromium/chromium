@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_NETWORK_UI_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_NETWORK_UI_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -12,7 +14,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -94,7 +95,7 @@ class NetworkUiController
     return network_ui_state_;
   }
 
-  static std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+  static std::unique_ptr<base::AutoReset<std::optional<bool>>>
   SetCanConfigureNetworkForTesting(bool can_configure_network);
 
  private:

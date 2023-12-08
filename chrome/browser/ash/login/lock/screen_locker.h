@@ -235,7 +235,7 @@ class ScreenLocker
       std::vector<ChallengeResponseKey> challenge_response_keys);
 
   void OnPinAttemptDone(std::unique_ptr<UserContext>,
-                        absl::optional<AuthenticationError>);
+                        std::optional<AuthenticationError>);
 
   // Called to select the appropriate Authenticator and perform unlock
   // operation.

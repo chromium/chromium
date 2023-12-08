@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -18,7 +20,6 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -118,7 +119,7 @@ void CryptohomeRecoverySetupScreen::ExitScreen(
         cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
             storage->Peek(token)->GetAccountId())) {
       storage->Invalidate(token, base::DoNothing());
-      wizard_context.extra_factors_token = absl::nullopt;
+      wizard_context.extra_factors_token = std::nullopt;
     }
   }
 

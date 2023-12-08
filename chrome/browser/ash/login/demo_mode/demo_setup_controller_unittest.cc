@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -35,7 +36,6 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -106,9 +106,9 @@ class DemoSetupControllerTestHelper {
   }
 
  private:
-  absl::optional<bool> succeeded_;
-  absl::optional<DemoSetupController::DemoSetupStep> setup_step_;
-  absl::optional<DemoSetupController::DemoSetupError> error_;
+  std::optional<bool> succeeded_;
+  std::optional<DemoSetupController::DemoSetupStep> setup_step_;
+  std::optional<DemoSetupController::DemoSetupError> error_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

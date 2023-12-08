@@ -188,32 +188,32 @@ class QuickStartController
   base::WeakPtr<TargetDeviceBootstrapController> bootstrap_controller_;
 
   // Source of truth of OOBE's current state via OobeUI::Observer
-  absl::optional<OobeScreenId> current_screen_, previous_screen_;
+  std::optional<OobeScreenId> current_screen_, previous_screen_;
 
   // Bookkeeping where the quick start flow started and ended.
-  absl::optional<EntryPoint> entry_point_, exit_point_;
+  std::optional<EntryPoint> entry_point_, exit_point_;
 
   // Discoverable name to be used on the UI. e.g.: Chromebook (123)
-  absl::optional<std::string> discoverable_name_;
+  std::optional<std::string> discoverable_name_;
 
   // QR Code to be shown on the UI when requested.
-  absl::optional<QRCode::PixelData> qr_code_data_;
+  std::optional<QRCode::PixelData> qr_code_data_;
 
   // PIN to be shown on the UI when requested.
-  absl::optional<std::string> pin_;
+  std::optional<std::string> pin_;
 
   // FIDO assertion returned by the phone. Used by the UI for debugging for now.
-  absl::optional<FidoAssertionInfo> fido_;
+  std::optional<FidoAssertionInfo> fido_;
 
   // WiFi name to be shown on the UI.
-  absl::optional<std::string> wifi_name_;
+  std::optional<std::string> wifi_name_;
 
   // Main state that the controller can be in.
   ControllerState controller_state_ = ControllerState::NOT_ACTIVE;
 
   // UI state that should be displayed by the QuickStartScreen. Only exists when
   // there is an ongoing setup.
-  absl::optional<UiState> ui_state_;
+  std::optional<UiState> ui_state_;
 
   // QuickStartScreen implements the UiDelegate and registers itself whenever it
   // is shown. UI updates happen over this observation path.

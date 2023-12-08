@@ -233,7 +233,7 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
     return result;
   }
 
-  absl::optional<ConsolidatedConsentScreen::Result> screen_result_;
+  std::optional<ConsolidatedConsentScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
   std::vector<base::Bucket> GetAllRecordedUserActions() {

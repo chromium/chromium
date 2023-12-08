@@ -131,7 +131,7 @@ void GaiaPasswordChangedScreen::AttemptAuthentication(
 
 void GaiaPasswordChangedScreen::OnPasswordAuthentication(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     if (error->get_cryptohome_code() ==
@@ -154,7 +154,7 @@ void GaiaPasswordChangedScreen::OnPasswordAuthentication(
 
 void GaiaPasswordChangedScreen::OnPasswordUpdated(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     // TODO(b/239420684): Send an error to the UI.
@@ -170,7 +170,7 @@ void GaiaPasswordChangedScreen::OnPasswordUpdated(
 
 void GaiaPasswordChangedScreen::OnGetConfiguration(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     // TODO(b/239420684): Send an error to the UI.
@@ -213,7 +213,7 @@ void GaiaPasswordChangedScreen::RecreateUser() {
 
 void GaiaPasswordChangedScreen::OnRemovedUserDirectory(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Failed to remove user home directory";

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
@@ -36,7 +37,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -273,7 +273,7 @@ class UpdateScreenTest : public OobeBaseTest,
 
   base::HistogramTester histogram_tester_;
 
-  absl::optional<UpdateScreen::Result> last_screen_result_;
+  std::optional<UpdateScreen::Result> last_screen_result_;
 
  private:
   void HandleScreenExit(UpdateScreen::Result result) {

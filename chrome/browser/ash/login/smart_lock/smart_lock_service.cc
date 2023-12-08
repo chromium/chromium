@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/smartlock_state.h"
@@ -48,7 +49,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -433,7 +433,7 @@ void SmartLockService::OnScreenDidUnlock() {
     if (will_authenticate_using_smart_lock()) {
       SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
           SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock);
-      RecordAuthResult(/*failure_reason=*/absl::nullopt);
+      RecordAuthResult(/*failure_reason=*/std::nullopt);
       RecordSmartLockScreenUnlockDuration(base::TimeTicks::Now() -
                                           lock_screen_last_shown_timestamp_);
     } else {
@@ -626,7 +626,7 @@ void SmartLockService::LoadRemoteDevices() {
     // changes.
     PA_LOG(VERBOSE) << "Smart Lock is not enabled by user; aborting.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            absl::nullopt /* local_device */);
+                            std::nullopt /* local_device */);
     return;
   }
 
@@ -647,7 +647,7 @@ void SmartLockService::LoadRemoteDevices() {
     PA_LOG(ERROR) << "Smart Lock is enabled by user, but no unlock key is "
                      "present; aborting.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            absl::nullopt /* local_device */);
+                            std::nullopt /* local_device */);
 
     if (pref_manager_->IsEasyUnlockEnabledStateSet()) {
       LogSmartLockEnabledState(SmartLockEnabledState::DISABLED);
@@ -700,7 +700,7 @@ void SmartLockService::PrepareForSuspend() {
 }
 
 void SmartLockService::RecordAuthResult(
-    absl::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
+    std::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
         failure_reason) {
   if (failure_reason.has_value()) {
     SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
@@ -720,7 +720,7 @@ void SmartLockService::ResetSmartLockState() {
 void SmartLockService::SetProximityAuthDevices(
     const AccountId& account_id,
     const multidevice::RemoteDeviceRefList& remote_devices,
-    absl::optional<multidevice::RemoteDeviceRef> local_device) {
+    std::optional<multidevice::RemoteDeviceRef> local_device) {
   UMA_HISTOGRAM_COUNTS_100("SmartLock.EnabledDevicesCount",
                            remote_devices.size());
 
@@ -827,18 +827,18 @@ void SmartLockService::UseLoadedRemoteDevices(
     PA_LOG(ERROR) << "There should only be 1 Smart Lock host, but there are: "
                   << remote_devices.size();
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            absl::nullopt);
+                            std::nullopt);
     NOTREACHED();
     return;
   }
 
-  absl::optional<multidevice::RemoteDeviceRef> local_device =
+  std::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "SmartLockService::" << __func__
                   << ": Local device unexpectedly null.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 

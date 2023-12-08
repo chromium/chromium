@@ -193,7 +193,7 @@ void PinSetupScreen::ClearAuthData(WizardContext& context) {
   if (context.extra_factors_token.has_value()) {
     ash::AuthSessionStorage::Get()->Invalidate(
         context.extra_factors_token.value(), base::DoNothing());
-    context.extra_factors_token = absl::nullopt;
+    context.extra_factors_token = std::nullopt;
   }
 }
 

@@ -32,7 +32,7 @@ namespace {
 using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
 
-absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
+std::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
     OobeScreenId screen) {
   if (screen.name == WelcomeScreenHandler::kScreenId.name) {
     return QuickStartController::EntryPoint::WELCOME_SCREEN;
@@ -43,7 +43,7 @@ absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
   } else if (screen.name == GaiaScreenHandler::kScreenId.name) {
     return QuickStartController::EntryPoint::GAIA_SCREEN;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(

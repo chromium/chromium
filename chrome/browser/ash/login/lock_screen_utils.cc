@@ -139,7 +139,7 @@ void StopEnforcingPolicyInputMethods() {
 
 void SetKeyboardSettings(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (absl::optional<bool> auto_repeat_enabled =
+  if (std::optional<bool> auto_repeat_enabled =
           known_user.FindBoolPath(account_id, prefs::kXkbAutoRepeatEnabled);
       auto_repeat_enabled.has_value()) {
     if (!auto_repeat_enabled.value()) {

@@ -692,7 +692,7 @@ bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
     return false;
   }
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  absl::optional<int> opt_val =
+  std::optional<int> opt_val =
       known_user.FindIntPath(focused_pod_account_id_, pref_name);
   if (value && opt_val.has_value()) {
     *value = opt_val.value();
@@ -993,7 +993,7 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
   bool offline_limit_expired = false;
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  const absl::optional<base::TimeDelta> offline_signin_interval =
+  const std::optional<base::TimeDelta> offline_signin_interval =
       known_user.GetOfflineSigninLimit(account_id);
 
   // Check if the limit is set only.

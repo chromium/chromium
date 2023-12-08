@@ -263,7 +263,7 @@ class MultiDeviceSetupScreenTest : public OobeBaseTest {
         MultiDeviceSetupScreen::OobeMultideviceScreenSkippedReason::kUnknown);
   }
 
-  absl::optional<MultiDeviceSetupScreen::Result> screen_result_;
+  std::optional<MultiDeviceSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;

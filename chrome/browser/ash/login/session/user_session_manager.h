@@ -8,6 +8,7 @@
 #include <bitset>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -41,7 +42,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
@@ -473,7 +473,7 @@ class UserSessionManager
 
   // Callback to process RetrieveActiveSessions() request results.
   void OnRestoreActiveSessions(
-      absl::optional<SessionManagerClient::ActiveSessionsMap> sessions);
+      std::optional<SessionManagerClient::ActiveSessionsMap> sessions);
 
   // Called by OnRestoreActiveSessions() when there're user sessions in
   // `pending_user_sessions_` that has to be restored one by one.

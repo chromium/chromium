@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -13,7 +15,6 @@
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/random.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -101,7 +102,7 @@ void SessionContext::FetchPersistedSessionContext() {
   const std::string* advertising_id_str =
       session_info.FindString(kPrepareForUpdateAdvertisingIdKey);
   CHECK(advertising_id_str);
-  absl::optional<AdvertisingId> maybe_advertising_id =
+  std::optional<AdvertisingId> maybe_advertising_id =
       AdvertisingId::ParseFromBase64(*advertising_id_str);
   if (!maybe_advertising_id.has_value()) {
     // TODO(b/234655072) Cancel Quick Start if this error occurs. The secondary

@@ -248,7 +248,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
   void SimulateWiFiTransfer(bool send_empty_creds = false) {
     auto* connection = connection_broker()->GetFakeConnection();
     if (send_empty_creds) {
-      connection->SendWifiCredentials(absl::nullopt);
+      connection->SendWifiCredentials(std::nullopt);
     } else {
       auto security = ash::quick_start::mojom::WifiSecurityType::kPSK;
       connection->SendWifiCredentials(ash::quick_start::mojom::WifiCredentials(

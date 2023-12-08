@@ -130,7 +130,7 @@ class ConsolidatedConsentScreen
   // Updates the state of the metrics toggle.
   void UpdateMetricsMode(bool enabled, bool managed);
 
-  absl::optional<bool> is_owner_;
+  std::optional<bool> is_owner_;
 
   bool is_child_account_ = false;
 

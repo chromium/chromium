@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/osauth/auth_factor_updater.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "chrome/browser/ash/login/osauth/auth_factor_migrator.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "components/user_manager/known_user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -42,7 +42,7 @@ void AuthFactorUpdater::Run(std::unique_ptr<UserContext> context,
 void AuthFactorUpdater::OnMigratorRun(
     AuthOperationCallback callback,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to run migrations " << error->ToDebugString();
     // Proceed to enforce policies anyways.

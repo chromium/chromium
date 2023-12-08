@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -45,7 +46,6 @@
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -122,7 +122,7 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
                                       int current_width) {
   std::string message;
   while (message_queue->WaitForMessage(&message)) {
-    absl::optional<base::Value> message_value = base::JSONReader::Read(message);
+    std::optional<base::Value> message_value = base::JSONReader::Read(message);
     if (!message_value || !message_value->is_dict()) {
       continue;
     }
@@ -133,7 +133,7 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
       continue;
     }
 
-    const absl::optional<int> data = message_dict.FindInt("data");
+    const std::optional<int> data = message_dict.FindInt("data");
     if (!data || data == current_width) {
       continue;
     }

@@ -1451,7 +1451,7 @@ void UserSessionManager::InitProfilePreferences(
                        user_context.GetPublicSessionInputMethod());
   }
 
-  absl::optional<base::Version> onboarding_completed_version =
+  std::optional<base::Version> onboarding_completed_version =
       user_manager::KnownUser(g_browser_process->local_state())
           .GetOnboardingCompletedVersion(user->GetAccountId());
   if (!onboarding_completed_version.has_value()) {
@@ -2055,7 +2055,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       known_user.RemovePendingOnboardingScreen(account_id);
     }
 
-    absl::optional<base::Version> onboarding_completed_version =
+    std::optional<base::Version> onboarding_completed_version =
         known_user.GetOnboardingCompletedVersion(account_id);
 
     if (!user_manager->IsCurrentUserNew() && pending_screen.empty() &&
@@ -2212,7 +2212,7 @@ void UserSessionManager::PerformPostBrowserLaunchOOBEActions(Profile* profile) {
 }
 
 void UserSessionManager::OnRestoreActiveSessions(
-    absl::optional<SessionManagerClient::ActiveSessionsMap> sessions) {
+    std::optional<SessionManagerClient::ActiveSessionsMap> sessions) {
   if (!sessions.has_value()) {
     LOG(ERROR) << "Could not get list of active user sessions after crash.";
     // If we could not get list of active user sessions it is safer to just

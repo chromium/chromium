@@ -37,7 +37,7 @@ class AuthFactorUpdater {
  private:
   void OnMigratorRun(AuthOperationCallback callback,
                      std::unique_ptr<UserContext> context,
-                     absl::optional<AuthenticationError> error);
+                     std::optional<AuthenticationError> error);
 
   raw_ptr<AuthPolicyConnector> connector_;
   raw_ptr<UserDataAuthClient> user_data_auth_;

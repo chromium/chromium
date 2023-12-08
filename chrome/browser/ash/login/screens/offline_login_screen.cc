@@ -177,7 +177,7 @@ void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const AccountId account_id = known_user.GetAccountId(
       sanitized_email, std::string(), AccountType::UNKNOWN);
-  const absl::optional<base::TimeDelta> offline_signin_interval =
+  const std::optional<base::TimeDelta> offline_signin_interval =
       known_user.GetOfflineSigninLimit(account_id);
 
   // Further checks only if the limit is set.

@@ -27,7 +27,7 @@ namespace {
 constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
 base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
-absl::optional<bool> g_can_configure_network_for_testing;
+std::optional<bool> g_can_configure_network_for_testing;
 
 bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
@@ -240,10 +240,10 @@ bool NetworkUiController::CanConfigureNetwork() {
 }
 
 // static
-std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+std::unique_ptr<base::AutoReset<std::optional<bool>>>
 NetworkUiController::SetCanConfigureNetworkForTesting(
     bool can_configure_network) {
-  return std::make_unique<base::AutoReset<absl::optional<bool>>>(
+  return std::make_unique<base::AutoReset<std::optional<bool>>>(
       &g_can_configure_network_for_testing, can_configure_network);
 }
 

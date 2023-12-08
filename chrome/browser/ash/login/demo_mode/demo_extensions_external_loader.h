@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_EXTENSIONS_EXTERNAL_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -75,7 +75,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   // Called when the external extensions prefs are read from the disk.
   // `prefs` - demo extensions prefs.
   void DemoExternalExtensionsPrefsLoaded(
-      absl::optional<base::Value::Dict> prefs);
+      std::optional<base::Value::Dict> prefs);
 
   std::unique_ptr<chromeos::ExternalCache> external_cache_;
 

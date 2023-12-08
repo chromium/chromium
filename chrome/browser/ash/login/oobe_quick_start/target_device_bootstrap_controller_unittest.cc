@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -188,7 +188,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   }
 
  protected:
-  absl::optional<FidoAssertionInfo> assertion_info_;
+  std::optional<FidoAssertionInfo> assertion_info_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_factory_;
   std::unique_ptr<FakeQuickStartConnectivityService>
@@ -334,7 +334,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
-  absl::optional<TargetDeviceConnectionBroker::FeatureSupportStatus>
+  std::optional<TargetDeviceConnectionBroker::FeatureSupportStatus>
       feature_status;
 
   fake_target_device_connection_broker_->set_feature_support_status(
@@ -500,7 +500,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   bootstrap_controller_->AttemptWifiCredentialTransfer();
   fake_target_device_connection_broker_->GetFakeConnection()
-      ->SendWifiCredentials(absl::nullopt);
+      ->SendWifiCredentials(std::nullopt);
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::EMPTY_WIFI_CREDENTIALS_RECEIVED);
@@ -542,7 +542,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
-      absl::nullopt);
+      std::nullopt);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
@@ -687,7 +687,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()
-      ->SendAccountTransferAssertionInfo(absl::nullopt);
+      ->SendAccountTransferAssertionInfo(std::nullopt);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),

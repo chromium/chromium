@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -59,7 +60,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -150,7 +150,7 @@ class PasswordChangeTest : public PasswordChangeTestBase {
   base::FilePath GetTestingFilePath() const {
     auto account_identifier =
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
-    absl::optional<base::FilePath> profile_dir =
+    std::optional<base::FilePath> profile_dir =
         FakeUserDataAuthClient::TestApi::Get()->GetUserProfileDir(
             account_identifier);
     if (!profile_dir) {
@@ -440,8 +440,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, PRE_Session) {
       browser_shutdown::AddAppTerminatingCallback(exit_waiter.QuitClosure());
 
   display_service_tester->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                        notifications[0].id(), absl::nullopt,
-                                        absl::nullopt);
+                                        notifications[0].id(), std::nullopt,
+                                        std::nullopt);
   exit_waiter.Run();
 }
 

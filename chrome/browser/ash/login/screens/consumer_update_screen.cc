@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -348,7 +348,7 @@ void ConsumerUpdateScreen::UpdateBatteryWarningVisibility() {
   if (!view_) {
     return;
   }
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value()) {
     return;

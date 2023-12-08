@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
@@ -17,7 +19,6 @@
 #include "chromeos/ash/components/login/auth/recovery/recovery_utils.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

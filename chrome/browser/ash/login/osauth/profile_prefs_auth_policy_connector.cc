@@ -49,12 +49,12 @@ void ProfilePrefsAuthPolicyConnector::SetLoginScreenAuthPolicyConnector(
   login_screen_connector_ = connector;
 }
 
-absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryInitialState(
+std::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryInitialState(
     const AccountId& account) {
   return !IsUserManaged(account);
 }
 
-absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryDefaultState(
+std::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryDefaultState(
     const AccountId& account) {
   if (IsUserManaged(account)) {
     return GetPrefsForUser(account)->GetBoolean(
@@ -65,15 +65,15 @@ absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryDefaultState(
   return false;
 }
 
-absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
+std::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
     const AccountId& account) {
   if (!IsUserManaged(account)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto* prefs = GetPrefsForUser(account);
   auto* pref = prefs->FindPreference(prefs::kRecoveryFactorBehavior);
   if (!pref || !pref->IsManaged() || pref->IsRecommended()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return pref->GetValue()->GetBool();
 }

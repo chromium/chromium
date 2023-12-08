@@ -86,8 +86,8 @@ constexpr base::TimeDelta kSyncConsentSettingsShowDelay = base::Seconds(3);
 constexpr base::TimeDelta kWaitTimeout = base::Seconds(10);
 constexpr base::TimeDelta kWaitTimeoutForTest = base::Milliseconds(1);
 
-absl::optional<bool> sync_disabled_by_policy_for_test;
-absl::optional<bool> sync_engine_initialized_for_test;
+std::optional<bool> sync_disabled_by_policy_for_test;
+std::optional<bool> sync_engine_initialized_for_test;
 
 SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_exit_delegate_ =
     nullptr;

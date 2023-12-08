@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 
+#include <optional>
+
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -29,7 +31,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -281,7 +282,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   WizardContext wizard_context_;
 
   // The last result reported by `enrollment_screen_`.
-  absl::optional<EnrollmentScreen::Result> last_screen_result_;
+  std::optional<EnrollmentScreen::Result> last_screen_result_;
 };
 
 TEST_F(EnrollmentScreenUnitTest, ConfigAfterRollback) {

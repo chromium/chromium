@@ -42,12 +42,12 @@ class RecoveryFactorHsmPubkeyMigration : public AuthFactorMigration {
   void OnAuthFactorConfigurationLoaded(
       AuthOperationCallback callback,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
   void UpdateRecoveryFactor(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback);
   void OnRecoveryUpdated(AuthOperationCallback callback,
                          std::unique_ptr<UserContext> context,
-                         absl::optional<AuthenticationError> error);
+                         std::optional<AuthenticationError> error);
 
   bool was_skipped_ = false;
   std::unique_ptr<AuthFactorEditor> editor_;

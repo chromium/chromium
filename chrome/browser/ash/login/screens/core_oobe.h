@@ -71,7 +71,7 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   // Calls to these methods will be deferred until fully initialized.
   // See |CoreOobeView::UiState| for details.
   void ShowScreenWithData(const OobeScreenId& screen,
-                          absl::optional<base::Value::Dict> data);
+                          std::optional<base::Value::Dict> data);
   void ReloadContent();
   void ForwardCancel();
 

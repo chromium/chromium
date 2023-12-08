@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
+#include <optional>
+
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -29,7 +31,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/origin.h"
@@ -273,8 +274,7 @@ void TargetDeviceBootstrapController::WaitForUserVerification() {
 }
 
 void TargetDeviceBootstrapController::OnUserVerificationResult(
-    absl::optional<mojom::UserVerificationResponse>
-        user_verification_response) {
+    std::optional<mojom::UserVerificationResponse> user_verification_response) {
   if (!user_verification_response.has_value() ||
       user_verification_response->result ==
           mojom::UserVerificationResult::kUserNotVerified) {
@@ -296,7 +296,7 @@ void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
 }
 
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
-    absl::optional<mojom::WifiCredentials> credentials) {
+    std::optional<mojom::WifiCredentials> credentials) {
   CHECK_EQ(status_.step, Step::REQUESTING_WIFI_CREDENTIALS);
 
   if (credentials.has_value()) {
@@ -310,7 +310,7 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   // Record successful wifi credentials transfer. Failures will be
   // logged from the QuickStartDecoder class.
   QuickStartMetrics::RecordWifiTransferResult(
-      /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
+      /*succeeded=*/true, /*failure_reason=*/std::nullopt);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {
@@ -383,7 +383,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
 }
 
 void TargetDeviceBootstrapController::OnFidoAssertionReceived(
-    absl::optional<FidoAssertionInfo> assertion) {
+    std::optional<FidoAssertionInfo> assertion) {
   if (!assertion.has_value()) {
     UpdateStatus(/*step=*/Step::ERROR,
                  /*payload=*/ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);

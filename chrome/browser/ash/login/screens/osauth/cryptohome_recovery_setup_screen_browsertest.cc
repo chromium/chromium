@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -50,7 +50,7 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
 
   void TearDownOnMainThread() override {
     OobeBaseTest::TearDownOnMainThread();
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
   }
 
   void LoginAsRegularUser() {
@@ -67,7 +67,7 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
     std::unique_ptr<UserContext> user_context =
         ash::AuthSessionStorage::Get()->BorrowForTests(
             FROM_HERE, context->extra_factors_token.value());
-    context->extra_factors_token = absl::nullopt;
+    context->extra_factors_token = std::nullopt;
     cryptohome_.MarkUserAsExisting(user_context->GetAccountId());
     ContinueScreenExit();
     // Wait until the OOBE flow finishes before we set new values on the wizard
@@ -87,7 +87,7 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
         ash::AuthSessionStorage::Get()->Store(std::move(user_context));
     context->skip_post_login_screens_for_tests = false;
     // Clear the test state.
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
   }
 
   CryptohomeRecoverySetupScreen* GetScreen() {
@@ -118,7 +118,7 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   CryptohomeMixin cryptohome_{&mixin_host_};
-  absl::optional<CryptohomeRecoverySetupScreen::Result> result_;
+  std::optional<CryptohomeRecoverySetupScreen::Result> result_;
 
  private:
   void HandleScreenExit(CryptohomeRecoverySetupScreen::Result result) {

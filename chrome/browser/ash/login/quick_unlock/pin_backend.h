@@ -129,7 +129,7 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // should be cleared from prefs.
   void OnPinMigrationAttemptComplete(Profile* profile,
                                      std::unique_ptr<UserContext>,
-                                     absl::optional<AuthenticationError>);
+                                     std::optional<AuthenticationError>);
 
   // Actions to be performed after an authentication attempt with Cryptohome.
   // The only use case right now is for PIN auto submit, where we might want to
@@ -138,7 +138,7 @@ class PinBackend : public ash::auth::PinBackendDelegate {
       const Key& key,
       AuthOperationCallback result,
       std::unique_ptr<UserContext> user_context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
 
   // Called after checking the user's PIN when enabling auto submit.
   // If the authentication was `success`ful, the `pin_length` will be
@@ -146,7 +146,7 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   void OnPinAutosubmitCheckComplete(size_t pin_length,
                                     BoolCallback result,
                                     std::unique_ptr<UserContext> user_context,
-                                    absl::optional<AuthenticationError> error);
+                                    std::optional<AuthenticationError> error);
 
   // Help method for working with the PIN auto submit preference.
   PrefService* PrefService(const AccountId& account_id);
@@ -191,7 +191,7 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   static void OnAuthOperation(std::string auth_token,
                               BoolCallback callback,
                               std::unique_ptr<UserContext>,
-                              absl::optional<AuthenticationError>);
+                              std::optional<AuthenticationError>);
 
   // True if still trying to determine which backend should be used.
   bool resolving_backend_ = true;

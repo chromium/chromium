@@ -175,7 +175,7 @@ bool IsMachineHWIDCorrect() {
   if (stats->IsRunningOnVm())
     return true;
 
-  const absl::optional<base::StringPiece> hwid =
+  const std::optional<base::StringPiece> hwid =
       stats->GetMachineStatistic(system::kHardwareClassKey);
   if (!hwid) {
     LOG(ERROR) << "Couldn't get machine statistic 'hardware_class'.";

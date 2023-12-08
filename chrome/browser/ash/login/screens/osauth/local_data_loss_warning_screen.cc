@@ -74,7 +74,7 @@ void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
 
 void LocalDataLossWarningScreen::OnRemovedUserDirectory(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Failed to remove user home directory";

@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -67,7 +68,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -368,7 +368,7 @@ class OAuth2Test : public OobeBaseTest {
     const base::Value::Dict& prefs_oauth_status =
         local_state->GetDict("OAuthTokenStatus");
 
-    absl::optional<int> oauth_token_status = prefs_oauth_status.FindInt(email);
+    std::optional<int> oauth_token_status = prefs_oauth_status.FindInt(email);
     if (!oauth_token_status.has_value())
       return user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN;
 

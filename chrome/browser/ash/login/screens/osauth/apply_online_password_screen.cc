@@ -59,7 +59,7 @@ void ApplyOnlinePasswordScreen::ShowImpl() {
 }
 
 void ApplyOnlinePasswordScreen::HideImpl() {
-  online_password_ = absl::nullopt;
+  online_password_ = std::nullopt;
   BaseOSAuthSetupScreen::HideImpl();
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;

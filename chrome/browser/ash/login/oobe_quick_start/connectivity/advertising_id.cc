@@ -13,7 +13,7 @@
 namespace ash::quick_start {
 
 // static
-absl::optional<AdvertisingId> AdvertisingId::ParseFromBase64(
+std::optional<AdvertisingId> AdvertisingId::ParseFromBase64(
     const std::string& encoded_advertising_id) {
   std::string decoded_output;
 
@@ -23,14 +23,14 @@ absl::optional<AdvertisingId> AdvertisingId::ParseFromBase64(
     QS_LOG(ERROR)
         << "Failed to decode the advertising ID. Encoded advertising ID: "
         << encoded_advertising_id;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (decoded_output.length() != kLength) {
     QS_LOG(ERROR) << "Decoded advertising ID is an unexpected length. "
                      "Decoded advertising ID output: "
                   << decoded_output;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::array<uint8_t, kLength> bytes;

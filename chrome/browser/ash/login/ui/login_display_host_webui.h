@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -27,7 +28,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -273,7 +273,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   bool booting_animation_finished_playing_ = false;
 
   // Measures OOBE WebUI load time.
-  absl::optional<base::ElapsedTimer> oobe_load_timer_;
+  std::optional<base::ElapsedTimer> oobe_load_timer_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

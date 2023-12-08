@@ -97,7 +97,7 @@ class UserCreationScreenTest
     run_loop.Run();
   }
 
-  absl::optional<UserCreationScreen::Result> screen_result_;
+  std::optional<UserCreationScreen::Result> screen_result_;
 
  protected:
   DeviceStateMixin device_state_{

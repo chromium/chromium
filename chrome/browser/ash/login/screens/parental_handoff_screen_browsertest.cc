@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
@@ -33,7 +34,6 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -60,7 +60,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   void SkipToParentalHandoffScreen();
 
-  const absl::optional<ParentalHandoffScreen::Result>& result() const {
+  const std::optional<ParentalHandoffScreen::Result>& result() const {
     return result_;
   }
 
@@ -73,7 +73,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   base::OnceCallback<void()> quit_closure_;
 
-  absl::optional<ParentalHandoffScreen::Result> result_;
+  std::optional<ParentalHandoffScreen::Result> result_;
 
   ParentalHandoffScreen::ScreenExitCallback original_callback_;
 

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -169,11 +169,11 @@ class WizardContext {
 
   KnowledgeFactorSetup knowledge_factor_setup;
 
-  absl::optional<OSAuthErrorKind> osauth_error;
+  std::optional<OSAuthErrorKind> osauth_error;
 
   // Same as above, but the actual context is stored in AuthSessionStorage,
   // and the token can be used to retrieve it.
-  absl::optional<AuthProofToken> extra_factors_token;
+  std::optional<AuthProofToken> extra_factors_token;
 
   // If the onboarding flow wasn't completed by the user we will try to show
   // TermsOfServiceScreen to them first and then continue the flow with this
@@ -201,7 +201,7 @@ class WizardContext {
   // during Quick Start flow. They are set on the QuickStartScreen during the
   // initial connection between the devices.
   // TODO(b/283724988) - Combine QuickStart fields into a class.
-  absl::optional<ash::quick_start::mojom::WifiCredentials>
+  std::optional<ash::quick_start::mojom::WifiCredentials>
       quick_start_wifi_credentials;
 
   // If this is a first login after update from CloudReady to a new version.
@@ -212,7 +212,7 @@ class WizardContext {
   // Determining ownership can take some time. Instead of finding out if the
   // current user is an owner of the device we reuse this value. It is set
   // during ConsolidatedConsentScreen.
-  absl::optional<bool> is_owner_flow;
+  std::optional<bool> is_owner_flow;
 
   // True when gesture navigation screen was shown during the OOBE.
   bool is_gesture_navigation_screen_was_shown = false;

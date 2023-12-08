@@ -93,7 +93,7 @@ void ChromeLoginPerformer::DidRunTrustedCheck(base::OnceClosure* callback) {
 bool ChromeLoginPerformer::IsUserAllowlisted(
     const AccountId& account_id,
     bool* wildcard_match,
-    const absl::optional<user_manager::UserType>& user_type) {
+    const std::optional<user_manager::UserType>& user_type) {
   return CrosSettings::Get()->IsUserAllowlisted(account_id.GetUserEmail(),
                                                 wildcard_match, user_type);
 }
@@ -134,7 +134,7 @@ void ChromeLoginPerformer::LoadAndApplyEarlyPrefs(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (!base::FeatureList::IsEnabled(ash::features::kEnableEarlyPrefs)) {
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
   base::FilePath early_prefs_dir;
@@ -158,7 +158,7 @@ void ChromeLoginPerformer::OnEarlyPrefsRead(
     bool success) {
   if (!success) {
     LOG(WARNING) << "No early prefs detected";
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
   AuthParts::Get()->RegisterEarlyLoginAuthPolicyConnector(

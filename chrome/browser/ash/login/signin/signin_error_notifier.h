@@ -85,7 +85,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // Handles clicks on the Secondary Account reauth notification. See
   // `message_center::HandleNotificationClickDelegate`.
   void HandleSecondaryAccountReauthNotificationClick(
-      absl::optional<int> button_index);
+      std::optional<int> button_index);
 
   // The error controller to query for error details.
   raw_ptr<SigninErrorController, ExperimentalAsh> error_controller_;

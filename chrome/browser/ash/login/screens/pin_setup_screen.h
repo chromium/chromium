@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_
 
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -13,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -70,7 +70,7 @@ class PinSetupScreen : public BaseScreen {
   // Inticates whether the device supports usage of PIN for login.
   // This information is retrived in an async way and will not be available
   // immediately.
-  absl::optional<bool> has_login_support_;
+  std::optional<bool> has_login_support_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;

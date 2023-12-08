@@ -118,7 +118,7 @@ void FakeLoginDisplayHost::UpdateWallpaper(const AccountId& prefilled_account) {
 
 bool FakeLoginDisplayHost::IsUserAllowlisted(
     const AccountId& account_id,
-    const absl::optional<user_manager::UserType>& user_type) {
+    const std::optional<user_manager::UserType>& user_type) {
   return false;
 }
 

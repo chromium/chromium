@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -149,7 +149,7 @@ class PinSetupScreenTest : public OobeBaseTest {
                      ->extra_factors_token.has_value());
   }
 
-  absl::optional<PinSetupScreen::Result> screen_result_;
+  std::optional<PinSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   bool screen_exited_ = false;
 

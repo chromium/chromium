@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/proto/aes_gcm_authentication_message.pb.h"
 #include "crypto/aead.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start::handshake {
 
@@ -42,9 +42,9 @@ constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
 constexpr std::array<uint8_t, 3> kBadData = {0x01, 0x02, 0x03};
 
 std::vector<uint8_t> BuildRawAuthMessage(
-    absl::optional<proto::AesGcmAuthenticationMessage::Version> version,
-    absl::optional<base::span<const uint8_t>> payload,
-    absl::optional<base::span<const uint8_t>> nonce) {
+    std::optional<proto::AesGcmAuthenticationMessage::Version> version,
+    std::optional<base::span<const uint8_t>> payload,
+    std::optional<base::span<const uint8_t>> nonce) {
   proto::AesGcmAuthenticationMessage auth_message;
 
   if (version) {
@@ -71,8 +71,8 @@ std::vector<uint8_t> BuildRawAuthMessage(
 }
 
 std::vector<uint8_t> BuildRawAuthPayload(
-    absl::optional<int32_t> role,
-    absl::optional<std::string> auth_string) {
+    std::optional<int32_t> role,
+    std::optional<std::string> auth_string) {
   proto::V1Message::AuthenticationPayload auth_payload;
 
   if (role) {
@@ -136,7 +136,7 @@ const VerifyHandshakeMessageTestCase kVerifyHandshakeMessageTestCases[] = {
      handshake::VerifyHandshakeMessageStatus::kFailedToParse},
     {"MissingVersion",
      BuildRawAuthMessage(
-         absl::nullopt,
+         std::nullopt,
          BuildRawAuthPayload(static_cast<int32_t>(DeviceRole::kSource),
                              kAuthToken),
          kNonce),
@@ -150,7 +150,7 @@ const VerifyHandshakeMessageTestCase kVerifyHandshakeMessageTestCases[] = {
      handshake::VerifyHandshakeMessageStatus::kFailedToParseAuthPayload},
     {"MissingPayload",
      BuildRawAuthMessage(proto::AesGcmAuthenticationMessage::V1,
-                         absl::nullopt,
+                         std::nullopt,
                          kNonce),
      /*expected_status=*/
      handshake::VerifyHandshakeMessageStatus::kFailedToParse},
@@ -167,7 +167,7 @@ const VerifyHandshakeMessageTestCase kVerifyHandshakeMessageTestCases[] = {
          proto::AesGcmAuthenticationMessage::V1,
          BuildRawAuthPayload(static_cast<int32_t>(DeviceRole::kSource),
                              kAuthToken),
-         absl::nullopt),
+         std::nullopt),
      /*expected_status=*/
      handshake::VerifyHandshakeMessageStatus::kFailedToParse},
     {"BadRole",
@@ -178,7 +178,7 @@ const VerifyHandshakeMessageTestCase kVerifyHandshakeMessageTestCases[] = {
      handshake::VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadRole},
     {"MissingRole",
      BuildRawAuthMessage(proto::AesGcmAuthenticationMessage::V1,
-                         BuildRawAuthPayload(absl::nullopt, kAuthToken),
+                         BuildRawAuthPayload(std::nullopt, kAuthToken),
                          kNonce),
      /*expected_status=*/
      handshake::VerifyHandshakeMessageStatus::kFailedToParseAuthPayload},
@@ -186,7 +186,7 @@ const VerifyHandshakeMessageTestCase kVerifyHandshakeMessageTestCases[] = {
      BuildRawAuthMessage(
          proto::AesGcmAuthenticationMessage::V1,
          BuildRawAuthPayload(static_cast<int32_t>(DeviceRole::kSource),
-                             absl::nullopt),
+                             std::nullopt),
          kNonce),
      /*expected_status=*/
      handshake::VerifyHandshakeMessageStatus::kFailedToParseAuthPayload},

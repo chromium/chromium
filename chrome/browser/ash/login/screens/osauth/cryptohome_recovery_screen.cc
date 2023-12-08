@@ -95,7 +95,7 @@ void CryptohomeRecoveryScreen::OnUserAction(const base::Value::List& args) {
 
 void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to get auth factors configuration, code "
                << error->get_cryptohome_code();
@@ -138,7 +138,7 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
 
 void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to authenticate with recovery, "
                << error->ToDebugString();
@@ -155,7 +155,7 @@ void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
 
 void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to rotate recovery factor, code "
                << error->get_cryptohome_code();
@@ -186,7 +186,7 @@ void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
 
 void CryptohomeRecoveryScreen::OnReplaceContextKey(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to replace context key, code "

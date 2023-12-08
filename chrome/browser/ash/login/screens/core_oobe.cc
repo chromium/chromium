@@ -74,7 +74,7 @@ CoreOobe::~CoreOobe() {
 }
 
 void CoreOobe::ShowScreenWithData(const OobeScreenId& screen,
-                                  absl::optional<base::Value::Dict> data) {
+                                  std::optional<base::Value::Dict> data) {
   const bool is_priority_screen =
       PriorityScreenChecker::IsPriorityScreen(screen);
 

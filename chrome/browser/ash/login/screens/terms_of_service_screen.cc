@@ -57,12 +57,12 @@ void SaveTosToFile(const std::string& tos, const base::FilePath& tos_path) {
   }
 }
 
-absl::optional<std::string> ReadFileToOptionalString(
+std::optional<std::string> ReadFileToOptionalString(
     const base::FilePath& file_path) {
   std::string content;
   if (base::ReadFileToString(file_path, &content))
-    return absl::make_optional<std::string>(content);
-  return absl::nullopt;
+    return std::make_optional<std::string>(content);
+  return std::nullopt;
 }
 
 }  // namespace
@@ -272,8 +272,7 @@ void TermsOfServiceScreen::LoadFromFileOrShowError() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void TermsOfServiceScreen::OnTosLoadedFromFile(
-    absl::optional<std::string> tos) {
+void TermsOfServiceScreen::OnTosLoadedFromFile(std::optional<std::string> tos) {
   if (!view_)
     return;
   if (!tos.has_value()) {

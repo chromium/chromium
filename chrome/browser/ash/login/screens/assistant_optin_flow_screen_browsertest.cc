@@ -426,7 +426,7 @@ class AssistantOptInFlowBaseTest : public OobeBaseTest {
 
   std::unique_ptr<ScopedAssistantSettings> assistant_settings_;
 
-  absl::optional<AssistantOptInFlowScreen::Result> screen_result_;
+  std::optional<AssistantOptInFlowScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
   // If set, HandleRequest will return an error for the next value prop URL

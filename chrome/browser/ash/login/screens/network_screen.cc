@@ -373,7 +373,7 @@ void NetworkScreen::ConfigureWifiNetwork(
 }
 
 void NetworkScreen::OnConfigureWifiNetworkResult(
-    const absl::optional<std::string>& network_guid,
+    const std::optional<std::string>& network_guid,
     const std::string& error_message) {
   if (!network_guid.has_value() || !error_message.empty()) {
     LOG(ERROR) << "Configure network failed with  "

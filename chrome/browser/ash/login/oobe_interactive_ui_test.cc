@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session_runner.h"
@@ -85,7 +86,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_switches.h"
@@ -1187,7 +1187,7 @@ class OobeFlexInteractiveUITest
   }
 
   EnrollmentScreen::TpmStatusCallback original_tpm_check_callback_;
-  absl::optional<::tpm_manager::TakeOwnershipReply> tpm_reply_;
+  std::optional<::tpm_manager::TakeOwnershipReply> tpm_reply_;
 };
 
 // Verify that ChromeOS Flex behaves as expected on devices with different TPM

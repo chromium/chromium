@@ -52,11 +52,11 @@ class FakeConnection : public Connection {
       RequestAccountTransferAssertionCallback callback) override;
 
   bool WasHandshakeInitiated();
-  void SendWifiCredentials(absl::optional<mojom::WifiCredentials> credentials);
-  void VerifyUser(absl::optional<mojom::UserVerificationResponse> response);
+  void SendWifiCredentials(std::optional<mojom::WifiCredentials> credentials);
+  void VerifyUser(std::optional<mojom::UserVerificationResponse> response);
   void SendAccountInfo(std::string email);
   void SendAccountTransferAssertionInfo(
-      absl::optional<FidoAssertionInfo> assertion_info);
+      std::optional<FidoAssertionInfo> assertion_info);
   void HandleHandshakeResult(bool success);
 
   void set_phone_instance_id(std::string phone_instance_id) {

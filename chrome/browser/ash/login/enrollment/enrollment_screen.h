@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_SCREEN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/cancelable_callback.h"
@@ -28,7 +29,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
@@ -248,7 +248,7 @@ class EnrollmentScreen
   base::WeakPtr<EnrollmentScreenView> view_;
   raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
-  absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
+  std::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;
   policy::EnrollmentConfig enrollment_config_;
   policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;

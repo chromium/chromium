@@ -193,7 +193,7 @@ TEST_F(SigninErrorNotifierTest, ErrorTransitionForPrimaryAccount) {
       account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
   std::u16string message = notification->message();
@@ -239,7 +239,7 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
   for (size_t i = 0; i < std::size(table); ++i) {
     GoogleServiceAuthError error(table[i]);
     SetAuthError(account_id, error);
-    absl::optional<message_center::Notification> notification =
+    std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
 
     // Only non scope persistent errors are reported.
@@ -275,7 +275,7 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // Expect that there is a notification, accounts didn't migrate yet.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kSecondaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
   std::u16string message = notification->message();
@@ -318,7 +318,7 @@ TEST_F(SigninErrorNotifierTest, TokenHandleTest) {
                                             /*reauth_required=*/true);
 
   // Test.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
   const std::u16string& message = notification->message();
@@ -350,7 +350,7 @@ TEST_F(SigninErrorNotifierTest,
                                             /*reauth_required=*/true);
 
   // Test.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
   const std::u16string& message = notification->message();

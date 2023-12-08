@@ -135,7 +135,7 @@ void NetworkPortalDetectorMixin::SetShillDefaultNetwork(
           "State": "%s", "Strength": 100, "AutoConnect": true})";
   std::string json_str = base::StringPrintf(
       kJson, network_guid.c_str(), network_type.c_str(), state.c_str());
-  absl::optional<base::Value::Dict> json_dict =
+  std::optional<base::Value::Dict> json_dict =
       chromeos::onc::ReadDictionaryFromJson(json_str);
   CHECK(json_dict.has_value());
   ShillManagerClient::Get()->ConfigureServiceForProfile(

@@ -166,7 +166,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
   // Go through online authentication (with saml) flow on the lock screen.
   void UnlockWithSAML() {
-    absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+    std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
         LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
     // Fill-in the SAML IdP form and submit.
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlNoticeMessage) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   test::JSChecker dialog_frame_js = reauth_dialog_helper->DialogJS();
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlSwitchToGaia) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   reauth_dialog_helper->ClickChangeIdPButtonOnSamlScreen();
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyScreenCancel) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
   reauth_dialog_helper->ForceSamlRedirect();
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_SamlScreenCancel) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   reauth_dialog_helper->ClickCancelButtonOnSamlScreen();
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedSingle) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   content::DOMMessageQueue message_queue(
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedDynamic) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedMultiple) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   // Fill-in the SAML IdP form and submit.
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedNone) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   // Fill-in the SAML IdP form and submit.
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_VerifyAgainFlow) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   // Authenticate in the IdP with another account other than the one used in
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_TriggerDialogOnNetworkOff) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_LoadAbort) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SAMLBlocklistNavigationDisallowed) {
   Login();
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
 
   ASSERT_TRUE(reauth_dialog_helper);
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -942,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
   ASSERT_TRUE(reauth_dialog_helper);
 
@@ -1037,7 +1037,7 @@ class SAMLCookieTransferTest : public LockscreenWebUiTest {
                 /*last_access_time=*/base::Time(), /*secure=*/true,
                 /*http_only=*/false, net::CookieSameSite::NO_RESTRICTION,
                 net::COOKIE_PRIORITY_DEFAULT,
-                /*partition_key=*/absl::nullopt),
+                /*partition_key=*/std::nullopt),
             fake_saml_idp()->GetSamlPageUrl(), options, base::DoNothing());
     ExpectCookieInUserProfile(kRandomCookieName, kRandomCookieValue);
   }

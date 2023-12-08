@@ -440,7 +440,7 @@ void LoginDisplayHostCommon::UpdateWallpaper(
 
 bool LoginDisplayHostCommon::IsUserAllowlisted(
     const AccountId& account_id,
-    const absl::optional<user_manager::UserType>& user_type) {
+    const std::optional<user_manager::UserType>& user_type) {
   if (!GetExistingUserController()) {
     return true;
   }
@@ -531,7 +531,7 @@ void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {
 
 void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
     bool is_reset_allowed,
-    absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
+    std::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
   if (!is_reset_allowed) {
     return;
   }
@@ -593,7 +593,7 @@ void LoginDisplayHostCommon::ClearOnboardingAuthSession() {
   if (wizard_context_->extra_factors_token.has_value()) {
     AuthSessionStorage::Get()->Invalidate(
         wizard_context_->extra_factors_token.value(), base::DoNothing());
-    wizard_context_->extra_factors_token = absl::nullopt;
+    wizard_context_->extra_factors_token = std::nullopt;
   }
 }
 

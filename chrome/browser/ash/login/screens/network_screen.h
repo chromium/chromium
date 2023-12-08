@@ -139,7 +139,7 @@ class NetworkScreen : public BaseScreen,
 
   // Callback of AddWifiNetworkFromQuickStart async call.
   void OnConfigureWifiNetworkResult(
-      const absl::optional<std::string>& network_guid,
+      const std::optional<std::string>& network_guid,
       const std::string& error_message);
 
   void OnStartConnectCompleted(

@@ -480,8 +480,8 @@ void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
   NOTREACHED();
 }
 
-absl::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
-  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : absl::nullopt;
+std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
+  return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
 }
 
 bool FakeChromeUserManager::IsCurrentUserOwner() const {

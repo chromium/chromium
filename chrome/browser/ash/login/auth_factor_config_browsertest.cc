@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -19,7 +21,6 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::auth {
 
@@ -63,13 +64,13 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
 
   // Create a new auth token. Returns nullopt if something went wrong, probably
   // because the provided password is incorrect.
-  absl::optional<std::string> MakeAuthToken(const std::string password) {
+  std::optional<std::string> MakeAuthToken(const std::string password) {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     CHECK(profile);
     extensions::QuickUnlockPrivateGetAuthTokenHelper token_helper(profile,
                                                                   password);
-    base::test::TestFuture<absl::optional<TokenInfo>,
-                           absl::optional<AuthenticationError>>
+    base::test::TestFuture<std::optional<TokenInfo>,
+                           std::optional<AuthenticationError>>
         result;
     token_helper.Run(result.GetCallback());
     if (result.Get<0>().has_value()) {
@@ -77,7 +78,7 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
     }
 
     CHECK(result.Get<1>().has_value());
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  protected:
@@ -100,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordSuccess) {
   static const std::string kGoodPassword = "asdfas∆f";
 
-  absl::optional<std::string> auth_token = MakeAuthToken(kPassword);
+  std::optional<std::string> auth_token = MakeAuthToken(kPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
       GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordComplexityFailure) {
   static const std::string kBadPassword = "asdfas∆";
 
-  absl::optional<std::string> auth_token = MakeAuthToken(kPassword);
+  std::optional<std::string> auth_token = MakeAuthToken(kPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
       GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),

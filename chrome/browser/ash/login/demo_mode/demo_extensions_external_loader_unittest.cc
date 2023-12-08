@@ -189,8 +189,8 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
   }
 
   void AddExtensionToConfig(const std::string& id,
-                            const absl::optional<std::string>& version,
-                            const absl::optional<std::string>& path,
+                            const std::optional<std::string>& version,
+                            const std::optional<std::string>& path,
                             base::Value::Dict& config) {
     base::Value::Dict extension;
     if (version.has_value()) {
@@ -272,8 +272,8 @@ TEST_F(DemoExtensionsExternalLoaderTest, SingleDemoExtension) {
   demo_mode_test_helper_->InitializeSession();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("extensions/a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("extensions/a.crx"), config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
@@ -293,12 +293,12 @@ TEST_F(DemoExtensionsExternalLoaderTest, MultipleDemoExtension) {
   demo_mode_test_helper_->InitializeSession();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("extensions/a.crx"), config);
-  AddExtensionToConfig(std::string(32, 'b'), absl::make_optional("1.1.0"),
-                       absl::make_optional("b.crx"), config);
-  AddExtensionToConfig(std::string(32, 'c'), absl::make_optional("2.0.0"),
-                       absl::make_optional("c.crx"), config);
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("extensions/a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'b'), std::make_optional("1.1.0"),
+                       std::make_optional("b.crx"), config);
+  AddExtensionToConfig(std::string(32, 'c'), std::make_optional("2.0.0"),
+                       std::make_optional("c.crx"), config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
@@ -324,10 +324,10 @@ TEST_F(DemoExtensionsExternalLoaderTest, CrxPathWithAbsolutePath) {
   demo_mode_test_helper_->InitializeSession();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("a.crx"), config);
-  AddExtensionToConfig(std::string(32, 'b'), absl::make_optional("1.1.0"),
-                       absl::make_optional(GetTestResourcePath("b.crx")),
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'b'), std::make_optional("1.1.0"),
+                       std::make_optional(GetTestResourcePath("b.crx")),
                        config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
@@ -350,10 +350,10 @@ TEST_F(DemoExtensionsExternalLoaderTest, ExtensionWithPathMissing) {
   demo_mode_test_helper_->InitializeSession();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("a.crx"), config);
-  AddExtensionToConfig(std::string(32, 'b'), absl::make_optional("1.1.0"),
-                       absl::nullopt, config);
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'b'), std::make_optional("1.1.0"),
+                       std::nullopt, config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
@@ -375,10 +375,10 @@ TEST_F(DemoExtensionsExternalLoaderTest, ExtensionWithVersionMissing) {
   demo_mode_test_helper_->InitializeSession();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("a.crx"), config);
-  AddExtensionToConfig(std::string(32, 'b'), absl::nullopt,
-                       absl::make_optional("b.crx"), config);
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'b'), std::nullopt,
+                       std::make_optional("b.crx"), config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
@@ -413,8 +413,8 @@ TEST_F(DemoExtensionsExternalLoaderTest,
   demo_mode_test_helper_->InitializeSessionWithPendingComponent();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("a.crx"), config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
@@ -437,8 +437,8 @@ TEST_F(DemoExtensionsExternalLoaderTest,
   demo_mode_test_helper_->InitializeSessionWithPendingComponent();
 
   base::Value::Dict config;
-  AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
-                       absl::make_optional("a.crx"), config);
+  AddExtensionToConfig(std::string(32, 'a'), std::make_optional("1.0.0"),
+                       std::make_optional("a.crx"), config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
 
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =

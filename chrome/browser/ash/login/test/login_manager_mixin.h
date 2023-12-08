@@ -7,6 +7,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -181,7 +181,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // proceeding into the session from the login screen.
   // If |user_context| is not set, built-in default will be used.
   void LoginAsNewRegularUser(
-      absl::optional<UserContext> user_context = absl::nullopt);
+      std::optional<UserContext> user_context = std::nullopt);
 
   // Logs in as a child user with default user context.Should be used for
   // proceeding into the session from the login screen.

@@ -53,7 +53,7 @@ void PostResponse(PinBackend::BoolCallback result, bool value) {
 void PostResponse(AuthOperationCallback result,
                   std::unique_ptr<UserContext> user_context,
                   bool success) {
-  absl::optional<AuthenticationError> error = absl::nullopt;
+  std::optional<AuthenticationError> error = std::nullopt;
   if (!success) {
     error = AuthenticationError{AuthFailure::UNLOCK_FAILED};
   }
@@ -237,7 +237,7 @@ void PinBackend::SetWithContext(const AccountId& account_id,
   // cryptohome-based PIN.
   storage->pin_storage_prefs()->RemovePin();
   cryptohome_backend_->SetPin(
-      std::move(user_context), pin, absl::nullopt,
+      std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
   UpdatePinAutosubmitOnSet(account_id, pin.length());
 }
@@ -440,7 +440,7 @@ void PinBackend::OnIsCryptohomeBackendSupported(bool is_supported) {
 void PinBackend::OnPinMigrationAttemptComplete(
     Profile* profile,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (!error.has_value()) {
     QuickUnlockStorage* storage = QuickUnlockFactory::GetForProfile(profile);
     storage->pin_storage_prefs()->RemovePin();
@@ -453,7 +453,7 @@ void PinBackend::OnCryptohomeAuthenticationResponse(
     const Key& key,
     AuthOperationCallback result,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   // Regardless of the outcome, discard the session in user_context. This
   // session was only meant to be used for checking the PIN.
   user_context->ResetAuthSessionIds();
@@ -480,7 +480,7 @@ void PinBackend::OnPinAutosubmitCheckComplete(
     size_t pin_length,
     BoolCallback result,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   const bool success = !error.has_value();
   const AccountId& account_id = user_context->GetAccountId();
   user_manager::KnownUser known_user(g_browser_process->local_state());
@@ -594,7 +594,7 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
 void PinBackend::OnAuthOperation(std::string auth_token,
                                  BoolCallback callback,
                                  std::unique_ptr<UserContext> user_context,
-                                 absl::optional<AuthenticationError> error) {
+                                 std::optional<AuthenticationError> error) {
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
   std::move(callback).Run(!error.has_value());
 }

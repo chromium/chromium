@@ -120,7 +120,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
             [](PinStorageCryptohomeUnitTest* self, bool* res,
                base::OnceClosure closure,
                std::unique_ptr<UserContext> user_context,
-               absl::optional<AuthenticationError> error) {
+               std::optional<AuthenticationError> error) {
               *res = !error.has_value();
               std::move(closure).Run();
             },
@@ -136,12 +136,12 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
 
     bool res;
     base::RunLoop loop;
-    storage_->SetPin(std::move(user_context_), pin, absl::nullopt,
+    storage_->SetPin(std::move(user_context_), pin, std::nullopt,
                      base::BindOnce(
                          [](PinStorageCryptohomeUnitTest* self, bool* res,
                             base::OnceClosure closure,
                             std::unique_ptr<UserContext> user_context,
-                            absl::optional<AuthenticationError> error) {
+                            std::optional<AuthenticationError> error) {
                            self->user_context_ = std::move(user_context);
                            *res = !error.has_value();
                            std::move(closure).Run();
@@ -166,7 +166,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         request,
         base::BindOnce(
             [](base::OnceClosure closure,
-               absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+               std::optional<::user_data_auth::AddAuthFactorReply> reply) {
               std::move(closure).Run();
             },
             run_loop.QuitClosure()));
@@ -188,7 +188,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
         request,
         base::BindOnce(
             [](base::OnceClosure closure,
-               absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
+               std::optional<::user_data_auth::AddAuthFactorReply> reply) {
               std::move(closure).Run();
             },
             run_loop.QuitClosure()));
@@ -211,7 +211,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
                             [](PinStorageCryptohomeUnitTest* self, bool* res,
                                base::OnceClosure closure,
                                std::unique_ptr<UserContext> user_context,
-                               absl::optional<AuthenticationError> error) {
+                               std::optional<AuthenticationError> error) {
                               self->user_context_ = std::move(user_context);
                               *res = !error.has_value();
                               std::move(closure).Run();

@@ -253,7 +253,7 @@ void LoginManagerMixin::LoginWithDefaultContext(
 }
 
 void LoginManagerMixin::LoginAsNewRegularUser(
-    absl::optional<UserContext> user_context) {
+    std::optional<UserContext> user_context) {
   LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());

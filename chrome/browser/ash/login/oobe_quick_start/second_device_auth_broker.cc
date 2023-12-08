@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -37,7 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::quick_start {
@@ -195,7 +195,7 @@ Base64UrlString GetChallengeBytesFromParsedResponse(
   // We need to convert the Base64 encoded challenge bytes from Gaia to
   // Base64Url encoded challenge bytes to send to Android. Android doesn't
   // handle the standard Base64 encoding.
-  absl::optional<Base64UrlString> challenge =
+  std::optional<Base64UrlString> challenge =
       Base64UrlTranscode(Base64String(*challenge_base64));
 
   return challenge ? *challenge : Base64UrlString();
@@ -707,7 +707,7 @@ void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
       /*force_new_key=*/true, /*key_crypto_type=*/attestation_key_type,
       /*key_name=*/attestation::kDeviceSetupKey,
       /*profile_specific_data=*/
-      absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
+      std::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
           profile_specific_data)),
       /*callback=*/
       base::BindOnce(&SecondDeviceAuthBroker::RunAttestationCertificateCallback,
@@ -731,7 +731,7 @@ void SecondDeviceAuthBroker::RunAttestationCertificateCallback(
         return;
       }
       metrics_.RecordAttestationCertificateRequestEnded(
-          /*error_code=*/absl::nullopt);
+          /*error_code=*/std::nullopt);
       std::move(callback).Run(PEMCertChain(pem_certificate_chain));
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:

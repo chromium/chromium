@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -30,7 +31,6 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "url/gurl.h"
@@ -115,7 +115,7 @@ class ExistingUserController : public content::NotificationObserver,
   void SetDisplayEmail(const std::string& email);
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const absl::optional<user_manager::UserType>& user_type);
+      const std::optional<user_manager::UserType>& user_type);
 
   // This is virtual to be mocked in unit tests.
   virtual bool IsSigninInProgress() const;

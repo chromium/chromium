@@ -57,13 +57,13 @@ class CryptohomeRecoveryScreen : public BaseScreen {
 
  private:
   void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
-                                     absl::optional<AuthenticationError> error);
+                                     std::optional<AuthenticationError> error);
   void OnAuthenticateWithRecovery(std::unique_ptr<UserContext> context,
-                                  absl::optional<AuthenticationError> error);
+                                  std::optional<AuthenticationError> error);
   void OnRotateRecoveryFactor(std::unique_ptr<UserContext> context,
-                              absl::optional<AuthenticationError> error);
+                              std::optional<AuthenticationError> error);
   void OnReplaceContextKey(std::unique_ptr<UserContext> context,
-                           absl::optional<AuthenticationError> error);
+                           std::optional<AuthenticationError> error);
   void OnAuthSessionExpired();
 
   std::unique_ptr<base::OneShotTimer> expiration_timer_;

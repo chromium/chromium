@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -87,7 +88,6 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -189,7 +189,7 @@ class WizardController : public OobeUI::Observer {
   // is explicitly set on DemoSetupController and going through demo settings
   // screens can be skipped.
   void SimulateDemoModeSetupForTesting(
-      absl::optional<DemoSession::DemoModeConfig> demo_config = absl::nullopt);
+      std::optional<DemoSession::DemoModeConfig> demo_config = std::nullopt);
 
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();

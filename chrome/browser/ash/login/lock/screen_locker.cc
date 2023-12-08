@@ -479,7 +479,7 @@ void ScreenLocker::OnChallengeResponseKeysPrepared(
 }
 
 void ScreenLocker::OnPinAttemptDone(std::unique_ptr<UserContext> user_context,
-                                    absl::optional<AuthenticationError> error) {
+                                    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     // PIN authentication has failed; try submitting as a normal password.
     user_context->SetIsUsingPin(false);

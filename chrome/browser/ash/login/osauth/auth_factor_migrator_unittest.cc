@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -13,17 +14,16 @@
 #include "chrome/browser/ash/login/osauth/auth_factor_migration.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
 
 using AuthOperationTestFuture =
     base::test::TestFuture<std::unique_ptr<UserContext>,
-                           absl::optional<AuthenticationError>>;
+                           std::optional<AuthenticationError>>;
 
 struct FakeMigrationInput {
-  absl::optional<AuthenticationError> error = absl::nullopt;
+  std::optional<AuthenticationError> error = std::nullopt;
   bool should_skip = false;
 };
 
@@ -53,7 +53,7 @@ class FakeMigration : public AuthFactorMigration {
   }
 
  private:
-  absl::optional<AuthenticationError> error_;
+  std::optional<AuthenticationError> error_;
   bool should_skip_;
   base::OnceClosure callback_;
 };
@@ -135,20 +135,20 @@ TEST_F(AuthFactorMigratorTest, EmptyListRun) {
 
   ASSERT_EQ(future.Get<0>().get(), context_);
   context_ = nullptr;  // Release ptr.
-  ASSERT_EQ(future.Get<1>(), absl::nullopt);
+  ASSERT_EQ(future.Get<1>(), std::nullopt);
 
   ExpectTotalMetricsCount(&histogram_tester, 0);
 }
 
 TEST_F(AuthFactorMigratorTest, SingleSuccessRun) {
   base::HistogramTester histogram_tester;
-  auto migrator = CreateMigrator({FakeMigrationInput{.error = absl::nullopt}});
+  auto migrator = CreateMigrator({FakeMigrationInput{.error = std::nullopt}});
   AuthOperationTestFuture future;
   migrator->Run(CreateContext(), future.GetCallback());
 
   ASSERT_EQ(future.Get<0>().get(), context_);
   context_ = nullptr;  // Release ptr.
-  ASSERT_EQ(future.Get<1>(), absl::nullopt);
+  ASSERT_EQ(future.Get<1>(), std::nullopt);
   ASSERT_TRUE(WasMigrationCalled(0));
 
   ExpectTotalMetricsCount(&histogram_tester, 1);
@@ -158,15 +158,15 @@ TEST_F(AuthFactorMigratorTest, SingleSuccessRun) {
 
 TEST_F(AuthFactorMigratorTest, MultipleSuccessRun) {
   base::HistogramTester histogram_tester;
-  auto migrator = CreateMigrator({FakeMigrationInput{.error = absl::nullopt},
-                                  FakeMigrationInput{.error = absl::nullopt},
-                                  FakeMigrationInput{.error = absl::nullopt}});
+  auto migrator = CreateMigrator({FakeMigrationInput{.error = std::nullopt},
+                                  FakeMigrationInput{.error = std::nullopt},
+                                  FakeMigrationInput{.error = std::nullopt}});
   AuthOperationTestFuture future;
   migrator->Run(CreateContext(), future.GetCallback());
 
   ASSERT_EQ(future.Get<0>().get(), context_);
   context_ = nullptr;  // Release ptr.
-  ASSERT_EQ(future.Get<1>(), absl::nullopt);
+  ASSERT_EQ(future.Get<1>(), std::nullopt);
   ASSERT_TRUE(WasMigrationCalled(0));
   ASSERT_TRUE(WasMigrationCalled(1));
   ASSERT_TRUE(WasMigrationCalled(2));
@@ -179,17 +179,17 @@ TEST_F(AuthFactorMigratorTest, MultipleSuccessRun) {
 TEST_F(AuthFactorMigratorTest, FailureRun) {
   base::HistogramTester histogram_tester;
   auto migrator = CreateMigrator(
-      {FakeMigrationInput{.error = absl::nullopt},
+      {FakeMigrationInput{.error = std::nullopt},
        FakeMigrationInput{.error = AuthenticationError{AuthFailure::TPM_ERROR}},
        FakeMigrationInput{
            .error = AuthenticationError{AuthFailure::LOGIN_TIMED_OUT}},
-       FakeMigrationInput{.error = absl::nullopt}});
+       FakeMigrationInput{.error = std::nullopt}});
   AuthOperationTestFuture future;
   migrator->Run(CreateContext(), future.GetCallback());
 
   ASSERT_EQ(future.Get<0>().get(), context_);
   context_ = nullptr;  // Release ptr.
-  ASSERT_NE(future.Get<1>(), absl::nullopt);
+  ASSERT_NE(future.Get<1>(), std::nullopt);
   ASSERT_EQ(future.Get<1>()->get_resolved_failure(), AuthFailure::TPM_ERROR);
   ASSERT_TRUE(WasMigrationCalled(0));
   ASSERT_TRUE(WasMigrationCalled(1));
@@ -208,14 +208,14 @@ TEST_F(AuthFactorMigratorTest, FailureRun) {
 TEST_F(AuthFactorMigratorTest, SkippedRun) {
   base::HistogramTester histogram_tester;
   auto migrator = CreateMigrator(
-      {FakeMigrationInput{.error = absl::nullopt, .should_skip = true},
-       FakeMigrationInput{.error = absl::nullopt}});
+      {FakeMigrationInput{.error = std::nullopt, .should_skip = true},
+       FakeMigrationInput{.error = std::nullopt}});
   AuthOperationTestFuture future;
   migrator->Run(CreateContext(), future.GetCallback());
 
   ASSERT_EQ(future.Get<0>().get(), context_);
   context_ = nullptr;  // Release ptr.
-  ASSERT_EQ(future.Get<1>(), absl::nullopt);
+  ASSERT_EQ(future.Get<1>(), std::nullopt);
   ASSERT_TRUE(WasMigrationCalled(0));
   ASSERT_TRUE(WasMigrationCalled(1));
 

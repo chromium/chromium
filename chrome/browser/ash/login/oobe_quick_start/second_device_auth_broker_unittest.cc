@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +43,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -188,7 +188,7 @@ class MockAttestationFlowFacade : public attestation::MockAttestationFlow {
       bool force_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
-      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      const std::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback) override {
     mock_attestation_flow_->GetCertificate(
         certificate_profile, account_id, request_origin, force_new_key,
@@ -494,7 +494,7 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesReturnsChallengeBytes) {
           return;
         }
 
-        absl::optional<base::Value> request_body =
+        std::optional<base::Value> request_body =
             base::JSONReader::Read(request.request_body->elements()
                                        ->at(0)
                                        .As<network::DataElementBytes>()
@@ -771,7 +771,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
           return;
         }
 
-        absl::optional<base::Value> request_body =
+        std::optional<base::Value> request_body =
             base::JSONReader::Read(request.request_body->elements()
                                        ->at(0)
                                        .As<network::DataElementBytes>()
@@ -803,7 +803,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
           return;
         }
 
-        absl::optional<std::vector<uint8_t>> decoded =
+        std::optional<std::vector<uint8_t>> decoded =
             base::Base64Decode(*device_attestation_certificate);
         // The certificate must be Base64 encoded. If not, it is a bad request.
         if (!decoded) {

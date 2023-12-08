@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_BASE_TEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -24,7 +25,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

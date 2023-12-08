@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -35,7 +36,6 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace ash {
@@ -194,7 +194,7 @@ class EncryptionMigrationTestBase
 
   // Updates the battery percent info reported by the power manager client.
   void SetBatteryPercent(int battery_percent) {
-    absl::optional<power_manager::PowerSupplyProperties> properties =
+    std::optional<power_manager::PowerSupplyProperties> properties =
         chromeos::FakePowerManagerClient::Get()->GetLastStatus();
     ASSERT_TRUE(properties.has_value());
     properties->set_battery_percent(battery_percent);

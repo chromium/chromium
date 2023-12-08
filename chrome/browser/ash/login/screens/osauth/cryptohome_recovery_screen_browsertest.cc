@@ -84,7 +84,7 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
 
   void TearDownOnMainThread() override {
     OobeBaseTest::TearDownOnMainThread();
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
   }
 
   void SetUpExitCallback() {
@@ -119,7 +119,7 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
   }
 
   bool IsMounted() {
-    base::test::TestFuture<absl::optional<user_data_auth::IsMountedReply>>
+    base::test::TestFuture<std::optional<user_data_auth::IsMountedReply>>
         future;
     FakeUserDataAuthClient::Get()->IsMounted(user_data_auth::IsMountedRequest(),
                                              future.GetCallback());
@@ -138,7 +138,7 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
                                          &cryptohome_};
   FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
                                                   embedded_test_server()};
-  absl::optional<CryptohomeRecoveryScreen::Result> result_;
+  std::optional<CryptohomeRecoveryScreen::Result> result_;
 
  private:
   void HandleScreenExit(CryptohomeRecoveryScreen::Result result) {

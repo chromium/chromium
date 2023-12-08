@@ -326,7 +326,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       keyboard_controller_client_;
   std::unique_ptr<KioskControllerHolder> kiosk_controller_holder_;
 
-  std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+  std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
@@ -980,7 +980,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
       keyboard_controller_client_;
   std::unique_ptr<KioskControllerHolder> kiosk_controller_holder_;
 
-  std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+  std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;

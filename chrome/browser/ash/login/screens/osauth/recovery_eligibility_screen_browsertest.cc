@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,7 +33,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -53,7 +53,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
 
   void TearDownOnMainThread() override {
     OobeBaseTest::TearDownOnMainThread();
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
   }
 
   void LoginAsUser(bool is_child) {
@@ -76,7 +76,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
     std::unique_ptr<UserContext> user_context;
     user_context = ash::AuthSessionStorage::Get()->BorrowForTests(
         FROM_HERE, context->extra_factors_token.value());
-    context->extra_factors_token = absl::nullopt;
+    context->extra_factors_token = std::nullopt;
     cryptohome_.MarkUserAsExisting(user_context->GetAccountId());
     ContinueScreenExit();
     // Wait until the OOBE flow finishes before we set new values on the wizard
@@ -95,7 +95,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
     context->extra_factors_token =
         ash::AuthSessionStorage::Get()->Store(std::move(user_context));
     context->skip_post_login_screens_for_tests = false;
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
   }
 
   RecoveryEligibilityScreen* GetScreen() {
@@ -129,7 +129,7 @@ class RecoveryEligibilityScreenTest : public OobeBaseTest {
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
   CryptohomeMixin cryptohome_{&mixin_host_};
-  absl::optional<RecoveryEligibilityScreen::Result> result_;
+  std::optional<RecoveryEligibilityScreen::Result> result_;
 
  private:
   void HandleScreenExit(RecoveryEligibilityScreen::Result result) {

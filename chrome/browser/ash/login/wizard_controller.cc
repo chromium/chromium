@@ -2871,7 +2871,7 @@ void WizardController::CreateChoobeFlowController() {
 }
 
 void WizardController::SimulateDemoModeSetupForTesting(
-    absl::optional<DemoSession::DemoModeConfig> demo_config) {
+    std::optional<DemoSession::DemoModeConfig> demo_config) {
   if (!demo_setup_controller_) {
     demo_setup_controller_ = std::make_unique<DemoSetupController>();
   }

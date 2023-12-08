@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -24,7 +25,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -124,7 +124,7 @@ class UpdateScreenUnitTest : public testing::Test {
       fake_update_engine_client_;
   std::unique_ptr<WizardContext> wizard_context_;
 
-  absl::optional<UpdateScreen::Result> last_screen_result_;
+  std::optional<UpdateScreen::Result> last_screen_result_;
 
  private:
   void HandleScreenExit(UpdateScreen::Result result) {

@@ -483,7 +483,7 @@ void EncryptionMigrationScreen::StartMigration() {
 
 void EncryptionMigrationScreen::OnMountExistingVault(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     user_context_ = std::move(context);
     RecordMigrationResultMountFailure(IsResumingIncompleteMigration(),
@@ -538,7 +538,7 @@ void EncryptionMigrationScreen::RemoveCryptohome() {
 
 void EncryptionMigrationScreen::OnRemoveCryptohome(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   user_context_ = std::move(context);
 
   if (!error.has_value()) {
@@ -608,7 +608,7 @@ void EncryptionMigrationScreen::DircryptoMigrationProgress(
 
 void EncryptionMigrationScreen::OnMigrationRequested(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   user_context_ = std::move(context);
   if (error.has_value()) {
     LOG(ERROR) << "Requesting MigrateToDircrypto failed.";

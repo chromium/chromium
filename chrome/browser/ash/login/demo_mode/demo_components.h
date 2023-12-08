@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_COMPONENTS_H_
 
 #include <list>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
@@ -96,23 +96,23 @@ class DemoComponents {
 
   // The error from trying to load the demo mode resources CrOS component from
   // the CrOSComponentManager.
-  const absl::optional<component_updater::CrOSComponentManager::Error>&
+  const std::optional<component_updater::CrOSComponentManager::Error>&
   resources_component_error() const {
     return resources_component_error_;
   }
 
   // The error from trying to load the demo mode app CrOS component from
   // the CrOSComponentManager.
-  const absl::optional<component_updater::CrOSComponentManager::Error>&
+  const std::optional<component_updater::CrOSComponentManager::Error>&
   app_component_error() const {
     return app_component_error_;
   }
 
-  const absl::optional<base::Version>& app_component_version() const {
+  const std::optional<base::Version>& app_component_version() const {
     return app_component_version_;
   }
 
-  const absl::optional<base::Version>& resources_component_version() const {
+  const std::optional<base::Version>& resources_component_version() const {
     return resources_component_version_;
   }
 
@@ -138,7 +138,7 @@ class DemoComponents {
 
   // Callback for the component or image loader request to load demo resources.
   // `mount_path` is the path at which the resources were loaded.
-  void OnDemoResourcesLoaded(absl::optional<base::FilePath> mounted_path);
+  void OnDemoResourcesLoaded(std::optional<base::FilePath> mounted_path);
 
   // Which config to load resources for: online or offline.
   DemoSession::DemoModeConfig config_;
@@ -148,12 +148,12 @@ class DemoComponents {
 
   // Last error (or NONE) seen when trying to load the demo-mode-resources CrOS
   // component. Has no value until the load attempt has completed.
-  absl::optional<component_updater::CrOSComponentManager::Error>
+  std::optional<component_updater::CrOSComponentManager::Error>
       resources_component_error_;
 
   // Last error (or NONE) seen when trying to load the demo-mode-app CrOS
   // component. Has no value until the load attempt has completed.
-  absl::optional<component_updater::CrOSComponentManager::Error>
+  std::optional<component_updater::CrOSComponentManager::Error>
       app_component_error_;
 
   // Path at which the demo-mode-resources component was loaded.
@@ -167,8 +167,8 @@ class DemoComponents {
   // List of pending callbacks passed to EnsureLoaded().
   std::list<base::OnceClosure> load_callbacks_;
 
-  absl::optional<base::Version> app_component_version_;
-  absl::optional<base::Version> resources_component_version_;
+  std::optional<base::Version> app_component_version_;
+  std::optional<base::Version> resources_component_version_;
 
   base::WeakPtrFactory<DemoComponents> weak_ptr_factory_{this};
 };

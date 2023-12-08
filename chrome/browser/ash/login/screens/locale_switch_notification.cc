@@ -69,8 +69,8 @@ class LocaleSwitchNotificationDelegate
   ~LocaleSwitchNotificationDelegate() override;
 
   // message_center::NotificationDelegate overrides:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   // OobeUI::Observer overrides:
@@ -123,8 +123,8 @@ LocaleSwitchNotificationDelegate::~LocaleSwitchNotificationDelegate() {
 }
 
 void LocaleSwitchNotificationDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   // If |button_index| is empty it means that user clicked on the body of a
   // notification. In this case notification will disappear from the screen, but
   // user still will be able to see it in the status tray. This will give user a

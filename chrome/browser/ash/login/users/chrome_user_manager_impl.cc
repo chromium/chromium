@@ -140,7 +140,7 @@ constexpr char kBluetoothLoggingUpstartJob[] = "bluetoothlog";
 
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
-                          absl::optional<AuthenticationError> error) {
+                          std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
                << " failed, return code: " << error->get_cryptohome_code();
@@ -189,7 +189,7 @@ void MaybeStartBluetoothLogging(const AccountId& account_id) {
 }
 
 void CheckCryptohomeIsMounted(
-    absl::optional<user_data_auth::IsMountedReply> result) {
+    std::optional<user_data_auth::IsMountedReply> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "IsMounted call failed.";
     return;

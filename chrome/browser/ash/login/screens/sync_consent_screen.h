@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_SYNC_CONSENT_SCREEN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -19,7 +20,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

@@ -171,7 +171,7 @@ class TargetDeviceBootstrapController
   void OnStopAdvertising();
 
   void WaitForUserVerification();
-  void OnUserVerificationResult(absl::optional<mojom::UserVerificationResponse>
+  void OnUserVerificationResult(std::optional<mojom::UserVerificationResponse>
                                     user_verification_response);
 
   // If the target device successfully receives an ack message, it prepares to
@@ -181,9 +181,9 @@ class TargetDeviceBootstrapController
   void OnNotifySourceOfUpdateResponse(bool ack_successful);
 
   void OnWifiCredentialsReceived(
-      absl::optional<mojom::WifiCredentials> credentials);
+      std::optional<mojom::WifiCredentials> credentials);
   void OnGoogleAccountInfoReceived(std::string account_email);
-  void OnFidoAssertionReceived(absl::optional<FidoAssertionInfo> assertion);
+  void OnFidoAssertionReceived(std::optional<FidoAssertionInfo> assertion);
 
   void OnChallengeBytesReceived(
       quick_start::SecondDeviceAuthBroker::ChallengeBytesOrError);

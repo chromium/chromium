@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_MOCK_LOGIN_DISPLAY_HOST_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_MOCK_LOGIN_DISPLAY_HOST_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -69,7 +69,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, UpdateWallpaper, (const AccountId&), (override));
   MOCK_METHOD(bool,
               IsUserAllowlisted,
-              (const AccountId&, const absl::optional<user_manager::UserType>&),
+              (const AccountId&, const std::optional<user_manager::UserType>&),
               (override));
   MOCK_METHOD(void, CancelPasswordChangedFlow, (), (override));
   MOCK_METHOD(void, MigrateUserData, (const std::string&), (override));

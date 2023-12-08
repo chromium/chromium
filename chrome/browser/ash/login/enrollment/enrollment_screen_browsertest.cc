@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -35,7 +37,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -849,7 +850,7 @@ class EnrollmentScreenDynamicTPMTest
 
   bool tpm_is_owned() { return tpm_is_owned_; }
   EnrollmentScreen::TpmStatusCallback original_tpm_check_callback_;
-  absl::optional<::tpm_manager::TakeOwnershipReply> tpm_reply_;
+  std::optional<::tpm_manager::TakeOwnershipReply> tpm_reply_;
 
  private:
   void HandleTakeTPMOwnershipResponse(

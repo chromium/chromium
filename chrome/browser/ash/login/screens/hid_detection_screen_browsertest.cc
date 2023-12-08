@@ -144,7 +144,7 @@ class HIDDetectionScreenChromeboxTest
   }
 
  protected:
-  const absl::optional<HIDDetectionScreen::Result>& GetExitResult() {
+  const std::optional<HIDDetectionScreen::Result>& GetExitResult() {
     return WizardController::default_controller()
         ->GetScreen<HIDDetectionScreen>()
         ->get_exit_result_for_testing();
@@ -196,7 +196,7 @@ class HIDDetectionScreenChromeboxTest
 
   void InvokePendingConnectCallback(bool success) {
     if (success) {
-      std::move(connect_callback_).Run(absl::nullopt);
+      std::move(connect_callback_).Run(std::nullopt);
     } else {
       std::move(connect_callback_)
           .Run(device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
@@ -288,7 +288,7 @@ class HIDDetectionScreenChromeboxTest
       return;
 
     fake_hid_detection_manager_->SetPairingState(
-        /*pairing_state=*/absl::nullopt);
+        /*pairing_state=*/std::nullopt);
   }
 
   // HID detection must be stopped before HidDetectionManager is destroyed. This

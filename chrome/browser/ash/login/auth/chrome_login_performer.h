@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_LOGIN_PERFORMER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -45,7 +45,7 @@ class ChromeLoginPerformer : public LoginPerformer {
   bool IsUserAllowlisted(
       const AccountId& account_id,
       bool* wildcard_match,
-      const absl::optional<user_manager::UserType>& user_type) override;
+      const std::optional<user_manager::UserType>& user_type) override;
 
   void LoadAndApplyEarlyPrefs(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback) override;

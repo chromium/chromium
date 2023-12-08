@@ -57,7 +57,7 @@ class ApplyOnlinePasswordScreen : public BaseOSAuthSetupScreen {
   void OnOnlinePasswordSet(auth::mojom::ConfigureResult result);
 
   // Values obtained from UserContext in `InspectContext`
-  absl::optional<OnlinePassword> online_password_;
+  std::optional<OnlinePassword> online_password_;
   AuthFactorsConfiguration auth_factors_config_;
 
   base::WeakPtr<ApplyOnlinePasswordScreenView> view_ = nullptr;

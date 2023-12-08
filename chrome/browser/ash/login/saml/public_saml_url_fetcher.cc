@@ -74,7 +74,7 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
       GetDeviceId(), /*critical=*/false,
       policy::DMAuth::FromDMToken(
           DeviceSettingsService::Get()->policy_data()->request_token()),
-      /*oauth_token=*/absl::nullopt,
+      /*oauth_token=*/std::nullopt,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       base::BindOnce(&PublicSamlUrlFetcher::OnPublicSamlUrlReceived,

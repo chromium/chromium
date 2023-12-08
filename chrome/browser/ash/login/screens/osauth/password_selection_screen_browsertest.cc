@@ -73,7 +73,7 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
 
   void TearDownOnMainThread() override {
     OobeBaseTest::TearDownOnMainThread();
-    result_ = absl::nullopt;
+    result_ = std::nullopt;
   }
 
   CryptohomeRecoverySetupScreen* GetRecoveryScreen() {
@@ -142,7 +142,7 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
         ash::AuthSessionStorage::Get()->Store(std::move(context));
   }
 
-  absl::optional<PasswordSelectionScreen::Result> result_;
+  std::optional<PasswordSelectionScreen::Result> result_;
 
  private:
   void HandleScreenExit(PasswordSelectionScreen::Result result) {
@@ -166,7 +166,7 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
   base::RepeatingClosure screen_exit_callback_;
 
   CryptohomeRecoverySetupScreen::ScreenExitCallback recovery_original_callback_;
-  absl::optional<CryptohomeRecoverySetupScreen::Result> recovery_result_;
+  std::optional<CryptohomeRecoverySetupScreen::Result> recovery_result_;
   base::RepeatingClosure recovery_screen_exit_callback_;
 };
 

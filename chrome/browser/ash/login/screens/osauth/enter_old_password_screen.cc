@@ -87,7 +87,7 @@ void EnterOldPasswordScreen::AttemptAuthentication(
 
 void EnterOldPasswordScreen::OnPasswordAuthentication(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     if (cryptohome::ErrorMatches(
             error->get_cryptohome_code(),

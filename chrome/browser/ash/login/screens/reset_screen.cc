@@ -99,7 +99,7 @@ void StartTPMFirmwareUpdate(
 // Checks if powerwash is allowed based on update modes and passes the result
 // to `callback`.
 void OnUpdateModesAvailable(
-    base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
+    base::OnceCallback<void(bool, std::optional<tpm_firmware_update::Mode>)>
         callback,
     const std::set<tpm_firmware_update::Mode>& modes) {
   using tpm_firmware_update::Mode;
@@ -110,7 +110,7 @@ void OnUpdateModesAvailable(
     std::move(callback).Run(true, mode);
     return;
   }
-  std::move(callback).Run(false, absl::nullopt);
+  std::move(callback).Run(false, std::nullopt);
 }
 
 }  // namespace
@@ -123,12 +123,12 @@ void ResetScreen::SetTpmFirmwareUpdateCheckerForTesting(
 
 // static
 void ResetScreen::CheckIfPowerwashAllowed(
-    base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
+    base::OnceCallback<void(bool, std::optional<tpm_firmware_update::Mode>)>
         callback) {
   if (InstallAttributes::Get()->IsDeviceLocked()) {
     if (!InstallAttributes::Get()->IsEnterpriseManaged()) {
       // The consumer owned device is always allowed to powerwash.
-      std::move(callback).Run(/*is_reset_allowed=*/true, absl::nullopt);
+      std::move(callback).Run(/*is_reset_allowed=*/true, std::nullopt);
       return;
     }
 
@@ -139,7 +139,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     CrosSettings::Get()->GetBoolean(kDevicePowerwashAllowed,
                                     &is_powerwash_allowed);
     if (is_powerwash_allowed) {
-      std::move(callback).Run(/*is_reset_allowed=*/true, absl::nullopt);
+      std::move(callback).Run(/*is_reset_allowed=*/true, std::nullopt);
       return;
     }
 
@@ -159,7 +159,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
       policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
           system::StatisticsProvider::GetInstance()) !=
       policy::AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired;
-  std::move(callback).Run(is_reset_allowed, absl::nullopt);
+  std::move(callback).Run(is_reset_allowed, std::nullopt);
 }
 
 ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,

@@ -20,8 +20,7 @@ const char kEnrollmentDomain[] = "example.com";
 const char kEnrollmentId[] = "fake-id";
 
 void ExpectPowerwashAllowed(bool is_reset_allowed) {
-  base::test::TestFuture<bool, absl::optional<tpm_firmware_update::Mode>>
-      future;
+  base::test::TestFuture<bool, std::optional<tpm_firmware_update::Mode>> future;
   ResetScreen::CheckIfPowerwashAllowed(future.GetCallback());
   EXPECT_EQ(is_reset_allowed, future.Get<0>());
 }

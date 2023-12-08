@@ -421,7 +421,7 @@ void HIDDetectionScreen::OnConnect(
     const std::string& address,
     device::BluetoothDeviceType device_type,
     uint16_t device_id,
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   DCHECK(base::Contains(pairing_device_id_to_timer_map_, device_id));
   hid_detection::RecordBluetoothPairingResult(
       !error_code.has_value(),

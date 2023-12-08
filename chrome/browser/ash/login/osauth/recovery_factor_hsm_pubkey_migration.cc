@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/osauth/recovery_factor_hsm_pubkey_migration.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "components/user_manager/known_user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,7 +39,7 @@ void RecoveryFactorHsmPubkeyMigration::Run(std::unique_ptr<UserContext> context,
 void RecoveryFactorHsmPubkeyMigration::OnAuthFactorConfigurationLoaded(
     AuthOperationCallback callback,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(std::move(context), error);
     return;
@@ -55,7 +55,7 @@ void RecoveryFactorHsmPubkeyMigration::UpdateRecoveryFactor(
   if (!recovery) {
     // No recovery factor.
     was_skipped_ = true;
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
 
@@ -64,7 +64,7 @@ void RecoveryFactorHsmPubkeyMigration::UpdateRecoveryFactor(
   if (mediator_key == GetRecoveryHsmPublicKey()) {
     // The latest public key was used for recovery, no need to update.
     was_skipped_ = true;
-    std::move(callback).Run(std::move(context), absl::nullopt);
+    std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }
 
@@ -77,14 +77,14 @@ void RecoveryFactorHsmPubkeyMigration::UpdateRecoveryFactor(
 void RecoveryFactorHsmPubkeyMigration::OnRecoveryUpdated(
     AuthOperationCallback callback,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to update recovery factor " << error->ToDebugString();
     std::move(callback).Run(std::move(context), error);
     return;
   }
   LOG(WARNING) << "Recovery factor updated";
-  std::move(callback).Run(std::move(context), absl::nullopt);
+  std::move(callback).Run(std::move(context), std::nullopt);
 }
 
 bool RecoveryFactorHsmPubkeyMigration::WasSkipped() {

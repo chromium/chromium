@@ -47,7 +47,7 @@ class LocalDataLossWarningScreen : public BaseOSAuthSetupScreen {
   void OnUserAction(const base::Value::List& args) override;
 
   void OnRemovedUserDirectory(std::unique_ptr<UserContext> user_context,
-                              absl::optional<AuthenticationError> error);
+                              std::optional<AuthenticationError> error);
 
   base::WeakPtr<LocalDataLossWarningScreenView> view_;
 

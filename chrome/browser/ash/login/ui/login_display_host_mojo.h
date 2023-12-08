@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_MOJO_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/views/view.h"
@@ -246,7 +246,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   bool initialized_ = false;
 
   // Set if Gaia dialog is shown with prefilled email.
-  absl::optional<AccountId> gaia_reauth_account_id_;
+  std::optional<AccountId> gaia_reauth_account_id_;
 
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};

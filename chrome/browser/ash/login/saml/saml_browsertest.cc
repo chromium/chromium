@@ -1845,7 +1845,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
                 kTestAuthSIDCookie1, kTestAuthLSIDCookie1);
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
   ASSERT_TRUE(reauth_dialog_helper);
 

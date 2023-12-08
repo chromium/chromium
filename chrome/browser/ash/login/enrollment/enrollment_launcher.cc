@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -49,7 +50,6 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -161,7 +161,7 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
 
   // Returns either OAuth token or DM token needed for the device attribute
   // update permission request.
-  absl::optional<policy::DMAuth> GetDMAuthForDeviceAttributeUpdate(
+  std::optional<policy::DMAuth> GetDMAuthForDeviceAttributeUpdate(
       policy::CloudPolicyClient* device_cloud_policy_client);
 
   policy::EnrollmentConfig enrollment_config_;
@@ -338,7 +338,7 @@ void EnrollmentLauncherImpl::GetDeviceAttributeUpdatePermission() {
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
-  absl::optional<policy::DMAuth> auth =
+  std::optional<policy::DMAuth> auth =
       GetDMAuthForDeviceAttributeUpdate(client);
   if (!auth.has_value()) {
     // There's no information about the enrolling user or device identity so
@@ -353,7 +353,7 @@ void EnrollmentLauncherImpl::GetDeviceAttributeUpdatePermission() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-absl::optional<policy::DMAuth>
+std::optional<policy::DMAuth>
 EnrollmentLauncherImpl::GetDMAuthForDeviceAttributeUpdate(
     policy::CloudPolicyClient* device_cloud_policy_client) {
   // Checking whether the device attributes can be updated requires either
@@ -377,7 +377,7 @@ void EnrollmentLauncherImpl::UpdateDeviceAttributes(
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
-  absl::optional<policy::DMAuth> auth =
+  std::optional<policy::DMAuth> auth =
       GetDMAuthForDeviceAttributeUpdate(client);
 
   // If we got here, we must have successfully run

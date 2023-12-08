@@ -69,14 +69,14 @@ class GaiaPasswordChangedScreen : public BaseScreen {
 
   void AttemptAuthentication(const std::string& old_password);
   void OnPasswordAuthentication(std::unique_ptr<UserContext> user_context,
-                                absl::optional<AuthenticationError> error);
+                                std::optional<AuthenticationError> error);
   void OnGetConfiguration(std::unique_ptr<UserContext> user_context,
-                          absl::optional<AuthenticationError> error);
+                          std::optional<AuthenticationError> error);
   void OnPasswordUpdated(std::unique_ptr<UserContext> user_context,
-                         absl::optional<AuthenticationError> error);
+                         std::optional<AuthenticationError> error);
   void RecreateUser();
   void OnRemovedUserDirectory(std::unique_ptr<UserContext> user_context,
-                              absl::optional<AuthenticationError> error);
+                              std::optional<AuthenticationError> error);
 
   void CancelPasswordChangedFlow();
   void OnCookiesCleared();

@@ -58,7 +58,7 @@ class WebKioskBaseTest : public OobeBaseTest {
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
 
-  std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+  std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_override_ =
           NetworkUiController::SetCanConfigureNetworkForTesting(true);
 };

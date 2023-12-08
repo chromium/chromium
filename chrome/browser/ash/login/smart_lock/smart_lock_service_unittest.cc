@@ -257,7 +257,7 @@ class SmartLockServiceTest : public testing::Test {
   }
 
   void SetLocalDevice(
-      const absl::optional<multidevice::RemoteDeviceRef>& local_device) {
+      const std::optional<multidevice::RemoteDeviceRef>& local_device) {
     fake_device_sync_client_->set_local_device_metadata(test_local_device_);
     fake_device_sync_client_->NotifyEnrollmentFinished();
   }

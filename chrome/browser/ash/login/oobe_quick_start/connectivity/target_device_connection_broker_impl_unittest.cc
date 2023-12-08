@@ -262,7 +262,7 @@ class FakeConnectionLifecycleListener
     connection_closed_reason_ = reason;
   }
 
-  absl::optional<std::string> pin_;
+  std::optional<std::string> pin_;
   bool connection_authenticated_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
       authenticated_connection_;

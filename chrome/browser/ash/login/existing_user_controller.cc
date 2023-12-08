@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -127,7 +128,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -244,7 +244,7 @@ void SetLoginExtensionApiCanLockManagedGuestSessionPref(
   prefs->CommitPendingWrite();
 }
 
-absl::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
+std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
     const UserContext& user_context,
     bool has_incomplete_migration) {
   if (has_incomplete_migration) {
@@ -564,7 +564,7 @@ void ExistingUserController::PerformLogin(
   }
 
   if (new_user_context.IsUsingPin()) {
-    absl::optional<Key> key =
+    std::optional<Key> key =
         quick_unlock::PinStorageCryptohome::TransformPinKey(
             pin_salt_storage_.get(), new_user_context.GetAccountId(),
             *new_user_context.GetKey());
@@ -620,7 +620,7 @@ void ExistingUserController::SetDisplayEmail(const std::string& email) {
 
 bool ExistingUserController::IsUserAllowlisted(
     const AccountId& account_id,
-    const absl::optional<user_manager::UserType>& user_type) {
+    const std::optional<user_manager::UserType>& user_type) {
   bool wildcard_match = false;
   if (login_performer_.get()) {
     return login_performer_->IsUserAllowlisted(account_id, &wildcard_match,
@@ -868,7 +868,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
       base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()));
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {
+          base::BindRepeating([](std::optional<int> button_index) {
             DCHECK(button_index);
             SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
           }));
@@ -908,7 +908,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
                                     is_enterprise_managed);
 
   if (is_enterprise_managed) {
-    absl::optional<std::string> manager =
+    std::optional<std::string> manager =
         chrome::GetAccountManagerIdentity(profile);
     if (manager) {
       known_user.SetAccountManager(user_context.GetAccountId(), *manager);
@@ -1000,7 +1000,7 @@ void ExistingUserController::OnLocalAuthenticationCancelled() {
 void ExistingUserController::OnOldEncryptionDetected(
     std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
-  absl::optional<EncryptionMigrationMode> encryption_migration_mode =
+  std::optional<EncryptionMigrationMode> encryption_migration_mode =
       GetEncryptionMigrationMode(*user_context, has_incomplete_migration);
   CHECK(login_performer_);
   if (!encryption_migration_mode.has_value()) {

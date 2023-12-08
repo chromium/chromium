@@ -67,7 +67,7 @@ void OSAuthErrorScreen::OnUserAction(const base::Value::List& args) {
 }
 
 void OSAuthErrorScreen::OnTokenInvalidated() {
-  context()->extra_factors_token = absl::nullopt;
+  context()->extra_factors_token = std::nullopt;
   exit_callback_.Run(Result::kAbortSignin);
 }
 

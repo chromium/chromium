@@ -81,7 +81,7 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 
  private:
-  absl::optional<bool> help_app_pref_fal_;
+  std::optional<bool> help_app_pref_fal_;
   base::test::TestFuture<FamilyLinkNoticeScreen::Result> screen_result_waiter_;
   FamilyLinkNoticeScreen::ScreenExitCallback original_callback_;
 

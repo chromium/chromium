@@ -61,7 +61,7 @@ class AuthHubTest : public LoginManagerTest {
   MockAuthAttemptConsumer attempt_consumer_;
   raw_ptr<AuthHubConnector, DanglingUntriaged | ExperimentalAsh> connector_;
   MockAuthFactorStatusConsumer status_consumer_;
-  absl::optional<AuthProofToken> auth_token_;
+  std::optional<AuthProofToken> auth_token_;
 
   LoginManagerMixin::TestUserInfo gaia_password_user_{
       LoginManagerMixin::CreateConsumerAccountId(1),

@@ -189,7 +189,7 @@ void OnArcVmDataMigratorStartedForGetAndroidDataInfo(
     bool result) {
   if (!result) {
     LOG(ERROR) << "Failed to start arcvm_data_migrator";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -327,7 +327,7 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
 }
 
 void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
-    absl::optional<int64_t> reply) {
+    std::optional<int64_t> reply) {
   if (!reply.has_value() || reply.value() < 0) {
     LOG(ERROR) << "Failed to get free disk space from spaced";
     HandleSetupFailure(
@@ -355,7 +355,7 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
 void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
     uint64_t free_disk_space,
     const base::TimeTicks& time_before_get_android_data_info,
-    absl::optional<arc::data_migrator::GetAndroidDataInfoResponse> response) {
+    std::optional<arc::data_migrator::GetAndroidDataInfoResponse> response) {
   const base::TimeDelta duration =
       tick_clock_->NowTicks() - time_before_get_android_data_info;
   ReportGetAndroidDataInfoDuration(duration);
@@ -516,7 +516,7 @@ void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
 }
 
 void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
-    absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+    std::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to create a disk image for /data: No D-Bus response";
     HandleSetupFailure(

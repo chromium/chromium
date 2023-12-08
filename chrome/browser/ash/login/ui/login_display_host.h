@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -198,7 +198,7 @@ class LoginDisplayHost {
   // Returns true if user is allowed to log in by domain policy.
   virtual bool IsUserAllowlisted(
       const AccountId& account_id,
-      const absl::optional<user_manager::UserType>& user_type) = 0;
+      const std::optional<user_manager::UserType>& user_type) = 0;
 
   // ----- Password change flow methods -----
   // Cancels current password changed flow.

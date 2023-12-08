@@ -48,11 +48,11 @@ class EnterOldPasswordScreen : public BaseOSAuthSetupScreen {
   void OnUserAction(const base::Value::List& args) override;
 
   void OnRemovedUserDirectory(std::unique_ptr<UserContext> user_context,
-                              absl::optional<AuthenticationError> error);
+                              std::optional<AuthenticationError> error);
 
   void AttemptAuthentication(const std::string& old_password);
   void OnPasswordAuthentication(std::unique_ptr<UserContext> user_context,
-                                absl::optional<AuthenticationError> error);
+                                std::optional<AuthenticationError> error);
 
   base::WeakPtr<EnterOldPasswordScreenView> view_;
 

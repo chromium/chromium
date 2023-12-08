@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -54,16 +54,16 @@ class TargetDeviceConnectionBroker {
   class AuthenticatedConnection {
    public:
     using RequestWifiCredentialsCallback =
-        base::OnceCallback<void(absl::optional<mojom::WifiCredentials>)>;
+        base::OnceCallback<void(std::optional<mojom::WifiCredentials>)>;
     // The ack_successful bool indicates whether the ack was successfully
     // received by the source device. If true, then the target device will
     // prepare to resume the Quick Start connection after it updates.
     using NotifySourceOfUpdateCallback =
         base::OnceCallback<void(/*ack_successful=*/bool)>;
     using RequestAccountTransferAssertionCallback =
-        base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
+        base::OnceCallback<void(std::optional<FidoAssertionInfo>)>;
     using AwaitUserVerificationCallback = base::OnceCallback<void(
-        absl::optional<mojom::UserVerificationResponse>)>;
+        std::optional<mojom::UserVerificationResponse>)>;
     using RequestAccountInfoCallback =
         base::OnceCallback<void(/*account_email=*/std::string)>;
 
