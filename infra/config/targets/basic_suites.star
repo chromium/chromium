@@ -4843,6 +4843,7 @@ targets.legacy_basic_suite(
         "net_unittests": None,
         "perfetto_unittests": None,
         "printing_unittests": None,
+        "sandbox_unittests": None,
         "services_unittests": None,
         "shell_dialogs_unittests": None,
         "skia_unittests": None,
