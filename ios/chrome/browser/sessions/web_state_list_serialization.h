@@ -37,11 +37,16 @@ using WebStateFactory =
 using WebStateFactoryFromProto = base::RepeatingCallback<std::unique_ptr<
     web::WebState>(web::WebStateID, web::proto::WebStateMetadataStorage)>;
 
+// Mapping of WebStateID to their WebStateMetadataStorage.
+using WebStateMetadataMap =
+    std::map<web::WebStateID, web::proto::WebStateMetadataStorage>;
+
 // Serializes `web_state_list` to a SessionWindowIOS instance.
 SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list);
 
 // Serializes `web_state_list` metadata to `storage`.
 void SerializeWebStateList(const WebStateList& web_state_list,
+                           const WebStateMetadataMap& metadata_map,
                            ios::proto::WebStateListStorage& storage);
 
 // Restores a `web_state_list` from `session_window` using `factory` to

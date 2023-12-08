@@ -31,6 +31,12 @@ namespace {
 // Maximum size of session state NSData objects.
 const int kMaxSessionState = 5 * 1024 * 1024;
 
+// Information about an orphaned WebState.
+struct OrphanInfo {
+  std::string session_id;
+  web::proto::WebStateMetadataStorage metadata;
+};
+
 // Deletes all files and directory in `path` not present in `items_to_keep`.
 void DeleteUnknownContent(const base::FilePath& path,
                           const std::set<base::FilePath>& items_to_keep) {
@@ -143,6 +149,26 @@ constexpr bool HasIntersection(Range1&& range1, Range2&& range2) {
   return result.count != 0;
 }
 
+// Returns a WebStateMetadataMap from `storage`.
+WebStateMetadataMap MetadataMapFromStorage(
+    const ios::proto::WebStateListStorage& storage) {
+  WebStateMetadataMap result;
+  for (const auto& item : storage.items()) {
+    // Ignore the item if it has no metadata or no navigation (since it
+    // will be dropped when restoring the session).
+    if (!item.has_metadata() || !item.metadata().navigation_item_count()) {
+      continue;
+    }
+
+    DCHECK(web::WebStateID::IsValidValue(item.identifier()));
+    const web::WebStateID web_state_id =
+        web::WebStateID::FromSerializedValue(item.identifier());
+
+    result.insert(std::make_pair(web_state_id, item.metadata()));
+  }
+  return result;
+}
+
 }  // anonymous namespace
 
 // Class storing information about a WebStateList tracked by the
@@ -189,8 +215,12 @@ class SessionRestorationServiceImpl::WebStateListInfo {
   // Returns the `observer`.
   SessionRestorationWebStateListObserver& observer() { return observer_; }
 
+  // Returns the WebStateMetadataMap.
+  WebStateMetadataMap& metadata_map() { return metadata_map_; }
+
  private:
   const std::string identifier_;
+  WebStateMetadataMap metadata_map_;
   SessionRestorationWebStateListObserver observer_;
   std::set<web::WebStateID> expected_ids_;
   bool can_load_synchronously_ = true;
@@ -332,6 +362,9 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
   ios::proto::WebStateListStorage session =
       ios::sessions::LoadSessionStorage(session_dir);
 
+  // Updates `info`'s WebStateMetadataMap from `session`.
+  info.metadata_map() = MetadataMapFromStorage(session);
+
   // Since this is the first session load, it is safe to delete any
   // unreferenced files from the Browser's storage path.
   std::set<base::FilePath> files_to_keep;
@@ -414,15 +447,13 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
       storage_path_.Append(info.identifier()), web_state_id);
 
-  // Create requests to serialize WebState storage and metadata storage,
-  // and then post them to the background sequence.
+  // Create requests to serialize WebState storage and post it to the
+  // background sequence (the metadata will be saved when the WebState
+  // is inserted in the WebStateList).
   web::proto::WebStateMetadataStorage metadata;
   metadata.Swap(storage.mutable_metadata());
 
   ios::sessions::IORequestList requests;
-  requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
-      web_state_dir.Append(kWebStateMetadataStorageFilename),
-      std::make_unique<web::proto::WebStateMetadataStorage>(metadata)));
   requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
       web_state_dir.Append(kWebStateStorageFilename),
       std::make_unique<web::proto::WebStateStorage>(storage)));
@@ -430,6 +461,11 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ios::sessions::ExecuteIORequests, std::move(requests)));
+
+  // Add the metadata to `info`'s WebStateMetadataMap. It will be saved when
+  // the WebState is inserted in the WebStateList.
+  DCHECK(!base::Contains(info.metadata_map(), web_state_id));
+  info.metadata_map().insert(std::make_pair(web_state_id, metadata));
 
   // Create the WebState with callback that return the data from memory. This
   // ensure there is no race condition while trying to read the data from the
@@ -494,15 +530,24 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
 
   // Create a map of orphaned WebStates (i.e. "unrealized" WebStates detached
   // from a WebStateList).
-  std::map<web::WebStateID, std::string> orphaned_map;
+  std::map<web::WebStateID, OrphanInfo> orphaned_map;
   for (WebStateList* web_state_list : dirty_web_state_lists_) {
     DCHECK(base::Contains(infos_, web_state_list));
     WebStateListInfo& info = *infos_[web_state_list];
 
     const auto& detached_web_states = info.observer().detached_web_states();
     if (!detached_web_states.empty()) {
+      WebStateMetadataMap& metadata_map = info.metadata_map();
       for (const auto web_state_id : detached_web_states) {
-        orphaned_map.insert(std::make_pair(web_state_id, info.identifier()));
+        OrphanInfo orphan_info{.session_id = info.identifier()};
+        auto iter = metadata_map.find(web_state_id);
+        if (iter != metadata_map.end()) {
+          orphan_info.metadata = std::move(iter->second);
+          metadata_map.erase(iter);
+        }
+
+        orphaned_map.insert(
+            std::make_pair(web_state_id, std::move(orphan_info)));
       }
     }
   }
@@ -517,6 +562,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
     if (!inserted_web_states.empty()) {
       const base::FilePath dest_dir = storage_path_.Append(info.identifier());
 
+      WebStateMetadataMap& metadata_map = info.metadata_map();
       for (const auto web_state_id : inserted_web_states) {
         // Check whether the `web_state_id` is expected. If this is the case,
         // then `CreateUnrealizedWebState()` took care of scheduling tasks to
@@ -529,12 +575,21 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
         // If the `web_state_id` is not expected, then it must be adopted
         // from another Browser, thus needs to be in the `orphaned_map`.
         DCHECK(base::Contains(orphaned_map, web_state_id));
-        const base::FilePath from_dir =
-            storage_path_.Append(orphaned_map[web_state_id]);
+        auto iter = orphaned_map.find(web_state_id);
+        OrphanInfo& orphan_info = iter->second;
 
+        const base::FilePath from_dir =
+            storage_path_.Append(orphan_info.session_id);
+
+        // Create a request to copy the orphaned data.
         requests.push_back(std::make_unique<ios::sessions::CopyPathIORequest>(
             ios::sessions::WebStateDirectory(from_dir, web_state_id),
             ios::sessions::WebStateDirectory(dest_dir, web_state_id)));
+
+        // Move the orphan metadata information its new owner's `info`
+        DCHECK(!base::Contains(metadata_map, web_state_id));
+        metadata_map.insert(
+            std::make_pair(web_state_id, std::move(orphan_info.metadata)));
       }
     }
   }
@@ -543,6 +598,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
   for (WebStateList* web_state_list : dirty_web_state_lists_) {
     DCHECK(base::Contains(infos_, web_state_list));
     WebStateListInfo& info = *infos_[web_state_list];
+    WebStateMetadataMap& metadata_map = info.metadata_map();
 
     // Asynchronous operation will be scheduled for this Browser, so it is
     // no longer safe to perform synchronous operation on it anymore.
@@ -554,13 +610,22 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
 
     const base::FilePath dest_dir = storage_path_.Append(info.identifier());
 
+    // Drop cached data for discarded WebStates.
+    const auto& discarded_web_states = info.observer().discarded_web_states();
+    if (!discarded_web_states.empty()) {
+      for (const auto web_state_id : discarded_web_states) {
+        metadata_map.erase(web_state_id);
+      }
+    }
+
     // Serialize the state of dirty WebState before serializing the metadata
     // for the WebStateList. This ensures that metadata is always referring
     // to WebStates that have been saved.
     const auto& dirty_web_states = observer.dirty_web_states();
     for (web::WebState* web_state : dirty_web_states) {
-      const base::FilePath web_state_dir = ios::sessions::WebStateDirectory(
-          dest_dir, web_state->GetUniqueIdentifier());
+      const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+      const base::FilePath web_state_dir =
+          ios::sessions::WebStateDirectory(dest_dir, web_state_id);
 
       // Serialize the WebState to protobuf message.
       auto storage = std::make_unique<web::proto::WebStateStorage>();
@@ -572,10 +637,16 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       auto metadata = base::WrapUnique(storage->release_metadata());
       DCHECK(metadata);
 
-      // Create requests to serialize both `metadata` and `storage`.
-      requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
-          web_state_dir.Append(kWebStateMetadataStorageFilename),
-          std::move(metadata)));
+      // Update the metadata in `info`'s WebStateMetadataMap. It will be
+      // saved inside the WebStateListStorage.
+      auto iter = metadata_map.find(web_state_id);
+      if (iter == metadata_map.end()) {
+        metadata_map.insert(std::make_pair(web_state_id, std::move(*metadata)));
+      } else {
+        iter->second = std::move(*metadata);
+      }
+
+      // Create a request to serialize the `storage`.
       requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
           web_state_dir.Append(kWebStateStorageFilename), std::move(storage)));
 
@@ -592,14 +663,14 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
       }
     }
 
-    // Serialize the state of the WebStateList if it is considered dirty.
-    if (observer.is_web_state_list_dirty()) {
-      auto storage = std::make_unique<ios::proto::WebStateListStorage>();
-      SerializeWebStateList(*web_state_list, *storage);
+    // Always serialize the WebStateList as it includes the WebStates'
+    // metadata (and thus needs to be saved either the list or one of
+    // the WebState is dirty).
+    auto storage = std::make_unique<ios::proto::WebStateListStorage>();
+    SerializeWebStateList(*web_state_list, info.metadata_map(), *storage);
 
-      requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
-          dest_dir.Append(kSessionMetadataFilename), std::move(storage)));
-    }
+    requests.push_back(std::make_unique<ios::sessions::WriteProtoIORequest>(
+        dest_dir.Append(kSessionMetadataFilename), std::move(storage)));
 
     observer.ClearDirty();
   }

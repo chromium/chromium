@@ -420,6 +420,7 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
 }
 
 void SerializeWebStateList(const WebStateList& web_state_list,
+                           const WebStateMetadataMap& metadata_map,
                            ios::proto::WebStateListStorage& storage) {
   const RemovingIndexes removing_indexes =
       GetIndexOfWebStatesToDrop(web_state_list);
@@ -441,8 +442,14 @@ void SerializeWebStateList(const WebStateList& web_state_list,
     }
 
     const web::WebState* web_state = web_state_list.GetWebStateAt(index);
+    const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
     ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
-    item_storage.set_identifier(web_state->GetUniqueIdentifier().identifier());
+    item_storage.set_identifier(web_state_id.identifier());
+
+    DCHECK(base::Contains(metadata_map, web_state_id));
+    auto iter = metadata_map.find(web_state_id);
+    *item_storage.mutable_metadata() = iter->second;
 
     WebStateOpener opener = web_state_list.GetOpenerOfWebStateAt(index);
     if (!opener.opener) {

@@ -183,7 +183,6 @@ FilePathSet ExpectedStorageFilesForWebStates(
         session_dir, reference.web_state->GetUniqueIdentifier());
 
     result.insert(web_state_dir.Append(kWebStateStorageFilename));
-    result.insert(web_state_dir.Append(kWebStateMetadataStorageFilename));
     if (reference.is_native_session_available) {
       result.insert(web_state_dir.Append(kWebStateSessionFilename));
     }
@@ -202,7 +201,8 @@ FilePathSet ExpectedStorageFilesForBrowser(const base::FilePath& session_dir,
         .is_native_session_available = true,
     });
   }
-  return ExpectedStorageFilesForWebStates(session_dir, true, references);
+  return ExpectedStorageFilesForWebStates(
+      session_dir, /*expect_session_metadata_storage=*/true, references);
 }
 
 // Set union.
@@ -738,7 +738,7 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
     EXPECT_EQ(ModifiedFiles(),
               ExpectedStorageFilesForWebStates(
                   SessionPathFromIdentifier(kIdentifier0),
-                  /*expect_session_metatadat_storage=*/true, {}));
+                  /*expect_session_metadata_storage=*/true, {}));
 
     // Record the files used to represent the state of the detached WebState.
     // Those files will be deleted when the session is loaded.
