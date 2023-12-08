@@ -2563,7 +2563,7 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
   }
 }
 
-TEST_F(AttributionDataHostManagerImplTest, HeadersSize_MetricsRecorded) {
+TEST_F(AttributionDataHostManagerImplTest, HeadersSize_SourceMetricsRecorded) {
   base::HistogramTester histograms;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -2612,6 +2612,72 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_MetricsRecorded) {
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 }
+
+TEST_F(AttributionDataHostManagerImplTest, HeadersSize_TriggerMetricsRecorded) {
+  base::HistogramTester histograms;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kKeepAliveInBrowserMigration,
+       blink::features::kAttributionReportingInBrowserMigration,
+       network::features::kAttributionReportingCrossAppWeb},
+      {});
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
+
+  const auto reporting_url = GURL("https://report.test");
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://destination.test");
+
+  // Web
+  {
+    data_host_manager_.NotifyBackgroundRegistrationStarted(
+        kBackgroundId, context_origin,
+        /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kDevtoolsRequestId);
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterTriggerHeader,
+                       kRegisterTriggerJson);
+    data_host_manager_.NotifyBackgroundRegistrationData(
+        kBackgroundId, headers.get(), reporting_url,
+        network::AttributionReportingRuntimeFeatures(),
+        /*trigger_verifications=*/{});
+    data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+    task_environment_.FastForwardBy(base::TimeDelta());
+
+    histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterTrigger",
+                                  strlen(kRegisterTriggerJson), 1);
+  }
+
+  // OS
+  {
+    base::StringPiece os_header_value(R"("https://r.test/x")");
+    data_host_manager_.NotifyBackgroundRegistrationStarted(
+        kBackgroundId, context_origin,
+        /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kDevtoolsRequestId);
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterOsTriggerHeader,
+                       os_header_value);
+    data_host_manager_.NotifyBackgroundRegistrationData(
+        kBackgroundId, headers.get(), reporting_url,
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
+        /*trigger_verificaations=*/{});
+
+    data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+    task_environment_.FastForwardBy(base::TimeDelta());
+
+    histograms.ExpectUniqueSample("Conversions.HeadersSize.RegisterOsTrigger",
+                                  os_header_value.length(), 1);
+  }
+}
+
 TEST_F(
     AttributionDataHostManagerImplTest,
     Background_NavigationTiedOnOngoingNavigation_TriggerDeferredUntilBackgroundSourceRegistrationCompletes) {

@@ -719,11 +719,18 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
           return absl::nullopt;
         }
         if (has_os_trigger) {
+          // Max header size is 256 KB, use 1M count to encapsulate.
+          base::UmaHistogramCounts1M(
+              "Conversions.HeadersSize.RegisterOsTrigger", os_trigger.size());
+
           return RegistrarAndHeader{.registrar = Registrar::kOs,
                                     .type = RegistrationType::kTrigger,
                                     .header = std::move(os_trigger)};
         }
         if (has_web_trigger) {
+          // Max header size is 256 KB, use 1M count to encapsulate.
+          base::UmaHistogramCounts1M("Conversions.HeadersSize.RegisterTrigger",
+                                     web_trigger.size());
           return RegistrarAndHeader{.registrar = Registrar::kWeb,
                                     .type = RegistrationType::kTrigger,
                                     .header = std::move(web_trigger)};
