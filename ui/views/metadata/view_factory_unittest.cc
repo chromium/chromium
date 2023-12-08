@@ -33,8 +33,9 @@ using ViewFactoryTest = views::test::WidgetTest;
 namespace internal {
 
 class TestView : public views::View {
+  METADATA_HEADER(TestView, views::View)
+
  public:
-  METADATA_HEADER(TestView);
   TestView() = default;
   TestView(const TestView&) = delete;
   TestView& operator=(const TestView&) = delete;
@@ -69,7 +70,7 @@ BEGIN_VIEW_BUILDER(, TestView, views::View)
 VIEW_BUILDER_METHOD(ArbitraryMethod, int, float, views::PropertyEffects)
 END_VIEW_BUILDER
 
-BEGIN_METADATA(TestView, views::View)
+BEGIN_METADATA(TestView)
 END_METADATA
 
 }  // namespace internal

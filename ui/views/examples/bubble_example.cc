@@ -73,8 +73,9 @@ std::u16string GetArrowName(BubbleBorder::Arrow arrow) {
 }
 
 class ExampleBubble : public BubbleDialogDelegateView {
+  METADATA_HEADER(ExampleBubble, BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ExampleBubble);
   ExampleBubble(View* anchor, BubbleBorder::Arrow arrow)
       : BubbleDialogDelegateView(anchor, arrow) {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -91,7 +92,7 @@ class ExampleBubble : public BubbleDialogDelegateView {
   }
 };
 
-BEGIN_METADATA(ExampleBubble, BubbleDialogDelegateView)
+BEGIN_METADATA(ExampleBubble)
 END_METADATA
 
 }  // namespace

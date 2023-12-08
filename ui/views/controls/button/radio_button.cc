@@ -152,7 +152,7 @@ void RadioButton::GetViewsInGroupFromParent(int group, Views* views) {
   }
 }
 
-BEGIN_METADATA(RadioButton, Checkbox)
+BEGIN_METADATA(RadioButton)
 END_METADATA
 
 }  // namespace views

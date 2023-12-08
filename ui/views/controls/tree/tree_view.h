@@ -59,9 +59,9 @@ class VIEWS_EXPORT TreeView : public View,
                               public TextfieldController,
                               public FocusChangeListener,
                               public PrefixDelegate {
- public:
-  METADATA_HEADER(TreeView);
+  METADATA_HEADER(TreeView, View)
 
+ public:
   TreeView();
 
   TreeView(const TreeView&) = delete;

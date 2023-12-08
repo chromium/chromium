@@ -171,7 +171,7 @@ void ImageViewBase::PreferredSizeChanged() {
   UpdateImageOrigin();
 }
 
-BEGIN_METADATA(ImageViewBase, View)
+BEGIN_METADATA(ImageViewBase)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)

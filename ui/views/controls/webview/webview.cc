@@ -524,7 +524,7 @@ void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
   }
 }
 
-BEGIN_METADATA(WebView, View)
+BEGIN_METADATA(WebView)
 END_METADATA
 
 }  // namespace views

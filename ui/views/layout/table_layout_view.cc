@@ -57,7 +57,7 @@ TableLayoutView& TableLayoutView::SetMinimumSize(const gfx::Size& size) {
   return *this;
 }
 
-BEGIN_METADATA(TableLayoutView, View)
+BEGIN_METADATA(TableLayoutView)
 END_METADATA
 
 }  // namespace views

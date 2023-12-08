@@ -54,8 +54,9 @@
 namespace views::examples {
 
 class ActionCheckbox : public Checkbox {
+  METADATA_HEADER(ActionCheckbox, Checkbox)
+
  public:
-  METADATA_HEADER(ActionCheckbox);
   ActionCheckbox();
   ActionCheckbox(const ActionCheckbox&) = delete;
   ActionCheckbox& operator=(const ActionCheckbox&) = delete;
@@ -129,7 +130,7 @@ void ActionCheckbox::TriggerAction() {
   }
 }
 
-BEGIN_METADATA(ActionCheckbox, Checkbox)
+BEGIN_METADATA(ActionCheckbox)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(, ActionCheckbox, Checkbox)

@@ -123,7 +123,7 @@ FadingView::FadingView() {
 
 FadingView::~FadingView() = default;
 
-BEGIN_METADATA(FadingView, View)
+BEGIN_METADATA(FadingView)
 END_METADATA
 
 ProposedLayout CenteringLayoutManager::CalculateProposedLayout(

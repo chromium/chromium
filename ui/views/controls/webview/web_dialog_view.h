@@ -32,9 +32,9 @@ namespace views {
 
 // A kind of webview that can notify its delegate when its content is ready.
 class ObservableWebView : public WebView {
- public:
-  METADATA_HEADER(ObservableWebView);
+  METADATA_HEADER(ObservableWebView, WebView)
 
+ public:
   ObservableWebView(content::BrowserContext* browser_context,
                     ui::WebDialogDelegate* delegate);
   ObservableWebView(const ObservableWebView&) = delete;
@@ -72,9 +72,9 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                                      public ui::WebDialogWebContentsDelegate,
                                      public ui::WebDialogDelegate,
                                      public DialogDelegate {
- public:
-  METADATA_HEADER(WebDialogView);
+  METADATA_HEADER(WebDialogView, ClientView)
 
+ public:
   // |handler| must not be nullptr.
   // |use_dialog_frame| indicates whether to use dialog frame view for non
   // client frame view.

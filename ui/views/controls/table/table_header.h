@@ -17,10 +17,10 @@
 namespace views {
 
 // Views used to render the header for the table.
-class VIEWS_EXPORT TableHeader : public views::View {
- public:
-  METADATA_HEADER(TableHeader);
+class VIEWS_EXPORT TableHeader : public View {
+  METADATA_HEADER(TableHeader, View)
 
+ public:
   // Amount the text is padded on the left/right side.
   static const int kHorizontalPadding;
 

@@ -39,8 +39,9 @@ const char* kAlignments[] = {"Left", "Center", "Right", "Head"};
 
 // A Label with a clamped preferred width to demonstrate eliding or wrapping.
 class ExamplePreferredSizeLabel : public Label {
+  METADATA_HEADER(ExamplePreferredSizeLabel, Label)
+
  public:
-  METADATA_HEADER(ExamplePreferredSizeLabel);
   ExamplePreferredSizeLabel() {
     SetBorder(
         CreateThemedSolidBorder(1, ExamplesColorIds::kColorLabelExampleBorder));
@@ -62,7 +63,7 @@ class ExamplePreferredSizeLabel : public Label {
   static const char* kElideBehaviors[];
 };
 
-BEGIN_METADATA(ExamplePreferredSizeLabel, Label)
+BEGIN_METADATA(ExamplePreferredSizeLabel)
 END_METADATA
 
 // static

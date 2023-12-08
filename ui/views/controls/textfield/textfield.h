@@ -75,9 +75,9 @@ class VIEWS_EXPORT Textfield : public View,
                                public SelectionControllerDelegate,
                                public ui::TouchEditable,
                                public ui::TextInputClient {
- public:
-  METADATA_HEADER(Textfield);
+  METADATA_HEADER(Textfield, View)
 
+ public:
   enum MenuCommands {
     kUndo = kLastTouchEditableCommandId + 1,
     kDelete,

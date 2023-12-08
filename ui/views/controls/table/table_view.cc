@@ -1955,7 +1955,7 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
   return i->get();
 }
 
-BEGIN_METADATA(TableView, View)
+BEGIN_METADATA(TableView)
 ADD_READONLY_PROPERTY_METADATA(size_t, RowCount)
 ADD_READONLY_PROPERTY_METADATA(absl::optional<size_t>, FirstSelectedRow)
 ADD_READONLY_PROPERTY_METADATA(bool, HasFocusIndicator)

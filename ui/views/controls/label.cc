@@ -1380,7 +1380,7 @@ void Label::UpdateFullTextElideBehavior() {
                                                           : gfx::NO_ELIDE);
 }
 
-BEGIN_METADATA(Label, View)
+BEGIN_METADATA(Label)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)

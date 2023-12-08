@@ -13,9 +13,9 @@
 namespace views {
 
 class VIEWS_EXPORT MenuSeparator : public View {
- public:
-  METADATA_HEADER(MenuSeparator);
+  METADATA_HEADER(MenuSeparator, View)
 
+ public:
   explicit MenuSeparator(
       ui::MenuSeparatorType type = ui::MenuSeparatorType::NORMAL_SEPARATOR);
   MenuSeparator(const MenuSeparator&) = delete;

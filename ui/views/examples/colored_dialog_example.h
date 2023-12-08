@@ -21,8 +21,9 @@ namespace examples {
 
 class ColoredDialog : public views::DialogDelegateView,
                       public views::TextfieldController {
+  METADATA_HEADER(ColoredDialog, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ColoredDialog);
   using AcceptCallback = base::OnceCallback<void(std::u16string)>;
 
   explicit ColoredDialog(AcceptCallback accept_callback);
@@ -43,8 +44,9 @@ class ColoredDialog : public views::DialogDelegateView,
 };
 
 class ColoredDialogChooser : public views::View {
+  METADATA_HEADER(ColoredDialogChooser, views::View)
+
  public:
-  METADATA_HEADER(ColoredDialogChooser);
   ColoredDialogChooser();
   ColoredDialogChooser(const ColoredDialogChooser&) = delete;
   ColoredDialogChooser& operator=(const ColoredDialogChooser&) = delete;

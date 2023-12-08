@@ -349,7 +349,7 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }
 
-BEGIN_METADATA(ProgressBar, View)
+BEGIN_METADATA(ProgressBar)
 ADD_PROPERTY_METADATA(int, PreferredHeight)
 ADD_PROPERTY_METADATA(absl::optional<gfx::RoundedCornersF>,
                       PreferredCornerRadii)

@@ -19,8 +19,9 @@ namespace views::corewm {
 // TODO(oshima): Consider to use views::Label when the performance issue is
 // resolved.
 class VIEWS_EXPORT TooltipViewAura : public views::View {
+  METADATA_HEADER(TooltipViewAura, views::View)
+
  public:
-  METADATA_HEADER(TooltipViewAura);
   TooltipViewAura();
   TooltipViewAura(const TooltipViewAura&) = delete;
   TooltipViewAura& operator=(const TooltipViewAura&) = delete;

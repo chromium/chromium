@@ -20,9 +20,9 @@ class SubmenuView;
 // As all the menu items are owned by the root menu item, care must be taken
 // such that when MenuHostRootView is deleted it doesn't delete the menu items.
 class MenuHostRootView : public internal::RootView {
- public:
-  METADATA_HEADER(MenuHostRootView);
+  METADATA_HEADER(MenuHostRootView, internal::RootView)
 
+ public:
   MenuHostRootView(Widget* widget, SubmenuView* submenu);
 
   MenuHostRootView(const MenuHostRootView&) = delete;

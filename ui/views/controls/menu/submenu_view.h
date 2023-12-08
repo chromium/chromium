@@ -47,9 +47,9 @@ class MenuScrollViewContainer;
 class VIEWS_EXPORT SubmenuView : public View,
                                  public PrefixDelegate,
                                  public ScrollDelegate {
- public:
-  METADATA_HEADER(SubmenuView);
+  METADATA_HEADER(SubmenuView, View)
 
+ public:
   // Creates a SubmenuView for the specified menu item.
   explicit SubmenuView(MenuItemView* parent);
 

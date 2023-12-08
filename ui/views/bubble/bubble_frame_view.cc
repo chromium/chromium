@@ -1193,7 +1193,7 @@ std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
   return label;
 }
 
-BEGIN_METADATA(BubbleFrameView, NonClientFrameView)
+BEGIN_METADATA(BubbleFrameView)
 ADD_PROPERTY_METADATA(absl::optional<double>, Progress)
 ADD_PROPERTY_METADATA(gfx::Insets, ContentMargins)
 ADD_PROPERTY_METADATA(gfx::Insets, FootnoteMargins)

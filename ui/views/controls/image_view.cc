@@ -123,7 +123,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
   return scaled_image_;
 }
 
-BEGIN_METADATA(ImageView, ImageViewBase)
+BEGIN_METADATA(ImageView)
 END_METADATA
 
 }  // namespace views

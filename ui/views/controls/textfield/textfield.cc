@@ -3159,7 +3159,7 @@ void Textfield::StopSelectionDragging() {
   selection_drag_type_ = absl::nullopt;
 }
 
-BEGIN_METADATA(Textfield, View)
+BEGIN_METADATA(Textfield)
 ADD_PROPERTY_METADATA(bool, ReadOnly)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)

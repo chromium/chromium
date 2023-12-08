@@ -134,8 +134,9 @@ class SolidRoundRectPainterWithShadow : public Painter {
 // library. This is a prototype of a potential way to implement such an effect
 // by overriding the hover effect to draw a new background with a shadow.
 class FabButton : public views::MdTextButton {
+  METADATA_HEADER(FabButton, views::MdTextButton)
+
  public:
-  METADATA_HEADER(FabButton);
   using MdTextButton::MdTextButton;
   FabButton(const FabButton&) = delete;
   FabButton& operator=(const FabButton&) = delete;
@@ -168,7 +169,7 @@ class FabButton : public views::MdTextButton {
   bool use_shadow_ = false;
 };
 
-BEGIN_METADATA(FabButton, views::MdTextButton)
+BEGIN_METADATA(FabButton)
 END_METADATA
 
 ButtonExample::ButtonExample() : ExampleBase("Button") {

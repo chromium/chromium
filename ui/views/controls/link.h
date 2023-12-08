@@ -28,9 +28,9 @@ namespace views {
 //
 ////////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT Link : public Label {
- public:
-  METADATA_HEADER(Link);
+  METADATA_HEADER(Link, Label)
 
+ public:
   // A callback to be called when the link is clicked.  Closures are also
   // accepted; see below.
   using ClickedCallback = base::RepeatingCallback<void(const ui::Event& event)>;

@@ -288,7 +288,7 @@ void TabbedPaneTab::UpdateTitleColor() {
   title_->SetEnabledColor(font_color);
 }
 
-BEGIN_METADATA(TabbedPaneTab, View)
+BEGIN_METADATA(TabbedPaneTab)
 END_METADATA
 
 // static
@@ -501,7 +501,7 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
                    GetColorProvider()->GetColor(ui::kColorTabBorderSelected));
 }
 
-BEGIN_METADATA(TabbedPaneTabStrip, View)
+BEGIN_METADATA(TabbedPaneTabStrip)
 ADD_READONLY_PROPERTY_METADATA(size_t, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
@@ -658,7 +658,7 @@ void TabbedPane::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-BEGIN_METADATA(TabbedPane, View)
+BEGIN_METADATA(TabbedPane)
 END_METADATA
 
 }  // namespace views

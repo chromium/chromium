@@ -33,9 +33,9 @@ class TabbedPaneWithWidgetTest;
 // Support for horizontal-highlight and vertical-border modes is limited and
 // may require additional polish.
 class VIEWS_EXPORT TabbedPane : public View {
- public:
-  METADATA_HEADER(TabbedPane);
+  METADATA_HEADER(TabbedPane, View)
 
+ public:
   // The orientation of the tab alignment.
   enum class Orientation {
     kHorizontal,
@@ -151,9 +151,9 @@ class VIEWS_EXPORT TabbedPane : public View {
 
 // The tab view shown in the tab strip.
 class VIEWS_EXPORT TabbedPaneTab : public View {
- public:
-  METADATA_HEADER(TabbedPaneTab);
+  METADATA_HEADER(TabbedPaneTab, View)
 
+ public:
   TabbedPaneTab(TabbedPane* tabbed_pane,
                 const std::u16string& title,
                 View* contents);
@@ -212,8 +212,9 @@ class VIEWS_EXPORT TabbedPaneTab : public View {
 
 // The tab strip shown above/left of the tab contents.
 class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
+  METADATA_HEADER(TabbedPaneTabStrip, View)
+
  public:
-  METADATA_HEADER(TabbedPaneTabStrip);
   // The return value of GetSelectedTabIndex() when no tab is selected.
   static constexpr size_t kNoSelectedTab = static_cast<size_t>(-1);
 

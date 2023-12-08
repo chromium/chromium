@@ -959,8 +959,9 @@ TEST_F(BubbleFrameViewTest, MetadataTest) {
 namespace {
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+  METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(TestBubbleDialogDelegateView);
   TestBubbleDialogDelegateView()
       : BubbleDialogDelegateView(nullptr, BubbleBorder::NONE) {
     set_shadow(BubbleBorder::NO_SHADOW);
@@ -1015,7 +1016,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   bool should_show_close_ = false;
 };
 
-BEGIN_METADATA(TestBubbleDialogDelegateView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(TestBubbleDialogDelegateView)
 END_METADATA
 
 class TestAnchor {
@@ -1037,6 +1038,8 @@ class TestAnchor {
 
 // BubbleDialogDelegate with no margins to test width snapping.
 class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
+  METADATA_HEADER(TestWidthSnapDelegate, TestBubbleDialogDelegateView)
+
  public:
   TestWidthSnapDelegate(TestAnchor* anchor, bool should_snap) {
     DialogDelegate::SetButtons(should_snap ? ui::DIALOG_BUTTON_OK
@@ -1050,6 +1053,9 @@ class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
   TestWidthSnapDelegate(const TestWidthSnapDelegate&) = delete;
   TestWidthSnapDelegate& operator=(const TestWidthSnapDelegate&) = delete;
 };
+
+BEGIN_METADATA(TestWidthSnapDelegate)
+END_METADATA
 
 }  // namespace
 

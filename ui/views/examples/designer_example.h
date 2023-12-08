@@ -72,8 +72,9 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   class GrabHandles;
 
   class GrabHandle : public View {
+    METADATA_HEADER(GrabHandle, View)
+
    public:
-    METADATA_HEADER(GrabHandle);
     GrabHandle(GrabHandles* grab_handles, GrabHandlePosition position);
     GrabHandle(const GrabHandle&) = delete;
     GrabHandle& operator=(const GrabHandle&) = delete;

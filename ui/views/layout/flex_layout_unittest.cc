@@ -42,10 +42,10 @@ using gfx::Rect;
 using gfx::Size;
 
 class MockView : public View {
+  METADATA_HEADER(MockView, View)
+
  public:
   enum class SizeMode { kUsePreferredSize, kFixedArea };
-
-  METADATA_HEADER(MockView);
 
   void SetMinimumSize(const Size& minimum_size) {
     minimum_size_ = minimum_size;
@@ -89,7 +89,7 @@ class MockView : public View {
   SizeMode size_mode_ = SizeMode::kUsePreferredSize;
 };
 
-BEGIN_METADATA(MockView, View)
+BEGIN_METADATA(MockView)
 ADD_PROPERTY_METADATA(gfx::Size, MaximumSize)
 END_METADATA
 

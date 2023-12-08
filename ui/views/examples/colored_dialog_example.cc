@@ -28,8 +28,9 @@
 namespace views::examples {
 
 class ThemeTrackingCheckbox : public views::Checkbox {
+  METADATA_HEADER(ThemeTrackingCheckbox, views::Checkbox)
+
  public:
-  METADATA_HEADER(ThemeTrackingCheckbox);
   explicit ThemeTrackingCheckbox(const std::u16string& label)
       : Checkbox(label,
                  base::BindRepeating(&ThemeTrackingCheckbox::ButtonPressed,
@@ -50,12 +51,13 @@ class ThemeTrackingCheckbox : public views::Checkbox {
   }
 };
 
-BEGIN_METADATA(ThemeTrackingCheckbox, views::Checkbox)
+BEGIN_METADATA(ThemeTrackingCheckbox)
 END_METADATA
 
 class TextVectorImageButton : public views::MdTextButton {
+  METADATA_HEADER(TextVectorImageButton, views::MdTextButton)
+
  public:
-  METADATA_HEADER(TextVectorImageButton);
   TextVectorImageButton(PressedCallback callback,
                         const std::u16string& text,
                         const gfx::VectorIcon& icon)
@@ -77,7 +79,7 @@ class TextVectorImageButton : public views::MdTextButton {
   const raw_ref<const gfx::VectorIcon> icon_;
 };
 
-BEGIN_METADATA(TextVectorImageButton, views::MdTextButton)
+BEGIN_METADATA(TextVectorImageButton)
 END_METADATA
 
 ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
@@ -118,7 +120,7 @@ void ColoredDialog::ContentsChanged(Textfield* sender,
   DialogModelChanged();
 }
 
-BEGIN_METADATA(ColoredDialog, views::DialogDelegateView)
+BEGIN_METADATA(ColoredDialog)
 END_METADATA
 
 ColoredDialogChooser::ColoredDialogChooser() {
@@ -169,7 +171,7 @@ void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
                      confirmation_label_));
 }
 
-BEGIN_METADATA(ColoredDialogChooser, views::View)
+BEGIN_METADATA(ColoredDialogChooser)
 END_METADATA
 
 ColoredDialogExample::ColoredDialogExample() : ExampleBase("Colored Dialog") {}

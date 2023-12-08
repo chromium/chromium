@@ -21,9 +21,9 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
                                     public ViewsScrollbarBridgeDelegate,
                                     public ui::ImplicitAnimationObserver,
                                     public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(CocoaScrollBar);
+  METADATA_HEADER(CocoaScrollBar, ScrollBar)
 
+ public:
   explicit CocoaScrollBar(bool horizontal);
 
   CocoaScrollBar(const CocoaScrollBar&) = delete;

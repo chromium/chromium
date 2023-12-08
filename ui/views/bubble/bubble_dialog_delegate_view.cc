@@ -1164,7 +1164,7 @@ void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {
   }
 }
 
-BEGIN_METADATA(BubbleDialogDelegateView, View)
+BEGIN_METADATA(BubbleDialogDelegateView)
 END_METADATA
 
 }  // namespace views

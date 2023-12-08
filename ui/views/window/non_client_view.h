@@ -28,9 +28,9 @@ enum class CloseRequestResult;
 //  details on View hierarchy).
 class VIEWS_EXPORT NonClientFrameView : public View,
                                         public ViewTargeterDelegate {
- public:
-  METADATA_HEADER(NonClientFrameView);
+  METADATA_HEADER(NonClientFrameView, View)
 
+ public:
   enum {
     // Various edges of the frame border have a 1 px shadow along their edges;
     // in a few cases we shift elements based on this amount for visual appeal.
@@ -150,9 +150,9 @@ class VIEWS_EXPORT NonClientFrameView : public View,
 //  +----------------------------------------------------+
 //
 class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
- public:
-  METADATA_HEADER(NonClientView);
+  METADATA_HEADER(NonClientView, View)
 
+ public:
   explicit NonClientView(ClientView* client_view);
   NonClientView(const NonClientView&) = delete;
   NonClientView& operator=(const NonClientView&) = delete;

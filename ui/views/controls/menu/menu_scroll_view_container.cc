@@ -57,8 +57,9 @@ static constexpr float kBackgroundBlurQuality = 0.33f;
 // MenuController.
 
 class MenuScrollButton : public View {
+  METADATA_HEADER(MenuScrollButton, View)
+
  public:
-  METADATA_HEADER(MenuScrollButton);
   MenuScrollButton(SubmenuView* host, bool is_up)
       : host_(host),
         is_up_(is_up),
@@ -143,7 +144,7 @@ class MenuScrollButton : public View {
   const int pref_height_;
 };
 
-BEGIN_METADATA(MenuScrollButton, View)
+BEGIN_METADATA(MenuScrollButton)
 END_METADATA
 
 }  // namespace
@@ -159,8 +160,9 @@ END_METADATA
 // what ScrollView does, so we use a one off variant.
 
 class MenuScrollViewContainer::MenuScrollView : public View {
+  METADATA_HEADER(MenuScrollView, View)
+
  public:
-  METADATA_HEADER(MenuScrollView);
   MenuScrollView(View* child, MenuScrollViewContainer* owner) : owner_(owner) {
     AddChildView(child);
   }
@@ -530,7 +532,7 @@ BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(
   }
 }
 
-BEGIN_METADATA(MenuScrollViewContainer, View)
+BEGIN_METADATA(MenuScrollViewContainer)
 END_METADATA
 
 }  // namespace views

@@ -46,8 +46,9 @@ namespace views::examples {
 namespace {
 
 class VectorIconGallery : public View, public TextfieldController {
+  METADATA_HEADER(VectorIconGallery, View)
+
  public:
-  METADATA_HEADER(VectorIconGallery);
   VectorIconGallery() {
     size_input_ = AddChildView(std::make_unique<Textfield>());
     color_input_ = AddChildView(std::make_unique<Textfield>());
@@ -293,7 +294,7 @@ class VectorIconGallery : public View, public TextfieldController {
   std::string contents_;
 };
 
-BEGIN_METADATA(VectorIconGallery, View)
+BEGIN_METADATA(VectorIconGallery)
 END_METADATA
 
 }  // namespace

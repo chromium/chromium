@@ -18,8 +18,9 @@ class Insets;
 namespace views {
 
 class VIEWS_EXPORT BoxLayoutView : public View {
+  METADATA_HEADER(BoxLayoutView, View)
+
  public:
-  METADATA_HEADER(BoxLayoutView);
   BoxLayoutView();
   BoxLayoutView(BoxLayoutView&) = delete;
   BoxLayoutView& operator=(BoxLayoutView&) = delete;

@@ -512,7 +512,7 @@ base::RetainingOneShotTimer* ScrollBar::GetHideTimerForTesting(
   return &static_cast<CocoaScrollBar*>(scroll_bar)->hide_scrollbar_timer_;
 }
 
-BEGIN_METADATA(CocoaScrollBar, ScrollBar)
+BEGIN_METADATA(CocoaScrollBar)
 END_METADATA
 
 }  // namespace views

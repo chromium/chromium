@@ -71,8 +71,9 @@ SkColor GetTextColorForEnableState(const Combobox& combobox, bool enabled) {
 
 // The transparent button which holds a button state but is not rendered.
 class TransparentButton : public Button {
+  METADATA_HEADER(TransparentButton, Button)
+
  public:
-  METADATA_HEADER(TransparentButton);
   explicit TransparentButton(PressedCallback callback)
       : Button(std::move(callback)) {
     SetFocusBehavior(FocusBehavior::NEVER);
@@ -116,7 +117,7 @@ class TransparentButton : public Button {
   }
 };
 
-BEGIN_METADATA(TransparentButton, Button)
+BEGIN_METADATA(TransparentButton)
 END_METADATA
 
 }  // namespace
@@ -797,7 +798,7 @@ const gfx::FontList& Combobox::GetForegroundFontList() const {
   return GetFontList();
 }
 
-BEGIN_METADATA(Combobox, View)
+BEGIN_METADATA(Combobox)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, Callback)
 ADD_PROPERTY_METADATA(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
 ADD_PROPERTY_METADATA(ui::ComboboxModel*, Model)

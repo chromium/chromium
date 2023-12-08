@@ -133,6 +133,9 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
   SchedulePaint();
 }
 
+BEGIN_METADATA(OverlayScrollBar, Thumb, BaseScrollBarThumb)
+END_METADATA
+
 OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
   SetNotifyEnterExitOnChild(true);
   SetPaintToLayer();
@@ -194,7 +197,7 @@ void OverlayScrollBar::StartHideCountdown() {
       base::BindOnce(&OverlayScrollBar::Hide, base::Unretained(this)));
 }
 
-BEGIN_METADATA(OverlayScrollBar, ScrollBar)
+BEGIN_METADATA(OverlayScrollBar)
 END_METADATA
 
 }  // namespace views

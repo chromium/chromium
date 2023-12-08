@@ -368,7 +368,7 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
                               action_item->GetImage());
 }
 
-BEGIN_METADATA(MdTextButton, LabelButton)
+BEGIN_METADATA(MdTextButton)
 ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)

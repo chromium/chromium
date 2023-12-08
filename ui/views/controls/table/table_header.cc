@@ -396,7 +396,8 @@ absl::optional<size_t> TableHeader::GetResizeColumn(int x) const {
              ? absl::make_optional(index.value())
              : absl::nullopt;
 }
-BEGIN_METADATA(TableHeader, View)
+
+BEGIN_METADATA(TableHeader)
 END_METADATA
 
 }  // namespace views

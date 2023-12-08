@@ -102,8 +102,9 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
 // their own announcements without changing their accessible name or description
 // is the reason this system exists at all).
 class AnnounceTextView : public View {
+  METADATA_HEADER(AnnounceTextView, View)
+
  public:
-  METADATA_HEADER(AnnounceTextView);
   ~AnnounceTextView() override = default;
 
   void AnnounceTextAs(const std::u16string& text,
@@ -148,7 +149,7 @@ class AnnounceTextView : public View {
   ax::mojom::Role announce_role_ = ax::mojom::Role::kNone;
 };
 
-BEGIN_METADATA(AnnounceTextView, View)
+BEGIN_METADATA(AnnounceTextView)
 END_METADATA
 
 // This event handler receives events in the pre-target phase and takes care of
@@ -945,6 +946,6 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
   return details;
 }
 
-BEGIN_METADATA(RootView, View)
+BEGIN_METADATA(RootView)
 END_METADATA
 }  // namespace views::internal

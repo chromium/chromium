@@ -43,8 +43,9 @@ namespace {
 // it in a view as AnimatedImageView.
 // See https://skia.org/user/modules/skottie for more info on skottie.
 class AnimationGallery : public BoxLayoutView, public TextfieldController {
+  METADATA_HEADER(AnimationGallery, BoxLayoutView)
+
  public:
-  METADATA_HEADER(AnimationGallery);
   AnimationGallery() {
     View* image_view_container = nullptr;
     BoxLayoutView* file_container = nullptr;
@@ -135,7 +136,7 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
   int size_ = 0;
 };
 
-BEGIN_METADATA(AnimationGallery, BoxLayoutView)
+BEGIN_METADATA(AnimationGallery)
 END_METADATA
 
 }  // namespace

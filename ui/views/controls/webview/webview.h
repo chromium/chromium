@@ -45,9 +45,9 @@ class WEBVIEW_EXPORT WebView : public View,
                                public content::WebContentsDelegate,
                                public content::WebContentsObserver,
                                public ui::AXModeObserver {
- public:
-  METADATA_HEADER(WebView);
+  METADATA_HEADER(WebView, View)
 
+ public:
   using WebContentsAttachedCallback = base::RepeatingCallback<void(WebView*)>;
 
   explicit WebView(content::BrowserContext* browser_context = nullptr);

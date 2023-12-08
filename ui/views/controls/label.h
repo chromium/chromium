@@ -41,9 +41,9 @@ class VIEWS_EXPORT Label : public View,
                            public WordLookupClient,
                            public SelectionControllerDelegate,
                            public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(Label);
+  METADATA_HEADER(Label, View)
 
+ public:
   enum MenuCommands {
     kCopy = 1,
     kSelectAll,

@@ -527,9 +527,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 // inherit or use BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
                                               public View {
- public:
-  METADATA_HEADER(BubbleDialogDelegateView);
+  METADATA_HEADER(BubbleDialogDelegateView, View)
 
+ public:
   template <typename T>
   static bool IsBubbleDialogDelegateView(const BubbleDialogDelegateView* view) {
     return ui::metadata::IsClass<T, BubbleDialogDelegateView>(view);

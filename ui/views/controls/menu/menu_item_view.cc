@@ -67,9 +67,9 @@ namespace {
 // VerticalSeparator ----------------------------------------------------------
 
 class VerticalSeparator : public Separator {
- public:
-  METADATA_HEADER(VerticalSeparator);
+  METADATA_HEADER(VerticalSeparator, Separator)
 
+ public:
   VerticalSeparator();
   VerticalSeparator(const VerticalSeparator&) = delete;
   VerticalSeparator& operator=(const VerticalSeparator&) = delete;
@@ -90,7 +90,7 @@ VerticalSeparator::VerticalSeparator() {
   SetColorId(id);
 }
 
-BEGIN_METADATA(VerticalSeparator, Separator)
+BEGIN_METADATA(VerticalSeparator)
 END_METADATA
 
 }  // namespace
@@ -1484,7 +1484,7 @@ int MenuItemView::GetVerticalMargin() const {
              : config.item_vertical_margin;
 }
 
-BEGIN_METADATA(MenuItemView, View)
+BEGIN_METADATA(MenuItemView)
 END_METADATA
 
 // EmptyMenuMenuItem ----------------------------------------------------------
@@ -1495,7 +1495,7 @@ EmptyMenuMenuItem::EmptyMenuMenuItem(MenuItemView* parent)
   SetEnabled(false);
 }
 
-BEGIN_METADATA(EmptyMenuMenuItem, MenuItemView)
+BEGIN_METADATA(EmptyMenuMenuItem)
 END_METADATA
 
 }  // namespace views

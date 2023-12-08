@@ -40,9 +40,9 @@ class LinkFragment;
 // whitespace is respected, provided not only whitespace fits in the first line.
 // In this case, leading whitespace is ignored.
 class VIEWS_EXPORT StyledLabel : public View {
- public:
-  METADATA_HEADER(StyledLabel);
+  METADATA_HEADER(StyledLabel, View)
 
+ public:
   // Parameters that define label style for a styled label's text range.
   struct VIEWS_EXPORT RangeStyleInfo {
     RangeStyleInfo();

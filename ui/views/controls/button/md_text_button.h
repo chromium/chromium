@@ -24,9 +24,9 @@ namespace views {
 
 // A button class that implements the Material Design text button spec.
 class VIEWS_EXPORT MdTextButton : public LabelButton {
- public:
-  METADATA_HEADER(MdTextButton);
+  METADATA_HEADER(MdTextButton, LabelButton)
 
+ public:
   explicit MdTextButton(PressedCallback callback = PressedCallback(),
                         const std::u16string& text = std::u16string(),
                         int button_context = style::CONTEXT_BUTTON_MD,

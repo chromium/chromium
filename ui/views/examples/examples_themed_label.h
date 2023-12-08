@@ -15,8 +15,9 @@
 namespace views::examples {
 
 class ThemedLabel : public Label {
+  METADATA_HEADER(ThemedLabel, Label)
+
  public:
-  METADATA_HEADER(ThemedLabel);
   ThemedLabel();
   ThemedLabel(const ThemedLabel&) = delete;
   ThemedLabel& operator=(const ThemedLabel&) = delete;

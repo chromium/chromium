@@ -66,8 +66,9 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
 };
 
 class ExampleMenuButton : public MenuButton {
+  METADATA_HEADER(ExampleMenuButton, MenuButton)
+
  public:
-  METADATA_HEADER(ExampleMenuButton);
   explicit ExampleMenuButton(const std::u16string& test = std::u16string());
 
   ExampleMenuButton(const ExampleMenuButton&) = delete;
@@ -84,7 +85,7 @@ class ExampleMenuButton : public MenuButton {
   std::unique_ptr<MenuRunner> menu_runner_;
 };
 
-BEGIN_METADATA(ExampleMenuButton, MenuButton)
+BEGIN_METADATA(ExampleMenuButton)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(/* no export */, ExampleMenuButton, MenuButton)

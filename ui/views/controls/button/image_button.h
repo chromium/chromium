@@ -18,9 +18,9 @@
 namespace views {
 
 class VIEWS_EXPORT ImageButton : public Button {
- public:
-  METADATA_HEADER(ImageButton);
+  METADATA_HEADER(ImageButton, Button)
 
+ public:
   // An enum describing the horizontal alignment of images on Buttons.
   enum HorizontalAlignment { ALIGN_LEFT = 0, ALIGN_CENTER, ALIGN_RIGHT };
 
@@ -135,9 +135,9 @@ END_VIEW_BUILDER
 //
 ////////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT ToggleImageButton : public ImageButton {
- public:
-  METADATA_HEADER(ToggleImageButton);
+  METADATA_HEADER(ToggleImageButton, ImageButton)
 
+ public:
   explicit ToggleImageButton(PressedCallback callback = PressedCallback());
 
   ToggleImageButton(const ToggleImageButton&) = delete;

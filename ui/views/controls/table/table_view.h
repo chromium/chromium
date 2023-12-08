@@ -59,11 +59,10 @@ enum TableTypes {
   ICON_AND_TEXT,
 };
 
-class VIEWS_EXPORT TableView : public views::View,
-                               public ui::TableModelObserver {
- public:
-  METADATA_HEADER(TableView);
+class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
+  METADATA_HEADER(TableView, View)
 
+ public:
   // Used by AdvanceActiveVisibleColumn(), AdvanceSelection() and
   // ResizeColumnViaKeyboard() to determine the direction to change the
   // selection.

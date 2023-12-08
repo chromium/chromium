@@ -37,9 +37,9 @@ class LabelButtonBorder;
 
 // LabelButton is a button with text and an icon.
 class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
- public:
-  METADATA_HEADER(LabelButton);
+  METADATA_HEADER(LabelButton, Button)
 
+ public:
   // Creates a LabelButton with pressed events sent to |callback| and label
   // |text|. |button_context| is a value from views::style::TextContext and
   // determines the appearance of |text|.

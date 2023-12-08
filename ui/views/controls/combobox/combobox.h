@@ -43,9 +43,9 @@ class PrefixSelector;
 class VIEWS_EXPORT Combobox : public View,
                               public PrefixDelegate,
                               public ui::ComboboxModelObserver {
- public:
-  METADATA_HEADER(Combobox);
+  METADATA_HEADER(Combobox, View)
 
+ public:
   using MenuSelectionAtCallback = base::RepeatingCallback<bool(size_t index)>;
   using MenuWillShowCallbackList = base::RepeatingClosureList;
   using MenuWillShowCallback = MenuWillShowCallbackList::CallbackType;

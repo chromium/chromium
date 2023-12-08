@@ -29,7 +29,7 @@ gfx::Rect NativeFrameViewMac::GetWindowBoundsForClientBounds(
   return window_bounds;
 }
 
-BEGIN_METADATA(NativeFrameViewMac, NativeFrameView)
+BEGIN_METADATA(NativeFrameViewMac)
 END_METADATA
 
 }  // namespace views

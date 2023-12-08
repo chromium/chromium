@@ -19,9 +19,9 @@ class LabelButton;
 // A bubble that contains actions available for the selected text. An object of
 // this type, as a BubbleDialogDelegateView, manages its own lifetime.
 class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(TouchSelectionMenuViews);
+  METADATA_HEADER(TouchSelectionMenuViews, BubbleDialogDelegateView)
 
+ public:
   enum ButtonViewId : int { kEllipsisButton = 1 };
 
   TouchSelectionMenuViews(TouchSelectionMenuRunnerViews* owner,

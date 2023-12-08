@@ -13,8 +13,9 @@ namespace views {
 // Dot indicator that can be added to a view, usually used as a status
 // indicator.
 class VIEWS_EXPORT DotIndicator : public View {
+  METADATA_HEADER(DotIndicator, View)
+
  public:
-  METADATA_HEADER(DotIndicator);
   DotIndicator(DotIndicator&) = delete;
   DotIndicator& operator=(const DotIndicator&) = delete;
   ~DotIndicator() override;

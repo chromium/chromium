@@ -278,8 +278,9 @@ using EditingHandleView = TouchSelectionControllerImpl::EditingHandleView;
 
 // A View that displays the text selection handle.
 class TouchSelectionControllerImpl::EditingHandleView : public View {
+  METADATA_HEADER(EditingHandleView, View)
+
  public:
-  METADATA_HEADER(EditingHandleView);
   EditingHandleView(TouchSelectionControllerImpl* controller,
                     bool is_cursor_handle)
       : controller_(controller),

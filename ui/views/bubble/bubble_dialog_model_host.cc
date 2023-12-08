@@ -163,8 +163,9 @@ int GetDialogBottomMargins(LayoutProvider* layout_provider,
 // Label/StyledLabel to be clickable, while supporting Links which requires a
 // StyledLabel.
 class CheckboxControl : public Checkbox {
+  METADATA_HEADER(CheckboxControl, Checkbox)
+
  public:
-  METADATA_HEADER(CheckboxControl);
   CheckboxControl(std::unique_ptr<View> label, int label_line_height)
       : label_line_height_(label_line_height) {
     auto* layout = SetLayoutManager(std::make_unique<BoxLayout>());
@@ -206,7 +207,7 @@ class CheckboxControl : public Checkbox {
   const int label_line_height_;
 };
 
-BEGIN_METADATA(CheckboxControl, Checkbox)
+BEGIN_METADATA(CheckboxControl)
 END_METADATA
 
 }  // namespace
@@ -246,8 +247,9 @@ class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
 };
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {
+  METADATA_HEADER(LayoutConsensusView, View)
+
  public:
-  METADATA_HEADER(LayoutConsensusView);
   LayoutConsensusView(LayoutConsensusGroup* group, std::unique_ptr<View> view)
       : group_(group) {
     group->AddView(this);

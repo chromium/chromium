@@ -704,7 +704,7 @@ void LabelButtonActionViewInterface::ActionItemChangedImpl(
                               action_item->GetImage());
 }
 
-BEGIN_METADATA(LabelButton, Button)
+BEGIN_METADATA(LabelButton)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinSize)

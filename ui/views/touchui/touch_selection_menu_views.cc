@@ -242,7 +242,7 @@ void TouchSelectionMenuViews::EllipsisPressed(const ui::Event& event) {
   }
 }
 
-BEGIN_METADATA(TouchSelectionMenuViews, BubbleDialogDelegateView)
+BEGIN_METADATA(TouchSelectionMenuViews)
 END_METADATA
 
 }  // namespace views

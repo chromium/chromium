@@ -3717,7 +3717,7 @@ void BaseActionViewInterface::ActionItemChangedImpl(
   action_view_->SetVisible(action_item->GetVisible());
 }
 
-// This block requires the existence of METADATA_HEADER(View) in the class
+// This block requires the existence of METADATA_HEADER_BASE(View) in the class
 // declaration for View.
 BEGIN_METADATA_BASE(View)
 ADD_PROPERTY_METADATA(std::unique_ptr<Background>, Background)

@@ -21,9 +21,9 @@ namespace views {
 
 // Progress bar is a control that indicates progress visually.
 class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(ProgressBar);
+  METADATA_HEADER(ProgressBar, View)
 
+ public:
   ProgressBar();
 
   ProgressBar(const ProgressBar&) = delete;

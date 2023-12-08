@@ -39,8 +39,9 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // when the mouse is pressed over the view. These Textfields allow the user to
   // interactively set each margin and the "flex" for the given view.
   class ChildPanel : public View, public TextfieldController {
+    METADATA_HEADER(ChildPanel, View)
+
    public:
-    METADATA_HEADER(ChildPanel);
     explicit ChildPanel(LayoutExampleBase* example);
     ChildPanel(const ChildPanel&) = delete;
     ChildPanel& operator=(const ChildPanel&) = delete;

@@ -649,7 +649,7 @@ void StyledLabel::RemoveOrDeleteAllChildViews() {
   }
 }
 
-BEGIN_METADATA(StyledLabel, View)
+BEGIN_METADATA(StyledLabel)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, DefaultTextStyle)

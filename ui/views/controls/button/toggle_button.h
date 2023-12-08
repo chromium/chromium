@@ -23,9 +23,9 @@ namespace views {
 // to a checkbox but has no text and looks more like a two-state horizontal
 // slider.
 class VIEWS_EXPORT ToggleButton : public Button {
- public:
-  METADATA_HEADER(ToggleButton);
+  METADATA_HEADER(ToggleButton, Button)
 
+ public:
   explicit ToggleButton(PressedCallback callback = PressedCallback());
   ToggleButton(PressedCallback callback, bool has_thumb_shadow);
 

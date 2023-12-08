@@ -407,13 +407,13 @@ void ToggleImageButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-BEGIN_METADATA(ImageButton, Button)
+BEGIN_METADATA(ImageButton)
 ADD_PROPERTY_METADATA(HorizontalAlignment, ImageHorizontalAlignment)
 ADD_PROPERTY_METADATA(VerticalAlignment, ImageVerticalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinimumImageSize)
 END_METADATA
 
-BEGIN_METADATA(ToggleImageButton, ImageButton)
+BEGIN_METADATA(ToggleImageButton)
 ADD_PROPERTY_METADATA(bool, Toggled)
 ADD_PROPERTY_METADATA(std::unique_ptr<Background>, ToggledBackground)
 ADD_PROPERTY_METADATA(std::u16string, ToggledTooltipText)

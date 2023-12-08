@@ -31,9 +31,9 @@ extern const char kWidgetNativeViewHostKey[];
 // Under the hood, a platform-specific NativeViewHostWrapper implementation does
 // the platform-specific work of manipulating the underlying OS widget type.
 class VIEWS_EXPORT NativeViewHost : public View {
- public:
-  METADATA_HEADER(NativeViewHost);
+  METADATA_HEADER(NativeViewHost, View)
 
+ public:
   NativeViewHost();
 
   NativeViewHost(const NativeViewHost&) = delete;

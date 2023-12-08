@@ -95,8 +95,9 @@ class ToggleButton::FocusRingHighlightPathGenerator
 
 // Class representing the thumb (the circle that slides horizontally).
 class ToggleButton::ThumbView : public View {
+  METADATA_HEADER(ThumbView, View)
+
  public:
-  METADATA_HEADER(ThumbView);
   explicit ThumbView(bool has_shadow) : has_shadow_(has_shadow) {
     // Make the thumb behave as part of the parent for event handling.
     SetCanProcessEventsWithinSubtree(false);
@@ -605,7 +606,7 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
 BEGIN_METADATA(ToggleButton, ThumbView, View)
 END_METADATA
 
-BEGIN_METADATA(ToggleButton, Button)
+BEGIN_METADATA(ToggleButton)
 ADD_PROPERTY_METADATA(bool, IsOn)
 ADD_PROPERTY_METADATA(bool, AcceptsEvents)
 END_METADATA

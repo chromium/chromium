@@ -288,7 +288,7 @@ void NativeViewHost::ClearFocus() {
   }
 }
 
-BEGIN_METADATA(NativeViewHost, View)
+BEGIN_METADATA(NativeViewHost)
 END_METADATA
 
 }  // namespace views

@@ -75,8 +75,9 @@ ui::ElementIdentifier GetButtonId(ui::DialogButton type) {
 
 // Simple container to bubble child view changes up the view hierarchy.
 class DialogClientView::ButtonRowContainer : public View {
+  METADATA_HEADER(ButtonRowContainer, View)
+
  public:
-  METADATA_HEADER(ButtonRowContainer);
   explicit ButtonRowContainer(DialogClientView* owner) : owner_(owner) {}
   ButtonRowContainer(const ButtonRowContainer&) = delete;
   ButtonRowContainer& operator=(const ButtonRowContainer&) = delete;
@@ -518,7 +519,7 @@ void DialogClientView::RemoveFillerView(size_t view_index) {
   }
 }
 
-BEGIN_METADATA(DialogClientView, ClientView)
+BEGIN_METADATA(DialogClientView)
 END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kTopViewId);
