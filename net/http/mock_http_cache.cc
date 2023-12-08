@@ -817,33 +817,38 @@ void MockHttpCache::SetTestMode(int test_mode) {
 }
 
 bool MockHttpCache::IsWriterPresent(const std::string& key) {
-  HttpCache::ActiveEntry* entry = http_cache_.FindActiveEntry(key);
-  return entry && entry->writers && !entry->writers->IsEmpty();
+  HttpCache::ActiveEntry* entry = http_cache_.GetActiveEntry(key);
+  return entry && entry->HasWriters() && !entry->writers()->IsEmpty();
 }
 
 bool MockHttpCache::IsHeadersTransactionPresent(const std::string& key) {
-  HttpCache::ActiveEntry* entry = http_cache_.FindActiveEntry(key);
-  return entry && entry->headers_transaction;
+  HttpCache::ActiveEntry* entry = http_cache_.GetActiveEntry(key);
+  return entry && entry->headers_transaction();
 }
 
 int MockHttpCache::GetCountReaders(const std::string& key) {
-  HttpCache::ActiveEntry* entry = http_cache_.FindActiveEntry(key);
-  return entry ? entry->readers.size() : 0;
+  HttpCache::ActiveEntry* entry = http_cache_.GetActiveEntry(key);
+  return entry ? entry->readers().size() : 0;
 }
 
 int MockHttpCache::GetCountAddToEntryQueue(const std::string& key) {
-  HttpCache::ActiveEntry* entry = http_cache_.FindActiveEntry(key);
-  return entry ? entry->add_to_entry_queue.size() : 0;
+  HttpCache::ActiveEntry* entry = http_cache_.GetActiveEntry(key);
+  return entry ? entry->add_to_entry_queue().size() : 0;
 }
 
 int MockHttpCache::GetCountDoneHeadersQueue(const std::string& key) {
-  HttpCache::ActiveEntry* entry = http_cache_.FindActiveEntry(key);
-  return entry ? entry->done_headers_queue.size() : 0;
+  HttpCache::ActiveEntry* entry = http_cache_.GetActiveEntry(key);
+  return entry ? entry->done_headers_queue().size() : 0;
 }
 
 int MockHttpCache::GetCountWriterTransactions(const std::string& key) {
-  HttpCache::ActiveEntry* entry = http_cache_.FindActiveEntry(key);
-  return entry && entry->writers ? entry->writers->GetTransactionsCount() : 0;
+  HttpCache::ActiveEntry* entry = http_cache_.GetActiveEntry(key);
+  return entry && entry->writers() ? entry->writers()->GetTransactionsCount()
+                                   : 0;
+}
+
+base::WeakPtr<HttpCache> MockHttpCache::GetWeakPtr() {
+  return http_cache_.GetWeakPtr();
 }
 
 //-----------------------------------------------------------------------------

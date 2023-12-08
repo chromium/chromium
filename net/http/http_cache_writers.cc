@@ -181,6 +181,7 @@ void HttpCache::Writers::RemoveTransaction(Transaction* transaction,
     TruncateEntry();
   }
 
+  // Destroys `this`.
   cache_->WritersDoneWritingToEntry(entry_, success, should_keep_entry_,
                                     TransactionSet());
 }
@@ -273,7 +274,7 @@ void HttpCache::Writers::TruncateEntry() {
                                     true /* response_truncated */);
   data->Done();
   io_buf_len_ = data->pickle()->size();
-  entry_->disk_entry->WriteData(kResponseInfoIndex, 0, data.get(), io_buf_len_,
+  entry_->GetEntry()->WriteData(kResponseInfoIndex, 0, data.get(), io_buf_len_,
                                 base::DoNothing(), true);
 }
 
@@ -296,7 +297,7 @@ bool HttpCache::Writers::ShouldTruncate() {
   }
 
   // Double check that there is something worth keeping.
-  int current_size = entry_->disk_entry->GetDataSize(kResponseContentIndex);
+  int current_size = entry_->GetEntry()->GetDataSize(kResponseContentIndex);
   if (!current_size) {
     should_keep_entry_ = false;
     return false;
@@ -442,7 +443,7 @@ int HttpCache::Writers::DoCacheWriteData(int num_bytes) {
     return num_bytes;
   }
 
-  int current_size = entry_->disk_entry->GetDataSize(kResponseContentIndex);
+  int current_size = entry_->GetEntry()->GetDataSize(kResponseContentIndex);
   CompletionOnceCallback io_callback = base::BindOnce(
       &HttpCache::Writers::OnIOComplete, weak_factory_.GetWeakPtr());
 
@@ -460,7 +461,7 @@ int HttpCache::Writers::DoCacheWriteData(int num_bytes) {
 
   if (!partial) {
     last_disk_cache_access_start_time_ = base::TimeTicks::Now();
-    rv = entry_->disk_entry->WriteData(kResponseContentIndex, current_size,
+    rv = entry_->GetEntry()->WriteData(kResponseContentIndex, current_size,
                                        read_buf_.get(), num_bytes,
                                        std::move(io_callback), true);
   } else {
@@ -517,7 +518,7 @@ void HttpCache::Writers::OnDataReceived(int result) {
   if (result == 0) {
     // Check if the response is actually completed or if not, attempt to mark
     // the entry as truncated in OnNetworkReadFailure.
-    int current_size = entry_->disk_entry->GetDataSize(kResponseContentIndex);
+    int current_size = entry_->GetEntry()->GetDataSize(kResponseContentIndex);
     DCHECK(network_transaction_);
     const HttpResponseInfo* response_info =
         network_transaction_->GetResponseInfo();

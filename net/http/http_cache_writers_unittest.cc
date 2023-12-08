@@ -103,7 +103,8 @@ class WritersTest : public TestWithTaskEnvironment {
   void CreateWriters() {
     cache_.CreateBackendEntry(GenerateCacheKey(kSimpleGET_Transaction.url),
                               &disk_entry_, nullptr);
-    entry_ = std::make_unique<HttpCache::ActiveEntry>(disk_entry_, false);
+    entry_ = std::make_unique<HttpCache::ActiveEntry>(cache_.GetWeakPtr(),
+                                                      disk_entry_, false);
     (static_cast<MockDiskEntry*>(disk_entry_))->AddRef();
     writers_ = std::make_unique<HttpCache::Writers>(&test_cache_, entry_.get());
   }
@@ -481,7 +482,7 @@ class WritersTest : public TestWithTaskEnvironment {
   bool Truncated() const {
     const int kResponseInfoIndex = 0;  // Keep updated with HttpCache.
     TestCompletionCallback callback;
-    int io_buf_len = entry_->disk_entry->GetDataSize(kResponseInfoIndex);
+    int io_buf_len = entry_->GetEntry()->GetDataSize(kResponseInfoIndex);
     if (io_buf_len == 0) {
       return false;
     }

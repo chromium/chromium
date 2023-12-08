@@ -13739,7 +13739,7 @@ TEST_F(HttpCacheIOCallbackTest, CreateFollowedByOpenOrCreate) {
   // Verify that OpenOrCreateEntry succeeded.
   ASSERT_EQ(cb.results()[1], OK);
   ASSERT_NE(entry2, nullptr);
-  ASSERT_EQ(entry1->disk_entry, entry2->disk_entry);
+  ASSERT_EQ(entry1->GetEntry(), entry2->GetEntry());
 }
 
 TEST_F(HttpCacheIOCallbackTest, FailedCreateFollowedByOpenOrCreate) {
@@ -13836,7 +13836,7 @@ TEST_F(HttpCacheIOCallbackTest, OpenFollowedByOpenOrCreate) {
   // Verify that OpenOrCreateEntry succeeded.
   ASSERT_EQ(cb.results()[2], OK);
   ASSERT_NE(entry2, nullptr);
-  ASSERT_EQ(entry1->disk_entry, entry2->disk_entry);
+  ASSERT_EQ(entry1->GetEntry(), entry2->GetEntry());
 }
 
 TEST_F(HttpCacheIOCallbackTest, FailedOpenFollowedByOpenOrCreate) {
