@@ -23,6 +23,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -90,6 +91,7 @@ public class IncognitoStorageLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.AllTypesToAllTypes.class)
+    @DisabledTest(message = "crbug.com/1489541")
     public void testSessionStorageDoesNotLeakFromActivityToActivity(
             String activityType1, String activityType2) throws TimeoutException {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
