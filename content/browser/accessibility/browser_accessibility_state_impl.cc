@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -497,7 +499,12 @@ ui::AXMode BrowserAccessibilityStateImpl::GetProcessMode() {
 }
 
 void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
-  accessibility_mode_ = new_mode;
+  const ui::AXMode old_mode = std::exchange(accessibility_mode_, new_mode);
+
+  // Broadcast the new mode flags, if any, to the AXModeObservers.
+  if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
+    ax_platform_.NotifyModeAdded(additions);
+  }
 }
 
 void BrowserAccessibilityStateImpl::CallInitBackgroundTasksForTesting(

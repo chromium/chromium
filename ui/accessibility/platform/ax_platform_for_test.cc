@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 
+#include <utility>
+
 namespace ui {
 
 AXMode AXPlatformForTest::GetProcessMode() {
@@ -11,7 +13,12 @@ AXMode AXPlatformForTest::GetProcessMode() {
 }
 
 void AXPlatformForTest::SetProcessMode(AXMode new_mode) {
-  mode_ = new_mode;
+  const AXMode old_mode = std::exchange(mode_, new_mode);
+
+  // Broadcast the new mode flags, if any, to the AXModeObservers.
+  if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
+    ax_platform_.NotifyModeAdded(additions);
+  }
 }
 
 }  // namespace ui

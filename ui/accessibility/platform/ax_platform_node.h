@@ -11,15 +11,14 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
-#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_mode_observer.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
+class AXModeObserver;
 class AXPlatformNodeDelegate;
 
 // AXPlatformNode is the abstract base class for an implementation of
@@ -139,10 +138,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   virtual void Init(AXPlatformNodeDelegate* delegate) = 0;
 
  private:
-  // Global ObserverList for AXMode changes.
-  static base::LazyInstance<
-      base::ObserverList<AXModeObserver>::Unchecked>::Leaky ax_mode_observers_;
-
   static base::LazyInstance<NativeWindowHandlerCallback>::Leaky
       native_window_handler_;
 

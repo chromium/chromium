@@ -13,6 +13,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
@@ -41,6 +42,7 @@ class PerformanceManagerMetricsProviderCommonTest : public testing::Test {
     provider_ = std::make_unique<performance_manager::MetricsProviderCommon>();
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<performance_manager::MetricsProviderCommon> provider_;
 };
 

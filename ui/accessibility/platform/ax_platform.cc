@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/ax_platform.h"
 
 #include "base/check_op.h"
+#include "ui/accessibility/ax_mode_observer.h"
 
 namespace ui {
 
@@ -28,6 +29,20 @@ AXPlatform::AXPlatform(Delegate& delegate) : delegate_(delegate) {
 AXPlatform::~AXPlatform() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+void AXPlatform::AddModeObserver(AXModeObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AXPlatform::RemoveModeObserver(AXModeObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void AXPlatform::NotifyModeAdded(AXMode mode) {
+  for (auto& observer : observers_) {
+    observer.OnAXModeAdded(mode);
+  }
 }
 
 }  // namespace ui
