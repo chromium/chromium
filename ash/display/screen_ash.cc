@@ -143,7 +143,6 @@ display::Display ScreenAsh::GetDisplayNearestWindow(
   const RootWindowSettings* rws = GetRootWindowSettings(root_window);
   int64_t id = rws->display_id;
   // if id is |kInvaildDisplayID|, it's being deleted.
-  DCHECK(id != display::kInvalidDisplayId);
   if (id == display::kInvalidDisplayId)
     return GetPrimaryDisplay();
 
