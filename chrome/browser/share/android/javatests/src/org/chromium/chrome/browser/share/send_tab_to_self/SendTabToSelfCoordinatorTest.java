@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
+
 import static org.chromium.url.JUnitTestGURLs.HTTP_URL;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -15,6 +20,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -27,6 +34,7 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -38,8 +46,23 @@ import java.util.Optional;
 public class SendTabToSelfCoordinatorTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
+    @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        // Skip device lock UI on automotive.
+        doAnswer(
+                        invocation -> {
+                            WindowAndroid.IntentCallback callback =
+                                    (WindowAndroid.IntentCallback) invocation.getArguments()[4];
+                            callback.onIntentCompleted(Activity.RESULT_OK, null);
+                            return null;
+                        })
+                .when(mDeviceLockActivityLauncher)
+                .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+
         // Setting a recent timestamp here is necessary, otherwise the device will be considered
         // expired and won't be displayed.
         long now = System.currentTimeMillis();
@@ -99,7 +122,7 @@ public class SendTabToSelfCoordinatorTest {
                                     "Page",
                                     BottomSheetControllerProvider.from(windowAndroid),
                                     Profile.getLastUsedRegularProfile(),
-                                    null);
+                                    mDeviceLockActivityLauncher);
                     coordinator.show();
                 });
     }
