@@ -138,6 +138,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final boolean mCanAutoTriggerWhileInMotion;
     private final boolean mCanReturnToPeekAfterExpansion;
     @Nullable private final ObservableSupplier<Boolean> mInMotionSupplier;
+    @Nullable private final BackPressManager mBackPressManager;
+    @Nullable private final BackPressHandler mBackPressHandler;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
     @Nullable
@@ -311,15 +313,17 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         onTab(tab);
                     });
         }
+        mBackPressManager = backPressManager;
         if (BackPressManager.isEnabled()) {
-            BackPressHandler backPressHandler =
-                    bottomSheetController.getBottomSheetBackPressHandler();
-            if (backPressHandler != null
+            mBackPressHandler = bottomSheetController.getBottomSheetBackPressHandler();
+            if (mBackPressHandler != null
                     && backPressManager != null
                     && !backPressManager.has(BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET)) {
                 backPressManager.addHandler(
-                        backPressHandler, BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET);
+                        mBackPressHandler, BackPressHandler.Type.PAGE_INSIGHTS_BOTTOM_SHEET);
             }
+        } else {
+            mBackPressHandler = null;
         }
     }
 
@@ -483,7 +487,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                             + " not enabled.");
             return;
         }
-        if (!mCanAutoTriggerWhileInMotion && mInMotionSupplier != null && mInMotionSupplier.get()) {
+        if (!mCanAutoTriggerWhileInMotion
+                && mInMotionSupplier != null
+                && mInMotionSupplier.get() != null
+                && mInMotionSupplier.get()) {
             Log.v(TAG, "Not auto-triggering because compositor is in motion.");
             return;
         }
@@ -751,8 +758,15 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         cancelAutoTrigger();
         mBottomUiController.removeObserver(mBottomUiObserver);
         mControlsStateProvider.removeObserver(mBrowserControlsObserver);
+        mSheetController.removeObserver(this);
+        if (mTabObservable.get() != null) {
+            mTabObservable.get().removeObserver(this);
+        }
         if (mInMotionSupplier != null) {
             mInMotionSupplier.removeObserver(mInMotionCallback);
+        }
+        if (mBackPressManager != null && mBackPressHandler != null) {
+            mBackPressManager.removeHandler(mBackPressHandler);
         }
         if (mPageInsightsDataLoader != null) {
             mPageInsightsDataLoader.destroy();
