@@ -60,14 +60,14 @@ class IsolatedWebAppInstallerView : public views::BoxLayoutView {
   virtual void ShowDisabledScreen();
 
   virtual void ShowGetMetadataScreen();
-  virtual void UpdateGetMetadataProgress(double percent, int minutes_remaining);
+  virtual void UpdateGetMetadataProgress(double percent);
 
   virtual void ShowMetadataScreen(
       const SignedWebBundleMetadata& bundle_metadata);
 
   virtual void ShowInstallScreen(
       const SignedWebBundleMetadata& bundle_metadata);
-  virtual void UpdateInstallProgress(double percent, int minutes_remaining);
+  virtual void UpdateInstallProgress(double percent);
 
   virtual void ShowInstallSuccessScreen(
       const SignedWebBundleMetadata& bundle_metadata);

@@ -243,11 +243,9 @@ void IsolatedWebAppInstallerView::ShowGetMetadataScreen() {
   ShowScreen(std::move(view), progress_bar);
 }
 
-void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(
-    double percent,
-    int minutes_remaining) {
+void IsolatedWebAppInstallerView::UpdateGetMetadataProgress(double percent) {
   CHECK(progress_bar_);
-  progress_bar_->SetValue(percent / 100.0);
+  progress_bar_->SetValue(percent);
 }
 
 void IsolatedWebAppInstallerView::ShowMetadataScreen(
@@ -291,10 +289,9 @@ void IsolatedWebAppInstallerView::ShowInstallScreen(
   ShowScreen(std::move(view), progress_bar);
 }
 
-void IsolatedWebAppInstallerView::UpdateInstallProgress(double percent,
-                                                        int minutes_remaining) {
+void IsolatedWebAppInstallerView::UpdateInstallProgress(double percent) {
   CHECK(progress_bar_);
-  progress_bar_->SetValue(percent / 100.0);
+  progress_bar_->SetValue(percent);
 }
 
 void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(

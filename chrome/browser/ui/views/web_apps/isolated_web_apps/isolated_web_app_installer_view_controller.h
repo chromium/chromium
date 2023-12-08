@@ -25,6 +25,7 @@ class View;
 
 namespace web_app {
 
+class CallbackDelayer;
 class IsolatedWebAppInstallerModel;
 class WebAppProvider;
 
@@ -66,7 +67,10 @@ class IsolatedWebAppInstallerViewController
   void OnComplete();
   void Close();
 
+  void OnPrefChanged(bool enabled);
+  void OnGetMetadataProgressUpdated(double progress);
   void OnInstallabilityChecked(InstallabilityChecker::Result result);
+  void OnInstallProgressUpdated(double progress);
   void OnInstallComplete(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
@@ -91,6 +95,7 @@ class IsolatedWebAppInstallerViewController
   raw_ptr<IsolatedWebAppInstallerView> view_;
   raw_ptr<views::DialogDelegate> dialog_delegate_;
 
+  std::unique_ptr<CallbackDelayer> callback_delayer_;
   std::unique_ptr<InstallabilityChecker> installability_checker_;
 
   base::OnceClosure callback_;

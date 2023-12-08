@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -51,6 +53,10 @@
 namespace web_app {
 
 namespace {
+
+constexpr base::TimeDelta kGetMetadataMinimumDelay = base::Seconds(2);
+constexpr base::TimeDelta kInstallationMinimumDelay = base::Seconds(2);
+constexpr double kProgressBarPausePercentage = 0.8;
 
 // A DialogDelegate that notifies callers when it closes.
 // Accept/Cancel/Close callbacks could be used together to figure out when a
@@ -126,14 +132,7 @@ IsolatedWebAppInstallerViewController::
 
 void IsolatedWebAppInstallerViewController::Start() {
   // TODO(crbug.com/1479140): Check if Feature is enabled
-  model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
-  OnModelChanged();
-
-  installability_checker_ = InstallabilityChecker::CreateAndStart(
-      profile_, web_app_provider_, model_->bundle_path(),
-      base::BindOnce(
-          &IsolatedWebAppInstallerViewController::OnInstallabilityChecked,
-          weak_ptr_factory_.GetWeakPtr()));
+  OnPrefChanged(true);
 }
 
 void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
@@ -221,9 +220,52 @@ void IsolatedWebAppInstallerViewController::Close() {
   }
 }
 
+void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
+  if (enabled) {
+    model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
+    model_->SetDialogContent(absl::nullopt);
+    if (!installability_checker_) {
+      callback_delayer_ = std::make_unique<CallbackDelayer>(
+          kGetMetadataMinimumDelay, kProgressBarPausePercentage,
+          base::BindRepeating(&IsolatedWebAppInstallerViewController::
+                                  OnGetMetadataProgressUpdated,
+                              weak_ptr_factory_.GetWeakPtr()));
+      installability_checker_ = InstallabilityChecker::CreateAndStart(
+          profile_, web_app_provider_, model_->bundle_path(),
+          callback_delayer_->StartDelayingCallback(base::BindOnce(
+              &IsolatedWebAppInstallerViewController::OnInstallabilityChecked,
+              weak_ptr_factory_.GetWeakPtr())));
+    }
+  } else {
+    // Disables the installer if the user has not started installation yet.
+    // If IWA is disabled after step::kInstall, we allow installation to
+    // complete and blocks the IWA from launching.
+    if (model_->step() < IsolatedWebAppInstallerModel::Step::kInstall) {
+      model_->SetStep(IsolatedWebAppInstallerModel::Step::kDisabled);
+      model_->SetDialogContent(absl::nullopt);
+      installability_checker_.reset();
+    }
+  }
+  OnModelChanged();
+}
+
+void IsolatedWebAppInstallerViewController::OnGetMetadataProgressUpdated(
+    double progress) {
+  if (view_) {
+    view_->UpdateGetMetadataProgress(progress);
+  }
+}
+
 void IsolatedWebAppInstallerViewController::OnInstallabilityChecked(
     InstallabilityChecker::Result result) {
   absl::visit(InstallabilityCheckedVisitor(*model_, *this), result);
+}
+
+void IsolatedWebAppInstallerViewController::OnInstallProgressUpdated(
+    double progress) {
+  if (view_) {
+    view_->UpdateInstallProgress(progress);
+  }
 }
 
 void IsolatedWebAppInstallerViewController::OnInstallComplete(
@@ -279,14 +321,19 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       model_->SetDialogContent(std::nullopt);
       OnModelChanged();
 
+      callback_delayer_ = std::make_unique<CallbackDelayer>(
+          kInstallationMinimumDelay, kProgressBarPausePercentage,
+          base::BindRepeating(
+              &IsolatedWebAppInstallerViewController::OnInstallProgressUpdated,
+              weak_ptr_factory_.GetWeakPtr()));
       const SignedWebBundleMetadata& metadata = model_->bundle_metadata();
       web_app_provider_->scheduler().InstallIsolatedWebApp(
           metadata.url_info(), metadata.location(), metadata.version(),
           /*optional_keep_alive=*/nullptr,
           /*optional_profile_keep_alive=*/nullptr,
-          base::BindOnce(
+          callback_delayer_->StartDelayingCallback(base::BindOnce(
               &IsolatedWebAppInstallerViewController::OnInstallComplete,
-              weak_ptr_factory_.GetWeakPtr()));
+              weak_ptr_factory_.GetWeakPtr())));
       break;
     }
 

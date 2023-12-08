@@ -6023,6 +6023,8 @@ static_library("ui") {
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.h",
       "views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.cc",
       "views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h",
+      "views/web_apps/isolated_web_apps/callback_delayer.cc",
+      "views/web_apps/isolated_web_apps/callback_delayer.h",
       "views/web_apps/isolated_web_apps/installability_checker.cc",
       "views/web_apps/isolated_web_apps/installability_checker.h",
       "views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.cc",
