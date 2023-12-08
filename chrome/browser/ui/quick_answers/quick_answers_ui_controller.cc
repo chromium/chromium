@@ -99,13 +99,9 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
 void QuickAnswersUiController::CreateRichAnswersView() {
   CHECK(controller_->quick_answer());
 
-  // TODO(b/279061152): Build result type specific rich answers view with
-  // reading `controller_->structured_result()`. Note that each result type
-  // will be copyable, i.e. we can copy a struct to a view without worrying
-  // about object-life-time management.
   views::UniqueWidgetPtr widget = quick_answers::RichAnswersView::CreateWidget(
       quick_answers_view()->GetAnchorViewBounds(), weak_factory_.GetWeakPtr(),
-      *controller_->quick_answer());
+      *controller_->quick_answer(), *controller_->structured_result());
 
   if (!widget) {
     // If the rich card widget cannot be created, fall-back to open the query

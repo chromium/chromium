@@ -19,6 +19,27 @@ QuickAnswersTextLabel::QuickAnswersTextLabel(
   SetEnabledColorId(quick_answers_text.color_id);
 }
 
+std::unique_ptr<QuickAnswersTextLabel>
+QuickAnswersTextLabel::CreateLabelWithStyle(const std::string& text,
+                                            const gfx::FontList& font_list,
+                                            int width,
+                                            bool is_multi_line,
+                                            ui::ColorId enabled_color_id) {
+  std::unique_ptr<QuickAnswersTextLabel> label =
+      std::make_unique<QuickAnswersTextLabel>(
+          QuickAnswerText(text, enabled_color_id));
+  label->SetFontList(font_list);
+
+  label->SetMultiLine(is_multi_line);
+  if (is_multi_line) {
+    label->SetMaximumWidth(width);
+  } else {
+    label->SetMaximumWidthSingleLine(width);
+  }
+
+  return label;
+}
+
 BEGIN_METADATA(QuickAnswersTextLabel, views::Label)
 END_METADATA
 

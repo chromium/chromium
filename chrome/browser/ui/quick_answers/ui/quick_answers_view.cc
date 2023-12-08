@@ -108,12 +108,10 @@ constexpr int kPhoneticsAudioButtonSizeDip = 14;
 constexpr int kPhoneticsAudioButtonBorderDip = 3;
 
 // ReportQueryView.
-constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kReportQueryButtonMarginDip = 16;
 constexpr int kReportQueryViewFontSize = 12;
 
 // Expansion affordance indicator.
-constexpr char kRobotoFont[] = "Roboto";
 constexpr int kExpansionIndicatorLabelFontSize = 12;
 constexpr int kExpansionIndicatorIconSizeDip = 12;
 constexpr int kExpansionIndicatorIconBorderDip = 4;
@@ -212,18 +210,18 @@ class ReportQueryView : public views::Button {
     description_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
             IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL),
-        Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::ITALIC,
-                                        kReportQueryViewFontSize,
-                                        gfx::Font::Weight::NORMAL)}));
+        Label::CustomFont{gfx::FontList(
+            {quick_answers::kGoogleSansFont}, gfx::Font::ITALIC,
+            kReportQueryViewFontSize, gfx::Font::Weight::NORMAL)}));
     description_label_->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
 
     report_label_ = AddChildView(std::make_unique<Label>(
         l10n_util::GetStringUTF16(
             IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL),
-        Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                        kReportQueryViewFontSize,
-                                        gfx::Font::Weight::MEDIUM)}));
+        Label::CustomFont{gfx::FontList(
+            {quick_answers::kGoogleSansFont}, gfx::Font::NORMAL,
+            kReportQueryViewFontSize, gfx::Font::Weight::MEDIUM)}));
     report_label_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -486,7 +484,7 @@ void QuickAnswersView::ShowRetryView() {
   description_labels.push_back(std::make_unique<QuickAnswerResultText>(
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NETWORK_ERROR)));
   auto* description_container =
-      AddHorizontalUiElements(description_labels, content_view_);
+      AddHorizontalUiElements(content_view_, description_labels);
 
   // Add retry label.
   retry_label_ =
@@ -747,7 +745,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   }
 
   // Add title.
-  View* title_view = AddHorizontalUiElements(quick_answer.title, content_view_);
+  View* title_view = AddHorizontalUiElements(content_view_, quick_answer.title);
   auto* title_label = static_cast<Label*>(title_view->children().front());
   title_label->SetMaximumWidthSingleLine(GetLabelWidth());
 
@@ -762,7 +760,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   View* first_answer_view = nullptr;
   if (!quick_answer.first_answer_row.empty()) {
     first_answer_view =
-        AddHorizontalUiElements(quick_answer.first_answer_row, content_view_);
+        AddHorizontalUiElements(content_view_, quick_answer.first_answer_row);
   }
   bool first_answer_is_single_label =
       first_answer_view->children().size() == 1 &&
@@ -780,7 +778,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
 
   // Add second row answer.
   if (!quick_answer.second_answer_row.empty()) {
-    AddHorizontalUiElements(quick_answer.second_answer_row, content_view_);
+    AddHorizontalUiElements(content_view_, quick_answer.second_answer_row);
   } else {
     // If secondary-answer does not exist and primary-answer is a single label,
     // allow that label to wrap through to the row intended for the former.
@@ -824,9 +822,9 @@ void QuickAnswersView::UpdateQuickAnswerResult(
         expansion_indicator_view->AddChildView(std::make_unique<Label>(
             l10n_util::GetStringUTF16(
                 IDS_QUICK_ANSWERS_VIEW_EXPANSION_INDICATOR_LABEL),
-            Label::CustomFont{gfx::FontList({kRobotoFont}, gfx::Font::NORMAL,
-                                            kExpansionIndicatorLabelFontSize,
-                                            gfx::Font::Weight::MEDIUM)}));
+            Label::CustomFont{gfx::FontList(
+                {quick_answers::kRobotoFont}, gfx::Font::NORMAL,
+                kExpansionIndicatorLabelFontSize, gfx::Font::Weight::MEDIUM)}));
     expansion_indicator_label->SetEnabledColorId(
         cros_tokens::kTextColorProminent);
 

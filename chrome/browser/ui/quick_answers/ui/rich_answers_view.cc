@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
@@ -55,7 +56,9 @@ using quick_answers::ResultType;
 constexpr int kDefaultRichCardWidth = 360;
 constexpr int kMinimumRichCardHeight = 120;
 constexpr int kMaximumRichCardHeight = 600;
+constexpr int kContentViewWidth = 300;
 
+// View dimensions.
 constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 20, 20);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
@@ -72,8 +75,6 @@ constexpr int kResultTypeIconSizeDip = 16;
 constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 // Google search link.
-constexpr char kRobotoFont[] = "Roboto";
-constexpr int kSearchLinkLabelFontSize = 13;
 constexpr auto kSearchLinkViewInsets = gfx::Insets::TLBR(6, 60, 20, 20);
 
 }  // namespace
@@ -90,7 +91,7 @@ RichAnswersView::RichAnswersView(
       controller_(std::move(controller)),
       result_type_(result_type),
       rich_answers_view_handler_(
-          std::make_unique<quick_answers::RichAnswersPreTargetHandler>(this)),
+          std::make_unique<RichAnswersPreTargetHandler>(this)),
       focus_search_(std::make_unique<chromeos::editor_menu::FocusSearch>(
           this,
           base::BindRepeating(&RichAnswersView::GetFocusableViews,
@@ -107,27 +108,28 @@ RichAnswersView::~RichAnswersView() = default;
 views::UniqueWidgetPtr RichAnswersView::CreateWidget(
     const gfx::Rect& anchor_view_bounds,
     base::WeakPtr<QuickAnswersUiController> controller,
-    const quick_answers::QuickAnswer& result) {
+    const QuickAnswer& quick_answer,
+    const StructuredResult& result) {
   // Create the correct rich card child view depending on the result type.
   std::unique_ptr<RichAnswersView> child_view = nullptr;
-  switch (result.result_type) {
-    case quick_answers::ResultType::kDefinitionResult: {
+  switch (quick_answer.result_type) {
+    case ResultType::kDefinitionResult: {
       child_view = std::make_unique<RichAnswersDefinitionView>(
-          anchor_view_bounds, controller);
+          anchor_view_bounds, controller, *result.definition_result.get());
       break;
     }
-    case quick_answers::ResultType::kTranslationResult: {
+    case ResultType::kTranslationResult: {
       child_view = std::make_unique<RichAnswersTranslationView>(
-          anchor_view_bounds, controller);
+          anchor_view_bounds, controller, *result.translation_result.get());
       break;
     }
-    case quick_answers::ResultType::kUnitConversionResult: {
+    case ResultType::kUnitConversionResult: {
       child_view = std::make_unique<RichAnswersUnitConversionView>(
-          anchor_view_bounds, controller);
+          anchor_view_bounds, controller, *result.unit_conversion_result.get());
       break;
     }
-    case quick_answers::ResultType::kKnowledgePanelEntityResult:
-    case quick_answers::ResultType::kNoResult: {
+    case ResultType::kKnowledgePanelEntityResult:
+    case ResultType::kNoResult: {
       return views::UniqueWidgetPtr();
     }
   }
@@ -224,10 +226,10 @@ void RichAnswersView::InitLayout() {
   content_view_ = main_view_->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
           .SetInteriorMargin(kContentViewInsets)
           .Build());
+  content_view_->SetMinimumCrossAxisSize(kContentViewWidth);
 
   // Add google search link label at the bottom.
   AddGoogleSearchLink();
@@ -273,6 +275,22 @@ void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
 }
 
+void RichAnswersView::AddHeaderViewsTo(views::View* container_view,
+                                       std::string header_text) {
+  auto* header_view = AddFillLayoutChildView(container_view);
+  auto* header_label_container = header_view->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .Build());
+  header_label_container->AddChildView(
+      QuickAnswersTextLabel::CreateLabelWithStyle(
+          header_text, GetFontList(TypographyToken::kCrosButton2),
+          kContentHeaderWidth,
+          /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+
+  AddSettingsButtonTo(header_view);
+}
+
 void RichAnswersView::AddGoogleSearchLink() {
   auto* search_link_view = base_view_->AddChildView(
       views::Builder<views::FlexLayoutView>()
@@ -287,9 +305,7 @@ void RichAnswersView::AddGoogleSearchLink() {
           IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT)));
   search_link_label_->SetCallback(base::BindRepeating(
       &RichAnswersView::OnGoogleSearchLinkClicked, weak_factory_.GetWeakPtr()));
-  search_link_label_->SetFontList(
-      gfx::FontList({kRobotoFont}, gfx::Font::NORMAL, kSearchLinkLabelFontSize,
-                    gfx::Font::Weight::MEDIUM));
+  search_link_label_->SetFontList(GetFontList(TypographyToken::kCrosButton2));
   search_link_label_->SetForceUnderline(false);
 }
 

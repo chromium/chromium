@@ -241,6 +241,8 @@ struct Sense {
 struct DefinitionResult {
  public:
   DefinitionResult();
+  DefinitionResult(const DefinitionResult& other);
+  DefinitionResult& operator=(const DefinitionResult& other);
   ~DefinitionResult();
 
   std::string word;
@@ -253,6 +255,8 @@ struct DefinitionResult {
 struct TranslationResult {
  public:
   TranslationResult();
+  TranslationResult(const TranslationResult& other);
+  TranslationResult& operator=(const TranslationResult& other);
   ~TranslationResult();
 
   // TODO(b/278929409): Migrate to `std::string` for strings in structs.
@@ -267,6 +271,8 @@ struct TranslationResult {
 struct UnitConversionResult {
  public:
   UnitConversionResult();
+  UnitConversionResult(const UnitConversionResult& other);
+  UnitConversionResult& operator=(const UnitConversionResult& other);
   ~UnitConversionResult();
 
   std::string result_text;
