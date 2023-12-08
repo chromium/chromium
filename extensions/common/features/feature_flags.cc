@@ -49,7 +49,22 @@ const base::Feature* GetFeature(const std::string& feature_flag) {
 bool IsFeatureFlagEnabled(const std::string& feature_flag) {
   const base::Feature* feature = GetFeature(feature_flag);
   CHECK(feature) << feature_flag;
-  return base::FeatureList::IsEnabled(*feature);
+
+  // If the feature list is initialized, use its value.
+  if (base::FeatureList::GetInstance()) {
+    return base::FeatureList::IsEnabled(*feature);
+  }
+
+  // There's a chance the feature list isn't initialized. This can happen
+  // when the user appended the --pack-extension switch, in which case the
+  // pack job happens before the feature list is set up. In this case,
+  // use the feature's default state.
+  // This isn't a security risk in this case; packing an extension doesn't
+  // determine its functionality when installed (and anyone could pack an
+  // extension with any feature configuration).
+  // TODO(https://crbug.com/1506254): Remove this handling and rely on
+  // the FeatureList being initialized.
+  return feature->default_state == base::FEATURE_ENABLED_BY_DEFAULT;
 }
 
 ScopedFeatureFlagsOverride CreateScopedFeatureFlagsOverrideForTesting(

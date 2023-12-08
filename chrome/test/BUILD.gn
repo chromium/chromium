@@ -3633,6 +3633,7 @@ if (!is_android) {
         "../browser/extensions/navigation_observer_browsertest.cc",
         "../browser/extensions/offscreen_document_browsertest.cc",
         "../browser/extensions/options_page_apitest.cc",
+        "../browser/extensions/pack_extension_browsertest.cc",
         "../browser/extensions/permissions_manager_browsertest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",
