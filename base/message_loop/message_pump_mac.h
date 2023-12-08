@@ -42,8 +42,6 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "base/record_replay.h"
-
 #if defined(__OBJC__)
 #if BUILDFLAG(IS_IOS)
 #import <Foundation/Foundation.h>
@@ -157,9 +155,6 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
   // Get the current mode mask from |enabled_modes_|.
   int GetModeMask() const;
-
-  // Keeps track of time spent idling.
-  absl::optional<recordreplay::AutoPerformanceActivity> idle_apa_;
 
  private:
   class ScopedModeEnabler;

@@ -144,8 +144,6 @@ void ProxyMain::BeginMainFrame(
     recordreplay::SetCompositorProxy(this);
   }
 
-  recordreplay::AutoPerformanceActivity apa("ProxyMain::BeginMainFrame");
-
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
 

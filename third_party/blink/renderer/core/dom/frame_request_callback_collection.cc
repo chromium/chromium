@@ -66,9 +66,6 @@ void FrameRequestCallbackCollection::ExecuteFrameCallbacks(
   ExecutionContext::ScopedRequestAnimationFrameStatus scoped_raf_status(
       context_);
 
-  recordreplay::AutoPerformanceActivity apa(
-    "FrameRequestCallbackCollection::ExecuteFrameCallbacks");
-
   // First, generate a list of callbacks to consider.  Callbacks registered from
   // this point on are considered only for the "next" frame, not this one.
   DCHECK(callbacks_to_invoke_.empty());

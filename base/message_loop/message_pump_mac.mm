@@ -483,16 +483,7 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   // *between* DoWork()'s. This DoWork() happens in sequence to that native
   // work, not nested within it.
   PopWorkItemScope();
-
-  bool has_apa = idle_apa_.has_value();
-  idle_apa_.reset();
-
   Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
-
-  if (has_apa) {
-    idle_apa_.emplace("Idle");
-  }
-
   // DoWork() (and its own work item coverage) is over so push a new scope to
   // cover any native work that could possibly happen before the next RunWork().
   PushWorkItemScope();
@@ -783,15 +774,11 @@ MessagePumpNSRunLoop::~MessagePumpNSRunLoop() {
 }
 
 void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
-  idle_apa_.emplace("Idle");
-
   while (keep_running()) {
     // NSRunLoop manages autorelease pools itself.
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                              beforeDate:[NSDate distantFuture]];
   }
-
-  idle_apa_.reset();
 }
 
 bool MessagePumpNSRunLoop::DoQuit() {

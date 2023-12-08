@@ -207,8 +207,6 @@ void ScriptedIdleTaskController::RunCallback(
     IdleDeadline::CallbackType callback_type) {
   DCHECK(!paused_);
 
-  recordreplay::AutoPerformanceActivity apa("ScriptedIdleTaskController::RunCallback");
-
   recordreplay::Assert(
       "[RUN-2419] ScriptedIdleTaskController::RunCallback A %d",
       id);

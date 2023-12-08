@@ -43,8 +43,6 @@ v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapper(
   RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
                            RuntimeCallStats::CounterId::kCreateWrapper);
 
-  recordreplay::AutoPerformanceActivity apa("V8DOMWrapper::CreateWrapper");
-
   V8WrapperInstantiationScope scope(script_state, type);
   if (scope.AccessCheckFailed()) {
     // V8WrapperInstantiationScope's ctor throws an exception

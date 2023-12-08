@@ -1125,8 +1125,6 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
       "[RUN-2056-2298] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint %d %d %u",
       recordreplay::PointerId(this), !!isolate(),
       main_thread_only().agent_group_schedulers.size());
-  recordreplay::AutoPerformanceActivity apa("MainThreadSchedulerImpl::PerformMicrotaskCheckpoint");
-
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
   // Perform a microtask checkpoint for each AgentSchedulingGroup. This

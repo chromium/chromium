@@ -92,8 +92,6 @@ void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
 void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   debug::ScopedTaskRunActivity task_activity(pending_task);
 
-  recordreplay::AutoPerformanceActivity apa("TaskAnnotator::RunTaskImpl");
-
   TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION(
       pending_task.posted_from.file_name());
 

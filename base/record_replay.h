@@ -41,14 +41,6 @@ void AssertMaybeEventsDisallowed(const char* format, ...);
 void AssertBytes(const char* why, const void* buf, size_t size);
 bool AreAssertsDisabled();
 
-bool ShouldReportPerformanceEvent(uint32_t kind);
-void PerformanceEvent(uint32_t kind, const void* buf, uint32_t size);
-
-struct AutoPerformanceActivity {
-  AutoPerformanceActivity(const std::string& activity);
-  ~AutoPerformanceActivity();
-};
-
 uintptr_t RecordReplayValue(const char* why, uintptr_t v);
 void RecordReplayBytes(const char* why, void* buf, size_t size);
 void RecordReplayString(const char* why, std::string& text);

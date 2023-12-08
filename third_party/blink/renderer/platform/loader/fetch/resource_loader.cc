@@ -1271,8 +1271,6 @@ void ResourceLoader::DidReceiveData(const char* data, int length) {
 
   recordreplay::Assert("[RUN-1436] ResourceLoader::DidReceiveData %d", length);
 
-  recordreplay::AutoPerformanceActivity apa("ResourceLoader::DidReceiveData");
-
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
     dict.SetDoubleKey("identifier",

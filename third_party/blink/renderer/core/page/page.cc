@@ -1159,8 +1159,6 @@ void Page::SetVisionDeficiency(VisionDeficiency new_vision_deficiency) {
 }
 
 void Page::Animate(base::TimeTicks monotonic_frame_begin_time) {
-  recordreplay::AutoPerformanceActivity apa("Page::Animate");
-
   GetAutoscrollController().Animate();
   Animator().ServiceScriptedAnimations(monotonic_frame_begin_time);
   // The ValidationMessage overlay manages its own internal Page that isn't

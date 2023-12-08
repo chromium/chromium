@@ -254,8 +254,6 @@ class JavaScriptStreamStartAlgorithm : public StreamStartAlgorithm {
 
   v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
                                   ExceptionState& exception_state) override {
-    recordreplay::AutoPerformanceActivity apa("JavaScriptStreamStartAlgorithm::Run");
-
     auto* isolate = script_state->GetIsolate();
     // https://streams.spec.whatwg.org/#set-up-writable-stream-default-controller-from-underlying-sink
     // 3. Let startAlgorithm be the following steps:

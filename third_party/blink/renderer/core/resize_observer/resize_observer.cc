@@ -156,8 +156,6 @@ void ResizeObserver::DeliverObservations() {
   if (active_observations_.empty())
     return;
 
-  recordreplay::AutoPerformanceActivity apa("ResizeObserver::DeliverObservations");
-
   HeapVector<Member<ResizeObserverEntry>> entries;
 
   for (auto& observation : active_observations_) {

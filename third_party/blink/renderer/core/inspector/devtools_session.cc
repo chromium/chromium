@@ -216,10 +216,6 @@ void DevToolsSession::DispatchProtocolCommandImpl(
       "devtools", "DevToolsSession::DispatchProtocolCommandImpl", call_id,
       TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN, "call_id", call_id);
 
-  recordreplay::AutoPerformanceActivity apa(
-    base::StringPrintf("DevToolsSession::DispatchProtocolCommandImpl:%s",
-                       method.Utf8().c_str()));
-
   // IOSession does not provide ordering guarantees relative to
   // Session, so a command may come to IOSession after Session is detached,
   // and get posted to main thread to this method.

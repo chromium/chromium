@@ -277,8 +277,6 @@ void PerformanceObserver::Deliver(absl::optional<int> dropped_entries_count) {
   if (performance_entries_.empty())
     return;
 
-  recordreplay::AutoPerformanceActivity apa("PerformanceObserver::Deliver");
-
   PerformanceEntryVector performance_entries;
   performance_entries.swap(performance_entries_);
   PerformanceObserverEntryList* entry_list =

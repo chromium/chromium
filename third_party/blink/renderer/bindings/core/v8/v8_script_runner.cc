@@ -377,11 +377,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
       script->GetUnboundScript()->GetScriptName();
   TRACE_EVENT1("v8", "v8.run", "fileName",
                TRACE_STR_COPY(*v8::String::Utf8Value(isolate, script_name)));
-
-  recordreplay::AutoPerformanceActivity apa(
-    base::StringPrintf("V8ScriptRunner::RunCompiledScript:%s",
-                       *v8::String::Utf8Value(isolate, script_name)));
-
   RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
 
@@ -450,10 +445,6 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     RethrowErrorsOption rethrow_errors) {
   if (!script_state)
     return ScriptEvaluationResult::FromClassicNotRun();
-
-  recordreplay::AutoPerformanceActivity apa(
-    base::StringPrintf("V8ScriptRunner::CompileAndRunScript:%s",
-                       classic_script->SourceUrl().GetString().Utf8().c_str()));
 
   // |script_state->GetContext()| must be initialized here already, typically
   // due to a WindowProxy() call inside ToScriptState*() that is used to get the

@@ -35,7 +35,6 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
 #include "base/record_replay.h"
-#include "base/strings/stringprintf.h"
 
 namespace mojo {
 
@@ -718,10 +717,6 @@ bool InterfaceEndpointClient::HandleIncomingMessage(Message* message) {
   // members we need for logging in case of an error.
   const char* interface_name = interface_name_;
   uint32_t name = message->name();
-
-  recordreplay::AutoPerformanceActivity apa(
-    base::StringPrintf("InterfaceEndpointClient::HandleIncomingMessage:%s",
-                       interface_name));
 
   recordreplay::Assert(
       "[RUN-2229-2231] InterfaceEndpointClient::HandleIncomingMessage A %u",
