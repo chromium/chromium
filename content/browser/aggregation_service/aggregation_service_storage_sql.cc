@@ -34,6 +34,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/transaction.h"
@@ -1024,6 +1025,11 @@ void AggregationServiceStorageSql::DatabaseErrorCallback(int extended_error,
 
   // Consider the database closed to avoid further errors.
   db_init_status_ = DbStatus::kClosed;
+
+  // Note that this histogram will not be recorded when errors are fatal.
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.AggregationService.Storage.Sql.Error",
+      sql::ToSqliteLoggedResultCode(extended_error));
 }
 
 }  // namespace content

@@ -637,6 +637,18 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.AggregationService.Storage.Sql.Error"
+    enum="SqliteLoggedResultCode" expires_after="2024-06-06">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <summary>
+    Records SQLite database errors encountered by the aggregation service's
+    storage layer. Recorded by AggregationServiceStorageSql's database error
+    callback, except when errors are fatal. Consequently, we should not expect
+    to receive any samples from debug builds.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
     expires_after="2024-04-28">

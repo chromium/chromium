@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,7 +34,9 @@
 #include "content/public/common/content_paths.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
+#include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1081,6 +1084,51 @@ TEST_F(AggregationServiceStorageSqlTest,
       "PrivacySandbox.AggregationService.Storage.Sql."
       "RequestDelayFromUpdatedReportTime",
       0);
+}
+
+// This test corrupts the SQLite database on disk and verifies that
+// AdjustOfflineReportTimes() encounters SQLITE_CORRUPT errors. There's nothing
+// special about this function besides the fact that it attempts to run a query.
+TEST_F(AggregationServiceStorageSqlTest,
+       AdjustOfflineReportTimes_DiskCorruption) {
+  constexpr auto kExampleTime =
+      base::Time::FromMillisecondsSinceUnixEpoch(1701791394350);
+
+  // Ensure the database schema is initialized. This is kind of an off-label use
+  // of StoreRequest(), and could be replaced with any other method that calls
+  // `EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent)`.
+  OpenDatabase();
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  CloseDatabase();
+
+  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path()));
+  OpenDatabase();
+
+#if DCHECK_IS_ON()
+  // AggregationServiceStorageSql::DatabaseErrorCallback() intentionally crashes
+  // in debug builds. Note that death tests run in a forked process, so this
+  // call should have no visible effects on the following lines.
+  ASSERT_DEATH_IF_SUPPORTED(storage_->AdjustOfflineReportTimes(
+                                kExampleTime, base::Hours(1), base::Hours(2)),
+                            "database disk image is malformed");
+#endif
+
+  // Suppress the crash in with `ScopedErrorExpecter`.
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    storage_->AdjustOfflineReportTimes(kExampleTime, base::Hours(1),
+                                       base::Hours(2));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  histograms_.ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.Storage.Sql.Error",
+      base::checked_cast<base::HistogramBase::Sample>(
+          sql::SqliteLoggedResultCode::kCorrupt),
+      /*expected_bucket_count=*/6);
+
+  CloseDatabase();
 }
 
 TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
