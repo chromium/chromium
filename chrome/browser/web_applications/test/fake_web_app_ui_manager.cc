@@ -139,7 +139,7 @@ void FakeWebAppUiManager::LaunchWebApp(apps::AppLaunchParams params,
                                        LaunchWebAppWindowSetting launch_setting,
                                        Profile& profile,
                                        LaunchWebAppDebugValueCallback callback,
-                                       AppLock& lock) {
+                                       WithAppResources& lock) {
   // Due to this sometimes causing confusion in tests, print that a launch has
   // been faked. To have launches create real WebContents in unit_tests (which
   // will be non-functional anyways), populate the WebAppUiManagerImpl in the

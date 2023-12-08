@@ -369,7 +369,7 @@ void WebAppUiManagerImpl::LaunchWebApp(apps::AppLaunchParams params,
                                        LaunchWebAppWindowSetting launch_setting,
                                        Profile& profile,
                                        LaunchWebAppDebugValueCallback callback,
-                                       AppLock& lock) {
+                                       WithAppResources& lock) {
   ::web_app::LaunchWebApp(std::move(params), launch_setting, profile, lock,
                           std::move(callback));
 }

@@ -86,7 +86,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
                     LaunchWebAppWindowSetting launch_setting,
                     Profile& profile,
                     LaunchWebAppDebugValueCallback callback,
-                    AppLock& lock) override;
+                    WithAppResources& lock) override;
   void WaitForFirstRunService(
       Profile& profile,
       FirstRunServiceCompletedCallback callback) override;

@@ -731,7 +731,7 @@ void UpdateLaunchStats(content::WebContents* web_contents,
 void LaunchWebApp(apps::AppLaunchParams params,
                   LaunchWebAppWindowSetting launch_setting,
                   Profile& profile,
-                  AppLock& lock,
+                  WithAppResources& lock,
                   LaunchWebAppDebugValueCallback callback) {
   base::Value::Dict debug_value;
   debug_value.Set("launch_params", ToDebugDict(params));

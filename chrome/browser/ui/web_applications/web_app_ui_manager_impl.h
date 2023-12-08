@@ -49,7 +49,7 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class AppLock;
+class WithAppResources;
 
 // Implementation of WebAppUiManager that depends upon //c/b/ui.
 // Allows //c/b/web_applications code to call into //c/b/ui without directly
@@ -104,7 +104,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
                     LaunchWebAppWindowSetting launch_setting,
                     Profile& profile,
                     LaunchWebAppDebugValueCallback callback,
-                    AppLock& lock) override;
+                    WithAppResources& lock) override;
   void WaitForFirstRunService(
       Profile& profile,
       FirstRunServiceCompletedCallback callback) override;

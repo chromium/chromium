@@ -32,7 +32,7 @@ class WebContents;
 namespace web_app {
 
 class AppBrowserController;
-class AppLock;
+class WithAppResources;
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
 
@@ -110,10 +110,12 @@ void UpdateLaunchStats(content::WebContents* web_contents,
                        const webapps::AppId& app_id,
                        const GURL& launch_url);
 
+// Locks that lock apps all have the WithAppResources mixin, allowing any
+// app-locking lock to call this method.
 void LaunchWebApp(apps::AppLaunchParams params,
                   LaunchWebAppWindowSetting launch_setting,
                   Profile& profile,
-                  AppLock& lock,
+                  WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
 }  // namespace web_app
