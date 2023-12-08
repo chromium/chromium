@@ -5,7 +5,6 @@
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
 assert(is_chromeos_ash)
@@ -23,13 +22,11 @@ copy("stage_static") {
     "app_context_test_support.js",
     "error_reporter.js",
     "launch.js",
-    "media_app.d.ts",
     "message_types.js",
     "mojo_api_bootstrap.js",
     "mojo_api_bootstrap_untrusted.js",
     "piex_module.js",
     "piex_module_loader.js",
-    "receiver.d.ts",
     "receiver.js",
   ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
@@ -48,22 +45,9 @@ copy("stage_generated") {
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 
   deps = [
-    ":generate_definitions",
     "//ash/webui/media_app_ui:mojo_bindings_js",
     "//ash/webui/media_app_ui:mojo_bindings_untrusted_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
-  ]
-}
-
-ts_definitions("generate_definitions") {
-  root_dir = "."
-  out_dir = stage_folder
-
-  js_files = [
-    "app_context_test_support.js",
-    "mojo_api_bootstrap_untrusted.js",
-    "message_types.js",
-    "piex_module_loader.js",
   ]
 }
 

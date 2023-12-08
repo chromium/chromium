@@ -105,11 +105,13 @@ class ReceivedFile {
   }
 
   /**
-   * @return {!Promise<undefined>}
+   * @return {!Promise<number>}
    */
   async deleteOriginalFileImpl() {
     await parentMessagePipe.sendMessage(
         Message.DELETE_FILE, {token: this.token});
+    // TODO(b/156571159): Remove when app_main.js no longer needs this.
+    return 0; /* "SUCCESS" */
   }
 
   /**
