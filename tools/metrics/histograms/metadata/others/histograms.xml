@@ -5326,6 +5326,88 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FetchKeepAlive.Renderer.Duration" units="ms"
+    expires_after="2024-04-10">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded the time taken to complete a fetch keepalive request in a renderer
+    process, no matter a request succeeds or fails.
+
+    As this is from the view of a renderer, it should not be used if in-browser
+    migration is enabled, as renderer will not be able to outlive even if any of
+    fetch keepalive request is still pending.
+  </summary>
+</histogram>
+
+<histogram name="FetchKeepAlive.Renderer.Duration.Failed" units="ms"
+    expires_after="2024-04-06">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded the time taken to complete a failed fetch keepalive request in a
+    renderer process.
+
+    This is the duration of a subset of requests logged by
+    `FetchKeepAlive.Renderer.Duration`. See that histogram for more details.
+  </summary>
+</histogram>
+
+<histogram name="FetchKeepAlive.Renderer.Duration.Succeeded" units="ms"
+    expires_after="2024-04-06">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded the time taken to complete a succeeded fetch keepalive request in a
+    renderer process.
+
+    This is the duration of a subset of requests logged by
+    `FetchKeepAlive.Renderer.Duration`. See that histogram for more details.
+  </summary>
+</histogram>
+
+<histogram name="FetchKeepAlive.Renderer.DurationAfterDetached" units="ms"
+    expires_after="2024-04-10">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded the time between a fetch context is &quot;detached&quot; and
+    completing a fetch keepalive request, no matter a request succeeds or fails.
+
+    As this is from the view of a renderer, it should not be used if in-browser
+    migration is enabled, as renderer will not be able to detach even if any of
+    fetch keepalive request is still pending.
+  </summary>
+</histogram>
+
+<histogram name="FetchKeepAlive.Renderer.DurationAfterDetached.Failed"
+    units="ms" expires_after="2024-04-10">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded the time between a fetch context is &quot;detached&quot; and
+    completing a failed fetch keepalive request.
+
+    This is the duration of a subset of requests logged by
+    `FetchKeepAlive.Renderer.DurationAfterDetached`. See that histogram for more
+    details.
+  </summary>
+</histogram>
+
+<histogram name="FetchKeepAlive.Renderer.DurationAfterDetached.Succeeded"
+    units="ms" expires_after="2024-04-10">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Recorded the time between a fetch context is &quot;detached&quot; and
+    completing a succeeded fetch keepalive request.
+
+    This is the duration of a subset of requests logged by
+    `FetchKeepAlive.Renderer.DurationAfterDetached`. See that histogram for more
+    details.
+  </summary>
+</histogram>
+
 <histogram name="FetchKeepAlive.Renderer.Metrics"
     enum="FetchKeepAliveRendererMetricType" expires_after="2024-04-10">
   <owner>mych@chromium.org</owner>
