@@ -3886,7 +3886,7 @@
     },
     {
       name: "URLPatternHasRegExpGroups",
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {

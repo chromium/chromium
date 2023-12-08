@@ -8816,6 +8816,7 @@ interface URL
     setter username
 interface URLPattern
     attribute @@toStringTag
+    getter hasRegExpGroups
     getter hash
     getter hostname
     getter password
