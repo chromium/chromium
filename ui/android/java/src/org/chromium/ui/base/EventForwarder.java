@@ -214,9 +214,6 @@ public class EventForwarder {
         try {
             // Android may batch multiple events together for efficiency. We
             // want to use the oldest event time as hardware time stamp.
-            //
-            // We can't get nanosecond for historical event time, so we get milliseconds and cast
-            // them to nanosecond.
             final long oldestEventTime =
                     event.getHistorySize() > 0
                             ? MotionEventUtils.getHistoricalEventTimeNanos(event, 0)

@@ -14,12 +14,20 @@ import org.chromium.base.TraceEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/** Class with helper methods for MotionEvent. */
+/**
+ * Class with helper methods for MotionEvent.
+ *
+ * <p>Not thread safe.
+ */
 public class MotionEventUtils {
+
+    @Nullable private static Method sGetTimeNanoMethod;
+    private static boolean sFailedReflection;
+
     /**
      * Returns the time in nanoseconds of the given MotionEvent.
      *
-     * This method exists as a utility pre API 34 (Android U) there was no public method to get
+     * <p>This method exists as a utility pre API 34 (Android U) there was no public method to get
      * nanoseconds. So we call the hidden SDK method "getEventTimeNano" via reflection. If the
      * reflection fails, the time in milliseconds extended to nanoseconds will be returned.
      */
@@ -48,6 +56,13 @@ public class MotionEventUtils {
         return timeNs;
     }
 
+    private static long approximateNanosFromEvent(MotionEvent event, int pos) {
+        return event.getHistoricalEventTime(pos) * 1_000_000;
+    }
+
+    private static boolean sFailedDoubleReflection;
+    private static Method sGetHistoricalEventTimeNanoMethod;
+
     /**
      * Returns the time in nanoseconds, but with precision to milliseconds, of the given
      * MotionEvent. There is no SDK method which returns the event time in nanoseconds, pre Android
@@ -57,11 +72,31 @@ public class MotionEventUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             return event.getHistoricalEventTimeNanos(pos);
         }
-        return event.getHistoricalEventTime(pos) * 1_000_000;
+        if (sFailedDoubleReflection) {
+            return approximateNanosFromEvent(event, pos);
+        }
+        try {
+            // Before Android U the method was declared in core/java/android/view/MotionEvent.java
+            // as "public final long getHistoricalEventTimeNano(int pos)". It was added in 2012. All
+            // Android releases supported by Chrome should have it.
+            if (sGetHistoricalEventTimeNanoMethod == null) {
+                Method getDeclaredMethod =
+                        Class.class.getDeclaredMethod(
+                                "getDeclaredMethod", String.class, Class[].class);
+                Class[] cArg = new Class[1];
+                cArg[0] = int.class;
+                Method method =
+                        (Method)
+                                getDeclaredMethod.invoke(
+                                        event.getClass(), "getHistoricalEventTimeNano", cArg);
+                method.setAccessible(true);
+                sGetHistoricalEventTimeNanoMethod = method;
+            }
+            return (long) sGetHistoricalEventTimeNanoMethod.invoke(event, pos);
+        } catch (Exception e) {
+            TraceEvent.instant("MotionEventUtils::getHistoricalEventTimeNanos error", e.toString());
+            sFailedDoubleReflection = true;
+            return approximateNanosFromEvent(event, pos);
+        }
     }
-
-    private MotionEventUtils() {}
-
-    @Nullable private static Method sGetTimeNanoMethod;
-    private static boolean sFailedReflection;
 }
