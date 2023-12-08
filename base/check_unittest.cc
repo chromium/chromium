@@ -396,7 +396,7 @@ TEST(CheckDeathTest, ConfigurableDCheck) {
   DCHECK(false);
 
   // Verify that DCHECK* aren't hard-wired to crash on failure.
-  logging::LOGGING_DCHECK = logging::LOG_INFO;
+  logging::LOGGING_DCHECK = logging::LOG_ERROR;
   DCHECK(false);
   DCHECK_EQ(1, 2);
 

@@ -502,9 +502,9 @@ void TraceLogMessage(const char* file, int line, const std::string& message) {
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 // In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
-// determined at run-time. We default it to INFO, to avoid it triggering
+// determined at run-time. We default it to ERROR, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
-BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
+BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_ERROR;
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have

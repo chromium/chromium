@@ -607,7 +607,7 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
           "gtest_internal_run_death_test")) {
     logging::LOGGING_DCHECK = logging::LOG_FATAL;
   } else {
-    logging::LOGGING_DCHECK = logging::LOG_INFO;
+    logging::LOGGING_DCHECK = logging::LOG_ERROR;
   }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 }
