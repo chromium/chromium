@@ -103,6 +103,29 @@ base::Value ValueChangeToValue(
   return base::Value(std::move(changes_value));
 }
 
+// Returns the seession storage access level for `extension_id`.
+api::storage::AccessLevel GetSessionAccessLevel(
+    const ExtensionId& extension_id,
+    content::BrowserContext& browser_context) {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(&browser_context);
+
+  // Default access level is only secure contexts.
+  int access_level =
+      base::to_underlying(api::storage::AccessLevel::kTrustedContexts);
+  prefs->ReadPrefAsInteger(extension_id, kPrefSessionStorageAccessLevel,
+                           &access_level);
+
+  // Return access level iff it's a valid value.
+  if (access_level > 0 &&
+      access_level <=
+          base::to_underlying(api::storage::AccessLevel::kMaxValue)) {
+    return static_cast<api::storage::AccessLevel>(access_level);
+  }
+
+  // Otherwise, return the default session access level.
+  return api::storage::AccessLevel::kTrustedContexts;
+}
+
 }  // namespace
 
 // SettingsFunction
@@ -203,7 +226,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
 
   if (!result.changes().empty()) {
     observer_->Run(
-        extension_id(), storage_area_,
+        extension_id(), storage_area_, /*session_access_level=*/absl::nullopt,
         value_store::ValueStoreChange::ToValue(result.PassChanges()));
   }
 
@@ -215,32 +238,29 @@ void SettingsFunction::OnSessionSettingsChanged(
   if (!changes.empty()) {
     SettingsChangedCallback observer =
         StorageFrontend::Get(browser_context())->GetObserver();
+    api::storage::AccessLevel access_level =
+        GetSessionAccessLevel(extension()->id(), *browser_context());
     // This used to dispatch asynchronously as a result of a
     // ObserverListThreadSafe. Ideally, we'd just run this synchronously, but it
     // appears at least some tests rely on the asynchronous behavior.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(observer, extension_id(), storage_area_,
-                                  ValueChangeToValue(std::move(changes))));
+        FROM_HERE,
+        base::BindOnce(observer, extension_id(), storage_area_, access_level,
+                       ValueChangeToValue(std::move(changes))));
   }
 }
 
 bool SettingsFunction::IsAccessToStorageAllowed() {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
-  // Default access level is only secure contexts.
-  int access_level =
-      base::to_underlying(api::storage::AccessLevel::kTrustedContexts);
-  prefs->ReadPrefAsInteger(extension()->id(), kPrefSessionStorageAccessLevel,
-                           &access_level);
+  api::storage::AccessLevel access_level =
+      GetSessionAccessLevel(extension()->id(), *browser_context());
 
   // Only a blessed extension context is considered trusted.
-  if (access_level ==
-      base::to_underlying(api::storage::AccessLevel::kTrustedContexts)) {
+  if (access_level == api::storage::AccessLevel::kTrustedContexts) {
     return source_context_type() == Feature::BLESSED_EXTENSION_CONTEXT;
   }
 
   // All contexts are allowed.
-  DCHECK_EQ(base::to_underlying(
-                api::storage::AccessLevel::kTrustedAndUntrustedContexts),
+  DCHECK_EQ(api::storage::AccessLevel::kTrustedAndUntrustedContexts,
             access_level);
   return true;
 }
@@ -508,7 +528,8 @@ void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaSetAccessLevelFunction::RunWithStorage(ValueStore* storage) {
-  // Not supported. Should return error.
+  // TODO(crbug.com/1508463). Support these storage areas. For now, we return an
+  // error.
   return Error("This StorageArea is not available for setting access level");
 }
 

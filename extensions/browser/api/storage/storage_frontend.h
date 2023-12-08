@@ -17,6 +17,7 @@
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/common/api/storage.h"
 
 namespace content {
 class BrowserContext;
@@ -89,9 +90,15 @@ class StorageFrontend : public BrowserContextKeyedAPI {
 
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
 
-  void OnSettingsChanged(const std::string& extension_id,
-                         StorageAreaNamespace storage_area,
-                         base::Value changes);
+  // Called when storage with `storage_area` for `extension_id` is updated with
+  // `changes`. Must include `session_access_level` iff `storage_area` is
+  // session (other storage areas don't support access levels, see
+  // crbug.com/1508463).
+  void OnSettingsChanged(
+      const std::string& extension_id,
+      StorageAreaNamespace storage_area,
+      absl::optional<api::storage::AccessLevel> session_access_level,
+      base::Value changes);
 
   // The (non-incognito) browser context this Frontend belongs to.
   const raw_ptr<content::BrowserContext> browser_context_;

@@ -594,6 +594,9 @@ struct Event {
   // tab only works if extension is allowed incognito access).
   const raw_ptr<content::BrowserContext> restrict_to_browser_context;
 
+  // If present, then the event will only be sent to this context type.
+  const absl::optional<Feature::Context> restrict_to_context_type;
+
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
   GURL event_url;
@@ -640,12 +643,15 @@ struct Event {
   Event(events::HistogramValue histogram_value,
         base::StringPiece event_name,
         base::Value::List event_args,
-        content::BrowserContext* restrict_to_browser_context);
+        content::BrowserContext* restrict_to_browser_context,
+        absl::optional<Feature::Context> restrict_to_context_type =
+            absl::nullopt);
 
   Event(events::HistogramValue histogram_value,
         base::StringPiece event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
+        absl::optional<Feature::Context> restrict_to_context_type,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info,

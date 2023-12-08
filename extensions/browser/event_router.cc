@@ -1103,6 +1103,13 @@ void EventRouter::DispatchEventToProcess(
   Feature::Context target_context =
       process_map->GetMostLikelyContextType(extension, process->GetID(), url);
 
+  // Don't dispach an event when target context doesn't match the restricted
+  // context type.
+  if (event.restrict_to_context_type.has_value() &&
+      event.restrict_to_context_type.value() != target_context) {
+    return;
+  }
+
   // We shouldn't be dispatching an event to a webpage, since all such events
   // (e.g.  messaging) don't go through EventRouter. The exceptions to this are
   // the new chrome webstore domain, which has permission to receive extension
@@ -1553,11 +1560,13 @@ Event::Event(events::HistogramValue histogram_value,
 Event::Event(events::HistogramValue histogram_value,
              base::StringPiece event_name,
              base::Value::List event_args,
-             content::BrowserContext* restrict_to_browser_context)
+             content::BrowserContext* restrict_to_browser_context,
+             absl::optional<Feature::Context> restrict_to_context_type)
     : Event(histogram_value,
             event_name,
             std::move(event_args),
             restrict_to_browser_context,
+            restrict_to_context_type,
             GURL(),
             EventRouter::USER_GESTURE_UNKNOWN,
             mojom::EventFilteringInfo::New()) {}
@@ -1566,6 +1575,7 @@ Event::Event(events::HistogramValue histogram_value,
              base::StringPiece event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
+             absl::optional<Feature::Context> restrict_to_context_type,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
              mojom::EventFilteringInfoPtr info,
@@ -1574,6 +1584,7 @@ Event::Event(events::HistogramValue histogram_value,
       event_name(event_name),
       event_args(std::move(event_args)),
       restrict_to_browser_context(restrict_to_browser_context),
+      restrict_to_context_type(restrict_to_context_type),
       event_url(event_url),
       dispatch_start_time(dispatch_start_time),
       user_gesture(user_gesture),
@@ -1591,8 +1602,8 @@ Event::~Event() = default;
 std::unique_ptr<Event> Event::DeepCopy() const {
   auto copy = std::make_unique<Event>(
       histogram_value, event_name, event_args.Clone(),
-      restrict_to_browser_context, event_url, user_gesture, filter_info.Clone(),
-      dispatch_start_time);
+      restrict_to_browser_context, restrict_to_context_type, event_url,
+      user_gesture, filter_info.Clone(), dispatch_start_time);
   copy->will_dispatch_callback = will_dispatch_callback;
   copy->did_dispatch_callback = did_dispatch_callback;
   copy->cannot_dispatch_callback = cannot_dispatch_callback;
