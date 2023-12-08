@@ -17,7 +17,7 @@ import common
 from boot_device import BootMode, StateTransitionError, boot_device
 from common import get_system_info, find_image_in_sdk, \
                    register_device_args
-from compatible_utils import get_sdk_hash, pave, running_unattended
+from compatible_utils import get_sdk_hash, running_unattended
 from lockfile import lock
 
 # Flash-file lock. Used to restrict number of flash operations per host.
@@ -121,8 +121,7 @@ def flash(system_image_dir: str,
 def update(system_image_dir: str,
            os_check: str,
            target: Optional[str],
-           serial_num: Optional[str] = None,
-           should_pave: Optional[bool] = True) -> None:
+           serial_num: Optional[str] = None) -> None:
     """Conditionally updates target given.
 
     Args:
@@ -130,7 +129,6 @@ def update(system_image_dir: str,
         os_check: <check|ignore|update>, which decides how to update the device.
         target: Node-name string indicating device that should be updated.
         serial_num: String of serial number of device that should be updated.
-        should_pave: Optional bool on whether or not to pave or flash.
     """
     needs_update, actual_image_dir = update_required(os_check,
                                                      system_image_dir, target,
@@ -138,24 +136,7 @@ def update(system_image_dir: str,
 
     system_image_dir = actual_image_dir
     if needs_update:
-        if should_pave:
-            if running_unattended():
-                assert target, ('Target ID must be specified on swarming when'
-                                ' paving.')
-                # TODO(crbug.com/1405525): We should check the device state
-                # before and after rebooting it to avoid unnecessary reboot or
-                # undesired state.
-                boot_device(target, BootMode.RECOVERY, serial_num)
-            try:
-                pave(system_image_dir, target)
-            except subprocess.TimeoutExpired:
-                # Fallback to flashing, just in case it might work.
-                # This could recover the device and make it usable.
-                # If it fails, device is unpaveable anyway, and should be taken
-                # out of fleet - this will do that.
-                flash(system_image_dir, target, serial_num)
-        else:
-            flash(system_image_dir, target, serial_num)
+        flash(system_image_dir, target, serial_num)
         # Always reboot the device since the ffx may ignore the device state
         # after the flash. See
         # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
@@ -170,14 +151,13 @@ def update(system_image_dir: str,
 
 
 def register_update_args(arg_parser: argparse.ArgumentParser,
-                         default_os_check: Optional[str] = 'check',
-                         default_pave: Optional[bool] = True) -> None:
+                         default_os_check: Optional[str] = 'check') -> None:
     """Register common arguments for device updating."""
     serve_args = arg_parser.add_argument_group('update',
                                                'device updating arguments')
     serve_args.add_argument('--system-image-dir',
                             help='Specify the directory that contains the '
-                            'Fuchsia image used to pave the device. Only '
+                            'Fuchsia image used to flash the device. Only '
                             'needs to be specified if "os_check" is not '
                             '"ignore".')
     serve_args.add_argument('--serial-num',
@@ -194,26 +174,16 @@ def register_update_args(arg_parser: argparse.ArgumentParser,
                             '"update", then the target device will '
                             'be reflashed. If "ignore", then the OS version '
                             'will not be checked.')
-    serve_args.add_argument('--pave',
-                            action='store_true',
-                            help='Performs a pave instead of a flash. '
-                            'Device must already be in Zedboot')
-    serve_args.add_argument('--no-pave',
-                            action='store_false',
-                            dest='pave',
-                            help='Performs a flash instead of a pave '
-                            '(experimental).')
-    serve_args.set_defaults(pave=default_pave)
 
 
 def main():
     """Stand-alone function for flashing a device."""
     parser = argparse.ArgumentParser()
     register_device_args(parser)
-    register_update_args(parser, default_os_check='update', default_pave=False)
+    register_update_args(parser, default_os_check='update')
     args = parser.parse_args()
     update(args.system_image_dir, args.os_check, args.target_id,
-           args.serial_num, args.pave)
+           args.serial_num)
 
 
 if __name__ == '__main__':
