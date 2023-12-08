@@ -71,7 +71,8 @@ removed_librs_template = "removed_lib.rs.hbs"
 root = "chromium"
 # These crates are dependencies in some configurations, but we don't use them.
 # TODO(danakj): Can we figure out the wasi and winapi ones automatically?
-remove_crates = ['cc', 'link-cplusplus', 'wasi', 'winapi-i686-pc-windows-gnu', 'winapi-x86_64-pc-windows-gnu']
+# minimal-lexical is unsound see https://crrev.com/c/4977110 for more info. It is a dependency of nom, but not actually used
+remove_crates = ['cc', 'link-cplusplus', 'wasi', 'winapi-i686-pc-windows-gnu', 'winapi-x86_64-pc-windows-gnu', 'minimal-lexical']
 
 [crate.anyhow]
 group = 'test'
@@ -102,6 +103,9 @@ group = 'test'
 
 [crate.log]
 group = 'test'
+
+[crate.nom]
+remove_deps = ['minimal-lexical']
 
 [crate.rand]
 group = 'test'

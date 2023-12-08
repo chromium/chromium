@@ -4,8 +4,8 @@ Description: Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) r
 1, 2 or 3 byte search and single substring search.
 
 Version: 2.6.4
-Security Critical: no
-Shipped: no
+Security Critical: yes
+Shipped: yes
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/memchr-2.6.4/LICENSE-MIT
 Revision: ce7b8e606410f6c81a63f45abb24c5b5aab5d741
