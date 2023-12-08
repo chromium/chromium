@@ -228,6 +228,17 @@ function assert(v, msg = "") {
   }
 }
 
+function isObject(val) {
+  return !!val && (typeof val === "object" || typeof val === "function")
+}
+
+function typeofMaybeNull(value: any) {
+  if (value === null) {
+    return "null";
+  }
+  return typeof value;
+}
+
 function getSourceMapURLs(sourceURL, relativeSourceMapURL) {
   let sourceBaseURL;
   if (typeof sourceURL === "string" && isValidBaseURL(sourceURL)) {
@@ -890,8 +901,6 @@ function clearPauseDataCallback() {
  * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject
  */
 function makeDebuggeeValue(plainValue) {
-  assert(plainValue && typeof plainValue === "object",
-    `value is not an object: ${!plainValue ? plainValue : typeof plainValue}`);
   const remoteObject = fromJsMakeDebuggeeValue(plainValue);
   return remoteObject;
 }
@@ -906,6 +915,8 @@ function createRrpValueRaw(plainValue) {
  * @return {number}
  */
 function registerPlainObject(plainObject) {
+  assert(isObject(plainObject),
+    `value is not an object: ${typeofMaybeNull(plainObject)}`);
   let rrpId = gRrpIdByPlainObject.get(plainObject);
   if (!rrpId) {
     // → ask V8InspectorSession to wrap plainObject (gets CDP.Runtime.RemoteObject)
