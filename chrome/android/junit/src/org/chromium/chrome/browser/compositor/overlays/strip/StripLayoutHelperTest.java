@@ -1098,7 +1098,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testTabCreated_NonRestoredTab_DoesNotSkipAutoscroll() {
+    public void testTabCreated_NonRestoredTab_SkipsAutoscroll() {
         initializeTest(false, true, 3);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
@@ -1106,13 +1106,13 @@ public class StripLayoutHelperTest {
         // Set initial scroller position to 1200.
         mStripLayoutHelper.getScrollerForTesting().setFinalX((int) SCREEN_WIDTH_LANDSCAPE);
 
-        // Act: Tab was restored after undoing a tab closure.
+        // Act: Tab was not restored after undoing a tab closure.
         boolean closureCancelled = false;
         mModel.addTab("new tab");
         mStripLayoutHelper.tabCreated(TIMESTAMP, 5, 3, false, closureCancelled, false);
 
-        // Assert: scroller position is modified.
-        assertNotEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
+        // Assert: scroller position is not modified.
+        assertEquals(1200, mStripLayoutHelper.getScrollerForTesting().getFinalX());
     }
 
     @Test
