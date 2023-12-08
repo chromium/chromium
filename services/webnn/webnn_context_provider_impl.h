@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -18,7 +19,8 @@ class WebNNContextImpl;
 
 // Maintain a set of WebNNContextImpl instances that are created by the context
 // provider.
-class WebNNContextProviderImpl : public mojom::WebNNContextProvider {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
+    : public mojom::WebNNContextProvider {
  public:
   WebNNContextProviderImpl();
 

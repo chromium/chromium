@@ -9,6 +9,7 @@
 #include <wrl.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 
@@ -20,7 +21,7 @@ using Microsoft::WRL::ComPtr;
 // graph. It owns the tensor's dimensions, strides and DML_BUFFER_TENSOR_DESC.
 // The TensorDesc is prepared for building a DML graph's description
 // (DML_GRAPH_DESC).
-class TensorDesc final {
+class COMPONENT_EXPORT(WEBNN_SERVICE) TensorDesc final {
  public:
   enum class Alignment {
     // Align the elements to leading/left edge.

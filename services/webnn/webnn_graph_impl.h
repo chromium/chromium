@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -14,13 +15,14 @@
 
 namespace webnn {
 
-class WebNNGraphImpl : public mojom::WebNNGraph {
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
+    : public mojom::WebNNGraph {
  public:
   // The members of `ComputeResourceInfo` are used to validate the inputs
   // of a graph execution. The input name and byte length of computation must
   // match graph's expectation, the output name and byte length are used to
   // create the result of computation.
-  struct ComputeResourceInfo {
+  struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
     explicit ComputeResourceInfo(const mojom::GraphInfoPtr& graph_info);
     ~ComputeResourceInfo();
 

@@ -10,6 +10,7 @@
 #include <dxgi.h>
 #include <wrl.h>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
@@ -28,7 +29,8 @@ class CommandQueue;
 // `webnn::dml::GraphImpl` of the same adapter. The `Adapter` instance is
 // created upon the first `webnn::dml::GraphImpl` call `Adapter::GetInstance()`
 // and is released when the last ``webnn::dml::GraphImpl` is destroyed.
-class Adapter final : public base::RefCounted<Adapter> {
+class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
+    : public base::RefCounted<Adapter> {
  public:
   // Get the shared `Adapter` instance for the default adapter. At the current
   // stage, the default adapter is queried from ANGLE. This method is not

@@ -76,7 +76,7 @@ target(link_target_type, "gpu_sources") {
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
-    "//services/webnn",
+    "//services/webnn:webnn_service",
     "//services/webnn/public/mojom",
     "//skia",
     "//third_party/angle:angle_gpu_info_util",

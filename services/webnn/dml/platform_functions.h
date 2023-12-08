@@ -9,12 +9,13 @@
 #include <d3d12.h>
 #include <windows.h>
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
 
 namespace webnn::dml {
 
-class PlatformFunctions {
+class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
  public:
   PlatformFunctions(const PlatformFunctions&) = delete;
   PlatformFunctions& operator=(const PlatformFunctions&) = delete;

@@ -10,6 +10,7 @@
 #include <deque>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -21,8 +22,9 @@ namespace webnn::dml {
 
 // The CommandQueue is a wrapper of an ID3D12CommandQueue and contains a fence
 // which is signaled when the execution on GPU is completed.
-class CommandQueue : public base::win::ObjectWatcher::Delegate,
-                     public base::RefCounted<CommandQueue> {
+class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
+    : public base::win::ObjectWatcher::Delegate,
+      public base::RefCounted<CommandQueue> {
  public:
   static scoped_refptr<CommandQueue> Create(ID3D12Device* d3d12_device);
 

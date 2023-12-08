@@ -259,7 +259,7 @@ viz_component("service") {
     "//services/metrics/public/mojom",
     "//services/tracing/public/cpp:cpp",
     "//services/viz/privileged/mojom",
-    "//services/webnn",
+    "//services/webnn:webnn_service",
     "//skia",
     "//skia:skcms",
     "//third_party/libyuv",

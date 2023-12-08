@@ -9,6 +9,7 @@
 #include <wrl.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,7 +24,7 @@ class CommandQueue;
 // a DirectML graph. It wraps a DirectML command recorder, and manages the
 // Direct3D 12 command list and command allocator for GPU work recording and
 // submission.
-class CommandRecorder final {
+class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  public:
   static std::unique_ptr<CommandRecorder> Create(
       scoped_refptr<CommandQueue> queue,
