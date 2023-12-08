@@ -1002,6 +1002,16 @@ CanonicalCookie::UniqueCookieKey CanonicalCookie::UniqueKey() const {
                          source_port);
 }
 
+CanonicalCookie::UniqueDomainCookieKey CanonicalCookie::UniqueDomainKey()
+    const {
+  absl::optional<CookieSourceScheme> source_scheme =
+      cookie_util::IsSchemeBoundCookiesEnabled()
+          ? absl::make_optional(source_scheme_)
+          : absl::nullopt;
+
+  return std::make_tuple(partition_key_, name_, domain_, path_, source_scheme);
+}
+
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
     const CanonicalCookie& secure_cookie) const {
   // Partition keys must both be equivalent.

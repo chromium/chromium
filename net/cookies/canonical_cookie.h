@@ -73,6 +73,14 @@ class NET_EXPORT CanonicalCookie {
                                      absl::optional<CookieSourceScheme>,
                                      /*source_port=*/absl::optional<int>>;
 
+  // Same as UniqueCookieKey but for use with Domain cookies, which do not
+  // consider the source_port.
+  using UniqueDomainCookieKey = std::tuple<absl::optional<CookiePartitionKey>,
+                                           /*name=*/std::string,
+                                           /*domain=*/std::string,
+                                           /*path=*/std::string,
+                                           absl::optional<CookieSourceScheme>>;
+
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
   CanonicalCookie(CanonicalCookie&& other);
@@ -275,11 +283,25 @@ class NET_EXPORT CanonicalCookie {
   // GetCookieDomainWithString->CanonicalizeHost).
   // If partitioned cookies are enabled, then we check the cookies have the same
   // partition key in addition to the checks in RFC 2965.
+  //
+  // To support origin-bound cookies the check will also include the source
+  // scheme and/or port depending on the state of the associated feature.
+  // Additionally, domain cookies get a slightly different check which does not
+  // include the source port.
   bool IsEquivalent(const CanonicalCookie& ecc) const {
     // It seems like it would make sense to take secure, httponly, and samesite
     // into account, but the RFC doesn't specify this.
     // NOTE: Keep this logic in-sync with TrimDuplicateCookiesForKey().
-    return UniqueKey() == ecc.UniqueKey();
+
+    // A host cookie will never match a domain cookie or vice-versa, this is
+    // because the "host-only-flag" is encoded within the `domain` field of the
+    // respective keys. So we don't need to explicitly check if ecc is also host
+    // or domain.
+    if (IsHostCookie()) {
+      return UniqueKey() == ecc.UniqueKey();
+    }
+    // Is domain cookie
+    return UniqueDomainKey() == ecc.UniqueDomainKey();
   }
 
   StrictlyUniqueCookieKey StrictlyUniqueKey() const {
@@ -294,6 +316,10 @@ class NET_EXPORT CanonicalCookie {
   // The source_scheme and source_port fields depend on whether or not their
   // associated features are enabled.
   UniqueCookieKey UniqueKey() const;
+
+  // Same as UniqueKey() except it does not contain a source_port field. For use
+  // with Domain cookies, which do not consider the source_port.
+  UniqueDomainCookieKey UniqueDomainKey() const;
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order
   // to support the stricter 'Secure' behaviors specified in Step 12 of

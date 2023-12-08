@@ -4173,12 +4173,25 @@ class CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus
         /*can_modify_httponly=*/true);
     ASSERT_TRUE(access_result.status.IsInclude());
 
-    ASSERT_EQ(GetAllCookies(cm_.get()).size(), 1UL);
+    auto preexisting_domain_cookie_https = CanonicalCookie::Create(
+        https_www_foo_.url(),
+        "A=PreexistingDomainHttps443; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(),
+        /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+
+    access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(preexisting_domain_cookie_https),
+        https_www_foo_.url(),
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+
+    ASSERT_EQ(GetAllCookies(cm_.get()).size(), 2UL);
   }
 
   // Inserts a single cookie that differs from "PreexistingHttps443" by scheme
   // only.
-  void AddHttp443Cookie() {
+  void AddHttpPort443Cookie() {
     GURL::Replacements replace_scheme;
     replace_scheme.SetSchemeStr("http");
     // We need to explicitly set the existing port, otherwise GURL will
@@ -4200,13 +4213,33 @@ class CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus
 
   // Inserts a single cookie that differs from "PreexistingHttps443" by port
   // only.
-  void AddHttps80Cookie() {
+  void AddHttpsPort80Cookie() {
     GURL::Replacements replace_port;
     replace_port.SetPortStr("80");
     GURL foo_made_80 = https_www_foo_.url().ReplaceComponents(replace_port);
 
     auto differ_by_port_only = CanonicalCookie::Create(
         foo_made_80, "A=InsertedHttps80", base::Time::Now(),
+        /*server_time=*/absl::nullopt,
+        /*cookie_partition_key=*/absl::nullopt);
+
+    CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+        cm_.get(), std::move(differ_by_port_only), foo_made_80,
+        /*can_modify_httponly=*/true);
+    ASSERT_TRUE(access_result.status.IsInclude());
+  }
+
+  // Inserts a single Domain cookie that differs from
+  // "PreexistingDomainHttps443" by port only.
+  void AddDomainHttpsPort80Cookie() {
+    GURL::Replacements replace_port;
+    replace_port.SetPortStr("80");
+    GURL foo_made_80 = https_www_foo_.url().ReplaceComponents(replace_port);
+
+    auto differ_by_port_only = CanonicalCookie::Create(
+        foo_made_80,
+        "A=InsertedDomainHttps80; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(),
         /*server_time=*/absl::nullopt,
         /*cookie_partition_key=*/absl::nullopt);
 
@@ -4224,7 +4257,7 @@ class CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus
 // Scheme binding disabled.
 // Port binding disabled.
 // Cookies that differ only in their scheme and/or port should overwrite the
-// preexisting cookie.
+// preexisting cookies.
 TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
        NoSchemeNoPort) {
   scoped_feature_list_.InitWithFeatures(
@@ -4233,17 +4266,29 @@ TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
 
   InitializeTest();
 
-  AddHttp443Cookie();
+  AddHttpPort443Cookie();
 
   auto cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "InsertedHttp443")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
 
-  AddHttps80Cookie();
+  AddHttpsPort80Cookie();
 
   cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "InsertedHttps80")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
 }
 
 // Scheme binding enabled.
@@ -4258,25 +4303,39 @@ TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
 
   InitializeTest();
 
-  AddHttp443Cookie();
+  AddHttpPort443Cookie();
 
   auto cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "PreexistingHttps443"),
-                           MatchesCookieNameValue("A", "InsertedHttp443")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
 
-  AddHttps80Cookie();
+  AddHttpsPort80Cookie();
 
   cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "InsertedHttp443"),
-                           MatchesCookieNameValue("A", "InsertedHttps80")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
 }
 
 // Scheme binding disabled.
 // Port binding enabled.
-// Cookies that differ by port are separate, cookies that differ only by
-// scheme should be overwritten.
+// Cookies that differ only by scheme and Domain cookies that differ only by
+// port should be overwritten. Host cookies that differ only by port are
+// separate.
 TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
        NoSchemeYesPort) {
   scoped_feature_list_.InitWithFeatures(
@@ -4285,23 +4344,37 @@ TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
 
   InitializeTest();
 
-  AddHttp443Cookie();
+  AddHttpPort443Cookie();
 
   auto cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "InsertedHttp443")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
 
-  AddHttps80Cookie();
+  AddHttpsPort80Cookie();
 
   cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "InsertedHttp443"),
-                           MatchesCookieNameValue("A", "InsertedHttps80")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
 }
 
 // Scheme binding enabled.
 // Port binding enabled.
-// Cookies that differ by port or scheme are separate.
+// Cookies that differ by port or scheme are separate. Except for Domain cookies
+// which will be overwritten if they differ only by port.
 TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
        YesSchemeYesPort) {
   scoped_feature_list_.InitWithFeatures(
@@ -4311,20 +4384,34 @@ TEST_F(CookieMonsterTest_MaybeDeleteEquivalentCookieAndUpdateStatus,
 
   InitializeTest();
 
-  AddHttp443Cookie();
+  AddHttpPort443Cookie();
 
   auto cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "PreexistingHttps443"),
-                           MatchesCookieNameValue("A", "InsertedHttp443")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
 
-  AddHttps80Cookie();
+  AddHttpsPort80Cookie();
 
   cookies = GetAllCookies(cm_.get());
-  EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "PreexistingHttps443"),
-                           MatchesCookieNameValue("A", "InsertedHttp443"),
-                           MatchesCookieNameValue("A", "InsertedHttps80")));
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "PreexistingDomainHttps443")));
+
+  AddDomainHttpsPort80Cookie();
+
+  cookies = GetAllCookies(cm_.get());
+  EXPECT_THAT(cookies,
+              testing::UnorderedElementsAre(
+                  MatchesCookieNameValue("A", "PreexistingHttps443"),
+                  MatchesCookieNameValue("A", "InsertedHttp443"),
+                  MatchesCookieNameValue("A", "InsertedHttps80"),
+                  MatchesCookieNameValue("A", "InsertedDomainHttps80")));
 }
 
 // Tests that only the correct set of (potentially duplicate) cookies are loaded
@@ -4377,7 +4464,35 @@ class CookieMonsterTest_StoreLoadedCookies : public CookieMonsterTest {
     port_450_cookie->SetCreationDate(least_recent_time);
     starting_list_.push_back(std::move(port_450_cookie));
 
-    ASSERT_EQ(starting_list_.size(), 3UL);
+    auto basic_domain_cookie = CanonicalCookie::Create(
+        https_www_foo_.url(),
+        "A=basic_domain; Domain=" + https_www_foo_.domain(), base::Time::Now(),
+        absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
+
+    // When there are duplicate domain cookies the most recent one is kept. So,
+    // this one.
+    basic_domain_cookie->SetCreationDate(most_recent_time);
+    starting_list_.push_back(std::move(basic_domain_cookie));
+
+    auto http_domain_cookie = CanonicalCookie::Create(
+        foo_with_http, "A=http_domain; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
+
+    http_domain_cookie->SetCreationDate(middle_time);
+    starting_list_.push_back(std::move(http_domain_cookie));
+
+    // Domain cookies don't consider the port, so this cookie should always be
+    // considered a duplicate.
+    auto port_450_domain_cookie = CanonicalCookie::Create(
+        foo_with_450, "A=port450_domain; Domain=" + https_www_foo_.domain(),
+        base::Time::Now(), absl::nullopt /* server_time */,
+        absl::nullopt /* cookie_partition_key */);
+    port_450_domain_cookie->SetCreationDate(least_recent_time);
+    starting_list_.push_back(std::move(port_450_domain_cookie));
+
+    ASSERT_EQ(starting_list_.size(), 6UL);
   }
 
   scoped_refptr<net::MockPersistentCookieStore> store_;
@@ -4388,7 +4503,7 @@ class CookieMonsterTest_StoreLoadedCookies : public CookieMonsterTest {
 
 // Scheme binding disabled.
 // Port binding disabled.
-// Only 1 cookie, the oldest, should exist.
+// Only 2 cookies, the most recently created, should exist.
 TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeNoPort) {
   scoped_feature_list_.InitWithFeatures(
       {}, {net::features::kEnableSchemeBoundCookies,
@@ -4398,12 +4513,13 @@ TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeNoPort) {
   auto cookies = GetAllCookies(cm_.get());
 
   EXPECT_THAT(cookies, testing::UnorderedElementsAre(
-                           MatchesCookieNameValue("A", "basic")));
+                           MatchesCookieNameValue("A", "basic"),
+                           MatchesCookieNameValue("A", "basic_domain")));
 }
 
 // Scheme binding enabled.
 // Port binding disabled.
-// 2 Cookies should exist.
+// 4 Cookies should exist.
 TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeNoPort) {
   scoped_feature_list_.InitWithFeatures(
       {net::features::kEnableSchemeBoundCookies},
@@ -4414,12 +4530,14 @@ TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeNoPort) {
 
   EXPECT_THAT(cookies, testing::UnorderedElementsAre(
                            MatchesCookieNameValue("A", "basic"),
-                           MatchesCookieNameValue("A", "http")));
+                           MatchesCookieNameValue("A", "http"),
+                           MatchesCookieNameValue("A", "basic_domain"),
+                           MatchesCookieNameValue("A", "http_domain")));
 }
 
 // Scheme binding disabled.
 // Port binding enabled.
-// 2 Cookies should exist.
+// 3 Cookies should exist.
 TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeYesPort) {
   scoped_feature_list_.InitWithFeatures(
       {net::features::kEnablePortBoundCookies},
@@ -4428,14 +4546,17 @@ TEST_F(CookieMonsterTest_StoreLoadedCookies, NoSchemeYesPort) {
   cm_->StoreLoadedCookies(std::move(starting_list_));
   auto cookies = GetAllCookies(cm_.get());
 
+  // Domain cookies aren't bound to a port by design, so duplicates across ports
+  // should still be removed. I.e.: "A=port450_domain"
   EXPECT_THAT(cookies, testing::UnorderedElementsAre(
                            MatchesCookieNameValue("A", "basic"),
-                           MatchesCookieNameValue("A", "port450")));
+                           MatchesCookieNameValue("A", "port450"),
+                           MatchesCookieNameValue("A", "basic_domain")));
 }
 
 // Scheme binding enabled.
 // Port binding enabled.
-// All 3 Cookies should exist.
+// 5 Cookies should exist.
 TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeYesPort) {
   scoped_feature_list_.InitWithFeatures(
       {net::features::kEnablePortBoundCookies,
@@ -4446,10 +4567,14 @@ TEST_F(CookieMonsterTest_StoreLoadedCookies, YesSchemeYesPort) {
   cm_->StoreLoadedCookies(std::move(starting_list_));
   auto cookies = GetAllCookies(cm_.get());
 
+  // Domain cookies aren't bound to a port by design, so duplicates across ports
+  // should still be removed. I.e.: "A=port450_domain"
   EXPECT_THAT(cookies, testing::UnorderedElementsAre(
                            MatchesCookieNameValue("A", "basic"),
                            MatchesCookieNameValue("A", "http"),
-                           MatchesCookieNameValue("A", "port450")));
+                           MatchesCookieNameValue("A", "port450"),
+                           MatchesCookieNameValue("A", "basic_domain"),
+                           MatchesCookieNameValue("A", "http_domain")));
 }
 
 // Test skipping a cookie in MaybeDeleteEquivalentCookieAndUpdateStatus for

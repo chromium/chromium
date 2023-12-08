@@ -1257,6 +1257,224 @@ TEST(CanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
   }
 }
 
+TEST(CanonicalCookieTest, IsEquivalentForOriginBoundCookies) {
+  auto create_cookie = [](const char* domain_field,
+                          CookieSourceScheme source_scheme, int source_port) {
+    const char* cookie_name = "A";
+    const char* cookie_value = "2EDA-EF";
+    const char* cookie_path = "/";
+    const base::Time creation_time = base::Time::Now();
+    const base::Time expiration_time = creation_time + base::Days(2);
+    const base::Time update_time = creation_time + base::Days(1);
+    const bool secure = false;
+    const bool httponly = false;
+    const CookieSameSite same_site = CookieSameSite::NO_RESTRICTION;
+    const absl::optional<CookiePartitionKey> partition_key = absl::nullopt;
+
+    return CanonicalCookie::CreateUnsafeCookieForTesting(
+        cookie_name, cookie_value, domain_field, cookie_path, creation_time,
+        expiration_time, base::Time(), update_time, secure, httponly, same_site,
+        COOKIE_PRIORITY_MEDIUM, partition_key, source_scheme, source_port);
+  };
+
+  const char* domain = ".www.example.com";
+  const char* host_only_domain = "www.example.com";
+  const CookieSourceScheme http_scheme = CookieSourceScheme::kNonSecure;
+  const int port_80 = 80;
+
+  auto domain_cookie = create_cookie(domain, http_scheme, port_80);
+
+  auto host_cookie = create_cookie(host_only_domain, http_scheme, port_80);
+
+  // Host cookies are never equivalent to domain cookies.
+  ASSERT_FALSE(domain_cookie->IsEquivalent(*host_cookie));
+  ASSERT_FALSE(host_cookie->IsEquivalent(*domain_cookie));
+
+  // With neither binding enabled, difference in scheme and port have no effect
+  // on equivalency.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({}, {features::kEnableSchemeBoundCookies,
+                                       features::kEnablePortBoundCookies});
+
+    // Different schemes are equivalent.
+    auto other_cookie =
+        create_cookie(domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different ports are equivalent.
+    other_cookie = create_cookie(domain, http_scheme, -1);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, http_scheme, 123);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(host_only_domain, http_scheme, -1);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(host_only_domain, http_scheme, 123);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different scheme and ports are equivalent.
+    other_cookie = create_cookie(domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+  }
+
+  // With scheme binding enabled, differences in scheme means cookies are not
+  // equivalent.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kEnableSchemeBoundCookies},
+                                  {features::kEnablePortBoundCookies});
+
+    // Different schemes are not equivalent.
+    auto other_cookie =
+        create_cookie(domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_FALSE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_FALSE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different ports are equivalent.
+    other_cookie = create_cookie(domain, http_scheme, -1);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, http_scheme, 123);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(host_only_domain, http_scheme, -1);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(host_only_domain, http_scheme, 123);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different scheme and ports are not equivalent.
+    other_cookie = create_cookie(domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_FALSE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+  }
+  // With port binding enabled, domain cookies with the different ports are
+  // equivalent. Host cookies are not equivalent.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kEnablePortBoundCookies},
+                                  {features::kEnableSchemeBoundCookies});
+
+    // Different schemes are equivalent.
+    auto other_cookie =
+        create_cookie(domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_TRUE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different ports are equivalent for domain cookies.
+    other_cookie = create_cookie(domain, http_scheme, -1);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, http_scheme, 123);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    // But not so for host cookies.
+    other_cookie = create_cookie(host_only_domain, http_scheme, -1);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(host_only_domain, http_scheme, 123);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different scheme and ports are equivalent for domain cookies.
+    other_cookie = create_cookie(domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    // But not so for host cookies.
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+  }
+
+  // When both scheme and port binding are enabled, different schemes are always
+  // not equivalent while different ports depend on whether the cookie is host
+  // or domain.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kEnablePortBoundCookies,
+                                   features::kEnableSchemeBoundCookies},
+                                  {});
+
+    // Different schemes are not equivalent.
+    auto other_cookie =
+        create_cookie(domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_FALSE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_FALSE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, port_80);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kUnset, port_80);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different ports are equivalent for domain cookies.
+    other_cookie = create_cookie(domain, http_scheme, -1);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(domain, http_scheme, 123);
+    EXPECT_TRUE(domain_cookie->IsEquivalent(*other_cookie));
+
+    // But not so for host cookies.
+    other_cookie = create_cookie(host_only_domain, http_scheme, -1);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie = create_cookie(host_only_domain, http_scheme, 123);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+
+    // Different scheme and ports are not equivalent.
+    other_cookie = create_cookie(domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_FALSE(domain_cookie->IsEquivalent(*other_cookie));
+
+    other_cookie =
+        create_cookie(host_only_domain, CookieSourceScheme::kSecure, 123);
+    EXPECT_FALSE(host_cookie->IsEquivalent(*other_cookie));
+  }
+}
+
 TEST(CanonicalCookieTest, IsDomainMatch) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
