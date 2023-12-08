@@ -1125,7 +1125,7 @@ void ShelfAppButton::ChildPreferredSizeChanged(views::View* child) {
 }
 
 void ShelfAppButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
+  ShelfButton::OnThemeChanged();
 
   UpdateIconImage();
   UpdateBadgeIconImage();
