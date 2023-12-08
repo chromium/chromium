@@ -108,10 +108,7 @@ class PdfViewerStreamManager
   // ensure such a stream info exists before calling this.
   void ClaimStreamInfoForTesting(content::RenderFrameHost* embedder_host);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(PdfViewerStreamManagerTest,
-                           AddAndGetStreamContainer);
-
+ protected:
   // Stream container stored for a single PDF navigation.
   class StreamInfo {
    public:
@@ -146,6 +143,8 @@ class PdfViewerStreamManager
 
     void SetExtensionNavigated();
 
+    bool DidPdfContentNavigate() const;
+
    private:
     // A unique ID for the PDF viewer instance. Used to set up postMessage
     // support for the full-page PDF viewer.
@@ -169,9 +168,6 @@ class PdfViewerStreamManager
     int32_t instance_id_;
   };
 
-  friend class content::WebContentsUserData<PdfViewerStreamManager>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
   explicit PdfViewerStreamManager(content::WebContents* contents);
 
   // Returns the stream info claimed by `embedder_host`, or nullptr if there's
@@ -181,6 +177,13 @@ class PdfViewerStreamManager
   // Returns the stream info for a PDF content navigation.
   StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
       content::NavigationHandle* navigation_handle);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(PdfViewerStreamManagerTest,
+                           AddAndGetStreamContainer);
+
+  friend class content::WebContentsUserData<PdfViewerStreamManager>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   // Returns whether there's an unclaimed stream info with the default embedder
   // host info.

@@ -489,6 +489,8 @@ static_library("test_support") {
     sources += [
       "../browser/pdf/pdf_extension_test_base.cc",
       "../browser/pdf/pdf_extension_test_base.h",
+      "../browser/pdf/test_pdf_viewer_stream_manager.cc",
+      "../browser/pdf/test_pdf_viewer_stream_manager.h",
     ]
 
     deps += [

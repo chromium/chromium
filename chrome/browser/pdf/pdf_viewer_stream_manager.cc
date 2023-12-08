@@ -96,6 +96,10 @@ void PdfViewerStreamManager::StreamInfo::SetExtensionNavigated() {
   did_extension_navigate_ = true;
 }
 
+bool PdfViewerStreamManager::StreamInfo::DidPdfContentNavigate() const {
+  return container_manager_.is_bound();
+}
+
 PdfViewerStreamManager::PdfViewerStreamManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<PdfViewerStreamManager>(*contents) {}
@@ -233,7 +237,7 @@ void PdfViewerStreamManager::ReadyToCommitNavigation(
 void PdfViewerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Maybe set up postMessage support after the PDF content host finishes
-  // navigating, which would delete the associated `StreamInfo`.
+  // navigating.
   if (MaybeSetUpPostMessage(navigation_handle)) {
     return;
   }
