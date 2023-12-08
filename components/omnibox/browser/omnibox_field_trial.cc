@@ -612,11 +612,9 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
                    : &omnibox::kOnDeviceHeadProviderNonIncognito;
   std::string constraint = base::GetFieldTrialParamValueByFeature(
       *feature, kOnDeviceHeadModelLocaleConstraint);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (constraint.empty()) {
     constraint = "500000";
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return constraint;
 }
 
