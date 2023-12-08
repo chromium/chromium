@@ -514,22 +514,33 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (locationDefaultValue.setting === ContentSetting.ASK);
   }
 
-  private onLocationAskClicked_() {
-    this.isLocationAllowed_ = true;
-    this.setPrefValue('generated.geolocation', SettingsState.CPSS);
+  private onLocationTopLevelRadioChanged_(event: CustomEvent<{value: string}>) {
+    const radioButtonName = event.detail.value;
+    switch (radioButtonName) {
+      case 'location-block-radio-button':
+        this.setPrefValue('generated.geolocation', SettingsState.BLOCK);
+        this.isLocationAllowed_ = false;
+        break;
+      case 'location-ask-radio-button':
+        this.setPrefValue('generated.geolocation', SettingsState.CPSS);
+        this.isLocationAllowed_ = true;
+        break;
+    }
   }
 
-  private onNotificationAskClicked_() {
-    this.isNotificationAllowed_ = true;
-    this.setPrefValue('generated.notification', SettingsState.CPSS);
-  }
-
-  private onLocationBlockClicked_() {
-    this.isLocationAllowed_ = false;
-  }
-
-  private onNotificationBlockClicked_() {
-    this.isNotificationAllowed_ = false;
+  private onNotificationTopLevelRadioChanged_(
+      event: CustomEvent<{value: string}>) {
+    const radioButtonName = event.detail.value;
+    switch (radioButtonName) {
+      case 'notification-block-radio-button':
+        this.setPrefValue('generated.notification', SettingsState.BLOCK);
+        this.isNotificationAllowed_ = false;
+        break;
+      case 'notification-ask-radio-button':
+        this.setPrefValue('generated.notification', SettingsState.CPSS);
+        this.isNotificationAllowed_ = true;
+        break;
+    }
   }
 
   private onPrivacyGuideClick_() {
