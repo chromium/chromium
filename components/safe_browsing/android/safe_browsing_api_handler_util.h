@@ -67,8 +67,9 @@ enum class SafeBrowsingJavaThreatType {
   SOCIAL_ENGINEERING = 2,
   UNWANTED_SOFTWARE = 3,
   POTENTIALLY_HARMFUL_APPLICATION = 4,
-  SUBRESOURCE_FILTER = 13,
-  BILLING = 15
+  BILLING = 15,
+  ABUSIVE_EXPERIENCE_VIOLATION = 20,
+  BETTER_ADS_VIOLATION = 21
 };
 
 // Must match the definition in SafeBrowsing::ThreatAttribute in SafeBrowsing
@@ -133,6 +134,12 @@ enum class UmaRemoteCallResult {
 UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
                                          SBThreatType* worst_threat,
                                          ThreatMetadata* metadata);
+
+// Translates |threat_type| and |threat_attributes| from the Safe Browsing API
+// into ThreatMetadata.
+ThreatMetadata GetThreatMetadataFromSafeBrowsingApi(
+    SafeBrowsingJavaThreatType threat_type,
+    const std::vector<int>& threat_attributes);
 
 }  // namespace safe_browsing
 

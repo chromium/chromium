@@ -152,8 +152,9 @@ SafeBrowsingJavaValidationResult GetJavaValidationResult(
     case SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING:
     case SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE:
     case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
-    case SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER:
     case SafeBrowsingJavaThreatType::BILLING:
+    case SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+    case SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION:
       is_threat_type_recognized = true;
       break;
   }
@@ -325,10 +326,11 @@ SBThreatType SafeBrowsingJavaToSBThreatType(
       return SB_THREAT_TYPE_URL_UNWANTED;
     case SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION:
       return SB_THREAT_TYPE_URL_MALWARE;
-    case SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER:
-      return SB_THREAT_TYPE_SUBRESOURCE_FILTER;
     case SafeBrowsingJavaThreatType::BILLING:
       return SB_THREAT_TYPE_BILLING;
+    case SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+    case SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION:
+      return SB_THREAT_TYPE_SUBRESOURCE_FILTER;
   }
 }
 
@@ -343,8 +345,6 @@ SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
       return SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE;
     case SB_THREAT_TYPE_URL_MALWARE:
       return SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION;
-    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-      return SafeBrowsingJavaThreatType::SUBRESOURCE_FILTER;
     case SB_THREAT_TYPE_BILLING:
       return SafeBrowsingJavaThreatType::BILLING;
     default:
@@ -359,13 +359,24 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
     JNIEnv* env,
     const SBThreatTypeSet& threat_types) {
   DCHECK_LT(0u, threat_types.size());
-  int int_threat_types[threat_types.size()];
+  size_t threat_type_size =
+      base::Contains(threat_types, SB_THREAT_TYPE_SUBRESOURCE_FILTER)
+          ? threat_types.size() + 1
+          : threat_types.size();
+  int int_threat_types[threat_type_size];
   int* itr = &int_threat_types[0];
   for (auto threat_type : threat_types) {
-    *itr++ = static_cast<int>(
-        SBThreatTypeToSafeBrowsingApiJavaThreatType(threat_type));
+    if (threat_type == SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
+      *itr++ = static_cast<int>(
+          SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
+      *itr++ =
+          static_cast<int>(SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION);
+    } else {
+      *itr++ = static_cast<int>(
+          SBThreatTypeToSafeBrowsingApiJavaThreatType(threat_type));
+    }
   }
-  return ToJavaIntArray(env, int_threat_types, threat_types.size());
+  return ToJavaIntArray(env, int_threat_types, threat_type_size);
 }
 
 // The map that holds the callback_id used to reference each pending SafetyNet
@@ -575,15 +586,10 @@ void OnUrlCheckDoneOnSBThreadBySafeBrowsingApi(
     return;
   }
 
-  // The API currently doesn't have required threat types
-  // (ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION) to work with threat
-  // attributes, so threat attributes are currently disabled. It should not
-  // affect browse URL checks (mainframe and subresource URLs). However, this
-  // must be changed before it is used for subresource filter checks.
-  // Similarly, threat attributes must be consumed if we decide to use malware
-  // landing info on Android.
   std::move(*(callback->response_callback))
-      .Run(SafeBrowsingJavaToSBThreatType(threat_type), ThreatMetadata());
+      .Run(
+          SafeBrowsingJavaToSBThreatType(threat_type),
+          GetThreatMetadataFromSafeBrowsingApi(threat_type, threat_attributes));
 }
 
 // Java->Native call, invoked when a SafeBrowsing check is done. |env| is the
@@ -635,17 +641,21 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     std::unique_ptr<ResponseCallback> callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
-  // The SafeBrowsing API currently doesn't have required threat types
-  // (ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION) to perform subresource
-  // filter checks, so only checking the browse URLs.
-  if (SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types) &&
-      base::FeatureList::IsEnabled(
-          kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)) {
+  bool for_browse_url = SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types);
+  if (for_browse_url && base::FeatureList::IsEnabled(
+                            kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)) {
     StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
                                 SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
-  } else {
-    StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
+    return;
   }
+  if (!for_browse_url && base::FeatureList::IsEnabled(
+                             kSafeBrowsingNewGmsApiForSubresourceFilterCheck)) {
+    StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
+                                SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+    return;
+  }
+
+  StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
 }
 
 void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(

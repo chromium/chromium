@@ -254,6 +254,10 @@ const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
+             "SafeBrowsingNewGmsApiForSubresourceFilterCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kSafeBrowsingOnUIThread,

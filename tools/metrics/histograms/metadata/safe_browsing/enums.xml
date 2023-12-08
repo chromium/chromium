@@ -237,8 +237,9 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="SOCIAL_ENGINEERING"/>
   <int value="3" label="UNWANTED_SOFTWARE"/>
   <int value="4" label="POTENTIALLY_HARMFUL_APPLICATION"/>
-  <int value="13" label="SUBRESOURCE_FILTER"/>
   <int value="15" label="BILLING"/>
+  <int value="20" label="ABUSIVE_EXPERIENCE_VIOLATION"/>
+  <int value="21" label="BETTER_ADS_VIOLATION"/>
 </enum>
 
 <enum name="SafeBrowsingAppOptIn">
