@@ -62,6 +62,9 @@ struct CommandLineArguments {
   // Specifies the input file (which may be the same as the output file).
   base::FilePath in_filename;
 
+  // Indicates whether `in_filename` is an EXE.
+  bool is_exe = true;
+
   // Specifies the file name for the output of operations.
   base::FilePath out_filename;
 };
@@ -85,6 +88,7 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
     PrintUsageAndExit(cmdline);
 
   args.in_filename = base::FilePath{cmdline->GetArgs()[0]};
+  args.is_exe = args.in_filename.MatchesExtension(FILE_PATH_LITERAL(".exe"));
 
   const base::FilePath out_filename =
       cmdline->GetSwitchValuePath(kOutFilenameSwitch);
@@ -94,11 +98,11 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
   args.get_tag_string = cmdline->HasSwitch(kGetTagSwitch);
   cmdline->RemoveSwitch(kGetTagSwitch);
 
-  args.set_superfluous_cert = cmdline->HasSwitch(kSetTagSwitch);
+  args.set_superfluous_cert = args.is_exe && cmdline->HasSwitch(kSetTagSwitch);
   args.tag_string = cmdline->GetSwitchValueASCII(kSetTagSwitch);
   cmdline->RemoveSwitch(kSetTagSwitch);
 
-  if (cmdline->HasSwitch(kPaddedLength)) {
+  if (args.is_exe && cmdline->HasSwitch(kPaddedLength)) {
     int padded_length = 0;
     if (!base::StringToInt(cmdline->GetSwitchValueASCII(kPaddedLength),
                            &padded_length) ||
@@ -122,8 +126,14 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
 int TagMain(int argc, char** argv) {
   const auto args = ParseCommandLineArgs(argc, argv);
   if (args.get_tag_string) {
-    const std::string tag_string =
-        tagging::BinaryReadTagString(args.in_filename);
+    const std::string tag_string = [&args] {
+      if (args.is_exe) {
+        return tagging::ExeReadTag(args.in_filename);
+      }
+      std::optional<tagging::TagArgs> tag_args =
+          tagging::MsiReadTag(args.in_filename);
+      return tag_args ? tag_args->tag_string : std::string();
+    }();
     if (tag_string.empty()) {
       std::cout << "Could not get tag string, see log for details" << std::endl;
       std::exit(1);
@@ -132,10 +142,18 @@ int TagMain(int argc, char** argv) {
   }
 
   if (args.set_superfluous_cert) {
-    if (!tagging::BinaryWriteTag(
+    if (!tagging::ExeWriteTag(
             args.in_filename, args.tag_string, args.padded_length,
             args.out_filename.empty() ? args.in_filename : args.out_filename)) {
-      std::cout << "Could not write tag, see log for details" << std::endl;
+      std::cout << "Could not write EXE tag, see log for details" << std::endl;
+      std::exit(1);
+    }
+  }
+
+  if (!args.is_exe && !args.tag_string.empty()) {
+    if (!tagging::MsiWriteTag(args.in_filename, args.tag_string,
+                              args.out_filename)) {
+      std::cout << "Could not write MSI tag, see log for details" << std::endl;
       std::exit(1);
     }
   }

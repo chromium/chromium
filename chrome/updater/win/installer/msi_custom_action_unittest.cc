@@ -82,11 +82,19 @@ INSTANTIATE_TEST_SUITE_P(
          "Google%20Chrome&needsadmin=prefers&brand=CHMB&installdataindex="
          "defaultbrowser"},
 
+        // MSI file size greater than `kMaxBufferLength` of 80KB.
+        {"GUH-size-greater-than-max.msi",
+         "appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%"
+         "20Chrome%20Beta&needsAdmin=True&brand=GGLL"},
+
         // special character in the tag value.
         {"GUH-special-value.msi", "brand=QA*A"},
 
         // untagged msi.
         {"GUH-untagged.msi", {}},
+
+        // invalid magic signature "Gact2.0Foo".
+        {"GUH-invalid-marker.msi", {}},
 
         // invalid characters in the tag key.
         {"GUH-invalid-key.msi", {}},

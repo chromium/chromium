@@ -248,11 +248,16 @@ ErrorCode Parse(base::StringPiece tag,
 std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
                     std::vector<uint8_t>::const_iterator end);
 std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
+std::string ExeReadTag(const base::FilePath& file);
+bool ExeWriteTag(const base::FilePath& in_file,
+                 const std::string& tag_string,
+                 int padded_length,
+                 const base::FilePath& out_file);
 
-// Utilities for reading and writing tags to Windows PE and MSI files.
+// Utilities for reading and writing tags to MSI files.
 //
 //
-// The tag specification is as follows:
+// The tag specification for MSI files is as follows:
 //   - The tag area begins with a magic signature 'Gact2.0Omaha'.
 //   - The next 2 bytes are the tag string length in big endian.
 //   - Then comes the tag string in the format "key1=value1&key2=value2".
@@ -262,7 +267,7 @@ std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 // +-------------------------------------+
 // ~    ..............................   ~
 // |    ..............................   |
-// |    Other parts of the file          |
+// |    Other parts of the MSI file      |
 // +-------------------------------------+
 // | Start of the certificate            |
 // ~    ..............................   ~
@@ -278,16 +283,14 @@ std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 // |  a   n   d   =   C   D   C   D   &   k   e   y   2   =   T   e  |
 // |  s   t                                                          |
 // +-----------------------------------------------------------------+
-// Extracts a tag from `filename`.
-std::string BinaryReadTagString(const base::FilePath& file);
-std::optional<tagging::TagArgs> BinaryReadTag(const base::FilePath& file);
+// Extracts a tag from the end of the MSI `filename`.
+std::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename);
 
 // Tags `file` with `tag_string` and writes the result to `file` by default, or
 // to `out_file` if `out_file` is provided.
-bool BinaryWriteTag(const base::FilePath& in_file,
-                    const std::string& tag_string,
-                    int padded_length,
-                    base::FilePath out_file);
+bool MsiWriteTag(const base::FilePath& file,
+                 const std::string& tag_string,
+                 base::FilePath out_file = {});
 
 }  // namespace tagging
 }  // namespace updater

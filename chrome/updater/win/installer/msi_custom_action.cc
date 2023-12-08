@@ -131,8 +131,7 @@ UINT MsiSetTags(MsiHandleInterface& msi_handle) {
     return ERROR_SUCCESS;
   }
 
-  const auto tag_args =
-      updater::tagging::BinaryReadTag(base::FilePath(*msi_path));
+  const auto tag_args = updater::tagging::MsiReadTag(base::FilePath(*msi_path));
   if (!tag_args) {
     return ERROR_SUCCESS;
   }
