@@ -22,6 +22,9 @@ ci.defaults.set(
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    siso_configs = ["builder"],
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
 )
 
 consoles.console_view(
@@ -1486,7 +1489,7 @@ fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient)(CQ)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel-compilator">android-arm64-rel-compilator</a>.\
 """,
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -1498,8 +1501,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 300,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1529,7 +1534,7 @@ fyi_reclient_comparison_builder(
     name = "Comparison Windows (reclient)(CQ)",
     description_html = """\
 This builder measures Windows build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-compilator">win10_chromium_x64_rel_ng-compilator</a>.\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win-rel-compilator">win-rel-compilator</a>.\
 """,
     builderless = True,
     cores = 32,
@@ -1542,8 +1547,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Windows CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 300,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1563,8 +1570,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 300,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(

@@ -45,6 +45,9 @@ ci.defaults.set(
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
+    siso_configs = ["builder"],
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
 )
 
 consoles.console_view(
@@ -742,6 +745,8 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     },
     reclient_cache_silo = "Comparison Linux CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 150,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
