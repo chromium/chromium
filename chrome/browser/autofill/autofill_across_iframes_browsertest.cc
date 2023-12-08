@@ -563,8 +563,15 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
 }
 
 // Tests that a newly emerging field inside a frame triggers a refill.
+// TODO(crbug.com/1486516): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RefillDynamicFormWithNewField \
+  DISABLED_RefillDynamicFormWithNewField
+#else
+#define MAYBE_RefillDynamicFormWithNewField RefillDynamicFormWithNewField
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
-                       RefillDynamicFormWithNewField) {
+                       MAYBE_RefillDynamicFormWithNewField) {
   const FormStructure* form = LoadFormWithAppearingField();
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
@@ -774,8 +781,16 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
 
 // Tests that a deeply nested form where some iframes don't even contain any
 // fields (but their subframes do) is extracted and filled correctly.
+// TODO(crbug.com/1486516): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
+  DISABLED_FlattenFormEvenAcrossFramesWithoutFields
+#else
+#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
+  FlattenFormEvenAcrossFramesWithoutFields
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
-                       FlattenFormEvenAcrossFramesWithoutFields) {
+                       MAYBE_FlattenFormEvenAcrossFramesWithoutFields) {
   SetUrlContent("/", MakeCss(3) +
                          R"(<iframe src="$4/3.html"></iframe>
                             <iframe src="$3/3.html"></iframe>
