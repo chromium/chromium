@@ -101,6 +101,7 @@ component("compositor") {
     "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/display",
     "//ui/events",
     "//ui/gfx",

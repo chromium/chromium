@@ -41,6 +41,7 @@
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/compositor_lock.h"
@@ -55,10 +56,6 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_transform.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/buildflags.h"
-#endif
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -464,11 +461,9 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // base::PowerSuspendObserver:
   void OnResume() override;
 
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   void OnCompleteSwapWithNewSize(const gfx::Size& size);
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
   bool IsLocked() { return lock_manager_.IsLocked(); }
 

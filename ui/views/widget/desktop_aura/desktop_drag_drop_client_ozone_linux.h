@@ -10,7 +10,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/buildflags.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"

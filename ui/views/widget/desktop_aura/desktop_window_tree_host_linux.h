@@ -14,7 +14,6 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/ozone/buildflags.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"

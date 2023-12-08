@@ -887,7 +887,10 @@ component("views") {
           "widget/desktop_aura/window_event_filter_linux.cc",
           "widget/desktop_aura/window_event_filter_linux.h",
         ]
-        deps += [ "//ui/base:hit_test" ]
+        deps += [
+          "//ui/base:hit_test",
+          "//ui/base:ozone_buildflags",
+        ]
       }
       if (is_chromeos_lacros) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
@@ -1346,6 +1349,7 @@ test("views_unittests") {
     "//ui/accessibility",
     "//ui/actions",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/base:test_support",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_test_support",

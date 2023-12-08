@@ -50,6 +50,7 @@
 #include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_observer.h"
@@ -893,14 +894,12 @@ void Compositor::OnResume() {
     obs.ResetIfActive();
 }
 
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 void Compositor::OnCompleteSwapWithNewSize(const gfx::Size& size) {
   for (auto& observer : observer_list_)
     observer.OnCompositingCompleteSwapWithNewSize(this, size);
 }
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
 void Compositor::SetOutputIsSecure(bool output_is_secure) {
   output_is_secure_ = output_is_secure;
