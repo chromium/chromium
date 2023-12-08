@@ -23,7 +23,6 @@ ts_modules = [
   "../switch_access_loader.ts",
   "cache.ts",
   "metrics.ts",
-  "navigator.ts",
 ]
 
 # TS files needed from ../common/.
@@ -106,6 +105,7 @@ run_jsbundler("switch_access_copied_files") {
     "icons/textSelectionStart.svg",
     "item_scan_manager.js",
     "menu_manager.js",
+    "navigator.js",
     "navigator_interfaces.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",

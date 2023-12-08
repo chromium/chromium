@@ -8,32 +8,38 @@ import {PointScanManager} from './point_scan_manager.js';
 import {SwitchAccess} from './switch_access.js';
 import {ErrorType} from './switch_access_constants.js';
 
-type AutomationNode = chrome.automation.AutomationNode;
+const AutomationNode = chrome.automation.AutomationNode;
 
 export class Navigator {
-  private static itemManager: ItemNavigatorInterface;
-  private static pointManager: PointNavigatorInterface;
-
-  static initializeSingletonInstances(desktop: AutomationNode): void {
-    Navigator.itemManager = new ItemScanManager(desktop);
-    Navigator.pointManager = new PointScanManager();
+  /** @param {!AutomationNode} desktop */
+  static initializeSingletonInstances(desktop) {
+    Navigator.itemManager_ = new ItemScanManager(desktop);
+    Navigator.pointManager_ = new PointScanManager();
   }
 
-  static get byItem(): ItemNavigatorInterface {
-    if (!Navigator.itemManager) {
+  /** @return {!ItemNavigatorInterface} */
+  static get byItem() {
+    if (!Navigator.itemManager_) {
       throw SwitchAccess.error(
           ErrorType.UNINITIALIZED,
           'Cannot access itemManager before Navigator.init()');
     }
-    return Navigator.itemManager;
+    return Navigator.itemManager_;
   }
 
-  static get byPoint(): PointNavigatorInterface {
-    if (!Navigator.pointManager) {
+  /** @return {!PointNavigatorInterface} */
+  static get byPoint() {
+    if (!Navigator.pointManager_) {
       throw SwitchAccess.error(
           ErrorType.UNINITIALIZED,
           'Cannot access pointManager before Navigator.init()');
     }
-    return Navigator.pointManager;
+    return Navigator.pointManager_;
   }
 }
+
+/** @private {ItemNavigatorInterface} */
+Navigator.itemManager_;
+
+/** @private {PointNavigatorInterface} */
+Navigator.pointManager_;
