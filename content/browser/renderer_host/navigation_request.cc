@@ -5718,10 +5718,10 @@ void NavigationRequest::CommitNavigation() {
     }
   }
 
-  if (ad_auction_headers_eligible_) {
+  if (ad_auction_headers_eligible_ && response_head_->headers) {
     ProcessAdAuctionResponseHeaders(origin, GetRenderFrameHost()->GetPage(),
                                     *response_head_->headers);
-  } else if (has_ad_auction_headers_attribute_) {
+  } else if (has_ad_auction_headers_attribute_ && response_head_->headers) {
     RemoveAdAuctionResponseHeaders(*response_head_->headers);
   }
 
