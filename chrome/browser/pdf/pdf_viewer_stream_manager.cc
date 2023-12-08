@@ -82,14 +82,19 @@ bool PdfViewerStreamManager::EmbedderHostInfo::operator<(
 PdfViewerStreamManager::StreamInfo::StreamInfo(
     const std::string& embed_internal_id,
     std::unique_ptr<extensions::StreamContainer> stream_container)
-    : internal_id(embed_internal_id), stream(std::move(stream_container)) {
+    : internal_id_(embed_internal_id), stream_(std::move(stream_container)) {
   // Make sure 0 is never used because some APIs (particularly WebRequest) have
   // special meaning for 0 IDs.
   static int32_t next_instance_id = 0;
-  instance_id = ++next_instance_id;
+  instance_id_ = ++next_instance_id;
 }
 
 PdfViewerStreamManager::StreamInfo::~StreamInfo() = default;
+
+void PdfViewerStreamManager::StreamInfo::SetExtensionNavigated() {
+  CHECK(!did_extension_navigate_);
+  did_extension_navigate_ = true;
+}
 
 PdfViewerStreamManager::PdfViewerStreamManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
@@ -127,11 +132,11 @@ PdfViewerStreamManager::GetStreamContainer(
   // same frame tree node ID. Verify the original URL in the stream container to
   // avoid a potential URL spoof.
   if (embedder_host->GetLastCommittedURL() !=
-      stream_info->stream->original_url()) {
+      stream_info->stream()->original_url()) {
     return nullptr;
   }
 
-  return stream_info->stream->GetWeakPtr();
+  return stream_info->stream()->GetWeakPtr();
 }
 
 void PdfViewerStreamManager::RenderFrameDeleted(
@@ -182,9 +187,9 @@ void PdfViewerStreamManager::FrameDeleted(int frame_tree_node_id) {
   for (auto iter = stream_infos_.begin(); iter != stream_infos_.end();) {
     if (iter->first.frame_tree_node_id == frame_tree_node_id) {
       StreamInfo* stream_info = iter->second.get();
-      if (stream_info->container_manager) {
-        stream_info->container_manager->DestroyFrameContainer(
-            stream_info->instance_id);
+      if (stream_info->mime_handler_view_container_manager()) {
+        stream_info->mime_handler_view_container_manager()
+            ->DestroyFrameContainer(stream_info->instance_id());
       }
 
       iter = stream_infos_.erase(iter);
@@ -222,7 +227,7 @@ void PdfViewerStreamManager::ReadyToCommitNavigation(
   // Set the internal ID to set up postMessage later, when the PDF content host
   // finishes navigating.
   auto container_manager = GetMimeHandlerViewContainerManager(embedder_host);
-  container_manager->SetInternalId(claimed_stream_info->internal_id);
+  container_manager->SetInternalId(claimed_stream_info->internal_id());
 }
 
 void PdfViewerStreamManager::DidFinishNavigation(
@@ -259,7 +264,7 @@ void PdfViewerStreamManager::DidFinishNavigation(
   // host has already navigated, to avoid multiple about:blanks navigating to
   // the extension URL.
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  if (!stream_info || stream_info->did_extension_navigate) {
+  if (!stream_info || stream_info->did_extension_navigate()) {
     return;
   }
 
@@ -269,7 +274,7 @@ void PdfViewerStreamManager::DidFinishNavigation(
   params.source_site_instance = embedder_host->GetSiteInstance();
   web_contents()->GetController().LoadURLWithParams(params);
 
-  stream_info->did_extension_navigate = true;
+  stream_info->SetExtensionNavigated();
 }
 
 void PdfViewerStreamManager::ClaimStreamInfoForTesting(
@@ -332,9 +337,9 @@ void PdfViewerStreamManager::DeleteStreamInfo(
   CHECK(iter != stream_infos_.end());
 
   StreamInfo* stream_info = iter->second.get();
-  if (stream_info->container_manager) {
-    stream_info->container_manager->DestroyFrameContainer(
-        stream_info->instance_id);
+  if (stream_info->mime_handler_view_container_manager()) {
+    stream_info->mime_handler_view_container_manager()->DestroyFrameContainer(
+        stream_info->instance_id());
   }
 
   stream_infos_.erase(iter);
@@ -359,7 +364,7 @@ bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
   // The stream container is no longer needed after registering the subresource
   // override.
   navigation_handle->RegisterSubresourceOverride(
-      claimed_stream_info->stream->TakeTransferrableURLLoader());
+      claimed_stream_info->stream()->TakeTransferrableURLLoader());
 
   return true;
 }
@@ -407,9 +412,10 @@ bool PdfViewerStreamManager::MaybeSetUpPostMessage(
   // delete `extensions::MimeHandlerViewFrameContainer` objects. However, OOPIF
   // PDF viewer doesn't have a guest element instance ID. Use the instance ID
   // instead, which is a unique ID for `StreamInfo`.
-  container_manager->DidLoad(claimed_stream_info->instance_id,
-                             claimed_stream_info->stream->original_url());
-  claimed_stream_info->container_manager = std::move(container_manager);
+  container_manager->DidLoad(claimed_stream_info->instance_id(),
+                             claimed_stream_info->stream()->original_url());
+  claimed_stream_info->set_mime_handler_view_container_manager(
+      std::move(container_manager));
 
   return true;
 }
