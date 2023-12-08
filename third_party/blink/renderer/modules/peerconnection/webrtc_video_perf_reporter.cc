@@ -10,15 +10,28 @@
 
 namespace blink {
 
-WebrtcVideoPerfReporter::WebrtcVideoPerfReporter(
+WebrtcVideoPerfReporter::WebrtcVideoPerfReporter() {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
+
+WebrtcVideoPerfReporter::~WebrtcVideoPerfReporter() {
+  // `task_runner_` may not be set in some unit tests of other features.
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+}
+
+void WebrtcVideoPerfReporter::Shutdown() {
+  // `task_runner_` may not be set in some unit tests of other features.
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void WebrtcVideoPerfReporter::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    ContextLifecycleNotifier* notifier,
     mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
-        perf_recorder)
-    : perf_recorder_(notifier) {
+        perf_recorder) {
   task_runner_ = task_runner;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  perf_recorder_.Bind(std::move(perf_recorder), task_runner_);
+  perf_recorder_.Bind(std::move(perf_recorder));
 }
 
 void WebrtcVideoPerfReporter::StoreWebrtcVideoStats(
@@ -29,7 +42,7 @@ void WebrtcVideoPerfReporter::StoreWebrtcVideoStats(
       FROM_HERE,
       base::BindOnce(
           &WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner,
-          WrapWeakPersistent(this), stats_key, video_stats));
+          weak_this_, stats_key, video_stats));
 }
 
 void WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner(
