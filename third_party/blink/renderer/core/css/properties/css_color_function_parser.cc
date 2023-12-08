@@ -409,12 +409,12 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
         continue;
       }
       if (channel_types_[i] == ChannelType::kPercentage) {
-        if (uses_bare_numbers && !is_relative_color_) {
+        if (uses_bare_numbers && is_legacy_syntax_) {
           return false;
         }
         uses_percentage = true;
       } else if (channel_types_[i] == ChannelType::kNumber) {
-        if (uses_percentage && !is_relative_color_) {
+        if (uses_percentage && is_legacy_syntax_) {
           return false;
         }
         uses_bare_numbers = true;
