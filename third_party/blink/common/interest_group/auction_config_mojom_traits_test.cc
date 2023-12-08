@@ -193,11 +193,11 @@ AuctionConfig CreateFullConfig() {
            kTotalSignalsFetchLatency,
        {absl::MakeUint128(0, 1), 2.0}}};
   non_shared_params.requested_size = AdSize(
-      100, AdSize::LengthUnit::kPixels, 0.7, AdSize::LengthUnit::kScreenHeight);
+      100, AdSize::LengthUnit::kPixels, 70, AdSize::LengthUnit::kScreenHeight);
   non_shared_params.all_slots_requested_sizes = {
-      AdSize(50, AdSize::LengthUnit::kPixels, 0.5,
+      AdSize(100, AdSize::LengthUnit::kPixels, 70,
              AdSize::LengthUnit::kScreenHeight),
-      AdSize(0.6, AdSize::LengthUnit::kScreenWidth, 0.5,
+      AdSize(55.5, AdSize::LengthUnit::kScreenWidth, 50.5,
              AdSize::LengthUnit::kPixels),
   };
   non_shared_params.required_seller_capabilities = {
@@ -470,19 +470,28 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionSuccessMultipleFull) {
 }
 
 TEST(AuctionConfigMojomTraitsTest, DuplicateAllSlotsRequestedSizes) {
-  const AdSize kSize1 = AdSize(0.7, AdSize::LengthUnit::kScreenWidth, 0.7,
+  const AdSize kSize1 = AdSize(70.5, AdSize::LengthUnit::kScreenWidth, 70.6,
                                AdSize::LengthUnit::kScreenHeight);
-  const AdSize kSize2 = AdSize(100, AdSize::LengthUnit::kPixels, 100,
+  const AdSize kSize2 = AdSize(100, AdSize::LengthUnit::kPixels, 110,
                                AdSize::LengthUnit::kPixels);
 
   AuctionConfig auction_config = CreateBasicConfig();
-  // An empty list is allowed.
+  // An empty list is not allowed.
   auction_config.non_shared_params.all_slots_requested_sizes.emplace();
-  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 
-  // Add one AdSize, list should still be allowed.
+  // Add one AdSize. List should be allowed.
   auction_config.non_shared_params.all_slots_requested_sizes->emplace_back(
       kSize1);
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  // Set `requested_size` to a different AdSize. List should not be allowed,
+  // since it doesn't include `requested_size`.
+  auction_config.non_shared_params.requested_size = kSize2;
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+
+  // Set `requested_size` to the same AdSize. List should be allowed.
+  auction_config.non_shared_params.requested_size = kSize1;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 
   // Add the same AdSize again, list should no longer be allowed.
@@ -493,6 +502,11 @@ TEST(AuctionConfigMojomTraitsTest, DuplicateAllSlotsRequestedSizes) {
   // Replace the second AdSize with a different value, the list should still be
   // allowed again.
   auction_config.non_shared_params.all_slots_requested_sizes->back() = kSize2;
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  // Set the `requested_size` to the size of the second AdList. The list should
+  // still be allowed.
+  auction_config.non_shared_params.requested_size = kSize2;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 
   // Add the second AdSize a second time, and the list should not be allowed

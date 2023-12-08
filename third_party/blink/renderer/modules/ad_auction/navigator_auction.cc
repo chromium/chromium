@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -2072,6 +2073,9 @@ bool CopyRequestedSizeFromIdlToMojo(const ExecutionContext& execution_context,
                                     ExceptionState& exception_state,
                                     const AuctionAdConfig& input,
                                     mojom::blink::AuctionAdConfig& output) {
+  // This must be called before CopyAllSlotsRequestedSizesFromIdlToMojo().
+  DCHECK(
+      !output.auction_ad_config_non_shared_params->all_slots_requested_sizes);
   if (!input.hasRequestedSize()) {
     return true;
   }
@@ -2086,6 +2090,9 @@ bool CopyRequestedSizeFromIdlToMojo(const ExecutionContext& execution_context,
   return true;
 }
 
+// This must be called after CopyRequestedSizeFromIdlToMojo(), since it verifies
+// that if both `all_slots_requested_sizes` and `requested_size` are set, then
+// the former contains the latter.
 bool CopyAllSlotsRequestedSizesFromIdlToMojo(
     const ExecutionContext& execution_context,
     ExceptionState& exception_state,
@@ -2093,6 +2100,14 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasAllSlotsRequestedSizes()) {
     return true;
+  }
+
+  if (input.allSlotsRequestedSizes().empty()) {
+    exception_state.ThrowTypeError(
+        String::Format("allSlotsRequestedSizes for AuctionAdConfig with seller "
+                       "'%s' may not be empty.",
+                       input.seller().Utf8().c_str()));
+    return false;
   }
 
   std::set<mojom::blink::AdSize> distinct_sizes;
@@ -2104,6 +2119,7 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
     if (!size) {
       return false;
     }
+
     if (!distinct_sizes.insert(*size).second) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
           input, "allSlotsRequestedSizes",
@@ -2113,9 +2129,23 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
           "must be distinct from other sizes in the list."));
       return false;
     }
+
     output.auction_ad_config_non_shared_params->all_slots_requested_sizes
         ->emplace_back(std::move(size));
   }
+
+  // If `requested_size` is set, `all_slots_requested_sizes` must include it.
+  if (output.auction_ad_config_non_shared_params->requested_size &&
+      !base::Contains(
+          distinct_sizes,
+          *output.auction_ad_config_non_shared_params->requested_size)) {
+    exception_state.ThrowTypeError(String::Format(
+        "allSlotsRequestedSizes for AuctionAdConfig with seller '%s' must "
+        "contain requestedSize as an element when requestedSize is set.",
+        input.seller().Utf8().c_str()));
+    return false;
+  }
+
   return true;
 }
 
