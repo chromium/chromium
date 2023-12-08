@@ -25,8 +25,9 @@ import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction
 import {XfPasswordDialog} from '../../../widgets/xf_password_dialog.js';
 import {XfSplitter} from '../../../widgets/xf_splitter.js';
 import {XfTree} from '../../../widgets/xf_tree.js';
-import {FilesToast} from '../../elements/files_toast.js';
-import {FilesTooltip} from '../../elements/files_tooltip.js';
+import type {FilesFormatDialog} from '../../elements/files_format_dialog.js';
+import type {FilesToast} from '../../elements/files_toast.js';
+import type {FilesTooltip} from '../../elements/files_tooltip.js';
 import {BannerController} from '../banner_controller.js';
 import {LaunchParam} from '../launch_param.js';
 import {ProvidersModel} from '../providers_model.js';
@@ -53,6 +54,7 @@ import {MultiMenu} from './multi_menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 import {ProgressCenterPanel} from './progress_center_panel.js';
 import {ProvidersMenu} from './providers_menu.js';
+
 
 /**
  * The root of the file manager's view managing the DOM of the Files app.
@@ -125,7 +127,7 @@ export class FileManagerUI {
   /**
    * Dialog for formatting
    */
-  readonly formatDialog: HTMLElement;
+  readonly formatDialog: FilesFormatDialog;
 
   /**
    * Dialog for password prompt
@@ -323,7 +325,8 @@ export class FileManagerUI {
     this.importCrostiniImageDialog =
         new ImportCrostiniImageDialog(this.element);
 
-    this.formatDialog = queryRequiredElement('#format-dialog');
+    this.formatDialog =
+        queryRequiredElement('#format-dialog') as FilesFormatDialog;
 
     this.dialogContainer =
         queryRequiredElement('.dialog-container', this.element);
@@ -332,7 +335,7 @@ export class FileManagerUI {
 
     this.toolbar = queryRequiredElement('.dialog-header', this.element);
 
-    this.filesTooltip = document.querySelector('files-tooltip') as FilesTooltip;
+    this.filesTooltip = document.querySelector<FilesTooltip>('files-tooltip')!;
 
     this.actionbar = queryRequiredElement('#action-bar', this.toolbar);
 
@@ -385,7 +388,7 @@ export class FileManagerUI {
 
     this.nudgeContainer = new NudgeContainer();
 
-    this.toast = document.querySelector('files-toast') as FilesToast;
+    this.toast = document.querySelector<FilesToast>('files-toast')!;
 
     this.fileTypeFilterContainer =
         queryRequiredElement('#file-type-filter-container', this.element);
