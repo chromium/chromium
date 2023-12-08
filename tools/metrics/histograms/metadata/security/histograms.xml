@@ -833,6 +833,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"
+    units="Boolean" expires_after="2024-04-20">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records whether a new process is used for navigation when there are other
+    same site process(es). Recorded for the outer-most main frame navigation
+    when navigation is committed (cross-origin redirects are not recorded).
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.ORB.BlockingReason"
     enum="OrbBlockingDecisionReason" expires_after="2023-08-08">
   <owner>creis@chromium.org</owner>

@@ -1172,6 +1172,29 @@ FencedDocumentData* GetFencedDocumentData(
   return nullptr;
 }
 
+bool NewProcessUsedForNavigationWhenSameSiteProcessExists(
+    RenderFrameHostImpl* committing_frame) {
+  RoutingIDFrameMap* frames = g_routing_id_frame_map.Pointer();
+  for (auto [_, frame] : *frames) {
+    if (committing_frame == frame) {
+      continue;
+    }
+    if (frame->GetProcess() == committing_frame->GetProcess()) {
+      continue;
+    }
+    if (frame->GetSiteInstance()->GetSiteInfo() !=
+        committing_frame->GetSiteInstance()->GetSiteInfo()) {
+      continue;
+    }
+    if (RenderProcessHostImpl::MayReuseAndIsSuitable(
+            frame->GetProcess(), committing_frame->GetSiteInstance())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -10620,6 +10643,25 @@ void RenderFrameHostImpl::CommitNavigation(
                       GetBrowserContext(), isolation_info.origin())) {
         manifest_policy = std::move(isolated_web_app_permissions_policy);
       }
+    }
+
+    // Record whether there are same site frames that live in different
+    // processes.
+    const bool maybe_new_process_is_used =
+        GetProcess()->GetRenderFrameHostCount() == 1 &&
+        GetSiteInstance() != navigation_request->frame_tree_node()
+                                 ->current_frame_host()
+                                 ->GetSiteInstance();
+    if (maybe_new_process_is_used && common_params->url.SchemeIsHTTPOrHTTPS() &&
+        IsOutermostMainFrame()) {
+      bool value = NewProcessUsedForNavigationWhenSameSiteProcessExists(this);
+      base::UmaHistogramBoolean(
+          "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists",
+          value);
+      ukm::builders::SiteInstance(
+          navigation_request->commit_params().document_ukm_source_id)
+          .SetNewProcessUsedForNavigationWhenSameSiteProcessExists(value)
+          .Record(ukm::UkmRecorder::Get());
     }
 
     SendCommitNavigation(
