@@ -3877,7 +3877,7 @@
   {
     "name": "enable-webview-tag-mparch-behavior",
     "owners": [ "mcnee@chromium.org", "//components/guest_view/OWNERS" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 126
   },
   {
     "name": "enable-welcome-tour",
