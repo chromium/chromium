@@ -24,7 +24,6 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
     private final Callback<TabModelSelector> mSelectorSupplierCallback;
 
     private TabModelSelector mSelector;
-    private boolean mHasProfile;
 
     public TabModelSelectorProfileSupplier(ObservableSupplier<TabModelSelector> selectorSupplier) {
         mSelectorObserver =
@@ -92,7 +91,6 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
         if (profile == null) {
             throw new IllegalStateException("Null is not a valid value to set for the profile.");
         }
-        mHasProfile = true;
         super.set(profile);
     }
 
@@ -110,6 +108,7 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
 
     @Override
     public boolean hasValue() {
-        return mHasProfile;
+        // this.get() will throw on null, so go directly to super.
+        return super.get() != null;
     }
 }
