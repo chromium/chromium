@@ -5,9 +5,11 @@
 #include "media/base/win/mf_initializer.h"
 
 #include <mfapi.h>
+#include <synchapi.h>
 
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/win/scoped_handle.h"
 
 namespace {
 
@@ -73,7 +75,8 @@ class MediaFoundationSession {
  private:
   friend struct base::StaticMemorySingletonTraits<MediaFoundationSession>;
 
-  MediaFoundationSession() {
+  MediaFoundationSession()
+      : mutex_handle_(CreateMutex(nullptr, false, L"mfx_d3d_mutex")) {
     const auto hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);
     has_media_foundation_ = hr == S_OK;
 
@@ -82,6 +85,10 @@ class MediaFoundationSession {
         << logging::SystemErrorCodeToString(hr);
   }
 
+  // Creating a global D3D mutex prior to sandbox startup ensures Intel hardware
+  // encoding MFTs will reuse the existing mutex instead of failing to create a
+  // new one inside the sandbox later. See https://crbug.com/1491893
+  base::win::ScopedHandle mutex_handle_;
   bool has_media_foundation_ = false;
 };
 
