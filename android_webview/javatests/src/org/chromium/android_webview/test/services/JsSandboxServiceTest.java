@@ -300,7 +300,6 @@ public class JsSandboxServiceTest {
                     "Enable it back once we have a WebView version to see if the feature is"
                             + " actually supported in that version")
     public void testFeatureDetection() throws Throwable {
-        Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(
                         ContextUtils.getApplicationContext());
@@ -694,7 +693,7 @@ public class JsSandboxServiceTest {
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
 
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code1);
-            ListenableFuture<String> resultFuture2 = jsIsolate.evaluateJavaScriptAsync(code2);
+            jsIsolate.evaluateJavaScriptAsync(code2);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(expected, result);
@@ -709,12 +708,12 @@ public class JsSandboxServiceTest {
         final byte[] bytes = {0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00};
         final String code =
                 "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => { return"
-                        + " android.consumeNamedDataAsArrayBuffer(\"id-2\").then((value) => {  return"
-                        + " android.consumeNamedDataAsArrayBuffer(\"id-3\").then((value) => {   return"
-                        + " android.consumeNamedDataAsArrayBuffer(\"id-4\").then((value) => {    return"
-                        + " android.consumeNamedDataAsArrayBuffer(\"id-5\").then((value) => {    "
-                        + " return \"success\";     }, (error) => {     return error.message;    });  "
-                        + " });  }); });});";
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-2\").then((value) => {  return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-3\").then((value) => {   return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-4\").then((value) => {    return"
+                    + " android.consumeNamedDataAsArrayBuffer(\"id-5\").then((value) => {    "
+                    + " return \"success\";     }, (error) => {     return error.message;    });  "
+                    + " });  }); });});";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
@@ -741,8 +740,6 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testPromiseEvaluationThrow() throws Throwable {
-        final String provideString = "Hello World";
-        final byte[] bytes = provideString.getBytes(StandardCharsets.US_ASCII);
         final String code =
                 ""
                         + "android.consumeNamedDataAsArrayBuffer(\"id-1\").catch((error) => {"
@@ -809,8 +806,7 @@ public class JsSandboxServiceTest {
             // thrown instead.
             jsIsolate.close();
             try {
-                ListenableFuture<String> postCloseResultFuture =
-                        jsIsolate.evaluateJavaScriptAsync(code);
+                jsIsolate.evaluateJavaScriptAsync(code);
                 Assert.fail("Should have thrown.");
             } catch (IllegalStateException e) {
                 // Expected
@@ -962,7 +958,7 @@ public class JsSandboxServiceTest {
 
                 // Check reject
                 try {
-                    String badPromiseResult = badPromiseFuture.get(5, TimeUnit.SECONDS);
+                    badPromiseFuture.get(5, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown");
                 } catch (ExecutionException e) {
                     if (!(e.getCause() instanceof EvaluationFailedException)) {
@@ -1273,12 +1269,12 @@ public class JsSandboxServiceTest {
         // with a RangeError, and a subsequent smaller request succeeds.
         final String code =
                 "function ab2str(buf) { return String.fromCharCode.apply(null, new"
-                        + " Uint8Array(buf));}async function test() { try {  await"
-                        + " android.consumeNamedDataAsArrayBuffer('large');  throw new"
-                        + " Error('consumption of large named data should not have succeeded'); } catch"
-                        + " (e) {  if (!(e instanceof RangeError)) {   throw e;  } } const buffer ="
-                        + " await android.consumeNamedDataAsArrayBuffer('small'); return await"
-                        + " ab2str(buffer);}test()";
+                    + " Uint8Array(buf));}async function test() { try {  await"
+                    + " android.consumeNamedDataAsArrayBuffer('large');  throw new"
+                    + " Error('consumption of large named data should not have succeeded'); } catch"
+                    + " (e) {  if (!(e instanceof RangeError)) {   throw e;  } } const buffer ="
+                    + " await android.consumeNamedDataAsArrayBuffer('small'); return await"
+                    + " ab2str(buffer);}test()";
         Context context = ContextUtils.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
