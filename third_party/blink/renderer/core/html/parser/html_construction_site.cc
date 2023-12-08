@@ -1143,6 +1143,7 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
 
 // "look up a custom element definition" for a token
 // https://html.spec.whatwg.org/C/#look-up-a-custom-element-definition
+// static
 CustomElementDefinition* HTMLConstructionSite::LookUpCustomElementDefinition(
     Document& document,
     const QualifiedName& tag_name,
@@ -1197,6 +1198,8 @@ Element* HTMLConstructionSite::CreateElement(
 
   Element* element;
 
+  // This check and the steps inside are duplicated in
+  // XMLDocumentParser::StartElementNs.
   if (will_execute_script) {
     // "6.1 Increment the document's throw-on-dynamic-insertion counter."
     ThrowOnDynamicMarkupInsertionCountIncrementer

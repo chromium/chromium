@@ -44,12 +44,16 @@
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
+#include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -1022,6 +1026,25 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   QualifiedName q_name(prefix, local_name, adjusted_uri);
   if (!prefix.empty() && adjusted_uri.empty())
     q_name = QualifiedName(g_null_atom, prefix + ":" + local_name, g_null_atom);
+
+  // If we are constructing a custom element, then we must run extra steps as
+  // described in the HTML spec below. This is similar to the steps in
+  // HTMLConstructionSite::CreateElement.
+  // https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token
+  // https://html.spec.whatwg.org/multipage/xhtml.html#parsing-xhtml-documents
+  absl::optional<CEReactionsScope> reactions;
+  absl::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
+      throw_on_dynamic_markup_insertions;
+  if (RuntimeEnabledFeatures::RunMicrotaskBeforeXmlCustomElementEnabled() &&
+      !parsing_fragment_) {
+    if (auto* definition = HTMLConstructionSite::LookUpCustomElementDefinition(
+            *document_, q_name, is)) {
+      throw_on_dynamic_markup_insertions.emplace(document_);
+      document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+      reactions.emplace();
+    }
+  }
+
   Element* new_element = current_node_->GetDocument().CreateElement(
       q_name,
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
