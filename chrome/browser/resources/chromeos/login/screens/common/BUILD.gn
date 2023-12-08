@@ -65,7 +65,6 @@ js_type_check("closure_compile_local") {
     ":touchpad_scroll",
     ":tpm_error",
     ":user_creation",
-    ":wrong_hwid",
   ]
 }
 
@@ -654,18 +653,6 @@ js_library("user_creation") {
   externs_list = [
     "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("wrong_hwid") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/wrong_hwid.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
 }
