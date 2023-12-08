@@ -58,33 +58,38 @@ namespace blink {
 
 // TODO(sashab): Move these to CSSPrimitiveValue.h.
 template <>
-inline int16_t CSSPrimitiveValue::ConvertTo() const {
+inline int16_t CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<int16_t>(GetDoubleValue());
+  return ClampTo<int16_t>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline uint16_t CSSPrimitiveValue::ConvertTo() const {
+inline uint16_t CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<uint16_t>(GetDoubleValue());
+  return ClampTo<uint16_t>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline int CSSPrimitiveValue::ConvertTo() const {
+inline int CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<int>(GetDoubleValue());
+  return ClampTo<int>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline unsigned CSSPrimitiveValue::ConvertTo() const {
+inline unsigned CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<unsigned>(GetDoubleValue());
+  return ClampTo<unsigned>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline float CSSPrimitiveValue::ConvertTo() const {
+inline float CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<float>(GetDoubleValue());
+  return ClampTo<float>(ComputeNumber(length_resolver));
 }
 
 // TODO(sashab): Move these to CSSIdentifierValueMappings.h, and update to use

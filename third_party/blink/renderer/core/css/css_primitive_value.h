@@ -385,7 +385,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   }
 
   template <typename T>
-  inline T ConvertTo() const;  // Defined in CSSPrimitiveValueMappings.h
+  inline T ConvertTo(const CSSLengthResolver&)
+      const;  // Defined in CSSPrimitiveValueMappings.h
 
   int ComputeInteger(const CSSLengthResolver&) const;
   double ComputeNumber(const CSSLengthResolver&) const;
