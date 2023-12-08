@@ -24,6 +24,11 @@ BASE_DECLARE_FEATURE(kSearchEngineChoiceTrigger);
 extern const base::FeatureParam<bool>
     kSearchEngineChoiceTriggerForTaggedProfilesOnly;
 
+// Forces the search engine choice country to Belgium. Used for testing
+// purposes.
+extern const base::FeatureParam<bool>
+    kSearchEngineChoiceTriggerWithForceEeaCountry;
+
 // Reprompt params for the search engine choice.
 // This is a JSON dictionary where keys are country codes, and values are Chrome
 // version strings. The wildcard country '*' represents all countries.

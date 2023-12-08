@@ -335,6 +335,14 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
     return command_line_country;
   }
 
+  bool force_eea_country =
+      switches::kSearchEngineChoiceTriggerWithForceEeaCountry.Get();
+  if (force_eea_country) {
+    // `kSearchEngineChoiceTriggerWithForceEeaCountry` forces the search engine
+    // choice country to Belgium.
+    return country_codes::CountryStringToCountryID("BE");
+  }
+
   return country_codes::GetCountryIDFromPrefs(profile_prefs);
 }
 
