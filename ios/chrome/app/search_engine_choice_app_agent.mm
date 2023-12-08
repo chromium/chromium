@@ -27,8 +27,10 @@
 @end
 
 @implementation SearchEngineChoiceAppAgent {
+  // The coordinator of the search engine choice screen.
   SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
-  // TODO(b/306576460): Use a ScopedUIBlocker to bloack other windows on iPads.
+  // UI blocker used by the search engine selection screen.
+  std::unique_ptr<ScopedUIBlocker> _searchEngineChoiceUIBlocker;
 }
 
 #pragma mark - SceneObservingAppAgent
@@ -36,19 +38,16 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
+    case SceneActivationLevelForegroundInactive:
+      break;
     case SceneActivationLevelForegroundActive:
-    case SceneActivationLevelForegroundInactive: {
       [self maybeShowChoiceSceen:sceneState];
       break;
-    }
-    case SceneActivationLevelBackground: {
+    case SceneActivationLevelBackground:
+    case SceneActivationLevelDisconnected:
+    case SceneActivationLevelUnattached:
       [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
       break;
-    }
-    case SceneActivationLevelDisconnected:
-    case SceneActivationLevelUnattached: {
-      break;
-    }
   }
   [super sceneState:sceneState transitionedToActivationLevel:level];
 }
@@ -57,8 +56,10 @@
 
 - (void)choiceScreenWillBeDismissed:
     (SearchEngineChoiceCoordinator*)coordinator {
-  [coordinator stop];
-  coordinator = nil;
+  DCHECK_EQ(_searchEngineChoiceCoordinator, coordinator);
+  _searchEngineChoiceUIBlocker.reset();
+  [_searchEngineChoiceCoordinator stop];
+  _searchEngineChoiceCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -68,6 +69,9 @@
     return;
   }
   if ([self shouldShowChoiceScreen]) {
+    DCHECK(!_searchEngineChoiceUIBlocker);
+    _searchEngineChoiceUIBlocker =
+        std::make_unique<ScopedUIBlocker>(sceneState);
     _searchEngineChoiceCoordinator = [[SearchEngineChoiceCoordinator alloc]
         initWithBaseViewController:sceneState.browserProviderInterface
                                        .currentBrowserProvider.viewController
