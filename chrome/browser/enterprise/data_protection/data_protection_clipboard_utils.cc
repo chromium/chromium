@@ -63,12 +63,19 @@ void HandleStringData(
                  IsClipboardPasteContentAllowedCallback callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            absl::optional<content::ClipboardPasteData> clipboard_paste_data;
-            clipboard_paste_data =
-                content::ClipboardPasteData(data.text[0], std::string(), {});
-            std::move(callback).Run(result.text_results[0]
-                                        ? std::move(clipboard_paste_data)
-                                        : absl::nullopt);
+            if (!result.text_results[0] && !result.image_result) {
+              std::move(callback).Run(absl::nullopt);
+              return;
+            }
+
+            content::ClipboardPasteData clipboard_paste_data;
+            if (result.text_results[0]) {
+              clipboard_paste_data.text = data.text[0];
+            }
+            if (result.image_result) {
+              clipboard_paste_data.image = data.image;
+            }
+            std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PASTE);

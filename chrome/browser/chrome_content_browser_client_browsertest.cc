@@ -894,6 +894,48 @@ class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
 #endif
 };
 
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, BitmapAllowed) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData(std::string(), "allowed",
+                                                     {});
+
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::BitmapType(),
+      clipboard_paste_data,
+      base::BindOnce(
+          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                 clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
+            EXPECT_EQ(clipboard_paste_data->image, "allowed");
+          }));
+}
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, BitmapBlocked) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData(std::string(), "blocked",
+                                                     {});
+
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::BitmapType(),
+      clipboard_paste_data,
+      base::BindOnce(
+          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                 clipboard_paste_data) {
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+            EXPECT_FALSE(clipboard_paste_data.has_value());
+#else
+            // Platforms that don't support local content analysis shouldn't
+            // block anything, even when the policy is set to a local service
+            // provider value.
+            EXPECT_TRUE(clipboard_paste_data.has_value());
+#endif
+          }));
+}
+
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, TextAllowed) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
