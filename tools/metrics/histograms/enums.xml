@@ -1300,14 +1300,6 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Prefill request not sent - not enough time."/>
 </enum>
 
-<enum name="AndroidEvictionReason">
-  <int value="0" label="TabUnusedTooLong"/>
-  <int value="1" label="TabUnusedInSession"/>
-  <int value="2" label="LimitOfActiveTabs"/>
-  <int value="3" label="EvictNTabs"/>
-  <int value="4" label="EvictAll"/>
-</enum>
-
 <enum name="AndroidMultiWindowActivityType">
   <int value="0" label="Enter"/>
   <int value="1" label="Exit"/>
@@ -1333,27 +1325,6 @@ Unknown properties are collapsed to zero. -->
   <int value="11" label="Unknown reason"/>
   <int value="12" label="User requested"/>
   <int value="13" label="User stopped"/>
-</enum>
-
-<enum name="AndroidStackUnwinder">
-  <int value="0" label="Not checked (obsolete)">
-    The stack unwinding implementation was not checked. The SamplingHeapProfiler
-    will collect stack samples but they may be invalid. (Starting in Sept 2022,
-    the implementation is always checked on Android so this is obsolete.)
-  </int>
-  <int value="1" label="Default">
-    The SamplingHeapProfiler uses the default unwind tables.
-  </int>
-  <int value="2" label="CFIBackTrace (obsolete)">
-    The SamplingHeapProfiler uses the trace_event::CFIBacktraceAndroid class.
-  </int>
-  <int value="3" label="Unavailable">
-    Stack unwinding is not available. The SamplingHeapProfiler will not collect
-    stack samples.
-  </int>
-  <int value="4" label="FramePointers">
-    The SamplingHeapProfiler uses the TraceStackFramePointers function.
-  </int>
 </enum>
 
 <enum name="AnrSkippedReason">
@@ -6406,11 +6377,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="HTTP cache hit"/>
 </enum>
 
-<enum name="BooleanGreaterOrEqualThan200MB">
-  <int value="0" label="lt; 200MB"/>
-  <int value="1" label="gt;= 200MB"/>
-</enum>
-
 <enum name="BooleanHadBlankText">
   <int value="0" label="Did not have blank text"/>
   <int value="1" label="Had blank text"/>
@@ -6527,11 +6493,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanKnown">
   <int value="0" label="Unknown"/>
   <int value="1" label="Known"/>
-</enum>
-
-<enum name="BooleanLargeAllocationFromFreelist">
-  <int value="0" label="Allocated via IPC"/>
-  <int value="1" label="Allocated via Freelist"/>
 </enum>
 
 <enum name="BooleanLatched">
@@ -6937,13 +6898,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Update available"/>
   <int value="2" label="Enterprise rollback required"/>
   <int value="3" label="Channel rollback required"/>
-</enum>
-
-<enum name="CachedMetadataHandlerState">
-  <int value="0" label="Present"/>
-  <int value="1" label="DataType mismatch"/>
-  <int value="2" label="Was never present"/>
-  <int value="3" label="Was discarded"/>
 </enum>
 
 <enum name="CacheStorageErrorStorageType">
@@ -38113,12 +38067,6 @@ from previous Chrome versions.
   <int value="2" label="Valid URL"/>
 </enum>
 
-<enum name="MappedAndResidentPagesDumpState">
-  <int value="0" label="kAccessPagemapDenied"/>
-  <int value="1" label="kFailure"/>
-  <int value="2" label="kSuccess"/>
-</enum>
-
 <enum name="MappedCSSProperties">
 <!-- Generated from third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.
 Called by update_use_counter_css.py.-->
@@ -39287,21 +39235,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Local display capture"/>
   <int value="5" label="Remote media stream"/>
   <int value="6" label="None"/>
-</enum>
-
-<enum name="MemoryPressureLevel">
-  <int value="0" label="No memory pressure"/>
-  <int value="1" label="Moderate memory pressure"/>
-  <int value="2" label="Critical memory pressure"/>
-</enum>
-
-<enum name="MemoryPressureLevelChanges">
-  <int value="0" label="No pressure to moderate pressure"/>
-  <int value="1" label="No pressure to critical pressure"/>
-  <int value="2" label="Moderate pressure to critical pressure"/>
-  <int value="3" label="Critical pressure to moderate pressure"/>
-  <int value="4" label="Critical pressure to no pressure"/>
-  <int value="5" label="Moderate pressure to no pressure"/>
 </enum>
 
 <enum name="MenuSourceType">
@@ -51576,51 +51509,6 @@ would be helpful to identify which type is being sent.
   <int value="7005" label="HIDDEN_to_WILL_HIDE"/>
   <int value="7006" label="HIDDEN_to_HIDING"/>
   <int value="7007" label="HIDDEN_to_HIDDEN"/>
-</enum>
-
-<enum name="VmmmsRequestPriority">
-<!-- This must be kept in sync with enum ResizePriority in ChromeOS
-src/platform2/system_api/non_standard_ipc/vm_memory_management
-vm_memory_management.proto -->
-
-  <int value="0" label="RESIZE_PRIORITY_UNSPECIFIED"/>
-  <int value="1" label="RESIZE_PRIORITY_BALLOON_STALL"/>
-  <int value="2" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_HOST"/>
-  <int value="3" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_GUEST"/>
-  <int value="4" label="RESIZE_PRIORITY_FOCUSED_TAB"/>
-  <int value="5" label="RESIZE_PRIORITY_FOCUSED_APP"/>
-  <int value="6" label="RESIZE_PRIORITY_PERCEPTIBLE_TAB"/>
-  <int value="7" label="RESIZE_PRIORITY_PERCEPTIBLE_APP"/>
-  <int value="8" label="RESIZE_PRIORITY_CACHED_TAB"/>
-  <int value="9" label="RESIZE_PRIORITY_CACHED_APP"/>
-  <int value="10" label="RESIZE_PRIORITY_MGLRU_RECLAIM"/>
-</enum>
-
-<enum name="VmmSwapDisableReason">
-  <int value="0" label="VM shutdown while active"/>
-  <int value="1" label="VM shutdown while inactive"/>
-  <int value="2" label="Low disk space while active"/>
-  <int value="3" label="Low disk space while inactive"/>
-  <int value="4" label="Disable request while active"/>
-  <int value="5" label="Disable request while inactive"/>
-</enum>
-
-<enum name="VmmSwapPolicyResult">
-  <int value="0" label="Approve enable request"/>
-  <int value="1" label="Cool down reject on enable request"/>
-  <int value="2" label="Usage reject on enable request"/>
-  <int value="3" label="TBW limit on enable request"/>
-  <int value="4" label="Low disk on enable request"/>
-  <int value="5" label="Approve maintenance request"/>
-  <int value="6" label="Cool down reject on maintenance request"/>
-  <int value="7" label="Usage reject on maintenance request"/>
-  <int value="8" label="TBW limit on maintenance request"/>
-  <int value="9" label="Low disk on maintenance request"/>
-</enum>
-
-<enum name="VmmSwapState">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Disabled"/>
 </enum>
 
 <enum name="VoiceIntentTarget">

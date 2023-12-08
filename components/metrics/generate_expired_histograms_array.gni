@@ -143,6 +143,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/login/histograms.xml",
       "//tools/metrics/histograms/metadata/media/enums.xml",
       "//tools/metrics/histograms/metadata/media/histograms.xml",
+      "//tools/metrics/histograms/metadata/memory/enums.xml",
       "//tools/metrics/histograms/metadata/memory/histograms.xml",
       "//tools/metrics/histograms/metadata/mobile/histograms.xml",
       "//tools/metrics/histograms/metadata/na_cl/histograms.xml",
