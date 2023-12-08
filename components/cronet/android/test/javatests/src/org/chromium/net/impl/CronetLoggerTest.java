@@ -176,29 +176,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    public void testTelemetryDisabled() throws JSONException {
-        final String url = NativeTestServer.getEchoBodyURL();
-        JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", false);
-        final String experimentalOptions = jsonExperimentalOptions.toString();
-        mTestRule
-                .getTestFramework()
-                .applyEngineBuilderPatch(
-                        (builder) -> builder.setExperimentalOptions(experimentalOptions));
-        CronetEngine engine = mTestRule.getTestFramework().startEngine();
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder requestBuilder =
-                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
-        UrlRequest request = requestBuilder.build();
-        request.start();
-        callback.blockForDone();
-
-        // Test-logger should be bypassed.
-        assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(0);
-        assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(0);
-    }
-
-    @Test
-    @SmallTest
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns =
                 new JSONObject()

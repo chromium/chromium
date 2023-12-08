@@ -175,9 +175,6 @@ struct URLRequestContextConfig {
   // period of the heartbeat signal.
   base::TimeDelta heartbeat_interval;
 
-  // Whether Cronet Telemetry should be enabled or not.
-  bool enable_telemetry;
-
   static bool ExperimentalOptionsParsingIsAllowedToFail() {
     return DCHECK_IS_ON();
   }

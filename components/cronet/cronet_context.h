@@ -183,8 +183,6 @@ class CronetContext {
   }
   base::TimeDelta heartbeat_interval() const { return heartbeat_interval_; }
 
-  bool enable_telemetry() const { return enable_telemetry_; }
-
   // NetworkTasks performs tasks on the network thread and owns objects that
   // live on the network thread.
   class NetworkTasks : public net::EffectiveConnectionTypeObserver,
@@ -373,9 +371,6 @@ class CronetContext {
   // If |bidi_stream_detect_broken_connection_| is true, this suggests the
   // period of the heartbeat signal.
   base::TimeDelta heartbeat_interval_;
-
-  // Whether Cronet Telemetry should be enabled or not.
-  bool enable_telemetry_;
 
   const int default_load_flags_;
 

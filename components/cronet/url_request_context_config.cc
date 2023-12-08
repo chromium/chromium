@@ -180,11 +180,6 @@ const char kBidiStreamDetectBrokenConnection[] =
 const char kUseDnsHttpsSvcbFieldTrialName[] = "UseDnsHttpsSvcb";
 const char kUseDnsHttpsSvcbUseAlpn[] = "use_alpn";
 
-// Runtime flag to enable Cronet Telemetry, defaults to true. To enable Cronet
-// Telemetry, this must be set to true alongside the manifest file flag
-// specified by CronetManifest's documentation.
-const char kEnableTelemetry[] = "enable_telemetry";
-
 // Serializes a base::Value into a string that can be used as the value of
 // JFV-encoded HTTP header [1].  If |value| is a list, we remove the outermost
 // [] delimiters from the result.
@@ -296,8 +291,7 @@ URLRequestContextConfig::URLRequestContextConfig(
       experimental_options(std::move(experimental_options)),
       network_thread_priority(network_thread_priority),
       bidi_stream_detect_broken_connection(false),
-      heartbeat_interval(base::Seconds(0)),
-      enable_telemetry(true) {
+      heartbeat_interval(base::Seconds(0)) {
   SetContextConfigExperimentalOptions();
 }
 
@@ -382,20 +376,6 @@ void URLRequestContextConfig::SetContextConfigExperimentalOptions() {
       heartbeat_interval = base::Seconds(heartbeat_interval_secs);
       bidi_stream_detect_broken_connection = heartbeat_interval_secs > 0;
       experimental_options.Remove(kBidiStreamDetectBrokenConnection);
-    }
-  }
-
-  const base::Value* enable_telemetry_value =
-      experimental_options.Find(kEnableTelemetry);
-  if (enable_telemetry_value) {
-    if (!enable_telemetry_value->is_bool()) {
-      LOG(ERROR) << "\"" << kEnableTelemetry << "\" config params \""
-                 << enable_telemetry_value << "\" is not a bool";
-      experimental_options.Remove(kEnableTelemetry);
-      effective_experimental_options.Remove(kEnableTelemetry);
-    } else {
-      enable_telemetry = enable_telemetry_value->GetBool();
-      experimental_options.Remove(kEnableTelemetry);
     }
   }
 }
