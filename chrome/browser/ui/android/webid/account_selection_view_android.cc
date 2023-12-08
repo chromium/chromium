@@ -258,6 +258,13 @@ std::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
 
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
     const GURL& url) {
+  if (!MaybeCreateJavaObject()) {
+    // The Java object is tied to the bottomsheet availability, so if we hadn't
+    // created one and the bottomsheet is not available then the CCT will not be
+    // opened.
+    delegate_->OnDismiss(DismissReason::kOther);
+    return nullptr;
+  }
   JNIEnv* env = AttachCurrentThread();
   return content::WebContents::FromJavaWebContents(
       Java_AccountSelectionBridge_showModalDialog(
