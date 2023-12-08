@@ -5,7 +5,8 @@
 """Helpers to reliably reboot the device via serial and fastboot.
 
 Note, this file will be executed in docker instance without vpython3, so we use
-python3 instead.
+python3 instead. The docker instance runs this file as a symbolic link of dmc
+via the "main" function.
 """
 
 import json
@@ -201,6 +202,15 @@ def main(action: str) -> int:
     serial_num = os.getenv('FUCHSIA_FASTBOOT_SERNUM')
     assert node_id is not None
     assert serial_num is not None
+
+    handlers = [logging.StreamHandler()]
+    if os.path.isdir('/home/swarming/'):
+        handlers.append(
+            logging.FileHandler('/home/swarming/dmc.%s.log' % node_id))
+    logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s',
+                        handlers=handlers)
+    logging.info('running command %s', sys.argv)
+
     if action == 'health-check':
         if is_in_fuchsia(node_id) or is_in_fastboot(serial_num):
             # Print out the json result without using logging to avoid any
