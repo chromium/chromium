@@ -39,8 +39,8 @@ class EduCoexistenceLoginScreen : public BaseScreen,
   EduCoexistenceLoginScreen& operator=(const EduCoexistenceLoginScreen&) =
       delete;
 
-  ScreenExitCallback get_exit_callback_for_test() { return exit_callback_; }
-  void set_exit_callback_for_test(const ScreenExitCallback& callback) {
+  ScreenExitCallback get_exit_callback_for_testing() { return exit_callback_; }
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
   }
 
