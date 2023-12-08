@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/masked_domain_list/url_matcher_with_bypass.h"
+#include <vector>
 
 #include "base/strings/strcat.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
