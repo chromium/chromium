@@ -1484,6 +1484,11 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         UseCounter::Count(resolver->GetExecutionContext(),
                           WebFeature::kFedCmLoginHint);
       }
+      if (RuntimeEnabledFeatures::FedCmDomainHintEnabled() &&
+          provider->hasDomainHint()) {
+        UseCounter::Count(resolver->GetExecutionContext(),
+                          WebFeature::kFedCmDomainHint);
+      }
       if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
           !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
         // TODO(https://crbug.com/1416939): make sure the Digital Credentials
