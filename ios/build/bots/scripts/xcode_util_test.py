@@ -489,15 +489,27 @@ Use "mac_toolchain help [command]" for more information about a command."""
     self.assertEqual(expected_result, actual_result)
 
   def test_get_latest_runtime_build_cipd_with_ios_version(self):
-    with mock.patch(
-        'xcode_util.describe_cipd_ref',
-        return_value='ios_runtime_build:21A342'):
+    output1 = """
+      Tags:
+        ios_runtime_build:21C62
+        ios_runtime_version:ios-17-2"""
+    output2 = """
+      Tags:
+        ios_runtime_build:21A342
+        ios_runtime_version:ios-15-0"""
+    with mock.patch('xcode_util.describe_cipd_ref') as mock_describe_cipd_ref:
+      mock_describe_cipd_ref.side_effect = [output1, output2]
       result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
     self.assertEqual(result, '21A342')
 
   def test_get_latest_runtime_build_cipd_with_xcode_version(self):
-    with mock.patch('xcode_util.describe_cipd_ref') as mock_describe_cipd_ref:
-      mock_describe_cipd_ref.side_effect = ['', 'ios_runtime_build:21A342']
+    output = """
+      Tags:
+        ios_runtime_build:21A342
+        ios_runtime_version:ios-15-0"""
+    with mock.patch(
+        'xcode_util.describe_cipd_ref',
+        return_value='ios_runtime_build:21A342'):
       result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
     self.assertEqual(result, '21A342')
 
