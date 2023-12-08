@@ -24,6 +24,10 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 namespace image_annotation {
 class ImageAnnotationService;
 }
@@ -63,7 +67,7 @@ class AccessibilityLabelsService
 
   bool IsEnabled();
 
-  void EnableLabelsServiceOnce();
+  void EnableLabelsServiceOnce(content::WebContents* web_contents);
 
   // Routes an Annotator interface receiver to the Image Annotation service for
   // binding.

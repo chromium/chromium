@@ -100,7 +100,7 @@ void AccessibilityLabelsMenuObserver::ExecuteCommand(int command_id) {
       ShowConfirmBubble(profile, false /* enable once only */);
     } else {
       AccessibilityLabelsServiceFactory::GetForProfile(profile)
-          ->EnableLabelsServiceOnce();
+          ->EnableLabelsServiceOnce(proxy_->GetWebContents());
     }
   }
 }
