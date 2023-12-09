@@ -72,7 +72,7 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
   // network::mojom::ProxyLookupClient:
   void OnProxyLookupComplete(
       int32_t net_error,
-      const absl::optional<net::ProxyInfo>& proxy_info) override {
+      const std::optional<net::ProxyInfo>& proxy_info) override {
     LOG_IF(WARNING, !proxy_info.has_value())
         << " Error determining the proxy information: " << net_error;
     // Assume there is a proxy if failing to get proxy information.
@@ -94,9 +94,9 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
         net::NetworkAnonymizationKey::CreateTransient();
     mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
         receiver_.BindNewPipeAndPassRemote();
-    receiver_.set_disconnect_handler(base::BindOnce(
-        &CAProxyLookupClient::OnProxyLookupComplete, base::Unretained(this),
-        net::ERR_ABORTED, absl::nullopt));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&CAProxyLookupClient::OnProxyLookupComplete,
+                       base::Unretained(this), net::ERR_ABORTED, std::nullopt));
 
     network_context->LookUpProxyForURL(url, network_anonymization_key,
                                        std::move(proxy_lookup_client));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -21,7 +23,6 @@
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -202,7 +203,7 @@ void SoftBindAttestationFlowImpl::GetCertificateInternal(
       /*request_origin=*/std::string(),
       /*force_new_key=*/force_new_key,
       /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/kSoftBindKey, /*profile_specific_data=*/absl::nullopt,
+      /*key_name=*/kSoftBindKey, /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(certificate_callback));
 }
 
@@ -363,7 +364,7 @@ void SoftBindAttestationFlowImpl::OnCertificateSigned(
         /*account_id=*/session->GetAccountId(),
         /*request_origin=*/std::string(), /*force_new_key=*/true,
         /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-        /*key_name=*/kSoftBindKey, /*profile_specific_data=*/absl::nullopt,
+        /*key_name=*/kSoftBindKey, /*profile_specific_data=*/std::nullopt,
         /*callback=*/std::move(renew_callback));
   }
 }

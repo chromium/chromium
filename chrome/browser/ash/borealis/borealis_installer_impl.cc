@@ -188,7 +188,7 @@ class BorealisInstallerImpl::Installation
     guest_os::GuestOsRegistryService* apps_registry =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
     apps_observation_.Observe(apps_registry);
-    absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
+    std::optional<guest_os::GuestOsRegistryService::Registration> main_app =
         apps_registry->GetRegistration(kClientAppId);
     if (main_app.has_value() &&
         main_app->VmType() == guest_os::VmType::BOREALIS) {
@@ -289,7 +289,7 @@ class BorealisInstallerImpl::Uninstallation
   }
 
   void OnDiskRemoved(
-      absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
+      std::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
     if (!response) {
       LOG(ERROR) << "Failed to destroy disk image. Empty response.";
       Fail(BorealisUninstallResult::kRemoveDiskFailed);

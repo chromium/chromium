@@ -114,7 +114,7 @@ void BorealisContextManagerImpl::ShutDownBorealisIfRunning() {
       std::move(request),
       base::BindOnce(
           [](base::WeakPtr<BorealisContextManagerImpl> weak_this,
-             absl::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
+             std::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
             if (reply.has_value() && reply->success() && weak_this) {
               weak_this->SendShutdownRequest(base::DoNothing(),
                                              kBorealisVmName);
@@ -136,7 +136,7 @@ void BorealisContextManagerImpl::SendShutdownRequest(
       base::BindOnce(
           [](base::OnceCallback<void(BorealisShutdownResult)>
                  on_shutdown_callback,
-             absl::optional<vm_tools::concierge::StopVmResponse> response) {
+             std::optional<vm_tools::concierge::StopVmResponse> response) {
             // We don't have a good way to deal with a vm failing to stop (and
             // this would be a very rare occurrence anyway). We log an error if
             // it actually wasn't successful.

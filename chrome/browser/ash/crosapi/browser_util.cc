@@ -58,17 +58,17 @@ namespace {
 
 // At session start the value for LacrosAvailability logic is applied and the
 // result is stored in this variable which is used after that as a cache.
-absl::optional<LacrosAvailability> g_lacros_availability_cache;
+std::optional<LacrosAvailability> g_lacros_availability_cache;
 
 // At session start the value for LacrosDataBackwardMigrationMode logic is
 // applied and the result is stored in this variable which is used after that as
 // a cache.
-absl::optional<LacrosDataBackwardMigrationMode>
+std::optional<LacrosDataBackwardMigrationMode>
     g_lacros_data_backward_migration_mode;
 
 // At session start the value for LacrosSelection logic is applied and the
 // result is stored in this variable which is used after that as a cache.
-absl::optional<LacrosSelectionPolicy> g_lacros_selection_cache;
+std::optional<LacrosSelectionPolicy> g_lacros_selection_cache;
 
 // The rootfs lacros-chrome metadata keys.
 constexpr char kLacrosMetadataContentKey[] = "content";
@@ -197,12 +197,12 @@ bool IsLacrosEnabledInternal(const User* user,
 }
 
 // Returns the string value for the kLacrosStabilitySwitch if present.
-absl::optional<std::string> GetLacrosStabilitySwitchValue() {
+std::optional<std::string> GetLacrosStabilitySwitchValue() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   return cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)
-             ? absl::optional<std::string>(cmdline->GetSwitchValueASCII(
+             ? std::optional<std::string>(cmdline->GetSwitchValueASCII(
                    browser_util::kLacrosStabilitySwitch))
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 // Resolves the Lacros stateful channel in the following order:
@@ -453,7 +453,7 @@ base::Version GetRootfsLacrosVersionMayBlock(
     return {};
   }
 
-  absl::optional<base::Value> v = base::JSONReader::Read(metadata);
+  std::optional<base::Value> v = base::JSONReader::Read(metadata);
   if (!v || !v->is_dict()) {
     LOG(WARNING) << "Failed to parse rootfs lacros-chrome metadata.";
     return {};
@@ -531,7 +531,7 @@ LacrosSelectionPolicy GetCachedLacrosSelectionPolicy() {
   return g_lacros_selection_cache.value_or(LacrosSelectionPolicy::kUserChoice);
 }
 
-absl::optional<LacrosSelection> DetermineLacrosSelection() {
+std::optional<LacrosSelection> DetermineLacrosSelection() {
   switch (GetCachedLacrosSelectionPolicy()) {
     case LacrosSelectionPolicy::kRootfs:
       return LacrosSelection::kRootfs;
@@ -542,7 +542,7 @@ absl::optional<LacrosSelection> DetermineLacrosSelection() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
 
   if (!cmdline->HasSwitch(browser_util::kLacrosSelectionSwitch)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto value =
@@ -554,7 +554,7 @@ absl::optional<LacrosSelection> DetermineLacrosSelection() {
     return LacrosSelection::kStateful;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
@@ -666,7 +666,7 @@ MigrationStatus GetMigrationStatus(PrefService* local_state,
     return MigrationStatus::kLacrosNotEnabled;
   }
 
-  absl::optional<ash::standalone_browser::migrator_util::MigrationMode> mode =
+  std::optional<ash::standalone_browser::migrator_util::MigrationMode> mode =
       ash::standalone_browser::migrator_util::GetCompletedMigrationMode(
           local_state, user->username_hash());
 
@@ -697,14 +697,14 @@ void SetProfileMigrationCompletionTimeForUser(PrefService* local_state,
   update->Set(user_id_hash, base::TimeToValue(base::Time::Now()));
 }
 
-absl::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
+std::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
     PrefService* local_state,
     const std::string& user_id_hash) {
   const auto* pref =
       local_state->FindPreference(kProfileMigrationCompletionTimeForUserPref);
 
   if (!pref) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value* value = pref->GetValue();
@@ -756,17 +756,17 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
              : LacrosLaunchSwitchSource::kForcedByPolicy;
 }
 
-absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
+std::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
     base::StringPiece value) {
   auto* it = kLacrosSelectionPolicyMap.find(value);
   if (it != kLacrosSelectionPolicyMap.end())
     return it->second;
 
   LOG(ERROR) << "Unknown LacrosSelection policy value is passed: " << value;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<LacrosDataBackwardMigrationMode>
+std::optional<LacrosDataBackwardMigrationMode>
 ParseLacrosDataBackwardMigrationMode(base::StringPiece value) {
   auto* it = kLacrosDataBackwardMigrationModeMap.find(value);
   if (it != kLacrosDataBackwardMigrationModeMap.end())
@@ -776,7 +776,7 @@ ParseLacrosDataBackwardMigrationMode(base::StringPiece value) {
     LOG(ERROR) << "Unknown LacrosDataBackwardMigrationMode policy value: "
                << value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::StringPiece GetLacrosDataBackwardMigrationModeName(

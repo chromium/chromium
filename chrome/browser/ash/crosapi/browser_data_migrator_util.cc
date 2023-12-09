@@ -140,7 +140,7 @@ static_assert(base::ranges::is_sorted(kPathNamePairs, PathNameComparator()),
               "kPathNamePairs needs to be sorted by the keys of its elements "
               "so that binary_search can be used on it.");
 
-absl::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
+std::optional<uint64_t> g_extra_bytes_required_to_be_freed_for_testing;
 
 // Key prefixes in LocalStorage's LevelDB.
 constexpr char kMetaPrefix[] = "META:chrome-extension://";
@@ -777,19 +777,19 @@ void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
   }
 }
 
-absl::optional<PreferencesContents> MigratePreferencesContents(
+std::optional<PreferencesContents> MigratePreferencesContents(
     const base::StringPiece original_contents) {
   // Parse the original JSON file from Ash.
-  absl::optional<base::Value> ash_root =
+  std::optional<base::Value> ash_root =
       base::JSONReader::Read(original_contents);
   if (!ash_root) {
     PLOG(ERROR) << "Failure while parsing Ash's Preferences";
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
   if (!ash_root_dict) {
     PLOG(ERROR) << "Failure while parsing Ash's Preferences root node";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Create a copy for Lacros migration.
@@ -797,7 +797,7 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
   base::Value::Dict* lacros_root_dict = lacros_root.GetIfDict();
   if (!lacros_root_dict) {
     PLOG(ERROR) << "Failure while parsing Lacros's Preferences root node";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Some preferences are to be moved to Lacros, and deleted in Ash.
@@ -830,11 +830,11 @@ absl::optional<PreferencesContents> MigratePreferencesContents(
   PreferencesContents contents;
   if (!base::JSONWriter::Write(*ash_root, &contents.ash)) {
     PLOG(ERROR) << "Failure while generating Ash's Preferences";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!base::JSONWriter::Write(lacros_root, &contents.lacros)) {
     PLOG(ERROR) << "Failure while generating Lacros's Preferences";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return contents;

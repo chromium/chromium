@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_serializer.h"
 
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
@@ -52,7 +52,7 @@ template <typename T>
 bool DeserializeEnumValue(const base::Value::Dict& parent_dict,
                           const char* value_name,
                           T* dst) {
-  absl::optional<int> serialized_enum = parent_dict.FindInt(value_name);
+  std::optional<int> serialized_enum = parent_dict.FindInt(value_name);
   if (!serialized_enum.has_value()) {
     return false;
   }
@@ -73,7 +73,7 @@ bool DeserializeStringValue(const base::Value::Dict& parent_dict,
 bool DeserializeBoolValue(const base::Value::Dict& parent_dict,
                           const char* value_name,
                           bool* dst) {
-  absl::optional<bool> serialized_bool = parent_dict.FindBool(value_name);
+  std::optional<bool> serialized_bool = parent_dict.FindBool(value_name);
   if (!serialized_bool.has_value()) {
     return false;
   }
@@ -84,7 +84,7 @@ bool DeserializeBoolValue(const base::Value::Dict& parent_dict,
 bool DeserializeRenewalPeriod(const base::Value::Dict& parent_dict,
                               const char* value_name,
                               base::TimeDelta* dst) {
-  absl::optional<int> serialized_time = parent_dict.FindInt(value_name);
+  std::optional<int> serialized_time = parent_dict.FindInt(value_name);
   *dst = base::Seconds(serialized_time.value_or(0));
   return true;
 }
@@ -92,8 +92,8 @@ bool DeserializeRenewalPeriod(const base::Value::Dict& parent_dict,
 bool DeserializeProtocolVersion(const base::Value::Dict& parent_value,
                                 const char* value_name,
                                 ProtocolVersion* dst) {
-  absl::optional<int> protocol_version_value = parent_value.FindInt(value_name);
-  absl::optional<ProtocolVersion> protocol_version =
+  std::optional<int> protocol_version_value = parent_value.FindInt(value_name);
+  std::optional<ProtocolVersion> protocol_version =
       ParseProtocolVersion(protocol_version_value);
   if (!protocol_version.has_value()) {
     return false;
@@ -172,7 +172,7 @@ bool DeserializeBase64Encoded(const base::Value::Dict& parent_dict,
     return false;
   }
 
-  absl::optional<std::vector<uint8_t>> public_key =
+  std::optional<std::vector<uint8_t>> public_key =
       base::Base64Decode(*serialized_public_key);
   if (!public_key) {
     return false;
@@ -390,7 +390,7 @@ bool CertProvisioningSerializer::DeserializeWorker(
   return true;
 }
 
-absl::optional<ProtocolVersion> CertProvisioningSerializer::GetProtocolVersion(
+std::optional<ProtocolVersion> CertProvisioningSerializer::GetProtocolVersion(
     const base::Value::Dict& saved_worker) {
   CertProfile cert_profile;
   if (!DeserializeCertProfile(saved_worker, kKeyNameCertProfile,

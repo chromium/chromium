@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -29,7 +30,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const char kLaunchHistogram[] = "Bruschetta.LaunchResult";

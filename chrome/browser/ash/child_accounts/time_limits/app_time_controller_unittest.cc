@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 
+#include <optional>
+
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/functional/bind.h"
@@ -36,7 +38,6 @@
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -239,7 +240,7 @@ bool AppTimeControllerTest::HasNotificationFor(
 
   notification_id = base::StrCat({notification_id, app_name});
 
-  absl::optional<message_center::Notification> message_center_notification =
+  std::optional<message_center::Notification> message_center_notification =
       notification_tester_.GetNotification(notification_id);
   return message_center_notification.has_value();
 }
@@ -524,7 +525,7 @@ TEST_F(AppTimeControllerTest, MetricsTest) {
     AppTimeLimitsPolicyBuilder builder;
     AppId absent_app(apps::AppType::kArc, "absent_app");
     AppLimit app_limit(AppRestriction::kTimeLimit, kOneHour, base::Time::Now());
-    AppLimit blocked_app(AppRestriction::kBlocked, absl::nullopt,
+    AppLimit blocked_app(AppRestriction::kBlocked, std::nullopt,
                          base::Time::Now());
     builder.AddAppLimit(kApp1, app_limit);
     builder.AddAppLimit(absent_app, app_limit);

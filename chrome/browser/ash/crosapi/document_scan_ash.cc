@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -70,7 +70,7 @@ struct ScanResult {
     return weak_ptr_factory.GetWeakPtr();
   }
 
-  absl::optional<std::string> data;
+  std::optional<std::string> data;
 
  private:
   base::WeakPtrFactory<ScanResult> weak_ptr_factory{this};
@@ -101,7 +101,7 @@ void OnScanCompleted(DocumentScanAsh::ScanFirstPageCallback callback,
 
 void GetScannerListAdapter(
     DocumentScanAsh::GetScannerListCallback callback,
-    const absl::optional<lorgnette::ListScannersResponse>& response_in) {
+    const std::optional<lorgnette::ListScannersResponse>& response_in) {
   if (!response_in) {
     auto response_out = mojom::GetScannerListResponse::New();
     response_out->result = mojom::ScannerOperationResult::kInternalError;
@@ -115,7 +115,7 @@ void GetScannerListAdapter(
 void OpenScannerAdapter(
     const std::string& scanner_id,
     DocumentScanAsh::OpenScannerCallback callback,
-    const absl::optional<lorgnette::OpenScannerResponse>& response_in) {
+    const std::optional<lorgnette::OpenScannerResponse>& response_in) {
   if (!response_in) {
     auto response_out = mojom::OpenScannerResponse::New();
     response_out->scanner_id = scanner_id;
@@ -130,7 +130,7 @@ void OpenScannerAdapter(
 void CloseScannerAdapter(
     const std::string& scanner_handle,
     DocumentScanAsh::CloseScannerCallback callback,
-    const absl::optional<lorgnette::CloseScannerResponse>& response_in) {
+    const std::optional<lorgnette::CloseScannerResponse>& response_in) {
   if (!response_in) {
     auto response_out = mojom::CloseScannerResponse::New();
     response_out->scanner_handle = scanner_handle;
@@ -145,7 +145,7 @@ void CloseScannerAdapter(
 void StartPreparedScanAdapter(
     const std::string& scanner_handle,
     DocumentScanAsh::StartPreparedScanCallback callback,
-    const absl::optional<lorgnette::StartPreparedScanResponse>& response_in) {
+    const std::optional<lorgnette::StartPreparedScanResponse>& response_in) {
   if (!response_in) {
     auto response = mojom::StartPreparedScanResponse::New();
     response->result = mojom::ScannerOperationResult::kInternalError;
@@ -160,7 +160,7 @@ void StartPreparedScanAdapter(
 void ReadScanDataAdapter(
     const std::string& job_handle,
     DocumentScanAsh::ReadScanDataCallback callback,
-    const absl::optional<lorgnette::ReadScanDataResponse>& response_in) {
+    const std::optional<lorgnette::ReadScanDataResponse>& response_in) {
   if (!response_in) {
     auto response = mojom::ReadScanDataResponse::New();
     response->result = mojom::ScannerOperationResult::kInternalError;
@@ -176,7 +176,7 @@ void SetOptionsAdapter(
     const std::string& scanner_handle,
     std::vector<std::string> option_names,
     DocumentScanAsh::SetOptionsCallback callback,
-    const absl::optional<lorgnette::SetOptionsResponse>& response_in) {
+    const std::optional<lorgnette::SetOptionsResponse>& response_in) {
   if (!response_in) {
     auto response = mojom::SetOptionsResponse::New();
     response->scanner_handle = scanner_handle;
@@ -195,7 +195,7 @@ void SetOptionsAdapter(
 void GetOptionGroupsAdapter(
     const std::string& scanner_handle,
     DocumentScanAsh::GetOptionGroupsCallback callback,
-    const absl::optional<lorgnette::GetCurrentConfigResponse>& response_in) {
+    const std::optional<lorgnette::GetCurrentConfigResponse>& response_in) {
   if (!response_in) {
     auto response = mojom::GetOptionGroupsResponse::New();
     response->result = mojom::ScannerOperationResult::kInternalError;
@@ -210,7 +210,7 @@ void GetOptionGroupsAdapter(
 void CancelScanAdapter(
     const std::string& job_handle,
     DocumentScanAsh::CancelScanCallback callback,
-    const absl::optional<lorgnette::CancelScanResponse>& response_in) {
+    const std::optional<lorgnette::CancelScanResponse>& response_in) {
   if (!response_in) {
     auto response = mojom::CancelScanResponse::New();
     response->job_handle = job_handle;

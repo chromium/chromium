@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 class Profile;
 
@@ -48,13 +48,13 @@ guest_os::GuestId GetBruschettaAlphaId();
 
 guest_os::GuestId MakeBruschettaId(std::string vm_name);
 
-absl::optional<const base::Value::Dict*> GetRunnableConfig(
+std::optional<const base::Value::Dict*> GetRunnableConfig(
     const Profile* profile,
     const std::string& config_id);
 
 base::FilePath BruschettaChromeOSBaseDirectory();
 
-absl::optional<const base::Value::Dict*> GetInstallableConfig(
+std::optional<const base::Value::Dict*> GetInstallableConfig(
     const Profile* profile,
     const std::string& config_id);
 
@@ -71,13 +71,13 @@ bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
 // Returns true if Bruschetta is installed.
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
 
-absl::optional<const base::Value::Dict*> GetConfigForGuest(
+std::optional<const base::Value::Dict*> GetConfigForGuest(
     Profile* profile,
     const guest_os::GuestId& guest_id,
     prefs::PolicyEnabledState enabled_level);
 
-absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
-                                                         std::string config_id);
+std::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
+                                                        std::string config_id);
 
 std::string GetVmUsername(const Profile* profile);
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <unordered_set>
 
 #include "base/containers/contains.h"
@@ -35,7 +36,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cert_provisioning {
 
@@ -356,7 +356,7 @@ void CertProvisioningSchedulerImpl::UpdateOneWorkerImpl(
 
   EraseByKey(failed_cert_profiles_, cert_profile_id);
 
-  absl::optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
+  std::optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
   if (!cert_profile) {
     return;
   }
@@ -546,7 +546,7 @@ bool CertProvisioningSchedulerImpl::ResetOneWorker(
     const CertProfileId& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  absl::optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
+  std::optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
   if (!cert_profile) {
     return false;
   }
@@ -596,7 +596,7 @@ void CertProvisioningSchedulerImpl::RemoveWorkerFromMap(
   }
 }
 
-absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
+std::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
     const CertProfileId& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -612,7 +612,7 @@ absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
     return CertProfile::MakeFromValue(cur_profile_dict);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<CertProfile> CertProvisioningSchedulerImpl::GetCertProfiles() {
@@ -622,7 +622,7 @@ std::vector<CertProfile> CertProvisioningSchedulerImpl::GetCertProfiles() {
 
   std::vector<CertProfile> result_profiles;
   for (const base::Value& cur_profile : profile_list.GetList()) {
-    absl::optional<CertProfile> p =
+    std::optional<CertProfile> p =
         CertProfile::MakeFromValue(cur_profile.GetDict());
     if (!p) {
       LOG(WARNING) << "Failed to parse certificate profile";

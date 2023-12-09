@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -166,7 +166,7 @@ enum class ProtocolVersion {
 };
 
 struct CertProfile {
-  static absl::optional<CertProfile> MakeFromValue(
+  static std::optional<CertProfile> MakeFromValue(
       const base::Value::Dict& value);
 
   CertProfile();
@@ -207,8 +207,8 @@ struct CertProfileComparator {
 };
 
 // Parses `protocol_version_value` as ProtocolVersion enum.
-absl::optional<ProtocolVersion> ParseProtocolVersion(
-    absl::optional<int> protocol_version_value);
+std::optional<ProtocolVersion> ParseProtocolVersion(
+    std::optional<int> protocol_version_value);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

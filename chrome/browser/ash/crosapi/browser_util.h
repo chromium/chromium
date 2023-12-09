@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -12,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -288,7 +288,7 @@ LacrosSelectionPolicy GetCachedLacrosSelectionPolicy();
 
 // Returns lacros selection option according to LarcrosSelectionPolicy and
 // lacros-selection flag. Returns nullopt if there is no preference.
-absl::optional<LacrosSelection> DetermineLacrosSelection();
+std::optional<LacrosSelection> DetermineLacrosSelection();
 
 // Returns the lacros ComponentInfo for a given channel.
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
@@ -351,7 +351,7 @@ void SetProfileMigrationCompletionTimeForUser(PrefService* local_state,
 
 // Gets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
 // identified by `user_id_hash`.
-absl::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
+std::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
     PrefService* local_state,
     const std::string& user_id_hash);
 
@@ -391,12 +391,12 @@ void SetLacrosLaunchSwitchSourceForTest(
 
 // Parses the string representation of LacrosSelection policy value into the
 // enum value. Returns nullopt on unknown value.
-absl::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
+std::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
     base::StringPiece value);
 
 // Parses the string representation of LacrosDataBackwardMigrationMode policy
 // value into the enum value. Returns nullopt on unknown value.
-absl::optional<LacrosDataBackwardMigrationMode>
+std::optional<LacrosDataBackwardMigrationMode>
 ParseLacrosDataBackwardMigrationMode(base::StringPiece value);
 
 // Returns the policy string representation from the given enum value.

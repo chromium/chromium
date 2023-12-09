@@ -8,6 +8,7 @@
 #include <linux/uvcvideo.h>
 #include <linux/videodev2.h>
 #include <cstdint>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -26,7 +27,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using chromeos::IpPeripheralServiceClient;
 

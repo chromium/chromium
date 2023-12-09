@@ -106,7 +106,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void DEPRECATED_ExtensionGenerateKey(
       mojom::KeystoreType keystore,
       mojom::KeystoreSigningAlgorithmPtr algorithm,
-      const absl::optional<std::string>& extension_id,
+      const std::optional<std::string>& extension_id,
       DEPRECATED_ExtensionGenerateKeyCallback callback) override;
   // DEPRECATED, use `Sign` instead.
   void DEPRECATED_ExtensionSign(
@@ -189,7 +189,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                       std::vector<uint8_t> signature,
                       chromeos::platform_keys::Status status);
   static void DidGetKeyTags(GetKeyTagsCallback callback,
-                            absl::optional<bool> corporate,
+                            std::optional<bool> corporate,
                             chromeos::platform_keys::Status status);
   static void DidAddKeyTags(AddKeyTagsCallback callback,
                             chromeos::platform_keys::Status status);

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/cpp/input_method_test_interface_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_ash.h"
@@ -279,7 +279,7 @@ InputMethodTestInterfaceAsh::ScopedInputMethodInstall::ScopedInputMethodInstall(
       {ash::input_method::InputMethodDescriptor(
           input_method_id, "", /*indicator=*/"T", input_method.xkb_layout, {},
           /*is_login_keyboard=*/true, {}, {},
-          /*handwriting_language=*/absl::nullopt)},
+          /*handwriting_language=*/std::nullopt)},
       text_input_method);
 }
 

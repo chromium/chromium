@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/test/task_environment.h"
@@ -16,7 +17,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
@@ -56,7 +56,7 @@ class MojoDelegate : public mojom::NotificationDelegate {
   void OnNotificationClicked() override { ++clicked_count_; }
   void OnNotificationButtonClicked(
       uint32_t button_index,
-      const absl::optional<std::u16string>& reply) override {
+      const std::optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_index_ = button_index;
   }
@@ -136,7 +136,7 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   mojo_notification->buttons.push_back(std::move(button1));
   auto button2 = mojom::ButtonInfo::New();
   button2->title = u"button2";
-  button2->placeholder = absl::make_optional(u"placeholder2");
+  button2->placeholder = std::make_optional(u"placeholder2");
   mojo_notification->buttons.push_back(std::move(button2));
 
   // Display the notification.
@@ -371,14 +371,14 @@ TEST_F(MessageCenterAshTest, UserActions) {
   ASSERT_TRUE(ui_notification);
 
   // Simulate the user clicking on the notification body.
-  ui_notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                     /*reply=*/absl::nullopt);
+  ui_notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                     /*reply=*/std::nullopt);
   mojo_delegate.receiver_.FlushForTesting();
   EXPECT_EQ(1, mojo_delegate.clicked_count_);
 
   // Simulate the user clicking on a notification button.
   ui_notification->delegate()->Click(/*button_index=*/1,
-                                     /*reply=*/absl::nullopt);
+                                     /*reply=*/std::nullopt);
   mojo_delegate.receiver_.FlushForTesting();
   EXPECT_EQ(1, mojo_delegate.button_clicked_count_);
   EXPECT_EQ(1u, mojo_delegate.last_button_index_);

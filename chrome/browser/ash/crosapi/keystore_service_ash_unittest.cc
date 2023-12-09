@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 
 #include <initializer_list>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -34,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock-actions.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The tests in this file mostly focus on verifying that KeystoreService can
 // forward messages to and from PlatformKeysService, KeyPermissionsService,
@@ -194,7 +194,7 @@ struct CallbackObserver {
                           base::Unretained(this));
   }
 
-  absl::optional<T> result;
+  std::optional<T> result;
 };
 
 // A mock for observing callbacks that return a single result of the type |T| by
@@ -209,7 +209,7 @@ struct CallbackObserverRef {
                           base::Unretained(this));
   }
 
-  absl::optional<T> result;
+  std::optional<T> result;
 };
 
 // A mock for observing status results returned via a callback.
@@ -226,7 +226,7 @@ struct StatusCallbackObserver {
 
   bool has_value() const { return result_is_error.has_value(); }
 
-  absl::optional<bool> result_is_error;
+  std::optional<bool> result_is_error;
   mojom::KeystoreError result_error = mojom::KeystoreError::kUnknown;
 };
 
@@ -287,7 +287,7 @@ TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
   // matter here.
   EXPECT_CALL(
       platform_keys_service_,
-      SignRsaPkcs1(absl::optional<TokenId>(TokenId::kUser), GetDataBin(),
+      SignRsaPkcs1(std::optional<TokenId>(TokenId::kUser), GetDataBin(),
                    GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
                    /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
@@ -306,7 +306,7 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
   // Accepted and returned data are the same. This is not realistic, but doesn't
   // matter here.
   EXPECT_CALL(platform_keys_service_,
-              SignEcdsa(absl::optional<TokenId>(TokenId::kSystem), GetDataBin(),
+              SignEcdsa(std::optional<TokenId>(TokenId::kSystem), GetDataBin(),
                         GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA512,
                         /*callback=*/_))
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
@@ -323,7 +323,7 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
 
 TEST_F(KeystoreServiceAshTest, UsingkRsassaPkcs1V15NoneSignSuccess) {
   EXPECT_CALL(platform_keys_service_,
-              SignRSAPKCS1Raw(absl::optional<TokenId>(TokenId::kSystem),
+              SignRSAPKCS1Raw(std::optional<TokenId>(TokenId::kSystem),
                               GetDataBin(), GetPublicKeyBin(),
                               /*callback=*/_))
       .WillOnce(RunOnceCallback<3>(GetDataBin(), Status::kSuccess));
@@ -444,7 +444,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
   EXPECT_CALL(key_permissions_service_,
               IsCorporateKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(
-          RunOnceCallback<1>(absl::optional<bool>(true), Status::kSuccess));
+          RunOnceCallback<1>(std::optional<bool>(true), Status::kSuccess));
 
   CallbackObserver<mojom::GetKeyTagsResultPtr> observer;
   keystore_service_.GetKeyTags(GetPublicKeyBin(), observer.GetCallback());
@@ -457,7 +457,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
 
 TEST_F(KeystoreServiceAshTest, GetKeyTagsFail) {
   EXPECT_CALL(key_permissions_service_, IsCorporateKey)
-      .WillOnce(RunOnceCallback<1>(absl::nullopt, Status::kErrorInternal));
+      .WillOnce(RunOnceCallback<1>(std::nullopt, Status::kErrorInternal));
 
   CallbackObserver<mojom::GetKeyTagsResultPtr> observer;
   keystore_service_.GetKeyTags(GetPublicKeyBin(), observer.GetCallback());
@@ -1111,7 +1111,7 @@ TEST_F(KeystoreServiceAshTest, DeprecatedRemoveCertificateShouldFail) {
 TEST_F(KeystoreServiceAshTest, DeprecatedExtensionGenerateKeyCallShouldFail) {
   auto cert_list = GetCertificateList();
   CallbackObserver<mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr> observer;
-  const absl::optional<std::string>& extension_id = "123";
+  const std::optional<std::string>& extension_id = "123";
 
   crosapi::mojom::KeystorePKCS115ParamsPtr params =
       crosapi::mojom::KeystorePKCS115Params::New();

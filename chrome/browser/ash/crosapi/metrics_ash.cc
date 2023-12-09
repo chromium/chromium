@@ -34,7 +34,7 @@ void MetricsAsh::GetFullHardwareClass(GetFullHardwareClassCallback callback) {
 }
 
 void MetricsAsh::OnMachineStatisticsLoaded() {
-  const absl::optional<base::StringPiece> full_hardware_class =
+  const std::optional<base::StringPiece> full_hardware_class =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           "hardware_class");
   if (full_hardware_class) {

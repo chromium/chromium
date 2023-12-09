@@ -105,8 +105,8 @@ TEST_F(WebsiteApprovalNotifierTest, MetricRecording) {
                    "SupervisedUsers_RemoteWebApproval_NotificationShown"));
   notification_tester_.SimulateClick(NotificationHandler::Type::TRANSIENT,
                                      GetNotificationId(host),
-                                     /*action_index=*/absl::nullopt,
-                                     /*reply=*/absl::nullopt);
+                                     /*action_index=*/std::nullopt,
+                                     /*reply=*/std::nullopt);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "SupervisedUsers_RemoteWebApproval_NotificationClicked"));
 }
@@ -123,8 +123,8 @@ TEST_F(WebsiteApprovalNotifierTest, UrlOpensInPrimaryBrowser) {
                       NewWindowDelegate::Disposition::kNewForegroundTab));
   notification_tester_.SimulateClick(NotificationHandler::Type::TRANSIENT,
                                      GetNotificationId(host),
-                                     /*action_index=*/absl::nullopt,
-                                     /*reply=*/absl::nullopt);
+                                     /*action_index=*/std::nullopt,
+                                     /*reply=*/std::nullopt);
 }
 
 }  // namespace ash

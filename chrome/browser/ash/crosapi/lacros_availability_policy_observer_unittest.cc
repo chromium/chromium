@@ -88,7 +88,7 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
       if (base::StartsWith(flag, prefix)) {
         base::StringPiece flag_value(flag);
         flag_value.remove_prefix(prefix.size());
-        absl::optional<base::Value> parsed = base::JSONReader::Read(flag_value);
+        std::optional<base::Value> parsed = base::JSONReader::Read(flag_value);
         std::vector<std::string> result;
         if (parsed && parsed->is_list()) {
           for (const auto& element : parsed->GetList()) {

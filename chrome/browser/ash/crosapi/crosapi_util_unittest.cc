@@ -233,7 +233,7 @@ TEST_F(CrosapiUtilTest, IsArcAvailable) {
           &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, absl::nullopt);
+          /*is_keep_alive_enabled=*/false, std::nullopt);
   EXPECT_TRUE(browser_init_params->device_properties->is_arc_available);
   EXPECT_FALSE(browser_init_params->device_properties->is_tablet_form_factor);
 }
@@ -250,7 +250,7 @@ TEST_F(CrosapiUtilTest, IsTabletFormFactor) {
           &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, absl::nullopt);
+          /*is_keep_alive_enabled=*/false, std::nullopt);
   EXPECT_FALSE(browser_init_params->device_properties->is_arc_available);
   EXPECT_TRUE(browser_init_params->device_properties->is_tablet_form_factor);
 }
@@ -269,7 +269,7 @@ TEST_F(CrosapiUtilTest, SerialNumber) {
           &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, absl::nullopt);
+          /*is_keep_alive_enabled=*/false, std::nullopt);
 
   auto serial_number = browser_init_params->device_properties->serial_number;
   ASSERT_TRUE(serial_number.has_value());

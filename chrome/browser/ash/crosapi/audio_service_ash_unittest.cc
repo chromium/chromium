@@ -21,7 +21,7 @@ class MockCallbacks {
  public:
   MOCK_METHOD2(GetMuteResponse, void(bool, bool));
   MOCK_METHOD1(GetDevicesResponse,
-               void(absl::optional<std::vector<mojom::AudioDeviceInfoPtr>>));
+               void(std::optional<std::vector<mojom::AudioDeviceInfoPtr>>));
   MOCK_METHOD1(SetMuteResponse, void(bool));
   MOCK_METHOD1(SetActiveDeviceListsResponse, void(bool));
   MOCK_METHOD1(SetPropertiesResponse, void(bool));

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_INSTALLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/download/public/background_service/download_metadata.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -68,13 +68,13 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void OnOpenFds(std::unique_ptr<Fds> fds);
   void CreateVmDisk();
   void OnCreateVmDisk(
-      absl::optional<vm_tools::concierge::CreateDiskImageResponse> result);
+      std::optional<vm_tools::concierge::CreateDiskImageResponse> result);
   void InstallPflash();
   void OnInstallPflash(
-      absl::optional<vm_tools::concierge::InstallPflashResponse> result);
+      std::optional<vm_tools::concierge::InstallPflashResponse> result);
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
-                 absl::optional<vm_tools::concierge::StartVmResponse> result);
+                 std::optional<vm_tools::concierge::StartVmResponse> result);
   void LaunchTerminal();
 
   void NotifyObserver(State state);

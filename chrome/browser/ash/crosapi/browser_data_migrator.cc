@@ -114,18 +114,18 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
     const AccountId& account_id,
     const std::string& user_id_hash,
-    base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback) {
+    base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback) {
   if (!MaybeRestartToMigrateInternal(
           account_id, user_id_hash,
           crosapi::browser_util::PolicyInitState::kAfterInit)) {
-    std::move(callback).Run(false, absl::nullopt);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     LOG(DFATAL) << "Could not get the original user data dir path.";
-    std::move(callback).Run(false, absl::nullopt);
+    std::move(callback).Run(false, std::nullopt);
     return;
   }
 
@@ -144,7 +144,7 @@ void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
 void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
     const AccountId& account_id,
     const std::string& user_id_hash,
-    base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback,
+    base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback,
     uint64_t required_size) {
   if (required_size > 0) {
     LOG(ERROR) << "Failed due to out of disk: " << required_size;
@@ -156,7 +156,7 @@ void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
       RestartToMigrate(account_id, user_id_hash,
                        user_manager::UserManager::Get()->GetLocalState(),
                        crosapi::browser_util::PolicyInitState::kAfterInit);
-  std::move(callback).Run(result, absl::nullopt);
+  std::move(callback).Run(result, std::nullopt);
 }
 
 bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(

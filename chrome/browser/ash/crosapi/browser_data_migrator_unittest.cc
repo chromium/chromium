@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -36,7 +37,6 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -87,7 +87,7 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
-  absl::optional<BrowserDataMigrator::Result> result;
+  std::optional<BrowserDataMigrator::Result> result;
   migrator->Migrate(base::BindLambdaForTesting(
       [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
         run_loop.Quit();
@@ -134,7 +134,7 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
-  absl::optional<BrowserDataMigrator::Result> result;
+  std::optional<BrowserDataMigrator::Result> result;
   migrator->Migrate(base::BindLambdaForTesting(
       [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
         run_loop.Quit();
@@ -181,7 +181,7 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDisk) {
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
-  absl::optional<BrowserDataMigrator::Result> result;
+  std::optional<BrowserDataMigrator::Result> result;
   migrator->Migrate(base::BindLambdaForTesting(
       [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
         run_loop.Quit();
@@ -295,12 +295,12 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     base::test::ScopedCommandLine command_line;
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kForceBrowserDataMigrationForTesting, "force-skip");
-    absl::optional<bool> result;
+    std::optional<bool> result;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
         user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result](bool result,
-                                   const absl::optional<uint64_t>& size) {
+                                   const std::optional<uint64_t>& size) {
               out_result = result;
             }));
     EXPECT_TRUE(result.has_value());
@@ -319,14 +319,14 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
         scoped_extra_bytes(1024 * 1024);
 
-    absl::optional<bool> result;
-    absl::optional<uint64_t> out_size;
+    std::optional<bool> result;
+    std::optional<uint64_t> out_size;
     base::RunLoop run_loop;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
         user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result, &out_size, &run_loop](
-                bool result, const absl::optional<uint64_t>& size) {
+                bool result, const std::optional<uint64_t>& size) {
               run_loop.Quit();
               out_result = result;
               out_size = size;
@@ -347,13 +347,13 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
         scoped_extra_bytes(0);
 
-    absl::optional<bool> result;
+    std::optional<bool> result;
     base::RunLoop run_loop;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
         user->GetAccountId(), user->username_hash(),
         base::BindLambdaForTesting(
             [&out_result = result, &run_loop](
-                bool result, const absl::optional<uint64_t>& size) {
+                bool result, const std::optional<uint64_t>& size) {
               run_loop.Quit();
               out_result = result;
             }));

@@ -105,29 +105,28 @@ class XuCameraService : public CfmObserver,
  private:
   void GetUnitIdWithDevicePath(const std::vector<uint8_t>& guid_le,
                                GetUnitIdCallback callback,
-                               const absl::optional<std::string>& dev_path);
+                               const std::optional<std::string>& dev_path);
   void MapCtrlWithDevicePath(mojom::ControlMappingPtr mapping_ctrl,
                              MapCtrlCallback callback,
-                             const absl::optional<std::string>& dev_path) const;
+                             const std::optional<std::string>& dev_path) const;
   void GetCtrlWithDevicePath(mojom::CtrlTypePtr ctrl,
                              mojom::GetFn fn,
                              GetCtrlCallback callback,
-                             const absl::optional<std::string>& dev_path) const;
+                             const std::optional<std::string>& dev_path) const;
   void SetCtrlWithDevicePath(mojom::CtrlTypePtr ctrl,
                              const std::vector<uint8_t>& data,
                              SetCtrlCallback callback,
-                             const absl::optional<std::string>& dev_path) const;
+                             const std::optional<std::string>& dev_path) const;
   uint8_t QueryXuControl(const base::ScopedFD& file_descriptor,
                          uint8_t unit_id,
                          uint8_t selector,
                          uint8_t* data,
                          uint8_t query_request,
                          uint16_t size) const;
-  void GetDevicePath(
-      mojom::WebcamIdPtr id,
-      const content::GlobalRenderFrameHostId& host_id,
-      base::OnceCallback<void(const absl::optional<std::string>&)> callback)
-      const;
+  void GetDevicePath(mojom::WebcamIdPtr id,
+                     const content::GlobalRenderFrameHostId& host_id,
+                     base::OnceCallback<void(const std::optional<std::string>&)>
+                         callback) const;
   void GetCtrlDbus(const std::string& dev_path_or_ip_addr,
                    const mojom::ControlQueryPtr& query,
                    const uint8_t& query_request,

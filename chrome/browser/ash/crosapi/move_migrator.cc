@@ -287,11 +287,11 @@ MoveMigrator::TaskResult MoveMigrator::PreMigrationCleanUp(
                   "safely. Need to free up "
                << extra_bytes_required_to_be_freed << " bytes from "
                << original_profile_dir;
-    return {TaskStatus::kPreMigrationCleanUpNotEnoughSpace, absl::nullopt,
+    return {TaskStatus::kPreMigrationCleanUpNotEnoughSpace, std::nullopt,
             extra_bytes_required_to_be_freed};
   }
 
-  return {TaskStatus::kSucceeded, absl::nullopt, absl::nullopt,
+  return {TaskStatus::kSucceeded, std::nullopt, std::nullopt,
           estimated_extra_bytes_created};
 }
 

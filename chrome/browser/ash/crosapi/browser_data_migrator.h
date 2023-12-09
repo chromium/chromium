@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -58,7 +58,7 @@ class BrowserDataMigrator {
     // If the migration is failed (kind must be kFailed) due to
     // out-of-diskspace, this field will be filled with the size of the disk
     // in bytes where the user required to free up.
-    absl::optional<uint64_t> required_size;
+    std::optional<uint64_t> required_size;
   };
 
   // TODO(crbug.com/1296174): Currently, dependency around callback is not
@@ -165,7 +165,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static void MaybeRestartToMigrateWithDiskCheck(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback);
+      base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback);
 
   // `BrowserDataMigrator` methods.
   void Migrate(MigrateCallback callback) override;
@@ -201,7 +201,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static void MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback,
+      base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback,
       uint64_t required_size);
 
   // Sets the value of `kMigrationStep` in Local State.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_STATEFUL_LACROS_LOADER_H_
 #define CHROME_BROWSER_ASH_CROSAPI_STATEFUL_LACROS_LOADER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -16,7 +17,6 @@
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 class ComponentUpdateService;
@@ -78,9 +78,9 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   // If `version_` is null, it implies the version is not yet calculated.
   // For cases where it failed to read the version, invalid `base::Version()` is
   // set.
-  absl::optional<base::Version> version_;
+  std::optional<base::Version> version_;
   // Cache the path to installed lacros-chrome path.
-  absl::optional<base::FilePath> path_;
+  std::optional<base::FilePath> path_;
 
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
 

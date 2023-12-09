@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefService;
@@ -115,7 +115,7 @@ class CertProvisioningWorker {
   // Returns the time when this worker has been last updated.
   virtual base::Time GetLastUpdateTime() const = 0;
   // Return the info of when this worker has last faced an unsuccessful attempt.
-  virtual const absl::optional<BackendServerError>& GetLastBackendServerError()
+  virtual const std::optional<BackendServerError>& GetLastBackendServerError()
       const = 0;
   // Return a message describing the reason for failure when the worker fails.
   // In case the worker did not fail, the message is empty.

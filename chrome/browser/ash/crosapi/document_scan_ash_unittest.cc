@@ -21,7 +21,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -129,7 +128,7 @@ TEST_F(DocumentScanAshTest, ScanFirstPage_InvalidScannerName) {
   document_scan_ash().ScanFirstPage(
       "bad_scanner", base::BindLambdaForTesting(
                          [&](mojom::ScanFailureMode failure_mode,
-                             const absl::optional<std::string>& scan_data) {
+                             const std::optional<std::string>& scan_data) {
                            EXPECT_EQ(failure_mode,
                                      mojom::ScanFailureMode::kDeviceBusy);
                            EXPECT_FALSE(scan_data.has_value());
@@ -144,7 +143,7 @@ TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerNoData) {
   document_scan_ash().ScanFirstPage(
       kTestScannerName, base::BindLambdaForTesting(
                             [&](mojom::ScanFailureMode failure_mode,
-                                const absl::optional<std::string>& scan_data) {
+                                const std::optional<std::string>& scan_data) {
                               EXPECT_EQ(failure_mode,
                                         mojom::ScanFailureMode::kDeviceBusy);
                               EXPECT_FALSE(scan_data.has_value());
@@ -161,7 +160,7 @@ TEST_F(DocumentScanAshTest, ScanFirstPage_ScannerData) {
   document_scan_ash().ScanFirstPage(
       kTestScannerName, base::BindLambdaForTesting(
                             [&](mojom::ScanFailureMode failure_mode,
-                                const absl::optional<std::string>& scan_data) {
+                                const std::optional<std::string>& scan_data) {
                               EXPECT_EQ(failure_mode,
                                         mojom::ScanFailureMode::kNoFailure);
                               ASSERT_TRUE(scan_data.has_value());

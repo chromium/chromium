@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -20,7 +22,6 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -90,7 +91,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       environment_provider_,
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kUseStartupPreference),
-      /*is_keep_alive_enabled=*/false, absl::nullopt);
+      /*is_keep_alive_enabled=*/false, std::nullopt);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
     return;

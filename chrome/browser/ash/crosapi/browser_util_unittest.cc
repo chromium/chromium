@@ -121,7 +121,7 @@ class BrowserUtilTest : public testing::Test {
     }
     fake_user_manager_.Reset();
     ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
-        absl::nullopt);
+        std::nullopt);
   }
 
   const user_manager::User* AddRegularUser(const std::string& email) {
@@ -457,7 +457,7 @@ TEST_F(BrowserUtilTest, MetadataMissingVersion) {
      "metadata_version": 1
    }
   )###";
-  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_FALSE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
@@ -471,7 +471,7 @@ TEST_F(BrowserUtilTest, MetadataVersionBadFormat) {
      "metadata_version": 1
    }
   )###";
-  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_FALSE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
@@ -485,7 +485,7 @@ TEST_F(BrowserUtilTest, MetadataOldVersion) {
      "metadata_version": 1
    }
   )###";
-  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_FALSE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
@@ -499,7 +499,7 @@ TEST_F(BrowserUtilTest, MetadataNewVersion) {
      "metadata_version": 1
    }
   )###";
-  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_TRUE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }

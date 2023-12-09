@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -48,7 +49,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using web_app::GenerateAppId;
@@ -139,7 +139,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
   void SimulateAppInstalled(const AppId& app_id,
                             const std::string& app_name,
-                            absl::optional<std::string> url = absl::nullopt) {
+                            std::optional<std::string> url = std::nullopt) {
     if (app_id.app_type() == apps::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
       arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
@@ -267,7 +267,7 @@ TEST_F(AppServiceWrapperTest, GetInstalledApps) {
   // extensions (with exception of Chrome) now.
   const AppId app2(
       apps::AppType::kChromeApp,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kExtensionAppUrl)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kExtensionAppUrl)));
 
   EXPECT_CALL(test_listener(), OnAppInstalled(app2)).Times(1);
   SimulateAppInstalled(app2, kExtensionNameA, kExtensionAppUrl);
@@ -275,7 +275,7 @@ TEST_F(AppServiceWrapperTest, GetInstalledApps) {
   // Add web app.
   const AppId app3(
       apps::AppType::kWeb,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kWebAppUrl1)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kWebAppUrl1)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app3)).Times(1);
   SimulateAppInstalled(app3, kWebAppName1, kWebAppUrl1);
 
@@ -298,14 +298,14 @@ TEST_F(AppServiceWrapperTest, GetAppName) {
 
   const AppId app2(
       apps::AppType::kChromeApp,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kExtensionAppUrl)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kExtensionAppUrl)));
 
   EXPECT_CALL(test_listener(), OnAppInstalled(app2)).Times(1);
   SimulateAppInstalled(app2, kExtensionNameA, kExtensionAppUrl);
 
   const AppId app3(
       apps::AppType::kWeb,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kWebAppUrl1)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kWebAppUrl1)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app3)).Times(1);
   SimulateAppInstalled(app3, kWebAppName1, kWebAppUrl1);
 
@@ -354,7 +354,7 @@ TEST_F(AppServiceWrapperTest, WebAppInstallation) {
   // Install first web app.
   const AppId app1(
       apps::AppType::kWeb,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kWebAppUrl1)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kWebAppUrl1)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app1)).Times(1);
   SimulateAppInstalled(app1, kWebAppName1, kWebAppUrl1);
 
@@ -365,7 +365,7 @@ TEST_F(AppServiceWrapperTest, WebAppInstallation) {
   // Install second web app.
   const AppId app2(
       apps::AppType::kWeb,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kWebAppUrl2)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kWebAppUrl2)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app2)).Times(1);
   SimulateAppInstalled(app2, kWebAppName2, kWebAppUrl2);
 
@@ -401,7 +401,7 @@ TEST_F(AppServiceWrapperTest, WebAppDisabled) {
   // Install web app.
   const AppId app(
       apps::AppType::kWeb,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kWebAppUrl1)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kWebAppUrl1)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app)).Times(1);
   SimulateAppInstalled(app, kWebAppName1, kWebAppUrl1);
 
@@ -422,7 +422,7 @@ TEST_F(AppServiceWrapperTest, IgnoreOtherExtensions) {
 
   const AppId app1(
       apps::AppType::kChromeApp,
-      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kExtensionAppUrl)));
+      GenerateAppId(/*manifest_id=*/std::nullopt, GURL(kExtensionAppUrl)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app1)).Times(1);
   SimulateAppInstalled(app1, kExtensionNameA, kExtensionAppUrl);
 

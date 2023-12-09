@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -24,7 +26,6 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "crypto/nss_util_internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -137,29 +138,29 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   return default_paths;
 }
 
-absl::optional<account_manager::Account>
+std::optional<account_manager::Account>
 EnvironmentProvider::GetDeviceAccount() {
   // Lacros doesn't support Multi-Login. Get the Primary User.
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user)
-    return absl::nullopt;
+    return std::nullopt;
 
   const AccountId& account_id = user->GetAccountId();
   switch (account_id.GetAccountType()) {
     case AccountType::ACTIVE_DIRECTORY:
-      return absl::make_optional(account_manager::Account{
+      return std::make_optional(account_manager::Account{
           account_manager::AccountKey{
               account_id.GetObjGuid(),
               account_manager::AccountType::kActiveDirectory},
           user->GetDisplayEmail()});
     case AccountType::GOOGLE:
-      return absl::make_optional(account_manager::Account{
+      return std::make_optional(account_manager::Account{
           account_manager::AccountKey{account_id.GetGaiaId(),
                                       account_manager::AccountType::kGaia},
           user->GetDisplayEmail()});
     case AccountType::UNKNOWN:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

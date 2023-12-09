@@ -125,8 +125,7 @@ class AnsibleManagementService : public KeyedService,
   void ApplyAnsiblePlaybook(const guest_os::GuestId& container_id);
   void OnApplyAnsiblePlaybook(
       const guest_os::GuestId& container_id,
-      absl::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
-          response);
+      std::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse> response);
 
   // Helper function that runs relevant callback and notifies observers.
   void OnConfigurationFinished(const guest_os::GuestId& container_id,

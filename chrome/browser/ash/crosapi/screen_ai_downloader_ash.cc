@@ -34,7 +34,7 @@ void ScreenAIDownloaderAsh::GetComponentFolder(
   }
 
   if (!download_if_needed) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -66,7 +66,7 @@ void ScreenAIDownloaderAsh::StateChanged(
     return;
   }
 
-  absl::optional<base::FilePath> component_path = absl::nullopt;
+  std::optional<base::FilePath> component_path = std::nullopt;
 
   switch (state) {
     case screen_ai::ScreenAIInstallState::State::kNotDownloaded:

@@ -58,7 +58,7 @@ TEST_F(ScreenAIDownloaderAshTest, EnsurePendingCallbackDestruction) {
       screen_ai::ScreenAIInstallState::State::kDownloading);
   GetComponentFolder(
       /*download_if_needed=*/true,
-      base::BindOnce([](const absl::optional<::base::FilePath>& file_path) {
+      base::BindOnce([](const std::optional<::base::FilePath>& file_path) {
         // do nothing
       }));
   EXPECT_TRUE(HasPendingCallbacks());
@@ -88,7 +88,7 @@ class ScreenAIDownloaderAshReplyTest
           /*download_if_needed=*/true,
           base::BindOnce(
               [](base::RunLoop* run_loop,
-                 const absl::optional<::base::FilePath>& file_path) {
+                 const std::optional<::base::FilePath>& file_path) {
                 run_loop->Quit();
               },
               &run_loop));
@@ -138,7 +138,7 @@ TEST_P(ScreenAIDownloaderAshReplyTest, EnsureReplyInAllStates) {
       /*download_if_needed=*/request_download_if_needed_,
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const absl::optional<::base::FilePath>& file_path) {
+             const std::optional<::base::FilePath>& file_path) {
             run_loop->Quit();
           },
           &run_loop));

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
 #define CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -37,8 +37,8 @@ class KerberosFilesHandler {
   virtual ~KerberosFilesHandler();
 
   // Writes the Kerberos credentials to disk asynchronously.
-  void SetFiles(absl::optional<std::string> krb5cc,
-                absl::optional<std::string> krb5conf);
+  void SetFiles(std::optional<std::string> krb5cc,
+                std::optional<std::string> krb5conf);
 
   // Deletes the Kerberos credentials from disk asynchronously.
   virtual void DeleteFiles();

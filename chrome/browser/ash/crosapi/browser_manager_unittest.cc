@@ -63,7 +63,7 @@ class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
               (bool incognito,
                bool should_trigger_session_restore,
                int64_t target_display_id,
-               absl::optional<uint64_t> profile_id,
+               std::optional<uint64_t> profile_id,
                NewWindowCallback callback),
               (override));
   MOCK_METHOD(void, OpenForFullRestore, (bool skip_crash_restore), (override));
@@ -212,7 +212,7 @@ class BrowserManagerTest : public testing::Test {
 
     // Reset any CPU restrictions.
     ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
-        absl::nullopt);
+        std::nullopt);
 
     // Reset the session manager state.
     session_manager::SessionManager::Get()->SetSessionState(

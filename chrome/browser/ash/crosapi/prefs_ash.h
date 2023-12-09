@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefChangeRegistrar;
@@ -93,8 +93,8 @@ class PrefsAsh : public mojom::Prefs,
     AshPrefSource pref_source;
     std::string path;
   };
-  absl::optional<State> GetState(mojom::PrefPath path);
-  const base::Value* GetValueForState(absl::optional<State> state);
+  std::optional<State> GetState(mojom::PrefPath path);
+  const base::Value* GetValueForState(std::optional<State> state);
 
   void OnPrefChanged(mojom::PrefPath path);
   void OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id);

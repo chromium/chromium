@@ -104,7 +104,7 @@ void BruschettaService::OnPolicyChanged() {
       continue;
     }
 
-    absl::optional<const base::Value::Dict*> config_opt =
+    std::optional<const base::Value::Dict*> config_opt =
         GetRunnableConfig(profile_, config_id);
     if (!config_opt.has_value()) {
       // config is either unset or explicitly blocked from running.
@@ -202,7 +202,7 @@ void BruschettaService::StopVm(std::string vm_name) {
       request,
       base::BindOnce(
           [](std::string vm_name,
-             absl::optional<vm_tools::concierge::StopVmResponse> response) {
+             std::optional<vm_tools::concierge::StopVmResponse> response) {
             // If stopping the VM fails there's not really much we can do about
             // it, but we can log an error.
             if (!response) {

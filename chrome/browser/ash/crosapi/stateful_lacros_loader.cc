@@ -176,8 +176,8 @@ void StatefulLacrosLoader::Unload() {
 void StatefulLacrosLoader::Reset() {
   // TODO(crbug.com/1432069): Reset call while loading breaks the behavior. Need
   // to handle such edge cases.
-  version_ = absl::nullopt;
-  path_ = absl::nullopt;
+  version_ = std::nullopt;
+  path_ = std::nullopt;
 }
 
 void StatefulLacrosLoader::GetVersion(

@@ -59,9 +59,9 @@ void WebAppServiceAsh::GetAssociatedAndroidPackage(
     return;
   }
 
-  const absl::optional<std::string> package_name =
+  const std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id);
-  const absl::optional<std::string> fingerprint =
+  const std::optional<std::string> fingerprint =
       apk_web_app_service->GetCertificateSha256Fingerprint(app_id);
 
   // Any web-only TWA should have an associated package name and fingerprint.

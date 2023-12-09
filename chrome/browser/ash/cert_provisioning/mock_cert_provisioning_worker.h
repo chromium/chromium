@@ -72,7 +72,7 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
   MOCK_METHOD(void, MarkWorkerForReset, (), (override));
   MOCK_METHOD(bool, IsWaiting, (), (const override));
   MOCK_METHOD(bool, IsWorkerMarkedForReset, (), (const override));
-  MOCK_METHOD(const absl::optional<BackendServerError>&,
+  MOCK_METHOD(const std::optional<BackendServerError>&,
               GetLastBackendServerError,
               (),
               (const override));

@@ -53,7 +53,7 @@ std::string GetBoardName() {
 // Returns the model name of this device (either from its CustomizationId or by
 // parsing its hardware class). Returns "" if it fails.
 std::string GetModelName() {
-  if (const absl::optional<base::StringPiece> ret =
+  if (const std::optional<base::StringPiece> ret =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kCustomizationIdKey)) {
     return std::string(ret.value());
@@ -64,7 +64,7 @@ std::string GetModelName() {
   // As a fallback when the CustomizationId is not available, we try to parse it
   // out of the hardware class. If The hardware class is unavailable, all bets
   // are off.
-  const absl::optional<base::StringPiece> hardware_class_statistic =
+  const std::optional<base::StringPiece> hardware_class_statistic =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kHardwareClassKey);
   if (!hardware_class_statistic) {

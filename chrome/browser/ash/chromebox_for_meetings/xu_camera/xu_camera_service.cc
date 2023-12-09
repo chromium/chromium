@@ -116,12 +116,12 @@ IpPeripheralServiceClient::SetControlCallback ConvertSetCtrlCallbackForDbus(
 
 void TranslateDeviceId(
     const std::string& hashed_device_id,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback,
     const url::Origin& security_origin,
     const std::string& salt) {
   auto translate_device_id_callback = base::BindOnce(
       [](const std::string& hashed_device_id,
-         base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+         base::OnceCallback<void(const std::optional<std::string>&)> callback,
          const url::Origin& security_origin, const std::string& salt) {
         content::GetMediaDeviceIDForHMAC(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,
@@ -252,7 +252,7 @@ void XuCameraService::GetUnitId(mojom::WebcamIdPtr id,
 void XuCameraService::GetUnitIdWithDevicePath(
     const std::vector<uint8_t>& guid_le,
     GetUnitIdCallback callback,
-    const absl::optional<std::string>& dev_path) {
+    const std::optional<std::string>& dev_path) {
   if (dev_path.has_value()) {
     const bool is_ip_camera = IsIpCamera(*dev_path);
     if (is_ip_camera) {
@@ -343,7 +343,7 @@ void XuCameraService::MapCtrl(mojom::WebcamIdPtr id,
 void XuCameraService::MapCtrlWithDevicePath(
     const mojom::ControlMappingPtr mapping_ctrl,
     MapCtrlCallback callback,
-    const absl::optional<std::string>& dev_path) const {
+    const std::optional<std::string>& dev_path) const {
   uint8_t error_code = 0;
   base::ScopedFD file_descriptor;
 
@@ -412,7 +412,7 @@ void XuCameraService::GetCtrlWithDevicePath(
     const mojom::CtrlTypePtr ctrl,
     const mojom::GetFn fn,
     GetCtrlCallback callback,
-    const absl::optional<std::string>& dev_path) const {
+    const std::optional<std::string>& dev_path) const {
   std::vector<uint8_t> data;
   if (!dev_path) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
@@ -472,7 +472,7 @@ void XuCameraService::SetCtrlWithDevicePath(
     const mojom::CtrlTypePtr ctrl,
     const std::vector<uint8_t>& data,
     SetCtrlCallback callback,
-    const absl::optional<std::string>& dev_path) const {
+    const std::optional<std::string>& dev_path) const {
   if (!dev_path) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
     std::move(callback).Run(ENOENT);
@@ -548,7 +548,7 @@ uint8_t XuCameraService::QueryXuControl(const base::ScopedFD& file_descriptor,
 void XuCameraService::GetDevicePath(
     mojom::WebcamIdPtr id,
     const content::GlobalRenderFrameHostId& host_id,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback)
+    base::OnceCallback<void(const std::optional<std::string>&)> callback)
     const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -561,7 +561,7 @@ void XuCameraService::GetDevicePath(
   auto hashed_device_id = id->get_device_id();
 
   if (!host_id || hashed_device_id.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -570,7 +570,7 @@ void XuCameraService::GetDevicePath(
 
   if (frame_host == nullptr) {
     VLOG(4) << __func__ << " frame_host == nullptr";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -578,7 +578,7 @@ void XuCameraService::GetDevicePath(
 
   if (browser_context == nullptr) {
     VLOG(4) << __func__ << " browser_context == nullptr";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

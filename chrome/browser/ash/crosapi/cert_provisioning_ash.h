@@ -66,9 +66,9 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
   // The observers that will receive notifications about cert changes in Ash.
   mojo::RemoteSet<mojom::CertProvisioningObserver> observers_;
 
-  absl::optional<ash::cert_provisioning::CertProvisioningScheduler*>
+  std::optional<ash::cert_provisioning::CertProvisioningScheduler*>
       user_scheduler_for_testing_;
-  absl::optional<ash::cert_provisioning::CertProvisioningScheduler*>
+  std::optional<ash::cert_provisioning::CertProvisioningScheduler*>
       device_scheduler_for_testing_;
 
   // This class supports any number of connections. This allows the client to

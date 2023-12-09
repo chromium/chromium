@@ -30,7 +30,7 @@ class MockTpmChallengeKeySubtle : public TpmChallengeKeySubtle {
                const std::string& key_name,
                Profile* profile,
                TpmChallengeKeyCallback callback,
-               const absl::optional<std::string>& signals),
+               const std::optional<std::string>& signals),
               (override));
 
   MOCK_METHOD(void,

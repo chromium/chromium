@@ -115,7 +115,7 @@ class VpnConfigurationImpl
   }
   const std::string& key() const override { return key_; }
   const std::string& object_path() const override { return object_path_; }
-  const absl::optional<std::string>& service_path() const override {
+  const std::optional<std::string>& service_path() const override {
     return service_path_;
   }
   void set_service_path(std::string service_path) override {
@@ -136,7 +136,7 @@ class VpnConfigurationImpl
   const std::string configuration_name_;
   const std::string key_;
   const std::string object_path_;
-  absl::optional<std::string> service_path_;
+  std::optional<std::string> service_path_;
 
   mojo::Remote<crosapi::mojom::PepperVpnProxyObserver>
       pepper_vpn_proxy_observer_;
@@ -266,8 +266,7 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
 
   // Avoid const ref here since configuration gets removed before service_path
   // is used.
-  const absl::optional<std::string> service_path =
-      configuration->service_path();
+  const std::optional<std::string> service_path = configuration->service_path();
 
   if (!service_path) {
     RunFailureCallback(std::move(callback), /*error_name=*/{},
@@ -470,7 +469,7 @@ void VpnServiceForExtensionAsh::DispatchOnPacketReceivedEvent(
 void VpnServiceForExtensionAsh::DispatchOnPlatformMessageEvent(
     const std::string& configuration_name,
     int32_t platform_message,
-    const absl::optional<std::string>& error) {
+    const std::optional<std::string>& error) {
   for (auto& observer : observers_) {
     observer->OnPlatformMessage(configuration_name, platform_message, error);
   }
@@ -507,7 +506,7 @@ void VpnServiceForExtensionAsh::DestroyConfigurationInternal(
     SetActiveConfiguration(nullptr);
   }
 
-  if (const absl::optional<std::string>& service_path =
+  if (const std::optional<std::string>& service_path =
           configuration->service_path()) {
     ash::ShillThirdPartyVpnDriverClient::Get()
         ->RemoveShillThirdPartyVpnObserver(configuration->object_path());
@@ -621,7 +620,7 @@ void VpnServiceAsh::OnVpnExtensionsChanged(
 
 void VpnServiceAsh::OnGetShillProperties(
     const std::string& service_path,
-    absl::optional<base::Value::Dict> configuration_properties) {
+    std::optional<base::Value::Dict> configuration_properties) {
   if (!configuration_properties) {
     return;
   }

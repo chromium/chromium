@@ -10,13 +10,13 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_USAGE_TIME_LIMIT_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace usage_time_limit {
@@ -74,7 +74,7 @@ class TimeWindowLimit {
   bool operator==(const TimeWindowLimit&) const;
   bool operator!=(const TimeWindowLimit& rhs) const { return !(*this == rhs); }
 
-  std::unordered_map<Weekday, absl::optional<TimeWindowLimitEntry>> entries;
+  std::unordered_map<Weekday, std::optional<TimeWindowLimitEntry>> entries;
 };
 
 struct TimeUsageLimitEntry {
@@ -101,7 +101,7 @@ class TimeUsageLimit {
   bool operator==(const TimeUsageLimit&) const;
   bool operator!=(const TimeUsageLimit& rhs) const { return !(*this == rhs); }
 
-  std::unordered_map<Weekday, absl::optional<TimeUsageLimitEntry>> entries;
+  std::unordered_map<Weekday, std::optional<TimeUsageLimitEntry>> entries;
   base::TimeDelta resets_at;
 };
 }  // namespace internal
@@ -164,7 +164,7 @@ State GetState(const base::Value::Dict& time_limit,
                const base::Time& usage_timestamp,
                const base::Time& current_time,
                const icu::TimeZone* const time_zone,
-               const absl::optional<State>& previous_state);
+               const std::optional<State>& previous_state);
 
 // Returns the expected time that the used time stored should be reset.
 // |time_limit| dictionary with UsageTimeLimit policy data.
@@ -180,7 +180,7 @@ base::Time GetExpectedResetTime(const base::Value::Dict& time_limit,
 // |local_override| dictionary with data of the last local override (authorized
 //                  by parent access code).
 // |used_time| time used in the current day.
-absl::optional<base::TimeDelta> GetRemainingTimeUsage(
+std::optional<base::TimeDelta> GetRemainingTimeUsage(
     const base::Value::Dict& time_limit,
     const base::Value::Dict* local_override,
     const base::Time current_time,

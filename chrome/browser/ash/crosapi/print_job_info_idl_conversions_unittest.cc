@@ -72,7 +72,7 @@ TEST(PrintJobInfoIdlConversionsTest, PrintJobInfoProtoToIdl) {
   EXPECT_EQ(kId, print_job_info.id);
   EXPECT_EQ(kTitle, print_job_info.title);
   EXPECT_EQ(idl::PrintJobSource::kPrintPreview, print_job_info.source);
-  EXPECT_EQ(absl::nullopt, print_job_info.source_id);
+  EXPECT_EQ(std::nullopt, print_job_info.source_id);
   EXPECT_EQ(idl::PrintJobStatus::kFailed, print_job_info.status);
   EXPECT_DOUBLE_EQ(static_cast<double>(kJobCreationTime),
                    print_job_info.creation_time);

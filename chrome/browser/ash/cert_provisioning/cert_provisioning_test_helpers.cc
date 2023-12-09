@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
 
+#include <optional>
+
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -70,7 +71,7 @@ void CertificateHelperForTesting::GetCertificates(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const absl::optional<CertProfileId>& cert_profile_id,
+    const std::optional<CertProfileId>& cert_profile_id,
     chromeos::platform_keys::Status status,
     base::Time not_valid_before,
     base::Time not_valid_after) {
@@ -79,7 +80,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
   cert_builder.SetValidity(not_valid_before, not_valid_after);
   auto cert = cert_builder.GetX509Certificate();
 
-  absl::optional<std::vector<uint8_t>> attribute;
+  std::optional<std::vector<uint8_t>> attribute;
   if (cert_profile_id.has_value()) {
     attribute = StrToBytes(cert_profile_id.value());
   }
@@ -100,7 +101,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const absl::optional<CertProfileId>& cert_profile_id) {
+    const std::optional<CertProfileId>& cert_profile_id) {
   base::Time not_valid_before = base::Time::Now() - base::Days(1);
   base::Time not_valid_after = base::Time::Now() + base::Days(365);
   return AddCert(cert_scope, cert_profile_id,
@@ -110,7 +111,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const absl::optional<CertProfileId>& cert_profile_id,
+    const std::optional<CertProfileId>& cert_profile_id,
     chromeos::platform_keys::Status status) {
   base::Time not_valid_before = base::Time::Now() - base::Days(1);
   base::Time not_valid_after = base::Time::Now() + base::Days(365);

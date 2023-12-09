@@ -33,7 +33,7 @@ class BorealisUtilTest : public testing::Test {
 }  // namespace
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsEmptyOnFailure) {
-  EXPECT_EQ(ParseSteamGameId("foo"), absl::nullopt);
+  EXPECT_EQ(ParseSteamGameId("foo"), std::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
@@ -43,7 +43,7 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.wmclass.foo");
-  EXPECT_EQ(SteamGameId(window.get()), absl::nullopt);
+  EXPECT_EQ(SteamGameId(window.get()), std::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
@@ -97,7 +97,7 @@ TEST_F(BorealisUtilTest, SteamGameIdWithAnonGame) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -110,7 +110,7 @@ TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -123,7 +123,7 @@ TEST_F(BorealisUtilTest, ProtonTitleKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleMultiLineUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00\n"
@@ -138,7 +138,7 @@ TEST_F(BorealisUtilTest, ProtonTitleMultiLineUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleMultiLineKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00\n"
@@ -153,7 +153,7 @@ TEST_F(BorealisUtilTest, ProtonTitleMultiLineKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleGameIdMismatch) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 456, Proton: Proton 1.2, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -166,7 +166,7 @@ TEST_F(BorealisUtilTest, ProtonTitleGameIdMismatch) {
 }
 
 TEST_F(BorealisUtilTest, SLRTitleUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: None, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -179,7 +179,7 @@ TEST_F(BorealisUtilTest, SLRTitleUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: None, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -192,7 +192,7 @@ TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, SLRTitleGameIdMismatch) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 456, Proton: None, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -205,7 +205,7 @@ TEST_F(BorealisUtilTest, SLRTitleGameIdMismatch) {
 }
 
 TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: None, SLR: None, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -218,7 +218,7 @@ TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
-  absl::optional<int> game_id = 123;
+  std::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: None, SLR: None, "
       "Timestamp: 2021-01-01 00:00:00";
@@ -231,7 +231,7 @@ TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
 }
 
 TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
-  absl::optional<int> game_id;
+  std::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: None, SLR: None, "
       "Timestamp: 2021-01-01 00:00:00\n"

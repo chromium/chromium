@@ -866,7 +866,7 @@ bool BrowserDataBackMigrator::MergePreferences(
   }
 
   // Parse the Ash JSON file.
-  absl::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
+  std::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
   if (!ash_root) {
     PLOG(ERROR) << "Failure while parsing Ash's Preferences";
     return false;
@@ -886,7 +886,7 @@ bool BrowserDataBackMigrator::MergePreferences(
   }
 
   // Parse the Lacros JSON file.
-  absl::optional<base::Value> lacros_root =
+  std::optional<base::Value> lacros_root =
       base::JSONReader::Read(lacros_contents);
   if (!lacros_root) {
     PLOG(ERROR) << "Failure while parsing Lacros's Preferences";
@@ -1276,8 +1276,8 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   if (policy_init_state ==
       crosapi::browser_util::PolicyInitState::kBeforeInit) {
-    absl::optional<crosapi::browser_util::LacrosDataBackwardMigrationMode>
-        parsed = absl::nullopt;
+    std::optional<crosapi::browser_util::LacrosDataBackwardMigrationMode>
+        parsed = std::nullopt;
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             crosapi::browser_util::

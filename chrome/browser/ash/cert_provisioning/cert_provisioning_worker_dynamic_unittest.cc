@@ -142,7 +142,7 @@ const std::string& GetPublicKey() {
 }
 
 const std::vector<uint8_t>& GetPublicKeyBin() {
-  static absl::optional<std::vector<uint8_t>> public_key;
+  static std::optional<std::vector<uint8_t>> public_key;
   if (!public_key.has_value()) {
     public_key = base::Base64Decode(kPublicKeyBase64);
     CHECK(public_key.has_value());
@@ -501,7 +501,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
   base::RepeatingClosure on_invalidation_callback;
 
   auto VerifyNoBackendErrorsSeen = [&worker]() {
-    EXPECT_EQ(worker.GetLastBackendServerError(), absl::nullopt);
+    EXPECT_EQ(worker.GetLastBackendServerError(), std::nullopt);
   };
   {
     testing::InSequence seq;
@@ -705,7 +705,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
       GetStateChangeCallback(), GetResultCallback());
 
   auto VerifyNoBackendErrorsSeen = [&worker]() {
-    EXPECT_EQ(worker.GetLastBackendServerError(), absl::nullopt);
+    EXPECT_EQ(worker.GetLastBackendServerError(), std::nullopt);
   };
   {
     testing::InSequence seq;
@@ -1979,7 +1979,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProcessBackendServerErrorResponse) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce([&worker]() {
           EXPECT_THAT(worker.GetLastBackendServerError(),
-                      testing::Ne(absl::nullopt));
+                      testing::Ne(std::nullopt));
         });
     worker.DoStep();
   }
@@ -1993,7 +1993,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProcessBackendServerErrorResponse) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce([&worker]() {
           EXPECT_THAT(worker.GetLastBackendServerError(),
-                      testing::Eq(absl::nullopt));
+                      testing::Eq(std::nullopt));
         });
 
     EXPECT_GET_NEXT_INSTRUCTION(
@@ -2002,7 +2002,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProcessBackendServerErrorResponse) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce([&worker]() {
           EXPECT_THAT(worker.GetLastBackendServerError(),
-                      testing::Eq(absl::nullopt));
+                      testing::Eq(std::nullopt));
         });
 
     worker.DoStep();

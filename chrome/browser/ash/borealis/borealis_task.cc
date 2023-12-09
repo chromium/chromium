@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_task.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -33,7 +34,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {
 
@@ -185,7 +185,7 @@ void CreateDiskImage::OnConciergeAvailable(BorealisContext* context,
 
 void CreateDiskImage::OnCreateDiskImage(
     BorealisContext* context,
-    absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+    std::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     context->set_disk_path(base::FilePath());
     Complete(BorealisStartupResult::kEmptyDiskResponse,
@@ -207,10 +207,10 @@ void CreateDiskImage::OnCreateDiskImage(
 
 namespace {
 
-absl::optional<base::File> MaybeOpenFile(
-    absl::optional<base::FilePath> file_path) {
+std::optional<base::File> MaybeOpenFile(
+    std::optional<base::FilePath> file_path) {
   if (!file_path) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::File file(file_path.value(), base::File::FLAG_OPEN |
@@ -218,7 +218,7 @@ absl::optional<base::File> MaybeOpenFile(
                                          base::File::FLAG_WRITE);
   if (!file.IsValid()) {
     LOG(WARNING) << "Failed to open " << file_path.value();
-    return absl::nullopt;
+    return std::nullopt;
   }
   return file;
 }
@@ -237,7 +237,7 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
 }
 void StartBorealisVm::StartBorealisWithExternalDisk(
     BorealisContext* context,
-    absl::optional<base::File> external_disk) {
+    std::optional<base::File> external_disk) {
   vm_tools::concierge::StartVmRequest request;
   request.mutable_vm()->set_dlc_id(kBorealisDlcName);
   request.set_start_termina(false);
@@ -278,7 +278,7 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
 
 void StartBorealisVm::OnStartBorealisVm(
     BorealisContext* context,
-    absl::optional<vm_tools::concierge::StartVmResponse> response) {
+    std::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
     Complete(BorealisStartupResult::kStartVmEmptyResponse,
              "Failed to start Borealis VM: Empty response.");

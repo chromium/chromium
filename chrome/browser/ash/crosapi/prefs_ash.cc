@@ -143,8 +143,8 @@ void PrefsAsh::BindReceiver(mojo::PendingReceiver<mojom::Prefs> receiver) {
 
 void PrefsAsh::GetPref(mojom::PrefPath path, GetPrefCallback callback) {
   const base::Value* value = GetValueForState(GetState(path));
-  std::move(callback).Run(value ? absl::optional<base::Value>(value->Clone())
-                                : absl::nullopt);
+  std::move(callback).Run(value ? std::optional<base::Value>(value->Clone())
+                                : std::nullopt);
 }
 
 void PrefsAsh::GetExtensionPrefWithControl(
@@ -155,7 +155,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
 
   if (!state || !value) {
     // Not a valid prefpath
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             mojom::PrefControlState::kDefaultUnknown);
     return;
   }
@@ -163,7 +163,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
   if (state->pref_source != AshPrefSource::kExtensionControlled) {
     // Not extension controlled
     std::move(callback).Run(
-        absl::optional<base::Value>(value->Clone()),
+        std::optional<base::Value>(value->Clone()),
         mojom::PrefControlState::kNotExtensionControlledPrefPath);
     return;
   }
@@ -183,7 +183,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
     // Lacros could control this.
     pref_control_state = mojom::PrefControlState::kLacrosExtensionControllable;
   }
-  std::move(callback).Run(absl::optional<base::Value>(value->Clone()),
+  std::move(callback).Run(std::optional<base::Value>(value->Clone()),
                           pref_control_state);
 }
 
@@ -267,11 +267,11 @@ void PrefsAsh::OnProfileAdded(Profile* profile) {
   OnPrimaryProfileReady(profile);
 }
 
-absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
+std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
     case mojom::PrefPath::kUnknown:
       LOG(WARNING) << "Unknown pref path: " << path;
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
       return State{local_state_, &local_state_registrar_,
                    AshPrefSource::kNormal,
@@ -295,7 +295,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDefaultSearchProviderDataPrefName: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::string pref_name(GetProfilePrefNameForPref(path));
       return State{profile_prefs_registrar_->prefs(),
@@ -305,7 +305,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::string pref_name(GetProfilePrefNameForPref(path));
       return State{profile_prefs_registrar_->prefs(),
@@ -348,7 +348,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kProxy: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       std::string pref_name(GetExtensionPrefNameForPref(path));
       return State{profile_prefs_registrar_->prefs(),
@@ -362,7 +362,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessToGetAllScreensMediaInSessionAllowedForUrls:
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return absl::nullopt;
+        return std::nullopt;
       }
       return State{
           .pref_service = profile_prefs_registrar_->prefs(),
@@ -373,7 +373,7 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   }
 }
 
-const base::Value* PrefsAsh::GetValueForState(absl::optional<State> state) {
+const base::Value* PrefsAsh::GetValueForState(std::optional<State> state) {
   if (!state) {
     return nullptr;
   }

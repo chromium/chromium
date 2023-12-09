@@ -1089,7 +1089,7 @@ void BrowserManager::Start(bool launching_at_login_screen) {
       should_attempt_update_) {
     SetState(State::MOUNTING);
     lacros_path_ = base::FilePath();
-    lacros_selection_ = absl::nullopt;
+    lacros_selection_ = std::nullopt;
     should_attempt_update_ = false;
     // OnLoadComplete will call Start again.
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
@@ -1675,7 +1675,7 @@ void BrowserManager::OnLoadComplete(bool launching_at_login_screen,
   DCHECK_EQ(state_, State::MOUNTING);
 
   lacros_path_ = path;
-  lacros_selection_ = absl::optional<LacrosSelection>(selection);
+  lacros_selection_ = std::optional<LacrosSelection>(selection);
   const bool success = !path.empty();
   SetState(success ? State::STOPPED : State::UNAVAILABLE);
   // TODO(crbug.com/1266010): In the event the load operation failed, we should

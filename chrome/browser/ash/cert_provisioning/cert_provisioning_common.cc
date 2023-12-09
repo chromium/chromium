@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
@@ -25,13 +26,12 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
 
 namespace {
-absl::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
+std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
   switch (scope) {
     case CertScope::kDevice: {
       return EmptyAccountId();
@@ -40,7 +40,7 @@ absl::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
       user_manager::User* user =
           ProfileHelper::Get()->GetUserByProfile(profile);
       if (!user) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       return user->GetAccountId();
@@ -152,7 +152,7 @@ CertProfile& CertProfile::operator=(CertProfile&&) = default;
 CertProfile::CertProfile() = default;
 CertProfile::~CertProfile() = default;
 
-absl::optional<CertProfile> CertProfile::MakeFromValue(
+std::optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value::Dict& value) {
   static_assert(kVersion == 6, "This function should be updated");
 
@@ -160,15 +160,15 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
   const std::string* name = value.FindString(kCertProfileNameKey);
   const std::string* policy_version =
       value.FindString(kCertProfilePolicyVersionKey);
-  absl::optional<bool> is_va_enabled =
+  std::optional<bool> is_va_enabled =
       value.FindBool(kCertProfileIsVaEnabledKey);
-  absl::optional<int> renewal_period_sec =
+  std::optional<int> renewal_period_sec =
       value.FindInt(kCertProfileRenewalPeroidSec);
-  absl::optional<int> protocol_version =
+  std::optional<int> protocol_version =
       value.FindInt(kCertProfileProtocolVersion);
 
   if (!id || !policy_version) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CertProfile result;
@@ -178,7 +178,7 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
   result.is_va_enabled = is_va_enabled.value_or(true);
   result.renewal_period = base::Seconds(renewal_period_sec.value_or(0));
 
-  absl::optional<ProtocolVersion> parsed_protocol_version =
+  std::optional<ProtocolVersion> parsed_protocol_version =
       ParseProtocolVersion(protocol_version);
   if (!parsed_protocol_version) {
     LOG(ERROR) << "Failed to parse ProtocolVersion "
@@ -187,7 +187,7 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
                        : std::string());
     // If a protocol version is delivered which this client doesn't
     // understand, there's no point using it.
-    return absl::nullopt;
+    return std::nullopt;
   }
   result.protocol_version = *parsed_protocol_version;
 
@@ -219,8 +219,8 @@ bool CertProfileComparator::operator()(const CertProfile& a,
 
 //==============================================================================
 
-absl::optional<ProtocolVersion> ParseProtocolVersion(
-    absl::optional<int> protocol_version_value) {
+std::optional<ProtocolVersion> ParseProtocolVersion(
+    std::optional<int> protocol_version_value) {
   switch (protocol_version_value.value_or(
       base::strict_cast<int>(ProtocolVersion::kStatic))) {
     case base::strict_cast<int>(ProtocolVersion::kStatic):
@@ -228,7 +228,7 @@ absl::optional<ProtocolVersion> ParseProtocolVersion(
     case base::strict_cast<int>(ProtocolVersion::kDynamic):
       return ProtocolVersion::kDynamic;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

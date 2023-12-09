@@ -36,7 +36,7 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
       base::Time::FromMillisecondsSinceUnixEpoch(current_state.time_millis());
   base::Time usage_timestamp = base::Time::FromMillisecondsSinceUnixEpoch(
       current_state.usage_timestamp());
-  absl::optional<usage_time_limit::State> previous_state =
+  std::optional<usage_time_limit::State> previous_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(golden_case.input());
 
   base::Value::Dict policy =

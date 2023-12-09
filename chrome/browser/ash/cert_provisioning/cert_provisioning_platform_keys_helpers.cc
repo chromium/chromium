@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cert_provisioning {
 
@@ -84,7 +84,7 @@ void CertIterator::OnGetCertificatesDone(
 
 void CertIterator::OnGetAttributeForKeyDone(
     scoped_refptr<net::X509Certificate> cert,
-    absl::optional<std::vector<uint8_t>> attr_value,
+    std::optional<std::vector<uint8_t>> attr_value,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(wait_counter_ > 0);

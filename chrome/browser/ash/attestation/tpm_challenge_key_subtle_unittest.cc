@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -118,7 +118,7 @@ class CallbackObserver {
   }
 
   base::RunLoop loop_;
-  absl::optional<TpmChallengeKeyResult> result_;
+  std::optional<TpmChallengeKeyResult> result_;
 };
 
 template <typename T>
@@ -151,7 +151,7 @@ class MockableFakeAttestationFlow : public MockAttestationFlow {
       bool /*force_new_key*/,
       ::attestation::KeyType /*key_crypto_type*/,
       const std::string& key_name,
-      const absl::optional<AttestationFlow::CertProfileSpecificData>&
+      const std::optional<AttestationFlow::CertProfileSpecificData>&
           profile_specific_data,
       CertificateCallback callback) {
     std::string certificate;
@@ -378,7 +378,7 @@ void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
       flow_type, will_register_key, KeyCryptoType(), key_name, GetProfile(),
-      callback_observer.GetCallback(), /*signals=*/absl::nullopt);
+      callback_observer.GetCallback(), /*signals=*/std::nullopt);
   callback_observer.WaitForCallback();
 
   EXPECT_EQ(callback_observer.GetResult(), public_key);
@@ -932,7 +932,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
       ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/true,
       ::attestation::KEY_TYPE_RSA, key_name, GetProfile(),
       callback_observer.GetCallback(),
-      /*signals=*/absl::nullopt);
+      /*signals=*/std::nullopt);
 
   // |challenge_key_subtle_| should wait until the certificate is uploaded.
   task_environment_.FastForwardBy(base::Minutes(10));

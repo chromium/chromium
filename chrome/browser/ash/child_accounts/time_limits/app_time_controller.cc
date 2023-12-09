@@ -107,7 +107,7 @@ std::u16string GetNotificationTitleFor(const std::u16string& app_name,
 std::u16string GetNotificationMessageFor(
     const std::u16string& app_name,
     AppNotification notification,
-    absl::optional<base::TimeDelta> time_limit) {
+    std::optional<base::TimeDelta> time_limit) {
   switch (notification) {
     case AppNotification::kFiveMinutes:
       return l10n_util::GetStringFUTF16(
@@ -268,7 +268,7 @@ bool AppTimeController::IsExtensionAllowlisted(
   return true;
 }
 
-absl::optional<base::TimeDelta> AppTimeController::GetTimeLimitForApp(
+std::optional<base::TimeDelta> AppTimeController::GetTimeLimitForApp(
     const std::string& app_service_id,
     apps::AppType app_type) const {
   const app_time::AppId app_id =
@@ -327,7 +327,7 @@ void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   app_registry_->SetReportingEnabled(
       policy::ActivityReportingEnabledFromDict(policy));
 
-  absl::optional<base::TimeDelta> new_reset_time =
+  std::optional<base::TimeDelta> new_reset_time =
       policy::ResetTimeFromDict(policy);
   // TODO(agawronska): Propagate the information about reset time change.
   if (new_reset_time && *new_reset_time != limits_reset_time_)
@@ -367,7 +367,7 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
 
 void AppTimeController::ShowAppTimeLimitNotification(
     const AppId& app_id,
-    const absl::optional<base::TimeDelta>& time_limit,
+    const std::optional<base::TimeDelta>& time_limit,
     AppNotification notification) {
   DCHECK_NE(AppNotification::kUnknown, notification);
 
@@ -534,8 +534,8 @@ void AppTimeController::OpenFamilyLinkApp() {
 void AppTimeController::ShowNotificationForApp(
     const std::string& app_name,
     AppNotification notification,
-    absl::optional<base::TimeDelta> time_limit,
-    absl::optional<gfx::ImageSkia> icon) {
+    std::optional<base::TimeDelta> time_limit,
+    std::optional<gfx::ImageSkia> icon) {
   DCHECK(notification == AppNotification::kFiveMinutes ||
          notification == AppNotification::kOneMinute ||
          notification == AppNotification::kTimeLimitChanged ||

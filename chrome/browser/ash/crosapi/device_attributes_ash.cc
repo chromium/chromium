@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
