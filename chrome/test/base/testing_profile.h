@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 class ExtensionSpecialStoragePolicy;
@@ -477,6 +478,10 @@ class TestingProfile : public Profile {
 
   // Creates a ProfilePolicyConnector.
   void CreateProfilePolicyConnector();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::map<OTRProfileID, std::unique_ptr<Profile>> otr_profiles_;
   raw_ptr<TestingProfile> original_profile_ = nullptr;

@@ -121,6 +121,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -195,6 +196,13 @@ TestingProfile::TestingProfile(const base::FilePath& path)
 
 TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
     : profile_path_(path), delegate_(delegate) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!user_manager::UserManager::IsInitialized()) {
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<ash::FakeChromeUserManager>());
+  }
+#endif
+
   if (profile_path_.empty()) {
     profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
   }
@@ -254,6 +262,13 @@ TestingProfile::TestingProfile(
       otr_profile_id_(otr_profile_id),
       policy_service_(std::move(policy_service)),
       url_loader_factory_(url_loader_factory) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!user_manager::UserManager::IsInitialized()) {
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<ash::FakeChromeUserManager>());
+  }
+#endif
+
   if (parent)
     parent->SetOffTheRecordProfile(std::unique_ptr<Profile>(this));
 
