@@ -1489,7 +1489,7 @@
   },
   {
     "prefix": "popover-hint-disabled",
-    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["masonf@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/semantics/popovers/popover-anchor-idl-property.tentative.html",
@@ -1513,11 +1513,12 @@
       "external/wpt/html/semantics/popovers/popover-shadow-dom.html",
       "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
-      "external/wpt/html/semantics/popovers/popover-types.html"
+      "external/wpt/html/semantics/popovers/popover-types.html",
+      "external/wpt/html/semantics/popovers/popover-hint-crash.tentative.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jan 1, 2024"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "expose-lcp-render-time",
@@ -2144,12 +2145,12 @@
   },
   {
     "prefix": "scoped-custom-element-registry-disabled",
-    "owners": ["xiaochengh@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["masonf@chromium.org", "dizhangg@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "js-resizable-arraybuffer",
