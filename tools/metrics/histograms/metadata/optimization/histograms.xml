@@ -529,6 +529,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.{ModelExecutionFeature}"
+    enum="Boolean" expires_after="2024-05-12">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether {ModelExecutionFeature} is currently enabled after settings
+    is updated. Recorded everytime settings is toggled for the feature.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.{ModelExecutionFeature}"
+    enum="Boolean" expires_after="2024-05-12">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether {ModelExecutionFeature} is currently enabled at startup.
+    Recorded once at startup.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceAddContextResult.{ModelExecutionFeature}"
     enum="OptimizationGuideOnDeviceAddContextResult" expires_after="2024-05-29">
   <owner>sky@chromium.org</owner>

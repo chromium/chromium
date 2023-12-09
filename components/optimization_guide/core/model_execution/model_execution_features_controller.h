@@ -48,6 +48,11 @@ class ModelExecutionFeaturesController
   bool ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature feature) const;
 
+  // Returns whether the `feature` should be currently allowed for logging model
+  // quality logs.
+  bool ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature feature) const;
+
   // Adds `observer` which can observe the change in feature settings.
   void AddObserver(SettingsEnabledObserver* observer);
 

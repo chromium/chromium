@@ -444,6 +444,71 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
   CheckInternalsLog("OnModelExecutionResponse");
 }
 
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
+                       PRE_EnableFeatureViaPref) {
+  EnableSignin();
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(prefs::GetSettingEnabledPrefName(
+                        proto::ModelExecutionFeature::
+                            MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+                    static_cast<int>(prefs::FeatureOptInState::kEnabled));
+  prefs->SetInteger(prefs::GetSettingEnabledPrefName(
+                        proto::ModelExecutionFeature::
+                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+                    static_cast<int>(prefs::FeatureOptInState::kDisabled));
+
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "TabOrganization",
+      false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "WallpaperSearch",
+      false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.Compose",
+      0);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
+      "TabOrganization",
+      false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
+      "WallpaperSearch",
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest, EnableFeatureViaPref) {
+#ifndef OS_CHROMEOS
+  EnableSignin();
+#endif
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "TabOrganization",
+      false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
+      "WallpaperSearch",
+      true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.Compose",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
+      "TabOrganization",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
+      "WallpaperSearch",
+      0);
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 class ModelExecutionEnterprisePolicyBrowserTest
@@ -482,6 +547,13 @@ class ModelExecutionEnterprisePolicyBrowserTest
         ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
   }
 
+  bool ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature feature) {
+    return GetOptGuideKeyedService()
+        ->model_execution_features_controller_
+        ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
+  }
+
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
@@ -503,7 +575,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 
   // Disable via the enterprise policy.
@@ -523,6 +599,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(IsSettingVisible(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
 
   // Enable via the enterprise policy.
   policies.Set(
@@ -537,7 +617,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 }
 
@@ -636,6 +720,41 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+}
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+                       EnableWithoutLogging) {
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  GetOptGuideKeyedService()->SimulateBrowserRestartForControllerTesting();
+
+  EnableSignin();
+
+  // EnableWithoutLogging via the enterprise policy.
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kTabOrganizationAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(
+                   model_execution::prefs::ModelExecutionEnterprisePolicyValue::
+                       kAllowWithoutLogging)),
+               nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(IsSettingVisible(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

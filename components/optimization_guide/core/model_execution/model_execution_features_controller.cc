@@ -163,6 +163,25 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
   return result;
 }
 
+bool ModelExecutionFeaturesController::
+    ShouldFeatureBeCurrentlyAllowedForLogging(
+        proto::ModelExecutionFeature feature) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
+    return false;
+  }
+  const char* enterprise_policy_pref =
+      model_execution::prefs::GetEnterprisePolicyPrefName(feature);
+  if (!enterprise_policy_pref) {
+    return true;
+  }
+  auto enterprise_policy_value =
+      static_cast<model_execution::prefs::ModelExecutionEnterprisePolicyValue>(
+          browser_context_profile_service_->GetInteger(enterprise_policy_pref));
+  return enterprise_policy_value ==
+         model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow;
+}
+
 prefs::FeatureOptInState ModelExecutionFeaturesController::GetPrefState(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -291,6 +310,15 @@ void ModelExecutionFeaturesController::OnFeatureSettingPrefChanged(
     proto::ModelExecutionFeature feature) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  auto pref_value = GetPrefState(feature);
+  if (pref_value != prefs::FeatureOptInState::kNotInitialized) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.",
+             GetStringNameForModelExecutionFeature(feature)}),
+        pref_value == prefs::FeatureOptInState::kEnabled);
+  }
+
   if (GetCurrentUserValidityResult(feature) !=
       ModelExecutionFeaturesController::UserValidityResult::kValid) {
     return;
@@ -300,8 +328,7 @@ void ModelExecutionFeaturesController::OnFeatureSettingPrefChanged(
     if (obs.feature() != feature) {
       continue;
     }
-
-    if (GetPrefState(feature) == prefs::FeatureOptInState::kEnabled) {
+    if (pref_value == prefs::FeatureOptInState::kEnabled) {
       obs.PrepareToEnableOnRestart();
     }
   }
@@ -311,14 +338,19 @@ void ModelExecutionFeaturesController::InitializeFeatureSettings() {
   features_enabled_at_startup_.clear();
   for (int i = 0; i < proto::ModelExecutionFeature_ARRAYSIZE; ++i) {
     proto::ModelExecutionFeature feature = proto::ModelExecutionFeature(i);
-    switch (feature) {
-      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-        continue;
-      default:
-        if (GetPrefState(feature) == prefs::FeatureOptInState::kEnabled) {
-          features_enabled_at_startup_.insert(static_cast<int>(feature));
-        }
-        continue;
+    if (feature ==
+        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED) {
+      continue;
+    }
+    bool is_enabled =
+        GetPrefState(feature) == prefs::FeatureOptInState::kEnabled;
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.",
+             GetStringNameForModelExecutionFeature(feature)}),
+        is_enabled);
+    if (is_enabled) {
+      features_enabled_at_startup_.insert(static_cast<int>(feature));
     }
   }
 }
