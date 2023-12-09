@@ -109,29 +109,40 @@ bugs in Chromium.
 Note that bad IPC messages should be safely rejected by Chromium without the use
 of `base::ImmediateCrash()` or `CHECK()` etc. as part of normal control flow.
 
-## Less fatal options
+## More cautious CHECK() rollouts and DCHECK() upgrades
 
-If an unexpected situation is happening, `DUMP_WILL_BE_CHECK()` can be used to
-help debug in production. This macro generates a non-fatal crash report if the
-condition passed to it does not hold. This macro preserves log-stream parameters
-(like CHECK() in a local build), so additional information can be streamed to it
-on failure to help debugging. Note that this does not abort on failure so be
-sure to handle the situation in a way that doesn't leave the process in a bad
-state.
+If you're not confident that an unexpected situation can't happen in practice,
+an additional `base::NotFatalUntil::M120` argument after the condition may be
+used to gather non-fatal diagnostics before turning fatal in a future milestone.
+Make sure to either prioritize these invariant failures once discovered, and
+punt the milestone where this invocation turns fatal to avoid rolling out a
+stability risk. Macros with a `base::NotFatalUntil` argument will provide
+non-fatal crash reports before the fatal milestone is hit. They preserve and upload logged arguments that are uploaded along the report which is useful
+for debugging failures as well.
 
-This macro can also be used to more cautiously add a new `CHECK()`. This may be
-used when it's hard to reason about whether a new invariant currently holds
-globally, you suspect that a DCHECK is currently firing or you have a small
-pre-stable population (iOS for instance). Do not be overly cautious about adding
-new CHECKs if you have reasonable pre-stable coverage, or the invariant is
-inside a new feature already guarded by a feature flag.
+This extra argument can be used to more cautiously add or upgrade to `CHECK()`s.
+This is appropriate when we're uncertain of whether the invariant currently
+holds true or when there's low pre-stable coverage. Specifically consider using
+these:
 
-This macro is only to be used temporarily, so `DUMP_WILL_BE_CHECK()` instances
-should always be tagged with a bug like `// TODO(crbug.com/nnnn)`. Use
-NextAction date to remember to revisit and clean up this macro (replace with a
-`CHECK()`) once sufficiently certain. Instances that are left unattended for too
-long may be upgraded as we presumably are not generating enough
-invariant-failure reports for a `CHECK()` to be a stability concern here.
+* When working on iOS code (low pre-stable coverage).
+* Upgrading `DCHECK()s`.
+* Working on code that's not flag guarded.
+
+As `base::NotFatalUntil` automatically turns fatal, keep an extra eye on
+automatically-filed bugs for failures in the wild. Discovered failures, like
+other invariant failures, are high-priority issues. Once resolved, either by
+handling the unexpected situation or making sure it no longer happens, the
+milestone number should be bumped to allow for validation in stable channels
+before turning fatal.
+
+Failing instances should not downgrade to DCHECKs as that hides the ongoing
+problem rather than resolving it. In rare exceptions you could use
+`DUMP_WILL_BE_CHECK()` macros for similar semantics (report on failure) without
+timeline expectations, though in this case you must also handle failure as best
+you can as failures are known to happen.
+
+## Alternatives in tests
 
 For failures in tests, GoogleTest macros such as `EXPECT_*`, `ASSERT_*` or
 `ADD_FAILURE()` are more appropriate than `CHECKing`. For production code:

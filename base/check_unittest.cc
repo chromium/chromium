@@ -5,11 +5,13 @@
 #include <tuple>
 
 #include "base/check_deref.h"
+#include "base/check_version_internal.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/macros/concat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -21,6 +23,11 @@
 namespace {
 
 int g_dump_without_crashing_count = 0;
+
+constexpr base::NotFatalUntil kNextMilestone =
+    BASE_CONCAT(base::NotFatalUntil::M, BASE_CHECK_NEXT_VERSION_INTERNAL);
+constexpr base::NotFatalUntil kCurrentMilestone =
+    BASE_CONCAT(base::NotFatalUntil::M, BASE_CHECK_VERSION_INTERNAL);
 
 class ScopedExpectDumpWithoutCrashing {
  public:
@@ -187,7 +194,7 @@ TEST(CheckDeathTest, PCheck) {
 }
 
 TEST(CheckDeathTest, CheckOp) {
-  int a = 1, b = 2;
+  const int a = 1, b = 2;
   // clang-format off
   EXPECT_CHECK("Check failed: a == b (1 vs. 2)", CHECK_EQ(a, b));
   EXPECT_CHECK("Check failed: a != a (1 vs. 1)", CHECK_NE(a, a));
@@ -657,6 +664,78 @@ TEST(CheckDeathTest, CheckDerefOfConstNullPointer) {
   std::string* const_null_pointer = nullptr;
   EXPECT_CHECK("Check failed: const_null_pointer != nullptr. ",
                CHECK_DEREF(const_null_pointer));
+}
+
+TEST(CheckDeathTest, CheckNotFatalUntil) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // This specific death test relies on LOGGING_DCHECK not being FATAL, even
+  // when run as part of a death test, as CHECK with a milestone acts like a
+  // DCHECK.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_ERROR);
+#endif
+
+  // Next milestone not yet fatal.
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: false. foo",
+                            CHECK(false, kNextMilestone) << "foo");
+
+  // Fatal in current major version.
+  EXPECT_CHECK("Check failed: false. foo", CHECK(false, kCurrentMilestone)
+                                               << "foo");
+}
+
+TEST(CheckDeathTest, CheckOpNotFatalUntil) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // This specific death test relies on LOGGING_DCHECK not being FATAL, even
+  // when run as part of a death test, as CHECK with a milestone acts like a
+  // DCHECK.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_ERROR);
+#endif
+  const int a = 1, b = 2;
+
+  // Next milestone not yet fatal.
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2)",
+                            CHECK_EQ(a, b, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a != a (1 vs. 1)",
+                            CHECK_NE(a, a, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b <= a (2 vs. 1)",
+                            CHECK_LE(b, a, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b < a (2 vs. 1)",
+                            CHECK_LT(b, a, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a >= b (1 vs. 2)",
+                            CHECK_GE(a, b, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a > b (1 vs. 2)",
+                            CHECK_GT(a, b, kNextMilestone));
+
+  // Fatal in current major version.
+  EXPECT_CHECK("Check failed: a == b (1 vs. 2)",
+               CHECK_EQ(a, b, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: a != a (1 vs. 1)",
+               CHECK_NE(a, a, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: b <= a (2 vs. 1)",
+               CHECK_LE(b, a, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: b < a (2 vs. 1)",
+               CHECK_LT(b, a, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: a >= b (1 vs. 2)",
+               CHECK_GE(a, b, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: a > b (1 vs. 2)",
+               CHECK_GT(a, b, kCurrentMilestone));
+}
+
+TEST(CheckDeathTest, NotReachedNotFatalUntil) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // This specific death test relies on LOGGING_DCHECK not being FATAL, even
+  // when run as part of a death test, as CHECK with a milestone acts like a
+  // DCHECK.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_ERROR);
+#endif
+
+  // Next milestone not yet fatal.
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: false. foo",
+                            NOTREACHED(kNextMilestone) << "foo");
+
+  // Fatal in current major version.
+  EXPECT_CHECK("Check failed: false. foo", NOTREACHED(kCurrentMilestone)
+                                               << "foo");
 }
 
 }  // namespace

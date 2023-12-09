@@ -6,6 +6,7 @@
 #define BASE_MACROS_REMOVE_PARENS_H_
 
 #include "base/macros/if.h"
+#include "base/macros/is_empty.h"
 
 // A macro that removes at most one outer set of parentheses from its arguments.
 // If the arguments are not surrounded by parentheses, this expands to the
@@ -25,13 +26,7 @@
   __VA_ARGS__
 
 #define BASE_INTERNAL_IS_PARENTHESIZED(...) \
-  BASE_INTERNAL_IS_EMPTY(BASE_INTERNAL_EAT __VA_ARGS__)
-#define BASE_INTERNAL_IS_EMPTY(...) BASE_INTERNAL_IS_EMPTY_EXPANDED(__VA_ARGS__)
-#define BASE_INTERNAL_IS_EMPTY_EXPANDED(...) \
-  BASE_INTERNAL_IS_EMPTY_INNER(_, ##__VA_ARGS__)
-#define BASE_INTERNAL_IS_EMPTY_INNER(...) \
-  BASE_INTERNAL_IS_EMPTY_INNER_EXPANDED(__VA_ARGS__, 0, 1)
-#define BASE_INTERNAL_IS_EMPTY_INNER_EXPANDED(e0, e1, is_empty, ...) is_empty
+  BASE_IS_EMPTY(BASE_INTERNAL_EAT __VA_ARGS__)
 #define BASE_INTERNAL_EAT(...)
 #define BASE_INTERNAL_ECHO(...) __VA_ARGS__
 #define BASE_INTERNAL_EMPTY()

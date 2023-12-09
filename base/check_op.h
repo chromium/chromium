@@ -27,6 +27,9 @@
 // DCHECK is disabled, the operands and their stringification methods are still
 // referenced to avoid warnings about unused variables or functions.
 //
+// Like (D)CHECK (D)CHECK_EQ also supports an optional base::NotFatalUntil
+// parameter. See base/check.h.
+//
 // To support the stringification of the check operands, this header is
 // *significantly* larger than base/check.h, so it should be avoided in common
 // headers.
@@ -142,7 +145,8 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
 // macro is used in an 'if' clause such as:
 // if (a == 1)
 //   CHECK_EQ(2, a);
-#define CHECK_OP_FUNCTION_IMPL(check_failure_function, name, op, val1, val2) \
+#define CHECK_OP_FUNCTION_IMPL(check_failure_function, name, op, val1, val2, \
+                               ...)                                          \
   switch (0)                                                                 \
   case 0:                                                                    \
   default:                                                                   \
@@ -151,17 +155,21 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
         !message_on_fail)                                                    \
       ;                                                                      \
     else                                                                     \
-      check_failure_function(message_on_fail)
+      check_failure_function(message_on_fail __VA_OPT__(, ) __VA_ARGS__)
 
 #if !CHECK_WILL_STREAM()
 
 // Discard log strings to reduce code bloat.
-#define CHECK_OP(name, op, val1, val2) CHECK((val1)op(val2))
+#define CHECK_OP(name, op, val1, val2, ...)                                \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), CHECK((val1)op(val2)),               \
+          CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, \
+                                 val1, val2, __VA_ARGS__))
 
 #else
 
-#define CHECK_OP(name, op, val1, val2) \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, val1, val2)
+#define CHECK_OP(name, op, val1, val2, ...)                              \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, val1, \
+                         val2 __VA_OPT__(, ) __VA_ARGS__)
 
 #endif
 
@@ -198,12 +206,18 @@ DEFINE_CHECK_OP_IMPL(LT, < )
 DEFINE_CHECK_OP_IMPL(GE, >=)
 DEFINE_CHECK_OP_IMPL(GT, > )
 #undef DEFINE_CHECK_OP_IMPL
-#define CHECK_EQ(val1, val2) CHECK_OP(EQ, ==, val1, val2)
-#define CHECK_NE(val1, val2) CHECK_OP(NE, !=, val1, val2)
-#define CHECK_LE(val1, val2) CHECK_OP(LE, <=, val1, val2)
-#define CHECK_LT(val1, val2) CHECK_OP(LT, < , val1, val2)
-#define CHECK_GE(val1, val2) CHECK_OP(GE, >=, val1, val2)
-#define CHECK_GT(val1, val2) CHECK_OP(GT, > , val1, val2)
+#define CHECK_EQ(val1, val2, ...) \
+  CHECK_OP(EQ, ==, val1, val2 __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_NE(val1, val2, ...) \
+  CHECK_OP(NE, !=, val1, val2 __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_LE(val1, val2, ...) \
+  CHECK_OP(LE, <=, val1, val2 __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_LT(val1, val2, ...) \
+  CHECK_OP(LT, < , val1, val2 __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_GE(val1, val2, ...) \
+  CHECK_OP(GE, >=, val1, val2 __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_GT(val1, val2, ...) \
+  CHECK_OP(GT, > , val1, val2 __VA_OPT__(, ) __VA_ARGS__)
 // clang-format on
 
 #if DCHECK_IS_ON()

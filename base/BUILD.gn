@@ -39,6 +39,7 @@ import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//build/timestamp.gni")
+import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -381,6 +382,7 @@ component("base") {
     "logging.h",
     "macros/concat.h",
     "macros/if.h",
+    "macros/is_empty.h",
     "macros/remove_parens.h",
     "macros/uniquify.h",
     "memory/aligned_memory.cc",
@@ -510,6 +512,7 @@ component("base") {
     "metrics/user_metrics.h",
     "metrics/user_metrics_action.h",
     "no_destructor.h",
+    "not_fatal_until.h",
     "notreached.h",
     "observer_list.h",
     "observer_list_internal.cc",
@@ -1032,6 +1035,7 @@ component("base") {
   ]
 
   deps = [
+    ":check_version_internal",
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
     "//base/allocator/partition_allocator:raw_ptr",
@@ -3486,6 +3490,7 @@ test("base_unittests") {
     ":arm_bti_testfunctions",
     ":base",
     ":base_stack_sampling_profiler_test_util",
+    ":check_version_internal",
     ":feature_list_buildflags",
     ":i18n",
     ":partition_alloc_test_support",
@@ -5087,4 +5092,16 @@ if (enable_base_tracing) {
     testonly = true
     deps = [ "//base/tracing:perfetto_diff_tests" ]
   }
+}
+
+process_version("check_version_internal") {
+  template_file = "//base/check_version_internal.h.in"
+  sources = [ "//chrome/VERSION" ]
+  output = "$target_gen_dir/check_version_internal.h"
+  extra_args = [
+    "-e",
+    "VERSION_MAJOR=\"%s\" % (MAJOR)",
+    "-e",
+    "NEXT_VERSION_MAJOR=\"%d\" % (int(MAJOR) + 1)",
+  ]
 }
