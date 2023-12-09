@@ -21,6 +21,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -35,7 +36,7 @@ constexpr int kIconSize = 20;
 constexpr auto kSelectedStateBoxInsets = gfx::Insets::TLBR(8, 0, 0, 0);
 constexpr auto kSelectedStateTextfieldInsets = gfx::Insets::TLBR(0, 16, 0, 12);
 
-constexpr int kUnselectedStateBoxCornerRadius = 4;
+constexpr int kUnselectedStateBoxCornerRadius = 8;
 constexpr auto kUnselectedStateBoxInsets = gfx::Insets::TLBR(4, 8, 4, 16);
 constexpr auto kUnselectedStateTextfieldInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 
@@ -202,9 +203,13 @@ FocusModeTaskView::FocusModeTaskView() {
   // We only show `textfield_container_`'s focus ring when the textfield is
   // active.
   views::FocusRing::Install(textfield_container_);
+  // Set the focus ring corner radius with 8px.
+  views::InstallRoundRectHighlightPathGenerator(
+      textfield_container_, gfx::Insets(), kUnselectedStateBoxCornerRadius);
   auto* textfield_container_focus_ring =
       views::FocusRing::Get(textfield_container_);
   textfield_container_focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+  textfield_container_focus_ring->SetOutsetFocusRingDisabled(true);
   textfield_container_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const TaskTextfield* textfield, const views::View* view) {
         return textfield && textfield->IsActive();
