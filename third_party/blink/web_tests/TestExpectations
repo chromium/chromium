@@ -5401,7 +5401,6 @@ crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 
 # WebAudio internals flaky GC (crbug.com/1312164): See the bug before removing the "Skip" label.
 crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-wrapper.html [ Failure Skip ]
-crbug.com/1312164 webaudio/internals/scriptprocessornode-premature-death.html [ Failure Skip ]
 crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Failure Skip ]
 crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Failure Skip ]
 

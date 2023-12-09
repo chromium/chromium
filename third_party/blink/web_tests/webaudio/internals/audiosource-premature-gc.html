@@ -4,6 +4,7 @@
     <title>
       Test premature GC upon OscillatorNode and AudioBufferSourceNode
     </title>
+    <script src="../../resources/gc.js"></script>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
@@ -37,7 +38,7 @@
 
           // If the node is GCed, |onended| won't be fired. Then this test
           // will be timed out because done() will not get called.
-          node.onended = function() {
+          node.onended = () => {
             should(
                 true,
                 sourceNodeType + 'Node 1 survived GC and onended event fired')
@@ -51,8 +52,8 @@
 
         // Suspend and GC before the render finishes. The time position is
         // arbitrary. GC should collect |osc2| because it is not scheduled.
-        context.suspend(0.1 * renderDuration).then(function() {
-          gc();
+        context.suspend(0.1 * renderDuration).then(async () => {
+          await asyncGC();
           context.resume();
         });
 

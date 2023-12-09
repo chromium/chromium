@@ -4,22 +4,24 @@
     <title>
       mediaelementaudiosourcenode-wrapper.html
     </title>
+    <script src="../../resources/gc.js"></script>
     <script src="../../resources/js-test.js"></script>
     <script src="../resources/audit-util.js"></script>
   </head>
   <body>
     <script id="layout-test-code">
       description(
-          'Verifies that for .mediaElement getters, a wrapper that corresponds to the actual element is created.');
+          'Verifies that for .mediaElement getters, a wrapper that ' +
+          'corresponds to the actual element is created.');
 
       let source;
-      function testMediaWrapper(kind) {
+      async function testMediaWrapper(kind) {
         let element = document.createElement(kind);
         let context = new AudioContext();
 
         source = context.createMediaElementSource(element);
         element = context = null;
-        gc();
+        await asyncGC();
         shouldBeUndefined('source.mediaElement.nonExistentProperty');
         source = null;
       }
