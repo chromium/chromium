@@ -2,19 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
-
-# TODO(b/308829256) Remove Closure type-checking in favor of TS.
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [ ":set_time_browser_proxy" ]
-}
-
-js_library("set_time_browser_proxy") {
-  deps = [ "//ash/webui/common/resources:cr_deprecated" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
 
 build_webui("build") {
   grd_prefix = "set_time_dialog"
@@ -23,7 +11,7 @@ build_webui("build") {
   web_component_files = [ "set_time_dialog.ts" ]
   non_web_component_files = [
     "set_time.ts",
-    "set_time_browser_proxy.js",
+    "set_time_browser_proxy.ts",
   ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
