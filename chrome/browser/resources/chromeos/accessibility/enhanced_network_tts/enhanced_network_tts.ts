@@ -2,30 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EnhancedNetworkTtsAdapter} from './mojo_bindings_externs';
+
+interface ServerResponse {
+  response: ash.enhancedNetworkTts.mojom.TtsResponse;
+  sampleRate: number;
+  bufferSize: number;
+  sendTtsAudio: (foo: chrome.ttsEngine.AudioBuffer) => void;
+  sendError: (foo: string) => void;
+}
+
 /**
  * This class contains the main functionalities for Enhanced Network TTS.
  */
 export class EnhancedNetworkTts {
-  constructor() {
-    /**
-     * The queue for processing server responses. Each element has one
-     * |response| received from mojo, and two callbacks |sendTtsAudio| and
-     * |sendError| for dispatching processed response data. We work on one
-     * |response| at a time, decode the |response| at |sampleRate| and send the
-     * decoded data to |sendTtsAudio| in buffers with |bufferSize|.
-     * @private {!Array<{response: !ash.enhancedNetworkTts.mojom.TtsResponse,
-     *                   sampleRate: number,
-     *                   bufferSize: number,
-     *                   sendTtsAudio: function(!chrome.ttsEngine.AudioBuffer):
-     *                                 void,
-     *                   sendError: function(string): void}>}
-     */
-    this.processingQueue_ = [];
+  /**
+   * The queue for processing server responses. Each element has one
+   * |response| received from mojo, and two callbacks |sendTtsAudio| and
+   * |sendError| for dispatching processed response data. We work on one
+   * |response| at a time, decode the |response| at |sampleRate| and send the
+   * decoded data to |sendTtsAudio| in buffers with |bufferSize|.
+   */
+  private processingQueue_: ServerResponse[];
 
-    /**
-     * The mojo API for Enhanced Network TTS.
-     * @private {?EnhancedNetworkTtsAdapter}
-     */
+  /** The mojo API for Enhanced Network TTS. */
+  private api_: EnhancedNetworkTtsAdapter|null;
+
+  constructor() {
+    this.processingQueue_ = [];
     this.api_ = null;
 
     /**
@@ -53,48 +57,56 @@ export class EnhancedNetworkTts {
    * request specified by the parameters |utterance|, |options|, and
    * |audioStreamOptions|. It uses the mojo API to safely retrieve audio that
    * fulfill the request and send the audio to |sendTtsAudio|.
-   * @param {string} utterance The text to speak.
-   * @param {!chrome.ttsEngine.SpeakOptions} options Options specified when a
-   *     client calls the chrome.tts.speak.
-   * @param {!chrome.ttsEngine.AudioStreamOptions} audioStreamOptions Contains
-   *     the audio stream format expected to be produced by this engine.
-   * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio A
-   *     function that accepts AudioBuffer for playback.
-   * @param {function(string): void} sendError A function that signals error.
+   * @param utterance The text to speak.
+   * @param options Options specified when a client calls the chrome.tts.speak.
+   * @param audioStreamOptions Contains the audio stream format expected to be
+   *     produced
+   * by this engine.
+   * @param sendTtsAudio A function that accepts AudioBuffer for playback.
+   * @param sendError A function that signals error.
    */
   async onSpeakWithAudioStreamEvent(
-      utterance, options, audioStreamOptions, sendTtsAudio, sendError) {
+      utterance: string, options: chrome.ttsEngine.SpeakOptions,
+      audioStreamOptions: chrome.ttsEngine.AudioStreamOptions,
+      sendTtsAudio: (audioBuffer: chrome.ttsEngine.AudioBuffer) => void,
+      sendError: (errorMessage: string) => void): Promise<void> {
     this.processingQueue_ = [];
 
     if (!this.api_) {
       try {
-        this.api_ = /** @type {EnhancedNetworkTtsAdapter} */ (
-            await chrome.mojoPrivate.requireAsync('ash.enhanced_network_tts'));
+        this.api_ =
+            await chrome.mojoPrivate.requireAsync('ash.enhanced_network_tts') as
+            EnhancedNetworkTtsAdapter;
       } catch (e) {
-        console.warn('Could not get mojoPrivate bindings: ' + e.message);
+        console.warn(
+            'Could not get mojoPrivate bindings: ' + (e as Error).message);
         sendError('Error: unable to get mojoPrivate bindings');
         return;
       }
     }
 
     const request = EnhancedNetworkTts.generateRequest(utterance, options);
-    await (this.api_.getAudioDataWithCallback(
+    await this.api_.getAudioDataWithCallback(
         request,
         response => this.queueResponse_(
-            response, audioStreamOptions, sendTtsAudio, sendError)));
+            response, audioStreamOptions, sendTtsAudio, sendError));
   }
 
   /**
    * Queue the |response| from the mojo API to be processed. If this is the
    * first response, we also start processing the response queue.
-   * @param {!ash.enhancedNetworkTts.mojom.TtsResponse} response
-   * @param {!chrome.ttsEngine.AudioStreamOptions} audioStreamOptions Contains
-   *     the audio stream format expected to be produced by this engine.
-   * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio A
-   *     function that accepts AudioBuffer for playback.
-   * @param {function(string): void} sendError A function that signals error.
+   * @param response
+   * @param audioStreamOptions Contains the audio stream format expected to be
+   *     produced
+   * by this engine.
+   * @param sendTtsAudio A function that accepts AudioBuffer for playback.
+   * @param sendError A function that signals error.
    */
-  queueResponse_(response, audioStreamOptions, sendTtsAudio, sendError) {
+  private queueResponse_(
+      response: ash.enhancedNetworkTts.mojom.TtsResponse,
+      audioStreamOptions: chrome.ttsEngine.AudioStreamOptions,
+      sendTtsAudio: (audioBuffer: chrome.ttsEngine.AudioBuffer) => void,
+      sendError: (errorMessage: string) => void): void {
     const sampleRate = audioStreamOptions.sampleRate;
     const bufferSize = audioStreamOptions.bufferSize;
     this.processingQueue_.push(
@@ -109,7 +121,7 @@ export class EnhancedNetworkTts {
    * removes the processed response from the queue and calls itself to process
    * the next available one.
    */
-  async processResponse_() {
+  private async processResponse_(): Promise<void> {
     if (this.processingQueue_.length === 0) {
       return;
     }
@@ -137,8 +149,8 @@ export class EnhancedNetworkTts {
             .kReceivedUnexpectedData:
           sendError('Error: unexpected data');
           break;
-        case ash.enhancedNetworkTts.mojom.TtsRequestError
-            .kRequestOverride:  // not an error
+        case ash.enhancedNetworkTts.mojom.TtsRequestError.kRequestOverride:
+          // not an error
           break;
       }
       return;
@@ -162,7 +174,7 @@ export class EnhancedNetworkTts {
     }
   }
 
-  async onStopEvent() {
+  async onStopEvent(): Promise<void> {
     // Clear the prior responses from the server and reset states.
     this.processingQueue_ = [];
     if (this.api_) {
@@ -173,18 +185,18 @@ export class EnhancedNetworkTts {
   /**
    * Generates a request that can be used to query audio data from the Enhanced
    * Network TTS mojo API, which sends the request to the ReadAloud server.
-   * @param {string} utterance The text to speak.
-   * @param {!chrome.ttsEngine.SpeakOptions} options Options specified when a
-   *     client calls the chrome.tts.speak.
-   * @return {!ash.enhancedNetworkTts.mojom.TtsRequest}
+   * @param utterance The text to speak.
+   * @param options Options specified when a client calls the chrome.tts.speak.
    */
-  static generateRequest(utterance, options) {
+  static generateRequest(
+      utterance: string, options: chrome.ttsEngine.SpeakOptions):
+      ash.enhancedNetworkTts.mojom.TtsRequest {
     // Gets the playback rate.
     const rate = options.rate || 1.0;
 
     // Unpack voice and lang. For lang, the server takes lang code only.
-    let voice = options.voiceName || '';
-    let lang = options.lang || '';
+    let voice: string|undefined = options.voiceName || '';
+    let lang: string|undefined = options.lang || '';
     lang = lang.trim().split(/_/)[0];
 
     // The ReadAloud server takes voice and lang as a pair. Sets them to
@@ -203,18 +215,18 @@ export class EnhancedNetworkTts {
       lang = undefined;
     }
 
-    return /** @type {!ash.enhancedNetworkTts.mojom.TtsRequest} */ (
-        {utterance, rate, voice, lang});
+    return {utterance, rate, voice, lang};
   }
 
   /**
    * Decodes |inputAudioData| into a Float32Array at the |targetSampleRate|.
-   * @param {!ArrayBuffer} inputAudioData The original data from audio files
-   *     like mp3, ogg, or wav.
-   * @param {number} targetSampleRate The sampling rate for decoding.
-   * @return {Promise<Float32Array>}
+   * @param inputAudioData The original data from audio files like mp3, ogg, or
+   *     wav.
+   * @param targetSampleRate The sampling rate for decoding.
    */
-  static async decodeAudioDataAtSampleRate(inputAudioData, targetSampleRate) {
+  static async decodeAudioDataAtSampleRate(
+      inputAudioData: ArrayBuffer,
+      targetSampleRate: number): Promise<Float32Array|null> {
     const context = new AudioContext({sampleRate: targetSampleRate});
 
     let audioBuffer;
@@ -237,12 +249,13 @@ export class EnhancedNetworkTts {
   /**
    * Creates a subarray from |startIdx| in the input |array|, with the size of
    * |subarraySize|.
-   * @param {!Float32Array} array
-   * @param {number} startIdx
-   * @param {number} subarraySize
-   * @return {!Float32Array}
+   * @param array
+   * @param startIdx
+   * @param subarraySize
    */
-  static subarrayFrom(array, startIdx, subarraySize) {
+  static subarrayFrom(
+      array: Float32Array, startIdx: number,
+      subarraySize: number): Float32Array {
     const subarray = new Float32Array(subarraySize);
     subarray.set(
         array.subarray(
@@ -258,19 +271,21 @@ export class EnhancedNetworkTts {
    * provided by the |chrome.ttsEngine.onSpeakWithAudioStream| event.
    * |sampleRate| and |bufferSize| can be specified in the extension manifest
    * file.
-   * @param {Float32Array} audioData Decoded audio data with a |sampleRate|.
-   * @param {number} sampleRate
-   * @param {number} bufferSize The size of each buffer that |sendTtsAudio|
-   *     expects.
-   * @param {!Array<!ash.enhancedNetworkTts.mojom.TimingInfo>} timeInfo An array
-   *     of timestamp information for each word in the |audioData|.
-   * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio The
-   *     function that takes |AudioBuffer| for playback.
-   * @param {boolean} lastData Whether this is the last data we expect to
-   * receive for the initial request.
+   * @param audioData Decoded audio data with a |sampleRate|.
+   * @param sampleRate
+   * @param bufferSize The size of each buffer that |sendTtsAudio| expects.
+   * @param timeInfo An array of timestamp information for each word in the
+   * |audioData|.
+   * @param sendTtsAudio The function that takes |AudioBuffer| for playback.
+   * @param lastData Whether this is the last data we expect to receive for the
+   *     initial
+   * request.
    */
   static sendAudioDataInBuffers(
-      audioData, sampleRate, bufferSize, timeInfo, sendTtsAudio, lastData) {
+      audioData: Float32Array|null, sampleRate: number, bufferSize: number,
+      timeInfo: ash.enhancedNetworkTts.mojom.TimingInfo[],
+      sendTtsAudio: (audioBuffer: chrome.ttsEngine.AudioBuffer) => void,
+      lastData: boolean): void {
     if (!audioData) {
       // TODO(crbug.com/1231318): Provide more appropriate error handling.
       return;

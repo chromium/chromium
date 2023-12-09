@@ -18,7 +18,10 @@ tsc_out_dir = "$target_gen_dir/tsc"
 common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 # TS files to compile.
-ts_modules = []
+ts_modules = [
+  "background.ts",
+  "enhanced_network_tts.ts",
+]
 
 # TS files needed from ../common/.
 common_ts_modules = [ "instance_checker.ts" ]
@@ -30,8 +33,16 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
-  definitions = []
+  definitions = [
+    "mojo_bindings_externs.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/tts.d.ts",
+    "../definitions/tts_engine.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -57,11 +68,7 @@ run_jsbundler("enhanced_network_tts_copied_files") {
     "../common:ts_build",
   ]
   dest_dir = enhanced_network_tts_dir
-  sources = [
-    "background.html",
-    "background.js",
-    "enhanced_network_tts.js",
-  ]
+  sources = [ "background.html" ]
 
   foreach(_ts_file, ts_modules) {
     sources += [ "$tsc_out_dir/enhanced_network_tts/" +
