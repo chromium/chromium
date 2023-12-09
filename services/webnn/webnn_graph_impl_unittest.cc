@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -18,6 +19,7 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
+#include "services/webnn/webnn_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn {
@@ -148,6 +150,12 @@ bool ValidateInputsForComputing(
   EXPECT_TRUE(is_callback_called);
   return valid;
 }
+
+mojom::Operand::DataType kAllOperandDataTypes[] = {
+    mojom::Operand::DataType::kFloat32, mojom::Operand::DataType::kFloat16,
+    mojom::Operand::DataType::kInt32,   mojom::Operand::DataType::kInt8,
+    mojom::Operand::DataType::kUint8,
+};
 
 }  // namespace
 
@@ -1887,6 +1895,97 @@ struct ElementWiseUnaryTester {
   }
 };
 
+// Test the data type support for element-wise unary operators.
+// The data type support is defined in the first parameter of the tuple
+// as a std::pair of mojom::ElementWiseUnary::Kind and array of
+// datatypes supported by the operator.
+class ElementWiseUnaryDataTypeFixture
+    : public testing::TestWithParam<
+          std::tuple<std::pair<mojom::ElementWiseUnary::Kind,
+                               std::vector<mojom::Operand::DataType>>,
+                     mojom::Operand::DataType,
+                     mojom::Operand::DataType>> {
+ public:
+  // Populate meaningful test suffixes.
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      std::string test_name =
+          base::StrCat({OpKindToString(std::get<0>(info.param).first), "_",
+                        DataTypeToString(std::get<1>(info.param)), "_",
+                        DataTypeToString(std::get<2>(info.param))});
+      return test_name;
+    }
+  };
+
+  void TestDataTypeSupportWithDimensions(
+      const std::vector<uint32_t>& dimensions) {
+    auto [operator_trait, inputDataType, outputDataType] = GetParam();
+    const mojom::ElementWiseUnary::Kind& kind = operator_trait.first;
+    // Some operators support dissimilar input and output data types.
+    const std::set<mojom::ElementWiseUnary::Kind>
+        kOperatorsWithDissimilarDatatypeSupport = {
+            mojom::ElementWiseUnary::Kind::kCast};
+
+    // Check if data types match, or if the operator supports mismatch.
+    // Check if the data type is supported by the operator.
+    const bool expected =
+        (inputDataType == outputDataType ||
+         kOperatorsWithDissimilarDatatypeSupport.contains(kind)) &&
+        std::find(operator_trait.second.begin(), operator_trait.second.end(),
+                  inputDataType) != operator_trait.second.end();
+
+    ElementWiseUnaryTester{
+        .kind = kind,
+        .input = {.type = inputDataType, .dimensions = dimensions},
+        .output = {.type = outputDataType, .dimensions = dimensions},
+        .expected = expected}
+        .Test();
+  }
+};
+
+TEST_P(ElementWiseUnaryDataTypeFixture, TestUnaryOperandDataTypeSupport) {
+  TestDataTypeSupportWithDimensions(std::vector<uint32_t>{1, 2, 3, 1});
+}
+
+TEST_P(ElementWiseUnaryDataTypeFixture, TestUnaryOperandScalarDataTypeSupport) {
+  TestDataTypeSupportWithDimensions(std::vector<uint32_t>{});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    WebNNGraphImplTest,
+    ElementWiseUnaryDataTypeFixture,
+    ::testing::Combine(
+        ::testing::ValuesIn({
+            std::make_pair(mojom::ElementWiseUnary::Kind::kLogicalNot,
+                           std::vector<mojom::Operand::DataType>{
+                               mojom::Operand::DataType::kUint8}),
+            std::make_pair(mojom::ElementWiseUnary::Kind::kIdentity,
+                           std::vector<mojom::Operand::DataType>(
+                               kAllOperandDataTypes,
+                               std::end(kAllOperandDataTypes))),
+            std::make_pair(mojom::ElementWiseUnary::Kind::kSqrt,
+                           std::vector<mojom::Operand::DataType>{
+                               mojom::Operand::DataType::kFloat16,
+                               mojom::Operand::DataType::kFloat32}),
+            std::make_pair(mojom::ElementWiseUnary::Kind::kErf,
+                           std::vector<mojom::Operand::DataType>{
+                               mojom::Operand::DataType::kFloat16,
+                               mojom::Operand::DataType::kFloat32}),
+            std::make_pair(mojom::ElementWiseUnary::Kind::kReciprocal,
+                           std::vector<mojom::Operand::DataType>{
+                               mojom::Operand::DataType::kFloat16,
+                               mojom::Operand::DataType::kFloat32}),
+            std::make_pair(mojom::ElementWiseUnary::Kind::kCast,
+                           std::vector<mojom::Operand::DataType>(
+                               kAllOperandDataTypes,
+                               std::end(kAllOperandDataTypes))),
+        }),
+        ::testing::ValuesIn(kAllOperandDataTypes),
+        ::testing::ValuesIn(kAllOperandDataTypes)),
+    ElementWiseUnaryDataTypeFixture::PrintToStringParamName());
+
 TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
   {
     // Test building element-wise abs.
@@ -2106,6 +2205,16 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 3, 4}},
         .expected = false}
+        .Test();
+  }
+  // Test case for cast where dimensions don't match
+  {
+    ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kCast,
+                           .input = {.type = mojom::Operand::DataType::kUint8,
+                                     .dimensions = {1, 2, 3, 1}},
+                           .output = {.type = mojom::Operand::DataType::kInt8,
+                                      .dimensions = {1, 2, 3, 2}},
+                           .expected = false}
         .Test();
   }
 }
@@ -4386,8 +4495,8 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the shapes of true_value and false_value are
-    // not broadcastable.
+    // Test the invalid graph when the shapes of true_value and false_value
+    // are not broadcastable.
     WhereTester{.condition = {.type = mojom::Operand::DataType::kUint8,
                               .dimensions = {2, 4}},
                 .true_value = {.type = mojom::Operand::DataType::kFloat32,

@@ -1585,8 +1585,7 @@ struct ElementWiseUnaryTester {
   OperandInfo<T> input;
   mojom::ElementWiseUnary::Kind kind;
   OperandInfo<O> output;
-  void Test(BuildAndComputeExpectation expectation =
-                BuildAndComputeExpectation::kSuccess) {
+  void Test() {
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
         builder.BuildInput("input", input.dimensions, input.type);
@@ -1599,10 +1598,8 @@ struct ElementWiseUnaryTester {
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
-                    named_outputs, expectation);
-    if (expectation == BuildAndComputeExpectation::kSuccess) {
-      VerifyIsEqual(std::move(named_outputs["output"]), output);
-    }
+                    named_outputs);
+    VerifyIsEqual(std::move(named_outputs["output"]), output);
   }
 };
 
@@ -1632,34 +1629,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
       .type = mojom::Operand::DataType::kUint8,
       .dimensions = {1, 2, 3, 1},
       .values = {0, 2, 0, 4, 5, 120}};
-  {
-    ElementWiseUnaryTester<float_t>{
-        .input = test_operand_info_float32,
-        .kind = mojom::ElementWiseUnary::Kind::kLogicalNot,
-        .output = test_operand_info_float32}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<float16>{
-        .input = test_operand_info_float16,
-        .kind = mojom::ElementWiseUnary::Kind::kLogicalNot,
-        .output = test_operand_info_float16}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<int32_t>{
-        .input = test_operand_info_int32,
-        .kind = mojom::ElementWiseUnary::Kind::kLogicalNot,
-        .output = test_operand_info_int32}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<int8_t>{
-        .input = test_operand_info_int8,
-        .kind = mojom::ElementWiseUnary::Kind::kLogicalNot,
-        .output = test_operand_info_int8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
   {
     ElementWiseUnaryTester<uint8_t>{
         .input = {.type = mojom::Operand::DataType::kUint8,
@@ -1748,26 +1717,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
         .Test();
   }
   {
-    ElementWiseUnaryTester<int32_t>{
-        .input = test_operand_info_int32,
-        .kind = mojom::ElementWiseUnary::Kind::kSqrt,
-        .output = test_operand_info_int32}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<int8_t>{.input = test_operand_info_int8,
-                                   .kind = mojom::ElementWiseUnary::Kind::kSqrt,
-                                   .output = test_operand_info_int8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<uint8_t>{
-        .input = test_operand_info_uint8,
-        .kind = mojom::ElementWiseUnary::Kind::kSqrt,
-        .output = test_operand_info_uint8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 3, 1},
@@ -1788,24 +1737,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
                    .dimensions = {1, 2, 3, 1},
                    .values = Float16FromFloat32({0, 1, 0, 1, 1, -1})}}
         .Test();
-  }
-  {
-    ElementWiseUnaryTester<int32_t>{.input = test_operand_info_int32,
-                                    .kind = mojom::ElementWiseUnary::Kind::kErf,
-                                    .output = test_operand_info_int32}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<int8_t>{.input = test_operand_info_int8,
-                                   .kind = mojom::ElementWiseUnary::Kind::kErf,
-                                   .output = test_operand_info_int8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<uint8_t>{.input = test_operand_info_uint8,
-                                    .kind = mojom::ElementWiseUnary::Kind::kErf,
-                                    .output = test_operand_info_uint8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -1831,27 +1762,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseUnary) {
                        {1, 0.25, 0.5, 0.0625, 0.015625,
                         std::numeric_limits<float>::infinity()})}}
         .Test();
-  }
-  {
-    ElementWiseUnaryTester<int32_t>{
-        .input = test_operand_info_int32,
-        .kind = mojom::ElementWiseUnary::Kind::kReciprocal,
-        .output = test_operand_info_int32}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<int8_t>{
-        .input = test_operand_info_int8,
-        .kind = mojom::ElementWiseUnary::Kind::kReciprocal,
-        .output = test_operand_info_int8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
-  }
-  {
-    ElementWiseUnaryTester<uint8_t>{
-        .input = test_operand_info_uint8,
-        .kind = mojom::ElementWiseUnary::Kind::kReciprocal,
-        .output = test_operand_info_uint8}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
   {
     ElementWiseUnaryTester<float>{
@@ -2351,18 +2261,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorCast) {
           .output = test_operand_info_int8}
           .Test();
     }
-  }
-  // Test case where dimensions dont match
-  {
-    OperandInfo<int8_t> test_operand_info_int8_wrong_dimension{
-        .type = mojom::Operand::DataType::kInt8,
-        .dimensions = {1, 2, 3, 2},
-        .values = {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}};
-    ElementWiseUnaryTester<uint8_t, int8_t>{
-        .input = test_operand_info_uint8,
-        .kind = mojom::ElementWiseUnary::Kind::kCast,
-        .output = test_operand_info_int8_wrong_dimension}
-        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
   }
 }
 

@@ -25,6 +25,7 @@
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -71,72 +72,6 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
   }
 }
 
-std::string ArgMinMaxOpKindToString(mojom::ArgMinMax::Kind kind) {
-  switch (kind) {
-    case mojom::ArgMinMax::Kind::kMin:
-      return "ArgMin";
-    case mojom::ArgMinMax::Kind::kMax:
-      return "ArgMax";
-  }
-  NOTREACHED_NORETURN();
-}
-
-std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
-  switch (kind) {
-    case mojom::ElementWiseBinary::Kind::kAdd:
-      return "add";
-    case mojom::ElementWiseBinary::Kind::kSub:
-      return "sub";
-    case mojom::ElementWiseBinary::Kind::kMul:
-      return "mul";
-    case mojom::ElementWiseBinary::Kind::kDiv:
-      return "div";
-    case mojom::ElementWiseBinary::Kind::kMax:
-      return "max";
-    case mojom::ElementWiseBinary::Kind::kMin:
-      return "min";
-    case mojom::ElementWiseBinary::Kind::kPow:
-      return "pow";
-    case mojom::ElementWiseBinary::Kind::kEqual:
-      return "equal";
-    case mojom::ElementWiseBinary::Kind::kGreater:
-      return "greater";
-    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
-      return "greaterOrEqual";
-    case mojom::ElementWiseBinary::Kind::kLesser:
-      return "lesser";
-    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
-      return "lesserOrEqual";
-  }
-  NOTREACHED_NORETURN();
-}
-
-std::string ReduceOpKindToString(mojom::Reduce::Kind kind) {
-  switch (kind) {
-    case mojom::Reduce::Kind::kL1:
-      return "ReduceL1";
-    case mojom::Reduce::Kind::kL2:
-      return "ReduceL2";
-    case mojom::Reduce::Kind::kLogSum:
-      return "ReduceLogSum";
-    case mojom::Reduce::Kind::kLogSumExp:
-      return "ReduceLogSumExp";
-    case mojom::Reduce::Kind::kMax:
-      return "ReduceMax";
-    case mojom::Reduce::Kind::kMean:
-      return "ReduceMean";
-    case mojom::Reduce::Kind::kMin:
-      return "ReduceMin";
-    case mojom::Reduce::Kind::kProduct:
-      return "ReduceProduct";
-    case mojom::Reduce::Kind::kSum:
-      return "ReduceSum";
-    case mojom::Reduce::Kind::kSumSquare:
-      return "ReduceSumSquare";
-  }
-  NOTREACHED_NORETURN();
-}
-
 DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
@@ -159,67 +94,6 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
       return DML_REDUCE_FUNCTION_SUM;
     case mojom::Reduce::Kind::kSumSquare:
       return DML_REDUCE_FUNCTION_SUM_SQUARE;
-  }
-  NOTREACHED_NORETURN();
-}
-std::string OpTagToString(Operation::Tag tag) {
-  switch (tag) {
-    case Operation::Tag::kArgMinMax:
-      return "argMin/Max";
-    case Operation::Tag::kBatchNormalization:
-      return "batchNormalization";
-    case Operation::Tag::kClamp:
-      return "clamp";
-    case Operation::Tag::kConcat:
-      return "concat";
-    case Operation::Tag::kConv2d:
-      return "conv2d";
-    case Operation::Tag::kElementWiseBinary:
-      return "element-wise binary";
-    case Operation::Tag::kElu:
-      return "elu";
-    case Operation::Tag::kElementWiseUnary:
-      return "element-wise unary";
-    case Operation::Tag::kExpand:
-      return "expand";
-    case Operation::Tag::kGather:
-      return "gather";
-    case Operation::Tag::kGemm:
-      return "gemm";
-    case Operation::Tag::kLayerNormalization:
-      return "layerNormalization";
-    case Operation::Tag::kLeakyRelu:
-      return "leakyRelu";
-    case Operation::Tag::kMatmul:
-      return "matmul";
-    case Operation::Tag::kPad:
-      return "pad";
-    case Operation::Tag::kPool2d:
-      return "pool2d";
-    case Operation::Tag::kPrelu:
-      return "prelu";
-    case Operation::Tag::kReduce:
-      return "reduce";
-    case Operation::Tag::kRelu:
-      return "relu";
-    case Operation::Tag::kResample2d:
-      return "resample2d";
-    case Operation::Tag::kReshape:
-      return "reshape";
-    case Operation::Tag::kSigmoid:
-      return "sigmoid";
-    case Operation::Tag::kSlice:
-      return "slice";
-    case Operation::Tag::kSoftmax:
-      return "softmax";
-    case Operation::Tag::kSplit:
-      return "split";
-    case Operation::Tag::kTanh:
-      return "tanh";
-    case Operation::Tag::kTranspose:
-      return "transpose";
-    case Operation::Tag::kWhere:
-      return "where";
   }
   NOTREACHED_NORETURN();
 }
@@ -394,7 +268,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
   if (!arg_min_max_node) {
     return base::unexpected(mojom::Error::New(
         mojom::Error::Code::kUnknownError,
-        "Failed to create " + ArgMinMaxOpKindToString(arg_min_max->kind) +
+        "Failed to create " + OpKindToString(arg_min_max->kind) +
             " operator."));
   }
 
@@ -1586,7 +1460,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
       DML_OPERATOR_REDUCE, &operator_desc, inputs);
   if (!reduce_node) {
     std::string error_message =
-        "Failed to create " + ReduceOpKindToString(reduce->kind) + " operator.";
+        "Failed to create " + OpKindToString(reduce->kind) + " operator.";
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
                                         std::move(error_message)));
   }

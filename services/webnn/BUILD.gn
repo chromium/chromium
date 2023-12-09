@@ -13,6 +13,8 @@ component("webnn_service") {
     "webnn_context_provider_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
+    "webnn_utils.cc",
+    "webnn_utils.h",
   ]
 
   if (is_win) {
