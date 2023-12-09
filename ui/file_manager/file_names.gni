@@ -279,6 +279,7 @@ ts_files = [
   "file_manager/foreground/js/actions_controller.ts",
   "file_manager/foreground/js/android_app_list_model.ts",
   "file_manager/foreground/js/banner_controller.ts",
+  "file_manager/foreground/js/command_handler.ts",
   "file_manager/foreground/js/crossover_search_utils.ts",
   "file_manager/foreground/js/dialog_action_controller.ts",
   "file_manager/foreground/js/directory_contents.ts",

@@ -14,9 +14,9 @@ import {crostiniPlaceHolderKey} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 import {FilesToast} from '../elements/files_toast.js';
 
+import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
-import {CommandHandler} from './file_manager_commands.js';
 import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 
@@ -120,7 +120,7 @@ export class CrostiniController {
         text: str(action),
         callback: () => {
           chrome.fileManagerPrivate.openSettingsSubpage(subPage);
-          CommandHandler.recordMenuItemSelected(umaItem);
+          recordMenuItemSelected(umaItem);
         },
       });
     };
@@ -138,18 +138,16 @@ export class CrostiniController {
         crostiniShareCount, 'FOLDER_SHARED_WITH_CROSTINI',
         'FOLDER_SHARED_WITH_CROSTINI_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'crostini/sharedPaths',
-        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING_TOAST_STARTUP);
+        MenuCommandsForUma.MANAGE_LINUX_SHARING_TOAST_STARTUP);
     toast(
         pluginVmShareCount, 'FOLDER_SHARED_WITH_PLUGIN_VM',
         'FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'app-management/pluginVm/sharedPaths',
-        CommandHandler.MenuCommandsForUMA
-            .MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
+        MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
     toast(
         bruschettaVmShareCount, 'FOLDER_SHARED_WITH_BRUSCHETTA',
         'FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'bruschetta/sharedPaths',
-        CommandHandler.MenuCommandsForUMA
-            .MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP);
+        MenuCommandsForUma.MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP);
   }
 }

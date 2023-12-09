@@ -15,7 +15,7 @@ import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolu
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
 
-import {CommandHandler} from './file_manager_commands.js';
+import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
 
 /** @type {!MockMetrics} */
 let mockMetrics;
@@ -25,7 +25,7 @@ let mockMetrics;
  * @returns {string|undefined}
  */
 function getMetricName(metricIndex) {
-  return CommandHandler.ValidMenuCommandsForUMA[metricIndex];
+  return ValidMenuCommandsForUma[metricIndex];
 }
 
 /**
@@ -580,12 +580,13 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
   };
 
   // Check each command is disabled and hidden.
-  const commandNames = [
-    'paste',
-    'cut',
-    'copy',
-    'new-folder',
-  ];
+  const commandNames =
+      /** @type {import('./command_handler.js').FilesCommandId[]} */ ([
+        'paste',
+        'cut',
+        'copy',
+        'new-folder',
+      ]);
   for (const commandName of commandNames) {
     // Check: command exists.
     const command = CommandHandler.getCommand(commandName);
@@ -671,18 +672,19 @@ export async function testCommandsForEntriesOnNonInteractiveVolume() {
   };
 
   // Check each command is disabled and hidden.
-  const commandNames = [
-    'paste',
-    'cut',
-    'copy',
-    'new-folder',
-    'delete',
-    'move-to-trash',
-    'paste-into-folder',
-    'rename',
-    'extract-all',
-    'zip-selection',
-  ];
+  const commandNames =
+      /** @type {import('./command_handler.js').FilesCommandId[]} */ ([
+        'paste',
+        'cut',
+        'copy',
+        'new-folder',
+        'delete',
+        'move-to-trash',
+        'paste-into-folder',
+        'rename',
+        'extract-all',
+        'zip-selection',
+      ]);
   for (const commandName of commandNames) {
     // Check: command exists.
     const command = CommandHandler.getCommand(commandName);

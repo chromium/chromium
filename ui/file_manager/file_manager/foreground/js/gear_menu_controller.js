@@ -7,8 +7,8 @@ import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
+import {CommandHandler} from './command_handler.js';
 import {DirectoryModel} from './directory_model.js';
-import {CommandHandler} from './file_manager_commands.js';
 import {ProvidersModel} from './providers_model.js';
 import {GearMenu} from './ui/gear_menu.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
