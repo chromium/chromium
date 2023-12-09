@@ -30,6 +30,7 @@ static_library("presence") {
     "//chromeos/ash/components/nearby/presence/proto",
     "//chromeos/ash/services/nearby/public/cpp:cpp",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//components/cross_device/logging:logging",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",

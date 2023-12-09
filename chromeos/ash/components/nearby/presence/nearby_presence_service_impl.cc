@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -180,9 +181,15 @@ void NearbyPresenceServiceImpl::UpdateCredentials() {
   // flow has already occurred, and we can move forward with updating
   // credentials.
   if (credential_manager_) {
+    CD_LOG(VERBOSE, Feature::NP)
+        << __func__ << ": Initiating updating credentials.";
     credential_manager_->UpdateCredentials();
     return;
   }
+
+  CD_LOG(VERBOSE, Feature::NP) << __func__
+                               << ": Attempted to update credentials, but "
+                                  "CredentialManager was not yet initialized.";
 
   // Otherwise, initialize a `CredentialManager` before updating credentials.
   Initialize(

@@ -2,6 +2,7 @@ include_rules = [
   "+components/keyed_service/core/keyed_service.h",
   "+components/signin/public",
   "+third_party/nearby",
+  "+components/cross_device/logging",
   # For testing.
   "+content/public/test",
 ]
