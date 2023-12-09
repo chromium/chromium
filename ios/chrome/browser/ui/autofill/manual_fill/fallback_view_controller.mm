@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
@@ -35,8 +38,8 @@ constexpr CGFloat PopoverMinHeight = 160;
 constexpr CGFloat PopoverMaxHeight = 360;
 
 // If the loading indicator was shown, it will be on screen for at least this
-// amount of seconds.
-constexpr CGFloat kMinimumLoadingTime = 0.5;
+// duration.
+constexpr base::TimeDelta kMinimumLoadingTime = base::Milliseconds(500);
 
 // Height of the section header.
 constexpr CGFloat kSectionHeaderHeight = 6;
@@ -47,11 +50,6 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }  // namespace
 
 @interface FallbackViewController ()
-
-// The date when the loading indicator started or [NSDate distantPast] if it
-// hasn't been shown.
-@property(nonatomic, strong) NSDate* loadingIndicatorStartingDate;
-
 // Header item to be shown when the loading indicator disappears.
 @property(nonatomic, strong) TableViewItem* queuedHeaderItem;
 
@@ -63,13 +61,18 @@ constexpr CGFloat kSectionFooterHeight = 8;
 
 @end
 
-@implementation FallbackViewController
+@implementation FallbackViewController {
+  // The time when the loading indicator started.
+  base::Time _loadingIndicatorStartingTime;
+}
 
 - (instancetype)init {
   self = [super initWithStyle:UITableViewStylePlain];
+
   if (self) {
-    _loadingIndicatorStartingDate = [NSDate distantPast];
+    _loadingIndicatorStartingTime = base::Time::Min();
   }
+
   return self;
 }
 
@@ -98,7 +101,7 @@ constexpr CGFloat kSectionFooterHeight = 8;
           PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
     }
     [self startLoadingIndicatorWithLoadingMessage:@""];
-    self.loadingIndicatorStartingDate = [NSDate date];
+    _loadingIndicatorStartingTime = base::Time::Now();
   }
 }
 
@@ -121,14 +124,10 @@ constexpr CGFloat kSectionFooterHeight = 8;
       return;
     }
     self.queuedHeaderItem = item;
-    NSTimeInterval remainingTime =
-        kMinimumLoadingTime - [self timeSinceLoadingIndicatorStarted];
     __weak __typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 (int64_t)(remainingTime * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [weakSelf presentQueuedHeaderItem];
-                   });
+    [self presentItemsAfterMinimumLoadingTime:^{
+      [weakSelf presentQueuedHeaderItem];
+    }];
     return;
   }
   self.queuedHeaderItem = item;
@@ -142,14 +141,10 @@ constexpr CGFloat kSectionFooterHeight = 8;
       return;
     }
     self.queuedDataItems = items;
-    NSTimeInterval remainingTime =
-        kMinimumLoadingTime - [self timeSinceLoadingIndicatorStarted];
     __weak __typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 (int64_t)(remainingTime * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [weakSelf presentQueuedDataItems];
-                   });
+    [self presentItemsAfterMinimumLoadingTime:^{
+      [weakSelf presentQueuedDataItems];
+    }];
     return;
   }
   self.queuedDataItems = items;
@@ -163,14 +158,10 @@ constexpr CGFloat kSectionFooterHeight = 8;
       return;
     }
     self.queuedActionItems = actions;
-    NSTimeInterval remainingTime =
-        kMinimumLoadingTime - [self timeSinceLoadingIndicatorStarted];
     __weak __typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 (int64_t)(remainingTime * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [weakSelf presentQueuedActionItems];
-                   });
+    [self presentItemsAfterMinimumLoadingTime:^{
+      [weakSelf presentQueuedActionItems];
+    }];
     return;
   }
   self.queuedActionItems = actions;
@@ -178,6 +169,15 @@ constexpr CGFloat kSectionFooterHeight = 8;
 }
 
 #pragma mark - Private
+
+// Updates the tableView contents after the `kMinimumLoadingTime` has passed.
+// - presentationBlock: Block updating items in the tableView.
+- (void)presentItemsAfterMinimumLoadingTime:(void (^)(void))presentationBlock {
+  const base::TimeDelta remainingTime =
+      kMinimumLoadingTime - [self timeSinceLoadingIndicatorStarted];
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(presentationBlock), remainingTime);
+}
 
 // Presents the header item.
 - (void)presentQueuedHeaderItem {
@@ -240,10 +240,8 @@ constexpr CGFloat kSectionFooterHeight = 8;
 
 // Seconds since the loading indicator started. This is >> kMinimumLoadingTime
 // if the loading indicator wasn't shown.
-// TODO(crbug.com/1382857): Migrate to base::Time API.
-- (NSTimeInterval)timeSinceLoadingIndicatorStarted {
-  return
-      [[NSDate date] timeIntervalSinceDate:self.loadingIndicatorStartingDate];
+- (base::TimeDelta)timeSinceLoadingIndicatorStarted {
+  return base::Time::Now() - _loadingIndicatorStartingTime;
 }
 
 // Indicates if the view is ready for data to be presented.
