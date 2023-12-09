@@ -168,6 +168,9 @@ bool IsSnapped(const TabDragContext* context) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// TODO(1509581): This should take a weak ref and return a Liveness, because
+// setting capture may cause the drag to end and the drag controller to be
+// destroyed.
 void SetCapture(TabDragContext* context) {
   context->GetWidget()->SetCapture(context);
 }
@@ -364,13 +367,14 @@ TabDragController::~TabDragController() {
          "up the stack for reentrancy.";
 }
 
-void TabDragController::Init(TabDragContext* source_context,
-                             TabSlotView* source_view,
-                             const std::vector<TabSlotView*>& dragging_views,
-                             const gfx::Point& mouse_offset,
-                             int source_view_offset,
-                             ui::ListSelectionModel initial_selection_model,
-                             ui::mojom::DragEventSource event_source) {
+TabDragController::Liveness TabDragController::Init(
+    TabDragContext* source_context,
+    TabSlotView* source_view,
+    const std::vector<TabSlotView*>& dragging_views,
+    const gfx::Point& mouse_offset,
+    int source_view_offset,
+    ui::ListSelectionModel initial_selection_model,
+    ui::mojom::DragEventSource event_source) {
   DCHECK(!dragging_views.empty());
   DCHECK(base::Contains(dragging_views, source_view));
   source_context_ = source_context;
@@ -459,17 +463,6 @@ void TabDragController::Init(TabDragContext* source_context,
   InitWindowCreatePoint();
   initial_selection_model_ = std::move(initial_selection_model);
 
-  // Gestures don't automatically do a capture. We don't allow multiple drags at
-  // the same time, so we explicitly capture.
-  if (event_source == ui::mojom::DragEventSource::kTouch) {
-    // Taking capture may cause capture to be lost, ending the drag and
-    // destroying |this|.
-    base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-    SetCapture(source_context_);
-    if (!ref)
-      return;
-  }
-
   window_finder_ = std::make_unique<WindowFinder>();
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
@@ -504,6 +497,27 @@ void TabDragController::Init(TabDragContext* source_context,
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
           source_context_->GetTabStripModel(), this);
+
+  ///////// DO NOT ADD INITIALIZATION CODE BELOW THIS LINE ////////
+  // We need to be initialized at this point because SetCapture may reenter this
+  // TabDragController and we do not want to deal with a partially-uninitialized
+  // object at that point. This is already too complicated.
+
+  // Gestures don't automatically do a capture. We don't allow multiple drags at
+  // the same time, so we explicitly capture.
+  if (event_source == ui::mojom::DragEventSource::kTouch) {
+    // Taking capture involves OS calls which may reentrantly call back into
+    // Chrome. This may result in the drag ending, destroying `this`. This
+    // behavior has been observed on Windows in https://crbug.com/964322 and
+    // ChromeOS in https://crbug.com/1431369.
+    base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
+    SetCapture(source_context_);
+    if (!ref) {
+      return Liveness::DELETED;
+    }
+  }
+
+  return Liveness::ALIVE;
 }
 
 // static
@@ -944,6 +958,8 @@ TabDragController::Liveness TabDragController::ContinueDragging(
       return StartSystemDragAndDropSessionIfNecessary(point_in_screen);
     } else if (DragBrowserToNewTabStrip(target_context, point_in_screen) ==
                DRAG_BROWSER_RESULT_STOP) {
+      // TODO(1509581): This may not always be correct.
+      // `DragBrowserToNewTabStrip` can delete `this` in some cases.
       return Liveness::ALIVE;
     }
   }

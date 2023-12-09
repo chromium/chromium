@@ -300,11 +300,21 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
            event.type() == ui::ET_GESTURE_SCROLL_BEGIN);
 
     drag_controller_ = std::make_unique<TabDragController>();
-    drag_controller_->Init(this, source, dragging_views, gfx::Point(x, y),
-                           event.x(), std::move(selection_model),
-                           EventSourceFromEvent(event));
+
+    // !!! Init may delete `drag_controller_` on some platforms. !!!
+    // Init takes capture, which on some platforms may reenter Chrome, the
+    // TabStrip, and the TabDragController, and may end the drag and destroy
+    // `tab_drag_controller_`. If Init returns DELETED, then `drag_controller_`
+    // is nullptr or it points to a *different instance*.
+    if (drag_controller_->Init(this, source, dragging_views, gfx::Point(x, y),
+                               event.x(), std::move(selection_model),
+                               EventSourceFromEvent(event)) ==
+        TabDragController::Liveness::DELETED) {
+      return;
+    }
 
     UpdateDragEventSourceCrashKey(drag_controller_->event_source());
+
     if (drag_controller_set_callback_)
       std::move(drag_controller_set_callback_).Run(drag_controller_.get());
   }

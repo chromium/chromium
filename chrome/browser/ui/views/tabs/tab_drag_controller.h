@@ -92,6 +92,38 @@ class TabDragController : public views::WidgetObserver,
   TabDragController& operator=(const TabDragController&) = delete;
   ~TabDragController() override;
 
+  // Whether this TabDragController still exists - used as a return type for
+  // methods which may end the drag session and thus destroy the
+  // TabDragController. These methods should also be annotated with
+  // [[nodiscard]] to force the caller to handle the case where the
+  // TabDragController was destroyed.
+  //
+  // Note that, since TabDragController makes system calls in many places, and
+  // many or most of those may reenter Chrome, the TabStrip, and the
+  // TabDragController, it's generally not possible to make strong guarantees
+  // about what can and cannot happen in various cases - code defensively.
+  //
+  // TODO(1509581): Return this from *all* methods which may end the drag. In
+  // particular this will require reconciliation with `DragBrowserResultType`
+  // returned by `DragBrowserToNewTabStrip`. Currently the following public
+  // methods may end the drag and destroy `this` but do not return a Liveness:
+  // - TabWasAdded
+  // - OnTabWillBeRemoved
+  // - Drag
+  // - EndDrag (this always end the drag)
+  //
+  // The static methods OnSystemDragAndDropUpdated and OnSystemDragAndDropExited
+  // may also end the drag.
+  //
+  // There are also many private methods that may end the drag but don't return
+  // a Liveness, and there is at least one case where the wrong Liveness might
+  // be returned due to the interaction with DragBrowserToNewTabStrip mentioned
+  // above.
+  enum class Liveness {
+    ALIVE,
+    DELETED,
+  };
+
   // Initializes TabDragController to drag the views in |dragging_views|
   // originating from |source_context|. |source_view| is the view that
   // initiated the drag and is either a Tab or a TabGroupHeader contained in
@@ -101,14 +133,15 @@ class TabDragController : public views::WidgetObserver,
   // offset of |mouse_offset| relative to |source_view|.
   // |initial_selection_model| is the selection model before the drag started
   // and is only non-empty if the original selection isn't the same as the
-  // dragging set.
-  void Init(TabDragContext* source_context,
-            TabSlotView* source_view,
-            const std::vector<TabSlotView*>& dragging_views,
-            const gfx::Point& mouse_offset,
-            int source_view_offset,
-            ui::ListSelectionModel initial_selection_model,
-            ui::mojom::DragEventSource event_source);
+  // dragging set. Returns Liveness::DELETED if `this` was deleted during this
+  // call, and Liveness::ALIVE if `this` still exists.
+  [[nodiscard]] Liveness Init(TabDragContext* source_context,
+                              TabSlotView* source_view,
+                              const std::vector<TabSlotView*>& dragging_views,
+                              const gfx::Point& mouse_offset,
+                              int source_view_offset,
+                              ui::ListSelectionModel initial_selection_model,
+                              ui::mojom::DragEventSource event_source);
 
   // Returns true if there is a drag underway and the drag is attached to
   // |tab_strip|.
@@ -211,11 +244,6 @@ class TabDragController : public views::WidgetObserver,
     kWaitingToDragTabs,
     // The drag session has completed or been canceled.
     kStopped
-  };
-
-  enum class Liveness {
-    ALIVE,
-    DELETED,
   };
 
   // Enumeration of the ways a drag session can end.
