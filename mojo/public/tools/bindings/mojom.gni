@@ -123,7 +123,6 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_js_generator.py",
       "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_ts_generator.py",
-      "$mojom_generator_root/generators/mojom_webui_js_bridge_generator.py",
       "$mojom_generator_script",
       "//build/action_helpers.py",
       "//build/gn_helpers.py",
@@ -355,10 +354,6 @@ if (enable_scrambled_message_ids) {
 #       for Blink tests and other non-WebUI users when generating TypeScript
 #       bindings for WebUI. Ignored if use_typescript_sources is not set to
 #       true.
-#
-#   webui_js_bridge_config (optional)
-#       Prefer to use the `mojom_with_webui_js_bridge` target below instead
-#       of using this argument directly.
 #
 #   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
@@ -1851,81 +1846,6 @@ template("mojom") {
     }
   }
 
-  if (defined(invoker.webui_js_bridge_config)) {
-    if (sources_list != []) {
-      bridge_config = invoker.webui_js_bridge_config
-
-      generator_webui_js_bridge_impl_target_name =
-          "${target_name}_webui_js_bridge_impl__generator"
-      action(generator_webui_js_bridge_impl_target_name) {
-        visibility = [ ":*" ]
-        script = mojom_generator_script
-        inputs = mojom_generator_sources + jinja2_sources
-        sources = sources_list
-
-        deps = [
-          ":$parser_target_name",
-          "//mojo/public/tools/bindings:precompile_templates",
-        ]
-
-        filelist = []
-        foreach(source, sources_list) {
-          filelist += [ rebase_path(source, root_build_dir) ]
-        }
-
-        outputs = []
-        foreach(base_path, output_file_base_paths) {
-          outputs += [
-            "$root_gen_dir/${base_path}-webui-js-bridge-impl.cc",
-            "$root_gen_dir/${base_path}-webui-js-bridge-impl.h",
-          ]
-        }
-
-        response_file_contents = filelist
-
-        args = common_generator_args + export_args
-        args += [
-          "--filelist={{response_file_name}}",
-          "-g",
-          "webui_js_bridge",
-        ]
-
-        rebased_webui_controller_header =
-            rebase_path(bridge_config.webui_controller_header, "//")
-
-        # Use a single string for the argument to avoid it being parsed as a
-        # filename by the mojom_bindings_generator.py argument parser.
-        config_arg =
-            "--webui_js_bridge_config=" + bridge_config.webui_controller + "=" +
-            rebased_webui_controller_header
-
-        args += [ config_arg ]
-      }
-
-      cpp_target_name = target_name
-      source_set("${target_name}_webui_js_bridge_impl") {
-        if (defined(invoker.testonly)) {
-          testonly = invoker.testonly
-        }
-
-        sources = []
-        foreach(base_path, output_file_base_paths) {
-          sources += [
-            "$root_gen_dir/${base_path}-webui-js-bridge-impl.cc",
-            "$root_gen_dir/${base_path}-webui-js-bridge-impl.h",
-          ]
-        }
-        configs += [ "//build/config/compiler:wexit_time_destructors" ]
-        deps = [
-          ":$cpp_target_name",
-          ":$generator_webui_js_bridge_impl_target_name",
-        ]
-
-        deps += bridge_config.webui_controller_deps
-      }
-    }
-  }
-
   use_typescript_for_target = defined(invoker.webui_module_path) &&
                               (!defined(invoker.use_typescript_sources) ||
                                (defined(invoker.use_typescript_sources) &&
@@ -2208,55 +2128,5 @@ template("mojom_component") {
                            ])
     component_output_prefix = invoker.output_prefix
     component_macro_prefix = invoker.macro_prefix
-  }
-}
-
-# A helper for the mojom() template above for defining a WebUIJsBridge.
-# Supports all the same arguments as mojom() except for `sources` and adds
-# `source`, `webui_controller`, `webui_controller_header`, and
-# `webui_controller_deps` which are *required*. See below for more details.
-#
-# A WebUIJsBridge is a Mojo interface that contains binders for all interfaces
-# that can be bound from a WebUI's JavaScript. This taret
-# will generate a C++ implementation of the WebUIJsBridge interface
-# and a {target_name}_webui_js_bridge_impl target that can be depended
-# on.
-#
-# The following arguments are required:
-#  - `source`: The mojom file that defines the WebUIJsBridge interface. It's
-#    allowed to define other interfaces.
-#  - `webui_controller`: The name of the WebUIController associated with the
-#    WebUIJsBridge.
-#  - `webui_controller_header`: The header where the WebUIController
-#    is declared.
-#  - `webui_controller_deps`: The target containing the WebUIController.
-template("mojom_with_webui_js_bridge") {
-  assert(defined(invoker.source))
-  assert(defined(invoker.webui_controller),
-         "mojom_with_webui_js_bridge should have a " +
-             "`webui_controller` parameter e.g. `foo::FooUI`.")
-  assert(defined(invoker.webui_controller_header),
-         "mojom_with_webui_js_bridge should have a " +
-             "`webui_controller_header` parameter.")
-  assert(defined(invoker.webui_controller_deps),
-         "mojom_with_webui_js_bridge should have a " +
-             "`webui_controller_deps` parameter.")
-
-  mojom(target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "source",
-                             "webui_controller",
-                             "webui_controller_header",
-                             "webui_controller_deps",
-                           ])
-    sources = [ invoker.source ]
-
-    webui_js_bridge_config = {
-      webui_controller = invoker.webui_controller
-      webui_controller_header = invoker.webui_controller_header
-      webui_controller_deps = invoker.webui_controller_deps
-    }
   }
 }

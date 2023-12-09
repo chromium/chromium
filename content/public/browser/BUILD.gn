@@ -470,7 +470,6 @@ source_set("browser_sources") {
     "web_ui_controller_interface_binder.cc",
     "web_ui_controller_interface_binder.h",
     "web_ui_data_source.h",
-    "web_ui_js_bridge_traits.h",
     "web_ui_managed_interface.cc",
     "web_ui_managed_interface.h",
     "web_ui_message_handler.h",

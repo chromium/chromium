@@ -141,8 +141,6 @@ static_library("test_support") {
     "../browser/web_package/mock_signed_exchange_handler.cc",
     "../browser/web_package/mock_signed_exchange_handler.h",
     "../browser/web_package/signed_exchange_test_utils.h",
-    "../browser/webui/test_webui_js_bridge_ui.cc",
-    "../browser/webui/test_webui_js_bridge_ui.h",
     "../browser/worker_host/test_shared_worker_service_impl.cc",
     "../browser/worker_host/test_shared_worker_service_impl.h",
     "../public/test/accessibility_notification_waiter.cc",
@@ -1085,13 +1083,9 @@ if (is_chromeos_ash) {
   }
 }
 
-mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
+mojom("web_ui_managed_interface_tests_bindings") {
   testonly = true
-  source = "data/web_ui_managed_interface_test.test-mojom"
-
-  webui_controller = "content::TestWebUIJsBridgeUI"
-  webui_controller_header = "//content/browser/webui/test_webui_js_bridge_ui.h"
-  webui_controller_deps = [ "//content/test:test_support" ]
+  sources = [ "data/web_ui_managed_interface_test.test-mojom" ]
 
   webui_module_path = "/content/test/data"
 }
@@ -1144,7 +1138,7 @@ ts_library("web_ui_mojo_test_build_ts") {
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
   extra_deps = [
     ":preprocess_mojo_webui_test",
-    ":web_ui_js_bridge_test_bindings_ts__generator",
+    ":web_ui_managed_interface_tests_bindings_ts__generator",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
   ]
 }
@@ -1613,7 +1607,6 @@ test("content_browsertests") {
     "../browser/webrtc/webrtc_video_capture_shared_device_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.cc",
     "../browser/webrtc/webrtc_webcam_browsertest.h",
-    "../browser/webui/web_ui_browser_interface_broker_registry_browsertest.cc",
     "../browser/webui/web_ui_browsertest.cc",
     "../browser/webui/web_ui_managed_interface_browsertest.cc",
     "../browser/webui/web_ui_mojo_browsertest.cc",
@@ -1685,8 +1678,7 @@ test("content_browsertests") {
     ":browsertest_support",
     ":content_test_mojo_bindings",
     ":test_support",
-    ":web_ui_js_bridge_test_bindings__generator",
-    ":web_ui_js_bridge_test_bindings_webui_js_bridge_impl",
+    ":web_ui_managed_interface_tests_bindings",
     ":web_ui_ts_test_mojo_bindings",
     "//base/test:proto_test_support",
     "//base/test:test_support",
@@ -2751,7 +2743,6 @@ test("content_unittests") {
     "../browser/webui/web_ui_message_handler_unittest.cc",
     "../browser/webui/web_ui_unittest.cc",
     "../browser/webui/web_ui_url_loader_factory_unittest.cc",
-    "../browser/webui/web_ui_webui_js_bridge_unittest.cc",
     "../browser/webui/webui_config_map_unittest.cc",
     "../browser/worker_host/dedicated_worker_service_impl_unittest.cc",
     "../browser/worker_host/mock_shared_worker.cc",
@@ -2980,9 +2971,6 @@ test("content_unittests") {
     "//content/renderer:for_content_tests",
     "//content/services/auction_worklet:tests",
     "//content/services/auction_worklet/public/mojom:for_content_tests",
-    "//content/test/web_ui:test_secondary_interface",
-    "//content/test/web_ui:test_webui_js_bridge2_webui_js_bridge_impl",
-    "//content/test/web_ui:test_webui_js_bridge_webui_js_bridge_impl",
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
