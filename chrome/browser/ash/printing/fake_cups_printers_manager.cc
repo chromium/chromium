@@ -67,7 +67,7 @@ void FakeCupsPrintersManager::UninstallPrinter(const std::string& printer_id) {
   installed_.erase(printer_id);
 }
 
-absl::optional<Printer> FakeCupsPrintersManager::GetPrinter(
+std::optional<Printer> FakeCupsPrintersManager::GetPrinter(
     const std::string& id) const {
   return printers_.Get(id);
 }

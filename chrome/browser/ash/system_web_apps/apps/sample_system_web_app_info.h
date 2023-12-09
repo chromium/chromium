@@ -25,7 +25,7 @@ class SampleSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
-  absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
+  std::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
       const override;
 };
 

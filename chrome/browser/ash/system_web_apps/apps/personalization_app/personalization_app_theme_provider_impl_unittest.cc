@@ -72,7 +72,7 @@ class TestThemeObserver
     sample_color_schemes_ = sample_color_schemes;
   }
 
-  void OnStaticColorChanged(absl::optional<::SkColor> static_color) override {
+  void OnStaticColorChanged(std::optional<::SkColor> static_color) override {
     static_color_ = static_color;
   }
 
@@ -84,9 +84,9 @@ class TestThemeObserver
     return theme_observer_receiver_.BindNewPipeAndPassRemote();
   }
 
-  absl::optional<bool> is_dark_mode_enabled() {
+  std::optional<bool> is_dark_mode_enabled() {
     if (!theme_observer_receiver_.is_bound()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     theme_observer_receiver_.FlushForTesting();
@@ -107,9 +107,9 @@ class TestThemeObserver
     return color_scheme_;
   }
 
-  absl::optional<SkColor> GetStaticColor() {
+  std::optional<SkColor> GetStaticColor() {
     if (!theme_observer_receiver_.is_bound()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     theme_observer_receiver_.FlushForTesting();
     return static_color_;
@@ -123,7 +123,7 @@ class TestThemeObserver
   bool color_mode_auto_schedule_enabled_ = false;
   ash::style::mojom::ColorScheme color_scheme_ =
       ash::style::mojom::ColorScheme::kTonalSpot;
-  absl::optional<::SkColor> static_color_ = absl::nullopt;
+  std::optional<::SkColor> static_color_ = std::nullopt;
   std::vector<ash::SampleColorScheme> sample_color_schemes_;
 };
 
@@ -181,7 +181,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
         test_theme_observer_.pending_remote());
   }
 
-  absl::optional<bool> is_dark_mode_enabled() {
+  std::optional<bool> is_dark_mode_enabled() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
     }
@@ -202,7 +202,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
     return test_theme_observer_.GetColorScheme();
   }
 
-  absl::optional<SkColor> GetStaticColor() {
+  std::optional<SkColor> GetStaticColor() {
     if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
     }

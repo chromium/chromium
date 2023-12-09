@@ -13,7 +13,7 @@ SystemWebAppBackgroundTaskInfo::SystemWebAppBackgroundTaskInfo(
     const SystemWebAppBackgroundTaskInfo& other) = default;
 
 SystemWebAppBackgroundTaskInfo::SystemWebAppBackgroundTaskInfo(
-    const absl::optional<base::TimeDelta>& period,
+    const std::optional<base::TimeDelta>& period,
     const GURL& url,
     bool open_immediately)
     : period(period), url(url), open_immediately(open_immediately) {}

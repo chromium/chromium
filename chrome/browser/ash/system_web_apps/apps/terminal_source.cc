@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/terminal_source.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -38,7 +40,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_allowlist.h"
@@ -62,7 +63,7 @@ class TerminalFileSystemProvider
                 .multiple_mounts = true,
                 .source = extensions::FileSystemProviderSource::SOURCE_NETWORK},
             l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_NAME),
-            /*icon_set=*/absl::nullopt) {}
+            /*icon_set=*/std::nullopt) {}
   bool RequestMount(
       Profile* profile,
       ash::file_system_provider::RequestMountCallback callback) override {
@@ -185,7 +186,7 @@ void TerminalSource::StartDataRequest(
   // Refresh the $i8n{themeColor} replacement for css files.
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     GURL contents_url;
-    absl::optional<SkColor> opener_background_color;
+    std::optional<SkColor> opener_background_color;
     content::WebContents* contents = wc_getter.Run();
     if (contents) {
       contents_url = contents->GetVisibleURL();

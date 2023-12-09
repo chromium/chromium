@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 
 #include <cups/cups.h>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -43,7 +44,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "printing/printed_document.h"
 #include "printing/printing_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -74,7 +74,7 @@ enum JobResultForHistogram {
 // Holds the print job data for recording to metrics upon print job completion.
 struct PrinterMetrics {
   bool printer_manually_selected;
-  absl::optional<StatusReason> printer_status_reason;
+  std::optional<StatusReason> printer_status_reason;
 };
 
 // Returns the appropriate JobResultForHistogram for a given |state|.  Only
@@ -198,7 +198,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
       return false;
     }
 
-    absl::optional<chromeos::Printer> printer = manager->GetPrinter(printer_id);
+    std::optional<chromeos::Printer> printer = manager->GetPrinter(printer_id);
     if (!printer) {
       LOG(WARNING)
           << "Printer was removed while job was in progress.  It cannot "

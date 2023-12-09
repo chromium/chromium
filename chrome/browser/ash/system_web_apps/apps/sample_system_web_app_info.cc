@@ -95,7 +95,7 @@ Browser* SampleSystemAppDelegate::GetWindowForLaunch(Profile* profile,
   return nullptr;
 }
 
-absl::optional<ash::SystemWebAppBackgroundTaskInfo>
+std::optional<ash::SystemWebAppBackgroundTaskInfo>
 SampleSystemAppDelegate::GetTimerInfo() const {
   return ash::SystemWebAppBackgroundTaskInfo(
       base::Seconds(30), GURL("chrome://sample-system-web-app/timer.html"));

@@ -101,7 +101,7 @@ TEST_F(SystemExtensionsPersistentStorageTest, WriteAndRemovePrefs) {
   }
 
   // Test the API returns the correct values.
-  absl::optional<SystemExtensionPersistedInfo> persistence_info =
+  std::optional<SystemExtensionPersistedInfo> persistence_info =
       storage.Get(kFirstId);
   EXPECT_EQ(persistence_info->manifest, first_test_manifest());
   std::vector<SystemExtensionPersistedInfo> persistence_infos =
@@ -233,7 +233,7 @@ TEST_F(SystemExtensionsPersistentStorageTest, PersistTwice) {
 
   // Test that the saved manifest is the correct one i.e. from the second
   // System Extension.
-  absl::optional<SystemExtensionPersistedInfo> persistence_info =
+  std::optional<SystemExtensionPersistedInfo> persistence_info =
       storage.Get(kFirstId);
   EXPECT_EQ(persistence_info->manifest, second_system_extension.manifest);
 }

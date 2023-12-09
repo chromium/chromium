@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_OAUTH2_LOG_ENTRY_H_
 #define CHROME_BROWSER_ASH_PRINTING_OAUTH2_LOG_ENTRY_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
@@ -21,13 +21,13 @@ namespace ash::printing::oauth2 {
 //  * `message` - free-text message, is omitted from the output when empty;
 //  * `method` - the name of the method called, use __func__ here;
 //  * `auth_server` - the URL of the Authorization Server (if applicable);
-//  * `status` - the result returned by the method or absl::nullopt if
+//  * `status` - the result returned by the method or std::nullopt if
 //               the method is still being executed;
 //  * `ipp_endpoint` - the URL of the IPP Endpoint (if applicable).
 std::string LogEntry(base::StringPiece message,
                      base::StringPiece method,
                      const GURL& auth_server,
-                     absl::optional<StatusCode> status = absl::nullopt,
+                     std::optional<StatusCode> status = std::nullopt,
                      const chromeos::Uri& ipp_endpoint = chromeos::Uri());
 
 }  // namespace ash::printing::oauth2

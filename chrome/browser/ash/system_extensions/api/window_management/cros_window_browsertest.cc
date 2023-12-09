@@ -59,10 +59,10 @@ Profile* GetProfile() {
 }
 
 base::UnguessableToken GetUnguessableToken(base::StringPiece str) {
-  absl::optional<base::Token> token = base::Token::FromString(str);
+  std::optional<base::Token> token = base::Token::FromString(str);
   DCHECK(token.has_value());
 
-  absl::optional<base::UnguessableToken> unguessable_token =
+  std::optional<base::UnguessableToken> unguessable_token =
       base::UnguessableToken::Deserialize(token->high(), token->low());
   return unguessable_token.value();
 }
@@ -110,7 +110,7 @@ class InstanceRegistryEventWaiter : public apps::InstanceRegistry::Observer {
   // result in nested run loops which would hang the test. Allow nestable tasks
   // to get around this.
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  absl::optional<base::UnguessableToken> window_id_;
+  std::optional<base::UnguessableToken> window_id_;
 };
 
 // Class used by tests to perform actions on the browser side.

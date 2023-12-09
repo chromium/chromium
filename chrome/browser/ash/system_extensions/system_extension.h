@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSION_H_
 
 #include <array>
+#include <optional>
 
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -35,7 +35,7 @@ struct SystemExtension {
   SystemExtension& operator=(SystemExtension&&) = default;
 
   static std::string IdToString(const SystemExtensionId& system_extension_id);
-  static absl::optional<SystemExtensionId> StringToId(base::StringPiece id_str);
+  static std::optional<SystemExtensionId> StringToId(base::StringPiece id_str);
 
   // The following fields are specified by the System Extension itself.
 
@@ -47,7 +47,7 @@ struct SystemExtension {
   std::string name;
   // Display name of the System Extension to be used where
   // the number of characters is limited.
-  absl::optional<std::string> short_name;
+  std::optional<std::string> short_name;
   // Entry point to the System Extension.
   GURL service_worker_url;
 

@@ -574,7 +574,7 @@ TEST_F(GaussianTrainerTest, TrainedCurveValue) {
 
   const MonotoneCubicSpline trained_curve =
       *(gaussian_trainer_->Train({data}).new_curve);
-  const absl::optional<MonotoneCubicSpline> expected_curve =
+  const std::optional<MonotoneCubicSpline> expected_curve =
       MonotoneCubicSpline::CreateMonotoneCubicSpline(
           log_lux_, {3.0,   8.0,   12.48, 18.72, 24.96, 31.2, 37.44,
                      43.68, 49.92, 56.16, 62.4,  62.4,  62.4, 66.0,

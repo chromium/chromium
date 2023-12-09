@@ -69,7 +69,7 @@ class FakePrintServersProvider : public PrintServersProvider {
                         const std::string& allowlist_pref) override {}
   void ClearData() override {}
 
-  absl::optional<std::vector<PrintServer>> GetPrintServers() override {
+  std::optional<std::vector<PrintServer>> GetPrintServers() override {
     return print_servers_;
   }
 
@@ -77,7 +77,7 @@ class FakePrintServersProvider : public PrintServersProvider {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void SetPrintServers(absl::optional<std::vector<PrintServer>> print_servers) {
+  void SetPrintServers(std::optional<std::vector<PrintServer>> print_servers) {
     print_servers_ = print_servers;
     if (observer_) {
       observer_->OnServersChanged(print_servers.has_value(),
@@ -86,7 +86,7 @@ class FakePrintServersProvider : public PrintServersProvider {
   }
 
  private:
-  absl::optional<std::vector<PrintServer>> print_servers_;
+  std::optional<std::vector<PrintServer>> print_servers_;
   raw_ptr<PrintServersProvider::Observer, ExperimentalAsh> observer_ = nullptr;
   base::WeakPtrFactory<FakePrintServersProvider> weak_ptr_factory_{this};
 };

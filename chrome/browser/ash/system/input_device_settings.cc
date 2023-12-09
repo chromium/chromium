@@ -17,8 +17,7 @@ namespace {
 // |to_set|. This differs from *to_set = other; in so far as nothing is changed
 // if |other| has no value. Returns true if |to_set| was updated.
 template <typename T>
-bool UpdateIfHasValue(const absl::optional<T>& other,
-                      absl::optional<T>* to_set) {
+bool UpdateIfHasValue(const std::optional<T>& other, std::optional<T>* to_set) {
   if (!other.has_value() || other == *to_set)
     return false;
   *to_set = other;

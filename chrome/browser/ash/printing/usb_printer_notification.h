@@ -44,8 +44,8 @@ class UsbPrinterNotification : public message_center::NotificationObserver {
 
   // message_center::NotificationObserver
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   void UpdateContents();

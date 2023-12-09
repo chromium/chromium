@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_HELP_APP_HELP_APP_DISCOVER_TAB_NOTIFICATION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -39,7 +39,7 @@ class HelpAppDiscoverTabNotification {
   void SetOnClickCallbackForTesting(base::RepeatingCallback<void()> callback);
 
  private:
-  void OnClick(absl::optional<int> button_index);
+  void OnClick(std::optional<int> button_index);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<message_center::Notification> notification_;

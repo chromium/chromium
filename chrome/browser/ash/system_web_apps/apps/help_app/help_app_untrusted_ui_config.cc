@@ -67,9 +67,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these
   // to be empty strings.
-  const absl::optional<base::StringPiece> customization_id =
+  const std::optional<base::StringPiece> customization_id =
       provider->GetMachineStatistic(system::kCustomizationIdKey);
-  const absl::optional<base::StringPiece> hwid =
+  const std::optional<base::StringPiece> hwid =
       provider->GetMachineStatistic(system::kHardwareClassKey);
   source->AddString("customizationId",
                     std::string(customization_id.value_or("")));

@@ -197,7 +197,7 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
 namespace ash {
 namespace system {
 
-absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+std::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
     const std::string& timezone) {
   // Determine region code from timezone id.
   char region[kMaxGeolocationResponseLength];
@@ -207,7 +207,7 @@ absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
                            kMaxGeolocationResponseLength, error);
   // Track failures.
   if (U_FAILURE(error))
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::ToLowerASCII(region);
 }

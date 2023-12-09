@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -109,11 +109,11 @@ class SystemWebAppManager : public KeyedService,
   void InstallSystemAppsForTesting();
 
   // Returns the app id for the given System App |type|.
-  absl::optional<webapps::AppId> GetAppIdForSystemApp(
+  std::optional<webapps::AppId> GetAppIdForSystemApp(
       SystemWebAppType type) const;
 
   // Returns the System App Type for the given |app_id|.
-  absl::optional<SystemWebAppType> GetSystemAppTypeForAppId(
+  std::optional<SystemWebAppType> GetSystemAppTypeForAppId(
       const webapps::AppId& app_id) const;
 
   // Returns the System App Delegate for the given App |type|.
@@ -130,10 +130,10 @@ class SystemWebAppManager : public KeyedService,
   // Under the hood, it returns the system web app whose `start_url` shares
   // the same origin with the given |url|. It does not take
   // `SystemWebAppDelegate::IsURLInSystemAppScope` into account.
-  absl::optional<SystemWebAppType> GetSystemAppForURL(const GURL& url) const;
+  std::optional<SystemWebAppType> GetSystemAppForURL(const GURL& url) const;
 
   // Returns the SystemWebAppType that should capture the navigation to |url|.
-  absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(
+  std::optional<SystemWebAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 
   const base::OneShotEvent& on_apps_synchronized() const {

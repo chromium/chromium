@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 
+#include <optional>
+
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
@@ -19,7 +21,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -91,7 +92,7 @@ class PersonalizationAppAmbientProviderImpl
   void OnUpdateSettings(bool success, const AmbientSettings& settings);
 
   void OnSettingsAndAlbumsFetched(
-      const absl::optional<ash::AmbientSettings>& settings,
+      const std::optional<ash::AmbientSettings>& settings,
       ash::PersonalAlbums personal_albums);
 
   // The `settings_` could be stale when the albums in Google Photos changes.
@@ -140,13 +141,13 @@ class PersonalizationAppAmbientProviderImpl
 
   // Local settings which may contain changes from WebUI but have not sent to
   // server. Only one `UpdateSettings()` at a time.
-  absl::optional<ash::AmbientSettings> settings_;
+  std::optional<ash::AmbientSettings> settings_;
 
   // The cached settings from the server. Should be the same as the server side.
   // This value will be updated when `RequestSettingsAndAlbums()` and
   // `UpdateSettings()` return successfully.
   // If `UpdateSettings()` fails, will restore to this value.
-  absl::optional<ash::AmbientSettings> cached_settings_;
+  std::optional<ash::AmbientSettings> cached_settings_;
 
   ash::PersonalAlbums personal_albums_;
 

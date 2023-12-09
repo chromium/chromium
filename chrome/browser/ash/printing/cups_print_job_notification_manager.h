@@ -47,7 +47,7 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
   void OnPrintJobNotificationRemoved(CupsPrintJobNotification* notification);
 
   // Return the notification for the given print job, or nullptr if not found.
-  absl::optional<CupsPrintJobNotification*> GetNotificationForTesting(
+  std::optional<CupsPrintJobNotification*> GetNotificationForTesting(
       CupsPrintJob* job);
 
  private:

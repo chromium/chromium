@@ -95,14 +95,14 @@ void InputDeviceSettingsImplOzone::SetTouchpadSensitivity(int value) {
   DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_touchpad_settings_.SetSensitivity(value);
-  input_controller()->SetTouchpadSensitivity(absl::nullopt, value);
+  input_controller()->SetTouchpadSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadScrollSensitivity(int value) {
   DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_touchpad_settings_.SetScrollSensitivity(value);
-  input_controller()->SetTouchpadScrollSensitivity(absl::nullopt, value);
+  input_controller()->SetTouchpadScrollSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::HapticTouchpadExists(
@@ -113,23 +113,23 @@ void InputDeviceSettingsImplOzone::HapticTouchpadExists(
 
 void InputDeviceSettingsImplOzone::SetTouchpadHapticFeedback(bool enabled) {
   current_touchpad_settings_.SetHapticFeedback(enabled);
-  input_controller()->SetTouchpadHapticFeedback(absl::nullopt, enabled);
+  input_controller()->SetTouchpadHapticFeedback(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadHapticClickSensitivity(
     int value) {
   current_touchpad_settings_.SetHapticClickSensitivity(value);
-  input_controller()->SetTouchpadHapticClickSensitivity(absl::nullopt, value);
+  input_controller()->SetTouchpadHapticClickSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetNaturalScroll(bool enabled) {
   current_touchpad_settings_.SetNaturalScroll(enabled);
-  input_controller()->SetNaturalScroll(absl::nullopt, enabled);
+  input_controller()->SetNaturalScroll(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetTapToClick(bool enabled) {
   current_touchpad_settings_.SetTapToClick(enabled);
-  input_controller()->SetTapToClick(absl::nullopt, enabled);
+  input_controller()->SetTapToClick(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetThreeFingerClick(bool enabled) {
@@ -140,7 +140,7 @@ void InputDeviceSettingsImplOzone::SetThreeFingerClick(bool enabled) {
 
 void InputDeviceSettingsImplOzone::SetTapDragging(bool enabled) {
   current_touchpad_settings_.SetTapDragging(enabled);
-  input_controller()->SetTapDragging(absl::nullopt, enabled);
+  input_controller()->SetTapDragging(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::MouseExists(DeviceExistsCallback callback) {
@@ -158,34 +158,34 @@ void InputDeviceSettingsImplOzone::SetMouseSensitivity(int value) {
   DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_mouse_settings_.SetSensitivity(value);
-  input_controller()->SetMouseSensitivity(absl::nullopt, value);
+  input_controller()->SetMouseSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetMouseScrollSensitivity(int value) {
   DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_mouse_settings_.SetScrollSensitivity(value);
-  input_controller()->SetMouseScrollSensitivity(absl::nullopt, value);
+  input_controller()->SetMouseScrollSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetPrimaryButtonRight(bool right) {
   current_mouse_settings_.SetPrimaryButtonRight(right);
-  input_controller()->SetPrimaryButtonRight(absl::nullopt, right);
+  input_controller()->SetPrimaryButtonRight(std::nullopt, right);
 }
 
 void InputDeviceSettingsImplOzone::SetMouseReverseScroll(bool enabled) {
   current_mouse_settings_.SetReverseScroll(enabled);
-  input_controller()->SetMouseReverseScroll(absl::nullopt, enabled);
+  input_controller()->SetMouseReverseScroll(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetMouseAcceleration(bool enabled) {
   current_mouse_settings_.SetAcceleration(enabled);
-  input_controller()->SetMouseAcceleration(absl::nullopt, enabled);
+  input_controller()->SetMouseAcceleration(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetMouseScrollAcceleration(bool enabled) {
   current_mouse_settings_.SetScrollAcceleration(enabled);
-  input_controller()->SetMouseScrollAcceleration(absl::nullopt, enabled);
+  input_controller()->SetMouseScrollAcceleration(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::PointingStickExists(
@@ -204,18 +204,18 @@ void InputDeviceSettingsImplOzone::SetPointingStickSensitivity(int value) {
   DCHECK_GE(value, static_cast<int>(PointerSensitivity::kLowest));
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_pointing_stick_settings_.SetSensitivity(value);
-  input_controller()->SetPointingStickSensitivity(absl::nullopt, value);
+  input_controller()->SetPointingStickSensitivity(std::nullopt, value);
 }
 
 void InputDeviceSettingsImplOzone::SetPointingStickPrimaryButtonRight(
     bool right) {
   current_pointing_stick_settings_.SetPrimaryButtonRight(right);
-  input_controller()->SetPointingStickPrimaryButtonRight(absl::nullopt, right);
+  input_controller()->SetPointingStickPrimaryButtonRight(std::nullopt, right);
 }
 
 void InputDeviceSettingsImplOzone::SetPointingStickAcceleration(bool enabled) {
   current_pointing_stick_settings_.SetAcceleration(enabled);
-  input_controller()->SetPointingStickAcceleration(absl::nullopt, enabled);
+  input_controller()->SetPointingStickAcceleration(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::ReapplyPointingStickSettings() {
@@ -224,12 +224,12 @@ void InputDeviceSettingsImplOzone::ReapplyPointingStickSettings() {
 
 void InputDeviceSettingsImplOzone::SetTouchpadAcceleration(bool enabled) {
   current_touchpad_settings_.SetAcceleration(enabled);
-  input_controller()->SetTouchpadAcceleration(absl::nullopt, enabled);
+  input_controller()->SetTouchpadAcceleration(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadScrollAcceleration(bool enabled) {
   current_touchpad_settings_.SetScrollAcceleration(enabled);
-  input_controller()->SetTouchpadScrollAcceleration(absl::nullopt, enabled);
+  input_controller()->SetTouchpadScrollAcceleration(std::nullopt, enabled);
 }
 
 void InputDeviceSettingsImplOzone::ReapplyTouchpadSettings() {

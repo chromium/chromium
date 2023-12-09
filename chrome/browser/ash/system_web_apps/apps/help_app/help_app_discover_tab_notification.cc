@@ -48,7 +48,7 @@ void HelpAppDiscoverTabNotification::Show() {
       base::UserMetricsAction("Discover.DiscoverTabNotification.Shown"));
 }
 
-void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
+void HelpAppDiscoverTabNotification::OnClick(std::optional<int> button_index) {
   SystemNotificationHelper::GetInstance()->Close(
       kShowHelpAppDiscoverTabNotificationId);
   SystemAppLaunchParams params;

@@ -71,10 +71,10 @@ class PersonalizationAppSeaPenProviderImpl
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
   void OnFetchThumbnailsDone(SearchWallpaperCallback callback,
-                             absl::optional<std::vector<SeaPenImage>> images);
+                             std::optional<std::vector<SeaPenImage>> images);
 
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
-                            absl::optional<SeaPenImage> image);
+                            std::optional<SeaPenImage> image);
 
   void OnGetRecentSeaPenImages(GetRecentSeaPenImagesCallback callback,
                                const std::vector<base::FilePath>& images);

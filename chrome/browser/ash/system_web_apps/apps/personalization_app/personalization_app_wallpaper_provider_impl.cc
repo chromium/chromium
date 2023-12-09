@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -57,7 +58,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -213,7 +213,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchImagesForCollection(
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
-    const absl::optional<std::string>& resume_token,
+    const std::optional<std::string>& resume_token,
     FetchGooglePhotosAlbumsCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
     wallpaper_receiver_.ReportBadMessage(
@@ -227,7 +227,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosSharedAlbums(
-    const absl::optional<std::string>& resume_token,
+    const std::optional<std::string>& resume_token,
     FetchGooglePhotosAlbumsCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
     wallpaper_receiver_.ReportBadMessage(
@@ -260,9 +260,9 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
-    const absl::optional<std::string>& item_id,
-    const absl::optional<std::string>& album_id,
-    const absl::optional<std::string>& resume_token,
+    const std::optional<std::string>& item_id,
+    const std::optional<std::string>& album_id,
+    const std::optional<std::string>& resume_token,
     FetchGooglePhotosPhotosCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
     wallpaper_receiver_.ReportBadMessage(
@@ -270,7 +270,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
         "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(
         ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New(
-            absl::nullopt, absl::nullopt));
+            std::nullopt, std::nullopt));
     return;
   }
 
@@ -347,7 +347,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   wallpaper_attribution_info_fetcher_.reset();
   attribution_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  absl::optional<ash::WallpaperInfo> info =
+  std::optional<ash::WallpaperInfo> info =
       WallpaperController::Get()->GetActiveUserWallpaperInfo();
   if (!info) {
     DVLOG(1) << "No wallpaper info for active user. This should only happen in "
@@ -611,7 +611,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
       ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id,
                                        /*daily_refresh_enabled=*/false, layout,
                                        preview_mode,
-                                       /*dedup_key=*/absl::nullopt),
+                                       /*dedup_key=*/std::nullopt),
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                          OnGooglePhotosWallpaperSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
@@ -651,7 +651,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     // Only force refresh if the album does not contain the current wallpaper
     // image.
     const auto& it = album_id_dedup_key_map_.find(album_id);
-    absl::optional<ash::WallpaperInfo> info =
+    std::optional<ash::WallpaperInfo> info =
         wallpaper_controller->GetActiveUserWallpaperInfo();
     if (info.has_value() && info->dedup_key.has_value()) {
       force_refresh =
@@ -711,7 +711,7 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
   wallpaper_controller->SetDailyRefreshCollectionId(GetAccountId(profile_),
                                                     collection_id);
 
-  absl::optional<ash::WallpaperInfo> info =
+  std::optional<ash::WallpaperInfo> info =
       wallpaper_controller->GetActiveUserWallpaperInfo();
   DCHECK(info);
 
@@ -762,7 +762,7 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
 
   auto* wallpaper_controller = WallpaperController::Get();
-  absl::optional<ash::WallpaperInfo> info =
+  std::optional<ash::WallpaperInfo> info =
       wallpaper_controller->GetActiveUserWallpaperInfo();
   DCHECK(info);
   DCHECK(info->type == WallpaperType::kDaily ||
@@ -852,7 +852,7 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollections(
   DCHECK(wallpaper_collection_info_fetcher_);
   DCHECK(!pending_collections_callbacks_.empty());
 
-  absl::optional<std::vector<backdrop::Collection>> result;
+  std::optional<std::vector<backdrop::Collection>> result;
   if (success && !collections.empty()) {
     result = std::move(collections);
   }
@@ -870,7 +870,7 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollectionImages(
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
-  absl::optional<std::vector<backdrop::Image>> result;
+  std::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
     // Do first pass to clear all unit_id associated with the images.
     base::ranges::for_each(images, [&](auto& proto_image) {
@@ -903,7 +903,7 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosEnabled(
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnFetchGooglePhotosPhotos(
-    absl::optional<std::string> album_id,
+    std::optional<std::string> album_id,
     FetchGooglePhotosPhotosCallback callback,
     mojo::StructPtr<mojom::FetchGooglePhotosPhotosResponse> response) {
   if (!album_id || !response || response.is_null()) {
@@ -996,7 +996,7 @@ void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced(
 
 void PersonalizationAppWallpaperProviderImpl::FindAttribution(
     const ash::WallpaperInfo& info,
-    const absl::optional<std::vector<backdrop::Collection>>& collections) {
+    const std::optional<std::vector<backdrop::Collection>>& collections) {
   DCHECK(!wallpaper_attribution_info_fetcher_);
   if (!collections.has_value() || collections->empty()) {
     const std::string key = GetOnlineWallpaperKey(info);
@@ -1025,7 +1025,7 @@ void PersonalizationAppWallpaperProviderImpl::FindAttribution(
 void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
     const ash::WallpaperInfo& info,
     std::size_t current_index,
-    const absl::optional<std::vector<backdrop::Collection>>& collections,
+    const std::optional<std::vector<backdrop::Collection>>& collections,
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {

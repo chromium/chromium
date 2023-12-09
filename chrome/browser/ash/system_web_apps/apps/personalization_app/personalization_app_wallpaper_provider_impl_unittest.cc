@@ -410,7 +410,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
   auto* ctrl = test_wallpaper_controller();
 
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 0);
-  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), absl::nullopt);
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), std::nullopt);
 
   auto layout = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
   wallpaper_provider_remote()->SetCurrentWallpaperLayout(layout);
@@ -573,12 +573,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
   EXPECT_CALL(*google_photos_albums_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+              AddRequestAndStartIfNecessary(std::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
 
   EXPECT_CALL(*google_photos_shared_albums_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+              AddRequestAndStartIfNecessary(std::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
 
@@ -646,8 +646,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   const std::string album_id = "albumId";
   EXPECT_CALL(*google_photos_photos_fetcher,
               AddRequestAndStartIfNecessary(
-                  absl::make_optional(item_id), absl::make_optional(album_id),
-                  absl::make_optional(kResumeToken), false, ::testing::_))
+                  std::make_optional(item_id), std::make_optional(album_id),
+                  std::make_optional(kResumeToken), false, ::testing::_))
       .Times(kNumFetches);
 
   // Test fetching Google Photos photos after fetching the enterprise setting.

@@ -87,7 +87,7 @@ class SystemClock : public LoginState::Observer,
 
   void UpdateClockType();
 
-  absl::optional<base::HourClockType> scoped_hour_clock_type_;
+  std::optional<base::HourClockType> scoped_hour_clock_type_;
 
   raw_ptr<Profile, ExperimentalAsh> user_profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

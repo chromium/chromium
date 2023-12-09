@@ -110,20 +110,20 @@ class PersonalizationAppWallpaperProviderImpl
       FetchImagesForCollectionCallback callback) override;
 
   void FetchGooglePhotosAlbums(
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& resume_token,
       FetchGooglePhotosAlbumsCallback callback) override;
 
   void FetchGooglePhotosSharedAlbums(
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& resume_token,
       FetchGooglePhotosAlbumsCallback callback) override;
 
   void FetchGooglePhotosEnabled(
       FetchGooglePhotosEnabledCallback callback) override;
 
   void FetchGooglePhotosPhotos(
-      const absl::optional<std::string>& item_id,
-      const absl::optional<std::string>& album_id,
-      const absl::optional<std::string>& resume_token,
+      const std::optional<std::string>& item_id,
+      const std::optional<std::string>& album_id,
+      const std::optional<std::string>& resume_token,
       FetchGooglePhotosPhotosCallback callback) override;
 
   void GetDefaultImageThumbnail(
@@ -221,7 +221,7 @@ class PersonalizationAppWallpaperProviderImpl
       ash::personalization_app::mojom::GooglePhotosEnablementState state);
 
   void OnFetchGooglePhotosPhotos(
-      absl::optional<std::string> album_id,
+      std::optional<std::string> album_id,
       FetchGooglePhotosPhotosCallback callback,
       mojo::StructPtr<mojom::FetchGooglePhotosPhotosResponse> response);
 
@@ -257,12 +257,12 @@ class PersonalizationAppWallpaperProviderImpl
 
   void FindAttribution(
       const ash::WallpaperInfo& info,
-      const absl::optional<std::vector<backdrop::Collection>>& collections);
+      const std::optional<std::vector<backdrop::Collection>>& collections);
 
   void FindImageMetadataInCollection(
       const ash::WallpaperInfo& info,
       std::size_t current_index,
-      const absl::optional<std::vector<backdrop::Collection>>& collections,
+      const std::optional<std::vector<backdrop::Collection>>& collections,
       bool success,
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);

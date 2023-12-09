@@ -497,14 +497,14 @@ void SmartChargingManager::UpdateChargeHistory() {
 }
 
 void SmartChargingManager::OnReceiveScreenBrightnessPercent(
-    absl::optional<double> screen_brightness_percent) {
+    std::optional<double> screen_brightness_percent) {
   if (screen_brightness_percent.has_value()) {
     screen_brightness_percent_ = *screen_brightness_percent;
   }
 }
 
 void SmartChargingManager::OnReceiveSwitchStates(
-    const absl::optional<chromeos::PowerManagerClient::SwitchStates>
+    const std::optional<chromeos::PowerManagerClient::SwitchStates>
         switch_states) {
   if (switch_states.has_value()) {
     lid_state_ = switch_states->lid_state;
@@ -653,7 +653,7 @@ std::tuple<PastEvent, PastEvent> SmartChargingManager::GetLastChargeEvents() {
 }
 
 void SmartChargingManager::OnChargeHistoryReceived(
-    absl::optional<power_manager::ChargeHistoryState> proto) {
+    std::optional<power_manager::ChargeHistoryState> proto) {
   if (proto.has_value()) {
     charge_history_ = proto.value();
     return;

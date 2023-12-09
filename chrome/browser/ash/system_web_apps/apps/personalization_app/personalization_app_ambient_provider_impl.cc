@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/backoff_entry.h"
 #include "personalization_app_ambient_provider_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
@@ -311,7 +311,7 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
                     "unselects all other videos.";
         return;
       }
-      absl::optional<AmbientVideo> video = FindAmbientVideoByAlbumId(id);
+      std::optional<AmbientVideo> video = FindAmbientVideoByAlbumId(id);
       if (!video) {
         ambient_receiver_.ReportBadMessage("Invalid album id.");
         return;
@@ -562,7 +562,7 @@ void PersonalizationAppAmbientProviderImpl::OnUpdateSettings(
 }
 
 void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
-    const absl::optional<ash::AmbientSettings>& settings,
+    const std::optional<ash::AmbientSettings>& settings,
     ash::PersonalAlbums personal_albums) {
   // `settings` value implies success.
   if (!settings) {
@@ -650,7 +650,7 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
   if (GetCurrentUiSettings().theme() == mojom::AmbientTheme::kVideo) {
-    absl::optional<AmbientVideo> video = GetCurrentUiSettings().video();
+    std::optional<AmbientVideo> video = GetCurrentUiSettings().video();
     DCHECK(video.has_value());
     auto url_arr =
         AmbientBackendController::Get()->GetTimeOfDayVideoPreviewImageUrls(

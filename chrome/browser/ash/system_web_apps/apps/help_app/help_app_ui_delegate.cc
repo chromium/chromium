@@ -85,7 +85,7 @@ ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
 
 ChromeHelpAppUIDelegate::~ChromeHelpAppUIDelegate() = default;
 
-absl::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
+std::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   constexpr char kHelpAppFeedbackCategoryTag[] = "FromHelpApp";
   // We don't change the default description, or add extra diagnostics so those
@@ -96,7 +96,7 @@ absl::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
                            std::string() /* description_placeholder_text */,
                            kHelpAppFeedbackCategoryTag /* category_tag */,
                            std::string() /* extra_diagnostics */);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromeHelpAppUIDelegate::ShowParentalControls() {
@@ -164,7 +164,7 @@ void ChromeHelpAppUIDelegate::GetDeviceInfo(
       &DeviceInfoCallback, std::move(callback), profile->GetWeakPtr()));
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
     const GURL& url) {
   if (!url.is_valid()) {
@@ -206,7 +206,7 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
       web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
           url, origin_url, /*is_renderer_initiated=*/true);
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // We specify a different page transition here because the common
@@ -219,7 +219,7 @@ ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
   params.initiator_origin = url::Origin::Create(origin_url);
   Navigate(&params);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash

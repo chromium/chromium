@@ -158,7 +158,7 @@ SystemExtensionsSandboxedUnpacker::GetSystemExtensionFromValue(
   if (!id_str) {
     return SystemExtensionsInstallStatus::kFailedIdMissing;
   }
-  absl::optional<SystemExtensionId> id = SystemExtension::StringToId(*id_str);
+  std::optional<SystemExtensionId> id = SystemExtension::StringToId(*id_str);
   if (!id.has_value()) {
     return SystemExtensionsInstallStatus::kFailedIdInvalid;
   }

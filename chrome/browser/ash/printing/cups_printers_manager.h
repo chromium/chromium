@@ -129,8 +129,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
   void UninstallPrinter(const std::string& printer_id) override = 0;
 
   // Look for a printer with the given id in any class.  Returns a copy of the
-  // printer if found, absl::nullopt if not found.
-  virtual absl::optional<chromeos::Printer> GetPrinter(
+  // printer if found, std::nullopt if not found.
+  virtual std::optional<chromeos::Printer> GetPrinter(
       const std::string& id) const = 0;
 
   // Log an event that the user started trying to set up the given printer,

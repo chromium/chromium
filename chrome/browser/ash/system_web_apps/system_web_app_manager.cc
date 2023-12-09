@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -86,7 +87,6 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -436,18 +436,18 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
-absl::optional<webapps::AppId> SystemWebAppManager::GetAppIdForSystemApp(
+std::optional<webapps::AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemWebAppType type) const {
   if (!provider_->is_registry_ready())
-    return absl::nullopt;
+    return std::nullopt;
   return web_app::GetAppIdForSystemApp(provider_->registrar_unsafe(),
                                        system_app_delegates_, type);
 }
 
-absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
+std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     const webapps::AppId& app_id) const {
   if (!provider_->is_registry_ready())
-    return absl::nullopt;
+    return std::nullopt;
   return web_app::GetSystemAppTypeForAppId(provider_->registrar_unsafe(),
                                            system_app_delegates_, app_id);
 }
@@ -460,7 +460,7 @@ const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
 std::vector<webapps::AppId> SystemWebAppManager::GetAppIds() const {
   std::vector<webapps::AppId> app_ids;
   for (const auto& app_type_to_app_info : system_app_delegates_) {
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         GetAppIdForSystemApp(app_type_to_app_info.first);
     if (app_id.has_value()) {
       app_ids.push_back(app_id.value());
@@ -500,8 +500,7 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  const absl::optional<SystemWebAppType> type =
-      GetSystemAppTypeForAppId(app_id);
+  const std::optional<SystemWebAppType> type = GetSystemAppTypeForAppId(app_id);
   // This function should only be called when an navigation happens inside a
   // System App. So the |app_id| should always have a valid associated System
   // App type.
@@ -516,43 +515,43 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   }
 }
 
-absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
+std::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
     const GURL& url) const {
   if (!HasSystemWebAppScheme(url))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!provider_->is_registry_ready())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       provider_->registrar_unsafe().FindAppWithUrlInScope(url);
   if (!app_id.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<SystemWebAppType> type =
+  std::optional<SystemWebAppType> type =
       GetSystemAppTypeForAppId(app_id.value());
   if (!type.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   const SystemWebAppDelegate* delegate =
       GetSystemWebApp(system_app_delegates_, type.value());
   if (!delegate)
-    return absl::nullopt;
+    return std::nullopt;
 
   return type;
 }
 
-absl::optional<SystemWebAppType>
+std::optional<SystemWebAppType>
 SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
-  absl::optional<SystemWebAppType> type = GetSystemAppForURL(url);
+  std::optional<SystemWebAppType> type = GetSystemAppForURL(url);
   if (!type.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const SystemWebAppDelegate* delegate =
       GetSystemWebApp(system_app_delegates_, type.value());
   if (!delegate->ShouldCaptureNavigations())
-    return absl::nullopt;
+    return std::nullopt;
 
   // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
   // move this into the camera one.
@@ -561,7 +560,7 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
     replacements.ClearQuery();
     replacements.ClearRef();
     if (url.ReplaceComponents(replacements).spec() != kChromeUICameraAppMainURL)
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   return type;
@@ -693,7 +692,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   RecordSystemWebAppInstallResults(install_results);
 
   for (const auto& it : system_app_delegates_) {
-    absl::optional<SystemWebAppBackgroundTaskInfo> background_info =
+    std::optional<SystemWebAppBackgroundTaskInfo> background_info =
         it.second->GetTimerInfo();
     if (background_info && it.second->IsAppEnabled()) {
       tasks_.push_back(std::make_unique<SystemWebAppBackgroundTask>(

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
 #define CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +23,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -99,11 +100,11 @@ class SmartChargingManager : public ui::UserActivityObserver,
 
   // Updates screen brightness percent from received value.
   void OnReceiveScreenBrightnessPercent(
-      absl::optional<double> screen_brightness_percent);
+      std::optional<double> screen_brightness_percent);
 
   // Updates lid state and tablet mode from received switch states.
   void OnReceiveSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // Gets amount of time of video playing recently (e.g. in the last 30
   // minutes).
@@ -132,7 +133,7 @@ class SmartChargingManager : public ui::UserActivityObserver,
   GetLastChargeEvents();
 
   void OnChargeHistoryReceived(
-      absl::optional<power_manager::ChargeHistoryState> proto);
+      std::optional<power_manager::ChargeHistoryState> proto);
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
@@ -189,14 +190,14 @@ class SmartChargingManager : public ui::UserActivityObserver,
   power_manager::UserChargingEvent user_charging_event_for_test_;
   std::vector<power_manager::PastChargingEvents::Event> past_events_;
 
-  absl::optional<double> battery_percent_;
-  absl::optional<double> screen_brightness_percent_;
-  absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
+  std::optional<double> battery_percent_;
+  std::optional<double> screen_brightness_percent_;
+  std::optional<power_manager::PowerSupplyProperties::ExternalPower>
       external_power_;
   power_manager::ChargeHistoryState charge_history_;
-  absl::optional<bool> is_charging_;
+  std::optional<bool> is_charging_;
 
-  absl::optional<base::FilePath> profile_path_;
+  std::optional<base::FilePath> profile_path_;
   const std::unique_ptr<SmartChargingUkmLogger> ukm_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);

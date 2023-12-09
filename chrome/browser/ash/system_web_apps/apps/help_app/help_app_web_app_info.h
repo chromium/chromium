@@ -31,7 +31,7 @@ class HelpAppSystemAppDelegate : public SystemWebAppDelegate {
   gfx::Rect GetDefaultBounds(Browser*) const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
-  absl::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
+  std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
   bool ShouldCaptureNavigations() const override;
 };
 

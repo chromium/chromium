@@ -713,12 +713,12 @@ TEST_F(CupsPrintersManagerTest, GetPrinter) {
 
   for (const std::string& id :
        {"Saved", "Enterprise", "Discovered", "Automatic"}) {
-    absl::optional<Printer> printer = manager_->GetPrinter(id);
+    std::optional<Printer> printer = manager_->GetPrinter(id);
     ASSERT_TRUE(printer);
     EXPECT_EQ(printer->id(), id);
   }
 
-  absl::optional<Printer> printer = manager_->GetPrinter("Nope");
+  std::optional<Printer> printer = manager_->GetPrinter("Nope");
   EXPECT_FALSE(printer);
 }
 
@@ -814,10 +814,10 @@ TEST_F(CupsPrintersManagerTest, GetPrinterUserNativePrintersDisabled) {
   // Disable the use of non-enterprise printers.
   UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
 
-  absl::optional<Printer> saved_printer = manager_->GetPrinter("Saved");
+  std::optional<Printer> saved_printer = manager_->GetPrinter("Saved");
   EXPECT_FALSE(saved_printer);
 
-  absl::optional<Printer> enterprise_printer =
+  std::optional<Printer> enterprise_printer =
       manager_->GetPrinter("Enterprise");
   ASSERT_TRUE(enterprise_printer);
   EXPECT_EQ(enterprise_printer->id(), "Enterprise");
@@ -957,7 +957,7 @@ TEST_F(CupsPrintersManagerTest, AutomaticUsbPrinterIsInstalledAutomatically) {
 
   task_environment_.RunUntilIdle();
 
-  absl::optional<chromeos::Printer> printer =
+  std::optional<chromeos::Printer> printer =
       manager_->GetPrinter(automatic_printer.printer.id());
   ASSERT_TRUE(printer);
   EXPECT_TRUE(manager_->IsPrinterInstalled(*printer));

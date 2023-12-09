@@ -50,7 +50,7 @@ bool PersonalizationAppThemeMetricsProvider::ProvideHistograms() {
     return false;
   }
 
-  const absl::optional<ash::ColorPaletteSeed> optional_color_palette_seed =
+  const std::optional<ash::ColorPaletteSeed> optional_color_palette_seed =
       ash::Shell::Get()->color_palette_controller()->GetCurrentSeed();
   if (!optional_color_palette_seed.has_value()) {
     return false;

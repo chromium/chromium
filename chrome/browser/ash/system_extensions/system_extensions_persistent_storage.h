@@ -47,7 +47,7 @@ class SystemExtensionsPersistentStorage {
 
   // Returns the System Extension with |system_extension_id| if it's in
   // persistent storage, or nullopt if it's not.
-  absl::optional<SystemExtensionPersistedInfo> Get(
+  std::optional<SystemExtensionPersistedInfo> Get(
       const SystemExtensionId& system_extension_id);
   std::vector<SystemExtensionPersistedInfo> GetAll();
 
