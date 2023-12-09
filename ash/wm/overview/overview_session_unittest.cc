@@ -5417,8 +5417,7 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
 
-  const CrOSNextDeskIconButton* new_desk_button =
-      desks_bar_view->new_desk_button();
+  const DeskIconButton* new_desk_button = desks_bar_view->new_desk_button();
   ASSERT_TRUE(new_desk_button);
   ASSERT_TRUE(new_desk_button->GetVisible());
   generator->DragMouseTo(new_desk_button->GetBoundsInScreen().CenterPoint());

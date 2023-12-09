@@ -41,28 +41,27 @@ constexpr int kZeroStateButtonWidth = 28;
 
 constexpr int kExpandedStateButtonWidth = 36;
 
-int GetFocusRingRadiusForState(CrOSNextDeskIconButton::State state) {
+int GetFocusRingRadiusForState(DeskIconButton::State state) {
   switch (state) {
-    case CrOSNextDeskIconButton::State::kZero:
+    case DeskIconButton::State::kZero:
       return kZeroStateFocusRingRadius;
-    case CrOSNextDeskIconButton::State::kExpanded:
+    case DeskIconButton::State::kExpanded:
       return kExpandedStateFocusRingRadius;
-    case CrOSNextDeskIconButton::State::kActive:
+    case DeskIconButton::State::kActive:
       return kActiveStateFocusRingRadius;
   }
 }
 
 }  // namespace
 
-CrOSNextDeskIconButton::CrOSNextDeskIconButton(
-    DeskBarViewBase* bar_view,
-    const gfx::VectorIcon* button_icon,
-    const std::u16string& text,
-    ui::ColorId icon_color_id,
-    ui::ColorId background_color_id,
-    bool initially_enabled,
-    base::RepeatingClosure callback)
-    : CrOSNextDeskButtonBase(text, /*set_text=*/false, bar_view, callback),
+DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
+                               const gfx::VectorIcon* button_icon,
+                               const std::u16string& text,
+                               ui::ColorId icon_color_id,
+                               ui::ColorId background_color_id,
+                               bool initially_enabled,
+                               base::RepeatingClosure callback)
+    : DeskButtonBase(text, /*set_text=*/false, bar_view, callback),
       state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded),
       button_icon_(button_icon),
       icon_color_id_(icon_color_id),
@@ -76,7 +75,7 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
     focus_ring->SetOutsetFocusRingDisabled(true);
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) {
-          const auto* v = views::AsViewClass<CrOSNextDeskIconButton>(view);
+          const auto* v = views::AsViewClass<DeskIconButton>(view);
           CHECK(v);
           if (v->is_focused()) {
             return true;
@@ -92,20 +91,20 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
   }
 }
 
-CrOSNextDeskIconButton::~CrOSNextDeskIconButton() = default;
+DeskIconButton::~DeskIconButton() = default;
 
 // static
-int CrOSNextDeskIconButton::GetCornerRadiusOnState(State state) {
+int DeskIconButton::GetCornerRadiusOnState(State state) {
   switch (state) {
-    case CrOSNextDeskIconButton::State::kZero:
-    case CrOSNextDeskIconButton::State::kExpanded:
+    case DeskIconButton::State::kZero:
+    case DeskIconButton::State::kExpanded:
       return kIconButtonCornerRadius;
-    case CrOSNextDeskIconButton::State::kActive:
+    case DeskIconButton::State::kActive:
       return kActiveStateCornerRadius;
   }
 }
 
-void CrOSNextDeskIconButton::UpdateState(State state) {
+void DeskIconButton::UpdateState(State state) {
   if (state_ == state) {
     return;
   }
@@ -119,8 +118,7 @@ void CrOSNextDeskIconButton::UpdateState(State state) {
       GetFocusRingRadiusForState(state_));
 }
 
-bool CrOSNextDeskIconButton::IsPointOnButton(
-    const gfx::Point& screen_location) const {
+bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
   DCHECK(!bar_view_->IsZeroState());
 
   gfx::Rect hit_test_bounds = GetBoundsInScreen();
@@ -135,7 +133,7 @@ bool CrOSNextDeskIconButton::IsPointOnButton(
   return hit_test_bounds.Contains(screen_location);
 }
 
-gfx::Size CrOSNextDeskIconButton::CalculatePreferredSize() const {
+gfx::Size DeskIconButton::CalculatePreferredSize() const {
   if (state_ == State::kZero) {
     return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
   }
@@ -150,7 +148,7 @@ gfx::Size CrOSNextDeskIconButton::CalculatePreferredSize() const {
   return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
 }
 
-void CrOSNextDeskIconButton::UpdateFocusState() {
+void DeskIconButton::UpdateFocusState() {
   std::optional<ui::ColorId> new_focus_color_id;
 
   if (is_focused() ||
@@ -175,12 +173,12 @@ void CrOSNextDeskIconButton::UpdateFocusState() {
   focus_ring->SchedulePaint();
 }
 
-void CrOSNextDeskIconButton::OnThemeChanged() {
-  CrOSNextDeskButtonBase::OnThemeChanged();
+void DeskIconButton::OnThemeChanged() {
+  DeskButtonBase::OnThemeChanged();
   UpdateEnabledState();
 }
 
-void CrOSNextDeskIconButton::StateChanged(ButtonState old_state) {
+void DeskIconButton::StateChanged(ButtonState old_state) {
   // Don't trigger `UpdateEnabledState` when the button is not added to the
   // views hierarchy yet, since we need to get the color from the widget's color
   // provider. The moment the button is added to the view hierarchy,
@@ -191,7 +189,7 @@ void CrOSNextDeskIconButton::StateChanged(ButtonState old_state) {
   }
 }
 
-void CrOSNextDeskIconButton::UpdateEnabledState() {
+void DeskIconButton::UpdateEnabledState() {
   const bool is_disabled = !GetEnabled();
   const auto* color_provider = GetColorProvider();
 
@@ -209,7 +207,7 @@ void CrOSNextDeskIconButton::UpdateEnabledState() {
                                                : icon_enabled_color));
 }
 
-BEGIN_METADATA(CrOSNextDeskIconButton, CrOSNextDeskButtonBase)
+BEGIN_METADATA(DeskIconButton, DeskButtonBase)
 END_METADATA
 
 }  // namespace ash

@@ -174,8 +174,7 @@ class SavedDeskTest : public OverviewTestBase,
     return nullptr;
   }
 
-  const CrOSNextDeskIconButton* GetLibraryButtonForRoot(
-      aura::Window* root_window) {
+  const DeskIconButton* GetLibraryButtonForRoot(aura::Window* root_window) {
     if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window)) {
       return desks_bar_view->library_button();
     }
@@ -484,21 +483,19 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
           // expanded, or active.
           auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
           ASSERT_TRUE(desks_bar_view);
-          const CrOSNextDeskIconButton* library_button =
+          const DeskIconButton* library_button =
               desks_bar_view->library_button();
           ASSERT_TRUE(library_button);
-          EXPECT_EQ(zero_state_shown,
-                    library_button->GetVisible() &&
-                        library_button->state() ==
-                            CrOSNextDeskIconButton::State::kZero);
-          EXPECT_EQ(expanded_state_shown,
-                    library_button->GetVisible() &&
-                        library_button->state() ==
-                            CrOSNextDeskIconButton::State::kExpanded);
-          EXPECT_EQ(active_state_shown,
-                    library_button->GetVisible() &&
-                        library_button->state() ==
-                            CrOSNextDeskIconButton::State::kActive);
+          EXPECT_EQ(zero_state_shown, library_button->GetVisible() &&
+                                          library_button->state() ==
+                                              DeskIconButton::State::kZero);
+          EXPECT_EQ(
+              expanded_state_shown,
+              library_button->GetVisible() &&
+                  library_button->state() == DeskIconButton::State::kExpanded);
+          EXPECT_EQ(active_state_shown, library_button->GetVisible() &&
+                                            library_button->state() ==
+                                                DeskIconButton::State::kActive);
         }
       };
 
@@ -1870,7 +1867,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = GetLibraryButtonForRoot(root);
   EXPECT_TRUE(library_button->GetVisible());
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kZero, library_button->state());
+  EXPECT_EQ(DeskIconButton::State::kZero, library_button->state());
   EXPECT_TRUE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 
@@ -1906,7 +1903,7 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = GetLibraryButtonForRoot(root_window);
   EXPECT_TRUE(library_button->GetVisible());
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, library_button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, library_button->state());
 
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
@@ -2002,7 +1999,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = desks_bar_view->library_button();
   ASSERT_TRUE(library_button->GetVisible());
-  ASSERT_EQ(library_button->state(), CrOSNextDeskIconButton::State::kActive);
+  ASSERT_EQ(library_button->state(), DeskIconButton::State::kActive);
 
   // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -2029,11 +2026,11 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
       DesksController::Get()->active_desk());
   LeftClickOn(mini_view->desk_action_view()->close_all_button());
   // The new desk button and the library button should be active state.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+  EXPECT_EQ(DeskIconButton::State::kExpanded,
             desks_bar_view->new_desk_button()->state());
   // `OpenOverviewAndShowSavedDeskGrid` clicks on the library button, so it
   // should be active.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive,
+  EXPECT_EQ(DeskIconButton::State::kActive,
             desks_bar_view->library_button()->state());
 
   // Delete the one and only template, we should remain in the desk library.
@@ -2044,7 +2041,7 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
                   ->IsVisible());
 
   // Test that the new desk button is expanded state.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+  EXPECT_EQ(DeskIconButton::State::kExpanded,
             desks_bar_view->new_desk_button()->state());
   EXPECT_FALSE(desks_bar_view->IsZeroState());
 }
@@ -2312,28 +2309,28 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   const ui::ColorId active_color_id = cros_tokens::kCrosSysTertiary;
 
-  const CrOSNextDeskIconButton* button = desks_bar_view->library_button();
+  const DeskIconButton* button = desks_bar_view->library_button();
   ASSERT_TRUE(button);
 
   // The library button starts of neither focused nor active.
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded, button->state());
+  EXPECT_EQ(DeskIconButton::State::kExpanded, button->state());
   EXPECT_FALSE(button->GetFocusColorIdForTesting());
 
   // Tests that when we are viewing the saved desk grid, the button border is
   // active.
   LeftClickOn(button);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 
   // Tests that when focused, the library button border has a focused color.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
 
   // Shift focus away from the library button. The button border should be
   // active.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 }
 

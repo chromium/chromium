@@ -719,8 +719,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
     if (!is_hovered_on_new_desk_button) {
       new_desk_button_scale_up_timer_.Stop();
     } else if (!new_desk_button_scale_up_timer_.IsRunning() &&
-               new_desk_button->state() ==
-                   CrOSNextDeskIconButton::State::kExpanded) {
+               new_desk_button->state() == DeskIconButton::State::kExpanded) {
       new_desk_button_scale_up_timer_.Start(
           FROM_HERE, kScaleUpNewDeskButtonGracePeriod, this,
           &OverviewWindowDragController::MaybeScaleUpNewDeskButton);
@@ -809,7 +808,7 @@ OverviewWindowDragController::CompleteNormalDrag(
       if (desks_bar_view) {
         desks_bar_view->UpdateDeskIconButtonState(
             desks_bar_view->new_desk_button(),
-            CrOSNextDeskIconButton::State::kExpanded);
+            DeskIconButton::State::kExpanded);
       }
     }
     return DragResult::kSnap;
@@ -853,8 +852,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     overview_session_->PositionWindows(/*animate=*/true);
     if (desks_bar_view) {
       desks_bar_view->UpdateDeskIconButtonState(
-          desks_bar_view->new_desk_button(),
-          CrOSNextDeskIconButton::State::kExpanded);
+          desks_bar_view->new_desk_button(), DeskIconButton::State::kExpanded);
     }
   }
   RecordNormalDrag(kToGrid, is_dragged_to_other_display);
@@ -1071,7 +1069,7 @@ void OverviewWindowDragController::MaybeScaleUpNewDeskButton() {
   }
 
   desks_bar_view->UpdateDeskIconButtonState(
-      new_desk_button, /*target_state=*/CrOSNextDeskIconButton::State::kActive);
+      new_desk_button, /*target_state=*/DeskIconButton::State::kActive);
 }
 
 }  // namespace ash

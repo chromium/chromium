@@ -33,13 +33,12 @@ constexpr int kDefaultDeskButtonHeight = 28;
 
 }  // namespace
 
-CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DeskBarViewBase* bar_view)
-    : CrOSNextDeskButtonBase(
-          DesksController::Get()->desks()[0]->name(),
-          /*set_text=*/true,
-          bar_view,
-          base::BindRepeating(&CrOSNextDefaultDeskButton::OnButtonPressed,
-                              base::Unretained(this))) {
+DefaultDeskButton::DefaultDeskButton(DeskBarViewBase* bar_view)
+    : DeskButtonBase(DesksController::Get()->desks()[0]->name(),
+                     /*set_text=*/true,
+                     bar_view,
+                     base::BindRepeating(&DefaultDeskButton::OnButtonPressed,
+                                         base::Unretained(this))) {
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
                                  DesksController::Get()->desks()[0]->name()));
@@ -48,13 +47,13 @@ CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DeskBarViewBase* bar_view)
       cros_tokens::kCrosSysSystemOnBase, kDefaultButtonCornerRadius));
 }
 
-void CrOSNextDefaultDeskButton::UpdateLabelText() {
+void DefaultDeskButton::UpdateLabelText() {
   SetText(gfx::ElideText(
       DesksController::Get()->desks()[0]->name(), gfx::FontList(),
       bounds().width() - 2 * kDefaultButtonHorizontalPadding, gfx::ELIDE_TAIL));
 }
 
-gfx::Size CrOSNextDefaultDeskButton::CalculatePreferredSize() const {
+gfx::Size DefaultDeskButton::CalculatePreferredSize() const {
   auto* root_window =
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
   const int preview_width = DeskMiniView::GetPreviewWidth(
@@ -74,13 +73,13 @@ gfx::Size CrOSNextDefaultDeskButton::CalculatePreferredSize() const {
   return gfx::Size(width, kDefaultDeskButtonHeight);
 }
 
-void CrOSNextDefaultDeskButton::OnButtonPressed() {
+void DefaultDeskButton::OnButtonPressed() {
   bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                 /*expanding_bar_view=*/true);
   bar_view_->NudgeDeskName(/*desk_index=*/0);
 }
 
-BEGIN_METADATA(CrOSNextDefaultDeskButton, CrOSNextDeskButtonBase)
+BEGIN_METADATA(DefaultDeskButton, DeskButtonBase)
 END_METADATA
 
 }  // namespace ash

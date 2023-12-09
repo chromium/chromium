@@ -22,11 +22,10 @@ constexpr int kFocusRingRadius = 16;
 
 }  // namespace
 
-CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
-    const std::u16string& text,
-    bool set_text,
-    DeskBarViewBase* bar_view,
-    base::RepeatingClosure pressed_callback)
+DeskButtonBase::DeskButtonBase(const std::u16string& text,
+                               bool set_text,
+                               DeskBarViewBase* bar_view,
+                               base::RepeatingClosure pressed_callback)
     : LabelButton(pressed_callback),
       bar_view_(bar_view),
       pressed_callback_(pressed_callback) {
@@ -57,16 +56,16 @@ CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) {
-          const auto* v = views::AsViewClass<CrOSNextDeskButtonBase>(view);
+          const auto* v = views::AsViewClass<DeskButtonBase>(view);
           CHECK(v);
           return v->is_focused();
         }));
   }
 }
 
-CrOSNextDeskButtonBase::~CrOSNextDeskButtonBase() = default;
+DeskButtonBase::~DeskButtonBase() = default;
 
-void CrOSNextDeskButtonBase::OnFocus() {
+void DeskButtonBase::OnFocus() {
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
     MoveFocusToView(this);
   }
@@ -74,37 +73,37 @@ void CrOSNextDeskButtonBase::OnFocus() {
   View::OnFocus();
 }
 
-void CrOSNextDeskButtonBase::OnBlur() {
+void DeskButtonBase::OnBlur() {
   UpdateFocusState();
   View::OnBlur();
 }
 
-views::View* CrOSNextDeskButtonBase::GetView() {
+views::View* DeskButtonBase::GetView() {
   return this;
 }
 
-void CrOSNextDeskButtonBase::MaybeActivateFocusedView() {
+void DeskButtonBase::MaybeActivateFocusedView() {
   pressed_callback_.Run();
 }
 
-void CrOSNextDeskButtonBase::MaybeCloseFocusedView(bool primary_action) {}
+void DeskButtonBase::MaybeCloseFocusedView(bool primary_action) {}
 
-void CrOSNextDeskButtonBase::MaybeSwapFocusedView(bool right) {}
+void DeskButtonBase::MaybeSwapFocusedView(bool right) {}
 
-void CrOSNextDeskButtonBase::OnFocusableViewFocused() {
+void DeskButtonBase::OnFocusableViewFocused() {
   UpdateFocusState();
   bar_view_->ScrollToShowViewIfNecessary(this);
 }
 
-void CrOSNextDeskButtonBase::OnFocusableViewBlurred() {
+void DeskButtonBase::OnFocusableViewBlurred() {
   UpdateFocusState();
 }
 
-void CrOSNextDeskButtonBase::UpdateFocusState() {
+void DeskButtonBase::UpdateFocusState() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(CrOSNextDeskButtonBase, views::LabelButton)
+BEGIN_METADATA(DeskButtonBase, views::LabelButton)
 END_METADATA
 
 }  // namespace ash

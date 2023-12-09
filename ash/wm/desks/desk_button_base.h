@@ -17,20 +17,17 @@ class DeskBarViewBase;
 // The base class of buttons (default desk button, new desk button and library
 // button) on desks bar. It's guaranteed this button always lives under a desk
 // bar view.
-// TODO(http://b/291622042): Remove `DeskButtonBase`, replace it with this
-// class and rename this class by removing the prefix CrOSNext.
-class CrOSNextDeskButtonBase : public views::LabelButton,
-                               public OverviewFocusableView {
+class DeskButtonBase : public views::LabelButton, public OverviewFocusableView {
  public:
-  METADATA_HEADER(CrOSNextDeskButtonBase);
+  METADATA_HEADER(DeskButtonBase);
 
-  explicit CrOSNextDeskButtonBase(const std::u16string& text,
-                                  bool set_text,
-                                  DeskBarViewBase* bar_view,
-                                  base::RepeatingClosure pressed_callback);
-  CrOSNextDeskButtonBase(const CrOSNextDeskButtonBase&) = delete;
-  CrOSNextDeskButtonBase& operator=(const CrOSNextDeskButtonBase&) = delete;
-  ~CrOSNextDeskButtonBase() override;
+  explicit DeskButtonBase(const std::u16string& text,
+                          bool set_text,
+                          DeskBarViewBase* bar_view,
+                          base::RepeatingClosure pressed_callback);
+  DeskButtonBase(const DeskButtonBase&) = delete;
+  DeskButtonBase& operator=(const DeskButtonBase&) = delete;
+  ~DeskButtonBase() override;
 
   // views::LabelButton:
   void OnFocus() override;

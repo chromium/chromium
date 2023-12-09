@@ -22,12 +22,9 @@ class DeskBarViewBase;
 
 // A button view in the desks bar with an icon. The button have three different
 // states, and the three states are interchangeable.
-// TODO(http://b/291622042): Remove `ZeroStateIconButton` and
-// `ExpandedDesksBarButton`, replace them with this class, and rename this class
-// by removing the prefix CrOSNext.
-class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
+class ASH_EXPORT DeskIconButton : public DeskButtonBase {
  public:
-  METADATA_HEADER(CrOSNextDeskIconButton);
+  METADATA_HEADER(DeskIconButton);
 
   // The enum class defines three states for the button. The button at different
   // states has different sizes. Any state could be transformed into another
@@ -47,16 +44,16 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
     kActive,
   };
 
-  CrOSNextDeskIconButton(DeskBarViewBase* bar_view,
-                         const gfx::VectorIcon* button_icon,
-                         const std::u16string& text,
-                         ui::ColorId icon_color_id,
-                         ui::ColorId background_color_id,
-                         bool initially_enabled,
-                         base::RepeatingClosure callback);
-  CrOSNextDeskIconButton(const CrOSNextDeskIconButton&) = delete;
-  CrOSNextDeskIconButton& operator=(const CrOSNextDeskIconButton&) = delete;
-  ~CrOSNextDeskIconButton() override;
+  DeskIconButton(DeskBarViewBase* bar_view,
+                 const gfx::VectorIcon* button_icon,
+                 const std::u16string& text,
+                 ui::ColorId icon_color_id,
+                 ui::ColorId background_color_id,
+                 bool initially_enabled,
+                 base::RepeatingClosure callback);
+  DeskIconButton(const DeskIconButton&) = delete;
+  DeskIconButton& operator=(const DeskIconButton&) = delete;
+  ~DeskIconButton() override;
 
   // Convenient function for returning the desk icon button's corner radius on
   // the given `state`.
@@ -81,7 +78,7 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
 
   bool IsPointOnButton(const gfx::Point& screen_location) const;
 
-  // CrOSNextDeskButtonBase:
+  // DeskButtonBase:
   gfx::Size CalculatePreferredSize() const override;
   // Updates the focus ring based on the dragged item's position and
   // `paint_as_active_`.

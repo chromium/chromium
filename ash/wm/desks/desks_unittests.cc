@@ -449,9 +449,8 @@ class DesksTest : public AshTestBase,
   void VerifyZeroStateNewDeskButtonVisibility(const DeskBarViewBase* bar_view,
                                               bool expected_visibility) {
     const auto state = bar_view->new_desk_button()->state();
-    EXPECT_TRUE(expected_visibility
-                    ? state == CrOSNextDeskIconButton::State::kZero
-                    : state != CrOSNextDeskIconButton::State::kZero);
+    EXPECT_TRUE(expected_visibility ? state == DeskIconButton::State::kZero
+                                    : state != DeskIconButton::State::kZero);
   }
 
   void VerifyExpandedStateNewDeskButtonVisibility(
@@ -459,8 +458,8 @@ class DesksTest : public AshTestBase,
       bool expected_visibility) {
     const auto state = bar_view->new_desk_button()->state();
     EXPECT_TRUE(expected_visibility
-                    ? state == CrOSNextDeskIconButton::State::kExpanded
-                    : state != CrOSNextDeskIconButton::State::kExpanded);
+                    ? state == DeskIconButton::State::kExpanded
+                    : state != DeskIconButton::State::kExpanded);
   }
 
   void SendKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
@@ -1922,7 +1921,7 @@ TEST_P(DesksTest, DragWindowAtZeroState) {
                   event_generator, /*by_touch_gestures=*/false,
                   /*drop=*/false);
   WaitForMilliseconds(200);
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded, new_desk_button->state());
+  EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button->state());
   EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
   // Now fire the timer directly to skip the wait time. Verify that the new desk
   // button is scaled up and at the active state and the new desk label is shown
@@ -1931,7 +1930,7 @@ TEST_P(DesksTest, DragWindowAtZeroState) {
       ->window_drag_controller()
       ->new_desk_button_scale_up_timer_for_test()
       ->FireNow();
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, new_desk_button->state());
   EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
 
   // Keep dragging `overview_item1` to the center of the new desk button to make
@@ -1993,7 +1992,7 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
       event_generator,
       /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_FALSE(desks_bar_view->IsZeroState());
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded, new_desk_button->state());
+  EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button->state());
   EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
 
   // Keep dragging `overview_item1` to hover on the new desk button, immediately
@@ -2010,7 +2009,7 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
       ->window_drag_controller()
       ->new_desk_button_scale_up_timer_for_test()
       ->FireNow();
-  EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, new_desk_button->state());
   EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
 
   // Now keep dragging `overview_item1` and make it not able to be dropped on
@@ -9619,8 +9618,8 @@ TEST_P(DeskBarTest, Basic) {
     auto* new_desk_button = desk_bar_view->new_desk_button();
     const auto expected_button_state =
         bar_type_ == DeskBarViewBase::Type::kOverview && test.desks.size() == 1
-            ? CrOSNextDeskIconButton::State::kZero
-            : CrOSNextDeskIconButton::State::kExpanded;
+            ? DeskIconButton::State::kZero
+            : DeskIconButton::State::kExpanded;
     EXPECT_THAT(new_desk_button->state(), expected_button_state);
     EXPECT_TRUE(new_desk_button->GetVisible());
     EXPECT_THAT(new_desk_button->GetEnabled(),

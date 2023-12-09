@@ -1591,7 +1591,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     // the window is dropped on an existing desk.
     desks_bar_view_->UpdateDeskIconButtonState(
         desks_bar_view_->new_desk_button(),
-        /*target_state=*/CrOSNextDeskIconButton::State::kExpanded);
+        /*target_state=*/DeskIconButton::State::kExpanded);
     return move_windows_to_target_desk(target_desk);
   }
 
@@ -1880,7 +1880,7 @@ void OverviewGrid::ShowSavedDeskLibrary() {
   } else {
     desks_bar_view_->UpdateDeskIconButtonState(
         desks_bar_view_->library_button(),
-        /*target_state=*/CrOSNextDeskIconButton::State::kActive);
+        /*target_state=*/DeskIconButton::State::kActive);
   }
 
   desks_bar_view_->UpdateButtonsForSavedDeskGrid();
@@ -1940,7 +1940,7 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
   // button, thus to avoid the animation glitches, directly update the state
   // for the library button instead of applying the scale animation to it.
   desks_bar_view_->library_button()->UpdateState(
-      CrOSNextDeskIconButton::State::kExpanded);
+      DeskIconButton::State::kExpanded);
 }
 
 bool OverviewGrid::IsShowingSavedDeskLibrary() const {

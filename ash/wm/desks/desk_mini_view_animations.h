@@ -21,7 +21,7 @@ class Widget;
 
 namespace ash {
 
-class CrOSNextDeskIconButton;
+class DeskIconButton;
 class DeskBarViewBase;
 class DeskMiniView;
 class ExpandedDesksBarButton;
@@ -103,7 +103,7 @@ void PerformLibraryButtonVisibilityAnimation(
 // - It assumes all the mini views in `bar_view`, new desk button and library
 // button have been laid out in their final positions.
 void PerformDeskIconButtonScaleAnimation(
-    CrOSNextDeskIconButton* button,
+    DeskIconButton* button,
     DeskBarViewBase* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x);
