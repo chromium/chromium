@@ -688,8 +688,8 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(0);
   std::move(get_managed_properties_callback)
-      .Run(cellular_service_path_1, /*properties=*/absl::nullopt,
-           /*error=*/absl::nullopt);
+      .Run(cellular_service_path_1, /*properties=*/std::nullopt,
+           /*error=*/std::nullopt);
   get_managed_properties_callback.Reset();
 
   // Start the migration process for |cellular_service_path_1| again.
@@ -724,7 +724,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
       .Times(0);
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
 }
 
 TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
@@ -793,7 +793,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
       .Times(0);
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*network_metadata_store(),
@@ -838,7 +838,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
       .Times(1);
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetCustomApns().empty());
 }
@@ -908,12 +908,12 @@ TEST_F(ApnMigratorTest,
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(0);
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular, base::Value::Dict());
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   std::move(onc_failure_callback).Run("error");
@@ -980,7 +980,7 @@ TEST_F(ApnMigratorTest,
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
@@ -1048,7 +1048,7 @@ TEST_F(ApnMigratorTest,
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict().Set(
           ::onc::cellular::kAPN,
@@ -1057,7 +1057,7 @@ TEST_F(ApnMigratorTest,
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1129,7 +1129,7 @@ TEST_F(ApnMigratorTest,
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict();
+  std::optional<base::Value::Dict> properties = base::Value::Dict();
 
   base::Value::Dict last_connected_attach_apn_dict;
   last_connected_attach_apn_dict.Set(::onc::cellular_apn::kAccessPointName,
@@ -1149,7 +1149,7 @@ TEST_F(ApnMigratorTest,
   properties->Set(::onc::network_config::kCellular, std::move(cellular));
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1223,7 +1223,7 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict().Set(
           ::onc::cellular::kLastGoodAPN,
@@ -1232,7 +1232,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1304,7 +1304,7 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict().Set(
           ::onc::cellular::kLastGoodAPN,
@@ -1313,7 +1313,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1384,7 +1384,7 @@ TEST_F(ApnMigratorTest,
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
@@ -1396,7 +1396,7 @@ TEST_F(ApnMigratorTest,
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1469,7 +1469,7 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict().Set(
           ::onc::cellular::kLastConnectedDefaultApnProperty,
@@ -1478,7 +1478,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1551,7 +1551,7 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict()
           .Set(::onc::cellular::kLastConnectedDefaultApnProperty,
@@ -1563,7 +1563,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1635,7 +1635,7 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
@@ -1655,7 +1655,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1738,7 +1738,7 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
@@ -1758,7 +1758,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);
@@ -1842,7 +1842,7 @@ TEST_F(
       .Times(0);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
@@ -1862,7 +1862,7 @@ TEST_F(
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // Simulate failure to create default custom APN.
@@ -1924,7 +1924,7 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  absl::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
       base::Value::Dict().Set(
           ::onc::cellular::kLastConnectedDefaultApnProperty,
@@ -1933,7 +1933,7 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
-           /*error=*/absl::nullopt);
+           /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   InvokePendingCreateCustomApnCallback(/*success=*/true);

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_SCHEDULED_TASK_UTIL_H_
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_SCHEDULED_TASK_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
 
 namespace policy {
@@ -26,7 +26,7 @@ namespace scheduled_task_util {
 // |frequency| - frequency of reccurring task. Can be daily, weekly or monthly.
 // |day_of_week| - optional field, used for policies that recur weekly.
 // |day_of_month| - optional field, used for policies that recur monthly.
-absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
+std::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
     const base::Value& value,
     const std::string& task_time_field_name);
 
@@ -42,7 +42,7 @@ std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
 // should run next. Returns nullopt if the calculation failed due to a
 // concurrent DST or Time Zone change.
 // |time_zone| refers to the time zone that should be considered for the policy.
-absl::optional<base::TimeDelta> CalculateNextScheduledTaskTimerDelay(
+std::optional<base::TimeDelta> CalculateNextScheduledTaskTimerDelay(
     const ScheduledTaskExecutor::ScheduledTaskData& data,
     const base::Time time,
     const icu::TimeZone& time_zone);

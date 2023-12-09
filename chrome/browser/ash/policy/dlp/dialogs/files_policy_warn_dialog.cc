@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/style/color_provider.h"
@@ -25,7 +26,6 @@
 #include "components/enterprise/data_controls/component.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -121,7 +121,7 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     WarningWithJustificationCallback callback,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
-    absl::optional<DlpFileDestination> destination,
+    std::optional<DlpFileDestination> destination,
     Info dialog_info)
     : FilesPolicyDialog(dialog_info.GetFiles().size(), action, modal_parent),
       destination_(destination),
@@ -279,7 +279,7 @@ std::u16string FilesPolicyWarnDialog::GetMessage() {
 
 void FilesPolicyWarnDialog::ProceedWarning(
     WarningWithJustificationCallback callback) {
-  absl::optional<std::u16string> user_justification;
+  std::optional<std::u16string> user_justification;
   if (justification_field_) {
     user_justification = justification_field_->GetText();
   }
@@ -289,7 +289,7 @@ void FilesPolicyWarnDialog::ProceedWarning(
 
 void FilesPolicyWarnDialog::CancelWarning(
     WarningWithJustificationCallback callback) {
-  std::move(callback).Run(/*user_justification=*/absl::nullopt,
+  std::move(callback).Run(/*user_justification=*/std::nullopt,
                           /*should_proceed=*/false);
 }
 

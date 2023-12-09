@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_run_routine_job.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -90,7 +90,7 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
-  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
+  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root.has_value()) {
     return false;
   }
@@ -100,7 +100,7 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
 
   base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid DiagnosticRoutineEnum.
-  absl::optional<int> routine_enum = dict.FindInt(kRoutineEnumFieldName);
+  std::optional<int> routine_enum = dict.FindInt(kRoutineEnumFieldName);
   if (!routine_enum.has_value()) {
     return false;
   }
@@ -148,7 +148,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
@@ -183,7 +183,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
         kSmartctlCheckWithPercentageUsed: {
       constexpr char kPercentageUsedThresholdFieldName[] =
           "percentageUsedThreshold";
-      absl::optional<int> percentage_used_threshold =
+      std::optional<int> percentage_used_threshold =
           params_dict_.FindInt(kPercentageUsedThresholdFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr input_threshold;
       // The smartctl check routine expects one optional integer >= 0.
@@ -211,7 +211,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       constexpr char kExpectedStatusFieldName[] = "expectedStatus";
       // Note that expectedPowerType is an optional parameter.
       constexpr char kExpectedPowerTypeFieldName[] = "expectedPowerType";
-      absl::optional<int> expected_status =
+      std::optional<int> expected_status =
           params_dict_.FindInt(kExpectedStatusFieldName);
       std::string* expected_power_type =
           params_dict_.FindString(kExpectedPowerTypeFieldName);
@@ -230,9 +230,8 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       }
       diagnostics_service->RunAcPowerRoutine(
           expected_status_enum,
-          expected_power_type
-              ? absl::optional<std::string>(*expected_power_type)
-              : absl::nullopt,
+          expected_power_type ? std::optional<std::string>(*expected_power_type)
+                              : std::nullopt,
           base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
@@ -240,7 +239,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
@@ -265,7 +264,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
@@ -291,7 +290,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
         kFloatingPointAccuracy: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
@@ -317,7 +316,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
       constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
-      absl::optional<int> wear_level_threshold =
+      std::optional<int> wear_level_threshold =
           params_dict_.FindInt(kWearLevelThresholdFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       // The NVMe wear level routine expects one optional integer >= 0.
@@ -343,7 +342,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
       constexpr char kNvmeSelfTestTypeFieldName[] = "nvmeSelfTestType";
-      absl::optional<int> nvme_self_test_type =
+      std::optional<int> nvme_self_test_type =
           params_dict_.FindInt(kNvmeSelfTestTypeFieldName);
       ash::cros_healthd::mojom::NvmeSelfTestTypeEnum nvme_self_test_type_enum;
       // The NVMe self-test routine expects a valid NvmeSelfTestTypeEnum.
@@ -368,10 +367,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       constexpr char kTypeFieldName[] = "type";
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kFileSizeMbFieldName[] = "fileSizeMb";
-      absl::optional<int> type = params_dict_.FindInt(kTypeFieldName);
-      absl::optional<int> length_seconds =
+      std::optional<int> type = params_dict_.FindInt(kTypeFieldName);
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
-      absl::optional<int> file_size_mb =
+      std::optional<int> file_size_mb =
           params_dict_.FindInt(kFileSizeMbFieldName);
       ash::cros_healthd::mojom::DiskReadRoutineTypeEnum type_enum;
       if (!length_seconds.has_value() || length_seconds.value() < 0 ||
@@ -394,7 +393,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
       ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
       if (length_seconds.has_value()) {
@@ -421,9 +420,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kMaximumDischargePercentAllowedFieldName[] =
           "maximumDischargePercentAllowed";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
-      absl::optional<int> maximum_discharge_percent_allowed =
+      std::optional<int> maximum_discharge_percent_allowed =
           params_dict_.FindInt(kMaximumDischargePercentAllowedFieldName);
       // The battery discharge routine expects two integers >= 0.
       if (!length_seconds.has_value() ||
@@ -448,9 +447,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kMinimumChargePercentRequiredFieldName[] =
           "minimumChargePercentRequired";
-      absl::optional<int> length_seconds =
+      std::optional<int> length_seconds =
           params_dict_.FindInt(kLengthSecondsFieldName);
-      absl::optional<int> minimum_charge_percent_required =
+      std::optional<int> minimum_charge_percent_required =
           params_dict_.FindInt(kMinimumChargePercentRequiredFieldName);
       // The battery charge routine expects two integers >= 0.
       if (!length_seconds.has_value() ||
@@ -473,7 +472,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory: {
       diagnostics_service->RunMemoryRoutine(
-          absl::nullopt,
+          std::nullopt,
           base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
@@ -551,8 +550,8 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
           params_dict_.FindString(kStunServerHostnameFieldName);
       diagnostics_service->RunVideoConferencingRoutine(
           stun_server_hostname
-              ? absl::make_optional<std::string>(*stun_server_hostname)
-              : absl::nullopt,
+              ? std::make_optional<std::string>(*stun_server_hostname)
+              : std::nullopt,
           base::BindOnce(
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
@@ -596,7 +595,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrivacyScreen: {
       constexpr char kPrivacyScreenTargetState[] = "targetState";
-      absl::optional<bool> target_state =
+      std::optional<bool> target_state =
           params_dict_.FindBool(kPrivacyScreenTargetState);
       diagnostics_service->RunPrivacyScreenRoutine(
           target_state.value_or(true),
@@ -667,7 +666,7 @@ void DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived(
     SYSLOG(ERROR) << "No RunRoutineResponse received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback),
-                                  ResultType::kFailure, absl::nullopt));
+                                  ResultType::kFailure, std::nullopt));
     return;
   }
 

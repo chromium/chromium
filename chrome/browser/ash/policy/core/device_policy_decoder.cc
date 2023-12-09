@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,7 +34,6 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,7 +61,7 @@ void SetJsonDevicePolicy(
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher,
     PolicyMap* policies) {
   std::string error;
-  absl::optional<base::Value> decoded_json =
+  std::optional<base::Value> decoded_json =
       DecodeJsonStringAndNormalize(json_string, policy_name, &error);
   base::Value value_to_set = decoded_json.has_value()
                                  ? std::move(decoded_json.value())
@@ -88,7 +88,7 @@ void SetDeviceDlcPredownloadListPolicy(
     const RepeatedPtrField<std::string>& raw_policy_value,
     PolicyMap* policies) {
   std::string error;
-  absl::optional<base::Value::List> decoded_dlc_list =
+  std::optional<base::Value::List> decoded_dlc_list =
       DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, &error);
   base::Value::List value_to_set = decoded_dlc_list.has_value()
                                        ? std::move(decoded_dlc_list.value())
@@ -2354,7 +2354,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
 
 }  // namespace
 
-absl::optional<base::Value> DecodeJsonStringAndNormalize(
+std::optional<base::Value> DecodeJsonStringAndNormalize(
     const std::string& json_string,
     const std::string& policy_name,
     std::string* error) {
@@ -2362,7 +2362,7 @@ absl::optional<base::Value> DecodeJsonStringAndNormalize(
       json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value_with_error.has_value()) {
     *error = "Invalid JSON string: " + value_with_error.error().message;
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::Value root = std::move(*value_with_error);
 
@@ -2381,7 +2381,7 @@ absl::optional<base::Value> DecodeJsonStringAndNormalize(
                 : policy::ErrorPathToString(policy_name, error_path))
         << ")";
     *error = msg.str();
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (changed) {
     std::ostringstream msg;
@@ -2398,7 +2398,7 @@ absl::optional<base::Value> DecodeJsonStringAndNormalize(
 
 // TODO (b/297008279): move this function to the class that will manage pre
 // downloading DLCs.
-absl::optional<base::Value::List> DecodeDeviceDlcPredownloadListPolicy(
+std::optional<base::Value::List> DecodeDeviceDlcPredownloadListPolicy(
     const RepeatedPtrField<std::string>& raw_policy_value,
     std::string* error) {
   constexpr auto policy_value_to_dlc_id =

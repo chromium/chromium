@@ -78,7 +78,7 @@ const char kResultLastActivityFieldName[] = "lastActivitySec";
 std::optional<std::string> FindString(const base::Value::Dict& dict,
                                       std::string_view key) {
   if (!dict.contains(key)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *dict.FindString(key);
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <array>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -18,7 +19,6 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/mock_clock.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -35,9 +35,9 @@ using ::testing::StrEq;
 
 // Is the given record about info metric? If yes, return the underlying
 // MetricData object.
-absl::optional<MetricData> IsRecordInfo(const Record& record) {
+std::optional<MetricData> IsRecordInfo(const Record& record) {
   if (record.destination() != Destination::INFO_METRIC) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   MetricData record_data;

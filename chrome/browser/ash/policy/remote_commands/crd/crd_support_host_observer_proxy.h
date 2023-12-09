@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -48,7 +48,7 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
   void OnHostStateConnecting() override;
   void OnHostStateConnected(const std::string& remote_username) override;
   void OnHostStateDisconnected(
-      const absl::optional<std::string>& disconnect_reason) override;
+      const std::optional<std::string>& disconnect_reason) override;
   void OnNatPolicyChanged(
       remoting::mojom::NatPolicyStatePtr nat_policy_state) override;
   void OnHostStateError(int64_t error_code) override;

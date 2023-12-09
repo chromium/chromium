@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,7 +25,6 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
@@ -204,7 +204,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   DlpContentRestrictionSet on_screen_restrictions_;
 
   // Information about the currently running video capture area if any.
-  absl::optional<VideoCaptureInfo> running_video_capture_info_;
+  std::optional<VideoCaptureInfo> running_video_capture_info_;
 
   // Cache for restrictions, which are sent to ash with a window id before the
   // id is known to ash. The window is (considered to be) invisible, so the

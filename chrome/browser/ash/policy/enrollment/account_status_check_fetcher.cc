@@ -133,7 +133,7 @@ void AccountStatusCheckFetcher::Fetch(FetchCallback callback,
           service_,
           DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT,
           random_device_id_, /*critical=*/false, DMAuth::NoAuth(),
-          /*oauth_token=*/absl::nullopt, url_loader_factory_,
+          /*oauth_token=*/std::nullopt, url_loader_factory_,
           base::BindOnce(
               &AccountStatusCheckFetcher::OnAccountStatusCheckReceived,
               weak_ptr_factory_.GetWeakPtr()));

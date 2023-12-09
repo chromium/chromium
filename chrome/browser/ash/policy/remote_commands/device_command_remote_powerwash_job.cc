@@ -67,7 +67,7 @@ void DeviceCommandRemotePowerwashJob::RunImpl(
   // Ack the command.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback),
-                                ResultType::kSuccess, absl::nullopt));
+                                ResultType::kSuccess, std::nullopt));
 }
 
 }  // namespace policy

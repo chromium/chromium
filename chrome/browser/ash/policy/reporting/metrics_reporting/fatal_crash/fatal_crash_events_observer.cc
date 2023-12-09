@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -32,7 +33,6 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -74,13 +74,13 @@ FatalCrashTelemetry::SessionType GetSessionType(
 }
 
 // Get the user email of the given session.
-absl::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
+std::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
   if (!user_session || !user_session->user_info.is_managed) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!user_session->user_info.account_id.is_valid()) {
     LOG(ERROR) << "Invalid user account ID.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return user_session->user_info.account_id.GetUserEmail();
 }

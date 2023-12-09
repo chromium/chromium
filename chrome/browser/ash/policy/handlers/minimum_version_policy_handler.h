@@ -174,7 +174,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
 
   // Returns the number of days to deadline if update is required and deadline
   // has not been reached. Returns null if update is not required.
-  absl::optional<int> GetTimeRemainingInDays();
+  std::optional<int> GetTimeRemainingInDays();
 
   // Callback used in tests and invoked after end-of-life status has been
   // fetched from the update_engine.

@@ -40,7 +40,7 @@ void EnrollmentRequisitionManager::Initialize() {
   const PrefService::Preference* pref =
       local_state->FindPreference(prefs::kDeviceEnrollmentRequisition);
   if (pref->IsDefaultValue()) {
-    const absl::optional<base::StringPiece> requisition =
+    const std::optional<base::StringPiece> requisition =
         provider->GetMachineStatistic(ash::system::kOemDeviceRequisitionKey);
 
     if (requisition && !requisition->empty()) {

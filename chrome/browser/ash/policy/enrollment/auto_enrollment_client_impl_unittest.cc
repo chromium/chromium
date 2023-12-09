@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -34,7 +35,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -95,7 +95,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   }
 
   void CreateClient(int power_initial, int power_limit) {
-    state_ = absl::nullopt;
+    state_ = std::nullopt;
     service_ =
         std::make_unique<FakeDeviceManagementService>(&job_creation_handler_);
     service_->ScheduleInitialization(0);
@@ -180,7 +180,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
           license_sku) {
     if (protocol_ == AutoEnrollmentProtocol::kFRE) {
       ServerWillSendStateForFRE(management_domain, restore_mode,
-                                device_disabled_message, absl::nullopt);
+                                device_disabled_message, std::nullopt);
     } else {
       ServerWillSendStateForInitialEnrollment(
           management_domain, is_license_packaged_with_device, license_sku,
@@ -192,7 +192,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       const std::string& management_domain,
       em::DeviceStateRetrievalResponse::RestoreMode restore_mode,
       const std::string& device_disabled_message,
-      absl::optional<em::DeviceInitialEnrollmentStateResponse>
+      std::optional<em::DeviceInitialEnrollmentStateResponse>
           initial_state_response) {
     em::DeviceManagementResponse response;
     em::DeviceStateRetrievalResponse* state_response =
@@ -355,7 +355,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
 
     EXPECT_FALSE(state_dict.FindString(kDeviceStateDisabledMessage));
 
-    absl::optional<bool> actual_is_license_packaged_with_device;
+    std::optional<bool> actual_is_license_packaged_with_device;
     actual_is_license_packaged_with_device =
         state_dict.FindBool(kDeviceStatePackagedLicense);
     if (actual_is_license_packaged_with_device.has_value()) {
@@ -396,7 +396,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   std::unique_ptr<FakeDeviceManagementService> service_;
   em::DeviceManagementRequest last_request_;
-  absl::optional<AutoEnrollmentState> state_;
+  std::optional<AutoEnrollmentState> state_;
   DeviceManagementService::JobConfiguration::JobType failed_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobConfiguration::JobType last_async_job_type_ =
@@ -1534,10 +1534,10 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
     AutoEnrollmentClientImplBaseTest::SetUp();
   }
 
-  void PsmWillReplyWith(psm::RlweResult psm_result,
-                        absl::optional<bool> membership_result = absl::nullopt,
-                        absl::optional<base::Time>
-                            membership_determination_time = absl::nullopt) {
+  void PsmWillReplyWith(
+      psm::RlweResult psm_result,
+      std::optional<bool> membership_result = std::nullopt,
+      std::optional<base::Time> membership_determination_time = std::nullopt) {
     fake_psm_rlwe_dmserver_client_ptr_->WillReplyWith(PsmResultHolder(
         psm_result, membership_result, membership_determination_time));
   }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_RSU_LOOKUP_KEY_UPLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -54,7 +54,7 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
 
   void GetDataFromCryptohome(bool available);
   void OnRsuDeviceIdReceived(
-      absl::optional<user_data_auth::GetRsuDeviceIdReply> result);
+      std::optional<user_data_auth::GetRsuDeviceIdReply> result);
 
   void OnEnrollmentCertificateUploaded(
       const std::string& uploaded_key,

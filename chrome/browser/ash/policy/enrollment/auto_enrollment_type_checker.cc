@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -25,7 +26,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -37,7 +37,7 @@ static bool IsOfficialGoogleChrome() {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
 #else
-  const absl::optional<base::StringPiece> firmware_type =
+  const std::optional<base::StringPiece> firmware_type =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           ash::system::kFirmwareTypeKey);
   return firmware_type != ash::system::kFirmwareTypeValueNonchrome;
@@ -134,7 +134,7 @@ constexpr int kUMAKSFetchNumTriesBuckets =
 const int kCodeVersion = 0;
 
 // When set to true, unified state determination is disabled.
-absl::optional<bool> g_unified_state_determination_kill_switch;
+std::optional<bool> g_unified_state_determination_kill_switch;
 
 void ReportKillSwitchFetchTries(int tries) {
   base::UmaHistogramCustomCounts(kUMAStateDeterminationKillSwitchFetchNumTries,
@@ -145,14 +145,14 @@ void ReportKillSwitchFetchTries(int tries) {
 
 void ParseKSConfig(base::OnceClosure init_callback,
                    const std::string& response) {
-  absl::optional<base::Value> config = base::JSONReader::Read(response);
+  std::optional<base::Value> config = base::JSONReader::Read(response);
   if (!config || !config->is_dict()) {
     LOG(ERROR) << "Kill switch config is not valid JSON or not a dict";
     std::move(init_callback).Run();
     return;
   }
 
-  absl::optional<int> disable_up_to_version =
+  std::optional<int> disable_up_to_version =
       config->GetDict().FindInt(kKSConfigDisableUpToVersionKey);
   if (!disable_up_to_version) {
     LOG(ERROR) << "Kill switch config is missing disable_up_to_version key or "
@@ -340,7 +340,7 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
     return FRERequirement::kExplicitlyRequired;
   }
 
-  const absl::optional<base::StringPiece> check_enrollment_value =
+  const std::optional<base::StringPiece> check_enrollment_value =
       statistics_provider->GetMachineStatistic(
           ash::system::kCheckEnrollmentKey);
 
@@ -455,7 +455,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
   }
   const ash::system::FactoryPingEmbargoState embargo_state =
       ash::system::GetEnterpriseManagementPingEmbargoState(statistics_provider);
-  const absl::optional<base::StringPiece> serial_number =
+  const std::optional<base::StringPiece> serial_number =
       statistics_provider->GetMachineID();
   if (!serial_number || serial_number->empty()) {
     LOG(WARNING)
@@ -463,7 +463,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
     return InitialStateDeterminationRequirement::kNotRequired;
   }
 
-  const absl::optional<base::StringPiece> rlz_brand_code =
+  const std::optional<base::StringPiece> rlz_brand_code =
       statistics_provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
   if (!rlz_brand_code || rlz_brand_code->empty()) {
     LOG(WARNING)

@@ -274,7 +274,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     robot_account_id_ = user_name;
   }
 
-  void ClearOAuthToken() { oauth_token_ = absl::nullopt; }
+  void ClearOAuthToken() { oauth_token_ = std::nullopt; }
 
   FakeStartCrdSessionJobDelegate& delegate() { return delegate_; }
 
@@ -605,7 +605,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_SUCCESS(RunJobAndWaitForResult(Payload()));
 
-  EXPECT_EQ(absl::nullopt, delegate().session_parameters().admin_email);
+  EXPECT_EQ(std::nullopt, delegate().session_parameters().admin_email);
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,

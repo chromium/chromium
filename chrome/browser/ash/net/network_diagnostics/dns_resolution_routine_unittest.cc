@@ -107,7 +107,7 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessfulResolution) {
   auto successful_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(successful_resolution));
   SetUpAndRunRoutine(std::move(fake_dns_results),
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -121,8 +121,8 @@ TEST_F(DnsResolutionRoutineTest, TestResolutionFailure) {
   auto failed_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
       net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(failed_resolution));
   SetUpAndRunRoutine(std::move(fake_dns_results),
                      mojom::RoutineVerdict::kProblem,
@@ -137,13 +137,13 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessOnRetry) {
       fake_dns_results;
   auto timed_out_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_DNS_TIMED_OUT, net::ResolveErrorInfo(net::ERR_DNS_TIMED_OUT),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(timed_out_resolution));
   auto successful_resolution = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   fake_dns_results.push_back(std::move(successful_resolution));
 
   fake_dns_results.push_back(std::move(successful_resolution));

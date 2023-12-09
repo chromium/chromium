@@ -76,7 +76,7 @@ void SupportHostObserverProxy::OnHostStateConnected(
 }
 
 void SupportHostObserverProxy::OnHostStateDisconnected(
-    const absl::optional<std::string>& disconnect_reason) {
+    const std::optional<std::string>& disconnect_reason) {
   // We always want to log this event, as it could help customers debug why
   // their CRD connection is failing/disconnecting.
   LOG(WARNING) << "CRD client disconnected with reason: "

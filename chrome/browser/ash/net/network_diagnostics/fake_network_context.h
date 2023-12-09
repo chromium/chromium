@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_NETWORK_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/circular_deque.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/net/network_diagnostics/fake_tcp_connected_socket.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_udp_socket.h"
 #include "services/network/test/test_network_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::network_diagnostics {
 
@@ -25,15 +25,15 @@ class FakeNetworkContext : public network::TestNetworkContext {
    public:
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses,
-              absl::optional<net::HostResolverEndpointResults>
+              std::optional<net::AddressList> resolved_addresses,
+              std::optional<net::HostResolverEndpointResults>
                   endpoint_results_with_metadata);
     ~DnsResult();
 
     int result_;
     net::ResolveErrorInfo resolve_error_info_;
-    absl::optional<net::AddressList> resolved_addresses_;
-    absl::optional<net::HostResolverEndpointResults>
+    std::optional<net::AddressList> resolved_addresses_;
+    std::optional<net::HostResolverEndpointResults>
         endpoint_results_with_metadata_;
   };
   FakeNetworkContext();
@@ -50,7 +50,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
       override;
 
   void CreateTCPConnectedSocket(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -64,10 +64,10 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
   // Sets the fake TCP connect code. TODO(khegde): Change this to
   // SetTCPConnectCompleteCode.
-  void SetTCPConnectCode(absl::optional<net::Error>& tcp_connect_code);
+  void SetTCPConnectCode(std::optional<net::Error>& tcp_connect_code);
 
   // Sets the fake TLS upgrade code.
-  void SetTLSUpgradeCode(absl::optional<net::Error>& tls_upgrade_code);
+  void SetTLSUpgradeCode(std::optional<net::Error>& tls_upgrade_code);
 
   // Sets the fake UDP connect code.
   void SetUdpConnectCode(net::Error udp_connect_code);

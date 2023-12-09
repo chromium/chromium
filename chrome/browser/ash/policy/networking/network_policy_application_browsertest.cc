@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -59,7 +60,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace policy {
@@ -194,7 +194,7 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
   const std::string property_name_;
 
   std::vector<std::string> values_;
-  absl::optional<WaitForValueState> wait_for_value_state_;
+  std::optional<WaitForValueState> wait_for_value_state_;
 };
 
 // Shorthand for ServicePropertyValueWatcher that allows waiting for a specific
@@ -660,7 +660,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
 
   // Extracts the UIData dictionary from the shill UIData property of the
   // service `service_path`.
-  absl::optional<base::Value::Dict> GetUIDataDict(
+  std::optional<base::Value::Dict> GetUIDataDict(
       const std::string& service_path) {
     const base::Value::Dict* properties =
         shill_service_client_test_->GetServiceProperties(service_path);
@@ -670,7 +670,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         properties->FindString(shill::kUIDataProperty);
     if (!ui_data_json)
       return {};
-    absl::optional<base::Value> ui_data_value =
+    std::optional<base::Value> ui_data_value =
         base::JSONReader::Read(*ui_data_json);
     if (!ui_data_value || !ui_data_value->is_dict())
       return {};
@@ -702,7 +702,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   const base::Value::Dict* GetWifiProps(const std::string& guid) {
-    absl::optional<std::string> wifi_service;
+    std::optional<std::string> wifi_service;
     wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
     if (wifi_service->empty()) {
       ADD_FAILURE() << "No wifi service found for: " << guid;
@@ -712,7 +712,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   void SetServiceVisibility(const std::string& guid, bool visible) {
-    absl::optional<std::string> wifi_service;
+    std::optional<std::string> wifi_service;
     wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
     if (wifi_service->empty()) {
       ADD_FAILURE() << "No wifi service found for: " << guid;
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
               ElementsAre(std::string() /* shill shared profile */));
   network_policy_application_observer.ResetEvents();
 
-  absl::optional<std::string> wifi_service =
+  std::optional<std::string> wifi_service =
       shill_service_client_test_->FindServiceMatchingGUID(
           "{device-policy-for-Wifi1}");
   ASSERT_TRUE(wifi_service);
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                                    base::Value(shill::kStateIdle)));
   }
 
-  absl::optional<std::string> wifi2_service =
+  std::optional<std::string> wifi2_service =
       shill_service_client_test_->FindServiceMatchingGUID(
           "{user-policy-for-Wifi2}");
   ASSERT_TRUE(wifi2_service);
@@ -1507,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   {
     // Now the policy-provided network becomes visible in a wifi scan.
     // Expect that wifi_policy_2 connects.
-    absl::optional<std::string> user_policy_wifi_service_path =
+    std::optional<std::string> user_policy_wifi_service_path =
         shill_service_client_test_->FindServiceMatchingGUID("wifi_policy_2");
     ASSERT_TRUE(user_policy_wifi_service_path);
     ServiceStateWaiter wifi_connected_waiter(
@@ -1607,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // Sign-in a user. The device policy network should connect because the
   // AllowOnlyPolicyNetworksToConnectIfAvailable became effective on user login.
   {
-    absl::optional<std::string> policy_wifi_service_path =
+    std::optional<std::string> policy_wifi_service_path =
         shill_service_client_test_->FindServiceMatchingGUID("wifi_policy_1");
     ASSERT_TRUE(policy_wifi_service_path);
     ServiceStateWaiter wifi_connected_waiter(shill_service_client_test_,
@@ -2070,7 +2070,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
   // Set GUID in the "user_settings" part of the UIData dictionary to a
   // inconsistent value.
   {
-    absl::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
+    std::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
     base::Value::Dict* user_settings =
         ui_data->EnsureDict(kUIDataKeyUserSettings);
@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
 
   // Verify that UIData now has the incorrect GUID.
   {
-    absl::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
+    std::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
     EXPECT_NE(GetGUIDFromUIData(*ui_data), kEthernetGuid);
   }
@@ -2110,7 +2110,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
 
   // Check that GUID in the UIData dictionary has been fixed.
   {
-    absl::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
+    std::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
     EXPECT_EQ(GetGUIDFromUIData(*ui_data), kEthernetGuid);
   }
@@ -2159,7 +2159,7 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(eap->client_cert_pkcs11_id->policy_source,
               network_mojom::PolicySource::kDevicePolicyEnforced);
     ASSERT_EQ(eap->client_cert_pkcs11_id->policy_value,
-              absl::make_optional(expected_client_cert->pem_or_id));
+              std::make_optional(expected_client_cert->pem_or_id));
 
     // The type should be "PKCS11Id" in the UI.
     ASSERT_TRUE(eap->client_cert_type);
@@ -2241,7 +2241,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     EXPECT_EQ(eap->client_cert_pkcs11_id->policy_source,
               network_mojom::PolicySource::kDevicePolicyEnforced);
     ASSERT_EQ(eap->client_cert_pkcs11_id->policy_value,
-              absl::make_optional(expected_client_cert->pem_or_id));
+              std::make_optional(expected_client_cert->pem_or_id));
 
     // The type should be "PKCS11Id" in the UI.
     ASSERT_TRUE(eap->client_cert_type);
@@ -2673,7 +2673,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
 
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // been wiped.
-  absl::optional<std::string> new_service_path =
+  std::optional<std::string> new_service_path =
       shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
   ASSERT_TRUE(new_service_path);
   {
@@ -2844,7 +2844,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsDisabledTest,
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // been wiped.
   {
-    absl::optional<std::string> new_service_path =
+    std::optional<std::string> new_service_path =
         shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
     ASSERT_TRUE(new_service_path);
     const base::Value::Dict* shill_properties =

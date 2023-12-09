@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting::test {
 namespace {
@@ -143,7 +143,7 @@ cros_healthd::TelemetryInfoPtr CreatePrivacyScreenResult(bool supported) {
   return telemetry_info;
 }
 
-absl::optional<MetricData> CollectData(
+std::optional<MetricData> CollectData(
     std::unique_ptr<CrosHealthdSamplerHandler> info_handler,
     cros_healthd::TelemetryInfoPtr telemetry_info,
     cros_healthd::ProbeCategoryEnum probe_category,
@@ -151,7 +151,7 @@ absl::optional<MetricData> CollectData(
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   CrosHealthdMetricSampler sampler(std::move(info_handler), probe_category);
-  test::TestEvent<absl::optional<MetricData>> metric_collect_event;
+  test::TestEvent<std::optional<MetricData>> metric_collect_event;
 
   sampler.MaybeCollect(metric_collect_event.cb());
   return metric_collect_event.result();
@@ -576,7 +576,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->cpu_result =
       cros_healthd::CpuResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const absl::optional<MetricData> cpu_data = CollectData(
+  const std::optional<MetricData> cpu_data = CollectData(
       std::make_unique<CrosHealthdCpuSamplerHandler>(),
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kCpu,
       CrosHealthdSamplerHandler::MetricType::kInfo);
@@ -586,7 +586,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->bus_result =
       cros_healthd::BusResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const absl::optional<MetricData> bus_data = CollectData(
+  const std::optional<MetricData> bus_data = CollectData(
       std::make_unique<CrosHealthdBusSamplerHandler>(
           CrosHealthdSamplerHandler::MetricType::kInfo),
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kBus,
@@ -598,7 +598,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->audio_result =
       cros_healthd::AudioResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const absl::optional<MetricData> audio_data = CollectData(
+  const std::optional<MetricData> audio_data = CollectData(
       std::make_unique<CrosHealthdAudioSamplerHandler>(),
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kAudio,
       CrosHealthdSamplerHandler::MetricType::kTelemetry);
@@ -609,7 +609,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
       cros_healthd::BootPerformanceResult::NewError(
           cros_healthd::ProbeError::New(cros_healthd::ErrorType::kFileReadError,
                                         ""));
-  const absl::optional<MetricData> boot_performance_data =
+  const std::optional<MetricData> boot_performance_data =
       CollectData(std::make_unique<CrosHealthdBootPerformanceSamplerHandler>(),
                   std::move(telemetry_info),
                   cros_healthd::ProbeCategoryEnum::kBootPerformance,
@@ -620,7 +620,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->input_result =
       cros_healthd::InputResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const absl::optional<MetricData> input_data = CollectData(
+  const std::optional<MetricData> input_data = CollectData(
       std::make_unique<CrosHealthdInputSamplerHandler>(),
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kInput,
       CrosHealthdSamplerHandler::MetricType::kInfo);
@@ -630,7 +630,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->display_result =
       cros_healthd::DisplayResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const absl::optional<MetricData> display_info_data = CollectData(
+  const std::optional<MetricData> display_info_data = CollectData(
       std::make_unique<CrosHealthdDisplaySamplerHandler>(
           CrosHealthdSamplerHandler::MetricType::kInfo),
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kDisplay,
@@ -641,7 +641,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
   telemetry_info->display_result =
       cros_healthd::DisplayResult::NewError(cros_healthd::ProbeError::New(
           cros_healthd::ErrorType::kFileReadError, ""));
-  const absl::optional<MetricData> display_telemetry_data = CollectData(
+  const std::optional<MetricData> display_telemetry_data = CollectData(
       std::make_unique<CrosHealthdDisplaySamplerHandler>(
           CrosHealthdSamplerHandler::MetricType::kTelemetry),
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kDisplay,

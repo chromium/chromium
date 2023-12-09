@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -40,7 +41,6 @@
 #include "components/user_manager/user_manager.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace policy {
@@ -353,7 +353,7 @@ void SystemLogUploader::OnSuccess() {
 
   // On successful log upload schedule the next log upload after
   // upload_frequency_ time from now.
-  ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
+  ScheduleNextSystemLogUpload(upload_frequency_, std::nullopt);
 }
 
 void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
@@ -368,13 +368,13 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
                   << ", retrying later.";
     ScheduleNextSystemLogUpload(base::Milliseconds(kErrorUploadDelayMs),
-                                absl::nullopt);
+                                std::nullopt);
   } else {
     // No more retries.
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
                   << ", no more retries.";
     retry_count_ = 0;
-    ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
+    ScheduleNextSystemLogUpload(upload_frequency_, std::nullopt);
   }
 }
 
@@ -413,12 +413,12 @@ void SystemLogUploader::RefreshUploadSettings() {
   // are now enabled. If no jobs have been attempted (ie. last_upload_attempt_
   // is the initial value) it will be scheduled immediately.
   if (!previous_upload_enabled && upload_enabled_){
-    ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
+    ScheduleNextSystemLogUpload(upload_frequency_, std::nullopt);
   }
 }
 
 void SystemLogUploader::UploadZippedSystemLogs(
-    absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+    std::optional<RemoteCommandJob::UniqueIDType> command_id,
     std::string zipped_system_logs) {
   // Must be called on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -453,7 +453,7 @@ void SystemLogUploader::UploadZippedSystemLogs(
 }
 
 void SystemLogUploader::StartLogUpload(
-    absl::optional<RemoteCommandJob::UniqueIDType> command_id) {
+    std::optional<RemoteCommandJob::UniqueIDType> command_id) {
   // Must be called on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -468,12 +468,12 @@ void SystemLogUploader::StartLogUpload(
     SYSLOG(INFO) << "System log upload is disabled, rescheduling.";
     retry_count_ = 0;
     last_upload_attempt_ = base::Time::NowFromSystemTime();
-    ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
+    ScheduleNextSystemLogUpload(upload_frequency_, std::nullopt);
   }
 }
 
 void SystemLogUploader::OnSystemLogsLoaded(
-    absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+    std::optional<RemoteCommandJob::UniqueIDType> command_id,
     std::unique_ptr<SystemLogs> system_logs) {
   // Must be called on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -538,7 +538,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
 
 void SystemLogUploader::ScheduleNextSystemLogUpload(
     base::TimeDelta frequency,
-    absl::optional<RemoteCommandJob::UniqueIDType> command_id) {
+    std::optional<RemoteCommandJob::UniqueIDType> command_id) {
   // Don't schedule a new system log upload if there's a log upload in progress
   // (it will be scheduled once the current one completes).
   if (log_upload_in_progress_) {

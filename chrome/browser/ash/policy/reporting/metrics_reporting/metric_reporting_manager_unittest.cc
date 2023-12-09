@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -45,7 +46,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::ByMove;
@@ -109,7 +109,7 @@ class FakeCollector : public CollectorBase {
  protected:
   // CollectorBase:
   void OnMetricDataCollected(bool is_event_driven,
-                             absl::optional<MetricData> metric_data) override {}
+                             std::optional<MetricData> metric_data) override {}
   bool CanCollect() const override { return true; }
 
  private:
@@ -132,7 +132,7 @@ class MockDelegate : public MetricReportingManager::Delegate {
       Destination destination,
       Priority priority,
       std::unique_ptr<RateLimiterInterface> rate_limiter,
-      absl::optional<SourceInfo> source_info) override {
+      std::optional<SourceInfo> source_info) override {
     return CreateMetricReportQueueMock(event_type, destination, priority,
                                        rate_limiter.get(), source_info);
   }
@@ -147,7 +147,7 @@ class MockDelegate : public MetricReportingManager::Delegate {
                Destination destination,
                Priority priority,
                RateLimiterInterface* rate_limiter,
-               absl::optional<SourceInfo> source_info),
+               std::optional<SourceInfo> source_info),
               ());
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
@@ -159,7 +159,7 @@ class MockDelegate : public MetricReportingManager::Delegate {
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
                int rate_unit_to_ms,
-               absl::optional<SourceInfo> source_info),
+               std::optional<SourceInfo> source_info),
               (override));
 
   MOCK_METHOD(std::unique_ptr<CollectorBase>,

@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
 
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
   // Proceed.
-  EXPECT_CALL(cb_, Run(/*user_justification=*/absl::optional<std::u16string>(),
+  EXPECT_CALL(cb_, Run(/*user_justification=*/std::optional<std::u16string>(),
                        /*should_proceed=*/true))
       .Times(1);
   dialog->AcceptDialog();
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
   // Cancel.
-  EXPECT_CALL(cb_, Run(/*user_justification=*/absl::optional<std::u16string>(),
+  EXPECT_CALL(cb_, Run(/*user_justification=*/std::optional<std::u16string>(),
                        /*should_proceed=*/false))
       .Times(1);
   dialog->CancelDialog();

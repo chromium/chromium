@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_service.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -30,7 +30,7 @@ DeviceLocalAccountExternalDataService::DeviceLocalAccountExternalDataService(
       ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA);
   resource_cache_ =
       std::make_unique<ResourceCache>(cache_dir, backend_task_runner_,
-                                      /* max_cache_size */ absl::nullopt);
+                                      /* max_cache_size */ std::nullopt);
   parent_->AddObserver(this);
 }
 

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_NET_ROLLBACK_NETWORK_CONFIG_FAKE_ROLLBACK_NETWORK_CONFIG_H_
 #define CHROME_BROWSER_ASH_NET_ROLLBACK_NETWORK_CONFIG_FAKE_ROLLBACK_NETWORK_CONFIG_H_
 
-#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
 
 namespace ash {
 
@@ -37,7 +37,7 @@ class FakeRollbackNetworkConfig : public RollbackNetworkConfig {
   }
 
  private:
-  absl::optional<base::Value> imported_config_ = absl::nullopt;
+  std::optional<base::Value> imported_config_ = std::nullopt;
   base::OnceClosure config_imported_callback_;
 };
 

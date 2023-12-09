@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -67,7 +68,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace policy {
@@ -139,7 +139,7 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  absl::optional<base::test::ScopedChromeOSVersionInfo> version_info_;
+  std::optional<base::test::ScopedChromeOSVersionInfo> version_info_;
 };
 
 MinimumVersionPolicyTestBase::MinimumVersionPolicyTestBase() {
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NoNetworkNotificationClick) {
   // notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, absl::nullopt);
+                                         0 /*action_index*/, std::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   EXPECT_TRUE(tray_test_api_->IsTrayBubbleOpen());
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, LastDayNotificationOnLogin) {
   // network settings and hides the notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, absl::nullopt);
+                                         0 /*action_index*/, std::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   EXPECT_TRUE(tray_test_api_->IsTrayBubbleOpen());
@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   // Clicking on notification button starts update and hides the notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, absl::nullopt);
+                                         0 /*action_index*/, std::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
   // Clicking on notification button opens settings page and hides notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, absl::nullopt);
+                                         0 /*action_index*/, std::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   Browser* settings_browser = chrome::FindLastActive();

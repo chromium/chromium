@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/dns_resolution_routine.h"
 
 #include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -19,7 +20,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::network_diagnostics {
 
@@ -107,8 +107,8 @@ void DnsResolutionRoutine::AttemptResolution() {
 void DnsResolutionRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&
         endpoint_results_with_metadata) {
   if (result == net::OK) {
     CHECK(resolved_addresses);

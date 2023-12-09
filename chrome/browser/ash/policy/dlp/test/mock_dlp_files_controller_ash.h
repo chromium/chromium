@@ -25,7 +25,7 @@ class MockDlpFilesControllerAsh : public DlpFilesControllerAsh {
 
   MOCK_METHOD(void,
               CheckIfTransferAllowed,
-              (absl::optional<file_manager::io_task::IOTaskId> task_id,
+              (std::optional<file_manager::io_task::IOTaskId> task_id,
                const std::vector<storage::FileSystemURL>& transferred_files,
                storage::FileSystemURL destination,
                bool is_move,
@@ -35,7 +35,7 @@ class MockDlpFilesControllerAsh : public DlpFilesControllerAsh {
   MOCK_METHOD(void,
               GetDlpMetadata,
               (const std::vector<storage::FileSystemURL>& files,
-               absl::optional<DlpFileDestination> destination,
+               std::optional<DlpFileDestination> destination,
                GetDlpMetadataCallback result_callback),
               (override));
 
@@ -74,7 +74,7 @@ class MockDlpFilesControllerAsh : public DlpFilesControllerAsh {
 
   MOCK_METHOD(void,
               IsFilesTransferRestricted,
-              (absl::optional<file_manager::io_task::IOTaskId> task_id,
+              (std::optional<file_manager::io_task::IOTaskId> task_id,
                const std::vector<FileDaemonInfo>& transferred_files,
                const DlpFileDestination& destination,
                dlp::FileAction files_action,

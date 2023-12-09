@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_FAKE_START_CRD_SESSION_JOB_DELEGATE_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_FAKE_START_CRD_SESSION_JOB_DELEGATE_H_
 
-#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
+#include <optional>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 
 namespace policy {
 
@@ -43,8 +43,8 @@ class FakeStartCrdSessionJobDelegate : public StartCrdSessionJobDelegate {
   bool has_active_session_ = false;
   bool access_code_success_ = true;
   bool terminate_session_called_ = false;
-  absl::optional<SessionParameters> received_session_parameters_;
-  absl::optional<SessionEndCallback> session_finished_callback_;
+  std::optional<SessionParameters> received_session_parameters_;
+  std::optional<SessionEndCallback> session_finished_callback_;
 };
 
 }  // namespace policy

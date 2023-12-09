@@ -28,13 +28,13 @@ using chromeos::network_config::mojom::ApnState;
 using chromeos::network_config::mojom::ApnType;
 using chromeos::network_config::mojom::ManagedApnPropertiesPtr;
 
-absl::optional<ApnPropertiesPtr> GetPreRevampApnFromDict(
+std::optional<ApnPropertiesPtr> GetPreRevampApnFromDict(
     const base::Value::Dict* cellular_dict,
     const char* key) {
   const base::Value::Dict* apn_dict =
       chromeos::network_config::GetDictionary(cellular_dict, key);
   if (!apn_dict) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Pre-revamp APNs with empty kAccessPointName will be ignored as they
@@ -44,7 +44,7 @@ absl::optional<ApnPropertiesPtr> GetPreRevampApnFromDict(
   const std::string* access_point_name =
       apn_dict->FindString(::onc::cellular_apn::kAccessPointName);
   if (!access_point_name || access_point_name->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return chromeos::network_config::GetApnProperties(
@@ -239,8 +239,8 @@ void ApnMigrator::OnGetManagedProperties(
     std::string iccid,
     std::string guid,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> properties,
-    absl::optional<std::string> error) {
+    std::optional<base::Value::Dict> properties,
+    std::optional<std::string> error) {
   if (error.has_value()) {
     NET_LOG(ERROR) << "Error fetching managed properties for " << iccid
                    << ", error: " << error.value();
@@ -290,7 +290,7 @@ void ApnMigrator::OnGetManagedProperties(
   const base::Value::Dict* cellular_dict =
       chromeos::network_config::GetDictionary(&properties.value(),
                                               ::onc::network_config::kCellular);
-  absl::optional<ApnPropertiesPtr> last_connected_attach_apn =
+  std::optional<ApnPropertiesPtr> last_connected_attach_apn =
       GetPreRevampApnFromDict(cellular_dict,
                               ::onc::cellular::kLastConnectedAttachApnProperty);
   NET_LOG(EVENT) << "last_connected_attach_apn: "
@@ -298,7 +298,7 @@ void ApnMigrator::OnGetManagedProperties(
                          ? (*last_connected_attach_apn)->access_point_name
                          : "none");
 
-  absl::optional<ApnPropertiesPtr> last_connected_default_apn =
+  std::optional<ApnPropertiesPtr> last_connected_default_apn =
       GetPreRevampApnFromDict(
           cellular_dict, ::onc::cellular::kLastConnectedDefaultApnProperty);
   NET_LOG(EVENT) << "last_connected_default_apn: "
@@ -370,7 +370,7 @@ void ApnMigrator::OnGetManagedProperties(
   }
 
   if (!has_last_connected_attach && !has_last_connected_default) {
-    absl::optional<ApnPropertiesPtr> last_good_apn =
+    std::optional<ApnPropertiesPtr> last_good_apn =
         GetPreRevampApnFromDict(cellular_dict, ::onc::cellular::kLastGoodAPN);
 
     if (last_good_apn && pre_revamp_custom_apn->access_point_name ==
@@ -497,7 +497,7 @@ void ApnMigrator::CreateDefaultThenAttachCustomApns(
   // once, when both APNs have been migrated.
   auto create_custom_attach_apn_callback =
       base::BindOnce(&ApnMigrator::CreateCustomApn, weak_factory_.GetWeakPtr(),
-                     iccid, guid, std::move(attach_apn), absl::nullopt);
+                     iccid, guid, std::move(attach_apn), std::nullopt);
 
   auto on_create_default_apn_callback =
       base::BindOnce(
@@ -530,7 +530,7 @@ void ApnMigrator::CreateCustomApn(
     const std::string& iccid,
     const std::string& network_guid,
     chromeos::network_config::mojom::ApnPropertiesPtr apn,
-    absl::optional<base::OnceCallback<void(bool)>> success_callback) {
+    std::optional<base::OnceCallback<void(bool)>> success_callback) {
   remote_cros_network_config_->CreateCustomApn(
       network_guid, std::move(apn),
       success_callback ? std::move(*success_callback)

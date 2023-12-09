@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -128,25 +128,24 @@ class SystemLogUploader : public UploadJob::Delegate {
   void RefreshUploadSettings();
 
   // Starts the system log loading process.
-  void StartLogUpload(
-      absl::optional<RemoteCommandJob::UniqueIDType> command_id);
+  void StartLogUpload(std::optional<RemoteCommandJob::UniqueIDType> command_id);
 
   // The callback is invoked by the Delegate if system logs have been loaded
   // from disk, adds policy dump and calls UploadSystemLogs.
   void OnSystemLogsLoaded(
-      absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+      std::optional<RemoteCommandJob::UniqueIDType> command_id,
       std::unique_ptr<SystemLogs> system_logs);
 
   // Uploads zipped system logs.
   void UploadZippedSystemLogs(
-      absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+      std::optional<RemoteCommandJob::UniqueIDType> command_id,
       std::string zipped_system_logs);
 
   // Helper method that figures out when the next system log upload should
   // be scheduled.
   void ScheduleNextSystemLogUpload(
       base::TimeDelta frequency,
-      absl::optional<RemoteCommandJob::UniqueIDType> command_id);
+      std::optional<RemoteCommandJob::UniqueIDType> command_id);
 
   // The number of consequent retries after the failed uploads.
   int retry_count_;

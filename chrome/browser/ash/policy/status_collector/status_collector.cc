@@ -84,12 +84,12 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-absl::optional<std::string> StatusCollector::GetBootMode(
+std::optional<std::string> StatusCollector::GetBootMode(
     ash::system::StatisticsProvider* statistics_provider) {
-  const absl::optional<std::string_view> dev_switch_mode =
+  const std::optional<std::string_view> dev_switch_mode =
       statistics_provider->GetMachineStatistic(ash::system::kDevSwitchBootKey);
   if (!dev_switch_mode) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (dev_switch_mode == ash::system::kDevSwitchBootValueDev) {
@@ -100,7 +100,7 @@ absl::optional<std::string> StatusCollector::GetBootMode(
     return std::string("Verified");
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StatusCollector::StatusCollector(ash::system::StatisticsProvider* provider,

@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   const base::Value::Dict* image_properties =
       images_pref.FindDict(account_id_1_.GetUserEmail());
   ASSERT_TRUE(image_properties);
-  absl::optional<int> image_index = image_properties->FindInt("index");
+  std::optional<int> image_index = image_properties->FindInt("index");
   const std::string* image_path = image_properties->FindString("path");
   ASSERT_TRUE(image_index.has_value());
   ASSERT_TRUE(image_path);
@@ -1576,15 +1576,15 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
 
   {
-    TestFuture<const absl::optional<CrxInstallError>&> installer_done_future;
+    TestFuture<const std::optional<CrxInstallError>&> installer_done_future;
     installer->AddInstallerCallback(installer_done_future.GetCallback());
 
     base::FilePath test_dir;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
     installer->InstallCrx(test_dir.Append(kPackagedAppCRXPath));
 
-    const absl::optional<CrxInstallError>& error = installer_done_future.Get();
-    EXPECT_THAT(error, testing::Eq(absl::nullopt));
+    const std::optional<CrxInstallError>& error = installer_done_future.Get();
+    EXPECT_THAT(error, testing::Eq(std::nullopt));
   }
 
   const extensions::Extension* app = installer->extension();

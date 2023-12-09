@@ -176,7 +176,7 @@ void SetDevBootFlag(ash::FakeInstallAttributesClient* client,
   ::user_data_auth::SetFirmwareManagementParametersRequest request;
   request.mutable_fwmp()->set_flags(fwmp_flags);
   base::test::TestFuture<
-      absl::optional<::user_data_auth::SetFirmwareManagementParametersReply>>
+      std::optional<::user_data_auth::SetFirmwareManagementParametersReply>>
       future_fwmp;
   client->SetFirmwareManagementParameters(request, future_fwmp.GetCallback());
   ASSERT_TRUE(future_fwmp.Get());
@@ -184,7 +184,7 @@ void SetDevBootFlag(ash::FakeInstallAttributesClient* client,
 
 void ClearDevBootFlag(ash::FakeInstallAttributesClient* client) {
   base::test::TestFuture<
-      absl::optional<::user_data_auth::RemoveFirmwareManagementParametersReply>>
+      std::optional<::user_data_auth::RemoveFirmwareManagementParametersReply>>
       future_removed_fwmp;
   client->RemoveFirmwareManagementParameters(
       ::user_data_auth::RemoveFirmwareManagementParametersRequest(),

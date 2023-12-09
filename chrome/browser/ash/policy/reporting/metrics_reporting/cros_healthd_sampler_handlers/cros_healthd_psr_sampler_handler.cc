@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_psr_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -76,11 +76,11 @@ void CrosHealthdPsrSamplerHandler::HandleResultImpl(
     size_t num_retries_left,
     cros_healthd::TelemetryInfoPtr result) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
       [](base::WeakPtr<const CrosHealthdPsrSamplerHandler> self,
          OptionalMetricCallback callback,
-         absl::optional<MetricData>* metric_data, size_t num_retries_left) {
+         std::optional<MetricData>* metric_data, size_t num_retries_left) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
         if (!metric_data->has_value() && num_retries_left > 0) {
           // Failed to obtain PSR info, try again in 10 seconds. May be due to
@@ -148,7 +148,7 @@ void CrosHealthdPsrSamplerHandler::HandleResultImpl(
   }
 
   // Gather PSR info.
-  metric_data = absl::make_optional<MetricData>();
+  metric_data = std::make_optional<MetricData>();
   auto* const runtime_counters_telemetry =
       metric_data->mutable_telemetry_data()
           ->mutable_runtime_counters_telemetry();

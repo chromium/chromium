@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_HTTPS_LATENCY_EVENT_DETECTOR_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_NETWORK_HTTPS_LATENCY_EVENT_DETECTOR_H_
 
+#include <optional>
+
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -26,8 +27,8 @@ class HttpsLatencyEventDetector : public PeriodicEventCollector::EventDetector {
 
   ~HttpsLatencyEventDetector() override = default;
 
-  absl::optional<MetricEventType> DetectEvent(
-      absl::optional<MetricData> previous_metric_data,
+  std::optional<MetricEventType> DetectEvent(
+      std::optional<MetricData> previous_metric_data,
       const MetricData& current_metric_data) override;
 };
 }  // namespace reporting

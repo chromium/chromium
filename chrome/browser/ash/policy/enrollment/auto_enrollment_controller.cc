@@ -175,8 +175,7 @@ void EnrollmentFwmpHelper::RequestFirmwareManagementParameters(
 
 void EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived(
     ResultCallback result_callback,
-    absl::optional<user_data_auth::GetFirmwareManagementParametersReply>
-        reply) {
+    std::optional<user_data_auth::GetFirmwareManagementParametersReply> reply) {
   if (!reply.has_value() ||
       reply->error() !=
           user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -496,9 +495,9 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  const absl::optional<base::StringPiece> serial_number =
+  const std::optional<base::StringPiece> serial_number =
       provider->GetMachineID();
-  const absl::optional<base::StringPiece> rlz_brand_code =
+  const std::optional<base::StringPiece> rlz_brand_code =
       provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
   // The Initial State Determination should not be started if the serial number
   // or brand code are missing. This is ensured in
@@ -584,7 +583,7 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
 }
 
 void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
-    absl::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
+    std::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
         reply) {
   if (!reply.has_value() ||
       reply->error() !=

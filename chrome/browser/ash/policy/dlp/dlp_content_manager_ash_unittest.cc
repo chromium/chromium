@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/functional/bind.h"
@@ -44,7 +45,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Mock;

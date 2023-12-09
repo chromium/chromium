@@ -79,7 +79,7 @@ bool CachedPolicyKeyLoader::LoadPolicyKeyImmediately() {
   request.set_username(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_)
           .account_id());
-  absl::optional<user_data_auth::GetSanitizedUsernameReply> reply =
+  std::optional<user_data_auth::GetSanitizedUsernameReply> reply =
       cryptohome_misc_client_->BlockingGetSanitizedUsername(request);
   if (!reply.has_value() || reply->sanitized_username().empty()) {
     return false;
@@ -170,7 +170,7 @@ void CachedPolicyKeyLoader::OnPolicyKeyLoaded(const std::string& key) {
 }
 
 void CachedPolicyKeyLoader::OnGetSanitizedUsername(
-    absl::optional<user_data_auth::GetSanitizedUsernameReply> reply) {
+    std::optional<user_data_auth::GetSanitizedUsernameReply> reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reply.has_value() || reply->sanitized_username().empty()) {
     // Don't bother trying to load a key if we don't know where it is - just

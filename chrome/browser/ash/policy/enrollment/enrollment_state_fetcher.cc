@@ -127,7 +127,7 @@ struct DeterminationContext {
 
   // State key retrieved from session_manager. Used for state retrieval
   // request. Computed by StateKeys step.
-  absl::optional<std::string> state_key;
+  std::optional<std::string> state_key;
 
   // Maintains the required data and methods to communicate with the PSM
   // server. In particular, it holds the plaintext id we are want to check
@@ -309,7 +309,7 @@ class RlweOprf {
             TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
         /*critical=*/true, DMAuth::NoAuth(),
-        /*oauth_token=*/absl::nullopt, context.url_loader_factory,
+        /*oauth_token=*/std::nullopt, context.url_loader_factory,
         base::BindOnce(&RlweOprf::OnRequestDone, weak_factory_.GetWeakPtr(),
                        std::move(completion_callback)));
 
@@ -407,7 +407,7 @@ class RlweQuery {
             TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
         /*critical=*/true, DMAuth::NoAuth(),
-        /*oauth_token=*/absl::nullopt, context.url_loader_factory,
+        /*oauth_token=*/std::nullopt, context.url_loader_factory,
         base::BindOnce(&RlweQuery::OnRequestDone, weak_factory_.GetWeakPtr(),
                        base::Unretained(context.psm_rlwe_client.get()),
                        std::move(completion_callback)));
@@ -510,12 +510,12 @@ class StateKeys {
   StateKeys& operator=(const StateKeys&) = delete;
 
   using CompletionCallback =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+      base::OnceCallback<void(std::optional<std::string>)>;
 
   // This will try up to `kMaxAttempts` times to obtain the state keys.  If
   // successful, it will return the current state key by calling the completion
   // callback.
-  // Otherwise, it will return `absl::nullopt`.
+  // Otherwise, it will return `std::nullopt`.
   void Retrieve(ServerBackedStateKeysBroker* state_key_broker,
                 CompletionCallback completion_callback) {
     ++attempts_;
@@ -530,7 +530,7 @@ class StateKeys {
                             const std::vector<std::string>& state_keys) {
     if (state_keys.empty() || state_keys[0].empty()) {
       if (attempts_ >= kMaxAttempts) {
-        return std::move(completion_callback).Run(absl::nullopt);
+        return std::move(completion_callback).Run(std::nullopt);
       }
       return Retrieve(state_key_broker, std::move(completion_callback));
     }
@@ -565,7 +565,7 @@ class EnrollmentState {
         DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL,
         base::Uuid::GenerateRandomV4().AsLowercaseString(),
         /*critical=*/true, DMAuth::NoAuth(),
-        /*oauth_token=*/absl::nullopt, context.url_loader_factory,
+        /*oauth_token=*/std::nullopt, context.url_loader_factory,
         base::BindOnce(&EnrollmentState::OnRequestDone,
                        weak_factory_.GetWeakPtr(),
                        std::move(completion_callback)));
@@ -973,7 +973,7 @@ class EnrollmentStateFetcherImpl::Sequence {
                                         weak_factory_.GetWeakPtr()));
   }
 
-  void OnStateKeysRetrieved(absl::optional<std::string> state_key) {
+  void OnStateKeysRetrieved(std::optional<std::string> state_key) {
     ReportStepDurationAndResetTimer(kUMASuffixStateKeyRetrieval);
     base::UmaHistogramBoolean(kUMAStateDeterminationStateKeysRetrieved,
                               state_key.has_value());

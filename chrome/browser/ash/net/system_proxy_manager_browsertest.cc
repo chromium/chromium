@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest, AuthenticationDialog) {
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kSystemProxyNotificationId,
-      /*action_index=*/absl::nullopt, /*reply=*/absl::nullopt);
+      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
   // Dialog is created.
   ASSERT_TRUE(dialog());
 
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kSystemProxyNotificationId,
-      /*action_index=*/absl::nullopt, /*reply=*/absl::nullopt);
+      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
 
   // Dialog is created.
   ASSERT_TRUE(dialog());
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kSystemProxyNotificationId,
-      /*action_index=*/absl::nullopt, /*reply=*/absl::nullopt);
+      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
   ASSERT_TRUE(dialog());
 
   // Expect warning is shown.
@@ -707,7 +707,7 @@ class SystemProxyCredentialsReuseBrowserTest
         base::BindOnce(
             [](std::string* username, std::string* password,
                base::OnceClosure closure,
-               const absl::optional<net::AuthCredentials>& credentials) {
+               const std::optional<net::AuthCredentials>& credentials) {
               if (credentials) {
                 *username = base::UTF16ToUTF8(credentials->username());
                 *password = base::UTF16ToUTF8(credentials->password());

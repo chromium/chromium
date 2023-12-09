@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_START_CRD_SESSION_JOB_DELEGATE_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_START_CRD_SESSION_JOB_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -36,7 +36,7 @@ class StartCrdSessionJobDelegate {
 
     std::string oauth_token = "";
     std::string user_name = "";
-    absl::optional<std::string> admin_email;
+    std::optional<std::string> admin_email;
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
     bool curtain_local_user_session = false;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -52,7 +53,6 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using enterprise_management::FetchSupportPacketResultCode;
 using enterprise_management::FetchSupportPacketResultNote;
@@ -233,7 +233,7 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
 
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     const std::string& command_payload) {
-  absl::optional<base::Value> value = base::JSONReader::Read(command_payload);
+  std::optional<base::Value> value = base::JSONReader::Read(command_payload);
   if (!value.has_value() || !value->is_dict()) {
     return false;
   }

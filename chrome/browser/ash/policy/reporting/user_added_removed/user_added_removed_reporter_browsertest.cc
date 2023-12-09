@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_switches.h"
@@ -49,7 +50,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::chromeos::MissiveClientTestObserver;
 using ::enterprise_management::ChromeDeviceSettingsProto;
@@ -78,7 +78,7 @@ Record GetNextUserAddedRemovedRecord(MissiveClientTestObserver* observer) {
   return record;
 }
 
-absl::optional<Record> MaybeGetEnqueuedUserAddedRemovedRecord() {
+std::optional<Record> MaybeGetEnqueuedUserAddedRemovedRecord() {
   const std::vector<Record>& records =
       chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           Priority::IMMEDIATE);
@@ -87,7 +87,7 @@ absl::optional<Record> MaybeGetEnqueuedUserAddedRemovedRecord() {
       return record;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Waiter used by tests during public session user creation.
@@ -279,8 +279,7 @@ IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,
       user_manager::UserManager::Get();
   ASSERT_TRUE(user_manager->IsLoggedInAsGuest());
 
-  const absl::optional<Record> record =
-      MaybeGetEnqueuedUserAddedRemovedRecord();
+  const std::optional<Record> record = MaybeGetEnqueuedUserAddedRemovedRecord();
   ASSERT_FALSE(record.has_value());
 }
 
@@ -364,8 +363,7 @@ IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterPublicSessionBrowserTest,
       user_manager::UserManager::Get();
   ASSERT_TRUE(user_manager->IsLoggedInAsManagedGuestSession());
 
-  const absl::optional<Record> record =
-      MaybeGetEnqueuedUserAddedRemovedRecord();
+  const std::optional<Record> record = MaybeGetEnqueuedUserAddedRemovedRecord();
   ASSERT_FALSE(record.has_value());
 }
 
@@ -421,8 +419,7 @@ class UserAddedRemovedReporterKioskBrowserTest
 IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterKioskBrowserTest,
                        DoesNotReportKioskUser) {
   ASSERT_TRUE(::ash::LoginState::Get()->IsKioskSession());
-  const absl::optional<Record> record =
-      MaybeGetEnqueuedUserAddedRemovedRecord();
+  const std::optional<Record> record = MaybeGetEnqueuedUserAddedRemovedRecord();
   ASSERT_FALSE(record.has_value());
 }
 

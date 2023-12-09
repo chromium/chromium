@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::onc::network_config::kWiFi;
 using ::onc::wifi::kSignalStrengthRssi;
@@ -36,8 +36,8 @@ void OnGetProperties(base::queue<std::string> service_path_queue,
                      base::flat_map<std::string, int> path_rssi_map,
                      WifiSignalStrengthRssiCallback cb,
                      const std::string& service_path,
-                     absl::optional<base::Value::Dict> properties,
-                     absl::optional<std::string> error) {
+                     std::optional<base::Value::Dict> properties,
+                     std::optional<std::string> error) {
   if (!properties.has_value() || !properties->FindDict(kWiFi) ||
       !properties->FindDict(kWiFi)->FindInt(kSignalStrengthRssi)) {
     DVLOG(1) << "Fetching signal strength RSSI value of service "
@@ -48,7 +48,7 @@ void OnGetProperties(base::queue<std::string> service_path_queue,
   } else {
     CHECK(!base::Contains(path_rssi_map, service_path));
 
-    absl::optional<int> rssi =
+    std::optional<int> rssi =
         properties->FindDict(kWiFi)->FindInt(kSignalStrengthRssi);
     path_rssi_map[service_path] = rssi.value();
   }

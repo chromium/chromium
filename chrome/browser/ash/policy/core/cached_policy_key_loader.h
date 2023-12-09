@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_CACHED_POLICY_KEY_LOADER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class CryptohomeMiscClient;
@@ -69,7 +69,7 @@ class CachedPolicyKeyLoader {
 
   // Callback for getting the sanitized username from |cryptohome_client_|.
   void OnGetSanitizedUsername(
-      absl::optional<user_data_auth::GetSanitizedUsernameReply> reply);
+      std::optional<user_data_auth::GetSanitizedUsernameReply> reply);
 
   void NotifyAndClearCallbacks();
 

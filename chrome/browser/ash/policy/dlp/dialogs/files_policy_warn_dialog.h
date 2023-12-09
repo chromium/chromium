@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_WARN_DIALOG_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/textarea/textarea.h"
@@ -32,7 +32,7 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog,
   FilesPolicyWarnDialog(WarningWithJustificationCallback callback,
                         dlp::FileAction action,
                         gfx::NativeWindow modal_parent,
-                        absl::optional<DlpFileDestination> destination,
+                        std::optional<DlpFileDestination> destination,
                         Info dialog_info);
   FilesPolicyWarnDialog(const FilesPolicyWarnDialog&) = delete;
   FilesPolicyWarnDialog(FilesPolicyWarnDialog&&) = delete;
@@ -69,7 +69,7 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog,
   std::vector<DlpConfidentialFile> files_;
 
   // TODO(b/290329012): Remove.
-  absl::optional<DlpFileDestination> destination_;
+  std::optional<DlpFileDestination> destination_;
 
   // Holds the information that allow to populate the dialog UI such as the list
   // of warned files and the message shown.

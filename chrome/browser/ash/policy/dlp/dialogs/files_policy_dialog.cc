@@ -135,7 +135,7 @@ std::u16string FilesPolicyDialog::Info::GetMessage() const {
 }
 
 void FilesPolicyDialog::Info::SetMessage(
-    const absl::optional<std::u16string>& message) {
+    const std::optional<std::u16string>& message) {
   if (message.has_value() && !message->empty()) {
     message_ = l10n_util::GetStringFUTF16(
         IDS_POLICY_DLP_FROM_YOUR_ADMIN_MESSAGE, message.value());
@@ -147,11 +147,11 @@ bool FilesPolicyDialog::Info::HasCustomMessage() const {
   return is_custom_message_;
 }
 
-absl::optional<GURL> FilesPolicyDialog::Info::GetLearnMoreURL() const {
+std::optional<GURL> FilesPolicyDialog::Info::GetLearnMoreURL() const {
   return learn_more_url_;
 }
 
-void FilesPolicyDialog::Info::SetLearnMoreURL(const absl::optional<GURL>& url) {
+void FilesPolicyDialog::Info::SetLearnMoreURL(const std::optional<GURL>& url) {
   if (url.has_value() && url->is_valid()) {
     learn_more_url_ = url.value();
   }
@@ -181,7 +181,7 @@ views::Widget* FilesPolicyDialog::CreateWarnDialog(
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
     Info dialog_info,
-    absl::optional<DlpFileDestination> destination) {
+    std::optional<DlpFileDestination> destination) {
   if (factory_) {
     return factory_->CreateWarnDialog(std::move(callback), action, modal_parent,
                                       destination, std::move(dialog_info));

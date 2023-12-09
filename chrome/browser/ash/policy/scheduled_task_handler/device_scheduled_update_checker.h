@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_DEVICE_SCHEDULED_UPDATE_CHECKER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
@@ -87,7 +87,7 @@ class DeviceScheduledUpdateChecker
   base::CallbackListSubscription cros_settings_subscription_;
 
   // Currently active scheduled update check policy.
-  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+  std::optional<ScheduledTaskExecutor::ScheduledTaskData>
       scheduled_update_check_data_;
 
   // Used to run and retry |StartUpdateCheckTimer| if it fails.

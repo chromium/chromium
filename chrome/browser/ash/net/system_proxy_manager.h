@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_SYSTEM_PROXY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace content {
@@ -218,7 +218,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   // available.
   void LookupProxyAuthCredentialsCallback(
       const system_proxy::ProtectionSpace& protection_space,
-      const absl::optional<net::AuthCredentials>& credentials);
+      const std::optional<net::AuthCredentials>& credentials);
 
   void ShowAuthenticationNotification(
       const system_proxy::ProtectionSpace& protection_space,

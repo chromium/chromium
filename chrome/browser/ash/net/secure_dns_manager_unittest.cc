@@ -52,7 +52,7 @@ class MockDoHTemplatesUriResolver
 void OnGetProperties(bool* success_out,
                      std::map<std::string, std::string>* props_out,
                      base::OnceClosure callback,
-                     absl::optional<base::Value::Dict> result) {
+                     std::optional<base::Value::Dict> result) {
   *success_out = result.has_value();
   if (result) {
     base::Value::Dict* value =

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -34,7 +35,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -128,7 +128,7 @@ class AutoEnrollmentClientImpl::ServerStateAvailabilityRequester {
   // available.
   // * true if server state has been obtained and the answer is: it is
   // available.
-  virtual absl::optional<bool> GetServerStateIfObtained() const = 0;
+  virtual std::optional<bool> GetServerStateIfObtained() const = 0;
 };
 
 // Responsible for resolving server state availability status via auto
@@ -170,7 +170,7 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
     StartImpl(std::move(callback));
   }
 
-  absl::optional<bool> GetServerStateIfObtained() const override {
+  std::optional<bool> GetServerStateIfObtained() const override {
     const PrefService::Preference* has_server_state_pref =
         local_state_->FindPreference(prefs::kShouldAutoEnroll);
     const PrefService::Preference* previous_limit_pref =
@@ -178,14 +178,14 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
 
     if (!has_server_state_pref || has_server_state_pref->IsDefaultValue() ||
         !previous_limit_pref || previous_limit_pref->IsDefaultValue()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     DCHECK(has_server_state_pref->GetValue()->is_bool());
     DCHECK(previous_limit_pref->GetValue()->is_int());
 
     if (power_limit_ > previous_limit_pref->GetValue()->GetInt()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return has_server_state_pref->GetValue()->GetBool();
@@ -233,7 +233,7 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             device_id_,
             /*critical=*/false, DMAuth::NoAuth(),
-            /*oauth_token=*/absl::nullopt, url_loader_factory_,
+            /*oauth_token=*/std::nullopt, url_loader_factory_,
             base::BindOnce(
                 &FREServerStateAvailabilityRequester::HandleRequestCompletion,
                 base::Unretained(this)));
@@ -455,13 +455,13 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
     StartImpl(std::move(callback));
   }
 
-  absl::optional<bool> GetServerStateIfObtained() const override {
+  std::optional<bool> GetServerStateIfObtained() const override {
     const PrefService::Preference* has_psm_server_state_pref =
         local_state_->FindPreference(prefs::kShouldRetrieveDeviceState);
 
     if (!has_psm_server_state_pref ||
         has_psm_server_state_pref->IsDefaultValue()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     DCHECK(has_psm_server_state_pref->GetValue()->is_bool());
@@ -598,9 +598,9 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
 
   void Start(CompletionCallback callback) { StartImpl(std::move(callback)); }
 
-  absl::optional<AutoEnrollmentState> GetAutoEnrollmentStateIfObtained() const {
+  std::optional<AutoEnrollmentState> GetAutoEnrollmentStateIfObtained() const {
     if (!device_state_available_) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     const DeviceStateMode device_state_mode = GetDeviceStateMode();
@@ -632,7 +632,7 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
             device_management_service_,
             state_download_message_processor_->GetJobType(), device_id_,
             /*critical=*/false, DMAuth::NoAuth(),
-            /*oauth_token=*/absl::nullopt, url_loader_factory_,
+            /*oauth_token=*/std::nullopt, url_loader_factory_,
             base::BindRepeating(&ServerStateRetriever::HandleRequestCompletion,
                                 base::Unretained(this)));
 
@@ -660,7 +660,7 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
       return;
     }
 
-    absl::optional<AutoEnrollmentStateMessageProcessor::ParsedResponse>
+    std::optional<AutoEnrollmentStateMessageProcessor::ParsedResponse>
         parsed_response_result =
             state_download_message_processor_->ParseResponse(result.response);
     if (!parsed_response_result) {

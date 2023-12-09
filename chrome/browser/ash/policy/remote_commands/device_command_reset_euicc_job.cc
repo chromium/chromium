@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_reset_euicc_job.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -22,7 +23,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -61,7 +61,7 @@ bool DeviceCommandResetEuiccJob::IsExpired(base::TimeTicks now) {
 }
 
 void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult result_callback) {
-  absl::optional<dbus::ObjectPath> euicc_path =
+  std::optional<dbus::ObjectPath> euicc_path =
       ash::cellular_utils::GetCurrentEuiccPath();
   if (!euicc_path) {
     SYSLOG(ERROR) << "No current EUICC. Unable to reset EUICC";
@@ -103,7 +103,7 @@ void DeviceCommandResetEuiccJob::RunResultCallback(CallbackWithResult callback,
   // Post |callback| to ensure async execution as required for RunImpl.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result,
-                                /*result_payload=*/absl::nullopt));
+                                /*result_payload=*/std::nullopt));
 }
 
 void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {

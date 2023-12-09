@@ -236,7 +236,7 @@ TEST_F(DeviceCommandRebootJobTest, RebootsWhenPowerManagerIsAvailable) {
   auto scoped_login_state = ScopedLoginState::CreateKiosk();
 
   chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
-      /*availability=*/absl::nullopt);
+      /*availability=*/std::nullopt);
 
   auto command = CreateAndInitializeCommand();
   base::test::TestFuture<void> future;

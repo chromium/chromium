@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 
+#include <optional>
 #include <string>
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -42,7 +42,7 @@ std::string FakeDeviceAttributes::GetDeviceAnnotatedLocation() const {
   return fake_device_annotated_location_;
 }
 
-absl::optional<std::string> FakeDeviceAttributes::GetDeviceHostname() const {
+std::optional<std::string> FakeDeviceAttributes::GetDeviceHostname() const {
   return fake_device_hostname_;
 }
 
@@ -96,7 +96,7 @@ void FakeDeviceAttributes::SetFakeDeviceAnnotatedLocation(
 }
 
 void FakeDeviceAttributes::SetFakeDeviceHostname(
-    const absl::optional<std::string> device_hostname) {
+    const std::optional<std::string> device_hostname) {
   fake_device_hostname_ = device_hostname;
 }
 

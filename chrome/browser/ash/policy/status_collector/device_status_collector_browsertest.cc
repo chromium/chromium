@@ -11,6 +11,7 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -122,7 +123,6 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
@@ -701,8 +701,7 @@ cros_healthd::TpmResultPtr CreatePartialTpmResult() {
       cros_healthd::TpmVersion::New(), cros_healthd::TpmStatus::New(),
       cros_healthd::TpmDictionaryAttack::New(),
       cros_healthd::TpmAttestation::New(),
-      cros_healthd::TpmSupportedFeatures::New(),
-      absl::optional<std::string>()));
+      cros_healthd::TpmSupportedFeatures::New(), std::optional<std::string>()));
 }
 
 cros_healthd::BusResultPtr CreateBusResult() {

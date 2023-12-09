@@ -58,7 +58,7 @@ void RealCrdOAuthTokenFetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   CRD_LOG(WARNING) << "Failed to get OAuth access token: " << error.ToString();
   oauth_request_.reset();
-  std::move(done_callback_).Run(absl::nullopt);
+  std::move(done_callback_).Run(std::nullopt);
 }
 
 FakeCrdOAuthTokenFetcher::FakeCrdOAuthTokenFetcher(

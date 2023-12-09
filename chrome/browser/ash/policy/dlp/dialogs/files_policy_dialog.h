@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DIALOGS_FILES_POLICY_DIALOG_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -115,16 +115,16 @@ class FilesPolicyDialog : public PolicyDialogBase {
     std::u16string GetMessage() const;
 
     // Overrides the default message.
-    void SetMessage(const absl::optional<std::u16string>& message);
+    void SetMessage(const std::optional<std::u16string>& message);
 
     // Returns whether a custom message was set.
     bool HasCustomMessage() const;
 
     // Returns the learn more URL that should be shown in the dialog, if any.
-    absl::optional<GURL> GetLearnMoreURL() const;
+    std::optional<GURL> GetLearnMoreURL() const;
 
     // Overrides the default learn more URL.
-    void SetLearnMoreURL(const absl::optional<GURL>& url);
+    void SetLearnMoreURL(const std::optional<GURL>& url);
 
     // Returns whether at least one of the default values (e.g., message, learn
     // more URL, etc...) has been overridden with a custom value.
@@ -150,7 +150,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
     bool is_custom_learn_more_url_ = false;
 
     // Default, admin defined learn more URL, or none of them.
-    absl::optional<GURL> learn_more_url_;
+    std::optional<GURL> learn_more_url_;
   };
 
   FilesPolicyDialog() = delete;
@@ -168,7 +168,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
       Info dialog_info,
-      absl::optional<DlpFileDestination> destination = absl::nullopt);
+      std::optional<DlpFileDestination> destination = std::nullopt);
 
   // Creates and shows an instance of FilesPolicyErrorDialog. Returns owning
   // Widget.
@@ -205,7 +205,7 @@ class FilesPolicyDialogFactory {
       WarningWithJustificationCallback callback,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination,
+      std::optional<DlpFileDestination> destination,
       FilesPolicyDialog::Info settings) = 0;
 
   virtual views::Widget* CreateErrorDialog(

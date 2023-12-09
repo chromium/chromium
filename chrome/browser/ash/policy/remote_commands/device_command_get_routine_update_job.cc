@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -116,7 +116,7 @@ em::RemoteCommand_Type DeviceCommandGetRoutineUpdateJob::GetType() const {
 
 bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
     const std::string& command_payload) {
-  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
+  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root.has_value()) {
     return false;
   }
@@ -126,7 +126,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
 
   const base::Value::Dict& dict = root->GetDict();
   // Make sure the command payload specified a valid integer for the routine ID.
-  absl::optional<int> id = dict.FindInt(kIdFieldName);
+  std::optional<int> id = dict.FindInt(kIdFieldName);
   if (!id.has_value()) {
     return false;
   }
@@ -134,7 +134,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
 
   // Make sure the command payload specified a valid
   // DiagnosticRoutineCommandEnum.
-  absl::optional<int> command_enum = dict.FindInt(kCommandFieldName);
+  std::optional<int> command_enum = dict.FindInt(kCommandFieldName);
   if (!command_enum.has_value()) {
     return false;
   }
@@ -145,7 +145,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
   }
 
   // Make sure the command payload specified a boolean for include_output.
-  absl::optional<bool> include_output = dict.FindBool(kIncludeOutputFieldName);
+  std::optional<bool> include_output = dict.FindBool(kIncludeOutputFieldName);
   if (!include_output.has_value()) {
     return false;
   }
@@ -176,7 +176,7 @@ void DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived(
     SYSLOG(ERROR) << "No RoutineUpdate received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback),
-                                  ResultType::kFailure, absl::nullopt));
+                                  ResultType::kFailure, std::nullopt));
     return;
   }
 

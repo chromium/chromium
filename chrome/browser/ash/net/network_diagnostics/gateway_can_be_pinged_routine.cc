@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/gateway_can_be_pinged_routine.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -138,7 +138,7 @@ void GatewayCanBePingedRoutine::PingGateways() {
 bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
                                                 std::string* ip,
                                                 base::TimeDelta* latency) {
-  absl::optional<base::Value> parsed_value(base::JSONReader::Read(status));
+  std::optional<base::Value> parsed_value(base::JSONReader::Read(status));
   if (!parsed_value.has_value()) {
     return false;
   }
@@ -152,12 +152,12 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!info) {
     return false;
   }
-  const absl::optional<int> recvd_value = info->FindInt("recvd");
+  const std::optional<int> recvd_value = info->FindInt("recvd");
   if (!recvd_value || recvd_value.value() < 1) {
     return false;
   }
 
-  const absl::optional<double> avg_value = info->FindDouble("avg");
+  const std::optional<double> avg_value = info->FindDouble("avg");
   if (!avg_value) {
     return false;
   }
@@ -224,7 +224,7 @@ void GatewayCanBePingedRoutine::OnManagedPropertiesReceived(
 
 void GatewayCanBePingedRoutine::OnTestICMPCompleted(
     bool is_default_network_ping_result,
-    const absl::optional<std::string> status) {
+    const std::optional<std::string> status) {
   DCHECK(gateways_remaining_ > 0);
   std::string result_ip;
   base::TimeDelta result_latency;

@@ -108,7 +108,7 @@ void DlpExtractIOTaskObserver::OnIOTaskStatus(
   }
 
   files_controller->GetDlpMetadata(
-      CollectSourceUrls(status.outputs), /*destination=*/absl::nullopt,
+      CollectSourceUrls(status.outputs), /*destination=*/std::nullopt,
       base::BindOnce(&GotDlpMetadata, CollectUrlPaths(status.outputs)));
 }
 

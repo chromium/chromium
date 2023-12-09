@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_bus_sampler_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -50,7 +50,7 @@ CrosHealthdBusSamplerHandler::~CrosHealthdBusSamplerHandler() = default;
 void CrosHealthdBusSamplerHandler::HandleResult(
     OptionalMetricCallback callback,
     cros_healthd::TelemetryInfoPtr result) const {
-  absl::optional<MetricData> metric_data;
+  std::optional<MetricData> metric_data;
   const auto& bus_result = result->bus_result;
 
   if (!bus_result.is_null()) {
@@ -67,7 +67,7 @@ void CrosHealthdBusSamplerHandler::HandleResult(
           if (metric_type_ == MetricType::kInfo) {
             if (bus_info->is_thunderbolt_bus_info()) {
               if (!metric_data.has_value()) {
-                metric_data = absl::make_optional<MetricData>();
+                metric_data = std::make_optional<MetricData>();
               }
               auto* const thunderbolt_info_out =
                   metric_data->mutable_info_data()
@@ -80,7 +80,7 @@ void CrosHealthdBusSamplerHandler::HandleResult(
           } else if (metric_type_ == MetricType::kTelemetry) {
             if (bus_info->is_usb_bus_info()) {
               if (!metric_data.has_value()) {
-                metric_data = absl::make_optional<MetricData>();
+                metric_data = std::make_optional<MetricData>();
               }
               auto* const usb_telemetry_out =
                   metric_data->mutable_telemetry_data()

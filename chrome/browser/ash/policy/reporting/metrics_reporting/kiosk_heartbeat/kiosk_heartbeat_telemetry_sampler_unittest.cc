@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_sampler.h"
 
+#include <optional>
+
 #include "base/test/task_environment.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -20,9 +21,9 @@ class KioskHeartbeatTelemetrySamplerTest : public testing::Test {
 };
 
 TEST_F(KioskHeartbeatTelemetrySamplerTest, MaybeCollect) {
-  test::TestEvent<absl::optional<MetricData>> test_event;
+  test::TestEvent<std::optional<MetricData>> test_event;
   sampler_.MaybeCollect(test_event.cb());
-  absl::optional<MetricData> result = test_event.result();
+  std::optional<MetricData> result = test_event.result();
 
   ASSERT_TRUE(result.has_value());
   const MetricData& metric_data = result.value();

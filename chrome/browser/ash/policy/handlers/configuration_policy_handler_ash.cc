@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -41,7 +42,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "crypto/sha2.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -56,27 +56,27 @@ constexpr char kPolicyEntryFileExtensionsKey[] = "file_extensions";
 constexpr char kSubkeyURL[] = "url";
 constexpr char kSubkeyHash[] = "hash";
 
-absl::optional<std::string> GetSubkeyString(const base::Value::Dict& dict,
-                                            PolicyErrorMap* errors,
-                                            const std::string& policy,
-                                            const std::string& subkey) {
+std::optional<std::string> GetSubkeyString(const base::Value::Dict& dict,
+                                           PolicyErrorMap* errors,
+                                           const std::string& policy,
+                                           const std::string& subkey) {
   const base::Value* policy_value = dict.Find(subkey);
 
   if (!policy_value) {
     errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
                      PolicyErrorPath{subkey});
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!policy_value->is_string()) {
     errors->AddError(policy, IDS_POLICY_TYPE_ERROR,
                      base::Value::GetTypeName(base::Value::Type::STRING),
                      PolicyErrorPath{subkey});
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (policy_value->GetString().empty()) {
     errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
                      PolicyErrorPath{subkey});
-    return absl::nullopt;
+    return std::nullopt;
   }
   return policy_value->GetString();
 }
@@ -185,9 +185,9 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(
   const base::Value* value = entry->value(base::Value::Type::DICT);
   DCHECK(value);
   const base::Value::Dict& dict = value->GetDict();
-  absl::optional<std::string> url_string =
+  std::optional<std::string> url_string =
       GetSubkeyString(dict, errors, policy, kSubkeyURL);
-  absl::optional<std::string> hash_string =
+  std::optional<std::string> hash_string =
       GetSubkeyString(dict, errors, policy, kSubkeyHash);
   if (!url_string || !hash_string) {
     return false;
@@ -244,7 +244,7 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  absl::optional<base::Value::Dict> root_dict =
+  std::optional<base::Value::Dict> root_dict =
       chromeos::onc::ReadDictionaryFromJson(value->GetString());
   if (!root_dict.has_value()) {
     errors->AddError(policy_name(), IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED);
@@ -317,7 +317,7 @@ void NetworkConfigurationPolicyHandler::PrepareForDisplaying(
   if (!entry) {
     return;
   }
-  absl::optional<base::Value> sanitized_config =
+  std::optional<base::Value> sanitized_config =
       SanitizeNetworkConfig(entry->value(base::Value::Type::STRING));
 
   if (!sanitized_config.has_value()) {
@@ -337,17 +337,17 @@ NetworkConfigurationPolicyHandler::NetworkConfigurationPolicyHandler(
       pref_path_(pref_path) {}
 
 // static
-absl::optional<base::Value>
+std::optional<base::Value>
 NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
     const base::Value* config) {
   if (!config) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value::Dict> config_dict =
+  std::optional<base::Value::Dict> config_dict =
       chromeos::onc::ReadDictionaryFromJson(config->GetString());
   if (!config_dict.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Placeholder to insert in place of the filtered setting.

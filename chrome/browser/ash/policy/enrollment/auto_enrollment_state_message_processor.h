@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_STATE_MESSAGE_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_management {
 class DeviceManagementRequest;
@@ -41,11 +41,11 @@ class AutoEnrollmentStateMessageProcessor {
     ~ParsedResponse();
 
     std::string restore_mode;
-    absl::optional<std::string> management_domain;
-    absl::optional<std::string> disabled_message;
-    absl::optional<bool> is_license_packaged_with_device;
-    absl::optional<std::string> license_type;
-    absl::optional<std::string> assigned_upgrade_type;
+    std::optional<std::string> management_domain;
+    std::optional<std::string> disabled_message;
+    std::optional<bool> is_license_packaged_with_device;
+    std::optional<std::string> license_type;
+    std::optional<std::string> assigned_upgrade_type;
   };
 
   // Returns the request job type. This must match the request filled in
@@ -59,7 +59,7 @@ class AutoEnrollmentStateMessageProcessor {
 
   // Parses the `response`. If it is valid, returns an instance of
   // ParsedResponse. Otherwise, returns nullopt.
-  virtual absl::optional<ParsedResponse> ParseResponse(
+  virtual std::optional<ParsedResponse> ParseResponse(
       const enterprise_management::DeviceManagementResponse& response) = 0;
 };
 

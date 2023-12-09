@@ -142,7 +142,7 @@ TEST_F(DnsLatencyRoutineTest, TestSuccessfulResolutions) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSuccessfulDnsResolutionDelayMs,
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -154,8 +154,8 @@ TEST_F(DnsLatencyRoutineTest, TestUnsuccessfulResolution) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
       net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-      /*resolved_addresses=*/absl::nullopt,
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*resolved_addresses=*/std::nullopt,
+      /*endpoint_results_with_metadata=*/std::nullopt);
   // The time taken to complete the resolution is not important for this test,
   // because a failed resolution attempt already results in a problem.
   SetUpAndRunRoutine(std::move(fake_dns_result),
@@ -171,7 +171,7 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySlightlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   SetUpAndRunRoutine(std::move(fake_dns_result), kSlightlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,
                      {mojom::DnsLatencyProblem::kSlightlyAboveThreshold});
@@ -184,7 +184,7 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySignificantlyAboveThreshold) {
   auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
       net::AddressList(FakeIPAddress()),
-      /*endpoint_results_with_metadata=*/absl::nullopt);
+      /*endpoint_results_with_metadata=*/std::nullopt);
   SetUpAndRunRoutine(std::move(fake_dns_result),
                      kSignificantlyAboveThresholdDelayMs,
                      mojom::RoutineVerdict::kProblem,

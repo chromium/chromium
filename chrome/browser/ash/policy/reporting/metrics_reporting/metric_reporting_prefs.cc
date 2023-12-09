@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::reporting {
 
@@ -25,7 +26,7 @@ void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kAppsInstalled);
 }
 
-absl::optional<std::string> GetAppReportingCategoryForType(
+std::optional<std::string> GetAppReportingCategoryForType(
     ::apps::AppType app_type) {
   switch (app_type) {
     case ::apps::AppType::kArc:
@@ -51,7 +52,7 @@ absl::optional<std::string> GetAppReportingCategoryForType(
     case ::apps::AppType::kMacOs:     // Not tracked today.
     case ::apps::AppType::kPluginVm:  // Only applies to MGS, so we skip.
     case ::apps::AppType::kUnknown:   // Invalid app type.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -64,7 +65,7 @@ bool IsAppTypeAllowed(::apps::AppType app_type,
     // Policy likely unset. Disallow app usage reporting regardless of app type.
     return false;
   }
-  const absl::optional<std::string> app_category =
+  const std::optional<std::string> app_category =
       GetAppReportingCategoryForType(app_type);
   return app_category.has_value() &&
          base::Contains(*allowed_app_types, app_category.value());

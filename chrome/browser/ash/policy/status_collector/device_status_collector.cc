@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -109,7 +110,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -315,22 +315,22 @@ std::vector<em::CPUTempInfo> ReadCPUTempInfo() {
 
 // If |contents| contains |prefix| followed by a hex integer, parses the hex
 // integer of specified length and returns it.
-// Otherwise, returns absl::nullopt.
-absl::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
-                                                 std::string_view prefix,
-                                                 size_t hex_number_length) {
+// Otherwise, returns std::nullopt.
+std::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
+                                                std::string_view prefix,
+                                                size_t hex_number_length) {
   size_t prefix_position = contents.find(prefix);
   if (prefix_position == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (prefix_position + prefix.size() + hex_number_length >= contents.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   int parsed_number;
   if (!base::HexStringToInt(
           contents.substr(prefix_position + prefix.size(), hex_number_length),
           &parsed_number)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed_number;
 }
@@ -1538,7 +1538,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     SetDeviceStatusReported();
   }
 
-  void OnGetRootDeviceSize(absl::optional<int64_t> root_device_size) {
+  void OnGetRootDeviceSize(std::optional<int64_t> root_device_size) {
     if (!root_device_size.has_value()) {
       DVLOG(1) << "Could not fetch root device size from spaced.";
       return;
@@ -2341,7 +2341,7 @@ bool DeviceStatusCollector::GetVersionInfo(
 
 bool DeviceStatusCollector::GetWriteProtectSwitch(
     em::DeviceStatusReportRequest* status) {
-  const absl::optional<std::string_view> firmware_write_protect =
+  const std::optional<std::string_view> firmware_write_protect =
       statistics_provider_->GetMachineStatistic(
           ash::system::kFirmwareWriteProtectCurrentKey);
   if (!firmware_write_protect) {
@@ -2608,7 +2608,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
   const update_engine::StatusResult update_engine_status =
       ash::UpdateEngineClient::Get()->GetLastStatus();
 
-  absl::optional<base::Version> required_platform_version;
+  std::optional<base::Version> required_platform_version;
 
   if (required_platform_version_string.empty()) {
     // If this is non-Kiosk session, the OS is considered as up-to-date if the
@@ -2718,7 +2718,7 @@ bool DeviceStatusCollector::GetRunningKioskApp(
 
 bool DeviceStatusCollector::GetDeviceBootMode(
     em::DeviceStatusReportRequest* status) {
-  absl::optional<std::string> boot_mode =
+  std::optional<std::string> boot_mode =
       StatusCollector::GetBootMode(statistics_provider_);
 
   if (boot_mode) {
@@ -3107,7 +3107,7 @@ bool DeviceStatusCollector::IsReportingAppInfoAndActivity() const {
 // TODO(https://crbug.com/1364428)
 // Make this function fallible when the optional received is empty
 void DeviceStatusCollector::OnOSVersion(
-    const absl::optional<std::string>& version) {
+    const std::optional<std::string>& version) {
   os_version_ = version.value_or("0.0.0.0");
 }
 
