@@ -38,4 +38,15 @@ namespace odfsConfigPrivate {
         GetAccountRestrictionsCallback callback);
   };
 
+  interface Events {
+    // Fired when the OneDrive mount mode changed.
+    // |event|: A OneDrive mount mode changed event.
+    static void onMountChanged(MountInfo event);
+
+    // Fired when the OneDrive restrictions changed.
+    // |event|: A OneDrive restrictions changed event.
+    static void onAccountRestrictionsChanged(
+        AccountRestrictionsInfo event);
+  };
+
 };

@@ -2,21 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
+#include <string>
+#include <vector>
+
 #include "base/containers/contains.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/test_event_router_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using testing::ElementsAreArray;
 
 namespace chromeos::cloud_storage {
 
-class OneDrivePrefObserverBrowserTest : public InProcessBrowserTest {
+class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
  public:
   OneDrivePrefObserverBrowserTest() {
     feature_list_.InitWithFeatures(
@@ -27,6 +40,25 @@ class OneDrivePrefObserverBrowserTest : public InProcessBrowserTest {
   ~OneDrivePrefObserverBrowserTest() override = default;
 
  protected:
+  void SetOneDriveMount(const std::string& mount) {
+    policy::PolicyMap policies;
+    policy::PolicyTest::SetPolicy(
+        &policies, policy::key::kMicrosoftOneDriveMount, base::Value(mount));
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  void SetOneDriveAccountRestrictions(std::vector<std::string> restrictions) {
+    base::Value::List restrictions_list;
+    for (auto& restriction : restrictions) {
+      restrictions_list.Append(std::move(restriction));
+    }
+    policy::PolicyMap policies;
+    policy::PolicyTest::SetPolicy(
+        &policies, policy::key::kMicrosoftOneDriveAccountRestrictions,
+        base::Value(std::move(restrictions_list)));
+    provider_.UpdateChromePolicy(policies);
+  }
+
   bool OneDrivePrefObserverServiceExists() {
     std::vector<DependencyNode*> nodes;
     const bool success = BrowserContextDependencyManager::GetInstance()
@@ -39,6 +71,34 @@ class OneDrivePrefObserverBrowserTest : public InProcessBrowserTest {
           return static_cast<const KeyedServiceBaseFactory*>(node)->name();
         });
   }
+
+  void CheckMountChangedEvent(const extensions::Event& event,
+                              const std::string& expected_mode) {
+    EXPECT_EQ(event.event_name,
+              extensions::api::odfs_config_private::OnMountChanged::kEventName);
+    ASSERT_EQ(1u, event.event_args.size());
+    const base::Value::Dict* event_dict = event.event_args.front().GetIfDict();
+    ASSERT_TRUE(event_dict);
+    const std::string* mode = event_dict->FindString("mode");
+    ASSERT_TRUE(mode);
+    EXPECT_THAT(*mode, expected_mode);
+  }
+
+  void CheckRestrictionChangedEvent(
+      const extensions::Event& event,
+      const std::vector<std::string>& expected_restrictions) {
+    EXPECT_EQ(event.event_name, extensions::api::odfs_config_private::
+                                    OnAccountRestrictionsChanged::kEventName);
+    ASSERT_EQ(1u, event.event_args.size());
+    const base::Value::Dict* event_dict = event.event_args.front().GetIfDict();
+    ASSERT_TRUE(event_dict);
+    const base::Value::List* restrictions =
+        event_dict->FindList("restrictions");
+    ASSERT_TRUE(restrictions);
+    EXPECT_THAT(*restrictions, ElementsAreArray(expected_restrictions));
+  }
+
+  Profile* profile() { return browser()->profile(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -54,6 +114,71 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
 #else
   NOTREACHED();
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
+                       OneDriveModeChangedEventTriggered) {
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile());
+  extensions::TestEventRouterObserver observer(event_router);
+
+  SetOneDriveMount("automated");
+  ASSERT_EQ(1u, observer.events().size());
+  CheckMountChangedEvent(*observer.events().begin()->second, "automated");
+  observer.ClearEvents();
+
+  SetOneDriveMount("automated");
+  ASSERT_EQ(0u, observer.events().size());
+
+  SetOneDriveMount("allowed");
+  ASSERT_EQ(1u, observer.events().size());
+  CheckMountChangedEvent(*observer.events().begin()->second, "allowed");
+  observer.ClearEvents();
+
+  SetOneDriveMount("disallowed");
+  ASSERT_EQ(1u, observer.events().size());
+  CheckMountChangedEvent(*observer.events().begin()->second, "disallowed");
+  observer.ClearEvents();
+
+  SetOneDriveMount("none");
+  ASSERT_EQ(1u, observer.events().size());
+  CheckMountChangedEvent(*observer.events().begin()->second, "");
+  observer.ClearEvents();
+}
+
+IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
+                       OneDriveAccountRestrictionsChangedEventTriggered) {
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile());
+  extensions::TestEventRouterObserver observer(event_router);
+
+  SetOneDriveAccountRestrictions({"https://www.google.com"});
+  ASSERT_EQ(1u, observer.events().size());
+  CheckRestrictionChangedEvent(*observer.events().begin()->second,
+                               {"https://www.google.com"});
+  observer.ClearEvents();
+
+  SetOneDriveAccountRestrictions({"https://www.google.com"});
+  ASSERT_EQ(0u, observer.events().size());
+
+  SetOneDriveAccountRestrictions(
+      {"https://www.google.com", "https://chromium.org"});
+  ASSERT_EQ(1u, observer.events().size());
+  CheckRestrictionChangedEvent(
+      *observer.events().begin()->second,
+      {"https://www.google.com", "https://chromium.org"});
+  observer.ClearEvents();
+
+  SetOneDriveAccountRestrictions({"common"});
+  ASSERT_EQ(1u, observer.events().size());
+  CheckRestrictionChangedEvent(*observer.events().begin()->second, {"common"});
+  observer.ClearEvents();
+
+  SetOneDriveAccountRestrictions({"abcd1234-1234-1234-1234-1234abcd1234"});
+  ASSERT_EQ(1u, observer.events().size());
+  CheckRestrictionChangedEvent(*observer.events().begin()->second,
+                               {"abcd1234-1234-1234-1234-1234abcd1234"});
+  observer.ClearEvents();
 }
 
 }  // namespace chromeos::cloud_storage

@@ -14609,6 +14609,8 @@ Called by update_extension_histograms.py.-->
       label="INPUT_METHOD_PRIVATE_ON_LANGUAGE_PACK_STATUS_CHANGED"/>
   <int value="549" label="OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED"/>
   <int value="550" label="OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED"/>
+  <int value="551" label="ODFS_CONFIG_PRIVATE_MOUNT_CHANGED"/>
+  <int value="552" label="ODFS_CONFIG_PRIVATE_ACCOUNT_RESTRICTIONS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFromWebstoreInconcistencyEnum">
