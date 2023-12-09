@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -629,6 +630,20 @@ static_assert(kInitialInteractionProfile !=
               "TestAllKnownInteractionProfileTypes expects the 0th profile in "
               "OpenXrInteractionProfileType to be valid.");
 
+// A list of interaction profiles that should be skipped by the below test. Each
+// profile must have a comment indicating why it is skipped.
+constexpr device::mojom::OpenXrInteractionProfileType
+    kSkippedInteractionProfiles[] = {
+        // The "Invalid" entry is not a real profile.
+        device::mojom::OpenXrInteractionProfileType::kInvalid,
+        // kAndroidHandGestures is a "synthetic" interaction profile type which
+        // is
+        // synthesized via it's own set of extension methods and needs to use a
+        // different mechanism to send button clicks rather than the rest of the
+        // methods.
+        device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures,
+};
+
 // Ensure that OpenXR can change between all known Interaction Profile types.
 // If you're adding a new interaction profile, you may need to validate that
 // openxr_test_helper has any required extensions listed as supported in it's
@@ -658,8 +673,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestAllKnownInteractionProfileTypes) {
       static_cast<uint32_t>(kInitialInteractionProfile) + 1;
   for (uint32_t i = kFirstChangedProfileIndex; i <= kFinalValue; i++) {
     auto profile = static_cast<device::mojom::OpenXrInteractionProfileType>(i);
-    // Skip the "Invalid" entry.
-    if (profile == device::mojom::OpenXrInteractionProfileType::kInvalid) {
+    if (base::Contains(kSkippedInteractionProfiles, profile)) {
       continue;
     }
     my_mock.UpdateInteractionProfile(profile);

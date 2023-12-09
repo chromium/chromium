@@ -7,10 +7,16 @@
 #include <memory>
 
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "device/vr/openxr/android/openxr_hand_tracker_android.h"
+#endif
 
 namespace device {
 
@@ -181,7 +187,19 @@ std::unique_ptr<OpenXrAnchorManager> OpenXrExtensionHelper::CreateAnchorManager(
 std::unique_ptr<OpenXrHandTracker> OpenXrExtensionHelper::CreateHandTracker(
     XrSession session,
     OpenXrHandednessType handedness) const {
-  if (IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME)) {
+  // While not explicitly always required, many extensions implicitly rely upon
+  // this being required by virtue of extending it's core structs.
+  bool ext_hand_tracking_supported =
+      IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+#if BUILDFLAG(IS_ANDROID)
+  if (ext_hand_tracking_supported &&
+      IsExtensionSupported(XR_ANDROID_HAND_GESTURE_EXTENSION_NAME)) {
+    return std::make_unique<OpenXrHandTrackerAndroid>(*this, session,
+                                                      handedness);
+  }
+#endif
+
+  if (ext_hand_tracking_supported) {
     return std::make_unique<OpenXrHandTracker>(*this, session, handedness);
   }
 

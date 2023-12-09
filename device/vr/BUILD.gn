@@ -257,6 +257,8 @@ if (enable_vr) {
         sources += [
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
+          "openxr/android/openxr_hand_tracker_android.cc",
+          "openxr/android/openxr_hand_tracker_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
         ]
 

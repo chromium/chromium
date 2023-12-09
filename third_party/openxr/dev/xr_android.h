@@ -11,8 +11,36 @@
 
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform_defines.h"
+
+#ifndef XR_ANDROID_hand_gesture
+
+#define XR_ANDROID_hand_gesture 1
+#define XR_ANDROID_hand_gesture_SPEC_VERSION 1
+#define XR_ANDROID_HAND_GESTURE_EXTENSION_NAME "XR_ANDROID_hand_gesture"
+#define XR_TYPE_HAND_GESTURE_ANDROID ((XrStructureType)1000454000U)
+typedef XrFlags64 XrHandGestureTypeFlagsANDROID;
+
+// Flag bits for XrHandGestureTypeFlagsANDROID
+static const XrHandGestureTypeFlagsANDROID
+    XR_HAND_GESTURE_TYPE_PINCH_PRESSED_BIT_ANDROID = 0x00000001;
+static const XrHandGestureTypeFlagsANDROID
+    XR_HAND_GESTURE_TYPE_PINCH_STABILIZED_BIT_ANDROID = 0x00000002;
+
+typedef struct XrHandGestureANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  uint8_t unused[4];
+  uint8_t unused1[4];
+  XrHandGestureTypeFlagsANDROID gestureTypeFlags;
+  XrPosef ray;
+  uint8_t unused2[4];
+  float unused5;
+  XrVector3f unused4;
+  uint8_t unused3[60];
+} XrHandGestureANDROID;
+
+#endif /* XR_ANDROID_hand_gesture */
 
 #ifndef XR_ANDROID_trackables
 #define XR_ANDROID_trackables 1
@@ -171,7 +199,12 @@ typedef XrResult(XRAPI_PTR* PFN_xrRaycastANDROID)(
 #define XR_ANDROID_reference_space_bounds_polygon 1
 #define XR_ANDROID_reference_space_bounds_polygon_SPEC_VERSION 1
 #define XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME "XR_ANDROID_reference_space_bounds_polygon"
-typedef XrResult (XRAPI_PTR *PFN_xrGetReferenceSpaceBoundsPolygonANDROID)(XrSession session, XrReferenceSpaceType referenceSpaceType, uint32_t boundaryVerticesCapacityInput, uint32_t* boundaryVerticesCountOutput, XrVector2f* boundaryVertices);
+typedef XrResult(XRAPI_PTR* PFN_xrGetReferenceSpaceBoundsPolygonANDROID)(
+    XrSession session,
+    XrReferenceSpaceType referenceSpaceType,
+    uint32_t boundaryVerticesCapacityInput,
+    uint32_t* boundaryVerticesCountOutput,
+    XrVector2f* boundaryVertices);
 #endif /* XR_ANDROID_reference_space_bounds_polygon */
 
 #endif // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_

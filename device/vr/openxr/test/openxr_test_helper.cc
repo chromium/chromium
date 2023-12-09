@@ -1000,6 +1000,7 @@ void OpenXrTestHelper::UpdateInteractionProfile(
       interaction_profile_ = device::kExtHandInteractionProfilePath;
       break;
     case device::mojom::OpenXrInteractionProfileType::kInvalid:
+    case device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures:
       NOTREACHED() << "Invalid EventData interaction_profile type";
       break;
   }

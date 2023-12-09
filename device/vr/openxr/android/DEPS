@@ -3,4 +3,5 @@ include_rules = [
   "+gpu/command_buffer/common",
   "+gpu/command_buffer/service",
   "+gpu/ipc/common",
+  "+third_party/openxr/dev/xr_android.h",
 ]

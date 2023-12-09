@@ -82,6 +82,7 @@ if (enable_openxr) {
       "//device/vr/*",
     ]
     sources = [
+      "dev/xr_android.h",
       "src/include/openxr/openxr.h",
       "src/include/openxr/openxr_platform.h",
       "src/include/openxr/openxr_platform_defines.h",
