@@ -200,7 +200,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   content::NavigationController& GetController();
 
-  GuestViewManager* GetGuestViewManager();
+  GuestViewManager* GetGuestViewManager() const;
+
+  // Returns the URL of the owner RenderFrameHost's last committed URL.
+  const GURL& GetOwnerLastCommittedURL() const;
 
   // Returns the URL of the owner RenderFrameHost's SiteInstance.
   const GURL& GetOwnerSiteURL() const;
@@ -211,6 +214,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // Whether the guest view is inside a plugin document.
   bool is_full_page_plugin() const { return is_full_page_plugin_; }
+
+  bool IsOwnedByExtension() const;
+  bool IsOwnedByWebUI() const;
+  bool IsOwnedByControlledFrameEmbedder() const;
 
   // Saves the attach state of the custom element hosting this GuestView.
   void SetAttachParams(const base::Value::Dict& params);

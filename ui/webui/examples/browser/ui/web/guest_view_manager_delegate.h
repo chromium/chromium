@@ -20,8 +20,9 @@ class GuestViewManagerDelegate : public guest_view::GuestViewManagerDelegate {
                      base::Value::Dict args,
                      guest_view::GuestViewBase* guest,
                      int instance_id) override;
-  bool IsGuestAvailableToContext(guest_view::GuestViewBase* guest) override;
-  bool IsOwnedByExtension(guest_view::GuestViewBase* guest) override;
+  bool IsGuestAvailableToContext(
+      const guest_view::GuestViewBase* guest) const override;
+  bool IsOwnedByExtension(const guest_view::GuestViewBase* guest) override;
   void RegisterAdditionalGuestViewTypes(
       guest_view::GuestViewManager* manager) override;
 };

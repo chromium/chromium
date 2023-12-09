@@ -144,8 +144,13 @@ void GuestViewManager::AttachGuest(int embedder_process_id,
   guest_view->SetAttachParams(attach_params);
 }
 
-bool GuestViewManager::IsOwnedByExtension(GuestViewBase* guest) {
+bool GuestViewManager::IsOwnedByExtension(const GuestViewBase* guest) {
   return delegate_->IsOwnedByExtension(guest);
+}
+
+bool GuestViewManager::IsOwnedByControlledFrameEmbedder(
+    const GuestViewBase* guest) {
+  return delegate_->IsOwnedByControlledFrameEmbedder(guest);
 }
 
 int GuestViewManager::GetNextInstanceID() {

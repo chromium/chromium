@@ -71,7 +71,10 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                            const base::Value::Dict& attach_params);
 
   // Indicates whether the |guest| is owned by an extension or Chrome App.
-  bool IsOwnedByExtension(GuestViewBase* guest);
+  bool IsOwnedByExtension(const GuestViewBase* guest);
+
+  // Indicates whether the |guest| is owned by a Controlled Frame embedder.
+  bool IsOwnedByControlledFrameEmbedder(const GuestViewBase* guest);
 
   int GetNextInstanceID();
 
