@@ -17,6 +17,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -99,6 +100,7 @@ class WebIDBCursorTest : public testing::Test {
   WebIDBCursorTest& operator=(const WebIDBCursorTest&) = delete;
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<IDBKey> null_key_;
   std::unique_ptr<WebIDBCursor> cursor_;

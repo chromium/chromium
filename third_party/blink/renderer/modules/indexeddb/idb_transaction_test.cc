@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -111,6 +112,7 @@ class IDBTransactionTest : public testing::Test,
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
+  test::TaskEnvironment task_environment_;
   raw_ptr<URLLoaderMockFactory, ExperimentalRenderer> url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;

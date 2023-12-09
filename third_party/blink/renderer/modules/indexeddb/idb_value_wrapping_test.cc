@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -448,6 +449,7 @@ TEST(IDBValueUnwrapperTest, ReadBytesDenormalizedInput) {
 }
 
 TEST(IDBValueUnwrapperTest, IsWrapped) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   NonThrowableExceptionState non_throwable_exception_state;
   v8::Local<v8::Value> v8_true = v8::True(scope.GetIsolate());
@@ -505,6 +507,7 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
 }
 
 TEST(IDBValueUnwrapperTest, Compression) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList enable_feature_list{
       features::kIndexedDBCompressValuesWithSnappy};
 
@@ -567,6 +570,7 @@ TEST(IDBValueUnwrapperTest, Compression) {
 // decompress existing data that has been persisted to disk if/when compression
 // is later disabled.
 TEST(IDBValueUnwrapperTest, Decompression) {
+  test::TaskEnvironment task_environment;
   Vector<WebBlobInfo> blob_infos;
   scoped_refptr<SharedBuffer> buffer;
   V8TestingScope scope;
