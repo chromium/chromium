@@ -54,7 +54,7 @@ declare global {
 interface OsAboutPageElement {
   $: {
     updateStatusMessageInner: HTMLDivElement,
-    'product-logo': HTMLImageElement,
+    productLogo: HTMLImageElement,
   };
 }
 
@@ -739,7 +739,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private onProductLogoClick_(): void {
-    this.$['product-logo'].animate(
+    this.$.productLogo.animate(
         {
           transform: ['none', 'rotate(-10turn)'],
         },
