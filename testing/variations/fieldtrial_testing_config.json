@@ -8809,6 +8809,21 @@
             ]
         }
     ],
+    "IOSExternalActions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSExternalActionURLs"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
