@@ -92,8 +92,7 @@ void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
     DCHECK(process_manager);
 
     process_manager->DecrementServiceWorkerKeepaliveCount(
-        worker_id, request_uuid, extensions::Activity::ACCESSIBILITY,
-        std::string());
+        worker_id, request_uuid, Activity::ACCESSIBILITY, std::string());
   }
   keepalive_request_uuid_for_worker_.clear();
 }
@@ -136,14 +135,14 @@ void AutomationEventRouter::DispatchActionResult(
 void AutomationEventRouter::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_NORETURN();
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(!data.source_extension_id.empty());
 
   for (const auto& remote : automation_remote_set_) {
     remote->DispatchGetTextLocationResult(data, rect);
   }
+#else
+  NOTREACHED_NORETURN();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -249,7 +248,7 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
         process_manager->IncrementServiceWorkerKeepaliveCount(
             worker_id,
             content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
-            extensions::Activity::ACCESSIBILITY, std::string());
+            Activity::ACCESSIBILITY, std::string());
   }
 }
 
@@ -298,13 +297,12 @@ void AutomationEventRouter::RemoveAutomationListener(
   if (rph_observers_.IsObservingSource(host))
     rph_observers_.RemoveObservation(host);
 
-  if (rph_observers_.GetSourcesCount() == 0) {
+  if (!rph_observers_.IsObservingAnySource()) {
     for (AutomationEventRouterObserver& observer : observers_)
       observer.AllAutomationExtensionsGone();
   }
 
-  extensions::ProcessManager* process_manager =
-      ProcessManager::Get(host->GetBrowserContext());
+  auto* process_manager = ProcessManager::Get(host->GetBrowserContext());
   DCHECK(process_manager);
 
   std::vector<WorkerId> all_worker_ids =
@@ -323,8 +321,7 @@ void AutomationEventRouter::RemoveAutomationListener(
     keepalive_request_uuid_for_worker_.erase(worker_id);
 
     process_manager->DecrementServiceWorkerKeepaliveCount(
-        worker_id, request_uuid, extensions::Activity::ACCESSIBILITY,
-        std::string());
+        worker_id, request_uuid, Activity::ACCESSIBILITY, std::string());
   }
 }
 
