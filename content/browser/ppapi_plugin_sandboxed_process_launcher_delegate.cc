@@ -33,12 +33,10 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::InitializeConfig(
   // The Pepper process is as locked-down as a renderer except that it can
   // create the server side of Chrome pipes.
   sandbox::ResultCode result;
-#if !defined(NACL_WIN64)
   result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
   if (result != sandbox::SBOX_ALL_OK) {
     return false;
   }
-#endif  // !defined(NACL_WIN64)
 
   // No plugins can generate executable code.
   sandbox::MitigationFlags flags = config->GetDelayedProcessMitigations();

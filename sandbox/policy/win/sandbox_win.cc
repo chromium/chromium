@@ -171,9 +171,8 @@ BASE_FEATURE(kEnableCsrssLockdownFeature,
              "EnableCsrssLockdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !defined(NACL_WIN64)
 // Adds the policy rules to allow read-only access to the windows system fonts
-// directory, and any subdirectories.
+// directory, and any subdirectories. Used by PDF renderers.
 bool AddWindowsFontsDir(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   base::FilePath directory;
@@ -194,7 +193,6 @@ bool AddWindowsFontsDir(TargetConfig* config) {
 
   return true;
 }
-#endif  // !defined(NACL_WIN64)
 
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
@@ -650,11 +648,9 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     config->AddRestrictingRandomSid();
   }
 
-#if !defined(NACL_WIN64)
   if (delegate->AllowWindowsFontsDir()) {
     AddWindowsFontsDir(config);
   }
-#endif
 
   result = AddGenericConfig(config);
   if (result != SBOX_ALL_OK) {
@@ -792,8 +788,6 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
   return SBOX_ALL_OK;
 }
 
-// TODO(jschuh): Need get these restrictions applied to NaCl and Pepper.
-// Just have to figure out what needs to be warmed up first.
 // static
 ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -829,7 +823,6 @@ ResultCode SandboxWin::AddAppContainerPolicy(TargetConfig* config,
 // static
 ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
-#if !defined(NACL_WIN64)
   MitigationFlags flags = config->GetProcessMitigations();
   // Check not enabling twice. Should not happen.
   DCHECK_EQ(0U, flags & MITIGATION_WIN32K_DISABLE);
@@ -840,9 +833,6 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
     return result;
 
   return config->SetFakeGdiInit();
-#else  // !defined(NACL_WIN64)
-  return SBOX_ALL_OK;
-#endif
 }
 
 // static
