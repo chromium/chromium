@@ -19,17 +19,21 @@
 
   managed-footnote {
     border-top: none;
+    font: var(--cros-body-2-font);
     /* margin-bottom is needed to compensate for the next element's 21px
       * margin at the top and 8px padding at the top. This leaves a 12px
       * padding between this element's content and the top of the next
       * element's text. */
     margin-bottom: calc(-21px - 8px);
-    padding-bottom: 16px;
-    padding-top: 12px;
+    padding-bottom: 14px;
+    padding-top: 14px;
     /* The next element spills over this element. This ensures the link
       * is clickable. */
     position: relative;
     z-index: 1;
+    --cr-link-color: var(--cros-sys-primary);
+    --cr-secondary-text-color: var(--cros-sys-secondary);
+    --iron-icon-fill-color: var(--cros-sys-secondary);
   }
 </style>
 <template is="dom-if"
