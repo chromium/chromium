@@ -24,6 +24,10 @@ class ComposeDialogView : public WebUIBubbleDialogView {
 
   ~ComposeDialogView() override;
 
+  // WebUIBubbleDialogView:
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override;
+
   BubbleContentsWrapperT<ComposeUI>* bubble_wrapper() {
     return bubble_wrapper_.get();
   }
@@ -31,6 +35,7 @@ class ComposeDialogView : public WebUIBubbleDialogView {
   base::WeakPtr<ComposeDialogView> GetWeakPtr();
 
  private:
+  gfx::Rect anchor_bounds_;
   std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper_;
   base::WeakPtrFactory<ComposeDialogView> weak_ptr_factory_{this};
 };
