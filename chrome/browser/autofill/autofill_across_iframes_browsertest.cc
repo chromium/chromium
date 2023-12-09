@@ -906,8 +906,14 @@ INSTANTIATE_TEST_SUITE_P(AutofillAcrossIframesTest,
                          ::testing::Bool());
 
 // Tests that submission of a cross-frame form is detected in the main frame.
+// TODO(crbug.com/1510056): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SubmissionGetsDetected DISABLED_SubmissionGetsDetected
+#else
+#define MAYBE_SubmissionGetsDetected SubmissionGetsDetected
+#endif
 IN_PROC_BROWSER_TEST_P(AutofillAcrossIframesTest_Submission,
-                       SubmissionGetsDetected) {
+                       MAYBE_SubmissionGetsDetected) {
   const FormStructure* form = LoadForm({"$2", "$2", "$2"});
   ASSERT_TRUE(form);
   ASSERT_THAT(FillForm(*form, *form->field(1)),
