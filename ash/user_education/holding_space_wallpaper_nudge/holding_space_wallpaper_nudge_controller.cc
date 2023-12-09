@@ -17,6 +17,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/root_window_controller.h"
@@ -131,9 +132,10 @@ WallpaperView* GetWallpaperViewNearestPoint(
       ->wallpaper_view();
 }
 
-// Indicates whether the nudge should be shown based on when it was last shown
-// and how many times total it's been shown. It should be no more than once
-// in a 24 hour period, and no more than 3 times total.
+// Indicates whether the nudge should be shown based on when it was last shown,
+// how many times total it's been shown, and whether the user has pinned a file
+// before. It should be no more than once in a 24 hour period, no more than 3
+// times total, and never if the user has pinned a file before.
 bool NudgeShouldBeShown() {
   if (!features::IsHoldingSpaceWallpaperNudgeRateLimitingEnabled()) {
     return true;
@@ -141,16 +143,22 @@ bool NudgeShouldBeShown() {
 
   PrefService* const prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // If the user has ever pinned a file, don't show the nudge.
+  if (holding_space_prefs::GetTimeOfFirstPin(prefs).has_value()) {
+    return false;
+  }
+
+  // If the user has seen the nudge 3 times, don't show it again.
+  if (holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs) >= 3u) {
+    return false;
+  }
+
+  // Show the nudge if the user has not seen the nudge in the last 24 hours.
   const auto time_of_last_nudge =
       holding_space_wallpaper_nudge_prefs::GetLastTimeNudgeWasShown(prefs);
-  const auto nudge_shown_count =
-      holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs);
-
-  bool nudge_shown_recently =
-      time_of_last_nudge.has_value() &&
-      base::Time::Now() - time_of_last_nudge.value() < base::Hours(24);
-
-  return nudge_shown_count < 3u && !nudge_shown_recently;
+  return !time_of_last_nudge.has_value() ||
+         base::Time::Now() - time_of_last_nudge.value() >= base::Hours(24);
 }
 
 // Highlight -------------------------------------------------------------------

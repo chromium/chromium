@@ -974,6 +974,70 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
       account_id, /*client=*/nullptr, /*model=*/nullptr);
 }
 
+// Verifies that the Holding Space wallpaper nudge is not shown for users that
+// have pinned a file before.
+TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest,
+       UserHasPinnedFiles) {
+  const int64_t display_id = GetPrimaryDisplay().id();
+
+  // Log in a regular user.
+  const AccountId& account_id = AccountId::FromUserEmail("user@test");
+  SimulateUserLogin(account_id);
+
+  // Register a model and client for holding space.
+  HoldingSpaceModel holding_space_model;
+  testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, &holding_space_client, &holding_space_model);
+
+  // Configure the client to crack file system URLs.
+  EXPECT_CALL(holding_space_client, CrackFileSystemUrl)
+      .WillRepeatedly(Invoke([](const GURL& file_system_url) {
+        return base::FilePath(base::StrCat(
+            {"//path/to/", std::string(&file_system_url.spec().back())}));
+      }));
+
+  // Create and show a widget from which data can be drag-and-dropped.
+  auto widget = CreateTestWidgetForDisplayId(display_id);
+  widget->SetContentsView(std::make_unique<DraggableView>(
+      base::BindLambdaForTesting([&](ui::OSExchangeData* data) {
+        data->SetString(u"Payload");
+        SetFilesAppData(data, u"file-system:a\nfile-system:b");
+      })));
+  widget->CenterWindow(gfx::Size(100, 100));
+  widget->Show();
+
+  auto* const shelf = GetShelfForDisplayId(display_id);
+  auto* const tray = GetHoldingSpaceTrayForShelf(shelf);
+
+  // Modify prefs directly to indicate that the user has pinned a file. Note
+  // that it doesn't matter if a file is currently pinned, only that they have
+  // used the functionality at some point.
+  holding_space_prefs::MarkTimeOfFirstPin(
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+
+  // Make animations non-zero so that the checks below don't miss them.
+  SetAnimationDurationMultiplier(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Drag a file over the wallpaper, and expect that the nudge does not show.
+  MoveMouseTo(widget.get());
+  PressLeftButton();
+  MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
+
+  EXPECT_FALSE(HasHelpBubble(tray));
+  EXPECT_FALSE(HasPing(tray));
+
+  // The wallpaper highlight for drop-to-pin functionality should still appear
+  // when the nudge is suppressed.
+  EXPECT_EQ(HasWallpaperHighlight(display_id),
+            drop_to_pin_enabled().value_or(false));
+
+  // Clean up holding space controller.
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, /*client=*/nullptr, /*model=*/nullptr);
+}
+
 // HoldingSpaceWallpaperNudgeControllerCounterfactualTest ----------------------
 
 // Base class for tests of the `HoldingSpaceWallpaperNudgeController` which are
