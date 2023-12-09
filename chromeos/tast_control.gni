@@ -125,10 +125,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
-  # b/314682414, until test sync complete crrev.com/c/5078707
-  "apps.LaunchHelpAppFromShortcut.stable",
-  "apps.LaunchHelpAppFromShortcut.stable_guest",
-
   # b/293976130, NaCl issues on arm64 boards
   "nacl.Pnacl@jacuzzi",
   "nacl.Pnacl@trogdor",
