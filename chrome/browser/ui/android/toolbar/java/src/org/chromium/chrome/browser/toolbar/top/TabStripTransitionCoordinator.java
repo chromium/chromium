@@ -49,6 +49,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private final int mTabStripHeightFromResource;
 
     private int mTabStripHeight;
+    private int mTabStripTransitionThreshold;
     private boolean mTabStripVisible;
     private @Nullable BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private @Nullable OnLayoutChangeListener mOnLayoutChangedListener;
@@ -74,6 +75,16 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
         mTabStripHeight = tabStripHeightFromResource;
         mTabStripVisible = mTabStripHeight > 0;
+
+        mOnLayoutChangedListener =
+                (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    int windowWidth = Math.abs(right - left);
+                    maybeUpdateTabStripVisibility(windowWidth);
+                };
+        mControlContainer.addOnLayoutChangeListener(mOnLayoutChangedListener);
+
+        updateTabStripTransitionThreshold();
+        maybeUpdateTabStripVisibility(mControlContainer.getWidth());
     }
 
     /** Return the current tab strip height. */
@@ -97,62 +108,45 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
             mBrowserControlsObserver = null;
         }
+        if (mOnLayoutChangedListener != null) {
+            mControlContainer.removeOnLayoutChangeListener(mOnLayoutChangedListener);
+            mOnLayoutChangedListener = null;
+        }
         mCallbackController.destroy();
         mTabStripHeightObservers.clear();
     }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration configuration) {
-        DisplayMetrics displayMetrics = mControlContainer.getResources().getDisplayMetrics();
-        int width = displayMetrics.widthPixels;
-        boolean showTabStrip =
-                width >= ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
-
-        if (showTabStrip == mTabStripVisible) return;
-
-        // Kick off tab strip transition once tab strip visibility is confirmed to be changed. Do
-        // not change the mTabStripVisible until the transition actually started.
-        if (mLastTransitionTask != null) {
-            mHandler.removeCallbacks(mLastTransitionTask);
-        }
-        mLastTransitionTask =
-                mCallbackController.makeCancelable(
-                        () -> maybeUpdateTabStripVisibility(showTabStrip));
-        mHandler.postDelayed(mLastTransitionTask, TRANSITION_DELAY_MS);
+        updateTabStripTransitionThreshold();
     }
 
     @Override
     public void onLowMemory() {}
 
-    private void maybeUpdateTabStripVisibility(boolean showTabStrip) {
+    private void updateTabStripTransitionThreshold() {
+        DisplayMetrics displayMetrics = mControlContainer.getResources().getDisplayMetrics();
+        mTabStripTransitionThreshold =
+                ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
+
+        if (sMinScreenWidthForTesting != null) {
+            maybeUpdateTabStripVisibility(displayMetrics.widthPixels);
+        }
+    }
+
+    private void maybeUpdateTabStripVisibility(int windowWidth) {
+        boolean showTabStrip = windowWidth >= mTabStripTransitionThreshold;
         if (showTabStrip == mTabStripVisible) return;
-        mTabStripVisible = showTabStrip;
 
-        // If control container is already stable, or the Android view is invisible, perform the
-        // layout directly; otherwise, wait for one layout pass so the toolbar is redrawn at the
-        // reduced width before capturing a new bitmap for the C++ animation.
-        if (!mControlContainer.isInLayout()
-                || mBrowserControlsVisibilityManager.getAndroidControlsVisibility()
-                        != View.VISIBLE) {
-            setTabStripVisibility(showTabStrip);
-            return;
+        // Kick off tab strip transition once tab strip visibility is confirmed to be
+        // changed. Do not change the mTabStripVisible until the transition actually
+        // started.
+        if (mLastTransitionTask != null) {
+            mHandler.removeCallbacks(mLastTransitionTask);
         }
-
-        // If an layout is already scheduled for a different visibility, cancel it.
-        if (mOnLayoutChangedListener != null) {
-            mControlContainer.removeOnLayoutChangeListener(mOnLayoutChangedListener);
-        }
-
-        // Wait for one layout pass so the toolbar is redrawn at the reduced width before capturing
-        // a new bitmap for the C++ animation.
-        mOnLayoutChangedListener =
-                (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    mControlContainer.removeOnLayoutChangeListener(mOnLayoutChangedListener);
-                    mOnLayoutChangedListener = null;
-
-                    setTabStripVisibility(showTabStrip);
-                };
-        mControlContainer.addOnLayoutChangeListener(mOnLayoutChangedListener);
+        mLastTransitionTask =
+                mCallbackController.makeCancelable(() -> setTabStripVisibility(showTabStrip));
+        mHandler.postDelayed(mLastTransitionTask, TRANSITION_DELAY_MS);
     }
 
     /**
@@ -172,6 +166,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
      * @param show Whether the tab strip should be shown.
      */
     private void setTabStripVisibility(boolean show) {
+        mTabStripVisible = show;
         mTabStripHeight = show ? mTabStripHeightFromResource : 0;
 
         // Notify tab strip height is changed, and get ready for the browser controls updates.
