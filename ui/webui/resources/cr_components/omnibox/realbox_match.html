@@ -286,9 +286,17 @@
 </div>
 <div class="actions container underneath" aria-hidden="true" hidden="[[!showActionsUnderneath_(match)]]">
   <template is="dom-repeat" items="[[match.actions]]">
+    <div id="actions-focus-border"
+        hidden="[[!expandedStateIconsChromeRefresh]]">
+        <cr-realbox-action id="action" action="[[item]]"
+          action-index="[[actionIndex_(item)]]"
+          on-execute-action="onExecuteAction_" tabindex="1">
+        </cr-realbox-action>
+    </div>
     <cr-realbox-action id="action" action="[[item]]"
       action-index="[[actionIndex_(item)]]"
-      on-execute-action="onExecuteAction_" tabindex="1">
+      on-execute-action="onExecuteAction_" tabindex="1"
+      hidden="[[expandedStateIconsChromeRefresh]]">
     </cr-realbox-action>
   </template>
 </div>
