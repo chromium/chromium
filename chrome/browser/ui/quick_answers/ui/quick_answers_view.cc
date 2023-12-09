@@ -73,7 +73,7 @@ constexpr int kMarginDip = 10;
 constexpr auto kMainViewInsets = gfx::Insets::VH(4, 0);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(8, 0, 8, 16);
 constexpr auto kRichCardRedesignContentViewInsets =
-    gfx::Insets::TLBR(8, 0, 8, 0);
+    gfx::Insets::TLBR(8, 0, 8, 12);
 constexpr int kMaxRows = 3;
 
 // Google icon.
@@ -83,7 +83,7 @@ constexpr auto kGoogleIconInsets = gfx::Insets::TLBR(10, 10, 0, 10);
 // Result type icon.
 constexpr int kResultTypeIconContainerRadius = 18;
 constexpr int kResultTypeIconSizeDip = 12;
-constexpr auto kResultTypeIconContainerInsets = gfx::Insets::VH(8, 12);
+constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(8, 12, 4, 8);
 constexpr auto kResultTypeIconCircleInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 // Info icon.
@@ -116,7 +116,7 @@ constexpr int kExpansionIndicatorLabelFontSize = 12;
 constexpr int kExpansionIndicatorIconSizeDip = 12;
 constexpr int kExpansionIndicatorIconBorderDip = 4;
 constexpr int kExpansionIndicatorSizeDip = 72;
-constexpr auto kExpansionIndicatorViewInsets = gfx::Insets::TLBR(8, 8, 12, 12);
+constexpr auto kExpansionIndicatorViewInsets = gfx::Insets::TLBR(4, 8, 16, 12);
 
 // TTS audio.
 constexpr char kGoogleTtsEngineId[] = "com.google.android.tts";
@@ -477,7 +477,7 @@ void QuickAnswersView::ShowRetryView() {
   auto* title_label = content_view_->AddChildView(
       std::make_unique<quick_answers::QuickAnswersTextLabel>(
           QuickAnswerText(title_)));
-  title_label->SetMaximumWidthSingleLine(GetLabelWidth());
+  title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
 
   // Add error label.
   std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
@@ -554,7 +554,7 @@ void QuickAnswersView::AddContentView() {
   auto* title_label = content_view_->AddChildView(
       std::make_unique<quick_answers::QuickAnswersTextLabel>(
           QuickAnswerText(title_)));
-  title_label->SetMaximumWidthSingleLine(GetLabelWidth());
+  title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
   std::string loading =
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_LOADING);
   content_view_->AddChildView(
@@ -589,6 +589,20 @@ void QuickAnswersView::AddFrameButtons() {
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
   settings_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsButtonBorderDip));
+}
+
+bool QuickAnswersView::ShouldAddPhoneticsAudioButton(ResultType result_type,
+                                                     GURL phonetics_audio,
+                                                     bool tts_audio_enabled) {
+  if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
+    return false;
+  }
+
+  if (result_type != ResultType::kDefinitionResult) {
+    return false;
+  }
+
+  return !phonetics_audio.is_empty() || tts_audio_enabled;
 }
 
 void QuickAnswersView::AddPhoneticsAudioButton(
@@ -673,14 +687,15 @@ int QuickAnswersView::GetBoundsWidth() {
   return anchor_view_bounds_.width();
 }
 
-int QuickAnswersView::GetLabelWidth() {
+int QuickAnswersView::GetLabelWidth(bool is_title) {
   int label_width = GetBoundsWidth() - kMainViewInsets.width() -
                     GetContentViewInsets().width() - kGoogleIconInsets.width() -
                     kGoogleIconSizeDip;
 
   // If the rich card feature flag is enabled, leave additional space
   // for the expansion affordance indicator.
-  if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
+  // This only applies to non-title text labels.
+  if (chromeos::features::IsQuickAnswersRichCardEnabled() && !is_title) {
     return label_width - kExpansionIndicatorSizeDip;
   }
 
@@ -695,7 +710,7 @@ void QuickAnswersView::ResetContentView() {
 void QuickAnswersView::UpdateBounds() {
   // Multi-line labels need to be resized to be compatible with bounds width.
   if (first_answer_label_) {
-    first_answer_label_->SizeToFit(GetLabelWidth());
+    first_answer_label_->SizeToFit(GetLabelWidth(/*is_title=*/false));
   }
 
   int height = GetHeightForWidth(GetBoundsWidth());
@@ -747,12 +762,12 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   // Add title.
   View* title_view = AddHorizontalUiElements(content_view_, quick_answer.title);
   auto* title_label = static_cast<Label*>(title_view->children().front());
-  title_label->SetMaximumWidthSingleLine(GetLabelWidth());
+  title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
 
   // Add phonetics audio button for definition results.
-  if (quick_answer.result_type == ResultType::kDefinitionResult &&
-      (!quick_answer.phonetics_info.phonetics_audio.is_empty() ||
-       quick_answer.phonetics_info.tts_audio_enabled)) {
+  if (ShouldAddPhoneticsAudioButton(
+          quick_answer.result_type, quick_answer.phonetics_info.phonetics_audio,
+          quick_answer.phonetics_info.tts_audio_enabled)) {
     AddPhoneticsAudioButton(quick_answer.phonetics_info, title_view);
   }
 
@@ -810,13 +825,13 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   if (chromeos::features::IsQuickAnswersRichCardEnabled() &&
       quick_answer.result_type != ResultType::kNoResult) {
     // Show the expansion affordance indicator if rich card view is available.
-    auto* expansion_indicator_view = main_view_->AddChildView(
-        views::Builder<views::FlexLayoutView>()
-            .SetOrientation(views::LayoutOrientation::kHorizontal)
-            .SetInteriorMargin(kExpansionIndicatorViewInsets)
-            .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-            .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
-            .Build());
+    auto* expansion_indicator_view =
+        AddChildView(views::Builder<views::FlexLayoutView>()
+                         .SetOrientation(views::LayoutOrientation::kHorizontal)
+                         .SetInteriorMargin(kExpansionIndicatorViewInsets)
+                         .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+                         .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+                         .Build());
 
     auto* expansion_indicator_label =
         expansion_indicator_view->AddChildView(std::make_unique<Label>(
