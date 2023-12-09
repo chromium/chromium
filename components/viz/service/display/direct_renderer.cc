@@ -272,6 +272,8 @@ void DirectRenderer::DrawFrame(
   output_surface_->SetNeedsMeasureNextDrawLatency();
   BeginDrawingFrame();
 
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawFrame A");
+
   // RenderPass owns filters, backdrop_filters, etc., and will outlive this
   // function call. So it is safe to store pointers in these maps.
   for (const auto& pass : *render_passes_in_draw_order) {
@@ -291,6 +293,8 @@ void DirectRenderer::DrawFrame(
       }
     }
   }
+
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawFrame B");
 
   bool frame_has_alpha =
       current_frame()->root_render_pass->has_transparent_background;
@@ -392,12 +396,16 @@ void DirectRenderer::DrawFrame(
 #endif
   }
 
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawFrame C");
+
   // Draw all non-root render passes except for the root render pass.
   for (const auto& pass : *render_passes_in_draw_order) {
     if (pass.get() == root_render_pass)
       break;
     DrawRenderPassAndExecuteCopyRequests(pass.get());
   }
+
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawFrame D");
 
   bool skip_drawing_root_render_pass =
       current_frame()->root_damage_rect.IsEmpty() && allow_empty_swap_ &&
@@ -423,6 +431,8 @@ void DirectRenderer::DrawFrame(
 
   if (overlay_processor_)
     overlay_processor_->ScheduleOverlays(resource_provider_);
+    
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawFrame E");
 
   // Total non-root render pass count, excluding root render pass and bypassed
   // render passes.
@@ -580,10 +590,14 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
     return;
   }
 
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawRenderPassAndExecuteCopyRequests A");
+
   // Repeated draw to simulate a slower device for the evaluation of performance
   // improvements in UI effects.
   for (int i = 0; i < settings_->slow_down_compositing_scale_factor; ++i)
     DrawRenderPass(render_pass);
+    
+  recordreplay::AssertMaybeEventsDisallowed("[RUN-2847-3001] DirectRenderer::DrawRenderPassAndExecuteCopyRequests B");
 
   for (auto& request : render_pass->copy_requests) {
     // Finalize the source subrect (output_rect, result_bounds,
