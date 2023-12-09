@@ -1487,7 +1487,9 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
       prefs::kThrottleNonVisibleCrossOriginIframesAllowed, true);
   registry->RegisterBooleanPref(prefs::kNewBaseUrlInheritanceBehaviorAllowed,
                                 true);
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kNativeClientForceAllowed, false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(
       policy::policy_prefs::kPPAPISharedImagesForVideoDecoderAllowed, true);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
@@ -1555,11 +1557,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
                                 true);
   registry->RegisterBooleanPref(
       prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant, true);
-
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled, true);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kSendMouseEventsDisabledFormControlsEnabled, true);
   registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
 
   registry->RegisterBooleanPref(

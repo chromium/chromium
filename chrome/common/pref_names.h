@@ -1528,9 +1528,11 @@ inline constexpr char kImportDialogSavedPasswords[] =
 inline constexpr char kImportDialogSearchEngine[] =
     "import_dialog_search_engine";
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Boolean controlling whether native client is force allowed by policy.
 inline constexpr char kNativeClientForceAllowed[] =
     "native_client_force_allowed";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Profile avatar and name
 inline constexpr char kProfileAvatarIndex[] = "profile.avatar_index";

@@ -79,8 +79,7 @@ class PolicyDetails:
       raise RuntimeError('Platform "%s" is not supported' % platform)
     return PLATFORM_STRINGS[platform]
 
-  def __init__(self, policy, chrome_major_version, deprecation_milestone_buffer,
-               target_platform, valid_tags):
+  def __init__(self, policy, chrome_major_version, target_platform, valid_tags):
     self.id = policy['id']
     self.name = policy['name']
     self.tags = policy.get('tags', None)
@@ -127,8 +126,7 @@ class PolicyDetails:
       # does not support the policy.
       if chrome_major_version:
         if (int(version_min) > chrome_major_version
-            or version_max != '' and int(version_max) <
-            chrome_major_version - deprecation_milestone_buffer):
+            or version_max != '' and int(version_max) < chrome_major_version):
           continue
       self.platforms.update(self._ConvertPlatform(platform))
 
@@ -291,13 +289,6 @@ def main():
       help='path to the policy_templates.json input file',
       metavar='FILE')
   parser.add_argument(
-      '--deprecation-milestone-buffer',
-      dest='deprecation_milestone_buffer',
-      type=int,
-      help='Number of major versions before a code for a policy stops being '
-      'generated',
-      default=3)  # Temporary fix for tree closure. crbug.com/1383391
-  parser.add_argument(
       '--no-chunking',
       action='store_false',
       dest='chunking',  # A variable called `no_chunking` would be confusing.
@@ -329,7 +320,6 @@ def main():
 
   target_platform = args.target_platform
   template_file_name = args.policy_templates_file
-  deprecation_milestone_buffer = int(args.deprecation_milestone_buffer)
 
   # --target-platform accepts "chromeos" as its input because that's what is
   # used within GN. Within policy templates, "chrome_os" is used instead.
@@ -344,8 +334,8 @@ def main():
   template_file_contents = _LoadJSONFile(template_file_name)
   risk_tags = RiskTags(template_file_contents)
   policy_details = [
-      PolicyDetails(policy, chrome_major_version, deprecation_milestone_buffer,
-                    target_platform, risk_tags.GetValidTags())
+      PolicyDetails(policy, chrome_major_version, target_platform,
+                    risk_tags.GetValidTags())
       for policy in template_file_contents['policy_definitions']
       if policy['type'] != 'group'
   ]

@@ -284,13 +284,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFeedbackSurveysEnabled,
     policy::policy_prefs::kFeedbackSurveysEnabled,
     base::Value::Type::BOOLEAN },
-// We avoid checking for BUILDFLAG(ENABLE_NACL) since we may want the policy to
-// exist (deprecated) even if NACL is no longer being built.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-  { key::kNativeClientForceAllowed,
-    prefs::kNativeClientForceAllowed,
-    base::Value::Type::BOOLEAN },
-#endif
   { key::kPasswordManagerEnabled,
     password_manager::prefs::kCredentialsEnableService,
     base::Value::Type::BOOLEAN },
@@ -1873,6 +1866,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSafeBrowsingExtensionProtectionAllowed,
     prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
     base::Value::Type::BOOLEAN },
+  // We avoid checking for BUILDFLAG(ENABLE_NACL) since we may want the policy
+  // to exist (deprecated) even if NACL is no longer being built.
+  { key::kNativeClientForceAllowed,
+    prefs::kNativeClientForceAllowed,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
@@ -1973,12 +1971,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif
   { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
-    base::Value::Type::BOOLEAN},
-  { key::kOffsetParentNewSpecBehaviorEnabled,
-    policy_prefs::kOffsetParentNewSpecBehaviorEnabled,
-    base::Value::Type::BOOLEAN},
-  { key::kSendMouseEventsDisabledFormControlsEnabled,
-    policy_prefs::kSendMouseEventsDisabledFormControlsEnabled,
     base::Value::Type::BOOLEAN},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kDeviceAutofillSAMLUsername,
