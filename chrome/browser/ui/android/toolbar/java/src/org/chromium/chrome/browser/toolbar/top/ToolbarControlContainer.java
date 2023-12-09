@@ -330,6 +330,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         private final Rect mLocationBarRect = new Rect();
         private final Rect mToolbarRect = new Rect();
         private final View mToolbarContainer;
+        private final View mToolbarHairline;
         private final Callback<Boolean> mOnCompositorInMotionChange =
                 this::onCompositorInMotionChange;
 
@@ -352,6 +353,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         public ToolbarViewResourceAdapter(View toolbarContainer, boolean useHardwareBitmapDraw) {
             super(toolbarContainer, useHardwareBitmapDraw);
             mToolbarContainer = toolbarContainer;
+            mToolbarHairline = mToolbarContainer.findViewById(R.id.toolbar_hairline);
         }
 
         /**
@@ -514,10 +516,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mToolbar.getLocationBarContentRect(mLocationBarRect);
             mLocationBarRect.offset(mTempPosition[0], mTempPosition[1]);
 
-            int shadowHeight =
-                    mToolbarContainer.getHeight()
-                            - mToolbar.getHeight()
-                            - mToolbar.getTabStripHeight();
+            int shadowHeight = mToolbarHairline.getHeight();
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
         }

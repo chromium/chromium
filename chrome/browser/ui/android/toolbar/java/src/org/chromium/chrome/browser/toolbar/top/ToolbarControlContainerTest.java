@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -65,6 +66,7 @@ public class ToolbarControlContainerTest {
 
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
     @Mock private View mToolbarContainer;
+    @Mock private View mToolbarHairline;
     @Mock private Toolbar mToolbar;
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
@@ -183,6 +185,8 @@ public class ToolbarControlContainerTest {
         UmaRecorderHolder.resetForTesting();
         when(mToolbarContainer.getWidth()).thenReturn(1);
         when(mToolbarContainer.getHeight()).thenReturn(1);
+        when(mToolbarContainer.findViewById(anyInt())).thenReturn(mToolbarHairline);
+        when(mToolbarHairline.getHeight()).thenReturn(1);
         mBrowserStateBrowserControlsVisibilityDelegate.set(BrowserControlsState.BOTH);
         mCompositorInMotionSupplier.set(false);
         mBrowserStateBrowserControlsVisibilityDelegate.addObserver(

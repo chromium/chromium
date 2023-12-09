@@ -32,9 +32,22 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private static final int TRANSITION_DELAY_MS = 200;
 
     /** Observes height of tab strip that could change during run time. */
+    // TODO(crbug.com/1509013): Rework the observer interface.
     public interface TabStripHeightObserver {
-        /** Notified when the tab strip height is about to change. */
-        void onTabStripHeightChanged(int newHeight);
+        /**
+         * Called when the tab strip requests an update when control container changes its width.
+         *
+         * @param newHeight The expected height tab strip will be changed into.
+         */
+        default void onHeightTransitionRequested(int newHeight) {}
+
+        /**
+         * Called when the tab strip height changed. This height will match the space on top of the
+         * toolbar reserved for the tab strip.
+         *
+         * @param newHeight The height same as {@link #getTabStripHeight()}.
+         */
+        default void onHeightChanged(int newHeight) {}
     }
 
     private static Integer sMinScreenWidthForTesting;
@@ -167,11 +180,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
      */
     private void setTabStripVisibility(boolean show) {
         mTabStripVisible = show;
-        mTabStripHeight = show ? mTabStripHeightFromResource : 0;
+        int newHeight = show ? mTabStripHeightFromResource : 0;
 
-        // Notify tab strip height is changed, and get ready for the browser controls updates.
+        // TODO(crbug.com/1509013): Request directly instead of using observer interface.
         for (var observer : mTabStripHeightObservers) {
-            observer.onTabStripHeightChanged(mTabStripHeight);
+            observer.onHeightTransitionRequested(newHeight);
         }
 
         if (mBrowserControlsObserver != null) return;
@@ -222,6 +235,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             mBrowserControlsObserver = null;
         }
 
+        // Change the height when we change the margin, to reflect the actual
+        // tab strip height.
+        mTabStripHeight = mTabStripVisible ? mTabStripHeightFromResource : 0;
+
         // The top margin is the space left for the tab strip.
         updateTopMargin(mToolbarLayout, mTabStripHeight);
 
@@ -237,6 +254,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         } else {
             View findToolbarStub = mControlContainer.findViewById(R.id.find_toolbar_stub);
             updateTopMargin(findToolbarStub, mTabStripHeight);
+        }
+
+        for (var observer : mTabStripHeightObservers) {
+            observer.onHeightChanged(mTabStripHeight);
         }
     }
 

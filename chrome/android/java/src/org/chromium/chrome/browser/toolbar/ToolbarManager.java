@@ -1739,11 +1739,20 @@ public class ToolbarManager
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
             stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
+
             mTabStripHeightObserver =
-                    newHeight -> {
-                        if (mTabStripHeightSupplier == null) return;
-                        mTabStripHeightSupplier.set(newHeight);
-                        stripLayoutHelperManager.setIsTabStripHidden(newHeight == 0);
+                    new TabStripHeightObserver() {
+                        @Override
+                        public void onHeightTransitionRequested(int newHeight) {
+                            // TODO(crbug.com/1509013): Supplier can have an inconsistent value
+                            //  with mToolbar.getTabStripHeight().
+                            mTabStripHeightSupplier.set(newHeight);
+                        }
+
+                        @Override
+                        public void onHeightChanged(int newHeight) {
+                            stripLayoutHelperManager.setIsTabStripHidden(newHeight == 0);
+                        }
                     };
             mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
         }
@@ -2090,7 +2099,7 @@ public class ToolbarManager
         mUrlFocusChangedCallback.onResult(hasFocus);
     }
 
-    /** Get the supplier for the current height of the tab strip. */
+    /** Get the supplier for the current height of the tab strip. Always returns a valid integer. */
     public ObservableSupplier<Integer> getTabStripHeightSupplier() {
         return mTabStripHeightSupplier;
     }

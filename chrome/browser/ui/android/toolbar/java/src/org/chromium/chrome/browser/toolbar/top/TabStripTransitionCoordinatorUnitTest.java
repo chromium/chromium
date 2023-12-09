@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.concurrent.TimeUnit;
@@ -65,6 +66,9 @@ public class TabStripTransitionCoordinatorUnitTest {
     private TestActivity mActivity;
     private TestControlContainer mSpyControlContainer;
 
+    private int mObservedOnHeightRequested = -1;
+    private int mObservedOnHeightChanged = -1;
+
     @Before
     public void setup() {
         mActivityScenario.getScenario().onActivity(activity -> mActivity = activity);
@@ -77,6 +81,20 @@ public class TabStripTransitionCoordinatorUnitTest {
                         mSpyControlContainer,
                         mSpyControlContainer.toolbarLayout,
                         TEST_TAB_STRIP_HEIGHT);
+        TabStripHeightObserver observer =
+                new TabStripHeightObserver() {
+                    @Override
+                    public void onHeightTransitionRequested(int newHeight) {
+                        mObservedOnHeightRequested = newHeight;
+                    }
+
+                    @Override
+                    public void onHeightChanged(int newHeight) {
+                        mObservedOnHeightChanged = newHeight;
+                    }
+                };
+        mCoordinator.addObserver(observer);
+
         doNothing()
                 .when(mBrowserControlsVisibilityManager)
                 .addObserver(mBrowserControlsObserver.capture());
@@ -87,26 +105,31 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void updateTabStripHeight_WideWindow() {
+    public void initWithWideWindow() {
         Assert.assertEquals(
                 "Tab strip height is wrong.",
                 TEST_TAB_STRIP_HEIGHT,
                 mCoordinator.getTabStripHeight());
 
         setDeviceWidthDp(480);
-        Assert.assertEquals("Tab strip height is wrong.", 0, mCoordinator.getTabStripHeight());
+        Assert.assertEquals("Tab strip height is wrong.", 0, mObservedOnHeightRequested);
     }
 
     @Test
     @Config(qualifiers = "w480dp")
-    public void updateTabStripHeight_NarrowWindow() {
-        Assert.assertEquals("Tab strip height is wrong.", 0, mCoordinator.getTabStripHeight());
+    public void initWithNarrowWindow() {
+        Assert.assertEquals(
+                "Init will not change the tab strip height.",
+                TEST_TAB_STRIP_HEIGHT,
+                mCoordinator.getTabStripHeight());
+        Assert.assertEquals(
+                "Tab strip height requested changing to 0.", 0, mObservedOnHeightRequested);
 
         setDeviceWidthDp(600);
         Assert.assertEquals(
-                "Tab strip height is wrong.",
+                "Changing the window to wide will request for full-size tab strip.",
                 TEST_TAB_STRIP_HEIGHT,
-                mCoordinator.getTabStripHeight());
+                mObservedOnHeightRequested);
     }
 
     @Test
@@ -116,6 +139,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         // Simulate top controls size change from browser. Input values doesn't matter in this call.
         mBrowserControlsObserver.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
         assertTabStripHeightForMargins(0);
+        assertObservedHeight(0);
     }
 
     @Test
@@ -126,6 +150,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
         mBrowserControlsObserver.getValue().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
         assertTabStripHeightForMargins(0);
+        assertObservedHeight(0);
     }
 
     @Test
@@ -136,6 +161,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         // Simulate top controls size change from browser. Input values doesn't matter in this call.
         mBrowserControlsObserver.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+        assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
     }
 
     @Test
@@ -146,6 +172,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
         mBrowserControlsObserver.getValue().onTopControlsHeightChanged(TEST_TOOLBAR_HEIGHT, 0);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+        assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
     }
 
     @Test
@@ -205,6 +232,18 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Top margin is wrong for toolbarHairline.",
                 tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.toolbarHairline.getTopMargin());
+    }
+
+    private void assertObservedHeight(int tabStripHeight) {
+        Assert.assertEquals(
+                "#getHeight has a different value.",
+                tabStripHeight,
+                mCoordinator.getTabStripHeight());
+
+        Assert.assertEquals(
+                "Observer#onHeightChanged received a different value.",
+                tabStripHeight,
+                mObservedOnHeightChanged);
     }
 
     private void simulateLayoutChange(int width) {

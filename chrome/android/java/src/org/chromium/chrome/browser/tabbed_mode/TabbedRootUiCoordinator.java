@@ -978,7 +978,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         final int topControlsNewHeight =
                 toolbarHeight
-                        + mToolbarManager.getToolbar().getTabStripHeight()
+                        + mToolbarManager.getTabStripHeightSupplier().get()
                         + mStatusIndicatorHeight;
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
