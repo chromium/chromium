@@ -5,6 +5,7 @@
 #include "base/profiler/frame_pointer_unwinder.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
@@ -29,6 +30,12 @@ uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
   }
 #endif
   const uintptr_t* fp = reinterpret_cast<uintptr_t*>(frame_pointer);
+
+  // MSAN does not consider the frame pointers and return addresses to have
+  // have been initialized in the normal sense, but they are actually
+  // initialized.
+  MSAN_UNPOISON(fp, sizeof(uintptr_t) * 2);
+
   uintptr_t next_frame = *fp;
   *return_address = *(fp + 1);
   return next_frame;
