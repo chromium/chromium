@@ -5096,12 +5096,29 @@ if (enable_base_tracing) {
 
 process_version("check_version_internal") {
   template_file = "//base/check_version_internal.h.in"
-  sources = [ "//chrome/VERSION" ]
   output = "$target_gen_dir/check_version_internal.h"
-  extra_args = [
-    "-e",
-    "VERSION_MAJOR=\"%s\" % (MAJOR)",
-    "-e",
-    "NEXT_VERSION_MAJOR=\"%d\" % (int(MAJOR) + 1)",
-  ]
+
+  # TODO(pbos): Consider moving chrome/VERSION into base/VERSION now that base
+  # depends on it. This dependency currently breaks webrtc which pulls in //base
+  # (but not //chrome). crbug.com/webrtc/13662 tracks removing webrtc's
+  # dependency on //base. For now we fake the check version far into the future.
+  # This breaks check_unittest.cc when built outside of chromium, but webrtc
+  # doesn't need to build base_unittests. If this is required in the future, but
+  # we haven't moved chrome/VERSION, we should ifdef out those tests.
+  if (build_with_chromium) {
+    sources = [ "//chrome/VERSION" ]
+    extra_args = [
+      "-e",
+      "VERSION_MAJOR=\"%s\" % (MAJOR)",
+      "-e",
+      "NEXT_VERSION_MAJOR=\"%d\" % (int(MAJOR) + 1)",
+    ]
+  } else {
+    extra_args = [
+      "-e",
+      "VERSION_MAJOR=\"9998\"",
+      "-e",
+      "NEXT_VERSION_MAJOR=\"9999\"",
+    ]
+  }
 }
