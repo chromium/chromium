@@ -65,8 +65,8 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     UsbPermissionRequest(
         const std::string& package_name,
         bool is_scan_request,
-        absl::optional<UsbDeviceEntry> usb_device_entry,
-        absl::optional<ArcUsbHostUiDelegate::RequestPermissionCallback>
+        std::optional<UsbDeviceEntry> usb_device_entry,
+        std::optional<ArcUsbHostUiDelegate::RequestPermissionCallback>
             callback);
     UsbPermissionRequest(UsbPermissionRequest&& other);
     UsbPermissionRequest& operator=(UsbPermissionRequest&& other);
@@ -78,7 +78,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
 
     const std::string& package_name() const { return package_name_; }
     bool is_scan_request() const { return is_scan_request_; }
-    const absl::optional<UsbDeviceEntry>& usb_device_entry() const {
+    const std::optional<UsbDeviceEntry>& usb_device_entry() const {
       return usb_device_entry_;
     }
 
@@ -93,10 +93,10 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     bool is_scan_request_;
     // Device entry of targeting device access request. nullopt if this is a
     // scan device list request.
-    absl::optional<UsbDeviceEntry> usb_device_entry_;
+    std::optional<UsbDeviceEntry> usb_device_entry_;
     // Callback of the device access reqeust. nullopt if this is a scan device
     // list request.
-    absl::optional<RequestPermissionCallback> callback_;
+    std::optional<RequestPermissionCallback> callback_;
   };
 
   ArcUsbHostPermissionManager(const ArcUsbHostPermissionManager&) = delete;

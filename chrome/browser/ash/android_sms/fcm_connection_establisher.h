@@ -94,7 +94,7 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
   void OnMessageDispatchResult(bool status);
 
   std::unique_ptr<base::OneShotTimer> retry_timer_;
-  absl::optional<InFlightMessage> in_flight_message_;
+  std::optional<InFlightMessage> in_flight_message_;
 
   // A queue of messages to be dispatched. Messages are dispatched and retried
   // one at a time from this queue.

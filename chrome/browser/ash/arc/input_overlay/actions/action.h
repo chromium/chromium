@@ -41,7 +41,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events);
 //    "key": "KeyA",
 //    "modifiers": [""] // optional: "ctrl", "shift", "alt".
 // }
-absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
+std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
     const base::StringPiece key_name);
 
@@ -117,8 +117,8 @@ class Action {
 
   // Cancel event when the focus is lost or window is destroyed and the touch
   // event is still not released.
-  absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
-  absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
+  std::optional<ui::TouchEvent> GetTouchCanceledEvent();
+  std::optional<ui::TouchEvent> GetTouchReleasedEvent();
   int GetUIRadius();
 
   bool IsDefaultAction() const;
@@ -154,14 +154,14 @@ class Action {
   const std::vector<gfx::PointF>& touch_down_positions() const {
     return touch_down_positions_;
   }
-  absl::optional<ActionType> original_type() { return original_type_; }
+  std::optional<ActionType> original_type() { return original_type_; }
   void set_original_type(ActionType type) {
-    original_type_ = absl::make_optional<ActionType>(type);
+    original_type_ = std::make_optional<ActionType>(type);
   }
   bool require_mouse_locked() const { return require_mouse_locked_; }
   TouchInjector* touch_injector() const { return touch_injector_; }
   int current_position_idx() const { return current_position_idx_; }
-  const absl::optional<int> touch_id() const { return touch_id_; }
+  const std::optional<int> touch_id() const { return touch_id_; }
   bool on_left_or_middle_side() const { return on_left_or_middle_side_; }
   bool support_modifier_key() const { return support_modifier_key_; }
   ActionView* action_view() const { return action_view_; }
@@ -205,7 +205,7 @@ class Action {
   // Unique ID for each action.
   int id_ = 0;
   // Used for the default action.
-  absl::optional<ActionType> original_type_;
+  std::optional<ActionType> original_type_;
   // name_ is basically for debugging and not visible to users.
   std::string name_;
   // `name_label_index` is the index of the user-defined label for the action.
@@ -229,7 +229,7 @@ class Action {
   bool require_mouse_locked_ = false;
   bool is_new_ = false;
   int parsed_input_sources_ = 0;
-  absl::optional<int> touch_id_;
+  std::optional<int> touch_id_;
   size_t current_position_idx_ = 0;
   raw_ptr<TouchInjector> touch_injector_;
 
@@ -239,7 +239,7 @@ class Action {
   // According to the design spec, the label position depends
   // on whether the action position is on left or right.
   bool on_left_or_middle_side_ = false;
-  absl::optional<float> radius_;
+  std::optional<float> radius_;
   // By default, it doesn't support modifier key.
   bool support_modifier_key_ = false;
   raw_ptr<ActionView, DanglingUntriaged> action_view_ = nullptr;

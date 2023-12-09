@@ -21,7 +21,7 @@ namespace {
 // Base directory for saving customized data in the user profile.
 constexpr char kPath[] = "google_gio";
 
-absl::optional<base::FilePath> CreateOrGetDirectory(
+std::optional<base::FilePath> CreateOrGetDirectory(
     const base::FilePath& storage_dir) {
   if (base::PathExists(storage_dir)) {
     return storage_dir;
@@ -32,7 +32,7 @@ absl::optional<base::FilePath> CreateOrGetDirectory(
 
   LOG(ERROR) << "Failed to create the base storage directory: "
              << storage_dir.value();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ProtoFileExists(const base::FilePath& file_path) {

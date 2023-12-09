@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_CHROME_SEARCH_RESULT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/scoring.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ui {
@@ -105,7 +105,7 @@ class ChromeSearchResult {
   const IconInfo& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
-  const absl::optional<ash::SystemInfoAnswerCardData>
+  const std::optional<ash::SystemInfoAnswerCardData>
   system_info_answer_card_data() const {
     return metadata_->system_info_answer_card_data;
   }
@@ -193,7 +193,7 @@ class ChromeSearchResult {
   }
 
   // Maybe returns a Drive file ID for this result, if applicable.
-  virtual absl::optional<std::string> DriveId() const;
+  virtual std::optional<std::string> DriveId() const;
 
   // Invokes a custom action on the result. It does nothing by default.
   virtual void InvokeAction(ash::SearchResultActionType action);

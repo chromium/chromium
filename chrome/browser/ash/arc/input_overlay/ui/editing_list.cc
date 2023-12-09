@@ -156,7 +156,7 @@ void EditingList::Init() {
   AddActionAddRow();
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   on_scroll_view_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
           &EditingList::OnScrollViewScrolled, base::Unretained(this)));

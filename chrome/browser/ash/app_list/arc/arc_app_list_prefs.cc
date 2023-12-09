@@ -282,17 +282,17 @@ base::Value RectToValueDict(const gfx::Rect& rect) {
 
 // Gets gfx::Rect from base::Value, e.g. { 0, 100, 200, 300 } returns
 // gfx::Rect(0, 100, 200, 300). If the Value does not contains valid rect,
-// returns absl::nullopt.
-absl::optional<gfx::Rect> RectFromDictValue(const base::Value* rect_dict) {
+// returns std::nullopt.
+std::optional<gfx::Rect> RectFromDictValue(const base::Value* rect_dict) {
   if (!rect_dict)
-    return absl::nullopt;
+    return std::nullopt;
   auto x = rect_dict->GetDict().FindInt("x");
   auto y = rect_dict->GetDict().FindInt("y");
   auto width = rect_dict->GetDict().FindInt("width");
   auto height = rect_dict->GetDict().FindInt("height");
   if (!x.has_value() || !y.has_value() || !width.has_value() ||
       !height.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return gfx::Rect(x.value(), y.value(), width.value(), height.value());
 }
@@ -895,7 +895,7 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
         const std::string* details =
             permission_state_dict->FindString(kPermissionStateDetails);
 
-        absl::optional<std::string> details_opt;
+        std::optional<std::string> details_opt;
         if (details != nullptr) {
           details_opt = *details;
         }
@@ -1042,7 +1042,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   std::string icon_resource_id =
       maybe_icon_resource_id ? *maybe_icon_resource_id : std::string();
 
-  absl::optional<std::string> version_name = absl::nullopt;
+  std::optional<std::string> version_name = std::nullopt;
   if (maybe_version_name && *maybe_version_name != std::string())
     version_name = *maybe_version_name;
 
@@ -1056,8 +1056,8 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
     last_launch_time = base::Time::FromInternalValue(last_launch_time_internal);
   }
 
-  absl::optional<uint64_t> app_size_in_bytes;
-  absl::optional<uint64_t> data_size_in_bytes;
+  std::optional<uint64_t> app_size_in_bytes;
+  std::optional<uint64_t> data_size_in_bytes;
 
   auto* app_size_entry = app_dict->FindString(kAppSizeBytesString);
   if (app_size_entry != nullptr && !app_size_entry->empty()) {
@@ -1516,11 +1516,11 @@ void ArcAppListPrefs::RegisterDefaultApps() {
     AddAppAndShortcut(
         app_info.name, app_info.package_name, app_info.activity,
         std::string() /* intent_uri */, std::string() /* icon_resource_id */,
-        absl::nullopt /* version name */, false /* sticky */,
+        std::nullopt /* version name */, false /* sticky */,
         false /* notifications_enabled */, false /* app_ready */,
         false /* suspended */, false /* shortcut */, true /* launchable */,
         false /* need_fixup */, ArcAppListPrefs::WindowLayout(),
-        absl::nullopt /* app_size */, absl::nullopt /* data_size */,
+        std::nullopt /* app_size */, std::nullopt /* data_size */,
         GetAppCategory(app_id));
   }
 }
@@ -1608,7 +1608,7 @@ void ArcAppListPrefs::OnConnectionClosed() {
     observer.OnAppConnectionClosed();
 }
 
-void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,
+void ArcAppListPrefs::HandleTaskCreated(const std::optional<std::string>& name,
                                         const std::string& package_name,
                                         const std::string& activity) {
   DCHECK(IsArcAndroidEnabledForProfile(profile_));
@@ -1622,11 +1622,11 @@ void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,
     AddAppAndShortcut(
         name.value_or(std::string()), package_name, activity,
         std::string() /* intent_uri */, std::string() /* icon_resource_id */,
-        absl::nullopt /* version_name */, false /* sticky */,
+        std::nullopt /* version_name */, false /* sticky */,
         false /* notifications_enabled */, true /* app_ready */,
         false /* suspended */, false /* shortcut */, false /* launchable */,
         false /* need_fixup */, ArcAppListPrefs::WindowLayout(),
-        absl::nullopt /* app_size */, absl::nullopt /* data_size */,
+        std::nullopt /* app_size */, std::nullopt /* data_size */,
         GetAppCategory(app_id));
   }
 }
@@ -1637,7 +1637,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
     const std::string& activity,
     const std::string& intent_uri,
     const std::string& icon_resource_id,
-    const absl::optional<std::string>& version_name,
+    const std::optional<std::string>& version_name,
     const bool sticky,
     const bool notifications_enabled,
     const bool app_ready,
@@ -1646,8 +1646,8 @@ void ArcAppListPrefs::AddAppAndShortcut(
     const bool launchable,
     const bool need_fixup,
     const WindowLayout& initial_window_layout,
-    const absl::optional<uint64_t> app_size_in_bytes,
-    const absl::optional<uint64_t> data_size_in_bytes,
+    const std::optional<uint64_t> app_size_in_bytes,
+    const std::optional<uint64_t> data_size_in_bytes,
     const arc::mojom::AppCategory app_category) {
   const std::string app_id = shortcut ? GetAppId(package_name, intent_uri)
                                       : GetAppId(package_name, activity);
@@ -1990,8 +1990,8 @@ void ArcAppListPrefs::OnAppListRefreshed(
 
   ready_apps_.clear();
   for (const auto& app : apps) {
-    absl::optional<uint64_t> app_size_in_bytes;
-    absl::optional<uint64_t> data_size_in_bytes;
+    std::optional<uint64_t> app_size_in_bytes;
+    std::optional<uint64_t> data_size_in_bytes;
 
     if (!app->app_storage.is_null()) {
       app_size_in_bytes = app->app_storage->app_size_in_bytes;
@@ -2077,8 +2077,8 @@ void ArcAppListPrefs::AddApp(const arc::mojom::AppInfo& app_info) {
     return;
   }
 
-  absl::optional<uint64_t> app_size_in_bytes;
-  absl::optional<uint64_t> data_size_in_bytes;
+  std::optional<uint64_t> app_size_in_bytes;
+  std::optional<uint64_t> data_size_in_bytes;
 
   if (!app_info.app_storage.is_null()) {
     app_size_in_bytes = app_info.app_storage->app_size_in_bytes;
@@ -2179,11 +2179,11 @@ void ArcAppListPrefs::OnInstallShortcut(arc::mojom::ShortcutInfoPtr shortcut) {
   AddAppAndShortcut(
       shortcut->name, shortcut->package_name, std::string() /* activity */,
       shortcut->intent_uri, shortcut->icon_resource_id,
-      absl::nullopt /* version_name */, false /* sticky */,
+      std::nullopt /* version_name */, false /* sticky */,
       false /* notifications_enabled */, true /* app_ready */,
       false /* suspended */, true /* shortcut */, true /* launchable */,
       false /* need_fixup */, ArcAppListPrefs::WindowLayout(),
-      absl::nullopt /* app_size */, absl::nullopt /* data_size */,
+      std::nullopt /* app_size */, std::nullopt /* data_size */,
       GetAppCategory(GetAppId(shortcut->package_name, shortcut->intent_uri)));
 }
 
@@ -2315,8 +2315,8 @@ void ArcAppListPrefs::OnIcon(
 void ArcAppListPrefs::OnTaskCreated(int32_t task_id,
                                     const std::string& package_name,
                                     const std::string& activity,
-                                    const absl::optional<std::string>& name,
-                                    const absl::optional<std::string>& intent,
+                                    const std::optional<std::string>& name,
+                                    const std::optional<std::string>& intent,
                                     int32_t session_id) {
   HandleTaskCreated(name, package_name, activity);
   for (auto& observer : observer_list_) {
@@ -2548,7 +2548,7 @@ void ArcAppListPrefs::OnIconInstalled(const std::string& app_id,
 }
 
 void ArcAppListPrefs::OnInstallationStarted(
-    const absl::optional<std::string>& package_name) {
+    const std::optional<std::string>& package_name) {
   ++installing_packages_count_;
   CancelDefaultAppLoadingTimeout();
   UpdateArcPackagesIsUpToDatePref();
@@ -2653,7 +2653,7 @@ ArcAppListPrefs::AppInfo::AppInfo(
     const std::string& activity,
     const std::string& intent_uri,
     const std::string& icon_resource_id,
-    const absl::optional<std::string>& version_name,
+    const std::optional<std::string>& version_name,
     const base::Time& last_launch_time,
     const base::Time& install_time,
     bool sticky,
@@ -2667,8 +2667,8 @@ ArcAppListPrefs::AppInfo::AppInfo(
     bool shortcut,
     bool launchable,
     bool need_fixup,
-    const absl::optional<uint64_t> app_size_in_bytes,
-    const absl::optional<uint64_t> data_size_in_bytes,
+    const std::optional<uint64_t> app_size_in_bytes,
+    const std::optional<uint64_t> data_size_in_bytes,
     arc::mojom::AppCategory app_category)
     : name(name),
       package_name(package_name),
@@ -2758,11 +2758,11 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
 ArcAppListPrefs::PackageInfo::~PackageInfo() = default;
 
 ArcAppListPrefs::WindowLayout::WindowLayout()
-    : WindowLayout(arc::mojom::WindowSizeType::kUnknown, true, absl::nullopt) {}
+    : WindowLayout(arc::mojom::WindowSizeType::kUnknown, true, std::nullopt) {}
 
 ArcAppListPrefs::WindowLayout::WindowLayout(arc::mojom::WindowSizeType type,
                                             bool resizable,
-                                            absl::optional<gfx::Rect> bounds)
+                                            std::optional<gfx::Rect> bounds)
     : type(type), resizable(resizable), bounds(std::move(bounds)) {}
 
 ArcAppListPrefs::WindowLayout::WindowLayout(

@@ -78,7 +78,7 @@ void UpdateEnabledStateByUserTypeUMA() {
     return;
   }
 
-  absl::optional<bool> enabled_state;
+  std::optional<bool> enabled_state;
   if (auto* stability_metrics_manager = StabilityMetricsManager::Get())
     enabled_state = stability_metrics_manager->GetArcEnabledState();
 

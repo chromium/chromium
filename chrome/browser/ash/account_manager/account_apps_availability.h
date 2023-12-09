@@ -119,13 +119,13 @@ class AccountAppsAvailability
   // Account Manager.
   void FindAccountByGaiaId(
       const std::string& gaia_id,
-      base::OnceCallback<void(const absl::optional<account_manager::Account>&)>
+      base::OnceCallback<void(const std::optional<account_manager::Account>&)>
           callback);
 
   // Call `NotifyObservers` if account is not `nullopt`.
   void MaybeNotifyObservers(
       bool is_available_in_arc,
-      const absl::optional<account_manager::Account>& account);
+      const std::optional<account_manager::Account>& account);
 
   // Call `OnAccountAvailableInArc` if `is_available_in_arc` is `true`.
   // Otherwise call `OnAccountUnavailableInArc`.

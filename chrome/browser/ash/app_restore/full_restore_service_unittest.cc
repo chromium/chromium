@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -45,7 +47,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -149,14 +150,14 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
   bool HasNotificationFor(const std::string& notification_id) {
-    absl::optional<message_center::Notification> message_center_notification =
+    std::optional<message_center::Notification> message_center_notification =
         display_service()->GetNotification(notification_id);
     return message_center_notification.has_value();
   }
 
   void VerifyRestoreNotificationTitle(const std::string& notification_id,
                                       bool is_reboot_notification) {
-    absl::optional<message_center::Notification> message_center_notification =
+    std::optional<message_center::Notification> message_center_notification =
         display_service()->GetNotification(notification_id);
     ASSERT_TRUE(message_center_notification.has_value());
     const std::u16string& title = message_center_notification.value().title();
@@ -190,13 +191,13 @@ class FullRestoreServiceTest : public testing::Test {
                      RestoreNotificationButtonIndex action_index) {
     display_service()->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
-        static_cast<int>(action_index), absl::nullopt);
+        static_cast<int>(action_index), std::nullopt);
   }
 
   // Simulates the initial sync of preferences.
   void SyncPreferences(
       SessionStartupPref::PrefValue restore_on_startup_value,
-      absl::optional<RestoreOption> maybe_restore_apps_and_pages_value) {
+      std::optional<RestoreOption> maybe_restore_apps_and_pages_value) {
     syncer::SyncDataList sync_data_list;
     sync_data_list.push_back(
         CreateRestoreOnStartupPrefSyncData(restore_on_startup_value));
@@ -464,7 +465,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Set the Chrome restore setting to simulate sync for the first time.
-  SyncPreferences(SessionStartupPref::kPrefValueLast, absl::nullopt);
+  SyncPreferences(SessionStartupPref::kPrefValueLast, std::nullopt);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
@@ -496,7 +497,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Set the Chrome restore setting to simulate sync for the first time.
-  SyncPreferences(SessionStartupPref::kPrefValueNewTab, absl::nullopt);
+  SyncPreferences(SessionStartupPref::kPrefValueNewTab, std::nullopt);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -793,7 +794,7 @@ class FullRestoreServiceMultipleUsersTest
   }
 
   bool HasNotificationForProfile2(const std::string& notification_id) {
-    absl::optional<message_center::Notification> message_center_notification =
+    std::optional<message_center::Notification> message_center_notification =
         display_service2()->GetNotification(notification_id);
     return message_center_notification.has_value();
   }
@@ -815,7 +816,7 @@ class FullRestoreServiceMultipleUsersTest
                                 RestoreNotificationButtonIndex action_index) {
     display_service2()->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
-        static_cast<int>(action_index), absl::nullopt);
+        static_cast<int>(action_index), std::nullopt);
   }
 
   NotificationDisplayServiceTester* display_service2() const {

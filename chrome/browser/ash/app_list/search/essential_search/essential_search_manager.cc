@@ -50,10 +50,9 @@ void EssentialSearchManager::FetchSocsCookie() {
 void EssentialSearchManager::OnCookieFetched(const std::string& cookie_header) {
   GURL google_url = GaiaUrls::GetInstance()->google_url();
 
-  std::unique_ptr<net::CanonicalCookie> cc(
-      net::CanonicalCookie::Create(google_url, cookie_header, base::Time::Now(),
-                                   absl::nullopt /* server_time */,
-                                   absl::nullopt /* cookie_partition_key */));
+  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
+      google_url, cookie_header, base::Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */));
 
   if (!cc) {
     LOG(ERROR) << "Invalid cookie header";

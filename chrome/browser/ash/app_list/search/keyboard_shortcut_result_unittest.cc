@@ -102,7 +102,7 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
-                accelerator, u"FakeKey", absl::nullopt)));
+                accelerator, u"FakeKey", std::nullopt)));
   }
 
   std::vector<ash::mojom::AcceleratorInfoPtr> CreateFakeAcceleratorInfoList(

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -21,7 +21,7 @@ class KioskApp {
   KioskApp(const KioskAppId& id,
            std::string_view name,
            gfx::ImageSkia icon,
-           absl::optional<GURL> url = absl::nullopt);
+           std::optional<GURL> url = std::nullopt);
   KioskApp(const KioskApp&);
   KioskApp(KioskApp&&);
   ~KioskApp();
@@ -36,13 +36,13 @@ class KioskApp {
   // The application icon as displayed in the UI.
   gfx::ImageSkia icon() const { return icon_; }
   // The application URL as displayed in the UI. Only present in web apps.
-  const absl::optional<GURL>& url() const { return url_; }
+  const std::optional<GURL>& url() const { return url_; }
 
  private:
   KioskAppId id_;
   std::string name_;
   gfx::ImageSkia icon_;
-  absl::optional<GURL> url_;
+  std::optional<GURL> url_;
 };
 
 }  // namespace ash

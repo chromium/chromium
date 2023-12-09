@@ -187,9 +187,8 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
 }  // namespace
 
 ArcSupportHost::ErrorInfo::ErrorInfo(Error error)
-    : error(error), arg(absl::nullopt) {}
-ArcSupportHost::ErrorInfo::ErrorInfo(Error error,
-                                     const absl::optional<int>& arg)
+    : error(error), arg(std::nullopt) {}
+ArcSupportHost::ErrorInfo::ErrorInfo(Error error, const std::optional<int>& arg)
     : error(error), arg(arg) {}
 ArcSupportHost::ErrorInfo::ErrorInfo(const ErrorInfo&) = default;
 ArcSupportHost::ErrorInfo& ArcSupportHost::ErrorInfo::operator=(
@@ -656,16 +655,16 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     }
   } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
     DCHECK(tos_delegate_);
-    absl::optional<bool> tos_shown = message.FindBool(kTosShown);
-    absl::optional<bool> is_metrics_enabled =
+    std::optional<bool> tos_shown = message.FindBool(kTosShown);
+    std::optional<bool> is_metrics_enabled =
         message.FindBool(kIsMetricsEnabled);
-    absl::optional<bool> is_backup_restore_enabled =
+    std::optional<bool> is_backup_restore_enabled =
         message.FindBool(kIsBackupRestoreEnabled);
-    absl::optional<bool> is_backup_restore_managed =
+    std::optional<bool> is_backup_restore_managed =
         message.FindBool(kIsBackupRestoreManaged);
-    absl::optional<bool> is_location_service_enabled =
+    std::optional<bool> is_location_service_enabled =
         message.FindBool(kIsLocationServiceEnabled);
-    absl::optional<bool> is_location_service_managed =
+    std::optional<bool> is_location_service_managed =
         message.FindBool(kIsLocationServiceManaged);
 
     const std::string* tos_content = message.FindString(kTosContent);

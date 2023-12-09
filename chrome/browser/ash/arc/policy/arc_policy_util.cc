@@ -45,7 +45,7 @@ bool IsArcDisabledForEnterprise() {
 
 std::set<std::string> GetRequestedPackagesFromArcPolicy(
     const std::string& arc_policy) {
-  absl::optional<base::Value> dict = ParsePolicyJson(arc_policy);
+  std::optional<base::Value> dict = ParsePolicyJson(arc_policy);
   if (!dict.has_value() || !dict.value().is_dict()) {
     return {};
   }
@@ -66,13 +66,13 @@ std::set<std::string> GetRequestedPackagesFromArcPolicy(
 }
 
 void RecordPolicyMetrics(const std::string& arc_policy) {
-  absl::optional<base::Value> dict = ParsePolicyJson(arc_policy);
+  std::optional<base::Value> dict = ParsePolicyJson(arc_policy);
   if (!dict.has_value() || !dict.value().is_dict()) {
     return;
   }
 
   for (const auto it : dict.value().GetDict()) {
-    absl::optional<ArcPolicyKey> key = GetPolicyKeyFromString(it.first);
+    std::optional<ArcPolicyKey> key = GetPolicyKeyFromString(it.first);
     if (key.has_value()) {
       UMA_HISTOGRAM_ENUMERATION("Arc.Policy.Keys", key.value());
     }
@@ -88,7 +88,7 @@ void RecordPolicyMetrics(const std::string& arc_policy) {
   }
 }
 
-absl::optional<base::Value> ParsePolicyJson(const std::string& arc_policy) {
+std::optional<base::Value> ParsePolicyJson(const std::string& arc_policy) {
   return base::JSONReader::Read(
       arc_policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 }
@@ -121,7 +121,7 @@ std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
   return install_type_map;
 }
 
-absl::optional<ArcPolicyKey> GetPolicyKeyFromString(
+std::optional<ArcPolicyKey> GetPolicyKeyFromString(
     const std::string& policy_key) {
   if (policy_key == kArcPolicyKeyAvailableAppSetPolicyDeprecated ||
       policy_key == kArcPolicyKeyWorkAccountAppWhitelistDeprecated ||
@@ -129,7 +129,7 @@ absl::optional<ArcPolicyKey> GetPolicyKeyFromString(
       policy_key == kArcPolicyKeyMountPhysicalMediaDisabled ||
       policy_key == kArcPolicyKeyDpsInteractionsDisabled) {
     // Ignore keys that are always set or represent server side flags.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (policy_key == kArcPolicyKeyAccountTypesWithManagementDisabled) {

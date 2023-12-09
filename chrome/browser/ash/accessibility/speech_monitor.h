@@ -7,12 +7,12 @@
 
 #include <chrono>
 #include <map>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/test/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(katie): This may need to move into Content as part of the TTS refactor.
 
@@ -76,7 +76,7 @@ class SpeechMonitor : public content::TtsPlatform {
 
     std::string text_;
     bool as_pattern_ = false;
-    absl::optional<std::string> locale_;
+    std::optional<std::string> locale_;
     std::vector<std::string> disallowed_text_;
   };
 
@@ -106,7 +106,7 @@ class SpeechMonitor : public content::TtsPlatform {
   // * For matching text, use the methods above;
   // * use this to check if some TTS parameters were set when a specific piece
   // of text was being spoken.
-  absl::optional<content::UtteranceContinuousParameters>
+  std::optional<content::UtteranceContinuousParameters>
   GetParamsForPreviouslySpokenTextPattern(const std::string& pattern);
 
   // Adds a call to be included in replay.

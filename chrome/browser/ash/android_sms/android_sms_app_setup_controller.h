@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_SETUP_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_SETUP_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -40,8 +41,8 @@ class AndroidSmsAppSetupController {
                         SuccessCallback callback) = 0;
 
   // Returns the id for the PWA at |install_url|; if no PWA exists,
-  // absl::nullopt is returned.
-  virtual absl::optional<webapps::AppId> GetPwa(const GURL& install_url) = 0;
+  // std::nullopt is returned.
+  virtual std::optional<webapps::AppId> GetPwa(const GURL& install_url) = 0;
 
   // Deletes the cookie which causes the PWA to remember this computer by
   // default. Note that this does not actually stop the PWA from remembering

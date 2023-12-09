@@ -158,7 +158,7 @@ const base::FilePath& GetCpuTemperaturePathOnFileThread() {
 bool ReadNonNegativeInt(const base::Value::Dict& root,
                         const std::string& key,
                         int* out) {
-  absl::optional<int> value = root.FindInt(key);
+  std::optional<int> value = root.FindInt(key);
   if (!value || *value < 0) {
     return false;
   }
@@ -528,7 +528,7 @@ std::string ArcSystemStatCollector::SerializeToJson() const {
 }
 
 bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
-  const absl::optional<base::Value> root = base::JSONReader::Read(json_data);
+  const std::optional<base::Value> root = base::JSONReader::Read(json_data);
   if (!root)
     return false;
   return LoadFromValue(*root);

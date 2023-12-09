@@ -40,10 +40,10 @@ double GetDoubleFromDictionary(const base::Value::Dict* dictionary,
                                double default_value) {
   if (!dictionary)
     return default_value;
-  absl::optional<double> double_value = dictionary->FindDouble(name);
+  std::optional<double> double_value = dictionary->FindDouble(name);
   if (double_value)
     return *double_value;
-  absl::optional<int> int_value = dictionary->FindInt(name);
+  std::optional<int> int_value = dictionary->FindInt(name);
   if (int_value)
     return *int_value;
   return default_value;

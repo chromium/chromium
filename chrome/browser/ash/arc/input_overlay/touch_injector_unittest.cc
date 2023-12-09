@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 
+#include <optional>
+
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -285,7 +286,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
   std::unique_ptr<TouchInjector> injector_;
 
  protected:
-  void InitWithFeature(absl::optional<base::test::FeatureRef> feature) {
+  void InitWithFeature(std::optional<base::test::FeatureRef> feature) {
     if (feature) {
       scoped_feature_list_.InitWithFeatures({*feature}, {});
     } else {
@@ -530,9 +531,9 @@ class VersionTouchInjectorTest : public TouchInjectorTest,
   void SetUp() override {
     TouchInjectorTest::SetUp();
     InitWithFeature(IsBetaVersion()
-                        ? absl::make_optional<base::test::FeatureRef>(
+                        ? std::make_optional<base::test::FeatureRef>(
                               ash::features::kArcInputOverlayBeta)
-                        : absl::nullopt);
+                        : std::nullopt);
   }
 
  private:

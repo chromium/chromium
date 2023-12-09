@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_answer_result.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -72,14 +72,14 @@ const gfx::VectorIcon& AnswerTypeToVectorIcon(
 // SuggestionAnswer::TextFields. For example, a text field containing "26°C" is
 // converted into the pair ("26", "°C"), and a text field containing "-5°F" is
 // converted into the pair ("-5", "°F").
-absl::optional<std::pair<std::u16string, std::u16string>> GetTemperature(
-    const absl::optional<std::u16string>& text) {
+std::optional<std::pair<std::u16string, std::u16string>> GetTemperature(
+    const std::optional<std::u16string>& text) {
   if (!text.has_value() || text->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   size_t digits_end = text->find_last_of(u"0123456789");
   if (digits_end == std::u16string::npos)
-    return absl::nullopt;
+    return std::nullopt;
 
   size_t unit_start = digits_end + 1;
   return std::make_pair(text->substr(0, unit_start), text->substr(unit_start));

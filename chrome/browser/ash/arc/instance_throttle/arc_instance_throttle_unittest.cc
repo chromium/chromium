@@ -540,7 +540,7 @@ TEST_F(ArcInstanceThrottleVMTest, Histograms) {
 
   // No response
   client->set_wait_for_service_to_be_available_response(true);
-  absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response;
+  std::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response;
   client->set_set_vm_cpu_restriction_response(response);
   observer->SetActive(false);
   run_loop()->RunUntilIdle();

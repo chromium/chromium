@@ -527,7 +527,7 @@ void ActionLabel::SetToEditDefault() {
                                      gfx::Font::Weight::BOLD));
   SetEnabledTextColors(kTextColorDefault);
   SetBackgroundForEdit();
-  views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+  views::FocusRing::Get(this)->SetColorId(std::nullopt);
 }
 
 void ActionLabel::SetToEditHover(bool hovered) {
@@ -535,7 +535,7 @@ void ActionLabel::SetToEditHover(bool hovered) {
     views::FocusRing::Get(this)->SetColorId(
         ui::kColorAshActionLabelFocusRingHover);
   } else {
-    views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+    views::FocusRing::Get(this)->SetColorId(std::nullopt);
   }
 }
 

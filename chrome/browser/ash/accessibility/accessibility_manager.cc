@@ -231,11 +231,11 @@ std::string AccessibilityPrivateEnumForAction(SelectToSpeakPanelAction action) {
   }
 }
 
-absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
+std::optional<bool> GetDictationOfflineNudgePrefForLocale(
     Profile* profile,
     const std::string& dictation_locale) {
   if (dictation_locale.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const base::Value::Dict& offline_nudges = profile->GetPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
@@ -245,7 +245,7 @@ absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
 // Represents response data returned by `ReadDlcFile`.
 struct ReadDlcFileResponse {
   ReadDlcFileResponse(std::vector<uint8_t> contents,
-                      absl::optional<std::string> error)
+                      std::optional<std::string> error)
       : contents(contents), error(error) {}
   ~ReadDlcFileResponse() = default;
   ReadDlcFileResponse(const ReadDlcFileResponse&) = default;
@@ -254,7 +254,7 @@ struct ReadDlcFileResponse {
   // The content of the DLC file.
   std::vector<uint8_t> contents;
   // An error, if any.
-  absl::optional<std::string> error;
+  std::optional<std::string> error;
 };
 
 // Reads the contents of a DLC file specified by `path`. Must run asynchronously
@@ -285,7 +285,7 @@ ReadDlcFileResponse ReadDlcFile(base::FilePath path) {
     return ReadDlcFileResponse(std::vector<uint8_t>(), error);
   }
 
-  return ReadDlcFileResponse(contents, absl::nullopt);
+  return ReadDlcFileResponse(contents, std::nullopt);
 }
 
 // Runs when `ReadDlcFile` returns the contents of a file.
@@ -294,8 +294,7 @@ void OnReadDlcFile(GetTtsDlcContentsCallback callback,
   std::move(callback).Run(response.contents, response.error);
 }
 
-absl::optional<PumpkinData> CreatePumpkinData(
-    base::FilePath base_pumpkin_path) {
+std::optional<PumpkinData> CreatePumpkinData(base::FilePath base_pumpkin_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -324,7 +323,7 @@ absl::optional<PumpkinData> CreatePumpkinData(
     ReadDlcFileResponse response =
         ReadDlcFile(base_pumpkin_path.Append(file_name));
     if (response.error.has_value())
-      return absl::nullopt;
+      return std::nullopt;
 
     *file_data = response.contents;
   }
@@ -1137,7 +1136,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
       pref_service->GetString(prefs::kAccessibilityDictationLocale);
   if (!triggered_by_user) {
     // This Dictation change was not due to an explicit user action.
-    const absl::optional<bool> offline_nudge =
+    const std::optional<bool> offline_nudge =
         GetDictationOfflineNudgePrefForLocale(profile_, dictation_locale);
 
     // See if the Dictation locale can now work offline in the
@@ -2544,7 +2543,7 @@ void AccessibilityManager::OnSodaInstallUpdated(int progress) {
   if (soda_installer->IsSodaDownloading(GetDictationLanguageCode()))
     return;
 
-  const absl::optional<bool> offline_nudge =
+  const std::optional<bool> offline_nudge =
       GetDictationOfflineNudgePrefForLocale(profile_, dictation_locale);
   // Check if this locale was downloaded and a nudge for it should be
   // shown to the user (the key is in kAccessibilityDictationLocale but the
@@ -2688,7 +2687,7 @@ void AccessibilityManager::InstallPumpkinForDictation(
     InstallPumpkinCallback callback) {
   DCHECK(!callback.is_null());
   if (!IsDictationEnabled()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -2708,7 +2707,7 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
   }
 
   if (!success) {
-    std::move(install_pumpkin_callback_).Run(absl::nullopt);
+    std::move(install_pumpkin_callback_).Run(std::nullopt);
     return;
   }
 
@@ -2726,7 +2725,7 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
 }
 
 void AccessibilityManager::OnPumpkinDataCreated(
-    absl::optional<PumpkinData> data) {
+    std::optional<PumpkinData> data) {
   if (install_pumpkin_callback_.is_null()) {
     return;
   }
@@ -2739,7 +2738,7 @@ void AccessibilityManager::OnPumpkinError(const std::string& error) {
     return;
   }
 
-  std::move(install_pumpkin_callback_).Run(absl::nullopt);
+  std::move(install_pumpkin_callback_).Run(std::nullopt);
   is_pumpkin_installed_for_testing_ = false;
 
   UpdateDictationNotification();

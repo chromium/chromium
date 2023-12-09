@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -82,7 +83,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(b/254819616): Replace base::RunLoop().RunUntilIdle() with
 // task_environment_.RunUntilIdle() or Run() & Quit() to make the tests less
@@ -125,7 +125,7 @@ class FileExpansionObserver : public ArcSessionManagerObserver {
   FileExpansionObserver(const FileExpansionObserver&) = delete;
   FileExpansionObserver& operator=(const FileExpansionObserver&) = delete;
 
-  const absl::optional<bool>& property_files_expansion_result() const {
+  const std::optional<bool>& property_files_expansion_result() const {
     return property_files_expansion_result_;
   }
 
@@ -135,7 +135,7 @@ class FileExpansionObserver : public ArcSessionManagerObserver {
   }
 
  private:
-  absl::optional<bool> property_files_expansion_result_;
+  std::optional<bool> property_files_expansion_result_;
 };
 
 class ShowErrorObserver : public ArcSessionManagerObserver {
@@ -150,7 +150,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
   ~ShowErrorObserver() override { session_manager_->RemoveObserver(this); }
 
-  const absl::optional<ArcSupportHost::ErrorInfo> error_info() const {
+  const std::optional<ArcSupportHost::ErrorInfo> error_info() const {
     return error_info_;
   }
 
@@ -159,7 +159,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
   }
 
  private:
-  absl::optional<ArcSupportHost::ErrorInfo> error_info_;
+  std::optional<ArcSupportHost::ErrorInfo> error_info_;
   const raw_ptr<ArcSessionManager, ExperimentalAsh> session_manager_;
 };
 
@@ -993,7 +993,7 @@ TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Undetermined) {
   SetArcVmDataMigrationStatus(profile()->GetPrefs(),
                               ArcVmDataMigrationStatus::kUnnotified);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(
-      absl::nullopt);
+      std::nullopt);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
@@ -1415,7 +1415,7 @@ struct ProvisioningErrorDisplayTestParam {
   ArcSupportHost::Error message;
 
   // The error code sent to arc support host.
-  absl::optional<int> arg;
+  std::optional<int> arg;
 };
 
 constexpr ProvisioningErrorDisplayTestParam

@@ -54,7 +54,7 @@ void UnscheduleDelayedCryptohomeRemoval(const cryptohome::Identification& id) {
 void OnRemoveAppCryptohomeComplete(
     const cryptohome::Identification& id,
     base::OnceClosure callback,
-    absl::optional<user_data_auth::RemoveReply> reply) {
+    std::optional<user_data_auth::RemoveReply> reply) {
   cryptohome::ErrorWrapper error = ReplyToCryptohomeError(reply);
   if (!cryptohome::HasError(error) ||
       cryptohome::ErrorMatches(

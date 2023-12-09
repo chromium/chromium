@@ -83,7 +83,7 @@ void AppServiceAppIconLoader::FetchImage(const std::string& id) {
     if (!it->second.isNull()) {
       delegate()->OnAppImageUpdated(id, it->second,
                                     /*is_placeholder_icon=*/false,
-                                    /*badge_image=*/absl::nullopt);
+                                    /*badge_image=*/std::nullopt);
     }
     return;
   }
@@ -114,7 +114,7 @@ void AppServiceAppIconLoader::UpdateImage(const std::string& id) {
 
   delegate()->OnAppImageUpdated(id, it->second,
                                 /*is_placeholder_icon=*/false,
-                                /*badge_image=*/absl::nullopt);
+                                /*badge_image=*/std::nullopt);
 }
 
 void AppServiceAppIconLoader::OnAppUpdate(const apps::AppUpdate& update) {
@@ -184,7 +184,7 @@ void AppServiceAppIconLoader::OnLoadIcon(const std::string& app_id,
     gfx::ImageSkia image = icon_value->uncompressed;
     icon_map_[id] = image;
     delegate()->OnAppImageUpdated(id, image, icon_value->is_placeholder_icon,
-                                  /*badge_image=*/absl::nullopt);
+                                  /*badge_image=*/std::nullopt);
   }
 
   if (icon_value->is_placeholder_icon) {

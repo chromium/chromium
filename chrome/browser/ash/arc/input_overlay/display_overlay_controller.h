@@ -59,7 +59,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetDisplayMode(DisplayMode mode);
 
   // Get the bounds of `menu_entry_` in screen coordinates.
-  absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
+  std::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
   void AddEditMessage(const base::StringPiece& message,
                       MessageType message_type);
@@ -189,7 +189,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
   void OnMenuEntryPositionChanged(bool leave_focus,
-                                  absl::optional<gfx::Point> location);
+                                  std::optional<gfx::Point> location);
   void FocusOnMenuEntry();
   void ClearFocus();
   void RemoveInputMenuView();

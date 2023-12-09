@@ -132,7 +132,7 @@ class ActionView : public views::View {
   }
   int unbind_label_index() { return unbind_label_index_; }
 
-  absl::optional<gfx::Point> touch_point_center() const {
+  std::optional<gfx::Point> touch_point_center() const {
     return touch_point_center_;
   }
 
@@ -150,7 +150,7 @@ class ActionView : public views::View {
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Local center position of the touch point view.
-  absl::optional<gfx::Point> touch_point_center_;
+  std::optional<gfx::Point> touch_point_center_;
 
   // Touch point only shows up in the edit mode for users to align the position.
   // This view owns the touch point as one of its children and `touch_point_`

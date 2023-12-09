@@ -611,7 +611,7 @@ std::string ArcTracingGraphicsModel::SerializeToJson() const {
 
 bool ArcTracingGraphicsModel::LoadFromJson(const std::string& json_data) {
   Reset();
-  absl::optional<base::Value> root = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root = base::JSONReader::Read(json_data);
   if (!root || !root->is_dict())
     return false;
   return LoadFromValue(root->GetDict());
@@ -631,7 +631,7 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
       if (!view_entry)
         return false;
       const std::string* activity = view_entry->FindString(kKeyActivity);
-      absl::optional<int> task_id = view_entry->FindInt(kKeyTaskId);
+      std::optional<int> task_id = view_entry->FindInt(kKeyTaskId);
       if (!activity || !task_id)
         return false;
       const ViewId view_id(*task_id, *activity);
@@ -668,7 +668,7 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
       app_icon_png_ =
           std::vector<unsigned char>(icon_content.begin(), icon_content.end());
     }
-    absl::optional<double> timestamp_value =
+    std::optional<double> timestamp_value =
         informaton->FindDouble(kKeyTimestamp);
     if (timestamp_value)
       timestamp_ = base::Time::FromMillisecondsSinceUnixEpoch(*timestamp_value);

@@ -20,44 +20,43 @@ constexpr char kAspectRatio[] = "aspect_ratio";
 constexpr char kXonY[] = "x_on_y";
 constexpr char kYonX[] = "y_on_x";
 
-absl::optional<gfx::PointF> ParseTwoElementsArray(
-    const base::Value::Dict& value,
-    const char* key,
-    bool required) {
+std::optional<gfx::PointF> ParseTwoElementsArray(const base::Value::Dict& value,
+                                                 const char* key,
+                                                 bool required) {
   const base::Value::List* list = value.FindList(key);
   if (!list) {
     if (required) {
       LOG(ERROR) << "Require values for key " << key;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (list->size() != 2) {
     LOG(ERROR) << "Require two elements for " << key << ". But got "
                << list->size() << " elements.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   double x = list->front().GetDouble();
   double y = list->back().GetDouble();
   if (std::abs(x) > 1 || std::abs(y) > 1) {
     LOG(ERROR) << "Require normalized values for " << key << ". But got x{" << x
                << "}, y{" << y << "}";
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional<gfx::PointF>(x, y);
+  return std::make_optional<gfx::PointF>(x, y);
 }
 
-absl::optional<int> ParseIntValue(const base::Value::Dict& value,
-                                  std::string key) {
-  absl::optional<int> val = value.FindInt(key);
+std::optional<int> ParseIntValue(const base::Value::Dict& value,
+                                 std::string key) {
+  std::optional<int> val = value.FindInt(key);
   if (val) {
     if (*val <= 0) {
       LOG(ERROR) << "Value for {" << key << "} should be positive, but got {"
                  << *val << "}.";
-      return absl::nullopt;
+      return std::nullopt;
     }
     return val;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 float CalculateDependent(const gfx::PointF& anchor,
@@ -92,7 +91,7 @@ float CalculateDependent(const gfx::PointF& anchor,
 
 bool ParsePositiveFraction(const base::Value::Dict& value,
                            const char* key,
-                           absl::optional<float>* output) {
+                           std::optional<float>* output) {
   *output = value.FindDouble(key);
   if (*output && **output <= 0) {
     LOG(ERROR) << "Require positive value of " << key << ". But got {"

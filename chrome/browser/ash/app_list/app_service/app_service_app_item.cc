@@ -124,7 +124,7 @@ AppServiceAppItem::AppServiceAppItem(
     }
   }
 
-  absl::optional<apps::PackageId> package_id =
+  std::optional<apps::PackageId> package_id =
       apps_util::GetPackageIdForApp(profile, app_update);
   if (package_id.has_value()) {
     SetPromisePackageId(package_id.value().ToString());

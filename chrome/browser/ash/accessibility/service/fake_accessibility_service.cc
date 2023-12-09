@@ -141,7 +141,7 @@ void FakeAccessibilityService::DispatchAccessibilityLocationChange(
 
 void FakeAccessibilityService::DispatchGetTextLocationResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {}
+    const std::optional<gfx::Rect>& rect) {}
 
 void FakeAccessibilityService::EnableAssistiveTechnology(
     const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features) {
@@ -208,7 +208,7 @@ void FakeAccessibilityService::RequestSpeechRecognitionStart(
 
 void FakeAccessibilityService::RequestSpeechRecognitionStop(
     ax::mojom::StopOptionsPtr options,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
+    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
   CHECK_EQ(sr_remotes_.size(), 1u);
   for (auto& remote : sr_remotes_) {
     remote->Stop(std::move(options), std::move(callback));
@@ -292,7 +292,7 @@ void FakeAccessibilityService::RequestOpenSettingsSubpage(
 void FakeAccessibilityService::RequestShowConfirmationDialog(
     const std::string& title,
     const std::string& description,
-    const absl::optional<std::string>& cancel_name,
+    const std::optional<std::string>& cancel_name,
     ax::mojom::UserInterface::ShowConfirmationDialogCallback callback) {
   for (auto& ux_client : ux_remotes_) {
     ux_client->ShowConfirmationDialog(title, description, cancel_name,

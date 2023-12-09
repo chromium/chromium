@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
@@ -136,7 +136,7 @@ void ZeroStateDriveProvider::StartZeroState() {
 }
 
 void ZeroStateDriveProvider::OnSuggestFileDataFetched(
-    const absl::optional<SuggestResults>& suggest_results) {
+    const std::optional<SuggestResults>& suggest_results) {
   // Fail to fetch the suggest data, so return early.
   if (!suggest_results) {
     // Send empty result list to search controller to unblock zero state.
@@ -173,9 +173,9 @@ void ZeroStateDriveProvider::SetSearchResults(
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const std::string& result_id,
     const base::FilePath& filepath,
-    const absl::optional<std::u16string>& prediction_reason,
+    const std::optional<std::u16string>& prediction_reason,
     const float relevance) {
-  absl::optional<std::u16string> details;
+  std::optional<std::u16string> details;
   if (prediction_reason)
     details = prediction_reason.value();
 

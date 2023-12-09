@@ -114,7 +114,7 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
     auto app = std::make_unique<apps::App>(
         apps::AppType::kWeb,
         web_app::GenerateAppId(
-            /*manifest_id=*/absl::nullopt, GURL(web_app_info->start_url)));
+            /*manifest_id=*/std::nullopt, GURL(web_app_info->start_url)));
     app->readiness = apps::Readiness::kReady;
     app->publisher_id = web_app_info->start_url;
 
@@ -281,22 +281,22 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, InstallAndUninstall) {
   StartArc(GetWebAppPackage("a"), GetArcAppPackage("b"));
 
   // App "a" installed.
-  absl::optional<std::string> app_id_a =
+  std::optional<std::string> app_id_a =
       service.GetWebAppIdForPackageName("org.example.a");
-  ASSERT_NE(app_id_a, absl::nullopt);
+  ASSERT_NE(app_id_a, std::nullopt);
   EXPECT_TRUE(service.IsWebOnlyTwa(*app_id_a));
   EXPECT_EQ(service.GetCertificateSha256Fingerprint(*app_id_a), "a-sha1");
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
   // App "b" not installed.
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.b"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.b"), std::nullopt);
 
   // Incrementally install a web app in ARC.
   GetAppHost().OnPackageAdded(GetWebAppPackage("c"));
 
   // App "c" installed.
-  absl::optional<std::string> app_id_c =
+  std::optional<std::string> app_id_c =
       service.GetWebAppIdForPackageName("org.example.c");
-  ASSERT_NE(app_id_c, absl::nullopt);
+  ASSERT_NE(app_id_c, std::nullopt);
   EXPECT_TRUE(service.IsWebOnlyTwa(*app_id_c));
   EXPECT_EQ(service.GetCertificateSha256Fingerprint(*app_id_c), "c-sha1");
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/c?start"));
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, InstallAndUninstall) {
   GetAppHost().OnPackageRemoved("org.example.a");
 
   // App "a" uninstalled.
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
 
   // Uninstall an app by removing it from the initial refresh list.
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, InstallAndUninstall) {
   StartArc({});
 
   // App "c" uninstalled.
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.c"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.c"), std::nullopt);
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/c?start"));
 }
 
@@ -326,9 +326,9 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   StartArc(GetWebAppPackage("a"));
 
   // App "a" is installed.
-  absl::optional<std::string> app_id_a =
+  std::optional<std::string> app_id_a =
       service.GetWebAppIdForPackageName("org.example.a");
-  ASSERT_NE(app_id_a, absl::nullopt);
+  ASSERT_NE(app_id_a, std::nullopt);
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
 
   // Pin the app to the shelf.
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   GetAppHost().OnPackageAdded(GetArcAppPackage("a"));
 
   // App "a" is uninstalled.
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
   // Android app is still pinned.
   auto arc_app_id = GetArcAppListPrefs().GetAppIdByPackageName("org.example.a");
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
 
   // App "a" is installed and has the updated pin index.
   app_id_a = service.GetWebAppIdForPackageName("org.example.a");
-  ASSERT_NE(app_id_a, absl::nullopt);
+  ASSERT_NE(app_id_a, std::nullopt);
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
   EXPECT_TRUE(shelf_model->IsAppPinned(*app_id_a));
   EXPECT_EQ(shelf_model->ItemIndexByID(ShelfID(*app_id_a)), pin_index);
@@ -374,12 +374,12 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
 
   // App "a" won't be installed because Lacros isn't running.
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
 
   // Start Lacros, app "a" should now be installed.
   StartLacros();
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
-  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
 
   // Stop Lacros and install another app incrementally.
   StopLacros();
@@ -387,12 +387,12 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
 
   // App "b" won't be installed because Lacros isn't running.
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/b?start"));
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.b"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.b"), std::nullopt);
 
   // Start Lacros, app "b" should now be installed.
   StartLacros();
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/b?start"));
-  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.b"), absl::nullopt);
+  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.b"), std::nullopt);
 
   // Stop Lacros and uninstall app "a".
   StopLacros();
@@ -400,12 +400,12 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
 
   // App "a" should still be installed because Lacros isn't running.
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
-  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
 
   // Start Lacros again, app "a" should now be removed.
   StartLacros();
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
-  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
@@ -417,9 +417,9 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   StartArc(GetWebAppPackage("a"));
 
   // App "a" is installed.
-  absl::optional<std::string> app_id_a =
+  std::optional<std::string> app_id_a =
       service.GetWebAppIdForPackageName("org.example.a");
-  ASSERT_NE(app_id_a, absl::nullopt);
+  ASSERT_NE(app_id_a, std::nullopt);
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
 
   // Stop ARC and uninstall app "a" from the browser side.
@@ -428,13 +428,13 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
 
   // Prefs should still be there, but the web app is uninstalled.
   EXPECT_NE(GetArcAppListPrefs().GetPackage("org.example.a"), nullptr);
-  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  ASSERT_NE(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
 
   // Restart ARC with the same packages, will trigger ARC app uninstallation.
   StartArc(GetWebAppPackage("a"));
   EXPECT_EQ(GetArcAppListPrefs().GetPackage("org.example.a"), nullptr);
-  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
@@ -445,9 +445,9 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   StartArc(GetWebAppPackage("a"));
 
   // App "a" is installed.
-  absl::optional<std::string> app_id_a =
+  std::optional<std::string> app_id_a =
       service.GetWebAppIdForPackageName("org.example.a");
-  ASSERT_NE(app_id_a, absl::nullopt);
+  ASSERT_NE(app_id_a, std::nullopt);
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
 
   // Disable ARC through settings.
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   ASSERT_TRUE(uninstalled_future.Wait());
 
   // Web app should be uninstalled.
-  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
   EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
 }
 
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   StartArc(GetWebAppPackage("a"));
 
   // App "a" should be installed.
-  absl::optional<std::string> app_id_a =
+  std::optional<std::string> app_id_a =
       service.GetWebAppIdForPackageName("org.example.a");
   EXPECT_TRUE(service.IsWebOnlyTwa(*app_id_a));
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   GetAppHost().OnPackageRemoved("org.example.a");
 
   // Web app should be removed from ApkWebAppService, but is still installed.
-  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), std::nullopt);
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
 }
 

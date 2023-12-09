@@ -112,7 +112,7 @@ arc::mojom::CaptionColorPtr GetCaptionColorFromPrefs(
   // generic, it does some redundant stuffs (like utf16 conversion, removing rgb
   // prefix). But since this path is frequently used, the benefit of reusing
   // method outweighs the cons.
-  absl::optional<SkColor> sk_color =
+  std::optional<SkColor> sk_color =
       ui::metadata::SkColorConverter::FromString(base::UTF8ToUTF16(color_str));
   if (!sk_color) {
     return nullptr;
@@ -358,7 +358,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   std::string default_network_name_;
 
   // Proxy configuration of the default network.
-  absl::optional<base::Value::Dict> default_proxy_config_;
+  std::optional<base::Value::Dict> default_proxy_config_;
 
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.

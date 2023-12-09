@@ -175,14 +175,14 @@ class OsSettingsProviderTest : public testing::Test {
         IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES, mojom::Section::kBluetooth,
         mojom::Subpage::kBluetoothSavedDevices, SearchResultIcon::kBluetooth,
         SearchResultDefaultRank::kMedium, mojom::kBluetoothSectionPath,
-        absl::make_optional(mojom::Subpage::kBluetoothDevices));
+        std::make_optional(mojom::Subpage::kBluetoothDevices));
     fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
                                        mojom::Setting::kAddPrinter);
     fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
                                        mojom::Setting::kSavedPrinters);
     fake_hierarchy_.AddSettingMetadata(
         mojom::Section::kBluetooth, mojom::Setting::kFastPairSavedDevices,
-        absl::make_optional(mojom::Subpage::kBluetoothSavedDevices));
+        std::make_optional(mojom::Subpage::kBluetoothSavedDevices));
 
     provider_ = std::make_unique<OsSettingsProvider>(profile_, &mock_handler_,
                                                      &fake_hierarchy_);

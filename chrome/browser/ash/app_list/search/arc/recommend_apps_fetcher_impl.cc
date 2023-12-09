@@ -171,7 +171,7 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   base::StringPiece response_body_json(*response_body);
   if (base::StartsWith(response_body_json, kJsonXssPreventionPrefix))
     response_body_json.remove_prefix(kJsonXssPreventionPrefix.length());
-  absl::optional<base::Value> output = ParseResponse(response_body_json);
+  std::optional<base::Value> output = ParseResponse(response_body_json);
   if (!output.has_value()) {
     // TODO(thanhdng): Add a UMA histogram here.
     delegate_->OnParseResponseError();
@@ -181,7 +181,7 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   delegate_->OnLoadSuccess(std::move(output.value()));
 }
 
-absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
+std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     base::StringPiece response) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(response);
 
@@ -189,10 +189,10 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     LOG(ERROR) << "Error parsing response JSON: "
                << parsed_json.error().message;
     // TODO(thanhdng): Add a UMA histogram here.
-    return absl::nullopt;
+    return std::nullopt;
   } else if (!parsed_json->is_list() && !parsed_json->is_dict()) {
     LOG(ERROR) << "Error parsing response JSON: Content malformed.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If the response is a dictionary, it is an error message in the
@@ -206,7 +206,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
       LOG(ERROR) << "Unable to find error code: response="
                  << response.substr(0, 128);
       // TODO(thanhdng): Add a UMA histogram here.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     int response_error_code = 0;
@@ -214,7 +214,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
       LOG(WARNING) << "Unable to parse error code: "
                    << *response_error_code_str;
       // TODO(thanhdng): Add a UMA histogram here.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (response_error_code == kResponseErrorNotFirstTimeChromebookUser) {
@@ -226,7 +226,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
       // TODO(thanhdng): Add a UMA histogram here.
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Otherwise, the response should return a list of apps.
@@ -234,7 +234,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   if (app_list.empty()) {
     DVLOG(1) << "No app in the response.";
     // TODO(thanhdng): Add a UMA histogram here.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::List output;

@@ -58,8 +58,8 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
     PwaDelegate();
     virtual ~PwaDelegate();
 
-    virtual absl::optional<webapps::AppId> GetPwaForUrl(const GURL& install_url,
-                                                        Profile* profile);
+    virtual std::optional<webapps::AppId> GetPwaForUrl(const GURL& install_url,
+                                                       Profile* profile);
     virtual network::mojom::CookieManager* GetCookieManager(Profile* profile);
     virtual void RemovePwa(const webapps::AppId& app_id,
                            Profile* profile,
@@ -70,7 +70,7 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
   void SetUpApp(const GURL& app_url,
                 const GURL& install_url,
                 SuccessCallback callback) override;
-  absl::optional<webapps::AppId> GetPwa(const GURL& install_url) override;
+  std::optional<webapps::AppId> GetPwa(const GURL& install_url) override;
   void DeleteRememberDeviceByDefaultCookie(const GURL& app_url,
                                            SuccessCallback callback) override;
   void RemoveApp(const GURL& app_url,

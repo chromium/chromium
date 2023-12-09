@@ -129,7 +129,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   shell_surface->SetFrameButtons(kVisibleButtonMask, kVisibleButtonMask);
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
-  absl::optional<gfx::RoundedCornersF> overlay_corners_radii;
+  std::optional<gfx::RoundedCornersF> overlay_corners_radii;
   if (chromeos::features::IsRoundedWindowsEnabled()) {
     DCHECK_NE(window_state, chromeos::WindowStateType::kPip);
 
@@ -191,7 +191,7 @@ void ArcGhostWindowShellSurface::InitContentOverlay(
     const std::string& app_id,
     uint32_t theme_color,
     arc::GhostWindowType type,
-    absl::optional<gfx::RoundedCornersF>&& corners_radii) {
+    std::optional<gfx::RoundedCornersF>&& corners_radii) {
   std::string app_name;
   // TODO(sstan): Move this part out of shell surface.
   // In test env, ArcAppListPrefs or App maybe null.
@@ -216,7 +216,7 @@ void ArcGhostWindowShellSurface::InitContentOverlay(
 }
 
 void ArcGhostWindowShellSurface::SetAppId(
-    const absl::optional<std::string>& id) {
+    const std::optional<std::string>& id) {
   app_id_ = id;
   if (GetWidget() && GetWidget()->GetNativeWindow()) {
     SetShellAppId(GetWidget()->GetNativeWindow(), app_id_);
@@ -225,7 +225,7 @@ void ArcGhostWindowShellSurface::SetAppId(
 
 void ArcGhostWindowShellSurface::SetShellAppId(
     ui::PropertyHandler* property_handler,
-    const absl::optional<std::string>& id) {
+    const std::optional<std::string>& id) {
   if (id)
     property_handler->SetProperty(app_restore::kAppIdKey, *id);
   else

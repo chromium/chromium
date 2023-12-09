@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_app_launch_throttle_observer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/mojom/app.mojom.h"
@@ -17,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -26,15 +26,15 @@ ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
     const std::string package_name) {
   return ArcAppListPrefs::AppInfo(
       package_name, package_name, "" /* activity */, "" /* intent_uri */,
-      "" /* icon_resource_id */, absl::nullopt /* version_name */,
+      "" /* icon_resource_id */, std::nullopt /* version_name */,
       base::Time() /* last_launch_time */, base::Time() /* install_time */,
       true /* sticky */, true /* notifications_enabled */,
       arc::mojom::ArcResizeLockState::UNDEFINED,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,
       true /* show_in_launcher */, true /* shortcut */, true /* launchable */,
-      false /* need_fixup */, absl::nullopt /* app_size_in_bytes */,
-      absl::nullopt /* data_size_in_bytes */,
+      false /* need_fixup */, std::nullopt /* app_size_in_bytes */,
+      std::nullopt /* data_size_in_bytes */,
       arc::mojom::AppCategory::kUndefined);
 }
 

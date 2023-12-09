@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,38 +18,37 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 namespace {
 
-absl::optional<KioskApp> WebAppById(WebKioskAppManager& manager,
-                                    const AccountId& account_id) {
+std::optional<KioskApp> WebAppById(WebKioskAppManager& manager,
+                                   const AccountId& account_id) {
   const WebKioskAppData* data = manager.GetAppByAccountId(account_id);
   if (!data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return KioskApp(KioskAppId::ForWebApp(account_id), data->name(), data->icon(),
                   data->install_url());
 }
 
-absl::optional<KioskApp> ChromeAppById(KioskChromeAppManager& manager,
-                                       std::string_view chrome_app_id) {
+std::optional<KioskApp> ChromeAppById(KioskChromeAppManager& manager,
+                                      std::string_view chrome_app_id) {
   KioskChromeAppManager::App manager_app;
   if (!manager.GetApp(std::string(chrome_app_id), &manager_app)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return KioskApp(
       KioskAppId::ForChromeApp(chrome_app_id, manager_app.account_id),
       manager_app.name, manager_app.icon);
 }
 
-absl::optional<KioskApp> ArcAppById(ArcKioskAppManager& manager,
-                                    const AccountId& account_id) {
+std::optional<KioskApp> ArcAppById(ArcKioskAppManager& manager,
+                                   const AccountId& account_id) {
   const ArcKioskAppData* data = manager.GetAppByAccountId(account_id);
   if (!data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return KioskApp(KioskAppId::ForArcApp(account_id), data->name(),
                   data->icon());
@@ -95,7 +95,7 @@ std::vector<KioskApp> KioskController::GetApps() const {
   return apps;
 }
 
-absl::optional<KioskApp> KioskController::GetAppById(
+std::optional<KioskApp> KioskController::GetAppById(
     const KioskAppId& app_id) const {
   switch (app_id.type) {
     case KioskAppType::kWebApp:
@@ -107,7 +107,7 @@ absl::optional<KioskApp> KioskController::GetAppById(
   }
 }
 
-absl::optional<KioskApp> KioskController::GetAutoLaunchApp() const {
+std::optional<KioskApp> KioskController::GetAutoLaunchApp() const {
   if (const auto& web_account_id = web_app_manager_->GetAutoLaunchAccountId();
       web_account_id.is_valid()) {
     return WebAppById(web_app_manager_.get(), web_account_id);
@@ -120,7 +120,7 @@ absl::optional<KioskApp> KioskController::GetAutoLaunchApp() const {
              arc_account_id.is_valid()) {
     return ArcAppById(arc_app_manager_.get(), arc_account_id);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash

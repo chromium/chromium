@@ -102,7 +102,7 @@ TEST_F(KioskAppLaunchErrorTest, SaveError) {
   KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error can be retrieved.
-  absl::optional<int> out_error = GetKioskDictionary().FindInt(kKeyLaunchError);
+  std::optional<int> out_error = GetKioskDictionary().FindInt(kKeyLaunchError);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(),
             static_cast<int>(KioskAppLaunchError::Error::kUserCancel));
@@ -122,7 +122,7 @@ TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   KioskAppLaunchError::SaveCryptohomeFailure(auth_failure);
 
   // The cryptohome failure can be retrieved.
-  absl::optional<int> out_error =
+  std::optional<int> out_error =
       GetKioskDictionary().FindInt(kKeyCryptohomeFailure);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(), auth_failure.reason());

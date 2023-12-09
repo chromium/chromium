@@ -10,7 +10,7 @@
 
 namespace arc::input_overlay {
 
-absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
+std::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
   std::map<std::string, int> resource_id_map = {
       {"org.chromium.arc.testapp.inputoverlay",
        IDR_IO_ORG_CHROMIUM_ARC_TESTAPP_INPUTOVERLAY},
@@ -57,8 +57,8 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
   };
 
   auto it = resource_id_map.find(package_name);
-  return (it != resource_id_map.end()) ? absl::optional<int>(it->second)
-                                       : absl::optional<int>();
+  return (it != resource_id_map.end()) ? std::optional<int>(it->second)
+                                       : std::optional<int>();
 }
 
 }  // namespace arc::input_overlay

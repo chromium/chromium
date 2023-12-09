@@ -70,8 +70,8 @@ void SpeechRecognitionImpl::Bind(
 void SpeechRecognitionImpl::Start(ax::mojom::StartOptionsPtr options,
                                   StartCallback callback) {
   // Extract arguments.
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   if (options->locale) {
     locale = *options->locale;
   }
@@ -137,7 +137,7 @@ void SpeechRecognitionImpl::HandleSpeechRecognitionError(
 void SpeechRecognitionImpl::StartHelper(StartCallback callback,
                                         const std::string& key,
                                         speech::SpeechRecognitionType type,
-                                        absl::optional<std::string> error) {
+                                        std::optional<std::string> error) {
   // Send relevant information back to the caller.
   auto info = ax::mojom::SpeechRecognitionStartInfo::New();
   info->type = ToMojo(type);
@@ -157,14 +157,14 @@ void SpeechRecognitionImpl::StartHelper(StartCallback callback,
 
 void SpeechRecognitionImpl::StopHelper(StopCallback callback,
                                        const std::string& key,
-                                       absl::optional<std::string> error) {
+                                       std::optional<std::string> error) {
   RemoveEventObserverWrapper(key);
   if (error.has_value()) {
     std::move(callback).Run(std::move(error));
     return;
   }
 
-  std::move(callback).Run(absl::optional<std::string>());
+  std::move(callback).Run(std::optional<std::string>());
 }
 
 std::string SpeechRecognitionImpl::CreateKey(

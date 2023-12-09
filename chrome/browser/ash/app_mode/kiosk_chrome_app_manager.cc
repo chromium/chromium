@@ -257,7 +257,7 @@ void KioskChromeAppManager::SetAppWasAutoLaunchedWithZeroDelay(
 }
 
 void KioskChromeAppManager::SetExtensionDownloaderBackoffPolicy(
-    absl::optional<net::BackoffEntry::Policy> backoff_policy) {
+    std::optional<net::BackoffEntry::Policy> backoff_policy) {
   // In browser tests `external_cache_` is reset before `StartupAppLauncher`.
   // Check before trying to set backoff policy here.
   if (!external_cache_) {
@@ -650,7 +650,7 @@ KioskChromeAppManager::CreatePrimaryAppInstallData(
                                             false);
   }
 
-  const absl::optional<bool> is_store_app_maybe =
+  const std::optional<bool> is_store_app_maybe =
       extension->FindBool(extensions::ExternalProviderImpl::kIsFromWebstore);
   const std::string* external_update_url_value = extension->FindString(
       extensions::ExternalProviderImpl::kExternalUpdateUrl);
@@ -913,7 +913,7 @@ KioskChromeAppManager::AutoLoginState KioskChromeAppManager::GetAutoLoginState()
   PrefService* prefs = g_browser_process->local_state();
   const base::Value::Dict& dict =
       prefs->GetDict(KioskChromeAppManager::kKioskDictionaryName);
-  absl::optional<int> value = dict.FindInt(kKeyAutoLoginState);
+  std::optional<int> value = dict.FindInt(kKeyAutoLoginState);
   if (!value.has_value()) {
     return AutoLoginState::kNone;
   }

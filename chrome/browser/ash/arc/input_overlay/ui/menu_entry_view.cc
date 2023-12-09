@@ -103,7 +103,7 @@ void MenuEntryView::OnMouseDragEndCallback() {
   // underneath the overlay. So it needs to leave focus to make event target
   // leave from the overlay layer.
   on_position_changed_callback_.Run(/*leave_focus=*/true,
-                                    absl::make_optional(origin()));
+                                    std::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kMouseDragRepostion,
@@ -113,7 +113,7 @@ void MenuEntryView::OnMouseDragEndCallback() {
 void MenuEntryView::OnGestureDragEndCallback() {
   ChangeMenuEntryOnDrag(/*is_dragging=*/false);
   on_position_changed_callback_.Run(/*leave_focus=*/true,
-                                    absl::make_optional(origin()));
+                                    std::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kTouchscreenDragRepostion,
@@ -122,7 +122,7 @@ void MenuEntryView::OnGestureDragEndCallback() {
 
 void MenuEntryView::OnKeyReleasedCallback() {
   on_position_changed_callback_.Run(/*leave_focus=*/false,
-                                    absl::make_optional(origin()));
+                                    std::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,

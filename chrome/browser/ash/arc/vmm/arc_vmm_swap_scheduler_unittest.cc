@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/callback_forward.h"
@@ -18,7 +20,6 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -27,7 +28,7 @@ constexpr auto kCheckingPreiod = base::Minutes(5);
 
 class TestPeaceDurationProvider : public PeaceDurationProvider {
  public:
-  absl::optional<base::TimeDelta> GetPeaceDuration() override {
+  std::optional<base::TimeDelta> GetPeaceDuration() override {
     count_++;
     return duration_;
   }
@@ -36,9 +37,9 @@ class TestPeaceDurationProvider : public PeaceDurationProvider {
     reset_cb_ = std::move(cb);
   }
 
-  void SetDuration(absl::optional<base::TimeDelta> d) {
+  void SetDuration(std::optional<base::TimeDelta> d) {
     duration_ = d;
-    if (d == absl::nullopt && !reset_cb_.is_null()) {
+    if (d == std::nullopt && !reset_cb_.is_null()) {
       reset_cb_.Run();
     }
   }
@@ -47,7 +48,7 @@ class TestPeaceDurationProvider : public PeaceDurationProvider {
  private:
   int count_ = 0;
   base::RepeatingClosure reset_cb_;
-  absl::optional<base::TimeDelta> duration_;
+  std::optional<base::TimeDelta> duration_;
 };
 
 }  // namespace
@@ -92,8 +93,8 @@ TEST_F(ArcVmmSwapSchedulerTest, SetSwapEnableDisable) {
           disable_count++;
         }
       }),
-      /* minimum_swapout_interval= */ absl::nullopt,
-      /* swappable_checking_period= */ absl::nullopt, nullptr);
+      /* minimum_swapout_interval= */ std::nullopt,
+      /* swappable_checking_period= */ std::nullopt, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
@@ -126,7 +127,7 @@ TEST_F(ArcVmmSwapSchedulerTest, EnableSwap) {
           swap_count++;
         }
       }),
-      /* minimum_swapout_interval= */ absl::nullopt,
+      /* minimum_swapout_interval= */ std::nullopt,
       /* swappable_checking_period= */ kCheckingPreiod, std::move(provider));
 
   base::RunLoop().RunUntilIdle();
@@ -146,7 +147,7 @@ TEST_F(ArcVmmSwapSchedulerTest, NeverEnableSwap) {
   SetSwapOutTime(base::Time());
 
   auto provider = std::make_unique<TestPeaceDurationProvider>();
-  provider->SetDuration(absl::nullopt);
+  provider->SetDuration(std::nullopt);
   auto* provider_raw = provider.get();
   int swap_count = 0;
 
@@ -156,7 +157,7 @@ TEST_F(ArcVmmSwapSchedulerTest, NeverEnableSwap) {
           swap_count++;
         }
       }),
-      /* minimum_swapout_interval= */ absl::nullopt,
+      /* minimum_swapout_interval= */ std::nullopt,
       /* swappable_checking_period= */ kCheckingPreiod, std::move(provider));
 
   base::RunLoop().RunUntilIdle();
@@ -186,7 +187,7 @@ TEST_F(ArcVmmSwapSchedulerTest, EnableSwapAndDisableSwap) {
           swap_count++;
         }
       }),
-      /* minimum_swapout_interval= */ absl::nullopt,
+      /* minimum_swapout_interval= */ std::nullopt,
       /* swappable_checking_period= */ kCheckingPreiod, std::move(provider));
 
   base::RunLoop().RunUntilIdle();
@@ -203,7 +204,7 @@ TEST_F(ArcVmmSwapSchedulerTest, EnableSwapAndDisableSwap) {
   // Set system "busy" i.e. "not swappable".
   auto checking_count_before_busy = provider_raw->count();
   auto swap_count_before_busy = swap_count;
-  provider_raw->SetDuration(absl::nullopt);
+  provider_raw->SetDuration(std::nullopt);
   task_environment_.FastForwardBy(base::Minutes(20));
   base::RunLoop().RunUntilIdle();
   EXPECT_GT(provider_raw->count(), checking_count_before_busy);
@@ -213,8 +214,8 @@ TEST_F(ArcVmmSwapSchedulerTest, EnableSwapAndDisableSwap) {
 TEST_F(ArcVmmSwapSchedulerTest, ReceiveSignalAndSave) {
   auto scheduler = std::make_unique<ArcVmmSwapScheduler>(
       base::NullCallback(),
-      /* minimum_swapout_interval= */ absl::nullopt,
-      /* swappable_checking_period= */ absl::nullopt, nullptr);
+      /* minimum_swapout_interval= */ std::nullopt,
+      /* swappable_checking_period= */ std::nullopt, nullptr);
 
   SetSwapOutTime(base::Time());
   EXPECT_EQ(GetSwapOutTime(), base::Time());
@@ -241,7 +242,7 @@ TEST_F(ArcVmmSwapSchedulerTest, SetDisableVmStateWhenDurationReset) {
           swap_count++;
         }
       }),
-      /* minimum_swapout_interval= */ absl::nullopt,
+      /* minimum_swapout_interval= */ std::nullopt,
       /* swappable_checking_period= */ kCheckingPreiod, std::move(provider));
 
   provider_raw->SetDuration(base::Minutes(20));
@@ -252,7 +253,7 @@ TEST_F(ArcVmmSwapSchedulerTest, SetDisableVmStateWhenDurationReset) {
 
   task_environment_.FastForwardBy(base::Minutes(10));
   // Set ARC activated.
-  provider_raw->SetDuration(absl::nullopt);
+  provider_raw->SetDuration(std::nullopt);
   base::RunLoop().RunUntilIdle();
 }
 

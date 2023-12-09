@@ -54,7 +54,7 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
                             content::BrowserContext* browser_context) override;
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 
   mojo::AssociatedRemoteSet<ax::mojom::Automation> automation_remotes_;
 

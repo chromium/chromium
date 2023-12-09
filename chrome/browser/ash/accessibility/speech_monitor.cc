@@ -348,7 +348,7 @@ void SpeechMonitor::MaybePrintExpectations() {
   LOG(ERROR) << output.str();
 }
 
-absl::optional<content::UtteranceContinuousParameters>
+std::optional<content::UtteranceContinuousParameters>
 SpeechMonitor::GetParamsForPreviouslySpokenTextPattern(
     const std::string& pattern) {
   for (const auto& [text, params] : text_params_) {
@@ -356,7 +356,7 @@ SpeechMonitor::GetParamsForPreviouslySpokenTextPattern(
       return params;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace test

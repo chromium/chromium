@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -42,7 +43,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -234,7 +234,7 @@ using IsCertificateAllowedCallback = base::OnceCallback<void(bool allowed)>;
 
 void CheckCorporateFlag(
     IsCertificateAllowedCallback callback,
-    absl::optional<bool> corporate_key,
+    std::optional<bool> corporate_key,
     chromeos::platform_keys::Status is_corporate_key_status) {
   if (is_corporate_key_status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Error checking whether key is corporate. Will not install "
@@ -265,10 +265,10 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
 }
 
 // Creates a |CertDescription| for the given |nss_cert| known to be stored in
-// |slot|. May return |absl::nullopt| if some cert metadata can't be found, e.g.
+// |slot|. May return |std::nullopt| if some cert metadata can't be found, e.g.
 // when the cert private key is deleted while we still keep a valid pointer to
 // |nss_cert|.
-absl::optional<CertDescription> BuildCertDescritionOnWorkerThread(
+std::optional<CertDescription> BuildCertDescritionOnWorkerThread(
     net::ScopedCERTCertificate nss_cert,
     keymanagement::mojom::ChapsSlot slot) {
   // Direct NSS calls must be made on a worker thread (not the IO/UI threads).
@@ -277,7 +277,7 @@ absl::optional<CertDescription> BuildCertDescritionOnWorkerThread(
 
   // NSS cert must be non null.
   if (!nss_cert)
-    return absl::nullopt;
+    return std::nullopt;
 
   // TODO(b/193771095) Use a valid wincx.
   // Must have a private key in order to access label and ID.
@@ -285,20 +285,20 @@ absl::optional<CertDescription> BuildCertDescritionOnWorkerThread(
       PK11_FindKeyByAnyCert(nss_cert.get(), nullptr /* wincx */);
   // TODO(b/193771180) Investigate race condition with null private keys.
   if (!private_key)
-    return absl::nullopt;
+    return std::nullopt;
   crypto::ScopedSECKEYPrivateKey priv_key_destroyer(private_key);
 
   // Must have a nickname (PKCS#11 CKA_LABEL).
   char* nickname = PK11_GetPrivateKeyNickname(private_key);
   if (!nickname)
-    return absl::nullopt;
+    return std::nullopt;
   std::string pkcs11_label(nickname);
   PORT_Free(nickname);
 
   // Finally, must have an ID item (PKCS#11 CKA_ID).
   SECItem* id_item = PK11_GetLowLevelKeyIDForPrivateKey(private_key);
   if (!id_item)
-    return absl::nullopt;
+    return std::nullopt;
   crypto::ScopedSECItem sec_item_destroyer(id_item);
   std::string pkcs11_id(id_item->data, id_item->data + id_item->len);
 
@@ -312,7 +312,7 @@ absl::optional<CertDescription> BuildCertDescritionOnWorkerThread(
 }
 
 using BuildCertDescritionCallback =
-    base::OnceCallback<void(absl::optional<CertDescription> populated_cert)>;
+    base::OnceCallback<void(std::optional<CertDescription> populated_cert)>;
 
 // Tries to asynchronously create a |CertDescription| for the given |nss_cert|
 // known to be stored in |slot| in a worker thread. Note direct NSS calls must
@@ -497,7 +497,7 @@ void CertStoreService::AppendCertDescriptionAndRecurse(
     keymanagement::mojom::ChapsSlot slot,
     base::queue<net::ScopedCERTCertificate> cert_queue,
     std::vector<CertDescription> allowed_certs,
-    absl::optional<CertDescription> cert_description) const {
+    std::optional<CertDescription> cert_description) const {
   if (cert_description.has_value())
     allowed_certs.emplace_back(std::move(cert_description.value()));
 

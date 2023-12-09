@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_VIEW_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -31,7 +31,7 @@ class ViewTestBase : public views::ViewsTestBase {
   ViewTestBase();
   ~ViewTestBase() override;
 
-  void InitWithFeature(absl::optional<base::test::FeatureRef> feature);
+  void InitWithFeature(std::optional<base::test::FeatureRef> feature);
   void SetDisplayMode(DisplayMode display_mode);
 
   // test::Test:

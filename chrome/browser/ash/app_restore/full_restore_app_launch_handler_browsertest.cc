@@ -343,13 +343,13 @@ class FullRestoreAppLaunchHandlerBrowserTest
   }
 
   bool HasNotificationFor(const std::string& notification_id) {
-    absl::optional<message_center::Notification> message_center_notification =
+    std::optional<message_center::Notification> message_center_notification =
         display_service()->GetNotification(notification_id);
     return message_center_notification.has_value();
   }
 
   void VerifyPostRebootNotificationTitle(const std::string& notification_id) {
-    absl::optional<message_center::Notification> message_center_notification =
+    std::optional<message_center::Notification> message_center_notification =
         display_service()->GetNotification(notification_id);
     ASSERT_TRUE(message_center_notification.has_value());
     EXPECT_EQ(message_center_notification.value().title(),
@@ -359,7 +359,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
   void SimulateClick(const std::string& notification_id,
                      RestoreNotificationButtonIndex action_index) {
     FullRestoreService::GetForProfile(profile())->Click(
-        static_cast<int>(action_index), absl::nullopt);
+        static_cast<int>(action_index), std::nullopt);
   }
 
   NotificationDisplayServiceTester* display_service() const {

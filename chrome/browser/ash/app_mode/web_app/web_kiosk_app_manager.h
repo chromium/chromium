@@ -76,7 +76,7 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // `app_name` indicates the name of the app if it's running in Ash.
   void InitKioskSystemSession(Profile* profile,
                               const KioskAppId& kiosk_app_id,
-                              const absl::optional<std::string>& app_name);
+                              const std::optional<std::string>& app_name);
 
   // Starts observing web app updates from App Service in a Kiosk session.
   void StartObservingAppUpdate(Profile* profile, const AccountId& account_id);

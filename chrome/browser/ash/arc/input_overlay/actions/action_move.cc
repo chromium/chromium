@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point.h"
@@ -546,7 +546,7 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
 
   gfx::PointF location = touch_press_pos;
   if (rotation_transform) {
-    if (const absl::optional<gfx::PointF> transformed_location =
+    if (const std::optional<gfx::PointF> transformed_location =
             rotation_transform->InverseMapPoint(location)) {
       location = *transformed_location;
     }
@@ -567,15 +567,15 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
   }
 }
 
-absl::optional<gfx::RectF> ActionMove::CalculateApplyArea(
+std::optional<gfx::RectF> ActionMove::CalculateApplyArea(
     const gfx::RectF& content_bounds) {
   if (target_area_.size() != 2) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto top_left = target_area_[0]->CalculatePosition(content_bounds);
   auto bottom_right = target_area_[1]->CalculatePosition(content_bounds);
-  return absl::make_optional<gfx::RectF>(
+  return std::make_optional<gfx::RectF>(
       top_left.x() + content_bounds.x(), top_left.y() + content_bounds.y(),
       bottom_right.x() - top_left.x(), bottom_right.y() - top_left.y());
 }

@@ -376,8 +376,8 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest, InstallAndUninstall) {
   EXPECT_FALSE(service->IsWebAppShellPackage(kPackageName));
   EXPECT_FALSE(service->IsWebAppInstalledFromArc(app_id));
 
-  EXPECT_EQ(service->GetPackageNameForWebApp(app_id), absl::nullopt);
-  EXPECT_EQ(service->GetWebAppIdForPackageName(kPackageName), absl::nullopt);
+  EXPECT_EQ(service->GetPackageNameForWebApp(app_id), std::nullopt);
+  EXPECT_EQ(service->GetWebAppIdForPackageName(kPackageName), std::nullopt);
 }
 
 // Test installation via PackageListRefreshed.
@@ -452,8 +452,8 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   // Uninstall both apps from the PRE_ test on the web apps side. ARC
   // uninstallation should be processed once ARC starts up.
   std::vector<webapps::AppId> uninstall_ids = {
-      web_app::GenerateAppId(absl::nullopt, GURL(kAppUrl)),
-      web_app::GenerateAppId(absl::nullopt, GURL(kAppUrl1))};
+      web_app::GenerateAppId(std::nullopt, GURL(kAppUrl)),
+      web_app::GenerateAppId(std::nullopt, GURL(kAppUrl1))};
 
   for (const auto& id : uninstall_ids) {
     base::RunLoop run_loop;
@@ -478,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   EXPECT_EQ(2u, removed_packages_.size());
   EXPECT_TRUE(base::Contains(removed_packages_, kPackageName));
   EXPECT_TRUE(base::Contains(removed_packages_, kPackageName1));
-  EXPECT_EQ(absl::nullopt, service->GetPackageNameForWebApp(kAppUrl));
-  EXPECT_EQ(absl::nullopt, service->GetPackageNameForWebApp(kAppUrl1));
+  EXPECT_EQ(std::nullopt, service->GetPackageNameForWebApp(kAppUrl));
+  EXPECT_EQ(std::nullopt, service->GetPackageNameForWebApp(kAppUrl1));
 
   arc_app_list_prefs_->RemoveObserver(this);
   DisableArc();

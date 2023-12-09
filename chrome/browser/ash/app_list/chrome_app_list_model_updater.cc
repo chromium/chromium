@@ -1169,7 +1169,7 @@ void ChromeAppListModelUpdater::EndTemporarySortAndTakeAction(
 
   const bool animate = !update_position_closure.is_null();
   ash::AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
-      /*new_order=*/absl::nullopt, animate, std::move(update_position_closure));
+      /*new_order=*/std::nullopt, animate, std::move(update_position_closure));
 }
 
 void ChromeAppListModelUpdater::CommitTemporaryPositions() {

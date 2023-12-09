@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 
 #include <cmath>
+#include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_util.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
@@ -71,7 +71,7 @@ std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> GetFileInfo(
     base::FilePath reparented_path = mount_path.Append(relative_path.value());
 
     base::File::Info info;
-    absl::optional<base::Time> last_accessed;
+    std::optional<base::Time> last_accessed;
     if (base::GetFileInfo(reparented_path, &info))
       last_accessed = info.last_accessed;
 
@@ -87,7 +87,7 @@ std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> GetFileInfo(
 DriveSearchProvider::FileInfo::FileInfo(
     const base::FilePath& reparented_path,
     drivefs::mojom::FileMetadataPtr metadata,
-    const absl::optional<base::Time>& last_accessed)
+    const std::optional<base::Time>& last_accessed)
     : reparented_path(reparented_path), last_accessed(last_accessed) {
   this->metadata = std::move(metadata);
 }
@@ -215,7 +215,7 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& reparented_path,
     double relevance,
     FileResult::Type type,
-    const absl::optional<std::string>& drive_id) {
+    const std::optional<std::string>& drive_id) {
   // Add "Google Drive" as details.
   std::u16string details =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);

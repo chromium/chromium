@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 
+#include <optional>
+
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -45,7 +46,7 @@ void CrashRecoveryLauncher::OnLacrosLaunchComplete() {
 
 void CrashRecoveryLauncher::InvokeDoneCallback(
     bool success,
-    const absl::optional<std::string>& app_name) {
+    const std::optional<std::string>& app_name) {
   if (done_callback_) {
     std::move(done_callback_).Run(success, app_name);
   }
@@ -69,7 +70,7 @@ void CrashRecoveryLauncher::OnAppPrepared() {
 void CrashRecoveryLauncher::OnAppLaunched() {}
 
 void CrashRecoveryLauncher::OnAppWindowCreated(
-    const absl::optional<std::string>& app_name) {
+    const std::optional<std::string>& app_name) {
   SYSLOG(INFO) << "Crash recovery flow succeeded";
   InvokeDoneCallback(true, app_name);
 }
@@ -78,7 +79,7 @@ void CrashRecoveryLauncher::OnLaunchFailed(KioskAppLaunchError::Error error) {
   SYSLOG(WARNING) << "Crash recovery flow failed with error "
                   << static_cast<int>(error);
   KioskAppLaunchError::Save(error);
-  InvokeDoneCallback(false, absl::nullopt);
+  InvokeDoneCallback(false, std::nullopt);
 }
 
 }  // namespace ash

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,7 +39,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -315,7 +315,7 @@ base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
   const base::Value* const app_policy_value =
       policy_map.GetValueUnsafe(policy::key::kArcPolicy);
   if (app_policy_value) {
-    absl::optional<base::Value> app_policy_dict;
+    std::optional<base::Value> app_policy_dict;
     if (app_policy_value->is_string()) {
       app_policy_dict = base::JSONReader::Read(
           app_policy_value->GetString(),

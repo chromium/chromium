@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/dictation.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -53,7 +54,6 @@
 #include "extensions/browser/api/audio/audio_service.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -1415,8 +1415,8 @@ class DictationUITest : public DictationTest {
   void WaitForProperties(
       bool visible,
       DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<std::u16string>>& hints) {
+      const std::optional<std::u16string>& text,
+      const std::optional<std::vector<std::u16string>>& hints) {
     dictation_bubble_test_helper_->WaitForVisibility(visible);
     dictation_bubble_test_helper_->WaitForVisibleIcon(icon);
     if (text.has_value())
@@ -1440,8 +1440,8 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
@@ -1452,7 +1452,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kHidden,
                     /*text=*/u"Testing",
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
@@ -1463,12 +1463,12 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/u"Select all",
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
   // UI should return to standby mode after a timeout.
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
                     /*text=*/std::u16string(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest,
@@ -1477,20 +1477,20 @@ IN_PROC_BROWSER_TEST_P(DictationUITest,
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
   // Send an interim speech result.
   SendInterimResultAndWait("Testing");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kHidden,
                     /*text=*/u"Testing",
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
   // Send a final speech result. UI should return to standby mode.
   SendFinalResultAndWait("Testing 123");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
                     /*text=*/std::u16string(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
@@ -1498,15 +1498,15 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
   // The UI should be hidden when Dictation deactivates.
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
   WaitForProperties(/*visible=*/false,
                     /*icon=*/DictationBubbleIconType::kHidden,
                     /*text=*/std::u16string(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
@@ -1514,13 +1514,13 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
   // Hints should show up after a few seconds without speech.
   WaitForProperties(
       /*visible=*/true,
       /*icon=*/DictationBubbleIconType::kStandby,
-      /*text=*/absl::optional<std::u16string>(),
+      /*text=*/std::optional<std::u16string>(),
       /*hints=*/std::vector<std::u16string>{kTrySaying, kType, kHelp});
 }
 
@@ -1544,7 +1544,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   WaitForProperties(
       /*visible=*/true,
       /*icon=*/DictationBubbleIconType::kStandby,
-      /*text=*/absl::optional<std::u16string>(),
+      /*text=*/std::optional<std::u16string>(),
       /*hints=*/std::vector<std::u16string>{kTrySaying, kType, kHelp});
 
   // Assert speech from ChromeVox.
@@ -1569,21 +1569,21 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownWhenTextCommitted) {
 
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 
   // Send a final speech result. UI should return to standby mode.
   SendFinalResultAndWait("Testing");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
                     /*text=*/std::u16string(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 
   // Hints should show up after a few seconds without speech.
   WaitForProperties(
       /*visible=*/true,
       /*icon=*/DictationBubbleIconType::kStandby,
-      /*text=*/absl::optional<std::u16string>(),
+      /*text=*/std::optional<std::u16string>(),
       /*hints=*/
       std::vector<std::u16string>{kTrySaying, kUndo, kDelete, kSelectAll,
                                   kHelp});
@@ -1600,14 +1600,14 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterTextSelected) {
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/u"Select all",
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 
   // UI should return to standby mode with hints after a few seconds without
   // speech.
   WaitForProperties(
       /*visible=*/true,
       /*icon=*/DictationBubbleIconType::kStandby,
-      /*text=*/absl::optional<std::u16string>(),
+      /*text=*/std::optional<std::u16string>(),
       /*hints=*/
       std::vector<std::u16string>{kTrySaying, kUnselect, kCopy, kDelete,
                                   kHelp});
@@ -1622,14 +1622,14 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterCommandExecuted) {
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/u"Move to the previous character",
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 
   // UI should return to standby mode with hints after a few seconds without
   // speech.
   WaitForProperties(
       /*visible=*/true,
       /*icon=*/DictationBubbleIconType::kStandby,
-      /*text=*/absl::optional<std::u16string>(),
+      /*text=*/std::optional<std::u16string>(),
       /*hints=*/std::vector<std::u16string>{kTrySaying, kUndo, kHelp});
 }
 
@@ -1898,8 +1898,8 @@ class DictationContextCheckingTest : public DictationTest {
   void WaitForProperties(
       bool visible,
       DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<std::u16string>>& hints) {
+      const std::optional<std::u16string>& text,
+      const std::optional<std::vector<std::u16string>>& hints) {
     dictation_bubble_test_helper_->WaitForVisibility(visible);
     dictation_bubble_test_helper_->WaitForVisibleIcon(icon);
     if (text.has_value()) {
@@ -1920,7 +1920,7 @@ class DictationContextCheckingTest : public DictationTest {
         /*visible=*/true,
         /*icon=*/DictationBubbleIconType::kMacroFail,
         /*text=*/message,
-        /*hints=*/absl::optional<std::vector<std::u16string>>());
+        /*hints=*/std::optional<std::vector<std::u16string>>());
   }
 
   // Attempts to run `command` on an editable with no selection and waits for
@@ -1934,7 +1934,7 @@ class DictationContextCheckingTest : public DictationTest {
         /*visible=*/true,
         /*icon=*/DictationBubbleIconType::kMacroFail,
         /*text=*/message,
-        /*hints=*/absl::optional<std::vector<std::u16string>>());
+        /*hints=*/std::optional<std::vector<std::u16string>>());
     SendFinalResultAndWaitForEditableValue("delete all", "");
   }
 
@@ -2009,8 +2009,8 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
   SendFinalResultAndWaitForSelection("Unselect", 11, 11);
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
@@ -2020,8 +2020,8 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
   SendFinalResultAndWaitForClipboardChanged("Cut");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopySuccessful) {
@@ -2031,8 +2031,8 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopySuccessful) {
   SendFinalResultAndWaitForClipboardChanged("Copy");
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFail) {
@@ -2041,7 +2041,7 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFail) {
       /*visible=*/true,
       /*icon=*/DictationBubbleIconType::kMacroFail,
       /*text=*/u"Can't repeat, no previous command",
-      /*hints=*/absl::optional<std::vector<std::u16string>>());
+      /*hints=*/std::optional<std::vector<std::u16string>>());
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFailUnselect) {
@@ -2049,8 +2049,8 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, RepeatFailUnselect) {
   // Wait for UI to return to standby mode.
   WaitForProperties(/*visible=*/true,
                     /*icon=*/DictationBubbleIconType::kStandby,
-                    /*text=*/absl::optional<std::u16string>(),
-                    /*hints=*/absl::optional<std::vector<std::u16string>>());
+                    /*text=*/std::optional<std::u16string>(),
+                    /*hints=*/std::optional<std::vector<std::u16string>>());
   RunEmptyEditableTest("repeat");
 }
 

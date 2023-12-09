@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 
+#include <optional>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,7 +25,6 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list::test {
 
@@ -97,13 +98,13 @@ TEST_F(FileResultTest, CheckMetadata) {
 TEST_F(FileResultTest, HostedExtensionsIgnored) {
   const base::FilePath path1("my/Document.gdoc");
   FileResult result_1(
-      /*id=*/"zero_state_file://" + path1.value(), path1, absl::nullopt,
+      /*id=*/"zero_state_file://" + path1.value(), path1, std::nullopt,
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());
   const base::FilePath path2("my/Map.gmaps");
   FileResult result_2(
-      /*id=*/"zero_state_file://" + path2.value(), path2, absl::nullopt,
+      /*id=*/"zero_state_file://" + path2.value(), path2, std::nullopt,
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());
@@ -114,7 +115,7 @@ TEST_F(FileResultTest, HostedExtensionsIgnored) {
 
 TEST_F(FileResultTest, PenalizeScore) {
   base::FilePath path(temp_dir_.GetPath().Append("somefile"));
-  absl::optional<TokenizedString> query;
+  std::optional<TokenizedString> query;
   query.emplace(u"somefile");
   base::Time now = base::Time::Now();
 
@@ -145,7 +146,7 @@ TEST_F(FileResultTest, Icons) {
   const base::FilePath folderPath("my/Maps");
   FileResult folderResult(
       /*id=*/"zero_state_file://" + folderPath.value(), folderPath,
-      absl::nullopt, ash::AppListSearchResultType::kZeroStateFile,
+      std::nullopt, ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kDirectory, profile_.get());
   EXPECT_TRUE(folderResult.chip_icon().isNull());
@@ -156,7 +157,7 @@ TEST_F(FileResultTest, Icons) {
   const base::FilePath sharedPath("my/Shared");
   FileResult sharedResult(
       /*id=*/"zero_state_file://" + sharedPath.value(), sharedPath,
-      absl::nullopt, ash::AppListSearchResultType::kZeroStateFile,
+      std::nullopt, ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
       FileResult::Type::kSharedDirectory, profile_.get());
   EXPECT_TRUE(sharedResult.chip_icon().isNull());
@@ -177,7 +178,7 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   ASSERT_TRUE(base::TouchFile(path, base::Time::FromSecondsSinceUnixEpoch(1),
                               base::Time::FromSecondsSinceUnixEpoch(2)));
   FileResult result(
-      /*id=*/"file://" + path.value(), path, absl::nullopt,
+      /*id=*/"file://" + path.value(), path, std::nullopt,
       ash::AppListSearchResultType::kImageSearch,
       ash::SearchResultDisplayType::kImage, 0.2f, std::u16string(),
       FileResult::Type::kFile, profile_.get());

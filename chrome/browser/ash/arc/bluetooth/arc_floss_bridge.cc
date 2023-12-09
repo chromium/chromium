@@ -120,7 +120,7 @@ void ArcFlossBridge::CreateSdpRecord(mojom::BluetoothSdpRecordPtr record_mojo,
           Convert(mojo::TypeConverter<
                   bluez::BluetoothServiceRecordBlueZ,
                   mojom::BluetoothSdpRecordPtr>::Convert(record_mojo));
-  const absl::optional<device::BluetoothUUID> uuid =
+  const std::optional<device::BluetoothUUID> uuid =
       floss::GetUUIDFromSdpRecord(sdp_record);
   if (!uuid.has_value()) {
     arc::mojom::BluetoothCreateSdpRecordResultPtr result =
@@ -221,7 +221,7 @@ void ArcFlossBridge::SdpSearchComplete(
     records_bluez.push_back(
         mojo::TypeConverter<bluez::BluetoothServiceRecordBlueZ,
                             floss::BtSdpRecord>::Convert(record));
-    absl::optional<floss::BtSdpHeaderOverlay> header =
+    std::optional<floss::BtSdpHeaderOverlay> header =
         GetHeaderOverlayFromSdpRecord(record);
     if (!header.has_value()) {
       continue;
@@ -237,7 +237,7 @@ void ArcFlossBridge::SdpSearchComplete(
 
 void ArcFlossBridge::SdpRecordCreated(const floss::BtSdpRecord record,
                                       const int32_t handle) {
-  const absl::optional<device::BluetoothUUID> uuid =
+  const std::optional<device::BluetoothUUID> uuid =
       floss::GetUUIDFromSdpRecord(record);
   if (!uuid.has_value()) {
     return;
@@ -337,7 +337,7 @@ void ArcFlossBridge::CreateBluetoothListenSocket(
   switch (type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM: {
       floss::FlossDBusManager::Get()->GetSocketManager()->ListenUsingRfcommAlt(
-          absl::nullopt, absl::nullopt, port,
+          std::nullopt, std::nullopt, port,
           floss::FlossSocketManager::GetRawFlossFlagsFromBluetoothFlags(
               flags->encrypt, flags->auth, flags->auth_mitm,
               flags->auth_16_digit, /*no_sdp=*/true),
@@ -435,7 +435,7 @@ void ArcFlossBridge::OnCreateConnectSocketCallback(
     std::unique_ptr<ArcBluetoothBridge::BluetoothConnectingSocket> sock_wrapper,
     ArcFlossBridge::BluetoothSocketConnectCallback callback,
     floss::FlossDBusClient::BtifStatus status,
-    absl::optional<floss::FlossSocketManager::FlossSocket>&& socket) {
+    std::optional<floss::FlossSocketManager::FlossSocket>&& socket) {
   if (status != floss::FlossDBusClient::BtifStatus::kSuccess) {
     std::move(callback).Run(
         mojom::BluetoothStatus::FAIL,
@@ -515,7 +515,7 @@ void ArcFlossBridge::OnConnectionStateChanged(
       response_callback = base::BindOnce(&OnNoOpBtifResult);
   // TODO: figure out the correct timeout here
   floss::FlossDBusManager::Get()->GetSocketManager()->Accept(
-      socket.id, /*timeout_ms=*/absl::nullopt, std::move(response_callback));
+      socket.id, /*timeout_ms=*/std::nullopt, std::move(response_callback));
 }
 
 void ArcFlossBridge::OnConnectionAccepted(

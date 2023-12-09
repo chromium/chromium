@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -56,7 +57,6 @@
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/menu_model.h"
 
 namespace apps {
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
       app_id, "App Name", /*parent_id=*/std::string(),
       ordinal.ToInternalValue(), /*item_pin_ordinal=*/std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
       FROM_HERE, syncer::SyncChange::ACTION_ADD,
       app_list::CreateAppRemoteData(
           app_id, "Test App", "", ordinal_after_sync.ToInternalValue(), "",
-          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
           kTestPackageId.ToString())));
   app_list_syncable_service()->ProcessSyncChanges(base::Location(),
                                                   change_list);
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncParent) {
       app_id, "App name", kFolderItemId, item_ordinal.ToInternalValue(),
       /*item_pin_ordinal=*/std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString()));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncParent) {
       FROM_HERE, syncer::SyncChange::ACTION_ADD,
       app_list::CreateAppRemoteData(
           app_id, "App name", "", item_ordinal.ToInternalValue(), "",
-          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
           kTestPackageId.ToString())));
   app_list_syncable_service()->ProcessSyncChanges(base::Location(),
                                                   change_list);
@@ -713,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       app_id, "App Name", /*parent_id=*/std::string(),
       ordinal.ToInternalValue(), pin_ordinal.ToInternalValue(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       app_id_in_sync, "App Name", /*parent_id=*/std::string(),
       ordinal.ToInternalValue(), std::string(),
       /*item_type=*/sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       FROM_HERE, syncer::SyncChange::ACTION_ADD,
       app_list::CreateAppRemoteData(
           app_id, "Test App", "", app_ordinal.ToInternalValue(), "",
-          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
           kTestPackageId.ToString())));
   app_list_syncable_service()->ProcessSyncChanges(base::Location(),
                                                   change_list);
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       ordinal.ToInternalValue(), pin_ordinal.ToInternalValue(),
       /*item_type=*/
       sync_pb::AppListSpecifics_AppListItemType_TYPE_REMOVE_DEFAULT_APP,
-      /*is_user_pinned=*/absl::nullopt,
+      /*is_user_pinned=*/std::nullopt,
       /*promise_package_id=*/kTestPackageId.ToString())));
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,

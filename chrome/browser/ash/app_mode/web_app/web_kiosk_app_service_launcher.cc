@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -24,7 +25,6 @@
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -104,7 +104,7 @@ void WebKioskAppServiceLauncher::GetInstallState(
 
 void WebKioskAppServiceLauncher::CheckWhetherNetworkIsRequired(
     WebKioskInstallState state,
-    const absl::optional<webapps::AppId>& id) {
+    const std::optional<webapps::AppId>& id) {
   if (state == WebKioskInstallState::kInstalled) {
     NotifyAppPrepared(id);
     return;
@@ -140,7 +140,7 @@ void WebKioskAppServiceLauncher::InstallAppInLacros() {
 }
 
 void WebKioskAppServiceLauncher::OnInstallComplete(
-    const absl::optional<webapps::AppId>& app_id) {
+    const std::optional<webapps::AppId>& app_id) {
   if (app_id.has_value()) {
     NotifyAppPrepared(app_id);
     return;
@@ -150,7 +150,7 @@ void WebKioskAppServiceLauncher::OnInstallComplete(
 }
 
 void WebKioskAppServiceLauncher::NotifyAppPrepared(
-    const absl::optional<webapps::AppId>& id) {
+    const std::optional<webapps::AppId>& id) {
   CHECK(id.has_value());
   app_id_ = id.value();
   observers_.NotifyAppPrepared();

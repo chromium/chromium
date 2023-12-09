@@ -272,7 +272,7 @@ TEST_F(InputConnectionImplTest, FinishComposingText) {
   // If there is composing text, FinishComposingText() calls CommitText() with
   // the text.
   context_handler()->Reset();
-  connection->SetComposingText(u"composing", 0, absl::nullopt);
+  connection->SetComposingText(u"composing", 0, std::nullopt);
   client()->SetText("composing");
   client()->SetCompositionRange(gfx::Range(0, 9));
   EXPECT_EQ(0, context_handler()->commit_text_call_count());
@@ -293,7 +293,7 @@ TEST_F(InputConnectionImplTest, SetComposingText) {
   engine()->Focus(context());
 
   context_handler()->Reset();
-  connection->SetComposingText(text, 0, absl::nullopt);
+  connection->SetComposingText(text, 0, std::nullopt);
   EXPECT_EQ(1, context_handler()->update_preedit_text_call_count());
   EXPECT_EQ(
       text,
@@ -316,7 +316,7 @@ TEST_F(InputConnectionImplTest, SetComposingText) {
 
   // Selection range
   context_handler()->Reset();
-  connection->SetComposingText(text, 0, absl::make_optional<gfx::Range>(1, 3));
+  connection->SetComposingText(text, 0, std::make_optional<gfx::Range>(1, 3));
   EXPECT_EQ(1u, context_handler()
                     ->last_update_composition_arg()
                     .composition_text.selection.start());
@@ -412,7 +412,7 @@ TEST_F(InputConnectionImplTest, InputContextHandlerIsNull) {
   connection->CommitText(u"text", 1);
   connection->DeleteSurroundingText(1, 1);
   connection->FinishComposingText();
-  connection->SetComposingText(u"text", 0, absl::nullopt);
+  connection->SetComposingText(u"text", 0, std::nullopt);
   connection->SetSelection(gfx::Range(2, 4));
   connection->GetTextInputState(true);
 }

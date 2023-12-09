@@ -23,7 +23,7 @@ class MenuEntryView : public views::ImageButton {
 
  public:
   using OnPositionChangedCallback =
-      base::RepeatingCallback<void(bool, absl::optional<gfx::Point>)>;
+      base::RepeatingCallback<void(bool, std::optional<gfx::Point>)>;
 
   static MenuEntryView* Show(
       PressedCallback pressed_callback,

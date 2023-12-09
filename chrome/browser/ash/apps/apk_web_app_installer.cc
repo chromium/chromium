@@ -58,7 +58,7 @@ ApkWebAppInstaller::ApkWebAppInstaller(Profile* profile,
                                        base::WeakPtr<Owner> weak_owner)
     : profile_(profile),
       is_web_only_twa_(false),
-      sha256_fingerprint_(absl::nullopt),
+      sha256_fingerprint_(std::nullopt),
       callback_(std::move(callback)),
       weak_owner_(weak_owner) {}
 

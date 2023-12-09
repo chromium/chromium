@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -25,7 +26,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -94,18 +94,18 @@ bool IsAdbOverUsbEnabled() {
 }
 
 // Returns cid from vm info. Otherwise, return nullopt.
-absl::optional<int64_t> GetCid() {
+std::optional<int64_t> GetCid() {
   Profile* const profile = arc::ArcSessionManager::Get()->profile();
   if (!profile) {
     LOG(ERROR) << "Profile is not ready";
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto& vm_info =
       guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
           kArcVmName);
   if (!vm_info) {
     LOG(ERROR) << "ARCVM is NOT ready";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return vm_info->cid();
 }
@@ -114,16 +114,16 @@ std::string GetSerialNumber() {
   return arc::ArcSessionManager::Get()->GetSerialNumber();
 }
 
-absl::optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
+std::optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
   auto cid = GetCid();
   if (!cid) {
     LOG(ERROR) << "ARCVM cid is empty";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto serial_number = GetSerialNumber();
   if (serial_number.empty()) {
     LOG(ERROR) << "Serial number is empty";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> environment = {

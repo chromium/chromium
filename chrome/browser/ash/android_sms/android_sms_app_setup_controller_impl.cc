@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/android_sms/android_sms_app_setup_controller_impl.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
@@ -54,7 +54,7 @@ AndroidSmsAppSetupControllerImpl::PwaDelegate::PwaDelegate() = default;
 
 AndroidSmsAppSetupControllerImpl::PwaDelegate::~PwaDelegate() = default;
 
-absl::optional<webapps::AppId>
+std::optional<webapps::AppId>
 AndroidSmsAppSetupControllerImpl::PwaDelegate::GetPwaForUrl(
     const GURL& install_url,
     Profile* profile) {
@@ -116,7 +116,7 @@ void AndroidSmsAppSetupControllerImpl::SetUpApp(const GURL& app_url,
       base::Time::Now() /* last_access_time */,
       !net::IsLocalhost(app_url) /* secure */, false /* http_only */,
       net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
-      absl::nullopt /* partition_key */);
+      std::nullopt /* partition_key */);
   // TODO(crbug.com/1069974): The cookie source url must be faked here because
   // otherwise, this would fail to set a secure cookie if |app_url| is insecure.
   // Consider instead to use url::Replacements to force the scheme to be https.
@@ -128,7 +128,7 @@ void AndroidSmsAppSetupControllerImpl::SetUpApp(const GURL& app_url,
                      std::move(callback)));
 }
 
-absl::optional<webapps::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
+std::optional<webapps::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
     const GURL& install_url) {
   return pwa_delegate_->GetPwaForUrl(install_url, profile_);
 }
@@ -156,7 +156,7 @@ void AndroidSmsAppSetupControllerImpl::RemoveApp(
     const GURL& install_url,
     const GURL& migrated_to_app_url,
     SuccessCallback callback) {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       pwa_delegate_->GetPwaForUrl(install_url, profile_);
 
   // If there is no app installed at |url|, there is nothing more to do.
@@ -328,7 +328,7 @@ void AndroidSmsAppSetupControllerImpl::SetMigrationCookie(
       base::Time::Now() /* last_access_time */,
       !net::IsLocalhost(app_url) /* secure */, false /* http_only */,
       net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
-      absl::nullopt /* partition_key */);
+      std::nullopt /* partition_key */);
   // TODO(crbug.com/1069974): The cookie source url must be faked here because
   // otherwise, this would fail to set a secure cookie if |app_url| is insecure.
   // Consider instead to use url::Replacements to force the scheme to be https.

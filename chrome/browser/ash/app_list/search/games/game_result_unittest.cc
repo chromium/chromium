@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/games/game_result.h"
 
+#include <optional>
+
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
@@ -15,7 +17,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skia_util.h"

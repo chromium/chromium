@@ -431,7 +431,7 @@ void TouchInjector::SaveMenuEntryLocation(
   float height = content_bounds_f_.height();
   DCHECK_GT(width, 1);
   DCHECK_GT(height, 1);
-  menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
+  menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
       menu_entry_location_point.x() / width,
       menu_entry_location_point.y() / height);
 }
@@ -788,7 +788,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
 
   if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
     // Generate new touch id that we can manage and add to map.
-    absl::optional<int> managed_touch_id =
+    std::optional<int> managed_touch_id =
         TouchIdManager::GetInstance()->ObtainTouchID();
     DCHECK(managed_touch_id);
     TouchPointInfo touch_point = {
@@ -799,7 +799,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
     return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                             root_location_f);
   } else if (touch_event->type() == ui::ET_TOUCH_RELEASED) {
-    absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
+    std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
     DCHECK(managed_touch_id);
     rewritten_touch_infos_.erase(original_id);
     TouchIdManager::GetInstance()->ReleaseTouchID(*managed_touch_id);
@@ -809,7 +809,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
 
   // Update this id's stored location to this newest location.
   it->second.touch_root_location = root_location_f;
-  absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
+  std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
   DCHECK(managed_touch_id);
   return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                           root_location_f);
@@ -888,7 +888,7 @@ void TouchInjector::LoadMenuEntryFromProto(AppDataProto& proto) {
   }
   auto menu_entry_position = proto.menu_entry_position().anchor_to_target();
   DCHECK_EQ(menu_entry_position.size(), 2);
-  menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
+  menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
       menu_entry_position[0], menu_entry_position[1]);
 }
 

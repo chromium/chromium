@@ -276,7 +276,7 @@ void DisplayOverlayController::OnMenuEntryPressed() {
 
 void DisplayOverlayController::OnMenuEntryPositionChanged(
     bool leave_focus,
-    absl::optional<gfx::Point> location) {
+    std::optional<gfx::Point> location) {
   if (leave_focus) {
     SetDisplayModeAlpha(DisplayMode::kView);
   }
@@ -536,13 +536,12 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
   display_mode_ = mode;
 }
 
-absl::optional<gfx::Rect>
-DisplayOverlayController::GetOverlayMenuEntryBounds() {
+std::optional<gfx::Rect> DisplayOverlayController::GetOverlayMenuEntryBounds() {
   if (!menu_entry_ || !menu_entry_->GetVisible()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::optional<gfx::Rect>(menu_entry_->GetBoundsInScreen());
+  return std::optional<gfx::Rect>(menu_entry_->GetBoundsInScreen());
 }
 
 void DisplayOverlayController::AddEditMessage(const base::StringPiece& message,

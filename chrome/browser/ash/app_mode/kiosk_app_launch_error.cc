@@ -24,7 +24,7 @@ constexpr char kKeyLaunchError[] = "launch_error";
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Error from the last kiosk launch.
-absl::optional<KioskAppLaunchError::Error> s_last_error = absl::nullopt;
+std::optional<KioskAppLaunchError::Error> s_last_error = std::nullopt;
 
 }  // namespace
 
@@ -102,7 +102,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
   const base::Value::Dict& dict =
       local_state->GetDict(KioskChromeAppManager::kKioskDictionaryName);
 
-  absl::optional<int> error = dict.FindInt(kKeyLaunchError);
+  std::optional<int> error = dict.FindInt(kKeyLaunchError);
   if (error.has_value()) {
     s_last_error = static_cast<KioskAppLaunchError::Error>(error.value());
     return *s_last_error;
@@ -117,16 +117,16 @@ void KioskAppLaunchError::RecordMetricAndClear() {
   ScopedDictPrefUpdate dict_update(local_state,
                                    KioskChromeAppManager::kKioskDictionaryName);
 
-  absl::optional<int> error = dict_update->FindInt(kKeyLaunchError);
+  std::optional<int> error = dict_update->FindInt(kKeyLaunchError);
   if (error) {
     base::UmaHistogramEnumeration("Kiosk.Launch.Error",
                                   static_cast<Error>(*error));
   }
 
   dict_update->Remove(kKeyLaunchError);
-  s_last_error = absl::nullopt;
+  s_last_error = std::nullopt;
 
-  absl::optional<int> cryptohome_failure =
+  std::optional<int> cryptohome_failure =
       dict_update->FindInt(kKeyCryptohomeFailure);
   if (cryptohome_failure) {
     UMA_HISTOGRAM_ENUMERATION(

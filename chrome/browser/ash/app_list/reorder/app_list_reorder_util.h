@@ -117,7 +117,7 @@ std::vector<SyncItemWrapper<T>> GenerateWrappersFromSyncItems(
 template <typename T>
 std::vector<SyncItemWrapper<T>> GenerateWrappersFromAppListItems(
     const std::vector<const ChromeAppListItem*>& app_list_items,
-    const absl::optional<std::string>& ignored_id) {
+    const std::optional<std::string>& ignored_id) {
   std::vector<SyncItemWrapper<T>> wrappers;
   for (const auto* app_list_item : app_list_items) {
     if (ignored_id && *ignored_id == app_list_item->id())

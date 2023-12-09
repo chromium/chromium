@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -75,7 +75,7 @@ class WebKioskAppData : public KioskAppDataBase {
  private:
   class IconFetcher;
   void OnDidDownloadIcon(const SkBitmap& icon);
-  void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
+  void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
   bool LoadLaunchUrlFromDictionary(const base::Value::Dict& dict);
 

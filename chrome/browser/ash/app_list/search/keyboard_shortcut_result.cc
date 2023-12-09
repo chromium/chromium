@@ -69,7 +69,7 @@ constexpr bool kUseAcronymMatcher = true;
 
 // The icon labels used by the shortcuts app can be found here:
 // https://crsrc.org/c/ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.cc;l=125.
-absl::optional<int> GetStringIdForIconCode(IconCode icon_code) {
+std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
   switch (icon_code) {
     case ash::SearchResultTextItem::kKeyboardShortcutPower:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER;
@@ -149,7 +149,7 @@ absl::optional<int> GetStringIdForIconCode(IconCode icon_code) {
 }
 
 std::u16string GetAccessibleStringForIcon(IconCode icon_code) {
-  const absl::optional<int> icon_code_string_id =
+  const std::optional<int> icon_code_string_id =
       GetStringIdForIconCode(icon_code);
   CHECK(icon_code_string_id.has_value());
 
@@ -178,7 +178,7 @@ bool IsModifierKey(ui::KeyboardCode keycode) {
 
 }  // namespace
 
-absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
+std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     KeyboardCode keyboard_code) {
   switch (keyboard_code) {
     case (KeyboardCode::VKEY_BROWSER_BACK):
@@ -254,13 +254,13 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     case (KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE):
       return IconCode::kKeyboardShortcutMicrophone;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 // This map matches the `keyToIconNameMap` of the shortcuts app frontend:
 // https://crsrc.org/c/ash/webui/shortcut_customization_ui/resources/js/input_key.ts;l=30.
-absl::optional<ash::SearchResultTextItem::IconCode>
+std::optional<ash::SearchResultTextItem::IconCode>
 KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
   static constexpr auto kIconCodes = base::MakeFixedFlatMap<base::StringPiece16,
                                                             IconCode>(
@@ -305,7 +305,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
 
   auto* it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
@@ -350,7 +350,7 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
       // The delimiter "+ " is neither an icon nor iconified text.
       text_vector.push_back(CreateStringTextItem(u" + "));
     } else {
-      const absl::optional<IconCode> icon_code =
+      const std::optional<IconCode> icon_code =
           GetIconCodeFromKeyboardCode(shortcut_key_codes[index]);
       if (icon_code) {
         // Placeholder general case 1:
@@ -399,7 +399,7 @@ void KeyboardShortcutResult::PopulateTextVector(
   key_codes.push_back(accelerator.key_code());
 
   for (auto key_code : key_codes) {
-    const absl::optional<IconCode> icon_code =
+    const std::optional<IconCode> icon_code =
         GetIconCodeFromKeyboardCode(key_code);
     bool use_alternative_styling = IsModifierKey(key_code);
     if (icon_code) {

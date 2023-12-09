@@ -105,7 +105,7 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
 
   auto* manager = GetSchedulerConfigurationManager();
   if (manager) {
-    absl::optional<std::pair<bool, size_t>> scheduler_configuration =
+    std::optional<std::pair<bool, size_t>> scheduler_configuration =
         manager->GetLastReply();
     if (scheduler_configuration) {
       // Logical CPU core number should consider system HyperThread status.

@@ -178,7 +178,7 @@ TEST_F(AndroidSmsAppManagerImplTest, TestSetUpMessages_NoPreviousApp_Fails) {
       GetAndroidMessagesURL() /* expected_app_url */,
       GetAndroidMessagesURL(
           true /* use_install_url */) /* expected_install_url */,
-      absl::nullopt /* id_for_app */);
+      std::nullopt /* id_for_app */);
 
   // Verify that no installed app exists and no observers were notified.
   EXPECT_FALSE(fake_android_sms_app_setup_controller()->GetAppMetadataAtUrl(
@@ -260,7 +260,7 @@ TEST_F(AndroidSmsAppManagerImplTest,
       GetAndroidMessagesURL() /* expected_app_url */,
       GetAndroidMessagesURL(
           true /* use_install_url */) /* expected_install_url */,
-      absl::nullopt /* id_for_app */);
+      std::nullopt /* id_for_app */);
 
   // Verify that the new app was not installed and no observers were notified.
   EXPECT_FALSE(fake_android_sms_app_setup_controller()->GetAppMetadataAtUrl(

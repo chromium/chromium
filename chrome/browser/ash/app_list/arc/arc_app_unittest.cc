@@ -171,7 +171,7 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
       const std::string& app_id,
       const gfx::ImageSkia& image,
       bool is_placeholder_icon,
-      const absl::optional<gfx::ImageSkia>& badge_image) override {
+      const std::optional<gfx::ImageSkia>& badge_image) override {
     app_id_ = app_id;
     image_ = image;
 
@@ -436,8 +436,8 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, false /* suspended */,
       launchable /* show_in_launcher*/, false /* shortcut */, launchable,
-      false /* need_fixup */, absl::nullopt /* app_size */,
-      absl::nullopt /* data_size */, app.app_category);
+      false /* need_fixup */, std::nullopt /* app_size */,
+      std::nullopt /* data_size */, app.app_category);
 }
 
 MATCHER_P(ArcPackageInfoIs, package, "") {
@@ -795,7 +795,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     return arc::mojom::ArcPackageInfo::New(
         package_name, package_version, 1 /* last_backup_android_id */,
         1 /* last_backup_time */, true /* sync */, false /* system */,
-        false /* vpn_provider */, nullptr /* web_app_info */, absl::nullopt,
+        false /* vpn_provider */, nullptr /* web_app_info */, std::nullopt,
         std::move(permissions) /* permission states */);
   }
 

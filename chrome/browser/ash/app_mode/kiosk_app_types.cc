@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 
 #include <algorithm>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -12,7 +13,6 @@
 #include "base/check.h"
 #include "components/account_id/account_id.h"
 #include "components/crx_file/id_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

@@ -329,7 +329,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
   SetStatus(Status::kLoaded);
 }
 
-void WebKioskAppData::OnIconLoadDone(absl::optional<gfx::ImageSkia> icon) {
+void WebKioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
 

@@ -144,7 +144,7 @@ void ArcPackageSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
   wait_until_ready_to_sync_cb_ = std::move(done);
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ArcPackageSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -207,7 +207,7 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
     sync_items_[local_package_name] = std::move(sync_item);
   }
   sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ArcPackageSyncableService::StopSyncing(syncer::ModelType type) {
@@ -221,8 +221,7 @@ void ArcPackageSyncableService::StopSyncing(syncer::ModelType type) {
   pending_uninstall_items_.clear();
 }
 
-absl::optional<syncer::ModelError>
-ArcPackageSyncableService::ProcessSyncChanges(
+std::optional<syncer::ModelError> ArcPackageSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!sync_processor_.get()) {
@@ -251,7 +250,7 @@ ArcPackageSyncableService::ProcessSyncChanges(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ArcPackageSyncableService::SyncStarted() {
@@ -528,8 +527,8 @@ void ArcPackageSyncableService::MaybeUpdateInstallMetrics(
         prefs_->GetAppIdByPackageName(package_info.package_name);
     const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
         prefs_->GetApp(app_id);
-    absl::optional<uint64_t> app_size =
-        app_info ? app_info->app_size_in_bytes : absl::nullopt;
+    std::optional<uint64_t> app_size =
+        app_info ? app_info->app_size_in_bytes : std::nullopt;
     metrics_helper_.OnAppInstalled(app_size);
   }
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
@@ -42,7 +44,6 @@
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -1391,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   fake_service_->RequestSpeechRecognitionStop(
       std::move(stop_options),
       base::BindLambdaForTesting(
-          [&stop_waiter](const absl::optional<std::string>& error) {
+          [&stop_waiter](const std::optional<std::string>& error) {
             ASSERT_FALSE(error.has_value());
             stop_waiter.Quit();
           }));

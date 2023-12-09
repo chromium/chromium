@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -246,10 +246,10 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // kiosk apps that are immediately auto-launched on startup.
   void SetAppWasAutoLaunchedWithZeroDelay(const std::string& app_id);
 
-  // Sets retry backoff policy of extension downloader. Set `absl::nullopt` to
+  // Sets retry backoff policy of extension downloader. Set `std::nullopt` to
   // restore to the default. Used to reduce backoff while Kiosk is launching.
   void SetExtensionDownloaderBackoffPolicy(
-      absl::optional<net::BackoffEntry::Policy> backoff_policy);
+      std::optional<net::BackoffEntry::Policy> backoff_policy);
 
   // Initialize `kiosk_system_session_`.
   void InitKioskSystemSession(Profile* profile, const KioskAppId& app_id);

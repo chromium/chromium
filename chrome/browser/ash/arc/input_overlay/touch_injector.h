@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -110,7 +110,7 @@ class TouchInjector : public ui::EventRewriter {
   void NotifyFirstTimeLaunch();
   // Save the menu entry view position when it's changed.
   void SaveMenuEntryLocation(gfx::Point menu_entry_location_point);
-  absl::optional<gfx::Vector2dF> menu_entry_location() const {
+  std::optional<gfx::Vector2dF> menu_entry_location() const {
     return menu_entry_location_;
   }
 
@@ -343,7 +343,7 @@ class TouchInjector : public ui::EventRewriter {
   bool enable_mouse_lock_ = false;
 
   // Use default position if it is null.
-  absl::optional<gfx::Vector2dF> menu_entry_location_;
+  std::optional<gfx::Vector2dF> menu_entry_location_;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };

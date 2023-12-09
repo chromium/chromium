@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -31,7 +32,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -158,7 +158,7 @@ class ArcInputMethodStateDelegateImpl : public ArcInputMethodState::Delegate {
     return ash::input_method::InputMethodDescriptor(
         input_method_id, display_name, std::string() /* indicator */, layout,
         languages, false /* is_login_keyboard */, GURL(info->settings_url),
-        GURL() /* input_view_url */, /*handwriting_language=*/absl::nullopt);
+        GURL() /* input_view_url */, /*handwriting_language=*/std::nullopt);
   }
 
  private:

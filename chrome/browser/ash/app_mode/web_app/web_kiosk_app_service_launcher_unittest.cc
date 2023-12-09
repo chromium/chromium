@@ -6,6 +6,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -43,7 +44,6 @@
 #include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -84,7 +84,7 @@ class MockAppLauncherObserver : public KioskAppLauncher::Observer {
   MOCK_METHOD0(OnAppInstalling, void());
   MOCK_METHOD0(OnAppPrepared, void());
   MOCK_METHOD0(OnAppLaunched, void());
-  MOCK_METHOD(void, OnAppWindowCreated, (const absl::optional<std::string>&));
+  MOCK_METHOD(void, OnAppWindowCreated, (const std::optional<std::string>&));
   MOCK_METHOD1(OnLaunchFailed, void(KioskAppLaunchError::Error));
 };
 
@@ -143,7 +143,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
         web_contents_manager().GetOrCreatePageState(install_url);
     install_page_state.url_load_result =
         web_app::WebAppUrlLoaderResult::kUrlLoaded;
-    install_page_state.redirection_url = absl::nullopt;
+    install_page_state.redirection_url = std::nullopt;
 
     install_page_state.opt_metadata =
         web_app::FakeWebContentsManager::CreateMetadataWithTitle(
@@ -162,7 +162,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
         blink::mojom::DisplayMode::kStandalone;
     install_page_state.opt_manifest->short_name = u"Basic app name";
 
-    return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+    return web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
 
   void InstallAppAsPlaceholder() {

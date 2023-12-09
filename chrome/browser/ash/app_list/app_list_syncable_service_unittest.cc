@@ -139,11 +139,11 @@ syncer::SyncDataList CreateBadAppRemoteData(const std::string& id) {
   // All fields empty.
   sync_list.push_back(CreateAppRemoteData(
       "", "", "", "", "", sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-      absl::nullopt, ""));
+      std::nullopt, ""));
   sync_list.push_back(
       CreateAppRemoteData(kUnset, kUnset, kUnset, kUnset, kUnset,
                           sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
-                          absl::nullopt, kUnset));
+                          std::nullopt, kUnset));
 
   return sync_list;
 }
@@ -602,11 +602,11 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   syncer::SyncDataList sync_list;
   sync_list.push_back(CreateAppRemoteData(
       kItemId1, "item_name1", GenerateId("parent_id1"), "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
       "promise_package_id1"));
   sync_list.push_back(CreateAppRemoteData(
       kItemId2, "item_name2", GenerateId("parent_id2"), "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
       "promise_package_id2"));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
@@ -711,7 +711,7 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   syncer::SyncDataList sync_list;
   sync_list.push_back(CreateAppRemoteData(
       kItemId1, "item_name1", kParentId(), "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, absl::nullopt,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_APP, std::nullopt,
       "promise_package_id1"));
   sync_list.push_back(CreateAppRemoteData(kItemId2, "item_name2", kParentId(),
                                           "ordinal", "pinordinal"));

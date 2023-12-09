@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_
 #define CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_
 
+#include <optional>
 #include <string>
+
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -35,7 +36,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 
 void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                               Profile* profile,
-                              const absl::optional<std::string>& app_name);
+                              const std::optional<std::string>& app_name);
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_

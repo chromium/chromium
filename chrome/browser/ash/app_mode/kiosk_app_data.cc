@@ -429,7 +429,7 @@ void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {
   SetStatus(Status::kLoaded);
 }
 
-void KioskAppData::OnIconLoadDone(absl::optional<gfx::ImageSkia> icon) {
+void KioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
   if (!icon.has_value()) {

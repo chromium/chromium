@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_CONTROLLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -30,8 +30,8 @@ class KioskController {
   ~KioskController();
 
   std::vector<KioskApp> GetApps() const;
-  absl::optional<KioskApp> GetAppById(const KioskAppId& app_id) const;
-  absl::optional<KioskApp> GetAutoLaunchApp() const;
+  std::optional<KioskApp> GetAppById(const KioskAppId& app_id) const;
+  std::optional<KioskApp> GetAutoLaunchApp() const;
 
  private:
   raw_ref<WebKioskAppManager> web_app_manager_;

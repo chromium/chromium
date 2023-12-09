@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 
 #include <iomanip>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -56,7 +57,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -152,12 +152,12 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
 // Example of identifier: /org/bluez/hci0/dev_E0_CF_65_8C_86_1A/service001a
 // Convert the last 4 characters of |identifier| to an
 // int, by interpreting them as hexadecimal digits.
-absl::optional<uint16_t> ConvertGattIdentifierToId(
+std::optional<uint16_t> ConvertGattIdentifierToId(
     const std::string identifier) {
   uint32_t result;
   if (identifier.size() < 4 ||
       !base::HexStringToUInt(identifier.substr(identifier.size() - 4), &result))
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 
@@ -167,7 +167,7 @@ template <class RemoteGattAttribute>
 arc::mojom::BluetoothGattDBElementPtr CreateGattDBElement(
     const arc::mojom::BluetoothGattDBAttributeType type,
     const RemoteGattAttribute* attribute) {
-  absl::optional<uint16_t> id =
+  std::optional<uint16_t> id =
       ConvertGattIdentifierToId(attribute->GetIdentifier());
   if (!id)
     return nullptr;
@@ -210,7 +210,7 @@ void OnGattOperationError(arc::ArcBluetoothBridge::GattStatusCallback callback,
 // ReadGattDescriptor.
 void OnGattRead(
     arc::ArcBluetoothBridge::GattReadCallback callback,
-    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& result) {
   arc::mojom::BluetoothGattValuePtr gattValue =
       arc::mojom::BluetoothGattValue::New();
@@ -231,7 +231,7 @@ void OnGattServerRead(
     arc::mojom::BluetoothGattStatus status,
     const std::vector<uint8_t>& value) {
   if (status == arc::mojom::BluetoothGattStatus::GATT_SUCCESS) {
-    std::move(callback).Run(/*error_code=*/absl::nullopt, value);
+    std::move(callback).Run(/*error_code=*/std::nullopt, value);
   } else {
     std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                             /*value=*/std::vector<uint8_t>());
@@ -255,12 +255,12 @@ bool IsGattOffsetValid(int offset) {
 
 // This is needed because Android only support UUID 16 bits in service data
 // section in advertising data
-absl::optional<uint16_t> GetUUID16(const BluetoothUUID& uuid) {
+std::optional<uint16_t> GetUUID16(const BluetoothUUID& uuid) {
   // Convert xxxxyyyy-xxxx-xxxx-xxxx-xxxxxxxxxxxx to int16 yyyy
   uint32_t result;
   if (uuid.canonical_value().size() < 8 ||
       !base::HexStringToUInt(uuid.canonical_value().substr(4, 4), &result))
-    return absl::nullopt;
+    return std::nullopt;
   return result;
 }
 
@@ -793,13 +793,13 @@ void ArcBluetoothBridge::GattCharacteristicValueChanged(
   if (!btle_instance)
     return;
 
-  const absl::optional<uint16_t> char_inst_id =
+  const std::optional<uint16_t> char_inst_id =
       ConvertGattIdentifierToId(characteristic->GetIdentifier());
   if (!char_inst_id)
     return;
 
   BluetoothRemoteGattService* service = characteristic->GetService();
-  const absl::optional<uint16_t> service_inst_id =
+  const std::optional<uint16_t> service_inst_id =
       ConvertGattIdentifierToId(service->GetIdentifier());
   if (!service_inst_id)
     return;
@@ -1029,7 +1029,7 @@ void ArcBluetoothBridge::OnDeviceLost(
 
 void ArcBluetoothBridge::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
-    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+    std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -1163,7 +1163,7 @@ void ArcBluetoothBridge::SetAdapterProperty(
 
   if (property->is_discovery_timeout()) {
     uint32_t discovery_timeout = property->get_discovery_timeout();
-    discoverable_off_timeout_ = absl::make_optional(discovery_timeout);
+    discoverable_off_timeout_ = std::make_optional(discovery_timeout);
     OnSetAdapterProperty(mojom::BluetoothStatus::SUCCESS, std::move(property));
   } else if (property->is_bdname()) {
     auto property_clone = property.Clone();
@@ -1468,7 +1468,7 @@ void ArcBluetoothBridge::OnGattConnectStateChanged(
 void ArcBluetoothBridge::OnGattConnect(
     mojom::BluetoothAddressPtr addr,
     std::unique_ptr<BluetoothGattConnection> connection,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     LOG(WARNING) << "GattConnectError: error_code = " << error_code.value();
     OnGattDisconnected(std::move(addr));
@@ -1618,12 +1618,12 @@ void ArcBluetoothBridge::GetGattDB(mojom::BluetoothAddressPtr remote_addr) {
     const auto& characteristics = service->GetCharacteristics();
     if (characteristics.size() > 0) {
       const auto& descriptors = characteristics.back()->GetDescriptors();
-      const absl::optional<uint16_t> start_handle =
+      const std::optional<uint16_t> start_handle =
           ConvertGattIdentifierToId(characteristics.front()->GetIdentifier());
       if (!start_handle)
         continue;
 
-      const absl::optional<uint16_t> end_handle = ConvertGattIdentifierToId(
+      const std::optional<uint16_t> end_handle = ConvertGattIdentifierToId(
           descriptors.size() > 0 ? descriptors.back()->GetIdentifier()
                                  : characteristics.back()->GetIdentifier());
       if (!end_handle)
@@ -2632,7 +2632,7 @@ ArcBluetoothBridge::GetDeviceProperties(mojom::BluetoothPropertyType type,
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::REMOTE_RSSI) {
-    absl::optional<int8_t> rssi = device->GetInquiryRSSI();
+    std::optional<int8_t> rssi = device->GetInquiryRSSI();
     if (rssi.has_value()) {
       properties.push_back(
           mojom::BluetoothProperty::NewRemoteRssi(rssi.value()));
@@ -2777,7 +2777,7 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
 
   // Service Data
   for (const BluetoothUUID& uuid : device->GetServiceDataUUIDs()) {
-    absl::optional<uint16_t> uuid16 = GetUUID16(uuid);
+    std::optional<uint16_t> uuid16 = GetUUID16(uuid);
     if (!uuid16)
       continue;
 

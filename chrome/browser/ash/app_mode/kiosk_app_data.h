@@ -139,7 +139,7 @@ class KioskAppData : public KioskAppDataBase,
 
   void OnCrxLoadFinished(const CrxLoader* crx_loader);
 
-  void OnIconLoadDone(absl::optional<gfx::ImageSkia> icon);
+  void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
   raw_ptr<KioskAppDataDelegate, ExperimentalAsh> delegate_;  // not owned.
   Status status_;

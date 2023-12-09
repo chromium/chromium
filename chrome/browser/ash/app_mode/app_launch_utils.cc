@@ -41,7 +41,7 @@ void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {
   launcher->Start(base::BindOnce(
       [](CrashRecoveryLauncher* launcher, const KioskAppId& kiosk_app_id,
          Profile* profile, bool success,
-         const absl::optional<std::string>& app_name) {
+         const std::optional<std::string>& app_name) {
         delete launcher;
         if (success) {
           CreateKioskSystemSession(kiosk_app_id, profile, app_name);
@@ -100,7 +100,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 
 void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                               Profile* profile,
-                              const absl::optional<std::string>& app_name) {
+                              const std::optional<std::string>& app_name) {
   switch (kiosk_app_id.type) {
     case KioskAppType::kWebApp:
       WebKioskAppManager::Get()->InitKioskSystemSession(profile, kiosk_app_id,

@@ -202,7 +202,7 @@ void ArcOptInPreferenceHandler::EnableUserMetrics(bool is_enabled) {
 }
 
 bool ArcOptInPreferenceHandler::GetUserMetrics() {
-  absl::optional<bool> metrics_enabled =
+  std::optional<bool> metrics_enabled =
       metrics_service_->GetCurrentUserMetricsConsent();
 
   // No value means user is not eligible for per-user consent. This should be

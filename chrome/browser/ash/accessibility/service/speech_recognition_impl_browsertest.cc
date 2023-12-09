@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StopError) {
   base::RunLoop waiter;
   sr_impl_->Stop(std::move(stop_options),
                  base::BindLambdaForTesting(
-                     [&waiter](const absl::optional<std::string>& error) {
+                     [&waiter](const std::optional<std::string>& error) {
                        ASSERT_EQ("Speech recognition already stopped",
                                  error.value());
                        waiter.Quit();

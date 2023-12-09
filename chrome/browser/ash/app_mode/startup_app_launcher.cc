@@ -79,7 +79,7 @@ StartupAppLauncher::StartupAppLauncher(
 StartupAppLauncher::~StartupAppLauncher() {
   // Restore to default extension downloader backoff policy.
   KioskChromeAppManager::Get()->SetExtensionDownloaderBackoffPolicy(
-      absl::nullopt);
+      std::nullopt);
 }
 
 void StartupAppLauncher::AddObserver(KioskAppLauncher::Observer* observer) {

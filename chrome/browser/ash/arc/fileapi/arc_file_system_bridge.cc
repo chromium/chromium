@@ -206,7 +206,7 @@ void ArcFileSystemBridge::GetFileName(const std::string& url,
                                             true /* fail_on_path_separators */,
                                             &unescaped_file_name)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(unescaped_file_name);
@@ -246,7 +246,7 @@ void ArcFileSystemBridge::GetLastModified(const GURL& url,
   GURL url_decoded = DecodeFromChromeContentProviderUrl(url);
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -254,11 +254,11 @@ void ArcFileSystemBridge::GetLastModified(const GURL& url,
               {storage::FileSystemOperation::GetMetadataField::kLastModified},
               base::BindOnce([](base::File::Error result,
                                 const base::File::Info& file_info)
-                                 -> absl::optional<base::Time> {
+                                 -> std::optional<base::Time> {
                 if (result != base::File::FILE_OK) {
-                  return absl::nullopt;
+                  return std::nullopt;
                 }
-                return absl::make_optional(file_info.last_modified);
+                return std::make_optional(file_info.last_modified);
               }).Then(std::move(callback)));
 }
 
@@ -295,7 +295,7 @@ void ArcFileSystemBridge::GetFileType(const std::string& url,
   GURL url_decoded = DecodeFromChromeContentProviderUrl(GURL(url));
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   scoped_refptr<storage::FileSystemContext> context =
@@ -305,8 +305,7 @@ void ArcFileSystemBridge::GetFileType(const std::string& url,
   extensions::app_file_handler_util::GetMimeTypeForLocalPath(
       profile_, file_system_url_and_handle.url.path(),
       base::BindOnce([](const std::string& mime_type) {
-        return mime_type.empty() ? absl::nullopt
-                                 : absl::make_optional(mime_type);
+        return mime_type.empty() ? std::nullopt : std::make_optional(mime_type);
       }).Then(std::move(callback)));
 }
 
@@ -330,7 +329,7 @@ void ArcFileSystemBridge::GetVirtualFileId(const std::string& url,
   GURL url_decoded = DecodeFromChromeContentProviderUrl(GURL(url));
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -432,7 +431,7 @@ void ArcFileSystemBridge::GenerateVirtualFileId(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (size < 0) {
     LOG(ERROR) << "Failed to get file size " << url_decoded;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   ash::VirtualFileProviderClient::Get()->GenerateVirtualFileId(
@@ -444,7 +443,7 @@ void ArcFileSystemBridge::GenerateVirtualFileId(
 void ArcFileSystemBridge::OnGenerateVirtualFileId(
     const GURL& url_decoded,
     GenerateVirtualFileIdCallback callback,
-    const absl::optional<std::string>& id) {
+    const std::optional<std::string>& id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(id.has_value());
   DCHECK_EQ(id_to_url_.count(id.value()), 0u);
@@ -455,7 +454,7 @@ void ArcFileSystemBridge::OnGenerateVirtualFileId(
 
 void ArcFileSystemBridge::OpenFileById(const GURL& url_decoded,
                                        OpenFileToReadCallback callback,
-                                       const absl::optional<std::string>& id) {
+                                       const std::optional<std::string>& id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!id.has_value()) {
     LOG(ERROR) << "Missing ID";

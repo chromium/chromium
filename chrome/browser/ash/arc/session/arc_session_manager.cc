@@ -379,7 +379,7 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
   DCHECK(arc::IsArcVmEnabled());
 
   // For ARCVM, read |kArcSaltPath| if that exists.
-  absl::optional<std::string> salt =
+  std::optional<std::string> salt =
       ReadSaltOnDisk(base::FilePath(kArcSaltPath));
   if (!salt) {
     return ArcSessionManager::ExpansionResult{{}, false};
@@ -715,7 +715,7 @@ void ArcSessionManager::OnProvisioningFinished(
     RequestArcDataRemoval();
   }
 
-  absl::optional<int> error_code;
+  std::optional<int> error_code;
   ArcSupportHost::Error support_error = GetSupportHostError(result);
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
     error_code = static_cast<std::underlying_type_t<ProvisioningStatus>>(
@@ -1016,7 +1016,7 @@ void ArcSessionManager::OnVmStarted(
           ->Unregister(*arcvm_mount_provider_id_);
     }
     arcvm_mount_provider_id_ =
-        absl::optional<guest_os::GuestOsMountProviderRegistry::Id>(
+        std::optional<guest_os::GuestOsMountProviderRegistry::Id>(
             guest_os::GuestOsService::GetForProfile(profile())
                 ->MountProviderRegistry()
                 ->Register(std::make_unique<ArcMountProvider>(
@@ -1528,7 +1528,7 @@ void ArcSessionManager::MaybeStartArcDataRemoval() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ArcSessionManager::OnArcDataRemoved(absl::optional<bool> result) {
+void ArcSessionManager::OnArcDataRemoved(std::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::REMOVING_DATA_DIR);
   DCHECK(profile_);
@@ -1575,7 +1575,7 @@ void ArcSessionManager::CheckArcVmDataMigrationNecessity(
 
 void ArcSessionManager::OnArcVmDataMigrationNecessityChecked(
     base::OnceClosure callback,
-    absl::optional<bool> result) {
+    std::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DCHECK_EQ(state_, State::CHECKING_DATA_MIGRATION_NECESSITY);

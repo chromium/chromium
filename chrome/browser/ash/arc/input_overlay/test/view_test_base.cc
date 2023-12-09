@@ -93,7 +93,7 @@ ViewTestBase::ViewTestBase()
 ViewTestBase::~ViewTestBase() = default;
 
 void ViewTestBase::InitWithFeature(
-    absl::optional<base::test::FeatureRef> feature) {
+    std::optional<base::test::FeatureRef> feature) {
   if (feature) {
     scoped_feature_list_.InitWithFeatures({*feature}, {});
   }

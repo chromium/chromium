@@ -143,7 +143,7 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
       /*current_now=*/0,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/absl::nullopt, std::move(temp_value_ptr));
+      /*manufacture_date=*/std::nullopt, std::move(temp_value_ptr));
   return battery_info;
 }
 
@@ -804,7 +804,7 @@ TEST_F(SystemInfoCardProviderTest, BatteryPowerManagerError) {
   SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
                                       cycle_count);
 
-  absl::nullopt_t props = absl::nullopt;
+  std::nullopt_t props = std::nullopt;
   chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 
   StartSearch(u"battery");

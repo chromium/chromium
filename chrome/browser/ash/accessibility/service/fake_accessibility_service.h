@@ -70,7 +70,7 @@ class FakeAccessibilityService
       const ui::AXRelativeBounds& bounds) override;
   void DispatchGetTextLocationResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 
   // ax::mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(
@@ -127,7 +127,7 @@ class FakeAccessibilityService
           callback);
   void RequestSpeechRecognitionStop(
       ax::mojom::StopOptionsPtr options,
-      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
+      base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
   //
   // Methods to pretend a TTS request came from the service.
@@ -179,7 +179,7 @@ class FakeAccessibilityService
   void RequestShowConfirmationDialog(
       const std::string& title,
       const std::string& description,
-      const absl::optional<std::string>& cancel_name,
+      const std::optional<std::string>& cancel_name,
       ax::mojom::UserInterface::ShowConfirmationDialogCallback callback);
 
   void RequestSetFocusRings(
