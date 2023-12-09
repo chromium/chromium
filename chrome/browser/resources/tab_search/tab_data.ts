@@ -72,6 +72,10 @@ function titleAndAlertAriaLabel(tabData: TabData): string {
     switch (alert) {
       case TabAlertState.kMediaRecording:
         return loadTimeData.getStringF('mediaRecording', tabTitle);
+      case TabAlertState.kAudioRecording:
+        return loadTimeData.getStringF('audioRecording', tabTitle);
+      case TabAlertState.kVideoRecording:
+        return loadTimeData.getStringF('videoRecording', tabTitle);
       case TabAlertState.kAudioPlaying:
         return loadTimeData.getStringF('audioPlaying', tabTitle);
       case TabAlertState.kAudioMuting:

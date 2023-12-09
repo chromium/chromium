@@ -52,8 +52,8 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
       IDR_TAB_STRIP_TAB_STRIP_HTML);
 
-  html_source->AddString("tabIdDataType",kWebUITabIdDataType);
-  html_source->AddString("tabGroupIdDataType",kWebUITabGroupIdDataType);
+  html_source->AddString("tabIdDataType", kWebUITabIdDataType);
+  html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
   webui::SetupChromeRefresh2023(html_source);
 
   static constexpr webui::LocalizedString kStrings[] = {
@@ -69,6 +69,8 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"hidConnected", IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT},
       {"serialConnected", IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT},
       {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
+      {"audioRecording", IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT},
+      {"videoRecording", IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT},
       {"audioMuting", IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT},
       {"tabCapturing", IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT},
       {"pipPlaying", IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT},
@@ -128,11 +130,13 @@ void TabStripUI::Deinitialize() {
 }
 
 void TabStripUI::LayoutChanged() {
-  if (page_handler_)
+  if (page_handler_) {
     page_handler_->NotifyLayoutChanged();
+  }
 }
 
 void TabStripUI::ReceivedKeyboardFocus() {
-  if (page_handler_)
+  if (page_handler_) {
     page_handler_->NotifyReceivedKeyboardFocus();
+  }
 }

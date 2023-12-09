@@ -59,6 +59,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
       {"expandRecentlyClosed", IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED},
       {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
+      {"audioRecording", IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT},
+      {"videoRecording", IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT},
       {"mediaTabs", IDS_TAB_SEARCH_MEDIA_TABS},
       {"noResultsFound", IDS_TAB_SEARCH_NO_RESULTS_FOUND},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
@@ -135,8 +137,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddDouble(
       "searchThreshold",
       std::clamp<double>(features::kTabSearchSearchThreshold.Get(),
-                          features::kTabSearchSearchThresholdMin,
-                          features::kTabSearchSearchThresholdMax));
+                         features::kTabSearchSearchThresholdMin,
+                         features::kTabSearchSearchThresholdMax));
   source->AddDouble("searchTitleWeight", features::kTabSearchTitleWeight.Get());
   source->AddDouble("searchHostnameWeight",
                     features::kTabSearchHostnameWeight.Get());

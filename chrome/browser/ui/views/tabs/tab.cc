@@ -794,6 +794,8 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
   int group;
   switch (state) {
     case TabAlertState::MEDIA_RECORDING:
+    case TabAlertState::AUDIO_RECORDING:
+    case TabAlertState::VIDEO_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
       group = 0;
       break;

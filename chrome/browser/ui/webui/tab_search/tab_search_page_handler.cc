@@ -849,6 +849,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
                           std::back_inserter(tab_data->alert_states),
                           [](TabAlertState alert) {
                             return alert == TabAlertState::MEDIA_RECORDING ||
+                                   alert == TabAlertState::AUDIO_RECORDING ||
+                                   alert == TabAlertState::VIDEO_RECORDING ||
                                    alert == TabAlertState::AUDIO_PLAYING ||
                                    alert == TabAlertState::AUDIO_MUTING;
                           });
