@@ -20,6 +20,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gl/scoped_egl_image.h"
 #endif
@@ -74,8 +75,8 @@ struct SwapChainInfo {
   // This property isn't android-specific but it is currently unused on Windows.
   gfx::Size shared_buffer_size{0, 0};
 
-  // Shared GpuMemoryBuffer
-  std::unique_ptr<gpu::GpuMemoryBufferImplAndroidHardwareBuffer> gmb;
+  // This owns a single reference to an AHardwareBuffer object.
+  base::android::ScopedHardwareBufferHandle scoped_ahb_handle;
 
   // This object keeps the image alive while processing a frame. That's
   // required because it owns underlying resources, and must still be
