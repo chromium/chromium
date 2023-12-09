@@ -88972,6 +88972,19 @@
        {}
       ]
      ],
+     "become-unfragmented-001.html": [
+      "df104fc494dfc3bd5070c04abf66becaea468a24",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "block-end-aligned-abspos-nested.html": [
       "b74a28e7319bad9f70a404bb613513778f42615f",
       [
@@ -305966,10 +305979,6 @@
       []
      ],
      "parsing": {
-      "color-valid-rgb-expected.txt": [
-       "6c9e1b912f60b0fec77a6756487dc46ce3cdd62c",
-       []
-      ],
       "opacity-valid-expected.txt": [
        "cebbfe06674f27ea2b4de8661fcbd6775b6472f9",
        []
@@ -352469,7 +352478,7 @@
        []
       ],
       "decision-logic.sub.py": [
-       "39a4fede5c5888294118f999a8adeeac7bea9b63",
+       "4e1862af82da346ee67941f3df92dd92dcf3ef21",
        []
       ],
       "direct-from-seller-signals.py": [
@@ -379100,7 +379109,7 @@
     ],
     "apng": {
      "apng-blue-rect-checkerboard-ref.html": [
-      "0c997d350a12c737f2935c31ac20a93da9678adc",
+      "3058aa633f4bbb46d5fc75f8e7152623c83803d3",
       []
      ],
      "apng-blue-rectangle-one-ref.html": [
@@ -497707,6 +497716,24 @@
       }
      ]
     ],
+    "document-activeelement.https.html": [
+     "3ac1fd866fc58c7bc957054976cf70baa92eacf6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "document-hasfocus.https.html": [
+     "24ea9988e916bd10633ff6a0f2ac1b8d1a481624",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "document-picture-in-picture-denied.https.html": [
      "3838fd683a87a4cf04e15098ff66a213c187e545",
      [
@@ -512433,8 +512460,187 @@
        }
       ]
      ],
+     "auction-config-passed-to-worklets.https.window.js": [
+      "c78a27bb87a67cae52c411beb6990796afd95f42",
+      [
+       "fledge/tentative/auction-config-passed-to-worklets.https.window.html?1-5",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config-passed-to-worklets.https.window.html?11-15",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config-passed-to-worklets.https.window.html?16-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/auction-config-passed-to-worklets.https.window.html?6-10",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "auction-config.https.window.js": [
-      "2319b99f79868572049494e7c67ac3119622d285",
+      "3b5814b5d4aa5139684a52a1e62d3c45293f495f",
       [
        "fledge/tentative/auction-config.https.window.html?1-5",
        {
