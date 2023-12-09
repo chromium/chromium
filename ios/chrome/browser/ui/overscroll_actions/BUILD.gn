@@ -25,6 +25,7 @@ source_set("overscroll_actions") {
     "//ios/chrome/browser/ui/page_info:constants",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/voice",
+    "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/web/common",
