@@ -10324,6 +10324,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "on_device_startup_metric_delay": "3m"
+                    },
                     "enable_features": [
                         "LogOnDeviceMetricsOnStartup"
                     ]
