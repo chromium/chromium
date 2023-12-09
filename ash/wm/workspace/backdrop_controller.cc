@@ -618,7 +618,8 @@ gfx::Rect BackdropController::GetBackdropBounds() {
           ? SnapPosition::kPrimary
           : SnapPosition::kSecondary;
   return split_view_controller->GetSnappedWindowBoundsInScreen(
-      snap_position, /*window_for_minimum_size=*/nullptr);
+      snap_position, /*window_for_minimum_size=*/nullptr,
+      chromeos::kDefaultSnapRatio);
 }
 
 void BackdropController::Layout() {

@@ -101,8 +101,9 @@ void DoSplitViewTransition(
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   // If split view mode is already active, use its own divider position.
-  if (!split_view_controller->InSplitViewMode())
-    split_view_controller->InitDividerPositionForTransition(divider_position);
+  if (!split_view_controller->InSplitViewMode()) {
+    split_view_controller->set_divider_position(divider_position);
+  }
 
   for (auto& iter : windows) {
     // Preserve the current snap ratio before transition, since

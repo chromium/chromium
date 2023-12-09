@@ -33,6 +33,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -236,13 +237,13 @@ gfx::Rect GetGridBoundsInScreen(
       case SplitViewController::State::kPrimarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
             SnapPosition::kSecondary,
-            /*window_for_minimum_size=*/nullptr);
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
         opposite_position = SnapPosition::kSecondary;
         break;
       case SplitViewController::State::kSecondarySnapped:
         bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
             SnapPosition::kPrimary,
-            /*window_for_minimum_size=*/nullptr);
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
         opposite_position = SnapPosition::kPrimary;
         break;
       case SplitViewController::State::kNoSnap:

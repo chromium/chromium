@@ -652,18 +652,6 @@ bool WindowState::HorizontallyShrinkWindow(const gfx::Rect& work_area) {
   return true;
 }
 
-void WindowState::UpdateSnappedBounds() {
-  auto* split_view_controller = SplitViewController::Get(window_);
-  DCHECK(split_view_controller->IsWindowInSplitView(window_));
-  const gfx::Rect snapped_bounds =
-      split_view_controller->GetSnappedWindowBoundsInParent(
-          GetStateType() == WindowStateType::kPrimarySnapped
-              ? SnapPosition::kPrimary
-              : SnapPosition::kSecondary,
-          window_);
-  SetBoundsDirect(snapped_bounds);
-}
-
 std::unique_ptr<WindowState::State> WindowState::SetStateObject(
     std::unique_ptr<WindowState::State> new_state) {
   current_state_->DetachState(this);

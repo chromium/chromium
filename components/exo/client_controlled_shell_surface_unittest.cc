@@ -33,6 +33,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
@@ -1034,13 +1035,14 @@ TEST_P(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   split_view_controller->SnapWindow(window1, ash::SnapPosition::kPrimary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SnapPosition::kPrimary, window1));
+      ash::SnapPosition::kPrimary, window1, chromeos::kDefaultSnapRatio));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
                 ash::SnapPosition::kPrimary,
-                shell_surface1->GetWidget()->GetNativeWindow()));
+                shell_surface1->GetWidget()->GetNativeWindow(),
+                chromeos::kDefaultSnapRatio));
   EXPECT_TRUE(HasBackdrop());
   split_view_controller->EndSplitView();
 
@@ -1048,13 +1050,14 @@ TEST_P(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   split_view_controller->SnapWindow(window1, ash::SnapPosition::kSecondary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SnapPosition::kSecondary, window1));
+      ash::SnapPosition::kSecondary, window1, chromeos::kDefaultSnapRatio));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kSecondarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
                 ash::SnapPosition::kSecondary,
-                shell_surface1->GetWidget()->GetNativeWindow()));
+                shell_surface1->GetWidget()->GetNativeWindow(),
+                chromeos::kDefaultSnapRatio));
   EXPECT_TRUE(HasBackdrop());
 }
 

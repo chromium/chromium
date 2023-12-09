@@ -19,6 +19,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -316,7 +317,9 @@ void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
             : SnapPosition::kPrimary;
     new_source_window_bounds =
         SplitViewController::Get(source_window_)
-            ->GetSnappedWindowBoundsInScreen(opposite_position, source_window_);
+            ->GetSnappedWindowBoundsInScreen(
+                opposite_position, source_window_,
+                window_util::GetSnapRatioForWindow(source_window_));
   }
   wm::ConvertRectFromScreen(source_window_->parent(),
                             &new_source_window_bounds);

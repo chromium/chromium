@@ -92,6 +92,7 @@
 #include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -6770,12 +6771,14 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
 
   gfx::Rect GetSplitViewLeftWindowBounds() {
     return split_view_controller()->GetSnappedWindowBoundsInScreen(
-        SnapPosition::kPrimary, split_view_controller()->primary_window());
+        SnapPosition::kPrimary, split_view_controller()->primary_window(),
+        chromeos::kDefaultSnapRatio);
   }
 
   gfx::Rect GetSplitViewRightWindowBounds() {
     return split_view_controller()->GetSnappedWindowBoundsInScreen(
-        SnapPosition::kSecondary, split_view_controller()->secondary_window());
+        SnapPosition::kSecondary, split_view_controller()->secondary_window(),
+        chromeos::kDefaultSnapRatio);
   }
 
   gfx::Rect GetSplitViewDividerBounds(bool is_dragging) {
@@ -7127,7 +7130,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     const gfx::Rect split_view_bounds_right =
         split_view_controller()->GetSnappedWindowBoundsInScreen(
             SnapPosition::kSecondary,
-            /*window_for_minimum_size=*/nullptr);
+            /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
 
     ToggleOverview();
 
@@ -8122,26 +8125,30 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
       work_area_length / 3,
       split_view_controller()
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr)
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio)
           .width(),
       8);
   EXPECT_NEAR(work_area_length / 2,
               split_view_controller()
                   ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                                   window2.get())
+                                                   window2.get(),
+                                                   chromeos::kDefaultSnapRatio)
                   .width(),
               8);
   EXPECT_NEAR(
       work_area_length * 2 / 3,
       split_view_controller()
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr)
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio)
           .width(),
       8);
   EXPECT_NEAR(work_area_length * 2 / 3,
               split_view_controller()
                   ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                   window2.get())
+                                                   window2.get(),
+                                                   chromeos::kDefaultSnapRatio)
                   .width(),
               8);
   split_view_divider()->StartResizeWithDivider(
@@ -8152,26 +8159,30 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
       work_area_length * 2 / 3,
       split_view_controller()
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr)
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio)
           .width(),
       8);
   EXPECT_NEAR(work_area_length * 2 / 3,
               split_view_controller()
                   ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                                   window2.get())
+                                                   window2.get(),
+                                                   chromeos::kDefaultSnapRatio)
                   .width(),
               8);
   EXPECT_NEAR(
       work_area_length / 3,
       split_view_controller()
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr)
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio)
           .width(),
       8);
   EXPECT_NEAR(work_area_length / 2,
               split_view_controller()
                   ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                   window2.get())
+                                                   window2.get(),
+                                                   chromeos::kDefaultSnapRatio)
                   .width(),
               8);
 }
@@ -8535,7 +8546,8 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SnapPosition::kSecondary,
-                    /*window_for_minimum_size=*/nullptr)));
+                    /*window_for_minimum_size=*/nullptr,
+                    chromeos::kDefaultSnapRatio)));
 
   split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
@@ -8546,7 +8558,8 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SnapPosition::kPrimary,
-                    /*window_for_minimum_size=*/nullptr)));
+                    /*window_for_minimum_size=*/nullptr,
+                    chromeos::kDefaultSnapRatio)));
 }
 
 // Test that in tablet mode, pressing tab key in overview should not crash.
@@ -9291,11 +9304,13 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_EQ(divider_position, split_view_controller()
                                   ->GetSnappedWindowBoundsInScreen(
                                       SnapPosition::kPrimary,
-                                      /*window_for_minimum_size=*/nullptr)
+                                      /*window_for_minimum_size=*/nullptr,
+                                      chromeos::kDefaultSnapRatio)
                                   .width());
   EXPECT_EQ(window2_minimum_size, split_view_controller()
                                       ->GetSnappedWindowBoundsInScreen(
-                                          SnapPosition::kPrimary, window2.get())
+                                          SnapPosition::kPrimary, window2.get(),
+                                          chromeos::kDefaultSnapRatio)
                                       .width());
   const int work_area_length =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -9305,34 +9320,40 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
       work_area_length - divider_position,
       split_view_controller()
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr)
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio)
           .width());
   EXPECT_EQ(work_area_length - divider_position,
             split_view_controller()
                 ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                 window2.get())
+                                                 window2.get(),
+                                                 chromeos::kDefaultSnapRatio)
                 .width());
   divider_position = 500;
   generator.DragMouseTo(divider_position, 10);
   EXPECT_EQ(divider_position, split_view_controller()
                                   ->GetSnappedWindowBoundsInScreen(
                                       SnapPosition::kPrimary,
-                                      /*window_for_minimum_size=*/nullptr)
+                                      /*window_for_minimum_size=*/nullptr,
+                                      chromeos::kDefaultSnapRatio)
                                   .width());
   EXPECT_EQ(divider_position, split_view_controller()
                                   ->GetSnappedWindowBoundsInScreen(
-                                      SnapPosition::kPrimary, window2.get())
+                                      SnapPosition::kPrimary, window2.get(),
+                                      chromeos::kDefaultSnapRatio)
                                   .width());
   EXPECT_EQ(
       work_area_length - divider_position,
       split_view_controller()
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr)
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio)
           .width());
   EXPECT_EQ(window2_minimum_size,
             split_view_controller()
                 ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                                 window2.get())
+                                                 window2.get(),
+                                                 chromeos::kDefaultSnapRatio)
                 .width());
 }
 
@@ -9350,14 +9371,16 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   const gfx::Rect bottom_snapped_bounds(0, height / 2, 600, height / 2);
   const gfx::Rect left_snapped_bounds(300, height);
   const gfx::Rect right_snapped_bounds(300, 0, 300, height);
-  EXPECT_EQ(top_snapped_bounds,
-            split_view_controller()->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kPrimary,
-                /*window_for_minimum_size=*/nullptr));
-  EXPECT_EQ(bottom_snapped_bounds,
-            split_view_controller()->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kSecondary,
-                /*window_for_minimum_size=*/nullptr));
+  EXPECT_EQ(
+      top_snapped_bounds,
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kPrimary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
+  EXPECT_EQ(
+      bottom_snapped_bounds,
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kSecondary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
 
   // Switch from clamshell mode to tablet mode and then back to clamshell mode.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -9370,14 +9393,16 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   tablet_mode_controller_test_api.OpenLidToAngle(90.0f);
   EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
   // Check the snapped window bounds again. They should be the same as before.
-  EXPECT_EQ(top_snapped_bounds,
-            split_view_controller()->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kPrimary,
-                /*window_for_minimum_size=*/nullptr));
-  EXPECT_EQ(bottom_snapped_bounds,
-            split_view_controller()->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kSecondary,
-                /*window_for_minimum_size=*/nullptr));
+  EXPECT_EQ(
+      top_snapped_bounds,
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kPrimary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
+  EXPECT_EQ(
+      bottom_snapped_bounds,
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kSecondary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio));
 }
 
 // Tests that the ratio between the divider position and the work area width is
@@ -9391,8 +9416,6 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
   ToggleOverview();
   split_view_controller()->SnapWindow(split_view_window.get(),
                                       SnapPosition::kPrimary);
-  WindowState* window_state = WindowState::Get(split_view_window.get());
-  absl::optional<float> default_snap_ratio = window_state->snap_ratio();
   const auto test_many_orientation_changes =
       [this](const std::string& description) {
         SCOPED_TRACE(description);
@@ -9422,13 +9445,18 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
           EXPECT_NEAR(before, after, 0.001f);
         }
       };
-  EXPECT_EQ(default_snap_ratio, window_state->snap_ratio());
+
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   test_many_orientation_changes("centered divider");
-  EXPECT_EQ(default_snap_ratio, window_state->snap_ratio());
-  ui::test::EventGenerator(Shell::GetPrimaryRootWindow(),
-                           split_view_window.get())
-      .DragMouseBy(50, 50);
-  EXPECT_NE(default_snap_ratio, window_state->snap_ratio());
+  EXPECT_EQ(split_view_window->GetBoundsInScreen().width() * 2,
+            work_area.width());
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      split_view_window->GetBoundsInScreen().right_center());
+  event_generator->DragMouseBy(50, 50);
+  EXPECT_NE(split_view_window->GetBoundsInScreen().width() * 2,
+            work_area.width());
   test_many_orientation_changes("off-center divider");
 }
 
@@ -9649,26 +9677,30 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
             screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
                 root_windows[1]));
 
-  EXPECT_EQ(gfx::Rect(0, 0, 400, height),
-            SplitViewController::Get(root_windows[0])
-                ->GetSnappedWindowBoundsInScreen(
-                    SnapPosition::kPrimary,
-                    /*window_for_minimum_size=*/nullptr));
-  EXPECT_EQ(gfx::Rect(400, 0, 400, height),
-            SplitViewController::Get(root_windows[0])
-                ->GetSnappedWindowBoundsInScreen(
-                    SnapPosition::kSecondary,
-                    /*window_for_minimum_size=*/nullptr));
-  EXPECT_EQ(gfx::Rect(800, 0, 400, height),
-            SplitViewController::Get(root_windows[1])
-                ->GetSnappedWindowBoundsInScreen(
-                    SnapPosition::kPrimary,
-                    /*window_for_minimum_size=*/nullptr));
-  EXPECT_EQ(gfx::Rect(1200, 0, 400, height),
-            SplitViewController::Get(root_windows[1])
-                ->GetSnappedWindowBoundsInScreen(
-                    SnapPosition::kSecondary,
-                    /*window_for_minimum_size=*/nullptr));
+  EXPECT_EQ(
+      gfx::Rect(0, 0, 400, height),
+      SplitViewController::Get(root_windows[0])
+          ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio));
+  EXPECT_EQ(
+      gfx::Rect(400, 0, 400, height),
+      SplitViewController::Get(root_windows[0])
+          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio));
+  EXPECT_EQ(
+      gfx::Rect(800, 0, 400, height),
+      SplitViewController::Get(root_windows[1])
+          ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio));
+  EXPECT_EQ(
+      gfx::Rect(1200, 0, 400, height),
+      SplitViewController::Get(root_windows[1])
+          ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio));
 }
 
 // Test that if clamshell split view is started by snapping a window that is the
@@ -9743,7 +9775,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr),
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio),
       grid_on_root2->bounds_for_testing());
   GetOverviewSession()->CompleteDrag(item1, right_snap_point);
   EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
@@ -9821,7 +9854,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       SplitViewController::Get(root_windows[0])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr),
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio),
       grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
@@ -9846,7 +9880,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       SplitViewController::Get(root_windows[0])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr),
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio),
       grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
@@ -9865,7 +9900,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr),
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio),
       grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_left_snap_point_away_from_edge(816.f, 300.f);
@@ -9879,7 +9915,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kSecondary,
-                                           /*window_for_minimum_size=*/nullptr),
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio),
       grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_right_snap_point(1599.f, 300.f);
@@ -9893,7 +9930,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_EQ(
       SplitViewController::Get(root_windows[1])
           ->GetSnappedWindowBoundsInScreen(SnapPosition::kPrimary,
-                                           /*window_for_minimum_size=*/nullptr),
+                                           /*window_for_minimum_size=*/nullptr,
+                                           chromeos::kDefaultSnapRatio),
       grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_middle_point(1200.f, 300.f);

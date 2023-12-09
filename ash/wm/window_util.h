@@ -179,6 +179,10 @@ ASH_EXPORT bool ShouldRoundThumbnailWindow(
     views::View* backdrop_view,
     const gfx::RectF& thumbnail_bounds_in_screen);
 
+// Returns the target snap ratio for the given `window` or
+// `chromeos::kDefaultSnapRatio` if the target snap ratio doesn't exist.
+float GetSnapRatioForWindow(aura::Window* window);
+
 // Returns true if either `kFasterSplitScreenSetup` or `kSnapGroup` is enabled.
 // When this is true, snapping one window will automatically start
 // SplitViewOverviewSession.

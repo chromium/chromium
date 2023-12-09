@@ -24,6 +24,7 @@
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/utils/haptics_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -385,7 +386,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       // Get the preview area bounds from the split view controller.
       preview_area_bounds = gfx::Rect(
           SplitViewController::Get(GetWidget()->GetNativeWindow())
-              ->GetSnappedWindowBoundsInScreen(snap_position, dragged_window_)
+              ->GetSnappedWindowBoundsInScreen(snap_position, dragged_window_,
+                                               chromeos::kDefaultSnapRatio)
               .size());
 
       if (!drag_ending_in_snap)

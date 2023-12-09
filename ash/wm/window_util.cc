@@ -12,7 +12,6 @@
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -39,6 +38,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -653,6 +653,11 @@ bool ShouldRoundThumbnailWindow(views::View* backdrop_view,
       gfx::RRectF(gfx::RectF(backdrop_view->GetBoundsInScreen()),
                   backdrop_view->layer()->rounded_corner_radii()));
   return !backdrop_bounds_in_screen.Contains(thumbnail_bounds_in_screen);
+}
+
+float GetSnapRatioForWindow(aura::Window* window) {
+  WindowState* window_state = WindowState::Get(window);
+  return window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
 }
 
 bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell() {

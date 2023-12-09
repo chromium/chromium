@@ -702,10 +702,10 @@ TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kPrimary, nullptr),
+                SnapPosition::kPrimary, nullptr, chromeos::kDefaultSnapRatio),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kSecondary, nullptr),
+                SnapPosition::kSecondary, nullptr, chromeos::kDefaultSnapRatio),
             right_window->GetBoundsInScreen());
 
   // Test that after restoring the snapped windows, they have the bounds we
@@ -889,10 +889,10 @@ TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kPrimary, nullptr),
+                SnapPosition::kPrimary, nullptr, chromeos::kDefaultSnapRatio),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SnapPosition::kSecondary, nullptr),
+                SnapPosition::kSecondary, nullptr, chromeos::kDefaultSnapRatio),
             right_window->GetBoundsInScreen());
   EXPECT_EQ(left_window, split_view_controller->primary_window());
   EXPECT_EQ(right_window, split_view_controller->secondary_window());

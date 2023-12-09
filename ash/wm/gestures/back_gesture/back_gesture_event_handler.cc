@@ -154,13 +154,15 @@ void ActivateUnderneathWindowInSplitViewMode(
     if (left_window && split_view_controller
                            ->GetSnappedWindowBoundsInScreen(
                                SnapPosition::kPrimary,
-                               /*window_for_minimum_size=*/nullptr)
+                               /*window_for_minimum_size=*/nullptr,
+                               chromeos::kDefaultSnapRatio)
                            .Contains(location)) {
       ActivateWindow(left_window);
     } else if (right_window && split_view_controller
                                    ->GetSnappedWindowBoundsInScreen(
                                        SnapPosition::kSecondary,
-                                       /*window_for_minimum_size=*/nullptr)
+                                       /*window_for_minimum_size=*/nullptr,
+                                       chromeos::kDefaultSnapRatio)
                                    .Contains(location)) {
       ActivateWindow(right_window);
     } else if (split_view_controller->split_view_divider()

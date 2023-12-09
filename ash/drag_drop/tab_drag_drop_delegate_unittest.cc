@@ -475,7 +475,8 @@ TEST_F(TabDragDropDelegateTest, SourceWindowBoundsUpdatedWhileDragging) {
         SplitViewController::Get(source_window.get());
     EXPECT_EQ(source_window->bounds(),
               split_view_controller->GetSnappedWindowBoundsInParent(
-                  SnapPosition::kSecondary, source_window.get()));
+                  SnapPosition::kSecondary, source_window.get(),
+                  chromeos::kDefaultSnapRatio));
     EXPECT_FALSE(split_view_controller->InSplitViewMode());
   }
 
