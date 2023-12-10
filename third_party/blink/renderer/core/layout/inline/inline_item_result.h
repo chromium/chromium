@@ -96,6 +96,7 @@ struct CORE_EXPORT InlineItemResult {
   // within the BFC.
   GC_PLUGIN_IGNORE("crbug.com/1146383")
   absl::optional<PositionedFloat> positioned_float;
+  ExclusionSpace exclusion_space_before_position_float;
 
   // Margins, borders, and padding for open tags.
   // Margins are set for atomic inlines too.

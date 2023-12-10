@@ -36,6 +36,8 @@ class CORE_EXPORT ExclusionSpaceInternal final {
   ExclusionSpaceInternal(ExclusionSpaceInternal&&) noexcept;
   ExclusionSpaceInternal& operator=(const ExclusionSpaceInternal&);
   ExclusionSpaceInternal& operator=(ExclusionSpaceInternal&&) noexcept;
+  // See `ExclusionSpace::CopyFrom()`.
+  void CopyFrom(const ExclusionSpaceInternal&);
   ~ExclusionSpaceInternal() = default;
 
   void Add(const ExclusionArea* exclusion);
@@ -556,6 +558,7 @@ class CORE_EXPORT ExclusionSpace {
                              : nullptr) {}
   ExclusionSpace(ExclusionSpace&& other) noexcept = default;
 
+  // This moves the cached `derived_geometry_`, see also `CopyFrom()`.
   ExclusionSpace& operator=(const ExclusionSpace& other) {
     exclusion_space_ =
         other.exclusion_space_
@@ -564,6 +567,10 @@ class CORE_EXPORT ExclusionSpace {
     return *this;
   }
   ExclusionSpace& operator=(ExclusionSpace&& other) = default;
+  // Same as `operator=`, except that `operator=` moves the cached
+  // `derived_geometry_` for when the copied instance is more likely to be used,
+  // while `CopyFrom` doesn't.
+  void CopyFrom(const ExclusionSpace&);
 
   void Add(const ExclusionArea* exclusion) {
     if (!exclusion_space_)
