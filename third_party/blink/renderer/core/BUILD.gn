@@ -1501,6 +1501,7 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_script, "", "script")
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
+  sources += rebase_path(blink_core_tests_streams, "", "streams")
   sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
   sources += rebase_path(blink_core_tests_url, "", "url")
   sources += rebase_path(blink_core_tests_url_pattern, "", "url_pattern")

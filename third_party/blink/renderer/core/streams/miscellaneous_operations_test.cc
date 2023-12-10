@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/streams/test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -30,6 +31,7 @@ v8::MaybeLocal<v8::Value> EmptyExtraArg() {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmNoMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
@@ -43,6 +45,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNoMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmUndefinedMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   underlying_object
@@ -60,6 +63,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmUndefinedMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmNullMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   underlying_object
@@ -76,6 +80,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNullMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmThrowingGetter) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue underlying_value = EvalWithPrintingError(
       &scope, "({ get pull() { throw new TypeError(); } })");
@@ -109,6 +114,7 @@ v8::Local<v8::Value> CreateFromFunctionAndGetResult(
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmReturnsInteger) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto result = CreateFromFunctionAndGetResult(&scope, "() => 5");
   ASSERT_TRUE(result->IsNumber());
@@ -116,6 +122,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmReturnsInteger) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmReturnsPromise) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto result =
       CreateFromFunctionAndGetResult(&scope, "() => Promise.resolve(2)");
@@ -138,12 +145,14 @@ bool CreateFromFunctionAndGetSuccess(
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmNoArgs) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_TRUE(CreateFromFunctionAndGetSuccess(
       &scope, "(...args) => args.length === 0"));
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmExtraArg) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Local<v8::Number> extra_arg = v8::Number::New(scope.GetIsolate(), 7);
   EXPECT_TRUE(CreateFromFunctionAndGetSuccess(
@@ -151,6 +160,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmExtraArg) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmPassOneArg) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::MaybeLocal<v8::Value> extra_arg;
   v8::Local<v8::Value> argv[] = {v8::Number::New(scope.GetIsolate(), 10)};
@@ -160,6 +170,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmPassOneArg) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateAlgorithmPassBoth) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::MaybeLocal<v8::Value> extra_arg = v8::Number::New(scope.GetIsolate(), 5);
   v8::Local<v8::Value> argv[] = {v8::Number::New(scope.GetIsolate(), 10)};
@@ -170,6 +181,7 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmPassBoth) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNoMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   v8::Local<v8::Value> controller = v8::Undefined(scope.GetIsolate());
@@ -184,6 +196,7 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNoMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   underlying_object
@@ -202,6 +215,7 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue underlying_value = EvalWithPrintingError(&scope,
                                                        R"(({
@@ -223,6 +237,7 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmReturningController) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue underlying_value = EvalWithPrintingError(&scope,
                                                        R"(({
@@ -250,6 +265,7 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmReturningController) {
 }
 
 TEST(MiscellaneousOperationsTest, CallOrNoop1NoMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   v8::Local<v8::Value> arg0 = v8::Number::New(scope.GetIsolate(), 0);
@@ -261,6 +277,7 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1NoMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CallOrNoop1NullMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto underlying_object = v8::Object::New(scope.GetIsolate());
   v8::Local<v8::Value> arg0 = v8::Number::New(scope.GetIsolate(), 0);
@@ -278,6 +295,7 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1NullMethod) {
 }
 
 TEST(MiscellaneousOperationsTest, CallOrNoop1CheckCalled) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue underlying_value = EvalWithPrintingError(&scope,
                                                        R"(({
@@ -298,6 +316,7 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1CheckCalled) {
 }
 
 TEST(MiscellaneousOperationsTest, CallOrNoop1ThrowingMethod) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue underlying_value = EvalWithPrintingError(&scope,
                                                        R"(({
@@ -334,6 +353,7 @@ v8::Local<v8::Promise> PromiseCallFromText(V8TestingScope* scope,
 }
 
 TEST(MiscellaneousOperationsTest, PromiseCalledWithObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Local<v8::Promise> promise =
       PromiseCallFromText(&scope, "(function() { return this.value === 15; })",
@@ -344,6 +364,7 @@ TEST(MiscellaneousOperationsTest, PromiseCalledWithObject) {
 }
 
 TEST(MiscellaneousOperationsTest, PromiseCallThrowing) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Local<v8::Promise> promise = PromiseCallFromText(
       &scope, "(function() { throw new TypeError(); })", "({})", 0, nullptr);
@@ -352,6 +373,7 @@ TEST(MiscellaneousOperationsTest, PromiseCallThrowing) {
 }
 
 TEST(MiscellaneousOperationsTest, PromiseCallRejecting) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Local<v8::Promise> promise = PromiseCallFromText(
       &scope, "(function() { return Promise.reject(16) })", "({})", 0, nullptr);
@@ -361,17 +383,20 @@ TEST(MiscellaneousOperationsTest, PromiseCallRejecting) {
 }
 
 TEST(MiscellaneousOperationsTest, ValidatePositiveHighWaterMark) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_EQ(ValidateAndNormalizeHighWaterMark(23, ASSERT_NO_EXCEPTION), 23.0);
 }
 
 TEST(MiscellaneousOperationsTest, ValidateInfiniteHighWaterMark) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   EXPECT_FALSE(isfinite(ValidateAndNormalizeHighWaterMark(
       std::numeric_limits<double>::infinity(), ASSERT_NO_EXCEPTION)));
 }
 
 TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ExceptionState exception_state(
       scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
@@ -380,6 +405,7 @@ TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
 }
 
 TEST(MiscellaneousOperationsTest, NaNHighWaterMarkInvalid) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ExceptionState exception_state(
       scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
@@ -389,6 +415,7 @@ TEST(MiscellaneousOperationsTest, NaNHighWaterMarkInvalid) {
 }
 
 TEST(MiscellaneousOperationsTest, UndefinedSizeFunction) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* algo = MakeSizeAlgorithmFromSizeFunction(
       scope.GetScriptState(), v8::Undefined(scope.GetIsolate()),
@@ -402,6 +429,7 @@ TEST(MiscellaneousOperationsTest, UndefinedSizeFunction) {
 }
 
 TEST(MiscellaneousOperationsTest, NullSizeFunction) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ExceptionState exception_state(
       scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
@@ -421,6 +449,7 @@ StrategySizeAlgorithm* IdentitySizeAlgorithm(V8TestingScope* scope) {
 }
 
 TEST(MiscellaneousOperationsTest, SizeAlgorithmWorks) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* algo = IdentitySizeAlgorithm(&scope);
   ASSERT_TRUE(algo);
@@ -432,6 +461,7 @@ TEST(MiscellaneousOperationsTest, SizeAlgorithmWorks) {
 }
 
 TEST(MiscellaneousOperationsTest, SizeAlgorithmConvertsToNumber) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* algo = IdentitySizeAlgorithm(&scope);
   ASSERT_TRUE(algo);
@@ -443,6 +473,7 @@ TEST(MiscellaneousOperationsTest, SizeAlgorithmConvertsToNumber) {
 }
 
 TEST(MiscellaneousOperationsTest, ThrowingSizeAlgorithm) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue function_value =
       EvalWithPrintingError(&scope, "() => { throw new TypeError(); }");
@@ -461,6 +492,7 @@ TEST(MiscellaneousOperationsTest, ThrowingSizeAlgorithm) {
 }
 
 TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* algo = IdentitySizeAlgorithm(&scope);
   ASSERT_TRUE(algo);
@@ -477,6 +509,7 @@ TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
 }
 
 TEST(MiscellaneousOperationsTest, PromiseResolve) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto promise = PromiseResolve(scope.GetScriptState(),
                                 v8::Number::New(scope.GetIsolate(), 19));
@@ -486,6 +519,7 @@ TEST(MiscellaneousOperationsTest, PromiseResolve) {
 }
 
 TEST(MiscellaneousOperationsTest, PromiseResolveWithPromise) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto original_promise = v8::Promise::Resolver::New(scope.GetContext())
                               .ToLocalChecked()
@@ -496,6 +530,7 @@ TEST(MiscellaneousOperationsTest, PromiseResolveWithPromise) {
 }
 
 TEST(MiscellaneousOperationsTest, PromiseResolveWithUndefined) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto promise = PromiseResolveWithUndefined(scope.GetScriptState());
   ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
@@ -503,6 +538,7 @@ TEST(MiscellaneousOperationsTest, PromiseResolveWithUndefined) {
 }
 
 TEST(MiscellaneousOperationsTest, PromiseReject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto promise = PromiseReject(scope.GetScriptState(),
                                v8::Number::New(scope.GetIsolate(), 43));

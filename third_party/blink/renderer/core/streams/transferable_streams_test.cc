@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -157,6 +158,7 @@ void ExpectDone(int line,
 // We only do minimal testing here. The functionality of transferable streams is
 // tested in the layout tests.
 TEST(TransferableStreamsTest, SmokeTest) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto* channel =
@@ -239,6 +241,7 @@ TEST(TransferableStreamsTest, SmokeTest) {
 }
 
 TEST(ConcatenatedReadableStreamTest, Empty) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -269,6 +272,7 @@ TEST(ConcatenatedReadableStreamTest, Empty) {
 }
 
 TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -321,6 +325,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
 }
 
 TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -373,6 +378,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
 }
 
 TEST(ConcatenatedReadableStreamTest, ErrorInSource1) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -409,6 +415,7 @@ TEST(ConcatenatedReadableStreamTest, ErrorInSource1) {
 }
 
 TEST(ConcatenatedReadableStreamTest, ErrorInSource2) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -445,6 +452,7 @@ TEST(ConcatenatedReadableStreamTest, ErrorInSource2) {
 }
 
 TEST(ConcatenatedReadableStreamTest, Cancel1) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -487,6 +495,7 @@ TEST(ConcatenatedReadableStreamTest, Cancel1) {
 }
 
 TEST(ConcatenatedReadableStreamTest, Cancel2) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -524,6 +533,7 @@ TEST(ConcatenatedReadableStreamTest, Cancel2) {
 }
 
 TEST(ConcatenatedReadableStreamTest, PendingStart1) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -558,6 +568,7 @@ TEST(ConcatenatedReadableStreamTest, PendingStart1) {
 }
 
 TEST(ConcatenatedReadableStreamTest, PendingStart2) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
