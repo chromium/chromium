@@ -147,7 +147,6 @@ void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
 }
 
 bool OneDriveUploadHandler::FileAlreadyBeingUploaded() {
-  auto odfs_info = GetODFSInfo(profile_);
   for (std::reference_wrapper<const file_manager::io_task::ProgressStatus>
            status : io_task_controller_->TaskStatuses()) {
     // Check upload (copy/move) tasks.
