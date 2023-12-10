@@ -491,6 +491,7 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms
 
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 
+crbug.com/1509927 [ win nvidia angle-d3d11 passthrough ] conformance/ogles/GL/atan/atan_009_to_012.html [ Failure ]
 
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
 
