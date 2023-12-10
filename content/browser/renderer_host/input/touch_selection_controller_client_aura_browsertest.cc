@@ -414,39 +414,61 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that long-pressing on a text brings up selection handles and the quick
-// menu properly.
-IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest, BasicSelection) {
-  // Set the test page up.
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
+                       InitiallyInactive) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
 
-  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
-  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
-            rwhva->selection_controller()->active_status());
+  EXPECT_EQ(
+      GetRenderWidgetHostViewAura()->selection_controller()->active_status(),
+      ui::TouchSelectionController::INACTIVE);
+  EXPECT_EQ(GetRenderWidgetHostViewAura()
+                ->selection_controller()
+                ->GetVisibleRectBetweenBounds(),
+            gfx::RectF());
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
-  EXPECT_EQ(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
+}
 
-  // Long-press on the text and wait for handles to appear.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::SELECTION_HANDLES_SHOWN);
+// Tests that long-pressing on a text brings up selection handles and the quick
+// menu properly.
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
+                       LongPressSelection) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController(true);
 
-  gfx::PointF point = GetPointInText(2);
-  ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
-  long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
-  ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                              long_press_details);
-  rwhva->OnGestureEvent(&long_press);
+  // Long-press to select some text.
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
+  SelectWithLongPress(generator,
+                      ConvertPointFromView(rwhva, generator.delegate(),
+                                           GetPointInText(/*cursor_index=*/2)));
 
-  selection_controller_client()->Wait();
+  // Touch selection should be active.
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::SELECTION_ACTIVE);
+  EXPECT_EQ(rwhva->GetSelectedText(), u"Some");
+  EXPECT_EQ(rwhva->selection_controller()->GetVisibleRectBetweenBounds().size(),
+            gfx::SizeF(4 * kCharacterWidth, kCharacterHeight));
+  // Selection handles and menu should not be shown while the long press is
+  // still being held down.
+  ui::TouchSelectionControllerTestApi selection_controller_test_api(
+      rwhva->selection_controller());
+  EXPECT_FALSE(selection_controller_test_api.GetStartVisible());
+  EXPECT_FALSE(selection_controller_test_api.GetEndVisible());
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
-  // Check that selection is active and the quick menu is showing.
-  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
+  // Release the long press.
+  generator.ReleaseTouch();
+
+  // Touch selection handles and menu should now be showing.
+  EXPECT_EQ(rwhva->selection_controller()->active_status(),
+            ui::TouchSelectionController::SELECTION_ACTIVE);
+  EXPECT_EQ(rwhva->GetSelectedText(), u"Some");
+  EXPECT_EQ(rwhva->selection_controller()->GetVisibleRectBetweenBounds().size(),
+            gfx::SizeF(4 * kCharacterWidth, kCharacterHeight));
+  EXPECT_TRUE(selection_controller_test_api.GetStartVisible());
+  EXPECT_TRUE(selection_controller_test_api.GetEndVisible());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
-  EXPECT_NE(gfx::RectF(),
-            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
 }
 
 class TouchSelectionControllerClientAuraSiteIsolationTest
