@@ -236,13 +236,14 @@ class ChromePrivateNetworkAccessOriginTrialTestBase
   // Origin Trials key generated with:
   //
   // tools/origin_trials/generate_token.py --expire-days 5000 --version 3
-  // http://pna-permission.security:9999 PrivateNetworkAccessPermissionPrompt
+  // https://pna-permission.security:9999 PrivateNetworkAccessPermissionPrompt
   static std::string OriginTrialToken() {
-    return "A7bNbiKma0iF9R5A51xA20kZnKy5X/KjIbdN6s/"
-           "PsS165jqtLR8e3tLwNstD6wO1foTeh8h1Jo0eka207j7a0gAAAAB7eyJvcmlnaW4iOi"
+    return "A/fzPTu9JNmk9L0nSsG6Pd/"
+           "nGW0bDTv8C1Uly7+"
+           "K6sNw6MpcQRQYqeyRHEsLjl0S0MJv7IigLYbCGkLUS2NjDwIAAAB7eyJvcmlnaW4iOi"
            "AiaHR0cHM6Ly9wbmEtcGVybWlzc2lvbi5zZWN1cml0eTo5OTk5IiwgImZlYXR1cmUiO"
            "iAiUHJpdmF0ZU5ldHdvcmtBY2Nlc3NQZXJtaXNzaW9uUHJvbXB0IiwgImV4cGlyeSI6"
-           "IDE3MDE4NTUzMzV9";
+           "IDIxMzQwMjE3MTd9";
   }
 
   // The OriginTrial token is bound to a given origin. Since the
