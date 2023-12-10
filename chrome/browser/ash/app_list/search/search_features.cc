@@ -37,6 +37,10 @@ BASE_FEATURE(kLauncherImageSearchIca,
              "LauncherImageSearchIca",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kICASupportedByHardware,
+             "ICASupportedByHardware",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLauncherImageSearchOcr,
              "LauncherImageSearchOcr",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -70,8 +74,10 @@ bool isLauncherFuzzyMatchForOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kLauncherFuzzyMatchForOmnibox);
 }
 
+// Only enable image search for ICA supported devices.
 bool IsLauncherImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherImageSearch);
+  return base::FeatureList::IsEnabled(kLauncherImageSearch) &&
+         base::FeatureList::IsEnabled(kICASupportedByHardware);
 }
 
 bool IsLauncherImageSearchIcaEnabled() {
