@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "media/base/audio_bus.h"
 #include "services/audio/public/cpp/device_factory.h"
 
@@ -20,7 +19,7 @@ constexpr int kMaxBusCapacity = 10;
 }  // namespace
 
 AudioCapturer::AudioCapturer(
-    base::StringPiece device_id,
+    std::string_view device_id,
     mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
     const media::AudioParameters& audio_params,
     OnAudioCapturedCallback callback)
