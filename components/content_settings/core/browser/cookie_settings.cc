@@ -123,6 +123,10 @@ void CookieSettings::SetTemporaryCookieGrantForHeuristic(
     const GURL& first_party_url,
     base::TimeDelta ttl,
     bool use_schemeless_patterns) {
+  if (url.is_empty() || first_party_url.is_empty()) {
+    return;
+  }
+
   // If the new grant has an earlier TTL than the existing setting, keep the
   // existing TTL.
   SettingInfo info;
