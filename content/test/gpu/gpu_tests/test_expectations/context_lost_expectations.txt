@@ -199,7 +199,9 @@ crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRest
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
-crbug.com/1505662 [ fuchsia ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+crbug.com/1505662 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+crbug.com/1505662 [ angle-vulkan arm fuchsia fuchsia-board-astro no-clang-coverage ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+crbug.com/1505662 [ angle-vulkan arm fuchsia fuchsia-board-nelson no-clang-coverage ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
