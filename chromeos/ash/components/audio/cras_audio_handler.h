@@ -711,8 +711,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   AudioDevice ConvertAudioNodeWithModifiedPriority(const AudioNode& node);
 
-  const AudioDevice* GetDeviceFromStableDeviceId(
-      uint64_t stable_device_id) const;
+  static const AudioDevice* GetDeviceFromStableDeviceId(
+      const AudioDeviceMap& devices,
+      uint64_t stable_device_id);
   const AudioDevice* GetKeyboardMic() const;
 
   const AudioDevice* GetHotwordDevice() const;
@@ -763,17 +764,29 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // |new_active_device|.
   bool ChangeActiveDevice(const AudioDevice& new_active_device);
 
-  // Returns true if there are any device changes for input or output
-  // specified by |is_input|, by comparing |audio_devices_| with |new_nodes|.
-  // Passes the new nodes discovered in *|new_discovered|.
-  // *|device_removed| indicates if any devices have been removed.
-  // *|active_device_removed| indicates if the current active device has been
-  // removed.
-  bool HasDeviceChange(const AudioNodeList& new_nodes,
-                       bool is_input,
-                       AudioDeviceList* new_discovered,
-                       bool* device_removed,
-                       bool* active_device_removed);
+  struct DeviceChanges {
+    // Given the list of |current_devices| and newly probed |new_devices|,
+    // computes the audio device changes for the direction specified by
+    // |is_input|.
+    explicit DeviceChanges(bool is_input,
+                           uint64_t active_node_id,
+                           const AudioDeviceMap& current_devices,
+                           const AudioDeviceList& new_devices);
+    ~DeviceChanges();
+
+    // List of devices in |new_devices| that are already in |current_devices|.
+    AudioDeviceList devices_remain_;
+    // List of devices that are added in |new_devices|.
+    AudioDeviceList devices_added_;
+    // The active device, potentially with an updated id.
+    // Or std::nullopt if the active device is removed.
+    std::optional<AudioDevice> active_device_;
+    bool has_any_change_;
+  };
+
+  // Compute the changes of audio devices.
+  DeviceChanges ComputeDeviceChanges(bool is_input,
+                                     const AudioDeviceList& new_devices) const;
 
   // Handles dbus callback for GetNodes.
   void HandleGetNodes(std::optional<AudioNodeList> node_list);
@@ -802,7 +815,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool hdmi_rediscovering() const { return hdmi_rediscovering_; }
 
   void SetHDMIRediscoverGracePeriodForTesting(int duration_in_ms);
-  bool ShouldSwitchToHotPlugDevice(const AudioDevice& hotplug_device) const;
+
+  static bool ShouldSwitchToHotPlugDevice(
+      const std::optional<AudioDevice>& current_device,
+      const AudioDevice& hotplug_device);
 
   enum DeviceStatus {
     OLD_DEVICE,
@@ -812,7 +828,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Checks if |device| is a newly discovered, changed, or existing device for
   // the nodes sent from NodesChanged signal.
-  DeviceStatus CheckDeviceStatus(const AudioDevice& device);
+  static DeviceStatus CheckDeviceStatus(const AudioDeviceMap& devices,
+                                        const AudioDevice& device);
 
   void NotifyActiveNodeChanged(bool is_input);
 
@@ -824,32 +841,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void PauseAllStreams();
 
   // Handles either input or output device changes, specified by |is_input|.
-  void HandleAudioDeviceChange(bool is_input,
-                               const AudioDeviceList& devices,
-                               const AudioDeviceList& hotplug_nodes,
-                               bool has_device_change,
-                               bool has_device_removed,
-                               bool active_device_removed);
+  void HandleAudioDeviceChange(bool is_input, const DeviceChanges& changes);
 
-  // Handles non-hotplug nodes change cases.
-  void HandleNonHotplugNodesChange(bool is_input,
-                                   const AudioDeviceList& devices,
-                                   const AudioDeviceList& hotplug_nodes,
-                                   bool has_device_change,
-                                   bool has_device_removed,
-                                   bool active_device_removed);
-
-  // Handles the regular user hotplug case with user priority.
-  void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
-
-  // Switch to the top priority device in |devices|. |devices| must be a list
+  // Returns the top priority device in |devices|. |devices| must be a list
   // of devices with the same direction.
-  void SwitchToTopPriorityDevice(const AudioDeviceList& devices);
-
-  // Switch to previous active device if it is found, otherwise, switch
-  // to the top priority device.
-  void SwitchToPreviousActiveDeviceIfAvailable(bool is_input,
-                                               const AudioDeviceList& devices);
+  std::optional<AudioDevice> TopPriorityDevice(
+      const AudioDeviceList& devices) const;
 
   // Activates the internal mic attached with the camera specified by
   // |camera_facing|.

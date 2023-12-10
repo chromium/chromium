@@ -32,6 +32,15 @@ class AudioDetailedViewPixelTest : public AshTestBase {
 };
 
 TEST_F(AudioDetailedViewPixelTest, Basics) {
+  // Pin input and output devices to ensure consistent behavior.
+  auto* audio_handler = CrasAudioHandler::Get();
+  AudioDevice output_device(FakeCrasAudioClient::Get()->node_list()[1]);
+  AudioDevice input_device(FakeCrasAudioClient::Get()->node_list()[5]);
+  audio_handler->SwitchToDevice(output_device, true,
+                                CrasAudioHandler::ACTIVATE_BY_USER);
+  audio_handler->SwitchToDevice(input_device, true,
+                                CrasAudioHandler::ACTIVATE_BY_USER);
+
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
   ASSERT_TRUE(system_tray->bubble());
